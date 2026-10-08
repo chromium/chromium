@@ -29,7 +29,6 @@
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -279,12 +278,6 @@ class TabSearchUIBundledCodeCacheBrowserTest
 
 IN_PROC_BROWSER_TEST_P(TabSearchUIBundledCodeCacheBrowserTest,
                        SuccessfullyLoadsCodeCache) {
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-      ShouldEnableFieldTrialTestingConfig()) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See crbug.com/464087732.";
-  }
-
   // Assert the bundled code-cache map is non-empty.
   EXPECT_FALSE(webui::GetWebUIResourceUrlToCodeCacheMap().empty());
 
