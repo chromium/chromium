@@ -809,45 +809,39 @@ class ChromiumDepGraph {
             }
             return
         }
-        // Use a background thread to avoid slowing down main thread.
-        // Saves about 80 seconds currently.
-        new Thread().start(() -> {
-            int maxRetries = 3
-            int delayMs = 1000
-            for (int retry = 0; retry <= maxRetries; retry++) {
-                HttpURLConnection http = null
-                try {
-                    http = (HttpURLConnection) new URL(url).openConnection()
-                    http.requestMethod = 'HEAD'
-                    http.connectTimeout = 5000
-                    http.readTimeout = 5000
-                    int code = http.responseCode
-                    if (code == 200) {
-                        return
-                    }
-                    if (code == 404) {
-                        new RuntimeException("Resolved POM but got 404 for $url").printStackTrace()
-                        System.exit(1)
-                    }
-                    if (retry == maxRetries) {
-                        new RuntimeException("Resolved POM but got response code $code for $url after $maxRetries retries").printStackTrace()
-                        System.exit(1)
-                    }
-                } catch (Throwable t) {
-                    if (retry == maxRetries) {
-                        new RuntimeException("Resolved POM but failed to connect to $url: " + t.getMessage(), t).printStackTrace()
-                        System.exit(1)
-                    }
-                } finally {
-                    if (http != null) {
-                        http.disconnect()
-                    }
+        int maxRetries = 3
+        int delayMs = 1000
+        for (int retry = 0; retry <= maxRetries; retry++) {
+            HttpURLConnection http = null
+            int code = -1
+            try {
+                http = (HttpURLConnection) new URL(url).openConnection()
+                http.requestMethod = 'HEAD'
+                http.connectTimeout = 15000
+                http.readTimeout = 15000
+                code = http.responseCode
+            } catch (Throwable t) {
+                if (retry == maxRetries) {
+                    throw new RuntimeException(
+                            "Resolved POM but failed to connect to $url: " + t.getMessage(), t)
                 }
-                try {
-                    Thread.sleep(delayMs * (retry + 1))
-                } catch (InterruptedException ignored) {}
+            } finally {
+                if (http != null) {
+                    http.disconnect()
+                }
             }
-        })
+            if (code == 200) {
+                return
+            }
+            if (code == 404) {
+                throw new RuntimeException("Resolved POM but got 404 for $url")
+            }
+            if (code != -1 && retry == maxRetries) {
+                throw new RuntimeException(
+                        "Resolved POM but got response code $code for $url after $maxRetries retries")
+            }
+            Thread.sleep(delayMs * (retry + 1))
+        }
     }
 
     // Checks if currentVersion is lower than versionInQuestion.
