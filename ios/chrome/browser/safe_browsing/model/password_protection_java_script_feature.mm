@@ -88,12 +88,13 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
   // Verify that the message is well-formed before using it.
-  if (!message.legacy_body()->is_dict()) {
+  const web::ScriptMessageValue& body = message.body();
+  if (body.type() != base::Value::Type::DICT) {
     return;
   }
-  const base::DictValue& dict = message.legacy_body()->GetDict();
+  const web::ScriptMessageDictValue& dict = body.GetDict();
 
-  const std::string* event_type = dict.FindString("eventType");
+  std::optional<std::string> event_type = dict.FindString("eventType");
   if (!event_type || event_type->empty()) {
     return;
   }
@@ -115,7 +116,7 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* text = dict.FindString("text");
+  std::optional<std::string> text = dict.FindString("text");
   if (!text || text->empty()) {
     return;
   }
