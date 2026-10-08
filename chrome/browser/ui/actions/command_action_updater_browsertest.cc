@@ -20,9 +20,11 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
@@ -298,17 +300,29 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
   EXPECT_FALSE(paste_action->GetEnabled());
 }
 
-// Verifies that the download action is registered on all platforms,
-// specifically ChromeOS where it performs a different behavior.
+// Verifies that the download page action is registered on all platforms and
+// that executing IDC_SHOW_DOWNLOADS opens chrome://downloads.
 IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        ShowDownloadsActionIsRegisteredAndEnabled) {
   actions::ActionItem* root =
       BrowserActions::From(browser())->root_action_item();
   ASSERT_TRUE(root);
-  actions::ActionItem* downloads_action =
+  actions::ActionItem* downloads_page_action =
+      actions::ActionManager::Get().FindAction(kActionShowDownloadsPage, root);
+  ASSERT_TRUE(downloads_page_action);
+  EXPECT_TRUE(downloads_page_action->GetEnabled());
+
+  actions::ActionItem* downloads_toolbar_action =
       actions::ActionManager::Get().FindAction(kActionShowDownloads, root);
-  ASSERT_TRUE(downloads_action);
-  EXPECT_TRUE(downloads_action->GetEnabled());
+  ASSERT_TRUE(downloads_toolbar_action);
+  EXPECT_TRUE(downloads_toolbar_action->GetEnabled());
+
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_SHOW_DOWNLOADS, true);
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_DOWNLOADS));
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(chrome::kChromeUIDownloadsURL));
 }
 
 // Verifies that executing IDC_ROUTE_MEDIA on an app browser window opens the
