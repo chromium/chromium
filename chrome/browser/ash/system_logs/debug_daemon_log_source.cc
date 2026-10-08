@@ -21,7 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/feedback/feedback_util.h"
@@ -283,7 +283,8 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
     }
 
     profile_dirs.emplace_back(
-        ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
+        ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+            user->username_hash()));
   }
 
   auto response = std::make_unique<SystemLogsResponse>();
