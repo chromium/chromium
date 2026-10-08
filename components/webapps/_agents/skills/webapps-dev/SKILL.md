@@ -53,5 +53,8 @@ applicable bot.
 
 - For non-trivial designs or execution plans, use `harness-doc-writer` and
   coordinate reviews with `chromium_design_reviewer`.
+- For security code reviews, vulnerability fix verification, or variation
+  audits, use the `security-review` skill
+  (`internal/agents/skills/security-review/`).
 - After structural changes or new directories, audit links and maps with
   `harness-updater`.

@@ -13,6 +13,9 @@
     },
     {
       "path": "chrome/browser/web_applications/docs/skills/create-web-applications-unittest"
+    },
+    {
+      "path": "internal/agents/skills/security-review"
     }
   ]
 }
