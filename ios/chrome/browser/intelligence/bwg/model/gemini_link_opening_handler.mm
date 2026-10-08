@@ -61,6 +61,7 @@
   }
 
   RecordURLOpened();
+  RecordGeminiImmersiveLearningCardWebModalOpened();
   id<GeminiCommands> geminiHandler =
       HandlerForProtocol(_dispatcher, GeminiCommands);
   [geminiHandler showGeminiWebModalForURL:gurl];

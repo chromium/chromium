@@ -180,14 +180,16 @@ TEST_F(GeminiLinkOpeningHandlerTest,
   EXPECT_EQ(GURL(kTestURL), opened_url);
 }
 
-// Test that openImmersiveLearningCardURLInWebModal: records the URL opened user
-// action.
+// Test that openImmersiveLearningCardURLInWebModal: records the URL opened and
+// web modal opened user actions.
 TEST_F(GeminiLinkOpeningHandlerTest,
        TestOpenImmersiveLearningCardURLInWebModalRecordsUserAction) {
   [link_opening_handler_
       openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
 
   EXPECT_EQ(1, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "MobileGeminiImmersiveLearningCardWebModalOpened"));
 }
 
 // Test that openImmersiveLearningCardURLInWebModal: ignores a nil URL.
@@ -200,6 +202,8 @@ TEST_F(GeminiLinkOpeningHandlerTest,
 
   [mock_gemini_commands_handler_ verify];
   EXPECT_EQ(0, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "MobileGeminiImmersiveLearningCardWebModalOpened"));
 }
 
 // Test that openImmersiveLearningCardURLInWebModal: opens the URL in a new tab

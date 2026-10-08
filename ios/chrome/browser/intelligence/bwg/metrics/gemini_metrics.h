@@ -683,6 +683,12 @@ void RecordFloatyHiddenFromSource(gemini::FloatyUpdateSource source);
 // Records that the user clicked a URL in a Gemini session.
 void RecordURLOpened();
 
+// Records that the Gemini web modal was opened for an immersive learning card.
+void RecordGeminiImmersiveLearningCardWebModalOpened();
+
+// Records that a navigation closed the Gemini web modal and opened a new tab.
+void RecordGeminiWebModalNavigatedToNewTab();
+
 // Records entry point metrics with context about whether FRE is shown.
 void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
                                  bool is_fre_flow);

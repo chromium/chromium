@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_modal_content_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -121,10 +122,13 @@ class GeminiWebModalCoordinatorTest : public PlatformTest {
     EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
     EXPECT_EQ(URL, url_loader_->last_params.web_params.url);
     EXPECT_EQ(1, delegate_.dismissalCount);
+    EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                     "MobileGeminiWebModalNavigatedToNewTab"));
     EXPECT_OCMOCK_VERIFY(mock_gemini_commands_handler_);
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::UserActionTester user_action_tester_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
@@ -171,6 +175,8 @@ TEST_F(GeminiWebModalCoordinatorTest, CloseButtonNotifiesDelegate) {
       geminiModalContentViewControllerDidTapClose:viewController];
 
   EXPECT_EQ(1, delegate_.dismissalCount);
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "MobileGeminiWebModalNavigatedToNewTab"));
 }
 
 // Test that swiping the sheet down also notifies the delegate.
