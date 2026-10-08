@@ -226,6 +226,11 @@ The bindings can be `#include`d from the following paths:
 
 ## Troubleshooting
 
+The sections below should help diagnose and fix some issues you may encounter.
+If your issue is not covered, then please see
+[`docs/rust/crubit/README.md`](./README.md) for instructions
+how to report a new bug.
+
 ### APIs missing from the generated bindings
 
 If `cpp_api_from_rust` is unable to generate bindings for a given Rust API,
@@ -260,7 +265,7 @@ end up being transitively used by many C++ targets, so please follow
 [Crubit and build performance](build_performance.md) when adding a
 dependency on the bindings.
 
-## Known issues
+### Known issues
 
 * https://crbug.com/545486505:
   Crubit link failure: `lld-link: error: undefined symbol: ___crubit_thunk_foo_bar_baz`

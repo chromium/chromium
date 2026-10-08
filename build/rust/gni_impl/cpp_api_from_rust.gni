@@ -6,6 +6,8 @@ import("//build/config/rust.gni")
 import("//build/rust/gni_impl/crubit_shared_args.gni")
 import("//build/toolchain/kythe.gni")
 
+# Crubit features enabled for all `cpp_api_from_rust` targets.
+# See also: https://github.com/google/crubit/blob/main/features/README.md
 _globally_enabled_crubit_features = [
   # TODO(b/558605603): Remove this feature from the list once it becomes the
   # default in Crubit.

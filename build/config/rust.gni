@@ -425,6 +425,27 @@ rust_prebuilt_stdlib =
 enable_cpp_api_from_rust = enable_rust && use_chromium_rust_toolchain &&
                            !rust_prebuilt_stdlib && build_with_chromium
 
+declare_args() {
+  # Whether it is okay to use `rust_api_from_cpp.gni`.  The default is `false`,
+  # because the `rust_api_from_cpp` tool is not yet officially supported (i.e.
+  # it may get removed from the Rust toolchain package in an emergency).  Set to
+  # `true` in `args.gn` for local experimentation.
+  #
+  # TODO(crbug.com/40226863): After officially supporting `rust_api_from_cpp`:
+  # * Introduce `_enable_crubit = enable_rust && use_chromium_rust_toolchain &&
+  #   build_with_chromium`
+  # * Set `enable_cpp_api_from_rust = _enable_crubit && !rust_prebuilt_stdlib`
+  # * Set `enable_rust_api_from_cpp = _enable_crubit`
+  #   (and it should just be a variable, not an `args.gn` setting / not in
+  #   `declare_args`)
+  # * Make sure that comments explaining the conditions above are retained and
+  #   make sense (and are not duplicated in each of the two `.gni`s?).
+  # * Remove `ENABLE_BUILDING_RS_BINDINGS_FROM_CC` from
+  #   `//tools/rust/build_crubit.py`: after that, every Rust toolchain package
+  #   has to include the tool.
+  enable_rust_api_from_cpp = false
+}
+
 rustc_wrapper_inputs = [
   "//build/action_helpers.py",
   "//build/gn_helpers.py",

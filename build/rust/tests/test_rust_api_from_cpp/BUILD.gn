@@ -2,21 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rs_bindings_from_cc.gni")
-import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
 
-rust_executable("test_rs_bindings_from_cc") {
-  crate_root = "main.rs"
-  sources = [ "main.rs" ]
+rust_static_library("test_rust_api_from_cpp") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "tests.rs"
+  sources = [ crate_root ]
   deps = [
     ":self_contained_target_rs_api",
-    ":target_depending_on_another_rs_api",
-    "//third_party/crubit:ctor",
+
+    # TODO(https://crbug.com/40226863): Also cover and test
+    # `:target_depending_on_another_rs_api`.
+    "//testing/rust_gtest_interop",
   ]
-  build_native_rust_unit_tests = true
 }
 
-rs_bindings_from_cc("self_contained_target_rs_api") {
+rust_api_from_cpp("self_contained_target_rs_api") {
   # This is the target that the bindings are for / call into.
   bindings_target = ":self_contained_target"
 
@@ -35,7 +38,7 @@ source_set("self_contained_target") {
   ]
 }
 
-rs_bindings_from_cc("target_depending_on_another_rs_api") {
+rust_api_from_cpp("target_depending_on_another_rs_api") {
   # This is the target that the bindings are for / call into.
   bindings_target = ":target_depending_on_another"
 

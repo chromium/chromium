@@ -111,9 +111,13 @@ import("//build/rust/gni_impl/rust_target.gni")
 #     need to depend on the cxx crate or any generated bindings.
 #
 #   cpp_api_from_rust (optional)
-#     A dictionary that if present opts-into using Crubit's tools to generate
-#     a C++ `.h` file with C++ bindings for public Rust APIs exported by the
-#     create.  The dictionary may have the following additional entries:
+#     A dictionary that (if present) opts-into using Crubit's
+#     `cpp_api_from_rust` (aka `cc_bindings_from_rs`) tool to generate a C++
+#     `.h` file with C++ bindings for public Rust APIs exported by the crate.
+#     For additional instructions and examples for using this attribute please
+#     see `//docs/rust/crubit/cpp_api_from_rust.md`.
+#
+#     The dictionary may have the following additional entries:
 #
 #       target_name
 #         The name of the C++ `source_set` that `build/rust/*.gni` should create

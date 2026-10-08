@@ -361,6 +361,18 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "remote_command": platform.remote_python_bin,
         },
+        {
+            # Like rust/bindgen, `rs_bindings_from_cc` parses C++ headers, but
+            # the action has no depfile, so the transitively included headers
+            # are not known to Siso and remote execution would fail.
+            # TODO(crbug.com/40226863): Enable remote execution once the
+            # action has a depfile and/or runs scandeps.
+            "name": "rust/rust_api_from_cpp",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/rust_api_from_cpp_wrapper.py",
+            "inputs": rust_toolchain + clang_inputs,
+            "remote": False,
+            "timeout": "2m",
+        },
     ])
     return step_config
 

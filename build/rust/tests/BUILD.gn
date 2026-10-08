@@ -75,11 +75,9 @@ group("deps") {
 
     if (enable_cpp_api_from_rust) {
       deps += [ "//build/rust/tests/test_cpp_api_from_rust" ]
-      # TODO(crbug.com/40226863): Enable the additional target below
-      # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
-      # meantime see the instructions in
-      # `//build/rust/gni_impl/run_rs_bindings_from_cc.py`.
-      #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
+    }
+    if (enable_rust_api_from_cpp) {
+      deps += [ "//build/rust/tests/test_rust_api_from_cpp" ]
     }
 
     if (can_build_rust_unit_tests) {
@@ -93,12 +91,6 @@ group("deps") {
         "//build/rust/tests/test_rust_multiple_dep_versions_exe/v1:test_lib_v1_unittests",
         "//build/rust/tests/test_rust_multiple_dep_versions_exe/v2:test_lib_v2_unittests",
         "//build/rust/tests/test_rust_static_library_non_standard_arrangement:foo_tests",
-
-        # TODO(crbug.com/40226863): Enable the additional target below
-        # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
-        # meantime see the instructions in
-        # `//build/rust/gni_impl/run_rs_bindings_from_cc.py`.
-        #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
 
       if (enable_rust_cxx) {

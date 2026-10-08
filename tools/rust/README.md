@@ -243,7 +243,8 @@ are part of `base_unittests` on every platform except ChromeOS and Fuchsia
 (see the `//build/rust/tests` dependency in `//base/BUILD.gn`).
 
 These tests cover `cc_bindings_from_rs` only.  The `rs_bindings_from_cc`
-targets in `//build/rust/tests/test_rs_bindings_from_cc` are still
-commented out behind `TODO(crbug.com/40226863)`.  Until they are enabled,
-the only check is the smoke test in `build_crubit.py`: it runs each
+tests in `//build/rust/tests/test_rust_api_from_cpp` are built only when the
+`enable_rust_api_from_cpp` GN arg is `true` (it defaults to `false` for now -
+see `TODO(crbug.com/40226863)` in `//build/config/rust.gni`).  Until then, the
+only check on the bots is the smoke test in `build_crubit.py`: it runs each
 installed binary once (e.g. `rs_bindings_from_cc --version`).

@@ -6,7 +6,9 @@
     C++ to call Rust.  This direction of Crubit interop
     is fully supported in Chromium (but see the "Caveats" section below).
 *   `rust_api_from_cpp` enables Rust to call C++.
-    It is not yet supported in Chromium, but integration work is ongoing.
+    It is not yet officially supported in Chromium.
+    Information about partial, experimental support can be found in
+    [`rust_api_from_cpp.md`](./rust_api_from_cpp.md).
 
 Notes:
 
@@ -55,3 +57,10 @@ Notes:
   https://discord.gg/nHq5fdADKV
 * TODO: Cover Crubit in
   [Chromium/FFI chapter of Comprehensive Rust course](https://google.github.io/comprehensive-rust/chromium/interoperability-with-cpp.html)
+
+## How to report bugs or feature requests
+
+* Googlers can use the [go/crubit-bug](https://goto.google.com/crubit-bug) short
+  link to report a Crubit bug or a feature request.
+* Alternatively, please open an issue at
+  https://github.com/google/crubit/issues/new
