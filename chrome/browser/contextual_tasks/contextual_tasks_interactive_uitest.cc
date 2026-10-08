@@ -1240,6 +1240,204 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
           "Side panel in the new window shows the moved tab's task"));
 }
 
+// This tests the following CUJ:
+//  (1) User has a webpage open in a window with a second tab.
+//  (2) User clicks the pinned Contextual Tasks toolbar button.
+//  (3) Contextual Tasks side panel opens with a task for the active tab.
+//  (4) User closes the active tab with the close tab shortcut (Ctrl+W, or
+//      Cmd+W on Mac).
+//  (5) The other tab becomes active and the side panel closes.
+//  (6) User reopens the closed tab with the restore tab shortcut
+//      (Ctrl+Shift+T, or Cmd+Shift+T on Mac).
+//  (7) The tab is restored at its URL. The side panel stays closed because the
+//      restored tab is not associated with the closed tab's task.
+//  (8) User clicks the pinned Contextual Tasks toolbar button.
+//  (9) Contextual Tasks side panel opens with a new zero-state task for the
+//      restored tab.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
+                       RestoreClosedTabAndReopenPanel) {
+  // Incognito profiles have no TabRestoreService, so the restore tab command
+  // is disabled.
+  SkipIfIncognito("Reopening closed tabs is not available in Incognito");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kRestoredTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kRestoredTabSidePanelId);
+
+  const GURL kPageUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kOtherPageUrl = embedded_test_server()->GetURL("/title2.html");
+  const DeepQuery kComposebox = {"contextual-tasks-app", "#composebox",
+                                 "#composebox"};
+
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+
+  std::optional<base::Uuid> task_id;
+
+  // Returns the ID of the task associated with the active tab.
+  auto get_active_tab_task_id = [this]() -> std::optional<base::Uuid> {
+    std::optional<ContextualTask> task =
+        CHECK_DEREF(ContextualTasksServiceFactory::GetForProfile(
+                        browser()->GetProfile()))
+            .GetContextualTaskForTab(sessions::SessionTabHelper::IdForTab(
+                browser()->tab_strip_model()->GetActiveWebContents()));
+    if (!task.has_value()) {
+      return std::nullopt;
+    }
+    return task->GetTaskId();
+  };
+
+  // Returns the task ID in the `kTaskQueryParam` query param of the WebUI URL
+  // that the side panel shows.
+  auto get_side_panel_task_param = [this]() -> std::string {
+    content::WebContents* const panel_contents =
+        ContextualTasksPanelController::From(browser())->GetActiveWebContents();
+    std::string task_param;
+    if (panel_contents) {
+      net::GetValueForKeyInQuery(panel_contents->GetLastCommittedURL(),
+                                 kTaskQueryParam, &task_param);
+    }
+    return task_param;
+  };
+
+  // Sends the keyboard shortcut for `command_id` to the browser window. On
+  // Mac, the close and restore tab shortcuts are main menu key equivalents
+  // that are not registered with the views FocusManager, so run the command
+  // that the shortcut maps to instead.
+  auto press_shortcut = [this](int command_id) {
+#if BUILDFLAG(IS_MAC)
+    return Steps(CheckResult(
+        [this, command_id]() {
+          return chrome::ExecuteCommand(browser(), command_id);
+        },
+        true));
+#else
+    ui::Accelerator accelerator;
+    CHECK(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+        command_id, &accelerator));
+    return Steps(SendAccelerator(kBrowserViewElementId, accelerator));
+#endif
+  };
+
+  RunTestSequence(
+      // (1) Open a webpage in the first tab, with a second tab in the window.
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kPageUrl),
+      AddInstrumentedTab(kGenericTab, kOtherPageUrl),
+      WaitForWebContentsReady(kGenericTab, kOtherPageUrl),
+      SelectTab(kTabStripElementId, 0),
+
+      // (2) Click the pinned Contextual Tasks toolbar button.
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      // (3) The side panel opens with a task for the active tab.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "RestoreTabSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelId, "RestoreTabSidePanelContents"),
+      WaitForElementExists(kSidePanelId, kComposebox),
+      Do([&]() { task_id = get_active_tab_task_id(); }),
+      Check([&]() { return task_id.has_value(); },
+            "Active tab is associated with a task"),
+      Check(
+          [&]() {
+            return get_side_panel_task_param() == task_id->AsLowercaseString();
+          },
+          "Side panel shows the active tab's task"),
+      // The side panel contents are released once no open tab is associated
+      // with the task, so stop tracking them before closing the tab.
+      UninstrumentWebContents(kSidePanelId),
+
+      // (4) Close the active tab with the close tab shortcut.
+      press_shortcut(IDC_CLOSE_TAB),
+
+      // (5) The other tab, which has no task, becomes active and the side panel
+      // closes.
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL();
+          },
+          kOtherPageUrl),
+      Check(
+          [this]() {
+            return !ContextualTasksPanelController::From(browser())
+                        ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is closed after the task tab closes"),
+
+      // (6) Reopen the closed tab with the restore tab shortcut.
+      InstrumentNextTab(kRestoredTabId), press_shortcut(IDC_RESTORE_TAB),
+
+      // (7) The tab is restored at its URL and becomes active. Task
+      // associations are not saved with closed tabs, so the restored tab has
+      // no task and the side panel stays closed.
+      WaitForWebContentsReady(kRestoredTabId, kPageUrl),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL();
+          },
+          kPageUrl),
+      Check([&]() { return !get_active_tab_task_id().has_value(); },
+            "Restored tab is not associated with a task"),
+      Check(
+          [this]() {
+            return !ContextualTasksPanelController::From(browser())
+                        ->IsPanelOpenForContextualTask();
+          },
+          "Side panel stays closed for the restored tab"),
+
+      // (8) Click the pinned Contextual Tasks toolbar button.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      // (9) The side panel opens with a new zero-state task for the restored
+      // tab.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "RestoredTabSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kRestoredTabSidePanelId,
+                              "RestoredTabSidePanelContents"),
+      WaitForElementExists(kRestoredTabSidePanelId, kComposebox),
+      Check(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is open for the restored tab"),
+      Check(
+          [&]() {
+            std::optional<base::Uuid> current_task_id =
+                get_active_tab_task_id();
+            return current_task_id.has_value() && current_task_id != task_id;
+          },
+          "Pinned button starts a new zero-state task for the restored tab"),
+      Check(
+          [&]() {
+            std::optional<base::Uuid> current_task_id =
+                get_active_tab_task_id();
+            return current_task_id.has_value() &&
+                   get_side_panel_task_param() ==
+                       current_task_id->AsLowercaseString();
+          },
+          "Side panel shows the restored tab's task"));
+}
+
 // TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
 // This tests the following CUJ:
 //  (1) User opens the Contextual Tasks side panel.
