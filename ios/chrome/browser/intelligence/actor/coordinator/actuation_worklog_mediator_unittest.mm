@@ -8,8 +8,6 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
-#import "base/run_loop.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/actor/core/task_source_info.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
@@ -18,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -144,7 +143,7 @@ class ActuationWorklogMediatorTest : public PlatformTest {
   // task.
   void StartObservingTask(actor::ActorTaskId task_id) {
     [mediator_ startObservingTaskWithID:task_id];
-    FlushTaskRunner();
+    actor::FlushCurrentSequence();
   }
 
   void ChangeState(actor::ActorTaskState new_state,
@@ -161,16 +160,6 @@ class ActuationWorklogMediatorTest : public PlatformTest {
                willExecuteTool:tool_type
                     taskUpdate:update
                     onWebState:web::WebStateID::FromSerializedValue(1)];
-  }
-
-  // Runs the tasks already posted to the current sequence, such as the posted
-  // observer registration. Tasks they post in turn are not run; use
-  // `base::test::RunUntil()` to wait on such chains.
-  void FlushTaskRunner() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   // Creates a task and starts observing it, as the Gemini container does
@@ -199,7 +188,7 @@ class ActuationWorklogMediatorTest : public PlatformTest {
         task_id, actor::ActorTaskInterruptReason::kWaitingUserConfirmation,
         kConfirmationMessage);
     // Delivers the posted state updates and intervention prompt.
-    FlushTaskRunner();
+    actor::FlushCurrentSequence();
     return !observer.stopped && observer.state == kWaitingOnUser;
   }
 
@@ -397,7 +386,7 @@ TEST_F(ActuationWorklogMediatorTest, TestStartObservingDeliversRegistration) {
   // The registration is posted, so nothing is shown yet.
   EXPECT_EQ(fake_consumer_.items.count, 0u);
 
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   EXPECT_NSEQ(fake_consumer_.taskTitle, @(kTaskTitle));
   EXPECT_TRUE(fake_consumer_.actuationActive);
   EXPECT_EQ(fake_consumer_.items.count, 1u);
@@ -410,7 +399,7 @@ TEST_F(ActuationWorklogMediatorTest,
   [mediator_ startObservingTaskWithID:task_id_];
   EndActuation();
 
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   EXPECT_EQ(fake_consumer_.taskTitle, nil);
   EXPECT_FALSE(fake_consumer_.actuationActive);
   EXPECT_EQ(fake_consumer_.items.count, 0u);
@@ -431,7 +420,7 @@ TEST_F(ActuationWorklogMediatorTest,
   EXPECT_EQ(fake_consumer_.intervention, nil);
   // The intervention completion is posted back to the task.
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kWaitingOnUser);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kReflecting);
 }
 
@@ -443,7 +432,7 @@ TEST_F(ActuationWorklogMediatorTest, TestDisconnectKeepsTaskWaitingOnUser) {
   FakeTaskStateObserver* observer = ObserveTaskState(task_id);
 
   [mediator_ disconnect];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_FALSE(observer.stopped);
   EXPECT_EQ(observer.state, kWaitingOnUser);

@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/intelligence/actor/util:test_support",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

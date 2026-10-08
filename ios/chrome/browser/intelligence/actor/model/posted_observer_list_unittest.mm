@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/posted_observer_list.h"
 
-#import "base/location.h"
-#import "base/run_loop.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -80,14 +78,6 @@ class PostedObserverListTest : public PlatformTest {
           }];
   }
 
-  // Runs the tasks already posted to the current sequence.
-  void FlushTaskRunner() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   base::test::TaskEnvironment task_environment_;
   PostedObserverList<id<PostedObserverListTestObserver>>* list_ = nil;
 };
@@ -97,12 +87,12 @@ TEST_F(PostedObserverListTest, NotifyIsPosted) {
   FakePostedObserverListTestObserver* observer =
       [[FakePostedObserverListTestObserver alloc] init];
   [list_ addObserver:observer];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   Notify(kFirstEvent);
   EXPECT_EQ(0u, observer.events.count);
 
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   EXPECT_NSEQ(@[ kFirstEvent ], observer.events);
 }
 
@@ -115,7 +105,7 @@ TEST_F(PostedObserverListTest, ObserverSkipsNotificationsPostedBeforeAdd) {
   Notify(kFirstEvent);
   [list_ addObserver:observer];
   Notify(kSecondEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ(@[ kSecondEvent ], observer.events);
 }
@@ -130,7 +120,7 @@ TEST_F(PostedObserverListTest, RegisteredBlockRunsBeforeLaterNotifications) {
   Notify(kFirstEvent);
   EXPECT_EQ(0u, observer.events.count);
 
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   EXPECT_NSEQ((@[ kRegisteredEvent, kFirstEvent ]), observer.events);
 }
 
@@ -143,7 +133,7 @@ TEST_F(PostedObserverListTest, RemoveCancelsPendingRegistration) {
   AddObserverWithRegisteredEvent(observer);
   [list_ removeObserver:observer];
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_EQ(0u, observer.events.count);
 }
@@ -154,11 +144,11 @@ TEST_F(PostedObserverListTest, RemoveCancelsPendingNotifications) {
   FakePostedObserverListTestObserver* observer =
       [[FakePostedObserverListTestObserver alloc] init];
   [list_ addObserver:observer];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   Notify(kFirstEvent);
   [list_ removeObserver:observer];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_EQ(0u, observer.events.count);
 }
@@ -176,7 +166,7 @@ TEST_F(PostedObserverListTest, ReAddBeforeRegistrationCompletesStartsFresh) {
   Notify(kSecondEvent);
   AddObserverWithRegisteredEvent(observer, kReRegisteredEvent);
   Notify(kThirdEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kReRegisteredEvent, kThirdEvent ]), observer.events);
 }
@@ -188,13 +178,13 @@ TEST_F(PostedObserverListTest, ReAddAfterRegistrationCompletesStartsFresh) {
   FakePostedObserverListTestObserver* observer =
       [[FakePostedObserverListTestObserver alloc] init];
   AddObserverWithRegisteredEvent(observer);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   [list_ removeObserver:observer];
   Notify(kFirstEvent);
   AddObserverWithRegisteredEvent(observer, kReRegisteredEvent);
   Notify(kSecondEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kRegisteredEvent, kReRegisteredEvent, kSecondEvent ]),
               observer.events);
@@ -208,7 +198,7 @@ TEST_F(PostedObserverListTest, DuplicateAddRegistersOnce) {
   AddObserverWithRegisteredEvent(observer);
   AddObserverWithRegisteredEvent(observer);
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kRegisteredEvent, kFirstEvent ]), observer.events);
 }
@@ -220,10 +210,10 @@ TEST_F(PostedObserverListTest, DuplicateAddAfterRegistrationIsIgnored) {
       [[FakePostedObserverListTestObserver alloc] init];
 
   AddObserverWithRegisteredEvent(observer);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   AddObserverWithRegisteredEvent(observer);
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kRegisteredEvent, kFirstEvent ]), observer.events);
 }
@@ -238,11 +228,11 @@ TEST_F(PostedObserverListTest, ObserverRemovesItselfDuringNotification) {
     [list_ removeObserver:receiver];
   };
   [list_ addObserver:observer];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   Notify(kFirstEvent);
   Notify(kSecondEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ(@[ kFirstEvent ], observer.events);
 }
@@ -261,10 +251,10 @@ TEST_F(PostedObserverListTest, ObserverRemovedByAnotherDuringNotification) {
       };
   [list_ addObserver:first_observer];
   [list_ addObserver:second_observer];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ(@[ kFirstEvent ], first_observer.events);
   EXPECT_EQ(0u, second_observer.events.count);
@@ -282,7 +272,7 @@ TEST_F(PostedObserverListTest, ObserverRemovesItselfDuringRegistration) {
 
   AddObserverWithRegisteredEvent(observer);
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ(@[ kRegisteredEvent ], observer.events);
 }
@@ -300,14 +290,14 @@ TEST_F(PostedObserverListTest, ObserverAddedDuringNotification) {
         AddObserverWithRegisteredEvent(second_observer);
       };
   [list_ addObserver:first_observer];
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   // `kSecondEvent` is queued before `second_observer` is added.
   Notify(kFirstEvent);
   Notify(kSecondEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
   Notify(kThirdEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kFirstEvent, kSecondEvent, kThirdEvent ]),
               first_observer.events);
@@ -324,7 +314,7 @@ TEST_F(PostedObserverListTest, PendingWorkCompletesAfterListReleased) {
   Notify(kFirstEvent);
   __weak PostedObserverList* weak_list = list_;
   list_ = nil;
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kRegisteredEvent, kFirstEvent ]), observer.events);
   EXPECT_EQ(nil, weak_list);
@@ -345,7 +335,7 @@ TEST_F(PostedObserverListTest, ObserversAreHeldWeakly) {
   // Completing the registration of, and notifying, a deallocated observer is a
   // no-op.
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 }
 
 // Tests that removing a nil observer is a no-op and does not affect pending
@@ -357,7 +347,7 @@ TEST_F(PostedObserverListTest, RemoveNilObserverIsNoOp) {
   AddObserverWithRegisteredEvent(observer);
   [list_ removeObserver:nil];
   Notify(kFirstEvent);
-  FlushTaskRunner();
+  actor::FlushCurrentSequence();
 
   EXPECT_NSEQ((@[ kRegisteredEvent, kFirstEvent ]), observer.events);
 }

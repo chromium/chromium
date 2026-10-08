@@ -7,14 +7,13 @@
 #import <memory>
 #import <sstream>
 
-#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/run_until.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -97,15 +96,6 @@ class ActorTabHelperTest : public PlatformTest {
   // PlatformTest:
   void SetUp() override;
   void TearDown() override;
-
-  // Posts a barrier task to the current sequenced task runner and waits for it
-  // to run, ensuring any earlier task posted by `ActorTabHelper` has completed.
-  bool FlushSequencedTaskRunner() {
-    base::test::TestFuture<void> future;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, future.GetCallback());
-    return future.Wait();
-  }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<KeepAliveFakeWebState> web_state_;
@@ -371,7 +361,7 @@ TEST_F(ActorTabHelperTest, KeepRenderProcessAliveNotReappliedWhenInactive) {
 
   web_state_->WasHidden();
   web_state_->SetKeepRenderProcessAlive(false);
-  ASSERT_TRUE(FlushSequencedTaskRunner());
+  actor::FlushCurrentSequence();
   EXPECT_FALSE(web_state_->keep_render_process_alive());
 }
 
@@ -384,7 +374,7 @@ TEST_F(ActorTabHelperTest,
   web_state_->WasHidden();
   web_state_->SetKeepRenderProcessAlive(false);
   tab_helper_->SetControlState(ActorControlState::kInactive);
-  ASSERT_TRUE(FlushSequencedTaskRunner());
+  actor::FlushCurrentSequence();
   EXPECT_FALSE(web_state_->keep_render_process_alive());
 }
 
@@ -396,7 +386,7 @@ TEST_F(ActorTabHelperTest, WebStateDestroyedBeforeReapplyTaskRuns) {
   web_state_->WasHidden();
   tab_helper_ = nullptr;
   web_state_.reset();
-  ASSERT_TRUE(FlushSequencedTaskRunner());
+  actor::FlushCurrentSequence();
 }
 
 }  // namespace

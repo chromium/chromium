@@ -15,7 +15,6 @@
 #import "base/ios/block_types.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -279,15 +278,6 @@ class ActorServiceTest : public PlatformTest {
 
   ActorToolFactory* GetToolFactory(ActorService* service) {
     return service->tool_factory_.get();
-  }
-
-  // Runs the tasks already posted to the current sequence. Tasks they post in
-  // turn are not run; use `base::test::RunUntil()` to wait on such chains.
-  void FlushTaskRunner() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -915,13 +905,13 @@ TEST_F(ActorServiceTest, TaskScopedUpdatesObserver) {
   // Neither other tasks nor newly created tasks notify the observer.
   service->StopTask(other_task_id, ActorTaskStoppedReason::kStoppedByUser);
   CreateTask(service, "New Task");
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_EQ(1, observer.registeredCount);
   EXPECT_EQ(0, observer.stoppedCount);
 
   service->RemoveTaskUpdatesObserver(observed_task_id, observer);
   service->StopTask(observed_task_id, ActorTaskStoppedReason::kStoppedByUser);
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_EQ(0, observer.stoppedCount);
 }
 
@@ -1309,7 +1299,7 @@ TEST_F(ActorServiceTest, InterventionAndInterruptSafelyHandleUnknownTaskId) {
   service->InterruptTask(unknown_task_id,
                          ActorTaskInterruptReason::kWaitingUserConfirmation,
                          "Unknown");
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 }

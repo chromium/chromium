@@ -150,6 +150,11 @@ bool HasJournalEntryWithDetail(
     std::string_view detail_value,
     std::optional<mojom::JournalEntryType> entry_type = std::nullopt);
 
+// Runs the tasks already posted to the current sequence. Tasks posted by those
+// tasks in turn are not run; use `base::test::RunUntil()` to wait on such
+// chains.
+void FlushCurrentSequence();
+
 }  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UTIL_ACTOR_TEST_UTILS_H_

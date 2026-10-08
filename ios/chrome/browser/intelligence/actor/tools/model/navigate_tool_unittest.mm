@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 
 #import "base/memory/weak_ptr.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -628,10 +627,7 @@ TEST_F(NavigateToolTest, Cancel_BeforeGatingDecision_DoesNotLoadUrl) {
   maybe_tool.value()->Execute(future.GetCallback());
   maybe_tool.value()->Cancel();
 
-  base::test::TestFuture<void> flush_future;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, flush_future.GetCallback());
-  ASSERT_TRUE(flush_future.Wait());
+  FlushCurrentSequence();
 
   EXPECT_TRUE(url_loading_observer_.last_url_.is_empty());
   EXPECT_FALSE(future.IsReady());

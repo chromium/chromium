@@ -7,9 +7,7 @@
 #import <optional>
 
 #import "base/functional/bind.h"
-#import "base/location.h"
 #import "base/run_loop.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -502,10 +500,7 @@ TEST_F(ToolControllerTest, CancelDropsPendingFailCurrentTool) {
   controller_->Cancel();
 
   // Flush the posted failure.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  FlushCurrentSequence();
   EXPECT_EQ(ToolController::State::kReady, controller_->state());
 }
 

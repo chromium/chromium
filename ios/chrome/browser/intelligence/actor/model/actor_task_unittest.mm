@@ -7,9 +7,7 @@
 #import <optional>
 
 #import "base/functional/callback_helpers.h"
-#import "base/run_loop.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -364,15 +362,6 @@ class ActorTaskTest : public PlatformTest {
   // Fires the page load timeout, cancelling the timer as production does.
   void TriggerOnPageLoadedTimeout() { task_->load_timeout_timer_.FireNow(); }
 
-  // Runs the tasks already posted to the current sequence. Tasks they post in
-  // turn are not run; use `base::test::RunUntil()` to wait on such chains.
-  void FlushTaskRunner() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   web::FakeWebFrame* AttachMainWebFrame(web::FakeWebState* web_state) {
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
@@ -511,7 +500,7 @@ TEST_F(ActorTaskTest, AddControlledWebState) {
   observer.didAddWebStateCalled = NO;
   task_->AddControlledWebState(nullptr);
   task_->AddControlledWebState(web_state.get());
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_FALSE(observer.didAddWebStateCalled);
   EXPECT_EQ(1u, GetControlledWebStates().size());
   EXPECT_EQ(1u, GetLogsForTesting(journal_.get()).size());
@@ -592,7 +581,7 @@ TEST_F(ActorTaskTest, RemoveObserverStopsUpdates) {
 
   observer.didChangeStateCalled = NO;
   SetTaskState(ActorTaskState::kActing);
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_FALSE(observer.didRegisterCalled);
   EXPECT_FALSE(observer.didChangeStateCalled);
@@ -746,7 +735,7 @@ TEST_F(ActorTaskTest, OptionalMethodsGracefullyIgnored) {
     TriggerOnWillExecuteTool(ToolType::kNavigate,
                              web::WebStateID::FromSerializedValue(123));
   });
-  EXPECT_NO_FATAL_FAILURE({ FlushTaskRunner(); });
+  EXPECT_NO_FATAL_FAILURE({ FlushCurrentSequence(); });
 
   task_->RemoveObserver(observer);
 }
@@ -774,7 +763,7 @@ TEST_F(ActorTaskTest, SafeSelfRemovalDuringNotification) {
 
     observer.didChangeStateCalled = NO;
     SetTaskState(ActorTaskState::kFinished);
-    FlushTaskRunner();
+    FlushCurrentSequence();
     EXPECT_FALSE(observer.didChangeStateCalled);
   }
 }
@@ -1820,14 +1809,14 @@ TEST_F(ActorTaskTest, InterruptIgnoredWhenNotExecuting) {
   SetTaskState(ActorTaskState::kPausedByUser);
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Ignored message");
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_EQ(task_->GetState(), ActorTaskState::kPausedByUser);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 
   SetTaskState(ActorTaskState::kCancelled);
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Ignored message");
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 }
@@ -1880,7 +1869,7 @@ TEST_F(ActorTaskTest, StopWhileInterruptedIgnoresSubsequentCompletion) {
 
   // Invoke completion block after task was stopped.
   delegate.confirmationCompletionHandler();
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
 }
@@ -1896,7 +1885,7 @@ TEST_F(ActorTaskTest, StopBeforeConfirmationShownSkipsDelegate) {
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Please confirm");
   task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
@@ -1913,7 +1902,7 @@ TEST_F(ActorTaskTest, DelegateRemovedBeforeConfirmationShownSkipsRequest) {
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Please confirm");
   task_->SetInterventionDelegate(nil);
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
@@ -2071,7 +2060,7 @@ TEST_F(ActorTaskTest, InterruptIgnoredWhenAlreadyWaitingOnUser) {
   delegate.requestConfirmationCalled = NO;
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Second prompt");
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
@@ -2105,14 +2094,14 @@ TEST_F(ActorTaskTest, ObserverAddedAfterPostSkipsEarlierNotifications) {
   FakeActorTaskUpdatesObserver* early_observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(early_observer);
-  FlushTaskRunner();
+  FlushCurrentSequence();
   ASSERT_TRUE(early_observer.didRegisterCalled);
 
   SetTaskState(ActorTaskState::kActing);
   FakeActorTaskUpdatesObserver* late_observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(late_observer);
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_TRUE(early_observer.didChangeStateCalled);
   EXPECT_EQ(ActorTaskState::kActing, early_observer.newState);
@@ -2128,7 +2117,7 @@ TEST_F(ActorTaskTest, DidRegisterPrecedesLaterNotifications) {
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
   SetTaskState(ActorTaskState::kActing);
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_TRUE(observer.didRegisterCalled);
   EXPECT_FALSE(observer.didChangeStateBeforeRegister);
@@ -2143,11 +2132,11 @@ TEST_F(ActorTaskTest, ObserverRemovedBeforeRegistrationIsNeverNotified) {
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
   task_->RemoveObserver(observer);
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_FALSE(observer.didRegisterCalled);
 
   SetTaskState(ActorTaskState::kActing);
-  FlushTaskRunner();
+  FlushCurrentSequence();
   EXPECT_FALSE(observer.didChangeStateCalled);
 }
 
@@ -2159,7 +2148,7 @@ TEST_F(ActorTaskTest, PendingRegistrationRunsAfterTaskDestroyed) {
   task_->AddObserver(observer);
   SetTaskState(ActorTaskState::kActing);
   task_.reset();
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_TRUE(observer.didRegisterCalled);
   EXPECT_FALSE(observer.didChangeStateBeforeRegister);
@@ -2180,7 +2169,7 @@ TEST_F(ActorTaskTest, ObserverRemovedFromDeallocWhileRegistrationPending) {
   }
   EXPECT_EQ(nil, weak_observer);
 
-  FlushTaskRunner();
+  FlushCurrentSequence();
 }
 
 // Test that an observer removed after a notification is posted, but before it
@@ -2194,7 +2183,7 @@ TEST_F(ActorTaskTest, ObserverRemovedBeforeDeliverySkipsNotification) {
 
   SetTaskState(ActorTaskState::kActing);
   task_->RemoveObserver(observer);
-  FlushTaskRunner();
+  FlushCurrentSequence();
 
   EXPECT_FALSE(observer.didChangeStateCalled);
 }
