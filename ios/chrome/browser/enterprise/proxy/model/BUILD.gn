@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "enterprise_network_auth_service_factory_ios.h",
     "enterprise_network_auth_service_factory_ios.mm",
+    "enterprise_proxy_blocking_page.h",
+    "enterprise_proxy_blocking_page.mm",
     "enterprise_proxy_error_service_factory_ios.h",
     "enterprise_proxy_error_service_factory_ios.mm",
     "enterprise_proxy_service_factory_ios.h",
@@ -18,16 +20,23 @@ source_set("model") {
   deps = [
     ":proxy_auth_challenge_util",
     "//base",
+    "//components/application_locale_storage",
     "//components/enterprise/net/core",
     "//components/keyed_service/core",
+    "//components/resources",
+    "//components/security_interstitials/core",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
+    "//ios/components/security_interstitials",
+    "//ios/components/ui_util",
     "//ios/web/public",
     "//ios/web/public/proxy",
     "//net",
     "//services/network/public/cpp",
+    "//ui/base",
     "//url",
   ]
 }
@@ -48,6 +57,7 @@ source_set("proxy_auth_challenge_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "enterprise_proxy_blocking_page_unittest.mm",
     "proxy_auth_challenge_util_unittest.mm",
     "proxy_service_controller_unittest.mm",
   ]
@@ -59,6 +69,7 @@ source_set("unit_tests") {
     "//components/enterprise/net/core",
     "//components/enterprise/net/core:test_support",
     "//components/keyed_service/core",
+    "//components/security_interstitials/core",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
@@ -69,6 +80,7 @@ source_set("unit_tests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//url",
   ]
 }
