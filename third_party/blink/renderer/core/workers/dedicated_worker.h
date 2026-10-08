@@ -157,17 +157,6 @@ class CORE_EXPORT DedicatedWorker final
 
   // Starts the worker.
   void Start();
-  void ContinueStart(
-      const KURL& script_url,
-      std::unique_ptr<WorkerMainScriptLoadParameters>
-          worker_main_script_load_params,
-      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host,
-      std::unique_ptr<WebPolicyContainer> policy_container,
-      mojo::PendingReceiver<mojom::blink::ReportingObserver>
-          coep_reporting_observer,
-      mojo::PendingReceiver<mojom::blink::ReportingObserver>
-          dip_reporting_observer);
   void ContinueStartInternal(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>

@@ -376,26 +376,6 @@ void DedicatedWorker::OnWorkerHostCreated(
   origin_ = blink::SecurityOrigin::CreateFromUrlOrigin(url::Origin(origin));
 }
 
-void DedicatedWorker::OnScriptLoadStarted(
-    std::unique_ptr<WorkerMainScriptLoadParameters>
-        worker_main_script_load_params,
-    CrossVariantMojoRemote<
-        mojom::blink::BackForwardCacheControllerHostInterfaceBase>
-        back_forward_cache_controller_host,
-    std::unique_ptr<WebPolicyContainer> policy_container,
-    CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
-        coep_reporting_observer,
-    CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
-        dip_reporting_observer) {
-  TRACE_EVENT("blink.worker", "DedicatedWorker::OnScriptLoadStarted");
-  // Specify empty source code here because scripts will be fetched on the
-  // worker thread.
-  ContinueStart(script_request_url_, std::move(worker_main_script_load_params),
-                std::move(back_forward_cache_controller_host),
-                std::move(policy_container), std::move(coep_reporting_observer),
-                std::move(dip_reporting_observer));
-}
-
 void DedicatedWorker::OnScriptLoadStartFailed() {
   TRACE_EVENT("blink.worker", "DedicatedWorker::OnScriptLoadStartFailed");
   // Specify empty source code here because scripts will be fetched on the
@@ -424,20 +404,20 @@ DedicatedWorker::CreateWebContentSettingsClient() {
   return nullptr;
 }
 
-void DedicatedWorker::ContinueStart(
-    const KURL& script_url,
+void DedicatedWorker::OnScriptLoadStarted(
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
-    mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+    CrossVariantMojoRemote<
+        mojom::blink::BackForwardCacheControllerHostInterfaceBase>
         back_forward_cache_controller_host,
     std::unique_ptr<WebPolicyContainer> policy_container,
-    mojo::PendingReceiver<mojom::blink::ReportingObserver>
+    CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         coep_reporting_observer,
-    mojo::PendingReceiver<mojom::blink::ReportingObserver>
+    CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         dip_reporting_observer) {
   UMA_HISTOGRAM_TIMES("Worker.TopLevelScript.LoadStartedTime",
                       base::TimeTicks::Now() - start_time_);
-  TRACE_EVENT("blink.worker", "DedicatedWorker::ContinueStart");
+  TRACE_EVENT("blink.worker", "DedicatedWorker::OnScriptLoadStarted");
   if (base::FeatureList::IsEnabled(
           features::kDedicatedWorkerAblationStudyEnabled)) {
     CHECK(GetExecutionContext());
@@ -449,7 +429,7 @@ void DedicatedWorker::ContinueStart(
         ->PostDelayedTask(
             FROM_HERE,
             BindOnce(&DedicatedWorker::ContinueStartInternal,
-                     WrapWeakPersistent(this), script_url,
+                     WrapWeakPersistent(this), script_request_url_,
                      std::move(worker_main_script_load_params),
                      std::move(back_forward_cache_controller_host),
                      std::move(policy_container),
@@ -459,7 +439,7 @@ void DedicatedWorker::ContinueStart(
     return;
   }
   ContinueStartInternal(
-      script_url, std::move(worker_main_script_load_params),
+      script_request_url_, std::move(worker_main_script_load_params),
       std::move(back_forward_cache_controller_host),
       std::move(policy_container), std::move(coep_reporting_observer),
       std::move(dip_reporting_observer));
