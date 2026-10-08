@@ -68,25 +68,27 @@ SurfaceHitTestGeometry ComputeSurfaceHitTestGeometry(
     const SurfaceLayerImpl& surface_layer,
     const EffectTree& effect_tree,
     float device_scale_factor) {
+  const bool is_clipped = surface_layer.is_clipped();
+  const bool is_masked =
+      effect_tree.HitTestMayBeAffectedByMask(surface_layer.effect_tree_index());
+
+  gfx::Rect hit_test_rect = (is_clipped || is_masked)
+                                ? surface_layer.visible_layer_rect()
+                                : gfx::Rect(surface_layer.bounds());
+
+  bool requires_async_hit_test = is_masked;
+  if (!requires_async_hit_test && is_clipped) {
+    requires_async_hit_test =
+        !surface_layer.ScreenSpaceTransform().Preserves2dAxisAlignment() ||
+        !effect_tree.ClippedHitTestRegionIsRectangle(
+            surface_layer.effect_tree_index());
+  }
+
   // Using the enclosing rect to ensure antialiased boundary pixels cause
   // pointer input to be routed to this layer.
-  gfx::RRectF hit_test_rect(gfx::ScaleToEnclosingRect(
-      gfx::Rect(surface_layer.bounds()), device_scale_factor));
-
-  bool layer_hit_test_region_is_masked =
-      effect_tree.HitTestMayBeAffectedByMask(surface_layer.effect_tree_index());
-  if (surface_layer.is_clipped() || layer_hit_test_region_is_masked) {
-    bool layer_hit_test_region_is_rectangle =
-        !layer_hit_test_region_is_masked &&
-        surface_layer.ScreenSpaceTransform().Preserves2dAxisAlignment() &&
-        effect_tree.ClippedHitTestRegionIsRectangle(
-            surface_layer.effect_tree_index());
-    hit_test_rect = gfx::RRectF(
-        gfx::ScaleToEnclosingRect(surface_layer.visible_layer_rect(),
-                                  device_scale_factor, device_scale_factor));
-    return {hit_test_rect, !layer_hit_test_region_is_rectangle};
-  }
-  return {hit_test_rect, false};
+  return {gfx::RRectF(
+              gfx::ScaleToEnclosingRect(hit_test_rect, device_scale_factor)),
+          requires_async_hit_test};
 }
 
 void PopulateHitTestRegion(viz::HitTestRegion* hit_test_region,
