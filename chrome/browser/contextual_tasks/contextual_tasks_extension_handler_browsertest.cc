@@ -2368,7 +2368,7 @@ IN_PROC_BROWSER_TEST_F(
   const SessionID deselected_session_id = SessionID::FromSerializedValue(777);
   lens::LensOverlayRequestId removed_req_id;
   removed_req_id.set_uuid(777);
-  mock_session_handle_->set_persisted_tabs(
+  mock_session_handle_->SetPersistedTabs(
       {{deselected_session_id,
         {base::UnguessableToken::Create(), removed_req_id}}});
   mock_session_handle_->set_deselected_tabs_urls(
@@ -2417,7 +2417,7 @@ IN_PROC_BROWSER_TEST_F(
               testing::ElementsAre(file_info.file_token));
   EXPECT_TRUE(mock_session_handle_->has_submitted_context());
   EXPECT_FALSE(
-      mock_session_handle_->persisted_tabs().contains(deselected_session_id));
+      mock_session_handle_->GetPersistedTabs().contains(deselected_session_id));
 
   // Second turn: nothing new was uploaded or removed.
   submit(base::BindLambdaForTesting(
@@ -2816,7 +2816,7 @@ IN_PROC_BROWSER_TEST_F(
   handler_->SetTaskId(task.GetTaskId());
 
   base::UnguessableToken submitted_token = base::UnguessableToken::Create();
-  mock_session_handle_->set_submitted_context_tokens({submitted_token});
+  mock_session_handle_->SetSubmittedContextTokens({submitted_token});
 
   contextual_search::FileInfo submitted_file;
   submitted_file.file_token = submitted_token;
@@ -2881,7 +2881,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
 
   base::UnguessableToken submitted_token = base::UnguessableToken::Create();
-  mock_session_handle_->set_submitted_context_tokens({submitted_token});
+  mock_session_handle_->SetSubmittedContextTokens({submitted_token});
 
   // Sending an empty UpdateThreadContextLibrary returns early without clearing
   // submitted tokens or overwriting existing restored tabs / service resources.
@@ -2908,7 +2908,7 @@ IN_PROC_BROWSER_TEST_F(
   tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
 
   base::UnguessableToken submitted_token = base::UnguessableToken::Create();
-  mock_session_handle_->set_submitted_context_tokens({submitted_token});
+  mock_session_handle_->SetSubmittedContextTokens({submitted_token});
 
   lens::SearchToClientMessage::UpdateThreadContextLibrary library;
   AddWebpageContext(library, 1, "https://example.com/a", "Tab A");

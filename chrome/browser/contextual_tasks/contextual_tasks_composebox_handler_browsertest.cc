@@ -4239,10 +4239,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(handler_, nullptr);
   ASSERT_NE(session_handle_, nullptr);
   const auto submitted_token = base::UnguessableToken::Create();
-  session_handle_->set_submitted_context_tokens({submitted_token});
+  session_handle_->SetSubmittedContextTokens({submitted_token});
 
   const SessionID tab_session_id = SessionID::FromSerializedValue(1);
-  session_handle_->set_persisted_tabs(
+  session_handle_->SetPersistedTabs(
       {{tab_session_id, {submitted_token, lens::LensOverlayRequestId()}}});
   session_handle_->set_deselected_tabs_urls(
       {{tab_session_id, {GURL("https://example.com"), "Example"}}});
@@ -4250,7 +4250,7 @@ IN_PROC_BROWSER_TEST_F(
   handler_->OnTaskChanged();
 
   EXPECT_TRUE(session_handle_->GetSubmittedContextTokens().empty());
-  EXPECT_TRUE(session_handle_->persisted_tabs().empty());
+  EXPECT_TRUE(session_handle_->GetPersistedTabs().empty());
   EXPECT_TRUE(session_handle_->deselected_tabs_urls().empty());
 }
 

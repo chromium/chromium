@@ -3253,7 +3253,7 @@ TEST_F(OmniboxComposeboxHandlerTest,
   EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
       .WillRepeatedly(testing::Return(&file_info));
 
-  session_handle_->set_submitted_context_tokens({active_tab_token});
+  session_handle_->SetSubmittedContextTokens({active_tab_token});
   EXPECT_EQ(session_handle_->GetSubmittedContextTokens().size(), 1u);
   EXPECT_TRUE(session_handle_->IsTabInContext(active_tab_id));
 
@@ -3319,7 +3319,7 @@ TEST_F(OmniboxComposeboxHandlerTest,
   EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
       .WillRepeatedly(testing::Return(&file_info));
 
-  session_handle_->set_submitted_context_tokens({active_tab_token});
+  session_handle_->SetSubmittedContextTokens({active_tab_token});
   session_handle_->set_invocation_source(
       lens::LensOverlayInvocationSource::kOmniboxPageAction);
 
@@ -3390,7 +3390,7 @@ TEST_F(OmniboxComposeboxHandlerTest,
   EXPECT_CALL(*mock_controller, GetFileInfo(second_tab_token))
       .WillRepeatedly(testing::Return(&file_info_2));
 
-  session_handle_->set_submitted_context_tokens(
+  session_handle_->SetSubmittedContextTokens(
       {active_tab_token, second_tab_token});
   EXPECT_EQ(session_handle_->GetSubmittedContextTokens().size(), 2u);
   EXPECT_TRUE(session_handle_->IsTabInContext(active_tab_id));
@@ -3466,7 +3466,7 @@ TEST_F(
   EXPECT_CALL(*mock_controller, GetFileInfo(second_tab_token))
       .WillRepeatedly(testing::Return(&file_info_2));
 
-  session_handle_->set_submitted_context_tokens(
+  session_handle_->SetSubmittedContextTokens(
       {first_tab_token, second_tab_token});
   EXPECT_EQ(session_handle_->GetSubmittedContextTokens().size(), 2u);
 
@@ -3533,7 +3533,7 @@ TEST_F(OmniboxComposeboxHandlerTest,
   EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
       .WillRepeatedly(testing::Return(&file_info));
 
-  session_handle_->set_submitted_context_tokens({active_tab_token});
+  session_handle_->SetSubmittedContextTokens({active_tab_token});
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       passed_session_handle;
@@ -3583,7 +3583,7 @@ TEST_F(
       omnibox::UNKNOWN_AIM_ENTRY_POINT));
 
   // 2. No tabs attached returns false and leaves session_handle_ intact.
-  session_handle_->set_submitted_context_tokens({});
+  session_handle_->SetSubmittedContextTokens({});
   EXPECT_FALSE(lens_search_controller_->StartContextualAimQueryInSidePanel(
       GURL("https://www.google.com/search?q=test"), session_handle_,
       omnibox::UNKNOWN_AIM_ENTRY_POINT));
@@ -3601,7 +3601,7 @@ TEST_F(
           session_handle_->GetController());
   EXPECT_CALL(*mock_controller, GetFileInfo(other_tab_token))
       .WillRepeatedly(testing::Return(&file_info));
-  session_handle_->set_submitted_context_tokens({other_tab_token});
+  session_handle_->SetSubmittedContextTokens({other_tab_token});
 
   EXPECT_FALSE(lens_search_controller_->StartContextualAimQueryInSidePanel(
       GURL("https://www.google.com/search?q=test"), session_handle_,
@@ -3667,7 +3667,7 @@ TEST_F(
       .WillRepeatedly(testing::Return(&second_file_info));
 
   // Multiple tokens are not supported by the legacy Lens side panel fallback.
-  session_handle_->set_submitted_context_tokens(
+  session_handle_->SetSubmittedContextTokens(
       {active_tab_token, second_tab_token});
   EXPECT_CALL(*lens_search_controller_,
               IssueContextualSearchRequest(testing::_, testing::_, testing::_,
@@ -3680,7 +3680,7 @@ TEST_F(
 
   // A single active-tab token falls back to IssueContextualSearchRequest and
   // resets session_handle_.
-  session_handle_->set_submitted_context_tokens({active_tab_token});
+  session_handle_->SetSubmittedContextTokens({active_tab_token});
   GURL target_url("https://www.google.com/search?q=test");
   EXPECT_CALL(
       *lens_search_controller_,

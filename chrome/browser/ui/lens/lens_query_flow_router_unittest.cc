@@ -3828,7 +3828,7 @@ TEST_F(LensQueryFlowRouterTest, ShouldFetchActiveTabForInvocationSource) {
       &session_handle));
 
   contextual_search::MockContextualSearchSessionHandle submitted_session_handle;
-  submitted_session_handle.set_submitted_context_tokens(
+  submitted_session_handle.SetSubmittedContextTokens(
       {base::UnguessableToken::Create()});
   EXPECT_FALSE(ShouldFetchActiveTabForInvocationSource(
       lens::LensOverlayInvocationSource::kOmniboxContextualQuery,

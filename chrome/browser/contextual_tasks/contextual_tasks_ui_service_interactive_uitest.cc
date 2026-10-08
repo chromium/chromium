@@ -830,8 +830,8 @@ IN_PROC_BROWSER_TEST_F(
   session_handle->StartTabContextUploadFlow(token1, std::move(data1),
                                             std::nullopt);
 
-  session_handle->set_submitted_context_tokens({token0, token1});
-  session_handle->set_persisted_tabs({
+  session_handle->SetSubmittedContextTokens({token0, token1});
+  session_handle->SetPersistedTabs({
       {tab0_id, {token0, lens::LensOverlayRequestId()}},
       {tab1_id, {token1, lens::LensOverlayRequestId()}},
   });

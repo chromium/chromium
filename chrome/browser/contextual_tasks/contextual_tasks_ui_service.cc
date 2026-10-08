@@ -3917,7 +3917,7 @@ void ContextualTasksUiService::AssociateSessionTabsToTask(
     }
   }
   for (const auto& [session_id, token_and_req] :
-       session_handle->persisted_tabs()) {
+       session_handle->GetPersistedTabs()) {
     if (session_id.is_valid()) {
       tab_ids.insert(session_id);
     }

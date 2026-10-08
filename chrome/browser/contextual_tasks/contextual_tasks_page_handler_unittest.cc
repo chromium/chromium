@@ -862,7 +862,7 @@ TEST_F(
   NiceMock<contextual_search::MockContextualSearchSessionHandle>
       mock_session_handle;
   base::UnguessableToken token = base::UnguessableToken::Create();
-  mock_session_handle.set_submitted_context_tokens({token});
+  mock_session_handle.SetSubmittedContextTokens({token});
 
   ON_CALL(*contextual_tasks_ui_, GetOrCreateContextualSessionHandle())
       .WillByDefault(Return(&mock_session_handle));

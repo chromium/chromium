@@ -2273,7 +2273,7 @@ TEST_F(ContextualTasksUiServiceTest,
   lens::LensOverlayRequestId req_id;
   persisted_map[persisted_tab_id] =
       std::make_pair(base::UnguessableToken::Create(), req_id);
-  mock_session->set_persisted_tabs(persisted_map);
+  mock_session->SetPersistedTabs(persisted_map);
 
   helper->SetTaskSession(std::nullopt, std::move(mock_session),
                          /*input_state_model=*/nullptr,

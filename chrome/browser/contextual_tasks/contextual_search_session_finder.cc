@@ -105,9 +105,9 @@ void UpdateContextualSearchWebContentsHelperForTask(
         existing_session->smart_tab_sharing_toggled_since_last_turn());
     session_handle->set_sts_toggled_removed_contexts(
         existing_session->sts_toggled_removed_contexts());
-    session_handle->set_submitted_context_tokens(
+    session_handle->SetSubmittedContextTokens(
         existing_session->GetSubmittedContextTokens());
-    session_handle->set_persisted_tabs(existing_session->persisted_tabs());
+    session_handle->SetPersistedTabs(existing_session->GetPersistedTabs());
     session_handle->set_deselected_tabs_urls(
         existing_session->deselected_tabs_urls());
   } else {

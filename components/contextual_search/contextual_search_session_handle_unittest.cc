@@ -393,7 +393,7 @@ TEST_F(ContextualSearchSessionHandleTest, GetSubmittedContextTabTitles) {
   EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(token2))
       .WillRepeatedly(testing::Return(&file_info2));
 
-  handle_->set_submitted_context_tokens({token1, token2});
+  handle_->SetSubmittedContextTokens({token1, token2});
 
   std::vector<std::string> tab_titles = handle_->GetSubmittedContextTabTitles();
   ASSERT_EQ(tab_titles.size(), 1u);
@@ -545,7 +545,7 @@ TEST_F(
   // Verify that submitted context tokens and persisted tabs are cleared immediately on toggle.
   EXPECT_TRUE(local_handle->GetSubmittedContextTokens().empty());
   EXPECT_TRUE(local_handle->GetSubmittedContextFileInfos().empty());
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
   EXPECT_EQ(local_handle->sts_toggled_removed_contexts().size(), 1u);
 
   auto request_info2 = std::make_unique<
@@ -640,7 +640,7 @@ TEST_F(
   // Verify that submitted context tokens and persisted tabs are cleared immediately on toggle.
   EXPECT_TRUE(local_handle->GetSubmittedContextTokens().empty());
   EXPECT_TRUE(local_handle->GetSubmittedContextFileInfos().empty());
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
   EXPECT_EQ(local_handle->sts_toggled_removed_contexts().size(), 1u);
 
   auto request_info2 = std::make_unique<
@@ -723,7 +723,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   // submitted tokens and persisted tabs for favicon restoration and underlines.
   local_handle->set_smart_tab_sharing_active(false);
   EXPECT_FALSE(local_handle->GetSubmittedContextTokens().empty());
-  EXPECT_FALSE(local_handle->persisted_tabs().empty());
+  EXPECT_FALSE(local_handle->GetPersistedTabs().empty());
   EXPECT_TRUE(local_handle->sts_toggled_removed_contexts().empty());
 }
 
@@ -771,7 +771,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   // Existing STS contexts from the initial turn must remain preserved and
   // active.
   EXPECT_FALSE(local_handle->GetSubmittedContextTokens().empty());
-  EXPECT_FALSE(local_handle->persisted_tabs().empty());
+  EXPECT_FALSE(local_handle->GetPersistedTabs().empty());
   EXPECT_TRUE(local_handle->sts_toggled_removed_contexts().empty());
   EXPECT_FALSE(tab_file_info.is_superceded);
   EXPECT_FALSE(local_handle->IsTabDeselected(SessionID::FromSerializedValue(1),
@@ -821,7 +821,7 @@ TEST_F(
   // Manually toggle STS OFF: persisted_tabs_ is cleared and tab is deselected.
   local_handle->OnSmartTabSharingToggled(false);
   EXPECT_TRUE(local_handle->smart_tab_sharing_toggled_since_last_turn());
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
   EXPECT_TRUE(local_handle->IsTabDeselected(SessionID::FromSerializedValue(1),
                                             GURL("https://example.com"), ""));
 
@@ -1141,7 +1141,7 @@ TEST_F(
   // Verify that the navigated `tab_token1` is removed, and only `tab_token2`
   // remains in `persisted_tabs_` and `uploaded_context_tokens_` and
   // `submitted_context_tokens`.
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -1296,7 +1296,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   // Verify it is in `persisted_tabs` and submitted context tokens list, but
   // cleared from uploaded list.
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -1322,7 +1322,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   local_handle->CreateClientToAimRequest(std::move(request_info2));
 
   // Verify it is removed from all lists.
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
   EXPECT_THAT(local_handle->GetUploadedContextTokens(),
               testing::Not(testing::Contains(tab_token)));
   EXPECT_THAT(local_handle->GetSubmittedContextTokens(),
@@ -1361,7 +1361,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   local_handle->CreateSearchUrl(std::move(request_info), base::DoNothing());
 
   // Verify `persisted_tabs_` has `token1`.
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   ASSERT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(session_id1);
   ASSERT_NE(it, persisted_tabs.end());
@@ -1437,8 +1437,8 @@ TEST_F(ContextualSearchSessionHandleTest,
   base::UnguessableToken token1 = base::UnguessableToken::Create();
   SessionID session_id1 = SessionID::NewUnique();
   lens::LensOverlayRequestId req_id1;
-  local_handle->set_persisted_tabs({{session_id1, {token1, req_id1}}});
-  local_handle->set_submitted_context_tokens({token1});
+  local_handle->SetPersistedTabs({{session_id1, {token1, req_id1}}});
+  local_handle->SetSubmittedContextTokens({token1});
 
   // Verify GetTokenForTab can find it.
   EXPECT_EQ(local_handle->GetTokenForTab(session_id1), token1);
@@ -1495,7 +1495,7 @@ TEST_F(ContextualSearchSessionHandleTest,
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
   local_handle->CreateClientToAimRequest(std::move(request_info));
 
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
@@ -1532,7 +1532,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   local_handle->CreateClientToAimRequest(std::move(request_info1));
 
   // Tab A should persist.
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   ASSERT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -1553,7 +1553,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(local_handle->GetUploadedContextTokens().empty());
 
   // Persistent tab A should remain.
-  const auto& persisted_tabs2 = local_handle->persisted_tabs();
+  const auto& persisted_tabs2 = local_handle->GetPersistedTabs();
   ASSERT_EQ(persisted_tabs2.size(), 1u);
   auto it2 = persisted_tabs2.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it2, persisted_tabs2.end());
@@ -1561,7 +1561,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   // Clear files with query_submitted=false. Persistent tab should remain.
   local_handle->ClearFiles(/*query_submitted=*/false);
-  const auto& persisted_tabs3 = local_handle->persisted_tabs();
+  const auto& persisted_tabs3 = local_handle->GetPersistedTabs();
   ASSERT_EQ(persisted_tabs3.size(), 1u);
 }
 
@@ -1597,8 +1597,8 @@ TEST_F(ContextualSearchSessionHandleTest,
   base::UnguessableToken token1 = base::UnguessableToken::Create();
   SessionID session_id1 = SessionID::NewUnique();
   lens::LensOverlayRequestId req_id1;
-  local_handle->set_persisted_tabs({{session_id1, {token1, req_id1}}});
-  local_handle->set_submitted_context_tokens({token1});
+  local_handle->SetPersistedTabs({{session_id1, {token1, req_id1}}});
+  local_handle->SetSubmittedContextTokens({token1});
 
   FileInfo file_info1;
   file_info1.file_token = token1;
@@ -1724,7 +1724,7 @@ TEST_F(ContextualSearchSessionHandleTest,
                  info) { return lens::ClientToAimMessage(); });
   local_handle->CreateClientToAimRequest(std::move(request_info1));
 
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 2u);
 
   // Tab A navigated away or closed, Tab B remains open.
@@ -1746,7 +1746,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   local_handle->CreateClientToAimRequest(std::move(request_info2));
 
   // Tab A should be removed from `persisted_tabs_`, Tab B should remain.
-  const auto& persisted_tabs2 = local_handle->persisted_tabs();
+  const auto& persisted_tabs2 = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs2.size(), 1u);
   auto it = persisted_tabs2.find(SessionID::FromSerializedValue(2));
   ASSERT_NE(it, persisted_tabs2.end());
@@ -1883,7 +1883,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(local_handle->DeleteFile(tab_token2));
 
   // Verify associated tokens are cleared due to deleted tab.
-  EXPECT_FALSE(local_handle->persisted_tabs().empty());
+  EXPECT_FALSE(local_handle->GetPersistedTabs().empty());
   EXPECT_TRUE(local_handle->GetUploadedContextTokens().empty());
   EXPECT_TRUE(local_handle->GetSubmittedContextTokens().empty());
   EXPECT_FALSE(
@@ -1910,7 +1910,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   // removed_contexts.
   ASSERT_TRUE(captured_info);
   ASSERT_EQ(captured_info->removed_contexts.size(), 1u);
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
@@ -1947,7 +1947,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   EXPECT_THAT(local_handle->GetUploadedContextTokens(),
               testing::UnorderedElementsAre(tab_token, file_token));
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
 
   auto request_info = std::make_unique<
       ContextualSearchContextController::CreateClientToAimRequestInfo>();
@@ -1958,7 +1958,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   // Uploaded tokens should be completely cleared.
   EXPECT_TRUE(local_handle->GetUploadedContextTokens().empty());
   // Tab token should be moved to `persisted_tabs_`, file token should NOT be.
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -1968,7 +1968,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(local_handle->GetUploadedContextTokens().empty());
   // Verify that submitted tabs are NOT cleared when "query_submitted=false"
   // (intended behavior).
-  const auto& persisted_tabs2 = local_handle->persisted_tabs();
+  const auto& persisted_tabs2 = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs2.size(), 1u);
   auto it2 = persisted_tabs2.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it2, persisted_tabs2.end());
@@ -2013,7 +2013,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   local_handle->CreateClientToAimRequest(std::move(request_info1));
   EXPECT_THAT(turn1_file_tokens, testing::ElementsAre(tab_token1));
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -2036,7 +2036,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   // Verify turn 2 `file_tokens` is empty (persisted tab is not re-attached).
   EXPECT_TRUE(turn2_file_tokens.empty());
   // Verify persisted tabs still retains Tab A for UI tracking.
-  const auto& persisted_tabs2 = local_handle->persisted_tabs();
+  const auto& persisted_tabs2 = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs2.size(), 1u);
   auto it2 = persisted_tabs2.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it2, persisted_tabs2.end());
@@ -2078,7 +2078,7 @@ TEST_F(
                  info) { return lens::ClientToAimMessage(); });
   local_handle->CreateClientToAimRequest(std::move(request_info1));
 
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -2121,7 +2121,7 @@ TEST_F(
 
   // Persisted tab tokens should now contain `tab_token2` (no `image_token`, no
   // `tab_token1`).
-  const auto& persisted_tabs2 = local_handle->persisted_tabs();
+  const auto& persisted_tabs2 = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs2.size(), 1u);
   auto it2 = persisted_tabs2.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it2, persisted_tabs2.end());
@@ -2158,7 +2158,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
   local_handle->CreateClientToAimRequest(std::move(request_info1));
-  const auto& persisted_tabs = local_handle->persisted_tabs();
+  const auto& persisted_tabs = local_handle->GetPersistedTabs();
   EXPECT_EQ(persisted_tabs.size(), 1u);
   auto it = persisted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, persisted_tabs.end());
@@ -2248,7 +2248,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   base::UnguessableToken persisted_token = base::UnguessableToken::Create();
   persisted_map[tab_session_id] =
       std::make_pair(persisted_token, lens::LensOverlayRequestId());
-  local_handle->set_persisted_tabs(persisted_map);
+  local_handle->SetPersistedTabs(persisted_map);
 
   // Because the flag is disabled, `GetActiveTokenForTab` should ignore
   // `persisted_tabs_` and return an empty token.
@@ -2286,7 +2286,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   local_handle->CreateClientToAimRequest(std::move(request_info));
 
   // Verify persisted tabs is empty.
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
 }
 
 TEST_F(ContextualSearchSessionHandleTest, HasSubmittedContext) {
@@ -2427,7 +2427,7 @@ TEST_F(ContextualSearchSessionHandleTest,
       local_handle->MarkQuerySubmitted({}, std::nullopt);
   ASSERT_EQ(submitted.size(), 1u);
   EXPECT_EQ(submitted[0], tab_token);
-  ASSERT_EQ(local_handle->persisted_tabs().size(), 1u);
+  ASSERT_EQ(local_handle->GetPersistedTabs().size(), 1u);
   EXPECT_TRUE(local_handle->DeleteFile(tab_token));
 
   // The deselected persisted tab is reported as removed and dropped from the
@@ -2436,7 +2436,7 @@ TEST_F(ContextualSearchSessionHandleTest,
       local_handle->TakeRemovedContexts();
   ASSERT_EQ(removed.size(), 1u);
   EXPECT_EQ(removed[0].uuid(), 12345u);
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
   EXPECT_TRUE(local_handle->GetSubmittedContextTokens().empty());
 
   // The removal is not reported again on the next turn.
@@ -2873,7 +2873,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(tab.submitted);
   EXPECT_FALSE(tab.restored_from_aim);
 
-  auto persisted = local_handle->persisted_tabs();
+  auto persisted = local_handle->GetPersistedTabs();
   ASSERT_EQ(1u, persisted.size());
   EXPECT_EQ(tab_token, persisted.at(SessionID::FromSerializedValue(5)).first);
 }
@@ -2885,7 +2885,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   base::UnguessableToken token = base::UnguessableToken::Create();
   SessionID session_id = SessionID::FromSerializedValue(5);
-  local_handle->set_persisted_tabs(
+  local_handle->SetPersistedTabs(
       {{session_id, {token, lens::LensOverlayRequestId()}}});
 
   local_handle->SetRestoredTabs(
@@ -2900,7 +2900,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(state.restored[1].restored_from_aim);
   ASSERT_EQ(1u, state.attached.size());
   EXPECT_EQ(token, state.attached[0].context_token);
-  EXPECT_EQ(1u, local_handle->persisted_tabs().size());
+  EXPECT_EQ(1u, local_handle->GetPersistedTabs().size());
   EXPECT_EQ(token, local_handle->GetTokenForTab(session_id));
 
   // Clearing restored tabs keeps the submitted tab.
@@ -2917,12 +2917,12 @@ TEST_F(ContextualSearchSessionHandleTest,
   local_handle->SetRestoredTabs(
       {MakeRestoredTab("https://example.com/3", "Tab 3", 3)});
 
-  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetPersistedTabs().empty());
   EXPECT_TRUE(local_handle->GetTokenForTab(SessionID::FromSerializedValue(3))
                   .is_empty());
 
   // Replacing persisted tabs does not touch AIM restored tabs.
-  local_handle->set_persisted_tabs({});
+  local_handle->SetPersistedTabs({});
   EXPECT_EQ(1u, local_handle->GetTabContextState().restored.size());
 }
 

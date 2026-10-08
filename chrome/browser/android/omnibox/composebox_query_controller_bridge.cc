@@ -379,7 +379,7 @@ void ComposeboxQueryControllerBridge::OnSearchUrlCreated(
               search_service->GetSession(session_handle_->session_id(),
                                          session_handle_->invocation_source());
       if (handle_copy) {
-        handle_copy->set_submitted_context_tokens(
+        handle_copy->SetSubmittedContextTokens(
             session_handle_->GetSubmittedContextTokens());
         handle_copy->CheckSearchContentSharingSettings(profile_->GetPrefs());
 

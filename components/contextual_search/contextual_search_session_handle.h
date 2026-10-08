@@ -444,7 +444,7 @@ class ContextualSearchSessionHandle {
   void ClearSubmittedContextTokens();
 
   // Sets the submitted context tokens.
-  void set_submitted_context_tokens(
+  void SetSubmittedContextTokens(
       const std::vector<base::UnguessableToken>& tokens);
 
   using PersistedTabsMap =
@@ -453,14 +453,14 @@ class ContextualSearchSessionHandle {
 
   // Returns the tabs submitted in previous turns of this session, i.e. the
   // entries of `tab_context_.attached` with `submitted` set.
-  PersistedTabsMap persisted_tabs() const;
+  PersistedTabsMap GetPersistedTabs() const;
 
   // Delete all tabs that have persisted across submissions.
   void ClearAllPersistedTabs();
 
   // Replaces the tabs submitted in previous turns of this session. Used for
   // session handoff.
-  void set_persisted_tabs(PersistedTabsMap new_persisted_tabs);
+  void SetPersistedTabs(PersistedTabsMap new_persisted_tabs);
 
   // Returns the list of submitted FileInfo for this particular instance
   // of the session. These are uploaded and submitted, but we have not received

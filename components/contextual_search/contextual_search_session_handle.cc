@@ -1061,7 +1061,7 @@ void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
   submitted_context_tokens_.clear();
 }
 
-void ContextualSearchSessionHandle::set_submitted_context_tokens(
+void ContextualSearchSessionHandle::SetSubmittedContextTokens(
     const std::vector<base::UnguessableToken>& tokens) {
   if (!tokens.empty()) {
     has_submitted_context_ = true;
@@ -1070,7 +1070,7 @@ void ContextualSearchSessionHandle::set_submitted_context_tokens(
 }
 
 ContextualSearchSessionHandle::PersistedTabsMap
-ContextualSearchSessionHandle::persisted_tabs() const {
+ContextualSearchSessionHandle::GetPersistedTabs() const {
   PersistedTabsMap persisted;
   for (const TabInfo& tab : tab_context_.attached) {
     if (!tab.submitted || !tab.tab_id.has_value()) {
@@ -1090,7 +1090,7 @@ void ContextualSearchSessionHandle::ClearAllPersistedTabs() {
   }
 }
 
-void ContextualSearchSessionHandle::set_persisted_tabs(
+void ContextualSearchSessionHandle::SetPersistedTabs(
     PersistedTabsMap new_persisted_tabs) {
   ClearAllPersistedTabs();
   for (auto& [session_id, token_and_req] : new_persisted_tabs) {
