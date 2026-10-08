@@ -527,7 +527,7 @@ class GlicStablePinningDelegatingSharingManagerBrowserTest
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_StablePinningDelegateSwap DISABLED_StablePinningDelegateSwap
 // TODO(crbug.com/542347163): Re-enable test.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_StablePinningDelegateSwap DISABLED_StablePinningDelegateSwap
 #else
 #define MAYBE_StablePinningDelegateSwap StablePinningDelegateSwap

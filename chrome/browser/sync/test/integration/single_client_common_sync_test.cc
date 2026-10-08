@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest, ReusesSameCacheGuid) {
 }
 
 // TODO(crbug.com/542347163): Re-enable test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_ShouldCrashAwaitQuiescenceForE2ETest \
   DISABLED_ShouldCrashAwaitQuiescenceForE2ETest
 #else

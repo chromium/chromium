@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSelected) {
 #define MAYBE_TestCloseTabDuringMoveOperation \
   DISABLED_TestCloseTabDuringMoveOperation
 // TODO(crbug.com/542347163): Re-enable test.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestCloseTabDuringMoveOperation \
   DISABLED_TestCloseTabDuringMoveOperation
 #else

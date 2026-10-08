@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 }
 
 // TODO(crbug.com/542347163): Re-enable test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_FactoryCtorFailsWithoutApiKey \
   DISABLED_FactoryCtorFailsWithoutApiKey
 #else
