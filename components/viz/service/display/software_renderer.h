@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   void EnsureScissorTestDisabled() override;
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
-  void DidChangeVisibility() override;
+  void DidChangeHasBackBuffers() override;
 
  protected:
   void SetRenderPassBackingDrawnRect(

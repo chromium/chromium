@@ -347,7 +347,7 @@ void PixelTest::SetUpSoftwareRenderer() {
 void PixelTest::FinishSetup() {
   CHECK(renderer_);
   renderer_->Initialize();
-  renderer_->SetVisible(true);
+  renderer_->SetHasBackBuffers(true);
 
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(

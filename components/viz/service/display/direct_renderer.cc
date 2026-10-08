@@ -138,12 +138,13 @@ void DirectRenderer::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
   output_surface_clip_rect_ = clip_rect;
 }
 
-void DirectRenderer::SetVisible(bool visible) {
+void DirectRenderer::SetHasBackBuffers(bool has_back_buffers) {
   DCHECK(initialized_);
-  if (visible_ == visible)
+  if (has_back_buffers_ == has_back_buffers) {
     return;
-  visible_ = visible;
-  DidChangeVisibility();
+  }
+  has_back_buffers_ = has_back_buffers;
+  DidChangeHasBackBuffers();
 }
 
 void DirectRenderer::ReallocatedFrameBuffers() {
@@ -204,7 +205,7 @@ void DirectRenderer::DrawFrame(
     const gfx::DisplayColorSpaces& display_color_spaces,
     SurfaceDamageRectList surface_damage_rect_list,
     const TrackedElementRects& tracked_element_rects) {
-  DCHECK(visible_);
+  DCHECK(has_back_buffers_);
   TRACE_EVENT0("viz,benchmark", "DirectRenderer::DrawFrame");
 
   auto* root_render_pass = render_passes_in_draw_order->back().get();

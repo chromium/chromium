@@ -1231,7 +1231,7 @@ void SkiaRenderer::MaybeFreeProtectedPool() {
 #endif
 
 void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
-  DCHECK(visible_);
+  DCHECK(has_back_buffers_);
   DCHECK(output_surface_->capabilities().supports_viewporter ||
          viewport_size_for_swap_buffers() == surface_size_for_swap_buffers());
   TRACE_EVENT0("viz,benchmark", "SkiaRenderer::SwapBuffers");
@@ -3560,8 +3560,8 @@ void SkiaRenderer::CopyDrawnRenderPass(
                                    std::move(request), mailbox);
 }
 
-void SkiaRenderer::DidChangeVisibility() {
-  if (visible_) {
+void SkiaRenderer::DidChangeHasBackBuffers() {
+  if (has_back_buffers_) {
     output_surface_->EnsureBackbuffer();
     // NOTE: Not recreating buffers right away, they are recreated on demand
     // later, when a frame is actually needed.
@@ -3569,9 +3569,9 @@ void SkiaRenderer::DidChangeVisibility() {
     output_surface_->DiscardBackbuffer();
 
     if (features::ShouldDiscardVizBufferQueueOnVisibilityChange()) {
-      // We are not visible, all buffers in root and render pass BufferQueues
-      // can go. However, we also need to make sure that the GPU tasks are
-      // flushed for it to have any effect.
+      // Back buffers should be discarded, all buffers in root and render pass
+      // BufferQueues can go. However, we also need to make sure that the GPU
+      // tasks are flushed for it to have any effect.
       if (root_buffer_queue_) {
         root_buffer_queue_->DestroyBuffers();
       }

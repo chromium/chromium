@@ -54,7 +54,7 @@ class VIZ_SERVICE_EXPORT NullRenderer : public DirectRenderer {
   void BeginDrawingFrame() override;
   void FinishDrawingFrame() override {}
   void EnsureScissorTestDisabled() override {}
-  void DidChangeVisibility() override {}
+  void DidChangeHasBackBuffers() override {}
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
 };

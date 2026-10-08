@@ -122,7 +122,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer
   void EnsureScissorTestDisabled() override;
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
-  void DidChangeVisibility() override;
+  void DidChangeHasBackBuffers() override;
   void SetDelegatedInkPointRendererSkiaForTest(
       std::unique_ptr<DelegatedInkPointRendererSkia> renderer) override;
   bool SupportsBGRA() const override;

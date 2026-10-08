@@ -433,15 +433,15 @@ void Display::SetVisible(mojom::DisplayVisibility visibility) {
   }
 
   if (had_buffers != has_buffers) {
-    // This may schedule tasks to e.g. destroy buffers when not visible, as in
-    // SkiaRenderer::SetVisible()
+    // This may schedule tasks to e.g. destroy buffers when back buffers are
+    // released, as in SkiaRenderer::DidChangeHasBackBuffers()
     std::unique_ptr<gpu::ScopedAllowScheduleGpuTask> allow_schedule_gpu_task;
     if (!has_buffers) {
       allow_schedule_gpu_task.reset(new gpu::ScopedAllowScheduleGpuTask());
     }
 
     if (renderer_) {
-      renderer_->SetVisible(has_buffers);
+      renderer_->SetHasBackBuffers(has_buffers);
     }
 
     if (!has_buffers && current_surface_id_.is_valid()) {
@@ -559,7 +559,8 @@ void Display::InitializeRenderer() {
   }
 
   renderer_->Initialize();
-  renderer_->SetVisible(visibility_ != mojom::DisplayVisibility::kInvisible);
+  renderer_->SetHasBackBuffers(visibility_ !=
+                               mojom::DisplayVisibility::kInvisible);
 
   SurfaceAggregator::ExtraPassForReadbackOption extra_pass_option =
       SurfaceAggregator::ExtraPassForReadbackOption::kNone;

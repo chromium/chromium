@@ -76,7 +76,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool use_partial_swap() const { return use_partial_swap_; }
 
   void SetOutputSurfaceClipRect(const gfx::Rect& clip_rect);
-  void SetVisible(bool visible);
+  // Tells the renderer whether to retain or discard its compositing back
+  // buffers.
+  void SetHasBackBuffers(bool has_back_buffers);
   void ReallocatedFrameBuffers();
   void DecideRenderPassAllocationsForFrame(
       const AggregatedRenderPassList& render_passes_in_draw_order,
@@ -295,7 +297,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       const AggregatedRenderPass* pass,
       const RenderPassRequirements& requirements);
   virtual void EnsureScissorTestDisabled() = 0;
-  virtual void DidChangeVisibility() = 0;
+  virtual void DidChangeHasBackBuffers() = 0;
   virtual void CopyDrawnRenderPass(
       const copy_output::RenderPassGeometry& geometry,
       std::unique_ptr<CopyOutputRequest> request) = 0;
@@ -361,7 +363,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Track skipped non-root render passes in DrawRenderPass.
   base::flat_set<AggregatedRenderPassId> skipped_render_pass_ids_;
 
-  bool visible_ = false;
+  bool has_back_buffers_ = false;
   bool disable_color_checks_for_testing_ = false;
 
   DrawingFrame* current_frame() {

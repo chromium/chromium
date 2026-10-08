@@ -148,7 +148,7 @@ void SoftwareRenderer::FinishDrawingFrame() {
 }
 
 void SoftwareRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
-  DCHECK(visible_);
+  DCHECK(has_back_buffers_);
   TRACE_EVENT0("viz", "SoftwareRenderer::SwapBuffers");
   OutputSurfaceFrame output_frame;
   output_frame.latency_info = std::move(swap_frame_data.latency_info);
@@ -834,11 +834,12 @@ bool SoftwareRenderer::ReadPixelsIntoBlitDestination(
   return true;
 }
 
-void SoftwareRenderer::DidChangeVisibility() {
-  if (visible_)
+void SoftwareRenderer::DidChangeHasBackBuffers() {
+  if (has_back_buffers_) {
     output_surface_->EnsureBackbuffer();
-  else
+  } else {
     output_surface_->DiscardBackbuffer();
+  }
 }
 
 bool SoftwareRenderer::ShouldApplyBackdropFilters(
