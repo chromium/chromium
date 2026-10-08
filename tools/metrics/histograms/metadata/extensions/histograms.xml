@@ -2878,21 +2878,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.HostedAppLaunchContainer" enum="AppLaunchContainer"
-    expires_after="2023-04-16">
-  <owner>benwells@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Records the container used for a hosted app launch, when the app is
-    launched. The definition of 'launch' for the purposes of this histogram is
-    different to that used for the launch type histograms. This definition is
-    less inclusive, for example it does not include navigations to the hosted
-    app due to normal browsing, which the other definition does include. This
-    definition could be thought of more as explicit launches via a launch
-    surface such as the app launcher, chrome://apps, or a shortcut.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.HostPermissions.GrantedAccess2"
     enum="HostPermissionsAccess" expires_after="never">
 <!-- expires-never: Monitors core extension usage. -->

@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -383,9 +382,6 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
         apps::GetAppLaunchSource(params.launch_source));
     return nullptr;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.HostedAppLaunchContainer",
-                            params.container);
 
   GURL url;
   if (supports_web_file_handlers && params.intent->activity_name.has_value()) {
