@@ -40,6 +40,9 @@ public class VerticalTabListViewBinder {
             view.getSearchButton()
                     .setOnClickListener(
                             model.get(VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER));
+        } else if (VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE == propertyKey) {
+            boolean visible = model.get(VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE);
+            view.getSearchButton().setVisibility(visible ? View.VISIBLE : View.GONE);
         } else if (VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER == propertyKey) {
             view.getNewTabButton()
                     .setOnClickListener(

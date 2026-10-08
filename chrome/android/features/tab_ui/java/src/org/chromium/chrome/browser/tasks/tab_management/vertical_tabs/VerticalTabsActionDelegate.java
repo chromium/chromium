@@ -11,7 +11,4 @@ import org.chromium.build.annotations.NullMarked;
 public interface VerticalTabsActionDelegate {
     /** Opens the tab search overlay side panel. */
     void openTabSearch();
-
-    /** Opens the Hub layout and focuses the search bar (GTS search). */
-    void openHubSearch();
 }

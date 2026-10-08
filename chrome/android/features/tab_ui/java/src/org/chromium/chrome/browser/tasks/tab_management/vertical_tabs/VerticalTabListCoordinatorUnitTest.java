@@ -26,6 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -1340,6 +1341,7 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
+        assertEquals(View.VISIBLE, tabSearchButton.getVisibility());
         UserActionTester userActionTester = new UserActionTester();
         tabSearchButton.performClick();
         verify(mVerticalTabsActionDelegate).openTabSearch();
@@ -1350,16 +1352,12 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
-    public void testTabSearchButtonClick_TabSearchForALDisabled() {
+    public void testTabSearchButton_TabSearchForALDisabled_Hidden() {
         createCoordinator();
         View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
-        UserActionTester userActionTester = new UserActionTester();
-        tabSearchButton.performClick();
-        verify(mVerticalTabsActionDelegate).openHubSearch();
-        assertTrue(
-                userActionTester.getActions().contains("Android.VerticalTabs.SearchButtonClicked"));
-        userActionTester.tearDown();
+        assertEquals(View.GONE, tabSearchButton.getVisibility());
+        verifyNoInteractions(mVerticalTabsActionDelegate);
     }
 
     @Test

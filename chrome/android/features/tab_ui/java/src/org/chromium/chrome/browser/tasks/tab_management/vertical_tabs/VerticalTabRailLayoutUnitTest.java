@@ -100,6 +100,7 @@ public class VerticalTabRailLayoutUnitTest {
                                 VerticalTabListProperties.ON_INCOGNITO_CLICK_LISTENER,
                                 mIncognitoClickListener)
                         .with(VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE, false)
+                        .with(VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE, true)
                         .with(
                                 VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
                                 mCollapseClickListener)
@@ -457,6 +458,22 @@ public class VerticalTabRailLayoutUnitTest {
         MotionEvent event = MotionEvent.obtain(0, 0, action, 100f, 250f, 0);
         event.setSource(InputDevice.SOURCE_MOUSE);
         return event;
+    }
+
+    @Test
+    public void testBindSearchButtonVisibility() {
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        assertNotNull(searchButton);
+
+        mModel.set(VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE, false);
+        VerticalTabListViewBinder.bind(
+                mModel, mRailLayout, VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE);
+        assertEquals(View.GONE, searchButton.getVisibility());
+
+        mModel.set(VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE, true);
+        VerticalTabListViewBinder.bind(
+                mModel, mRailLayout, VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE);
+        assertEquals(View.VISIBLE, searchButton.getVisibility());
     }
 
     @Test

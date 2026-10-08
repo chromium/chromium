@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.test.util;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.view.View;
+
+import org.hamcrest.Matcher;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
@@ -84,20 +88,11 @@ public class VerticalTabsTestUtils {
     }
 
     private static void waitForTabStripState(ChromeTabbedActivity cta, boolean expectVertical) {
+        Matcher<View> railMatcher = withId(R.id.vertical_tab_rail_container);
         if (expectVertical) {
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        View v = cta.findViewById(R.id.tab_search_button);
-                        return v != null && v.isShown();
-                    },
-                    "Timed out waiting for vertical tabs tab search button to be shown.");
+            ViewFinder.waitForView(cta, railMatcher);
         } else {
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        View v = cta.findViewById(R.id.tab_search_button);
-                        return v == null || !v.isShown();
-                    },
-                    "Timed out waiting for vertical tabs tab search button to be hidden.");
+            ViewFinder.waitForNoView(cta, railMatcher);
         }
     }
 }

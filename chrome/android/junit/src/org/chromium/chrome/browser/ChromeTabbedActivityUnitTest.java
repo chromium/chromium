@@ -28,8 +28,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,8 +40,6 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,32 +53,10 @@ public class ChromeTabbedActivityUnitTest {
         private boolean mDidFinishNativeInitialization;
         private boolean mTerminateIncognitoSessionCalled;
         private boolean mFinishCalled;
-        private final List<Integer> mMenuOrKeyboardActionIds = new ArrayList<>();
-        private final List<Boolean> mMenuOrKeyboardActionFromMenu = new ArrayList<>();
         private final List<Integer> mRequestedWindowFeatures = new ArrayList<>();
-
-        public List<Integer> getMenuOrKeyboardActionIds() {
-            return mMenuOrKeyboardActionIds;
-        }
-
-        public List<Boolean> getMenuOrKeyboardActionFromMenu() {
-            return mMenuOrKeyboardActionFromMenu;
-        }
 
         public List<Integer> getRequestedWindowFeatures() {
             return mRequestedWindowFeatures;
-        }
-
-        // Records the action instead of running it, since running it requires native.
-        @Override
-        public boolean onMenuOrKeyboardAction(
-                int id,
-                boolean fromMenu,
-                @Nullable Bundle menuItemData,
-                @Nullable MotionEventInfo triggeringMotion) {
-            mMenuOrKeyboardActionIds.add(id);
-            mMenuOrKeyboardActionFromMenu.add(fromMenu);
-            return true;
         }
 
         // AppCompatDelegate#hasWindowFeature() cannot be queried before onCreate(), so record the
@@ -185,31 +159,6 @@ public class ChromeTabbedActivityUnitTest {
         assertNotNull(result);
         assertTrue(result.containsKey("android:support:fragments"));
         assertEquals("custom_value", result.getString("custom_key"));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
-    public void
-            testVerticalTabsActionDelegate_openHubSearch_disabledOnDesktop_doesNotTriggerHubSearch() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
-
-        VerticalTabsActionDelegate delegate = activity.createVerticalTabsActionDelegate();
-        delegate.openHubSearch();
-
-        assertTrue(activity.getMenuOrKeyboardActionIds().isEmpty());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
-    public void
-            testVerticalTabsActionDelegate_openHubSearch_enabledOnNonDesktop_triggersHubSearch() {
-        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
-        VerticalTabsActionDelegate delegate = activity.createVerticalTabsActionDelegate();
-        delegate.openHubSearch();
-
-        assertEquals(List.of(R.id.tab_search), activity.getMenuOrKeyboardActionIds());
-        assertEquals(List.of(false), activity.getMenuOrKeyboardActionFromMenu());
     }
 
     @Test

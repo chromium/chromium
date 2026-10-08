@@ -581,6 +581,9 @@ public class VerticalTabListCoordinator {
                         .setTabUnderlineManager(mTabUnderlineManager)
                         .build();
 
+        // The tab search button is only shown when tab search is enabled, matching the
+        // horizontal tab strip.
+        boolean isTabSearchEnabled = ChromeFeatureList.sTabSearchForDesktop.isEnabled();
         mContainerModel =
                 new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
                         .with(
@@ -588,12 +591,11 @@ public class VerticalTabListCoordinator {
                                 v -> {
                                     RecordUserAction.record(
                                             "Android.VerticalTabs.SearchButtonClicked");
-                                    if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
-                                        verticalTabsActionDelegate.openTabSearch();
-                                    } else {
-                                        verticalTabsActionDelegate.openHubSearch();
-                                    }
+                                    verticalTabsActionDelegate.openTabSearch();
                                 })
+                        .with(
+                                VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE,
+                                isTabSearchEnabled)
                         .with(
                                 VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
                                 v -> handleNewTabButtonClick())

@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -40,20 +39,18 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -156,7 +153,17 @@ public class VerticalTabsTest {
 
     @Test
     @MediumTest
-    public void testToolbarButtonsVisibility() {
+    @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    public void testToolbarButtonsVisibility_TabSearchDisabled() {
+        onView(withId(R.id.collapse_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.tab_search_button)).check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.new_tab_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    public void testToolbarButtonsVisibility_TabSearchEnabled() {
         onView(withId(R.id.collapse_button)).check(matches(isDisplayed()));
         onView(withId(R.id.tab_search_button)).check(matches(isDisplayed()));
         onView(withId(R.id.new_tab_button)).check(matches(isDisplayed()));
@@ -626,33 +633,6 @@ public class VerticalTabsTest {
                         matches(
                                 withContentDescription(
                                         R.string.accessibility_collapse_vertical_tabs)));
-    }
-
-    // =========================================================================================
-    // Left Rail Toolbar Buttons
-    // =========================================================================================
-    @Test
-    @MediumTest
-    public void testClickSearchButton_OpensSearch() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertFalse(
-                "Hub layout should not be visible initially.",
-                cta.getLayoutManager().isLayoutVisible(LayoutType.HUB));
-
-        SearchActivity searchActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        SearchActivity.class,
-                        Stage.RESUMED,
-                        /* uiThreadTrigger= */ null,
-                        /* backgroundThreadTrigger= */ () ->
-                                onView(withId(R.id.tab_search_button)).perform(click()));
-        assertNotNull("SearchActivity should be opened.", searchActivity);
-
-        assertFalse(
-                "Hub layout should not open when tab search is triggered.",
-                cta.getLayoutManager().isLayoutVisible(LayoutType.HUB));
-
-        ApplicationTestUtils.finishActivity(searchActivity);
     }
 
     // =========================================================================================
