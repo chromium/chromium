@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/disk_cache/disk_cache.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 
@@ -150,6 +151,10 @@ class CacheStorageCacheEntryHandler {
       scoped_refptr<DiskCacheBlobEntry> blob_entry,
       CacheStorageCache::EntryIndex disk_cache_index,
       CacheStorageCache::EntryIndex side_data_disk_cache_index);
+
+  mojo::PendingRemote<network::mojom::DataPipeGetter> CreateDataPipeGetter(
+      scoped_refptr<DiskCacheBlobEntry> blob_entry,
+      CacheStorageCache::EntryIndex disk_cache_index);
 
   // Wrapper for storage::mojom::BlobStorageContext bound to this sequence.
   scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;

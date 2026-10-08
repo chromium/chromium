@@ -2,35 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_REQUEST_BLOB_TASK_H_
-#define CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_REQUEST_BLOB_TASK_H_
+#ifndef CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_REQUEST_BODY_TASK_H_
+#define CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_REQUEST_BODY_TASK_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
 #include "content/browser/background_fetch/storage/database_task.h"
-#include "storage/browser/blob/blob_data_handle.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
 namespace background_fetch {
 
-class GetRequestBlobTask : public DatabaseTask {
+class GetRequestBodyTask : public DatabaseTask {
  public:
-  using GetRequestBlobCallback =
-      base::OnceCallback<void(blink::mojom::BackgroundFetchError,
-                              blink::mojom::SerializedBlobPtr)>;
+  using GetRequestBodyCallback = base::OnceCallback<void(
+      blink::mojom::BackgroundFetchError,
+      mojo::PendingRemote<network::mojom::DataPipeGetter>)>;
 
-  GetRequestBlobTask(
+  GetRequestBodyTask(
       DatabaseTaskHost* host,
       const BackgroundFetchRegistrationId& registration_id,
       const scoped_refptr<BackgroundFetchRequestInfo>& request_info,
-      GetRequestBlobCallback callback);
+      GetRequestBodyCallback callback);
 
-  GetRequestBlobTask(const GetRequestBlobTask&) = delete;
-  GetRequestBlobTask& operator=(const GetRequestBlobTask&) = delete;
+  GetRequestBodyTask(const GetRequestBodyTask&) = delete;
+  GetRequestBodyTask& operator=(const GetRequestBodyTask&) = delete;
 
-  ~GetRequestBlobTask() override;
+  ~GetRequestBodyTask() override;
 
   // DatabaseTask implementation:
   void Start() override;
@@ -44,15 +45,15 @@ class GetRequestBlobTask : public DatabaseTask {
 
   BackgroundFetchRegistrationId registration_id_;
   scoped_refptr<BackgroundFetchRequestInfo> request_info_;
-  GetRequestBlobCallback callback_;
+  GetRequestBodyCallback callback_;
 
-  blink::mojom::SerializedBlobPtr blob_;
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_;
 
-  base::WeakPtrFactory<GetRequestBlobTask> weak_factory_{
+  base::WeakPtrFactory<GetRequestBodyTask> weak_factory_{
       this};  // Keep as last.
 };
 
 }  // namespace background_fetch
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_REQUEST_BLOB_TASK_H_
+#endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_REQUEST_BODY_TASK_H_

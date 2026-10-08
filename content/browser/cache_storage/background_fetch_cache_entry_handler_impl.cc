@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace content {
@@ -60,8 +60,9 @@ void BackgroundFetchCacheEntryHandlerImpl::PopulateRequestBody(
     return;
   }
 
-  request->blob =
-      CreateBlob(std::move(blob_entry), CacheStorageCache::INDEX_SIDE_DATA);
+  request->body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request->body->AppendDataPipe(CreateDataPipeGetter(
+      std::move(blob_entry), CacheStorageCache::INDEX_SIDE_DATA));
 }
 
 base::WeakPtr<CacheStorageCacheEntryHandler>

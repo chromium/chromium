@@ -28,6 +28,7 @@
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -579,20 +580,23 @@ void BackgroundFetchJobController::GetUploadData(
   }
 
   if (request->request_body_size() == 0) {
-    DidGetUploadData(std::move(callback), BackgroundFetchError::NONE, nullptr);
+    DidGetUploadData(std::move(callback), 0, BackgroundFetchError::NONE,
+                     mojo::PendingRemote<network::mojom::DataPipeGetter>());
     return;
   }
 
-  data_manager_->GetRequestBlob(
+  data_manager_->GetRequestBody(
       registration_id(), request,
       base::BindOnce(&BackgroundFetchJobController::DidGetUploadData,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     request->request_body_size()));
 }
 
 void BackgroundFetchJobController::DidGetUploadData(
     BackgroundFetchDelegate::GetUploadDataCallback callback,
+    uint64_t size,
     BackgroundFetchError error,
-    blink::mojom::SerializedBlobPtr blob) {
+    mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter) {
   if (error != BackgroundFetchError::NONE) {
     Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
           base::DoNothing());
@@ -602,7 +606,10 @@ void BackgroundFetchJobController::DidGetUploadData(
   }
 
   BackgroundFetchDelegate::Client::GetUploadDataResponse response;
-  response.blob = std::move(blob);
+  if (data_pipe_getter) {
+    response.size = base::ByteSize(size);
+    response.data_pipe_getter = std::move(data_pipe_getter);
+  }
   response.url_loader_factory = url_loader_factory_;
 
   std::move(callback).Run(std::move(response));

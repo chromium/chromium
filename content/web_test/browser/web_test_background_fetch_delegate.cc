@@ -32,11 +32,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -242,16 +239,9 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
     download::DownloadRequestParameters params;
     params.url_loader_factory = std::move(response.url_loader_factory);
 
-    if (response.blob) {
-      mojo::PendingRemote<network::mojom::DataPipeGetter>
-          data_pipe_getter_remote;
-      mojo::Remote<blink::mojom::Blob> blob_remote(
-          std::move(response.blob->blob));
-      blob_remote->AsDataPipeGetter(
-          data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
-
+    if (response.data_pipe_getter) {
       params.post_body = base::MakeRefCounted<network::ResourceRequestBody>();
-      params.post_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+      params.post_body->AppendDataPipe(std::move(response.data_pipe_getter));
     }
     std::move(callback).Run(std::move(params));
   }

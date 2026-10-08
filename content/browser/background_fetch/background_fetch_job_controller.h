@@ -23,6 +23,8 @@
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -187,9 +189,11 @@ class CONTENT_EXPORT BackgroundFetchJobController
   void Finish(blink::mojom::BackgroundFetchFailureReason reason_to_abort,
               ErrorCallback callback);
 
-  void DidGetUploadData(BackgroundFetchDelegate::GetUploadDataCallback callback,
-                        blink::mojom::BackgroundFetchError error,
-                        blink::mojom::SerializedBlobPtr blob);
+  void DidGetUploadData(
+      BackgroundFetchDelegate::GetUploadDataCallback callback,
+      uint64_t size,
+      blink::mojom::BackgroundFetchError error,
+      mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter);
 
   // Manager for interacting with the DB. It is owned by the
   // BackgroundFetchContext.

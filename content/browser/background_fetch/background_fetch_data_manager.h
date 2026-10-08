@@ -25,6 +25,8 @@
 #include "content/browser/background_fetch/storage/database_task.h"
 #include "content/browser/background_fetch/storage/get_initialization_data_task.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
@@ -72,9 +74,9 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   using MarkRegistrationForDeletionCallback =
       base::OnceCallback<void(blink::mojom::BackgroundFetchError,
                               blink::mojom::BackgroundFetchFailureReason)>;
-  using GetRequestBlobCallback =
-      base::OnceCallback<void(blink::mojom::BackgroundFetchError,
-                              blink::mojom::SerializedBlobPtr)>;
+  using GetRequestBodyCallback = base::OnceCallback<void(
+      blink::mojom::BackgroundFetchError,
+      mojo::PendingRemote<network::mojom::DataPipeGetter>)>;
   using MarkRequestCompleteCallback =
       base::OnceCallback<void(blink::mojom::BackgroundFetchError)>;
   using NextRequestCallback =
@@ -136,12 +138,12 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   void PopNextRequest(const BackgroundFetchRegistrationId& registration_id,
                       NextRequestCallback callback);
 
-  // Retrieves the request blob associated with |request_info|. THis should be
-  // called for requests that are known to have a blob.
-  void GetRequestBlob(
+  // Retrieves the request body associated with |request_info|. This should be
+  // called for requests that are known to have a body.
+  void GetRequestBody(
       const BackgroundFetchRegistrationId& registration_id,
       const scoped_refptr<BackgroundFetchRequestInfo>& request_info,
-      GetRequestBlobCallback callback);
+      GetRequestBodyCallback callback);
 
   // Marks |request_info| as complete and calls |callback| when done.
   void MarkRequestAsComplete(

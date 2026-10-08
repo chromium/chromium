@@ -5,15 +5,19 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BACKGROUND_FETCH_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_BACKGROUND_FETCH_DELEGATE_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -71,7 +75,8 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
       GetUploadDataResponse& operator=(GetUploadDataResponse&& other);
 
       // The request body to use for the download.
-      blink::mojom::SerializedBlobPtr blob;
+      mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
+      base::ByteSize size;
 
       // The custom URLLoaderFactory to use for the request.
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;

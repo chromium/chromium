@@ -18,6 +18,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
@@ -36,7 +37,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -70,6 +73,38 @@ const char kAlternativeUniqueId[] = "bb48a9fb-c21f-4c2d-a9ae-58bd48a9fb53";
 const char kInitialTitle[] = "Initial Title";
 
 constexpr size_t kResponseSize = 42u;
+
+class StringDataPipeReader : public mojo::DataPipeDrainer::Client {
+ public:
+  std::string WaitForData() {
+    run_loop_.Run();
+    return std::move(data_);
+  }
+
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_.append(base::as_string_view(data));
+  }
+  void OnDataComplete() override { run_loop_.Quit(); }
+
+ private:
+  std::string data_;
+  base::RunLoop run_loop_;
+};
+
+std::string DataPipeGetterToString(
+    mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter) {
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CHECK_EQ(mojo::CreateDataPipe(nullptr, producer, consumer), MOJO_RESULT_OK);
+
+  mojo::Remote<network::mojom::DataPipeGetter> remote(
+      std::move(data_pipe_getter));
+  remote->Read(std::move(producer), base::DoNothing());
+
+  StringDataPipeReader reader;
+  mojo::DataPipeDrainer drainer(&reader, std::move(consumer));
+  return reader.WaitForData();
+}
 
 void DidGetInitializationData(
     base::OnceClosure quit_closure,
@@ -329,26 +364,23 @@ class BackgroundFetchDataManagerTest
   }
 
   // Synchronous version of
-  // BackgroundFetchDataManager::GetRequestBlob().
-  std::string GetRequestBlobAsString(
+  // BackgroundFetchDataManager::GetRequestBody().
+  std::string GetRequestBodyAsString(
       const BackgroundFetchRegistrationId& registration_id,
       const scoped_refptr<BackgroundFetchRequestInfo>& request_info,
       blink::mojom::BackgroundFetchError* out_error) {
-    DCHECK(out_error);
+    CHECK(out_error);
 
-    blink::mojom::SerializedBlobPtr blob;
+    base::test::TestFuture<blink::mojom::BackgroundFetchError,
+                           mojo::PendingRemote<network::mojom::DataPipeGetter>>
+        request_body_future;
+    background_fetch_data_manager_->GetRequestBody(
+        registration_id, request_info, request_body_future.GetCallback());
+    auto [error, data_pipe_getter] = request_body_future.Take();
+    *out_error = error;
 
-    base::RunLoop run_loop;
-    background_fetch_data_manager_->GetRequestBlob(
-        registration_id, request_info,
-        base::BindOnce(&BackgroundFetchDataManagerTest::DidGetRequestBlob,
-                       base::Unretained(this), run_loop.QuitClosure(),
-                       out_error, &blob));
-    run_loop.Run();
-
-    if (blob && blob->blob) {
-      mojo::Remote<blink::mojom::Blob> blob_remote(std::move(blob->blob));
-      return storage::BlobToString(blob_remote.get());
+    if (data_pipe_getter) {
+      return DataPipeGetterToString(std::move(data_pipe_getter));
     }
 
     return std::string();
@@ -757,16 +789,6 @@ class BackgroundFetchDataManagerTest
       scoped_refptr<BackgroundFetchRequestInfo> request_info) {
     *out_error = error;
     *out_request_info = request_info;
-    std::move(quit_closure).Run();
-  }
-
-  void DidGetRequestBlob(base::OnceClosure quit_closure,
-                         blink::mojom::BackgroundFetchError* out_error,
-                         blink::mojom::SerializedBlobPtr* out_blob,
-                         blink::mojom::BackgroundFetchError error,
-                         blink::mojom::SerializedBlobPtr blob) {
-    *out_error = error;
-    *out_blob = std::move(blob);
     std::move(quit_closure).Run();
   }
 
@@ -1570,12 +1592,12 @@ TEST_F(BackgroundFetchDataManagerTest, GetUploadBody) {
   EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
 
   auto payload1 =
-      GetRequestBlobAsString(registration_id, request_info1, &error);
+      GetRequestBodyAsString(registration_id, request_info1, &error);
   EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
   EXPECT_EQ(payload1, "upload1");
 
   auto payload2 =
-      GetRequestBlobAsString(registration_id, request_info2, &error);
+      GetRequestBodyAsString(registration_id, request_info2, &error);
   EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
   EXPECT_EQ(payload2, "upload2");
 }
@@ -1871,15 +1893,17 @@ TEST_F(BackgroundFetchDataManagerTest, MatchRequestsWithBody) {
                 &error, &settled_fetches);
   EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
   ASSERT_EQ(settled_fetches.size(), 2u);
-  EXPECT_FALSE(settled_fetches[0]->request->blob);
+  EXPECT_FALSE(settled_fetches[0]->request->body);
 
   auto& request = settled_fetches[1]->request;
-  ASSERT_TRUE(request->blob);
-  EXPECT_EQ(request->blob->size, upload_data.size());
+  ASSERT_TRUE(request->body);
 
-  ASSERT_TRUE(request->blob->blob);
-  mojo::Remote<blink::mojom::Blob> blob(std::move(request->blob->blob));
-  EXPECT_EQ(storage::BlobToString(blob.get()), upload_data);
+  std::vector<network::DataElement>* elements =
+      request->body->elements_mutable();
+  ASSERT_EQ(elements->size(), 1u);
+  auto* pipe = (*elements)[0].TryAs<network::DataElementDataPipe>();
+  ASSERT_TRUE(pipe);
+  EXPECT_EQ(DataPipeGetterToString(pipe->ReleaseDataPipeGetter()), upload_data);
 }
 
 TEST_F(BackgroundFetchDataManagerTest, MatchRequestsFromCache) {

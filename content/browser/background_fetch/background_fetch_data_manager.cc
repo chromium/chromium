@@ -23,7 +23,7 @@
 #include "content/browser/background_fetch/storage/get_developer_ids_task.h"
 #include "content/browser/background_fetch/storage/get_metadata_task.h"
 #include "content/browser/background_fetch/storage/get_registration_task.h"
-#include "content/browser/background_fetch/storage/get_request_blob_task.h"
+#include "content/browser/background_fetch/storage/get_request_body_task.h"
 #include "content/browser/background_fetch/storage/mark_registration_for_deletion_task.h"
 #include "content/browser/background_fetch/storage/mark_request_complete_task.h"
 #include "content/browser/background_fetch/storage/match_requests_task.h"
@@ -223,13 +223,13 @@ void BackgroundFetchDataManager::PopNextRequest(
           this, registration_id, std::move(callback)));
 }
 
-void BackgroundFetchDataManager::GetRequestBlob(
+void BackgroundFetchDataManager::GetRequestBody(
     const BackgroundFetchRegistrationId& registration_id,
     const scoped_refptr<BackgroundFetchRequestInfo>& request_info,
-    GetRequestBlobCallback callback) {
+    GetRequestBodyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  AddDatabaseTask(std::make_unique<background_fetch::GetRequestBlobTask>(
+  AddDatabaseTask(std::make_unique<background_fetch::GetRequestBodyTask>(
       this, registration_id, request_info, std::move(callback)));
 }
 

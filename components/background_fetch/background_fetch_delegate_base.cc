@@ -27,11 +27,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace background_fetch {
@@ -523,7 +519,7 @@ void BackgroundFetchDelegateBase::DidGetUploadData(
     params.isolation_info = job_details->fetch_description->isolation_info;
   }
 
-  if (!response.blob || response.blob->uuid.empty()) {
+  if (!response.data_pipe_getter) {
     std::move(callback).Run(std::move(params));
     return;
   }
@@ -535,15 +531,10 @@ void BackgroundFetchDelegateBase::DidGetUploadData(
 
   DCHECK(job_details->current_fetch_guids.count(download_guid));
   auto& request_data = job_details->current_fetch_guids.at(download_guid);
-  request_data.body_size_bytes = response.blob->size;
+  request_data.body_size_bytes = response.size.InBytes();
 
-  // Use a Data Pipe to transfer the blob.
-  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
-  mojo::Remote<blink::mojom::Blob> blob_remote(std::move(response.blob->blob));
-  blob_remote->AsDataPipeGetter(
-      data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
   params.post_body = base::MakeRefCounted<network::ResourceRequestBody>();
-  params.post_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+  params.post_body->AppendDataPipe(std::move(response.data_pipe_getter));
 
   std::move(callback).Run(std::move(params));
 }
