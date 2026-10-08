@@ -1784,6 +1784,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/document/LauncherActivityTest.java",
     "src/org/chromium/chrome/browser/dragdrop/DragAndDropLauncherActivityTest.java",
     "src/org/chromium/chrome/browser/externalnav/UrlOverridingTest.java",
+    "src/org/chromium/chrome/browser/eye_dropper/EyeDropperTest.java",
     "src/org/chromium/chrome/browser/findinpage/FindTest.java",
     "src/org/chromium/chrome/browser/fullscreen/FullscreenManagerTest.java",
     "src/org/chromium/chrome/browser/history/HistoryPageOnLffTest.java",

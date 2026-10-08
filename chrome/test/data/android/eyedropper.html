@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <button id="open_eyedropper">Open EyeDropper</button>
+  <script>
+    window.lastResult = 'initial';
+    document.getElementById('open_eyedropper').addEventListener('click', async () => {
+      const eyeDropper = new EyeDropper();
+      try {
+        const result = await eyeDropper.open();
+        window.lastResult = 'selected: ' + result.sRGBHex;
+      } catch (e) {
+        window.lastResult = 'error: ' + e.name + ' - ' + e.message;
+      }
+    });
+  </script>
+</body>
+</html>

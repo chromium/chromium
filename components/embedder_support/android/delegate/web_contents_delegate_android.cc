@@ -22,6 +22,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
+#include "components/embedder_support/android/delegate/eye_dropper_bridge.h"
 #include "components/embedder_support/android/delegate/html_color_picker_bridge.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
@@ -118,6 +119,15 @@ WebContentsDelegateAndroid::OpenColorChooser(
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
   return std::make_unique<HtmlColorPickerBridge>(source, color, suggestions);
+}
+
+std::unique_ptr<content::EyeDropper> WebContentsDelegateAndroid::OpenEyeDropper(
+    content::RenderFrameHost* frame,
+    content::EyeDropperListener* listener) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+  CHECK(web_contents);
+  return EyeDropperBridge::Create(web_contents, listener);
 }
 
 // OpenURLFromTab() will be called when we're performing a browser-intiated

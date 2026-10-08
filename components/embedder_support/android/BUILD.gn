@@ -96,6 +96,7 @@ static_library("view") {
 
 generate_jni("web_contents_delegate_jni") {
   sources = [
+    "java/src/org/chromium/components/embedder_support/delegate/EyeDropperBridge.java",
     "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerBridge.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
@@ -103,6 +104,8 @@ generate_jni("web_contents_delegate_jni") {
 
 static_library("web_contents_delegate") {
   sources = [
+    "delegate/eye_dropper_bridge.cc",
+    "delegate/eye_dropper_bridge.h",
     "delegate/html_color_picker_bridge.cc",
     "delegate/html_color_picker_bridge.h",
     "delegate/web_contents_delegate_android.cc",
@@ -303,6 +306,7 @@ if (current_toolchain == default_toolchain) {
     resources_package = "org.chromium.components.embedder_support.delegate"
 
     sources = [
+      "java/src/org/chromium/components/embedder_support/delegate/EyeDropperBridge.java",
       "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerAdvanced.java",
       "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerAdvancedComponent.java",
       "java/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerBridge.java",
