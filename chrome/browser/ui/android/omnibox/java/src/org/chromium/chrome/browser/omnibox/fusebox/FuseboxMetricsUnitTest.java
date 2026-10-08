@@ -300,6 +300,24 @@ public class FuseboxMetricsUnitTest {
     }
 
     @Test
+    public void testNotifyAttachmentsPopupClosed_ItemSelected() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", true);
+        FuseboxMetrics.notifyAttachmentsPopupClosed(/* itemSelected= */ true);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyAttachmentsPopupClosed_NoItemSelected() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
+        FuseboxMetrics.notifyAttachmentsPopupClosed(/* itemSelected= */ false);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testNotifyOmniboxSessionEnded_SessionStarted_Navigation_NoAttachments() {
         mMetrics.notifyOmniboxSessionStarted();
 

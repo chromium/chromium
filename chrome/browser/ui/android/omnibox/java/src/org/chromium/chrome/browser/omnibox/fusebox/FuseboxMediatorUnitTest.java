@@ -1109,6 +1109,71 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void popupItemSelectedMetric_closedWithoutSelection_recordsFalse() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
+
+        // Opens the popup.
+        mMediator.onPlusButtonClicked();
+
+        // Closes it without selecting anything.
+        mMediator.onPlusButtonClicked();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void popupItemSelectedMetric_itemTapped_recordsTrue() {
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        mMediator.onPlusButtonClicked();
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", true);
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void popupItemSelectedMetric_moreOptionsThenBackPress_recordsFalse() {
+        OmniboxFeatures.setUseAccordionForTesting(true);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
+        mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
+        assertEquals(BackPressResult.SUCCESS, mMediator.handleBackPress());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void popupItemSelectedMetric_resetsWhenPopupReopened() {
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", true)
+                        .expectBooleanRecord(
+                                "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false)
+                        .build();
+
+        // First open: select an item.
+        mMediator.onPlusButtonClicked();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
+        // Second open: dismiss without selecting.
+        mMediator.onPlusButtonClicked();
+        mMediator.onPlusButtonClicked();
+
+        histogramWatcher.assertExpected();
+        assertFalse(mMediator.wasPopupItemSelected());
+    }
+
+    @Test
     public void popupAddsTabs() {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();

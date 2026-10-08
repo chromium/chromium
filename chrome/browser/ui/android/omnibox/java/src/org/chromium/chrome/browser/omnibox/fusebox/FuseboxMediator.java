@@ -603,6 +603,7 @@ import java.util.function.Supplier;
         if (!isInInputSession()) return;
         // Prevent rapid clicks from "showing" the popup more than once.
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) return;
+        mPopupItemSelected = false;
 
         boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
         updateModelForCurrentTab();
@@ -646,6 +647,9 @@ import java.util.function.Supplier;
     }
 
     private void hidePopup() {
+        if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
+            FuseboxMetrics.notifyAttachmentsPopupClosed(mPopupItemSelected);
+        }
         if (OmniboxFeatures.hasAccordion()) {
             mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, false);
         }

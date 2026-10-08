@@ -323,6 +323,11 @@ public class FuseboxMetrics {
                 "Omnibox.MobileFusebox.ModelButtonSelected", modelMode, MODEL_MODE_HISTOGRAM_BOUND);
     }
 
+    static void notifyAttachmentsPopupClosed(boolean itemSelected) {
+        RecordHistogram.recordBooleanHistogram(
+                "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", itemSelected);
+    }
+
     void notifyOmniboxSessionStarted() {
         mSessionStarted = true;
     }

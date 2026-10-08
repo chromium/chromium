@@ -2986,6 +2986,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentsPopupItemSelected"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether the user tapped at least one item (attachment, tool, or
+    model) in the attachments popup before it closed. Recorded once each time
+    the popup closes, regardless of how it was dismissed (Plus button, back
+    press, scrim tap, omnibox unfocus, or automatic close after a selection).
+    Tapping a picker (e.g. camera, files) counts as a selection even if the
+    picker is later cancelled. Clicking the More options button to expand the
+    accordion does not count as a selection.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentsPopupToggled" enum="Boolean"
     expires_after="2027-10-01">
   <owner>pnoland@google.com</owner>
