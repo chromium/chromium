@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -47,7 +48,7 @@ const uint8_t kTokenSignatureSize = 64;
 
 struct DisabledTokensTestData {
   const std::vector<std::string> input_list;
-  const std::vector<const uint8_t*> expected_list;
+  const std::vector<raw_ptr<const uint8_t>> expected_list;
 };
 
 // Token 1
