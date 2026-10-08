@@ -31,7 +31,9 @@ enum class ToolId {
   kType = 5,
   // Translates the current page.
   kTranslatePage = 6,
-  kMaxValue = kTranslatePage,
+  // Navigates the active tab backward one entry in session history.
+  kGoBack = 7,
+  kMaxValue = kGoBack,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

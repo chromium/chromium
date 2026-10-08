@@ -5,10 +5,13 @@
 #include "chrome/browser/actor/tools/history_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
 #include "chrome/browser/actor/tools/history_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -21,6 +24,10 @@ using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
 namespace {
+
+// Default description for the `go_back` tool.
+constexpr std::string_view kGoBackToolDescription =
+    "Go back to the previous page in history.";
 
 ToolRequest::CreateToolResult CreateHistoryTool(
     TaskId task_id,
@@ -46,6 +53,13 @@ ToolRequest::CreateToolResult CreateHistoryTool(
 HistoryBackToolRequest::HistoryBackToolRequest(TabHandle tab_handle)
     : TabToolRequest(tab_handle) {}
 HistoryBackToolRequest::~HistoryBackToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> HistoryBackToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kGoBack, kModelFacingName,
+                               kGoBackToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult HistoryBackToolRequest::CreateTool(
     TaskId task_id,

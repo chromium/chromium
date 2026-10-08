@@ -13,8 +13,11 @@
 
 #include "base/check.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
@@ -139,6 +142,17 @@ TEST(ToolRegistryTest, TranslatePageToolDefinition) {
               RequiresParam(TranslatePageToolRequest::kTargetLanguageParam));
 }
 
+TEST(ToolRegistryTest, HistoryBackToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      HistoryBackToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kGoBack);
+  EXPECT_EQ(definition->name, HistoryBackToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -207,6 +221,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsTranslatePageTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kTranslatePage,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsHistoryBackTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kGoBack, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_HISTORY_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_HISTORY_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -16,9 +17,15 @@ class ToolRequestVisitorFunctor;
 class HistoryBackToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "HistoryBack";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "go_back";
 
   explicit HistoryBackToolRequest(tabs::TabHandle tab_handle);
   ~HistoryBackToolRequest() override;
+
+  // Returns the `ToolId::kGoBack` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
