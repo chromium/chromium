@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_SELECT_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -20,11 +21,21 @@ class ToolRequestVisitorFunctor;
 class SelectToolRequest : public PageToolRequest {
  public:
   static constexpr char kName[] = "Select";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "select_option";
+  // JSON argument key for the DOM node ID of the target <select> element.
+  static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
+  // JSON argument key for the value attribute of the <option> to select.
+  static constexpr std::string_view kValueParam = "value";
 
   SelectToolRequest(tabs::TabHandle tab_handle,
                     const PageTarget& target,
                     std::string_view value);
   ~SelectToolRequest() override;
+
+  // Returns the `ToolId::kSelectOption` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 

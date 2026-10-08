@@ -25,7 +25,9 @@ enum class ToolId {
   kSwitchTab = 2,
   // Scrolls an element or the main viewport in the active tab.
   kScroll = 3,
-  kMaxValue = kScroll,
+  // Selects an option in a dropdown (<select>) element on the page.
+  kSelectOption = 4,
+  kMaxValue = kSelectOption,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
