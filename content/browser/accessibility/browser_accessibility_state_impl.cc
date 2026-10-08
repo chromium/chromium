@@ -781,14 +781,9 @@ void BrowserAccessibilityStateImpl::ApplyAccessibilityModeToWebContents(
   }  // else the WebContents will be updated when it is revealed.
 }
 
-// This ScopedModeCollection::Delegate override is called by
-// scoped_modes_for_process_ when the effective mode for the collection of
-// scopers targeting the process changes, and by
-// BrowserAccessibilityStateImplAndroid::OnModeChangedForWebContents when the
-// global mode changes due to a WebContents-scoped mode change.
-void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
-                                                  ui::AXMode new_mode) {
-  // Strip kNativeAdaptedWebContents so it never pollutes process-wide UMA
+void BrowserAccessibilityStateImpl::OnAnyModeChanged(ui::AXMode old_mode,
+                                                     ui::AXMode new_mode) {
+  // Strip kNativeAdaptedWebContents so it never pollutes process-wide UMA.
   old_mode.set_mode(ui::AXMode::kNativeAdaptedWebContents, false);
   new_mode.set_mode(ui::AXMode::kNativeAdaptedWebContents, false);
 
@@ -818,30 +813,34 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
     base::debug::SetCrashKeyString(ax_mode_crash_key, new_mode.ToString());
   }
 
-  // Combine the effective mode for the process with the effective mode for each
-  // WebContents and its associated BrowserContext. Read
-  // `scoped_modes_for_process_` directly rather than `new_mode` because on
-  // Android `OnModeChanged` is also called with the global mode (which unions
-  // all WebContents modes) and must not apply one WebContents's mode to others.
+  // Handle additions to the mode flags.
+  if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
+    // Broadcast the new mode flags, if any, to the AXModeObservers.
+    ax_platform_.NotifyModeAdded(additions);
+  }
+}
+
+// This ScopedModeCollection::Delegate override is called by
+// scoped_modes_for_process_ when the effective mode for the collection of
+// scopers targeting the process changes.
+void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
+                                                  ui::AXMode new_mode) {
+  // Combine the new mode for the process with the effective mode for each
+  // WebContents and its associated BrowserContext.
   std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
-      [this, process_mode = scoped_modes_for_process_.accessibility_mode()](
-          WebContentsImpl* web_contents) {
+      [this, new_mode](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed() &&
             !web_contents->IsNeverComposited()) {
           ApplyAccessibilityModeToWebContents(
-              web_contents, process_mode,
+              web_contents, new_mode,
               ModeCollectionForTarget::GetAccessibilityMode(
                   web_contents->GetBrowserContext()),
               ModeCollectionForTarget::GetAccessibilityMode(web_contents));
         }
       });
 
-  // Handle additions to the process's mode flags.
-  if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
-    // Broadcast the new mode flags, if any, to the AXModeObservers.
-    ax_platform_.NotifyModeAdded(additions);
-  }
+  OnAnyModeChanged(old_mode, GetAccessibilityMode());
 }
 
 // This ScopedModeCollection::Delegate override is called by
@@ -937,18 +936,23 @@ void BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
     WebContents* web_contents,
     ui::AXMode old_mode,
     ui::AXMode new_mode) {
-  if (web_contents->IsBeingDestroyed()) {
-    return;
+  const ui::AXMode effective_old_mode = GetAccessibilityMode();
+  if (!web_contents->IsBeingDestroyed()) {
+    // Combine the effective modes for the process, `web_contents`'s
+    // BrowserContext, and for `web_contents`.
+    ApplyAccessibilityModeToWebContents(
+        static_cast<WebContentsImpl*>(web_contents),
+        scoped_modes_for_process_.accessibility_mode(),
+        ModeCollectionForTarget::GetAccessibilityMode(
+            web_contents->GetBrowserContext()),
+        new_mode);
   }
 
-  // Combine the effective modes for the process, `web_contents`'s
-  // BrowserContext, and for `web_contents.
-  ApplyAccessibilityModeToWebContents(
-      static_cast<WebContentsImpl*>(web_contents),
-      scoped_modes_for_process_.accessibility_mode(),
-      ModeCollectionForTarget::GetAccessibilityMode(
-          web_contents->GetBrowserContext()),
-      new_mode);
+  // On Android, `GetAccessibilityMode()` includes per-`WebContents` modes
+  // (whereas on other platforms this call is a no-op). Notify even if
+  // `web_contents` is being destroyed so closing the last active tab resets
+  // state.
+  OnAnyModeChanged(effective_old_mode, GetAccessibilityMode());
 }
 
 void BrowserAccessibilityStateImpl::OnFocusChangedInPage(

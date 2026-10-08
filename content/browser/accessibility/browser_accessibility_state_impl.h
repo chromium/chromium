@@ -161,15 +161,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   virtual void RecordPlatformClientHistograms(ui::AXMode old_mode,
                                               ui::AXMode new_mode);
 
-  // ScopedModeCollection::Delegate:
-  // Handles a change to the effective accessibility mode for the process.
-  void OnModeChanged(ui::AXMode old_mode, ui::AXMode new_mode) override;
-
-  // Handles a change to the effective accessibility mode for `web_contents`.
-  virtual void OnModeChangedForWebContents(WebContents* web_contents,
-                                           ui::AXMode old_mode,
-                                           ui::AXMode new_mode);
-
   ui::AXPlatform& ax_platform() { return ax_platform_; }
 
  private:
@@ -186,6 +177,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
                                            ui::AXMode browser_context_mode,
                                            ui::AXMode web_contents_mode);
 
+  // ScopedModeCollection::Delegate:
+  // Handles a change to the effective accessibility mode for the process.
+  void OnModeChanged(ui::AXMode old_mode, ui::AXMode new_mode) override;
+
   // Filters out `kFromPlatform` from `mode` if activation from platform
   // integration is enabled; otherwise, filters all mode flags from `mode` if
   // `kFromPlatform` is present in it.
@@ -195,6 +190,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnModeChangedForBrowserContext(BrowserContext* browser_context,
                                       ui::AXMode old_mode,
                                       ui::AXMode new_mode);
+
+  // Handles a change to the effective accessibility mode for `web_contents`.
+  void OnModeChangedForWebContents(WebContents* web_contents,
+                                   ui::AXMode old_mode,
+                                   ui::AXMode new_mode);
 
   // Add the AXModes + AXMode::kFromPlatform, when corresponding platform APIs
   // are used.
@@ -211,6 +211,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // Helper to disable and clean-up the accessibility performance experiment.
   void ExitPerformanceExperiment();
+
+  // Called whenever any accessibility mode changes; updates histograms, crash
+  // keys, assistive tech, and `AXModeObserver`s for the transition from
+  // `old_mode` to `new_mode`.
+  void OnAnyModeChanged(ui::AXMode old_mode, ui::AXMode new_mode);
 
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
@@ -246,8 +251,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
 
-  // The collection of active ScopedAccessibilityMode instances targeting all
-  // WebContentses in the process.
+  // The collection of active `ScopedAccessibilityMode` instances created via
+  // `CreateScopedModeForProcess()`. Modes in this collection are inherited by
+  // every `BrowserContext` and `WebContents` in the process (forming the base
+  // of the `Process -> BrowserContext -> WebContents` hierarchy).
   ScopedModeCollection scoped_modes_for_process_{*this};
 
   // A ScopedAccessibilityMode that holds the process-wide mode flags modified

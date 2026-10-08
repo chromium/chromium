@@ -434,6 +434,10 @@ void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
   NotifyWebContentsPreferencesChanged();
 }
 
+// On Android, platform accessibility modes are scoped per `WebContents` rather
+// than process-wide. `GetAccessibilityMode()` combines the process mode with
+// all active `WebContents` modes, and `OnAnyModeChanged()` uses this to update
+// process-level histograms, assistive tech state, and crash keys.
 ui::AXMode BrowserAccessibilityStateImplAndroid::GetAccessibilityMode() {
   ui::AXMode mode = BrowserAccessibilityStateImpl::GetAccessibilityMode();
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
@@ -443,21 +447,6 @@ ui::AXMode BrowserAccessibilityStateImplAndroid::GetAccessibilityMode() {
   }
   mode.set_mode(ui::AXMode::kNativeAdaptedWebContents, false);
   return mode;
-}
-
-void BrowserAccessibilityStateImplAndroid::OnModeChangedForWebContents(
-    WebContents* web_contents,
-    ui::AXMode old_mode,
-    ui::AXMode new_mode) {
-  const ui::AXMode effective_old_mode = GetAccessibilityMode();
-  BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
-      web_contents, old_mode, new_mode);
-  // On Android, platform accessibility modes are scoped per WebContents rather
-  // than to the process. Forward changes in the aggregate global mode to
-  // `OnModeChanged` so process-level histograms (`Accessibility.Bundle`,
-  // `Accessibility.ModeFlag`, `Accessibility.EngineUse.*`), assistive tech
-  // state (`RefreshAssistiveTechIfNecessary`), and crash keys are updated.
-  OnModeChanged(effective_old_mode, GetAccessibilityMode());
 }
 
 void BrowserAccessibilityStateImplAndroid::RefreshAssistiveTech() {
