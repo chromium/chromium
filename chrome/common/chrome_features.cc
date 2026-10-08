@@ -1214,7 +1214,12 @@ BASE_FEATURE(kHttpsFirstBalancedMode, base::FEATURE_ENABLED_BY_DEFAULT);
 // Automatically enables HTTPS-First Mode in a balanced configuration when
 // possible.
 BASE_FEATURE(kHttpsFirstBalancedModeAutoEnable,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Kill switch for crbug.com/40892208.
 BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,

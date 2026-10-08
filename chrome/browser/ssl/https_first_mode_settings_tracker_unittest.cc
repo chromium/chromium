@@ -1196,7 +1196,9 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
 // Tests that the correct setting at startup is logged, when the Balanced Mode
 // feature flag is enabled but not on by default.
 TEST_F(HttpsFirstModeSettingsTrackerTest, StartupBalancedModeAvailable) {
-  feature_list()->InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+  feature_list()->InitWithFeatures(
+      /*enabled_features=*/{features::kHttpsFirstBalancedMode},
+      /*disabled_features=*/{features::kHttpsFirstBalancedModeAutoEnable});
 
   base::HistogramTester histograms;
   HttpsFirstModeService* service =
@@ -1247,9 +1249,17 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, AdvancedProtectionStatusChange) {
           profile());
   ASSERT_TRUE(aps_manager);
 
+#if BUILDFLAG(IS_ANDROID)
+  const HttpsFirstModeSetting expected_default_setting =
+      HttpsFirstModeSetting::kDisabled;
+#else
+  const HttpsFirstModeSetting expected_default_setting =
+      HttpsFirstModeSetting::kEnabledBalanced;
+#endif
+
   // Initially, the Strict HFM pref is disabled.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+  EXPECT_EQ(service->GetCurrentSetting(), expected_default_setting);
 
   // Enable Advanced Protection. This should not change the pref, but
   // GetCurrentSetting should now return kEnabledFull.
@@ -1257,10 +1267,10 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, AdvancedProtectionStatusChange) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kEnabledFull);
 
-  // Disable Advanced Protection. GetCurrentSetting should return to kDisabled.
+  // Disable Advanced Protection. GetCurrentSetting should return to default.
   aps_manager->SetAdvancedProtectionStatusForTesting(false);
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+  EXPECT_EQ(service->GetCurrentSetting(), expected_default_setting);
 }
 
 // Checks that enabling Advanced Protection clears the HTTP allowlist, just as a
@@ -1287,9 +1297,17 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   content::StoragePartition* storage_partition =
       profile()->GetDefaultStoragePartition();
 
-  ASSERT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+#if BUILDFLAG(IS_ANDROID)
+  const HttpsFirstModeSetting expected_default_setting =
+      HttpsFirstModeSetting::kDisabled;
+#else
+  const HttpsFirstModeSetting expected_default_setting =
+      HttpsFirstModeSetting::kEnabledBalanced;
+#endif
 
-  // Allowlist a host for http while HTTPS-First Mode is disabled.
+  ASSERT_EQ(service->GetCurrentSetting(), expected_default_setting);
+
+  // Allowlist a host for http while Advanced Protection is disabled.
   state->AllowHttpForHost("http-allowed.com", storage_partition);
   EXPECT_TRUE(
       state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
@@ -1307,12 +1325,19 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   EXPECT_TRUE(
       state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
   aps_manager->SetAdvancedProtectionStatusForTesting(false);
-  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+  EXPECT_EQ(service->GetCurrentSetting(), expected_default_setting);
   EXPECT_TRUE(
       state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
 }
 
 TEST_F(HttpsFirstModeSettingsTrackerTest, BalancedModeEnabledForEsbUsers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kHttpsFirstBalancedMode,
+                            features::
+                                kHttpsFirstModeDefaultSettingPairsWithEsb},
+      /*disabled_features=*/{features::kHttpsFirstBalancedModeAutoEnable});
+
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -1320,13 +1345,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, BalancedModeEnabledForEsbUsers) {
   StatefulSSLHostStateDelegate* state =
       StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
   ASSERT_TRUE(state);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kHttpsFirstBalancedMode,
-                            features::
-                                kHttpsFirstModeDefaultSettingPairsWithEsb},
-      /*disabled_features=*/{});
 
   // 1. Add a host to the HTTP allowlist to test that it gets cleared on pref
   // changes.
@@ -1368,6 +1386,10 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, BalancedModeEnabledForEsbUsers) {
 }
 
 TEST_F(HttpsFirstModeSettingsTrackerTest, StartupDetailedState_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kHttpsFirstBalancedModeAutoEnable);
+
   base::HistogramTester histograms;
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());

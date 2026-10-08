@@ -104,7 +104,7 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
           profile());
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kDisabled);
+      HttpsFirstModeSetting::kEnabledBalanced);
   EXPECT_FALSE(*pref.GetPrefObject().user_control_disabled);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(), kGeneratedHttpsFirstModePref);
   test_observer.Reset();
@@ -130,7 +130,7 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
 
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kDisabled);
+      HttpsFirstModeSetting::kEnabledBalanced);
   EXPECT_FALSE(*pref.GetPrefObject().user_control_disabled);
   // If the user isn't signed in, AP manager doesn't update the AP status on
   // startup, so the pref doesn't get a notification.
@@ -159,10 +159,10 @@ TEST_F(GeneratedHttpsFirstModePrefTest, AdvancedProtectionEnforcement) {
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
           profile());
 
-  // Initially, HFM is disabled and not enforced.
+  // Initially, HFM is in balanced mode and not enforced.
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kDisabled);
+      HttpsFirstModeSetting::kEnabledBalanced);
   EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
 
   // Enable Advanced Protection. This should enforce kEnabledFull.
@@ -183,7 +183,7 @@ TEST_F(GeneratedHttpsFirstModePrefTest, AdvancedProtectionEnforcement) {
   aps_manager->SetAdvancedProtectionStatusForTesting(false);
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kDisabled);
+      HttpsFirstModeSetting::kEnabledBalanced);
   EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
 }
 
@@ -513,12 +513,14 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
 
 // Check that updating the security settings bundle correctly updates the
 // generated HFM pref when the bundle integration feature is enabled.
+// Temporarily force kHttpsFirstBalancedModeAutoEnable to disabled until that
+// flag is removed.
 TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSettingsBundle_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kHttpsFirstBalancedMode,
        safe_browsing::kBundledSecuritySettingsAskBeforeHttp},
-      {});
+      {features::kHttpsFirstBalancedModeAutoEnable});
 
   GeneratedHttpsFirstModePref pref(profile());
 
@@ -548,11 +550,14 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSettingsBundle_FeatureEnabled) {
 
 // Check that updating the security settings bundle does not affect the
 // generated HFM pref when the bundle integration feature is disabled.
+// Temporarily force kHttpsFirstBalancedModeAutoEnable to disabled until that
+// flag is removed.
 TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSettingsBundle_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kHttpsFirstBalancedMode},
-      {safe_browsing::kBundledSecuritySettingsAskBeforeHttp});
+      {features::kHttpsFirstBalancedModeAutoEnable,
+       safe_browsing::kBundledSecuritySettingsAskBeforeHttp});
 
   GeneratedHttpsFirstModePref pref(profile());
 
@@ -574,12 +579,14 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSettingsBundle_FeatureDisabled) {
 
 // Check that changing the Safe Browsing preference kSafeBrowsingEnhanced
 // updates the generated pref.
+// Temporarily force kHttpsFirstBalancedModeAutoEnable to disabled until that
+// flag is removed.
 TEST_F(GeneratedHttpsFirstModePrefTest, UpdateSafeBrowsingPreference) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kHttpsFirstBalancedMode,
        features::kHttpsFirstModeDefaultSettingPairsWithEsb},
-      {});
+      {features::kHttpsFirstBalancedModeAutoEnable});
 
   GeneratedHttpsFirstModePref pref(profile());
 
