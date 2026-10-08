@@ -21,6 +21,7 @@ import android.text.TextWatcher;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
@@ -68,6 +69,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
@@ -174,6 +176,13 @@ public class SettingsSearchCoordinator
 
     // True once the search box margins in single-column layout are initialized.
     private boolean mSingleColumnWidthInitialized;
+
+    // Toolbar search lens button shown in single-column MainSettings when the search bar is
+    // scrolled completely out of view behind the toolbar, its intended visibility state, and
+    // its fade transition.
+    private @Nullable View mSearchLensButton;
+    private boolean mSearchLensButtonVisible;
+    private @Nullable Transition mSearchLensButtonFadeTransition;
 
     // Used for histogram that logs the user behavior for search.
     // LINT.IfChange(ExitReason)
@@ -327,6 +336,15 @@ public class SettingsSearchCoordinator
         ViewGroup searchBoxParent = mUseMultiColumn ? mActionBar : appBar;
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_box, searchBoxParent, true);
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, mActionBar, true);
+        if (isCollapsibleSearchBoxEnabled()) {
+            LayoutInflater.from(mActivity)
+                    .inflate(R.layout.settings_search_lens_button, mActionBar, true);
+            mSearchLensButton = mActionBar.requireViewById(R.id.search_lens_button);
+            mSearchLensButton.setOnClickListener(
+                    v -> {
+                        if (mSearchLensButtonVisible) onClickSearchBox(v);
+                    });
+        }
         View searchBox = requireViewById(R.id.search_box);
         setSearchBoxVerticalMargin(searchBox, mUseMultiColumn);
         searchBox.setOnClickListener(this::onClickSearchBox);
@@ -738,6 +756,45 @@ public class SettingsSearchCoordinator
                         },
                         false);
         updateSearchUiWidth();
+    }
+
+    private static boolean isCollapsibleSearchBoxEnabled() {
+        return ChromeFeatureList.sSettingsSearchCollapsibleSearchBox.isEnabled();
+    }
+
+    /**
+     * Updates the visibility of the toolbar search lens button with a fade transition. During a
+     * fade-out, {@link android.transition.Visibility} keeps the view laid out in {@code mActionBar}
+     * with transition-visibility {@link View#VISIBLE} until the fade finishes while suppressing
+     * {@code Toolbar} layout ({@code mSuppressLayout}), so callers are gated on the intended state
+     * {@link #mSearchLensButtonVisible} rather than {@link View#getVisibility()}.
+     *
+     * @param visible The target visibility state.
+     */
+    @VisibleForTesting
+    void setSearchLensButtonVisible(boolean visible) {
+        if (mSearchLensButton == null || mSearchLensButtonVisible == visible) return;
+        mSearchLensButtonVisible = visible;
+        if (!AccessibilityState.prefersReducedMotion()) {
+            if (mSearchLensButtonFadeTransition == null) {
+                mSearchLensButtonFadeTransition =
+                        TransitionInflater.from(mActivity)
+                                .inflateTransition(R.transition.settings_search_lens_fade);
+            }
+            TransitionManager.beginDelayedTransition(mActionBar, mSearchLensButtonFadeTransition);
+        } else {
+            // Force any running fade to finish so the setVisibility below sticks immediately.
+            TransitionManager.endTransitions(mActionBar);
+        }
+        mSearchLensButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    boolean isSearchLensButtonVisibleForTesting() {
+        return mSearchLensButtonVisible;
+    }
+
+    @Nullable Transition getSearchLensButtonFadeTransitionForTesting() {
+        return mSearchLensButtonFadeTransition;
     }
 
     private void showUiInSingleColumn(View searchBox, boolean show) {

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.ui.widget.ChromeImageButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_lens_button"
+    android:layout_width="@dimen/min_touch_target_size"
+    android:layout_height="@dimen/min_touch_target_size"
+    android:layout_gravity="end|center_vertical"
+    android:background="@drawable/default_icon_background"
+    android:contentDescription="@string/search_in_settings_hint"
+    android:src="@drawable/ic_search_24dp"
+    android:tooltipText="@string/search_in_settings_hint"
+    android:visibility="gone"
+    app:tint="@color/default_icon_color_tint_list"/>

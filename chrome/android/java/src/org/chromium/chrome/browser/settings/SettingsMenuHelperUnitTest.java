@@ -750,11 +750,31 @@ public class SettingsMenuHelperUnitTest {
                 /* isMainSettings= */ false);
     }
 
+    @Test
+    public void testUpdateNavigationIcon_withExtraImageButton_returnsNavButton() {
+        ImageButton extraButton = new ImageButton(mActivity);
+        mToolbar.addView(extraButton, 0);
+
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar,
+                mActivity,
+                /* shownInTab= */ true,
+                /* show= */ true,
+                /* isMultiColumn= */ true,
+                /* isMainSettings= */ false);
+
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertFalse(navigationButton.isClickable());
+        assertTrue(extraButton.isClickable());
+    }
+
     /** Returns the navigation button on the toolbar. */
     private View getNavigationButton() {
         for (int i = 0; i < mToolbar.getChildCount(); i++) {
             View child = mToolbar.getChildAt(i);
-            if (child instanceof ImageButton) {
+            if (child instanceof ImageButton
+                    && ((ImageButton) child).getDrawable() == mToolbar.getNavigationIcon()) {
                 return child;
             }
         }

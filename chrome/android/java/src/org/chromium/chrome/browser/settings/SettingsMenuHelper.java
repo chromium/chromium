@@ -352,7 +352,8 @@ public class SettingsMenuHelper {
     private static View getNavigationButtonView(Toolbar toolbar) {
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             View child = toolbar.getChildAt(i);
-            if (child instanceof ImageButton) {
+            if (child instanceof ImageButton
+                    && ((ImageButton) child).getDrawable() == toolbar.getNavigationIcon()) {
                 return child;
             }
         }
