@@ -31,6 +31,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/sessions/core/session_id.h"
+
+namespace extensions {
+class DocumentPipWindowController;
+}
 #endif
 
 class DocumentPipWidgetDelegate;
@@ -317,6 +321,7 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   SessionID session_id_ = SessionID::InvalidValue();
+  std::unique_ptr<extensions::DocumentPipWindowController> window_controller_;
 #endif
 
   // Initial options from the requestWindow() call.

@@ -1,21 +1,28 @@
 # Picture-in-Picture Views
 
 This directory contains Views code that is used for both
-[video picture-in-picture](/chrome/browser/ui/views/overlay/video_overlay/window_views) and
-[document picture-in-picture](/chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h)
+[video picture-in-picture] and [document picture-in-picture].
 
-## Standalone Document PiP Widget adapter
+## Standalone Document PiP extension foundation
 
-`DocumentPipBaseWindow` adapts a PiP Widget to `ui::BaseWindow`
-without owning the Widget or introducing a Browser. The adapter
-must be destroyed before its Widget. The host unit tests cover
-window operations directly; extension-controller wiring is separate.
+With `DocumentPipStandaloneWindow` enabled, `DocumentPipHost` owns the Widget
+and child WebContents without creating a Browser or tab strip. In builds with
+extension support, it also owns `DocumentPipWindowController`, whose
+`DocumentPipBaseWindow` adapter exposes Widget operations to extension window
+infrastructure.
 
-## Standalone Document PiP child identity
+Each opening gets a fresh window ID and a separate tab ID. The child receives
+tab-contents classification, extension scripting/observation helpers, and a
+`ZoomController` before its controller is published in `WindowControllerList`.
+Its `SessionTabHelper` has no session-service delegate: the script-created
+document must not enter session restore.
 
-In extension-enabled builds, each opening gets a fresh window ID
-and a separate tab ID. The child receives tab-contents classification,
-extension scripting/observation helpers, and a ZoomController.
-Its SessionTabHelper has no session-service delegate: the script-created
-document must not enter session restore. WindowControllerList publication
-is a separate integration step.
+The controller describes a single active tab in an always-on-top `"popup"`
+window. Tab metadata uses the normal extension permission-scrubbing rules. Both
+host-initiated and native close paths unregister the controller before
+destroying the Widget or child.
+
+[video picture-in-picture]:
+    /chrome/browser/ui/views/overlay/video_overlay/window_views
+[document picture-in-picture]:
+    /chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h

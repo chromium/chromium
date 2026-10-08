@@ -75,11 +75,20 @@ source_set("picture_in_picture") {
   ]
 
   if (enable_extensions_core) {
-    public += [ "document_pip_base_window.h" ]
-    sources += [ "document_pip_base_window.cc" ]
-    public_deps += [ "//components/sessions" ]
-    deps += [
+    public += [
+      "document_pip_base_window.h",
+      "document_pip_window_controller.h",
+    ]
+    sources += [
+      "document_pip_base_window.cc",
+      "document_pip_window_controller.cc",
+    ]
+    public_deps += [
       "//chrome/browser/extensions",
+      "//components/sessions",
+    ]
+    deps += [
+      "//chrome/browser/ui/browser_window",
       "//components/zoom",
       "//extensions/browser",
       "//extensions/common",

@@ -56,6 +56,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_base_window.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_window_controller.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/zoom/zoom_controller.h"
 #include "extensions/browser/extension_registry.h"
@@ -216,6 +218,13 @@ void DocumentPipHost::CreateAndShowPipWindow(
   // up the helpers a standalone PiP child needs directly. Done after `widget_`
   // is initialized because the dialog manager anchors to it.
   CreateChildWebContentsHelpers(GetChildWebContents());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  window_controller_ =
+      std::make_unique<extensions::DocumentPipWindowController>(
+          *this, std::make_unique<DocumentPipBaseWindow>(*widget_),
+          session_id_);
+#endif
 
   restore_focus_on_activation_ = true;
 #if !BUILDFLAG(IS_WIN)
@@ -712,6 +721,8 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
   widget_observation_.Reset();
   contents_view_observation_.Reset();
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Unpublish while both the Widget and child WebContents are still alive.
+  window_controller_.reset();
   session_id_ = SessionID::InvalidValue();
 #endif
   modal_dialog_host_observer_list_.Notify(

@@ -320,6 +320,15 @@ if (!is_android) {
       "//url",
     ]
 
+    if (enable_extensions_core) {
+      deps += [
+        "//chrome/browser/extensions",
+        "//components/sessions",
+        "//extensions/browser",
+        "//extensions/common",
+      ]
+    }
+
     if (is_chromeos) {
       deps += [
         "//chromeos/ui/base",

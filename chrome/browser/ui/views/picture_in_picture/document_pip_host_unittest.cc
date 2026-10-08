@@ -47,13 +47,19 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/extensions/window_controller_list_observer.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_base_window.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/zoom/zoom_controller.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/base_window.h"
 #include "ui/views/test/mock_native_widget.h"
 #include "ui/views/window/frame_view.h"
 #endif
@@ -288,14 +294,85 @@ TEST_F(DocumentPipHostTest, Accessors) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+namespace {
+
+extensions::WindowController* FindExtensionWindow(int window_id) {
+  for (extensions::WindowController* controller :
+       *extensions::WindowControllerList::GetInstance()) {
+    if (controller->GetWindowId() == window_id) {
+      return controller;
+    }
+  }
+  return nullptr;
+}
+
+class PipExtensionWindowObserver
+    : public extensions::WindowControllerListObserver,
+      public content::WebContentsObserver {
+ public:
+  PipExtensionWindowObserver() {
+    observation_.Observe(extensions::WindowControllerList::GetInstance());
+  }
+
+  void OnWindowControllerAdded(
+      extensions::WindowController* controller) override {
+    ++added;
+    window_id = controller->GetWindowId();
+    auto* child = controller->GetActiveTab();
+    ASSERT_TRUE(child);
+    EXPECT_EQ(window_id,
+              sessions::SessionTabHelper::IdForWindowContainingTab(child).id());
+    EXPECT_TRUE(extensions::TabHelper::FromWebContents(child));
+    EXPECT_TRUE(zoom::ZoomController::FromWebContents(child));
+    Observe(child);
+  }
+
+  void OnWindowControllerRemoved(
+      extensions::WindowController* controller) override {
+    ++removed;
+    EXPECT_EQ(window_id, controller->GetWindowId());
+    EXPECT_EQ(web_contents(), controller->GetActiveTab());
+    EXPECT_TRUE(controller->window()->GetNativeWindow());
+    EXPECT_FALSE(FindExtensionWindow(window_id));
+  }
+
+  void WebContentsDestroyed() override {
+    EXPECT_EQ(added, removed);
+    EXPECT_FALSE(FindExtensionWindow(window_id));
+    ++children_destroyed;
+  }
+
+  int added = 0;
+  int removed = 0;
+  int children_destroyed = 0;
+  int window_id = -1;
+
+ private:
+  base::ScopedObservation<extensions::WindowControllerList,
+                          extensions::WindowControllerListObserver>
+      observation_{this};
+};
+
+}  // namespace
+
 TEST_F(DocumentPipHostTest, ExtensionWindowIdentityAndHelpers) {
+  PipExtensionWindowObserver observer;
   auto* host = CreateHostAndOpenPipWindow();
   auto* child = host->GetChildWebContents();
+  auto* controller = FindExtensionWindow(host->GetSessionId().id());
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(1, observer.added);
   EXPECT_TRUE(host->GetSessionId().is_valid());
-  EXPECT_EQ(host->GetSessionId(),
-            sessions::SessionTabHelper::IdForWindowContainingTab(child));
   EXPECT_TRUE(sessions::SessionTabHelper::IdForTab(child).is_valid());
   EXPECT_NE(host->GetSessionId(), sessions::SessionTabHelper::IdForTab(child));
+  EXPECT_EQ(&profile_, controller->profile());
+  EXPECT_FALSE(controller->GetBrowserWindowInterface());
+  EXPECT_FALSE(controller->GetBrowser());
+  EXPECT_EQ(1, controller->GetTabCount());
+  EXPECT_EQ(child, controller->GetActiveTab());
+  EXPECT_EQ(child, controller->GetWebContentsAt(0));
+  EXPECT_FALSE(controller->GetWebContentsAt(-1));
+  EXPECT_FALSE(controller->GetWebContentsAt(1));
   EXPECT_EQ(extensions::mojom::ViewType::kTabContents,
             extensions::GetViewType(child));
   EXPECT_TRUE(
@@ -304,7 +381,95 @@ TEST_F(DocumentPipHostTest, ExtensionWindowIdentityAndHelpers) {
   EXPECT_TRUE(extensions::TabHelper::FromWebContents(child)->script_executor());
   EXPECT_TRUE(zoom::ZoomController::FromWebContents(child));
   host->Close();
+  EXPECT_EQ(1, observer.removed);
+  EXPECT_EQ(1, observer.children_destroyed);
   EXPECT_FALSE(host->GetSessionId().is_valid());
+}
+
+TEST_F(DocumentPipHostTest, ExtensionWindowSerializationScrubsTabMetadata) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* controller = FindExtensionWindow(host->GetSessionId().id());
+  ASSERT_TRUE(controller);
+  auto* child = host->GetChildWebContents();
+  const GURL url("https://example.test/pip");
+  content::WebContentsTester::For(child)->NavigateAndCommit(url);
+  child->UpdateTitleForEntry(child->GetController().GetLastCommittedEntry(),
+                             u"PiP title");
+
+  using extensions::WindowController;
+  constexpr auto context = extensions::mojom::ContextType::kPrivilegedExtension;
+  auto value = controller->CreateWindowValueForExtension(
+      nullptr, WindowController::kDontPopulateTabs, context);
+  EXPECT_EQ(controller->GetWindowId(), value.FindInt("id"));
+  EXPECT_EQ("popup", *value.FindString("type"));
+  EXPECT_EQ("normal", *value.FindString("state"));
+  EXPECT_EQ(false, value.FindBool("incognito"));
+  EXPECT_EQ(true, value.FindBool("alwaysOnTop"));
+  EXPECT_EQ(host->GetWidget()->IsActive(), value.FindBool("focused"));
+  const gfx::Rect bounds = host->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(bounds.x(), value.FindInt("left"));
+  EXPECT_EQ(bounds.y(), value.FindInt("top"));
+  EXPECT_EQ(bounds.width(), value.FindInt("width"));
+  EXPECT_EQ(bounds.height(), value.FindInt("height"));
+  EXPECT_FALSE(value.contains("tabs"));
+
+  value = controller->CreateWindowValueForExtension(
+      nullptr, WindowController::kPopulateTabs, context);
+  const auto* tabs = value.FindList("tabs");
+  ASSERT_TRUE(tabs);
+  ASSERT_EQ(1u, tabs->size());
+  const auto& tab = (*tabs)[0].GetDict();
+  EXPECT_EQ(sessions::SessionTabHelper::IdForTab(child).id(),
+            tab.FindInt("id"));
+  EXPECT_EQ(controller->GetWindowId(), tab.FindInt("windowId"));
+  EXPECT_EQ(0, tab.FindInt("index"));
+  EXPECT_EQ(true, tab.FindBool("active"));
+  EXPECT_EQ(true, tab.FindBool("selected"));
+  EXPECT_EQ(true, tab.FindBool("highlighted"));
+  EXPECT_FALSE(tab.contains("url"));
+  EXPECT_FALSE(tab.contains("title"));
+  EXPECT_FALSE(tab.contains("favIconUrl"));
+
+  auto extension =
+      extensions::ExtensionBuilder("tabs").AddAPIPermission("tabs").Build();
+  auto permitted_tabs = controller->CreateTabList(extension.get(), context);
+  ASSERT_EQ(1u, permitted_tabs.size());
+  const auto& permitted_tab = permitted_tabs[0].GetDict();
+  EXPECT_EQ(url.spec(), *permitted_tab.FindString("url"));
+  EXPECT_EQ("PiP title", *permitted_tab.FindString("title"));
+}
+
+TEST_F(DocumentPipHostTest, ExtensionWindowVisibilityAndOptionsWithoutBrowser) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* controller = FindExtensionWindow(host->GetSessionId().id());
+  ASSERT_TRUE(controller);
+  auto extension = extensions::ExtensionBuilder("extension").Build();
+  EXPECT_TRUE(
+      controller->IsVisibleToTabsAPIForExtension(extension.get(), false));
+  EXPECT_TRUE(controller->IsVisibleToTabsAPIForExtension(nullptr, false));
+  auto app = extensions::ExtensionBuilder(
+                 "app", extensions::ExtensionBuilder::Type::PLATFORM_APP)
+                 .Build();
+  EXPECT_FALSE(controller->IsVisibleToTabsAPIForExtension(app.get(), true));
+  EXPECT_FALSE(controller->OpenOptionsPage(
+      extension.get(), GURL("https://example.test/options"), true));
+  using extensions::WindowController;
+  EXPECT_TRUE(
+      controller->MatchesFilter(WindowController::GetFilterFromWindowTypes(
+          {extensions::api::windows::WindowType::kPopup})));
+  EXPECT_FALSE(
+      controller->MatchesFilter(WindowController::GetFilterFromWindowTypes(
+          {extensions::api::windows::WindowType::kNormal})));
+}
+
+TEST_F(DocumentPipHostTest, ExtensionWindowControllerUsesHostWidget) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* controller = FindExtensionWindow(host->GetSessionId().id());
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(host->GetWidget()->GetNativeWindow(),
+            controller->window()->GetNativeWindow());
+  controller->SetFullscreenMode(true, GURL("chrome-extension://example/"));
+  EXPECT_FALSE(host->GetWidget()->IsFullscreen());
 }
 
 TEST_F(DocumentPipHostTest, ExtensionWindowAdapterOperations) {
@@ -386,6 +551,78 @@ TEST_F(DocumentPipHostTest, ExtensionWindowAdapterForwardsDeactivation) {
   widget.reset();
 }
 
+enum class ExtensionClosePath {
+  kHost,
+  kChild,
+  kWidget,
+  kNativeWidget,
+  kExtension,
+  kOpenerNavigation,
+  kOpenerDestruction,
+};
+
+class DocumentPipExtensionCloseTest
+    : public DocumentPipHostTest,
+      public testing::WithParamInterface<ExtensionClosePath> {};
+
+TEST_P(DocumentPipExtensionCloseTest,
+       UnregistersBeforeDestructionAndCanReopen) {
+  PipExtensionWindowObserver observer;
+  auto* host = CreateHostAndOpenPipWindow();
+  const SessionID window_id = host->GetSessionId();
+  const SessionID tab_id =
+      sessions::SessionTabHelper::IdForTab(host->GetChildWebContents());
+  switch (GetParam()) {
+    case ExtensionClosePath::kHost:
+      host->Close();
+      break;
+    case ExtensionClosePath::kChild:
+      host->CloseContents(host->GetChildWebContents());
+      break;
+    case ExtensionClosePath::kWidget:
+      host->GetWidget()->Close();
+      break;
+    case ExtensionClosePath::kNativeWidget:
+      host->GetWidget()->CloseNow();
+      break;
+    case ExtensionClosePath::kExtension:
+      FindExtensionWindow(window_id.id())->window()->Close();
+      break;
+    case ExtensionClosePath::kOpenerNavigation:
+      content::WebContentsTester::For(opener())->NavigateAndCommit(
+          GURL("https://example.test/next"));
+      break;
+    case ExtensionClosePath::kOpenerDestruction:
+      opener_web_contents_.reset();
+      break;
+  }
+  EXPECT_EQ(1, observer.removed);
+  EXPECT_EQ(1, observer.children_destroyed);
+  EXPECT_FALSE(FindExtensionWindow(window_id.id()));
+  if (opener()) {
+    host->Close();
+    EXPECT_EQ(1, observer.removed);
+    EXPECT_EQ(host, CreateHostAndOpenPipWindow());
+    EXPECT_NE(window_id, host->GetSessionId());
+    EXPECT_NE(tab_id, sessions::SessionTabHelper::IdForTab(
+                          host->GetChildWebContents()));
+    EXPECT_EQ(2, observer.added);
+    host->Close();
+    EXPECT_EQ(2, observer.removed);
+    EXPECT_EQ(2, observer.children_destroyed);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DocumentPipExtensionCloseTest,
+    testing::Values(ExtensionClosePath::kHost,
+                    ExtensionClosePath::kChild,
+                    ExtensionClosePath::kWidget,
+                    ExtensionClosePath::kNativeWidget,
+                    ExtensionClosePath::kExtension,
+                    ExtensionClosePath::kOpenerNavigation,
+                    ExtensionClosePath::kOpenerDestruction));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // The host creates a Widget with a DocumentPipWidgetDelegate.
