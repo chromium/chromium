@@ -99,7 +99,8 @@ void OtpManagerImpl::GetOtpSuggestions(
     const FormFieldData& field,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
   if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
-      field.origin().opaque() || !OtpFieldDetector::IsOtpForm(form)) {
+      !OtpFieldDetector::IsOtpField(form, field) ||
+      !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
     return;
   }
@@ -249,7 +250,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
 
   std::vector<FieldGlobalId> otp_field_ids;
   for (const auto& field : form->fields()) {
-    if (field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    if (OtpFieldDetector::IsOtpField(*form, *field)) {
       otp_field_ids.push_back(field->global_id());
     }
   }
@@ -607,24 +608,25 @@ const AutofillField* OtpManagerImpl::GetFocusedOtpField() const {
   if (!currently_focused_field_id_.has_value()) {
     return nullptr;
   }
+  const FormStructure* form = nullptr;
   const AutofillField* field = nullptr;
   if (currently_focused_form_id_.has_value()) {
-    field = owner_
-                ->FindFormAndField(*currently_focused_form_id_,
-                                   *currently_focused_field_id_)
-                .autofill_field;
+    AutofillManager::FormAndField form_and_field = owner_->FindFormAndField(
+        *currently_focused_form_id_, *currently_focused_field_id_);
+    form = form_and_field.form_structure;
+    field = form_and_field.autofill_field;
   }
   if (!field) {
     // AutofillManager provides an overload `FindCachedFormById(const
     // FieldGlobalId&)` that searches cached forms for the one containing the
     // given field ID.
-    if (const FormStructure* form =
-            owner_->FindCachedFormById(*currently_focused_field_id_)) {
+    form = owner_->FindCachedFormById(*currently_focused_field_id_);
+    if (form) {
       field = form->GetFieldById(*currently_focused_field_id_);
     }
   }
-  return field && field->Type().GetTypes().contains(ONE_TIME_CODE) ? field
-                                                                   : nullptr;
+  return form && field && OtpFieldDetector::IsOtpField(*form, *field) ? field
+                                                                      : nullptr;
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
@@ -642,10 +644,11 @@ bool OtpManagerImpl::AnyOtpFieldContainsTypedInput() const {
     if (has_typed_input) {
       return;
     }
-    has_typed_input = std::ranges::any_of(form.fields(), [](const auto& field) {
-      return field->Type().GetTypes().contains(ONE_TIME_CODE) &&
-             field->all_modifiers().contains(FieldModifier::kUser);
-    });
+    has_typed_input =
+        std::ranges::any_of(form.fields(), [&form](const auto& field) {
+          return OtpFieldDetector::IsOtpField(form, *field) &&
+                 field->all_modifiers().contains(FieldModifier::kUser);
+        });
   });
   return has_typed_input;
 }

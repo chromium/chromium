@@ -16,6 +16,8 @@
 namespace autofill {
 
 class AutofillClient;
+class AutofillField;
+class FormFieldData;
 class FormStructure;
 
 // Utility class to observe if a WebContents (with all of its frames)
@@ -57,9 +59,16 @@ class OtpFieldDetector : public AutofillManager::Observer {
   // one OTP field.
   bool IsOtpFieldPresent() const;
 
+  // Returns true if `field` is a focusable `ONE_TIME_CODE` field in `form` that
+  // is not a password input and is same-site with the main frame's origin.
+  [[nodiscard]] static bool IsOtpField(const FormStructure& form,
+                                       const AutofillField& field);
+  [[nodiscard]] static bool IsOtpField(const FormStructure& form,
+                                       const FormFieldData& field);
+
   // Returns true if the `form` contains at least one focusable `ONE_TIME_CODE`
-  // field that is not a password input, and all focusable `ONE_TIME_CODE`
-  // fields in the `form` are same-site with the main frame's origin.
+  // field that is not a password input, and all `ONE_TIME_CODE` fields in the
+  // `form` are same-site with the main frame's origin.
   [[nodiscard]] static bool IsOtpForm(const FormStructure& form);
 
   // AutofillManager::Observer:

@@ -155,7 +155,12 @@ class OtpManagerImplTest
         &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined, form_id,
         TestBrowserAutofillManager::Observer::FieldTypeSource::kAutofillAiModel,
         /*small_forms_were_parsed=*/false);
-    return autofill_manager().FindCachedFormById(form_id);
+    const FormStructure* cached_form =
+        autofill_manager().FindCachedFormById(form_id);
+    if (cached_form && !cached_form->fields().empty()) {
+      test_field_ = *cached_form->field(0);
+    }
+    return cached_form;
   }
 
   const FormStructure* AddFormWithOtpField(
@@ -166,11 +171,13 @@ class OtpManagerImplTest
         .fields =
             {
                 {.server_type = ONE_TIME_CODE,
+                 .host_frame = autofill_driver().GetFrameToken(),
                  .is_focusable = is_focusable,
                  .label = u"OTP",
                  .name = u"otp",
                  .origin = field_origin},
             },
+        .host_frame = autofill_driver().GetFrameToken(),
         .main_frame_origin = main_frame_origin,
     };
     return AddForm(form_description);
@@ -632,12 +639,17 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_PhishGuardCheckPassesFrameToken) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
       .WillOnce(RunOnceCallback<0>(otp));
 
-  const FormStructure* form = AddFormWithOtpField();
-  ASSERT_TRUE(form);
-
   LocalFrameToken subframe_token = test::MakeLocalFrameToken();
-  FormFieldData field = *form->field(0);
-  field.set_host_frame(subframe_token);
+  const FormStructure* form = AddForm({
+      .fields =
+          {
+              {.server_type = ONE_TIME_CODE,
+               .host_frame = subframe_token,
+               .label = u"OTP",
+               .name = u"otp"},
+          },
+  });
+  ASSERT_TRUE(form);
 
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce([&](LocalFrameToken frame_to_fill,
@@ -647,7 +659,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_PhishGuardCheckPassesFrameToken) {
       });
 
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
-  otp_manager.GetOtpSuggestions(*form, field, future.GetCallback());
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0].value(), otp.value());
@@ -1290,6 +1302,130 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestionsUnfocusableOtpFieldReturnsEmpty) {
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
 
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that in a same-origin form containing both a password `ONE_TIME_CODE`
+// field and a text `ONE_TIME_CODE` field, `GetOtpSuggestions` returns empty
+// suggestions when triggered on the password field, and returns the OTP when
+// triggered on the text field.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestionsPasswordFieldInMixedFormReturnsEmpty) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    kDefaultOtpValue, base::TimeTicks::Now());
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(RunOnceCallback<0>(otp));
+
+  const FormStructure* form = AddForm({
+      .fields =
+          {
+              {.server_type = ONE_TIME_CODE,
+               .is_focusable = true,
+               .label = u"Password OTP",
+               .name = u"pw_otp",
+               .form_control_type = FormControlType::kInputPassword},
+              {.server_type = ONE_TIME_CODE,
+               .is_focusable = true,
+               .label = u"Text OTP",
+               .name = u"text_otp",
+               .form_control_type = FormControlType::kInputText},
+          },
+  });
+  ASSERT_TRUE(form);
+  ASSERT_EQ(form->fields().size(), 2u);
+
+  // Triggering on the password field must not return suggestions.
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      password_future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0),
+                                password_future.GetCallback());
+  EXPECT_TRUE(password_future.IsReady());
+  EXPECT_TRUE(password_future.Get().empty());
+
+  // Triggering on the text OTP field returns the OTP suggestion.
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce(RunOnceCallback<1>(false));
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      text_future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(1),
+                                text_future.GetCallback());
+  ASSERT_EQ(text_future.Get().size(), 1u);
+  EXPECT_EQ(text_future.Get()[0].value(), otp.value());
+}
+
+// Tests that a cross-origin password `ONE_TIME_CODE` field injected alongside a
+// same-origin text `ONE_TIME_CODE` field blocks OTP retrieval and suggestions.
+TEST_F(OtpManagerImplTest,
+       CrossOriginPasswordOtpFieldWithSameOriginTextOtpFieldReturnsEmpty) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  const FormStructure* form = AddForm({
+      .fields =
+          {
+              {.server_type = ONE_TIME_CODE,
+               .is_focusable = true,
+               .label = u"Cross-origin Password OTP",
+               .name = u"attacker_otp",
+               .form_control_type = FormControlType::kInputPassword,
+               .origin = url::Origin::Create(GURL("https://attacker.test"))},
+              {.server_type = ONE_TIME_CODE,
+               .is_focusable = true,
+               .label = u"Main-frame Text OTP",
+               .name = u"main_otp",
+               .form_control_type = FormControlType::kInputText,
+               .origin = url::Origin::Create(GURL("https://example.test"))},
+          },
+      .main_frame_origin = url::Origin::Create(GURL("https://example.test")),
+  });
+  ASSERT_TRUE(form);
+  ASSERT_EQ(form->fields().size(), 2u);
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      cross_origin_future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0),
+                                cross_origin_future.GetCallback());
+  EXPECT_TRUE(cross_origin_future.IsReady());
+  EXPECT_TRUE(cross_origin_future.Get().empty());
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      same_origin_future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(1),
+                                same_origin_future.GetCallback());
+  EXPECT_TRUE(same_origin_future.IsReady());
+  EXPECT_TRUE(same_origin_future.Get().empty());
+}
+
+// Tests that `GetOtpSuggestions` returns empty suggestions if the trigger field
+// itself has a cross-origin (mismatched eTLD+1) origin, even when `form` is a
+// valid same-origin OTP form.
+TEST_F(OtpManagerImplTest,
+       GetOtpSuggestionsCrossOriginTriggerFieldOnValidFormReturnsEmpty) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(1);
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://example.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+  ASSERT_TRUE(form);
+  ASSERT_EQ(form->fields().size(), 1u);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  FormFieldData cross_origin_field = *form->field(0);
+  cross_origin_field.set_origin(
+      url::Origin::Create(GURL("https://attacker.test")));
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, cross_origin_field,
+                                future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
 }

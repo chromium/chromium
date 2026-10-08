@@ -542,7 +542,8 @@ TEST(OtpFieldDetectorIsOtpFormTest, PasswordOtpField) {
 }
 
 // Tests that `IsOtpForm` returns true when there is both a password field
-// and a text-based OTP field.
+// and a text-based OTP field on the same origin, while `IsOtpField` only
+// returns true for the text-based OTP field.
 TEST(OtpFieldDetectorIsOtpFormTest, PasswordFieldAndTextOtpField) {
   FormData form;
   form.set_main_frame_origin(url::Origin::Create(GURL("https://example.com")));
@@ -562,6 +563,66 @@ TEST(OtpFieldDetectorIsOtpFormTest, PasswordFieldAndTextOtpField) {
   form_structure.field(1)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
 
   EXPECT_TRUE(OtpFieldDetector::IsOtpForm(form_structure));
+  EXPECT_FALSE(
+      OtpFieldDetector::IsOtpField(form_structure, *form_structure.field(0)));
+  EXPECT_TRUE(
+      OtpFieldDetector::IsOtpField(form_structure, *form_structure.field(1)));
+}
+
+// Tests that `IsOtpForm` returns false when a cross-origin password field with
+// `ONE_TIME_CODE` is present alongside a same-origin text OTP field.
+TEST(OtpFieldDetectorIsOtpFormTest,
+     CrossOriginPasswordFieldAndSameOriginTextOtpField) {
+  FormData form;
+  form.set_main_frame_origin(url::Origin::Create(GURL("https://example.com")));
+  FormFieldData field1;
+  field1.set_origin(url::Origin::Create(GURL("https://attacker.com")));
+  field1.set_is_focusable(true);
+  field1.set_form_control_type(FormControlType::kInputPassword);
+  FormFieldData field2;
+  field2.set_origin(url::Origin::Create(GURL("https://example.com")));
+  field2.set_is_focusable(true);
+  field2.set_form_control_type(FormControlType::kInputText);
+  form.set_fields({field1, field2});
+
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.fields().size(), 2u);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+  form_structure.field(1)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+
+  EXPECT_FALSE(OtpFieldDetector::IsOtpForm(form_structure));
+  EXPECT_FALSE(
+      OtpFieldDetector::IsOtpField(form_structure, *form_structure.field(0)));
+  EXPECT_TRUE(
+      OtpFieldDetector::IsOtpField(form_structure, *form_structure.field(1)));
+}
+
+// Tests that `IsOtpForm` returns false when a cross-origin unfocusable field
+// with `ONE_TIME_CODE` is present alongside a same-origin text OTP field.
+TEST(OtpFieldDetectorIsOtpFormTest,
+     CrossOriginUnfocusableFieldAndSameOriginTextOtpField) {
+  FormData form;
+  form.set_main_frame_origin(url::Origin::Create(GURL("https://example.com")));
+  FormFieldData field1;
+  field1.set_origin(url::Origin::Create(GURL("https://attacker.com")));
+  field1.set_is_focusable(false);
+  field1.set_form_control_type(FormControlType::kInputText);
+  FormFieldData field2;
+  field2.set_origin(url::Origin::Create(GURL("https://example.com")));
+  field2.set_is_focusable(true);
+  field2.set_form_control_type(FormControlType::kInputText);
+  form.set_fields({field1, field2});
+
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.fields().size(), 2u);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+  form_structure.field(1)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+
+  EXPECT_FALSE(OtpFieldDetector::IsOtpForm(form_structure));
+  EXPECT_FALSE(
+      OtpFieldDetector::IsOtpField(form_structure, *form_structure.field(0)));
+  EXPECT_TRUE(
+      OtpFieldDetector::IsOtpField(form_structure, *form_structure.field(1)));
 }
 
 }  // namespace autofill
