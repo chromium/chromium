@@ -3473,6 +3473,11 @@
       name: "FragmentedOofInCb",
     },
     {
+      // crbug.com/570740320
+      name: "FrameCaretSkipHiddenCheck",
+      status: "stable",
+    },
+    {
       name: "FrameSerializerNoWebEntities",
       status: "stable",
     },

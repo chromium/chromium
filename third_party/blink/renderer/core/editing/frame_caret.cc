@@ -308,7 +308,8 @@ void FrameCaret::PaintCaret(GraphicsContext& context,
 
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
 
-  if (!frame_->Selection().IsHidden()) {
+  if (RuntimeEnabledFeatures::FrameCaretSkipHiddenCheckEnabled() ||
+      !frame_->Selection().IsHidden()) {
     auto type = frame_->Selection().IsHandleVisible()
                     ? gfx::SelectionBound::Type::CENTER
                     : gfx::SelectionBound::Type::HIDDEN;
