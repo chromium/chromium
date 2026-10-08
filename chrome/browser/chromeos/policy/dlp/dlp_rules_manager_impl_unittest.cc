@@ -5,16 +5,19 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
@@ -23,8 +26,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/fake_dlp_client.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -73,6 +79,34 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
       : DlpRulesManagerImpl(local_state, profile) {}
 
   ~MockDlpRulesManager() override { Shutdown(); }
+};
+
+class FakeDlpClientWithError : public chromeos::FakeDlpClient {
+ public:
+  void SetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyRequest request,
+                         SetDlpFilesPolicyCallback callback) override {
+    if (!error_message_.has_value()) {
+      chromeos::FakeDlpClient::SetDlpFilesPolicy(request, std::move(callback));
+      return;
+    }
+    ++error_set_dlp_files_policy_count_;
+    ::dlp::SetDlpFilesPolicyResponse response;
+    response.set_error_message(*error_message_);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response));
+  }
+
+  int GetTotalSetDlpFilesPolicyCount() const {
+    return GetSetDlpFilesPolicyCount() + error_set_dlp_files_policy_count_;
+  }
+
+  void SetSetDlpFilesPolicyError(std::optional<std::string> error_message) {
+    error_message_ = std::move(error_message);
+  }
+
+ private:
+  int error_set_dlp_files_policy_count_ = 0;
+  std::optional<std::string> error_message_;
 };
 
 }  // namespace
@@ -174,7 +208,8 @@ class DlpRulesManagerImplTest : public testing::Test {
               expected_rule_metadata.obfuscated_id);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockDlpRulesManager> dlp_rules_manager_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -617,6 +652,66 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
   run_loop_.Run();
+
+  chromeos::DlpClient::Shutdown();
+}
+
+TEST_F(DlpRulesManagerImplTest, FilesRestriction_RetriesSetPolicyOnError) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kDataLeakPreventionFilesRestriction);
+  auto* client = new FakeDlpClientWithError();
+  client->SetFileAccessAllowed(false);
+
+  ASSERT_FALSE(file_access::ScopedFileAccessDelegate::HasInstance());
+
+  dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
+  rule.AddSrcUrl(kExampleUrl)
+      .AddDstUrl(kExampleUrl)
+      .AddRestriction(data_controls::kRestrictionFiles,
+                      data_controls::kLevelBlock);
+
+  // Make the initial notification of the daemon fail. The file access delegate
+  // should still be initialized so that file access checks do not fail open.
+  client->SetSetDlpFilesPolicyError("Failed to call dlp");
+  UpdatePolicyPref({rule});
+  EXPECT_EQ(1, client->GetTotalSetDlpFilesPolicyCount());
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(file_access::ScopedFileAccessDelegate::HasInstance());
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccess(
+      {base::FilePath("/tmp/test.txt")}, GURL(kExampleUrl),
+      future.GetCallback());
+  EXPECT_FALSE(future.Get().is_allowed());
+
+  // A retry should recover once the daemon starts responding successfully.
+  client->SetSetDlpFilesPolicyError(std::nullopt);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(2, client->GetTotalSetDlpFilesPolicyCount());
+  EXPECT_TRUE(file_access::ScopedFileAccessDelegate::HasInstance());
+
+  // If a later notification fails, the file access delegate should remain
+  // active while another retry is pending.
+  client->SetSetDlpFilesPolicyError("Failed to call dlp");
+  dlp_rules_manager_->DlpDaemonRestarted();
+  EXPECT_EQ(3, client->GetTotalSetDlpFilesPolicyCount());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(file_access::ScopedFileAccessDelegate::HasInstance());
+
+  client->SetSetDlpFilesPolicyError(std::nullopt);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(4, client->GetTotalSetDlpFilesPolicyCount());
+  EXPECT_TRUE(file_access::ScopedFileAccessDelegate::HasInstance());
+
+  histogram_tester_->ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kErrorsFilesPolicySetup,
+      true, 2);
+  histogram_tester_->ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kErrorsFilesPolicySetup,
+      false, 2);
 
   chromeos::DlpClient::Shutdown();
 }

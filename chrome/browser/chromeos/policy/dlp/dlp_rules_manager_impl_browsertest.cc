@@ -4,7 +4,11 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
@@ -13,6 +17,10 @@
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/fake_dlp_client.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -29,6 +37,20 @@ class FakeDlpRulesManager : public DlpRulesManagerImpl {
   explicit FakeDlpRulesManager(PrefService* local_state, Profile* profile)
       : DlpRulesManagerImpl(local_state, profile) {}
   ~FakeDlpRulesManager() override = default;
+};
+
+class FakeDbusErrorDlpClient : public chromeos::FakeDlpClient {
+ public:
+  FakeDbusErrorDlpClient() { SetFileAccessAllowed(false); }
+
+  void SetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyRequest request,
+                         SetDlpFilesPolicyCallback callback) override {
+    ::dlp::SetDlpFilesPolicyResponse response;
+    response.set_error_message(
+        "org.freedesktop.DBus.Error.NoReply: Did not receive a reply");
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response));
+  }
 };
 }  // namespace
 
@@ -95,6 +117,39 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingDisabled) {
       DlpRulesManagerFactory::GetForPrimaryProfile();
   EXPECT_FALSE(rules_manager->IsReportingEnabled());
   EXPECT_EQ(rules_manager->GetReportingManager(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, FilesPolicyErrorDoesNotFailOpen) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->GetProfile(),
+      base::BindRepeating(
+          [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return nullptr;
+          }));
+
+  chromeos::DlpClient::Shutdown();
+  new FakeDbusErrorDlpClient();
+
+  InitializeRulesManager();
+
+  {
+    ScopedListPrefUpdate update(g_browser_process->local_state(),
+                                policy_prefs::kDlpRulesList);
+
+    dlp_test_util::DlpRule rule("rule #1", "Block", "testid1");
+    rule.AddSrcUrl(kUrlStr1).AddDstUrl("*").AddRestriction(
+        data_controls::kRestrictionFiles, data_controls::kLevelBlock);
+
+    update->Append(rule.Create());
+  }
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return file_access::ScopedFileAccessDelegate::HasInstance(); }));
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccess(
+      {base::FilePath("/tmp/test.txt")}, GURL(kUrlStr1), future.GetCallback());
+  EXPECT_FALSE(future.Get().is_allowed());
 }
 
 }  // namespace policy

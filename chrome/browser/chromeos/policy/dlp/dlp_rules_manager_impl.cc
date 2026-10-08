@@ -47,6 +47,8 @@ using RulesConditionsMap = std::map<RuleId, UrlConditionId>;
 constexpr char kDrivePattern[] = "drive.google.com";
 constexpr char kOneDrivePattern[] = "onedrive.live.com";
 
+constexpr base::TimeDelta kMaxSetFilesPolicyRetryDelay = base::Minutes(5);
+
 // Creates a condition set for the given `url`.
 scoped_refptr<url_matcher::URLMatcherConditionSet> CreateConditionSet(
     url_matcher::URLMatcher* matcher,
@@ -132,21 +134,6 @@ void AddAssociatedUrlConditions(
     AddUrlConditions(matcher, condition_id, &destinations_urls, conditions,
                      patterns_mapping, rule_id, map);
   }
-}
-
-void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
-  data_controls::DlpBooleanHistogram(
-      data_controls::dlp::kErrorsFilesPolicySetup,
-      response.has_error_message());
-  if (response.has_error_message()) {
-    DlpScopedFileAccessDelegate::DeleteInstance();
-    LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
-               << response.error_message();
-    return;
-  }
-  CHECK(chromeos::DlpClient::Get()->IsAlive(), base::NotFatalUntil::M161);
-  DlpScopedFileAccessDelegate::Initialize(
-      base::BindRepeating(chromeos::DlpClient::Get));
 }
 
 ::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {
@@ -296,6 +283,37 @@ void DlpRulesManagerImpl::DlpDaemonRestarted() {
   OnDataLeakPreventionRulesUpdate();
 }
 
+void DlpRulesManagerImpl::OnSetDlpFilesPolicy(
+    const ::dlp::SetDlpFilesPolicyResponse response) {
+  data_controls::DlpBooleanHistogram(
+      data_controls::dlp::kErrorsFilesPolicySetup,
+      response.has_error_message());
+
+  // Always initialize the delegate so that file accesses are routed to the
+  // daemon. If the daemon timed out or returned an error during policy setup,
+  // keeping the delegate initialized prevents failing open locally in Chrome
+  // while a retry is pending.
+  DlpScopedFileAccessDelegate::Initialize(
+      base::BindRepeating(chromeos::DlpClient::Get));
+
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
+               << response.error_message();
+    const base::TimeDelta delay = set_files_policy_retry_delay_;
+    set_files_policy_retry_delay_ = std::min(set_files_policy_retry_delay_ * 2,
+                                             kMaxSetFilesPolicyRetryDelay);
+    set_files_policy_retry_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  set_files_policy_retry_timer_.Stop();
+  set_files_policy_retry_delay_ = kInitialSetFilesPolicyRetryDelay;
+  CHECK(chromeos::DlpClient::Get()->IsAlive(), base::NotFatalUntil::M161);
+}
+
 void DlpRulesManagerImpl::Shutdown() {
   // There are FilesController implementations such as DlpFilesControllerAsh
   // that are using the Profile to do some cleanup (e.g., stop observing the
@@ -317,6 +335,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   dst_conditions_.clear();
   rules_id_metadata_mapping_.clear();
   files_controller_ = nullptr;
+  set_files_policy_retry_timer_.Stop();
 
   const base::ListValue& rules_list =
       local_state_->GetList(policy_prefs::kDlpRulesList);
@@ -460,7 +479,9 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
       data_controls::DlpBooleanHistogram(
           data_controls::dlp::kFilesDaemonStartedUMA, true);
       chromeos::DlpClient::Get()->SetDlpFilesPolicy(
-          request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
+          request_to_daemon,
+          base::BindOnce(&DlpRulesManagerImpl::OnSetDlpFilesPolicy,
+                         weak_ptr_factory_.GetWeakPtr()));
       if (!files_controller_) {
         files_controller_ =
             std::make_unique<DlpFilesControllerAsh>(*this, profile_);
@@ -470,7 +491,9 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
       // The daemon is running, but should be deactivated by sending empty
       // policy.
       chromeos::DlpClient::Get()->SetDlpFilesPolicy(
-          request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
+          request_to_daemon,
+          base::BindOnce(&DlpRulesManagerImpl::OnSetDlpFilesPolicy,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else {
       // The daemon is not running and should not be communicated.
       DlpScopedFileAccessDelegate::DeleteInstance();
