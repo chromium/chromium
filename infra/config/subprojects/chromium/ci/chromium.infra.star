@@ -261,6 +261,10 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.0.yaml",
             },
             {
+                "sdk_package_name": "platforms/android-37.2",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.2.yaml",
+            },
+            {
                 "sdk_package_name": "platform-tools",
                 "cipd_yaml": "third_party/android_sdk/cipd/platform-tools/linux.yaml",
             },
@@ -353,6 +357,14 @@ packager_builder(
             {
                 "sdk_package_name": "system-images/android-37.0/google_apis_ps16k/x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.0/google_apis_ps16k/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images/android-37.2/google_apis_ps16k/arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.2/google_apis_ps16k/arm64-v8a.yaml",
+            },
+            {
+                "sdk_package_name": "system-images/android-37.2/google_apis_ps16k/x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.2/google_apis_ps16k/x86_64.yaml",
             },
         ],
     },
