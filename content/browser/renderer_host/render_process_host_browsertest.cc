@@ -38,6 +38,7 @@
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -1898,6 +1899,126 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   EXPECT_TRUE(new_child_rfh1->IsRenderFrameLive());
   EXPECT_EQ(0, process_exits_);
   EXPECT_EQ(0, host_destructions_);
+}
+
+namespace {
+
+// Releases a worker refcount on `process_` when a navigation finishes (e.g.,
+// when `~NavigationRequest()` destroys `ServiceWorkerClient` during
+// `FrameTreeNode::CancelNavigation()`), and records whether the process was
+// still alive immediately afterward.
+class WorkerRefReleasingNavigationObserver : public WebContentsObserver {
+ public:
+  WorkerRefReleasingNavigationObserver(WebContents* web_contents,
+                                       RenderProcessHost* process)
+      : WebContentsObserver(web_contents), process_(process) {}
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (process_) {
+      RenderProcessHost* process = std::exchange(process_, nullptr);
+      process->DecrementWorkerRefCount();
+      released_ = true;
+      process_alive_after_release_ = process->IsInitializedAndNotDead();
+    }
+  }
+
+  bool released() const { return released_; }
+  bool process_alive_after_release() const {
+    return process_alive_after_release_;
+  }
+
+ private:
+  raw_ptr<RenderProcessHost> process_;
+  bool released_ = false;
+  bool process_alive_after_release_ = false;
+};
+
+}  // namespace
+
+// Keeps a navigation alive when the process of its speculative RenderFrameHost
+// dies. Without this feature, crashes reset the navigation.
+class RenderProcessHostTestWithResumeNavigation : public RenderProcessHostTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitAndEnableFeature(
+        features::kResumeNavigationWithSpeculativeRFHProcessGone);
+    RenderProcessHostTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderProcessHostTestWithResumeNavigation,
+    testing::Values(false, true),
+    [](const testing::TestParamInfo<RenderProcessHostTest::ParamType>& info) {
+      return info.param ? "KeepAliveInBrowserMigration" : "Default";
+    });
+
+// Regression test for b/569408565: Ensure that dropping the last worker
+// refcount during `FrameTreeNode::CancelNavigation()` while detaching a
+// non-live subframe does not make `RenderProcessHostImpl::Cleanup()` run
+// `FastShutdown()` -> `RenderProcessGone()` and destroy the `FrameTreeNode`
+// mid-detach. The process must still exit after the detach completes.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTestWithResumeNavigation,
+                       NoReentrantCleanupOnSubframeDetachWithWorkerRef) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  GURL initial_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* child_rfh0 = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_rfh1 = root->child_at(1)->current_frame_host();
+  RenderProcessHost* process_b = child_rfh0->GetProcess();
+
+  // Start a same-site navigation in child-0 and pause it before commit while
+  // `child_rfh0` is still live (so no early RFH swap occurs).
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  TestNavigationManager nav_manager(shell()->web_contents(), url_b);
+  ASSERT_TRUE(ExecJs(
+      root, JsReplace("document.getElementById('child-0').src = $1;", url_b)));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  // Terminate the b.com subframe process while the navigation is in flight so
+  // both subframes are non-live while `child_rfh0` remains current_frame_host()
+  // with an active NavigationRequest.
+  {
+    RenderProcessHostWatcher termination_observer(
+        process_b, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process_b->Shutdown(0);
+    termination_observer.Wait();
+  }
+  ASSERT_FALSE(child_rfh0->IsRenderFrameLive());
+  ASSERT_FALSE(child_rfh1->IsRenderFrameLive());
+  ASSERT_EQ(child_rfh0, root->child_at(0)->current_frame_host());
+  ASSERT_TRUE(root->child_at(0)->navigation_request());
+
+  // Relaunch `process_b` and hold a worker refcount on it, simulating a service
+  // worker running in `process_b`.
+  ASSERT_TRUE(process_b->Init());
+  process_b->IncrementWorkerRefCount();
+  ASSERT_TRUE(process_b->IsInitializedAndNotDead());
+
+  // When child-0's navigation is cancelled during detach, drop the worker
+  // refcount on `process_b`.
+  WorkerRefReleasingNavigationObserver nav_observer(shell()->web_contents(),
+                                                    process_b);
+  RenderProcessHostWatcher exit_observer(
+      process_b, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(ExecJs(root, "document.getElementById('child-0').remove();"));
+  exit_observer.Wait();
+  EXPECT_FALSE(process_b->IsInitializedAndNotDead());
+
+  // The process must not have been shut down synchronously while the subframe
+  // was being detached; it should only exit after the detach completes.
+  ASSERT_TRUE(nav_observer.released());
+  EXPECT_TRUE(nav_observer.process_alive_after_release());
 }
 
 // Test that RenderProcessHostImpl::Cleanup can handle nested deletions of
