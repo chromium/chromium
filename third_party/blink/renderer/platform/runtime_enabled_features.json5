@@ -7065,13 +7065,6 @@
       name: "WarnOnContentVisibilityRenderAccess",
     },
     {
-      // Anchors the wavy text decoration pattern at the decorating box so the
-      // wave phase continues across inline fragment boundaries. Enabled by
-      // default; acts as a kill switch. https://crbug.com/41287729
-      name: "WavyDecorationContinuousPhase",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/5183481574850560
       name: "WebAppInstallation",
       status: {"Android": "", "default": "test"},

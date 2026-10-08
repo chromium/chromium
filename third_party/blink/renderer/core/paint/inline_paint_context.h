@@ -46,7 +46,7 @@ class CORE_EXPORT InlinePaintContext {
   }
 
   // Pushes a decorating box if the item is a decorating box.
-  class CORE_EXPORT ScopedInlineItem {
+  class ScopedInlineItem {
     STACK_ALLOCATED();
 
    public:
