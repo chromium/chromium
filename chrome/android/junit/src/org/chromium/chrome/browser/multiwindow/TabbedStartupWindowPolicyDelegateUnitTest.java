@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,6 +36,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -114,12 +117,29 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.MultiWindow.StartupRestorationWindowCount", /* value= */ 1);
+        var userActionTester = new UserActionTester();
+        doAnswer(
+                        invocation -> {
+                            assertTrue(
+                                    userActionTester
+                                            .getActions()
+                                            .contains(
+                                                    "Android.MultiWindow.StartupRestorationInitiated"));
+                            return null;
+                        })
+                .when(mTabbedActivity)
+                .startActivity(any());
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity).startActivity(any());
+        histogramWatcher.assertExpected();
+        userActionTester.tearDown();
         assertEquals(
                 SessionStartupPolicy.DEFAULT,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
@@ -196,12 +216,22 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         setupAppTasks(1);
         doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.MultiWindow.StartupRestorationWindowCount", /* value= */ 1);
+        var userActionTester = new UserActionTester();
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
         // Verify.
         verify(mTabbedActivity, never()).startActivity(any());
+        histogramWatcher.assertExpected();
+        assertFalse(
+                userActionTester
+                        .getActions()
+                        .contains("Android.MultiWindow.StartupRestorationInitiated"));
+        userActionTester.tearDown();
         assertFalse(
                 "isRecoverable should be cleared when task is alive in non-multiwindow mode.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
@@ -948,12 +978,23 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         mDelegate.applyPolicy(mTabbedActivity);
         assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().contains(1));
+        var durationWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.MultiWindow.StartupRestorationDuration")
+                        .build();
+        var userActionTester = new UserActionTester();
 
         // Act.
         TabbedStartupCoordinator.onWindowCreated(/* windowId= */ 1, NewWindowAppSource.RELAUNCH);
 
         // Verify.
         assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().isEmpty());
+        durationWatcher.assertExpected();
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("Android.MultiWindow.StartupRestorationCompleted"));
+        userActionTester.tearDown();
     }
 
     private void setupRecoverableInstances(@SessionStartupPolicy int startupPolicy) {

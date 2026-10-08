@@ -56,6 +56,11 @@ import java.util.Map;
 
     // BaseTabbedStartupDelegate implementation.
     @Override
+    protected void onRestorationInitiated() {
+        RecordUserAction.record("Android.MultiWindow.CrashRecoveryInitiated");
+    }
+
+    @Override
     protected void onAllWindowsRestored(long durationMillis) {
         RecordHistogram.recordTimesHistogram(
                 "Android.MultiWindow.CrashRecoveryDuration", durationMillis);
@@ -280,7 +285,6 @@ import java.util.Map;
                 : "Expected exactly one host activity to be present before initiating crash"
                         + " recovery.";
 
-        RecordUserAction.record("Android.MultiWindow.CrashRecoveryInitiated");
         Log.i(
                 TAG,
                 "Initiating restoration of %d non-visible windows and %d visible windows.",

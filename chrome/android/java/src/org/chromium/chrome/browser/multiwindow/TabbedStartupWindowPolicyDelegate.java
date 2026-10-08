@@ -16,6 +16,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStart
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
@@ -115,8 +118,15 @@ import java.util.Set;
 
     // BaseTabbedStartupDelegate implementation.
     @Override
+    protected void onRestorationInitiated() {
+        RecordUserAction.record("Android.MultiWindow.StartupRestorationInitiated");
+    }
+
+    @Override
     protected void onAllWindowsRestored(long durationMillis) {
-        // TODO: Record startup window restoration metrics here.
+        RecordHistogram.recordTimesHistogram(
+                "Android.MultiWindow.StartupRestorationDuration", durationMillis);
+        RecordUserAction.record("Android.MultiWindow.StartupRestorationCompleted");
     }
 
     @Override
@@ -309,11 +319,13 @@ import java.util.Set;
         int currentInstanceId = activity.getWindowId();
         Set<Integer> allIds = ChromeMultiInstancePersistentStore.readAllInstanceIds();
         Map<Integer, AppTask> appTasksById = MultiWindowUtils.getAppTasksById(activity);
+        int recoverableWindowCount = 0;
         boolean windowsRestored = false;
         for (int windowId : allIds) {
             int taskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
             if (windowId != currentInstanceId
                     && ChromeMultiInstancePersistentStore.readIsRecoverable(windowId)) {
+                recoverableWindowCount++;
                 windowsRestored |=
                         restoreWindow(
                                 activity,
@@ -321,6 +333,12 @@ import java.util.Set;
                                 appTasksById.get(taskId),
                                 NewWindowAppSource.RELAUNCH);
             }
+        }
+        if (recoverableWindowCount > 0) {
+            RecordHistogram.recordExactLinearHistogram(
+                    "Android.MultiWindow.StartupRestorationWindowCount",
+                    recoverableWindowCount,
+                    TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
         if (windowsRestored) {
             ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), /* flags= */ 0);

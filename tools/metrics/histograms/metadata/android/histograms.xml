@@ -3722,6 +3722,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.StartupRestorationDuration" units="ms"
+    expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the elapsed time from when automatic multi-window restoration
+    initiates activity creation on cold startup until all newly launched windows
+    from the previous Chrome session have been created.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.StartupRestorationWindowCount"
+    units="windows" expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of recoverable windows (excluding the primary launching
+    host window) eligible for automatic restoration on cold startup under the
+    &quot;Continue where you left off&quot; startup policy, including windows
+    whose existing live tasks are left in the background in non-multi-window
+    mode without launching a new activity.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.WindowZOrder.DisplaysCount" units="count"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

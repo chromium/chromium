@@ -69,10 +69,11 @@ import java.util.Set;
             // when a task's activity was previously destroyed (e.g. after a crash).
             task.finishAndRemoveTask();
         }
-        // Lazily record the start time upon the first actual activity launch in the restoration
-        // batch.
+        // Lazily record the start time and notify subclasses upon the first actual activity launch
+        // in the restoration batch.
         if (mRestorationStartTime == 0) {
             mRestorationStartTime = TimeUtils.elapsedRealtimeMillis();
+            onRestorationInitiated();
         }
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
@@ -114,6 +115,12 @@ import java.util.Set;
             onAllWindowsRestored(duration);
         }
     }
+
+    /**
+     * Invoked once right before initiating activity creation for the first window in a restoration
+     * batch.
+     */
+    protected abstract void onRestorationInitiated();
 
     /**
      * Invoked when all windows in {@link #mWindowIdsPendingRestoration} have completed restoration.

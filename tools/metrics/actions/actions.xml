@@ -4258,6 +4258,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.MultiWindow.StartupRestorationCompleted">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Recorded when automatic multi-window restoration on startup finishes
+    creating all windows for which activity creation was initiated.
+  </description>
+</action>
+
+<action name="Android.MultiWindow.StartupRestorationInitiated">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Recorded when automatic multi-window restoration on cold startup initiates
+    activity creation for at least one additional window.
+  </description>
+</action>
+
 <action name="Android.MultiWindowMode.Enter-SecondInstance">
   <owner>twellington@chromium.org</owner>
   <description>
