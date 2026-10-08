@@ -211,6 +211,7 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     SetFullscreen(tool_request.arguments, std::move(callback));
     return;
   }
+#endif
 
   if (tool_request.name == "click_element") {
     ClickElement(tool_request.arguments, std::move(callback));
@@ -226,7 +227,6 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     SelectOption(tool_request.arguments, std::move(callback));
     return;
   }
-#endif
 
   std::move(callback).Run(ToolResponse::Error(
       actor::mojom::ActionResultCode::kToolUnknown, "Unsupported tool"));
@@ -458,6 +458,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   set_fullscreen.behavior = ToolDefinition::Behavior::kBlocking;
   set_fullscreen.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(set_fullscreen));
+#endif
 
   ToolDefinition click_element;
   click_element.name = "click_element";
@@ -531,7 +532,6 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   select_option.behavior = ToolDefinition::Behavior::kBlocking;
   select_option.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(select_option));
-#endif
 
   return tools;
 }
