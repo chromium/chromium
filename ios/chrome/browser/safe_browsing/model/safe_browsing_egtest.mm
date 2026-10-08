@@ -95,11 +95,11 @@ NSString* const kPrimaryButtonID = @"primary-button";
 constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
 
 // Duration to wait for client-side detection classification to finish and cache
-// a verdict. On high-resolution devices (e.g. iPad Pro 13-inch) on loaded bots,
-// cold-start model loading, snapshot generation, and BEST_EFFORT background ML
-// visual feature extraction require additional time beyond default action
-// timeouts.
-constexpr base::TimeDelta kClassificationVerdictTimeout = base::Seconds(30);
+// a verdict. On loaded simulator bots and high-resolution devices (e.g. iPad
+// Pro 13-inch), cold-start model loading, snapshot generation, and BEST_EFFORT
+// background ML visual feature extraction require additional time beyond
+// default action timeouts.
+constexpr base::TimeDelta kClassificationVerdictTimeout = base::Seconds(60);
 
 // Request handler for net::EmbeddedTestServer that returns the request URL's
 // path as the body of the response if the request URL's path starts with
