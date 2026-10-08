@@ -458,6 +458,10 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   SafeBrowsingMetricsCollectorFactory::GetInstance();
   SamplePanelModelFactory::GetInstance();
   SendTabToSelfSyncServiceFactory::GetInstance();
+  SessionProtoDBFactory<commerce_subscription_db::
+                            CommerceSubscriptionContentProto>::GetInstance();
+  SessionProtoDBFactory<
+      parcel_tracking_db::ParcelTrackingContent>::GetInstance();
   SessionRestorationServiceFactory::GetInstance();
   SessionSyncServiceFactory::GetInstance();
   ShareKitServiceFactory::GetInstance();
@@ -499,8 +503,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
 #endif
 
   // Call other "Ensure...FactoriesBuilt" functions as necessary.
-  EnsureSessionProtoDBFactoriesBuilt();
-
   if (web::features::IsCobaltEnabled()) {
     ios::provider::EnsureCobaltProfileKeyedServiceFactoriesBuilt();
   }

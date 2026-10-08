@@ -73,7 +73,4 @@ class SessionProtoDBFactory final
   }
 };
 
-// Ensure all SessionProtoDB<T> factories are built for all values of T.
-void EnsureSessionProtoDBFactoriesBuilt();
-
 #endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_

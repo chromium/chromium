@@ -66,10 +66,7 @@ source_set("shopping_service") {
 }
 
 source_set("session_proto_db") {
-  sources = [
-    "session_proto_db_factory.h",
-    "session_proto_db_factory.mm",
-  ]
+  sources = [ "session_proto_db_factory.h" ]
 
   deps = [
     "//base",
