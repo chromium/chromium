@@ -7011,25 +7011,6 @@
             ]
         }
     ],
-    "EnableHighChannelLayouts": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableHighChannelLayouts"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableNewUploadSizeLimit": [
         {
             "platforms": [
