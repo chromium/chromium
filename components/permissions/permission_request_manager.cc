@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -274,7 +275,18 @@ void PermissionRequestManager::AddRequest(
     return;
   }
 
+  // Cancel all requests if the WebContents does not support permission
+  // requests at all. This takes priority over
+  // `allowlist_for_permission_requests_`.
   if (!web_contents_supports_permission_requests_) {
+    request->Cancelled();
+    return;
+  }
+
+  // If the WebContents only supports specific permission types, cancel any
+  // request not in the allowlist.
+  if (allowlist_for_permission_requests_.has_value() &&
+      !allowlist_for_permission_requests_->contains(request->request_type())) {
     request->Cancelled();
     return;
   }

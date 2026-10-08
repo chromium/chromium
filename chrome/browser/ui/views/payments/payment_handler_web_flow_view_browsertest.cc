@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -40,6 +42,7 @@
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/core/features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_alert.h"
@@ -47,6 +50,8 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -54,6 +59,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
@@ -68,6 +74,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace payments {
 
@@ -1130,6 +1137,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
       web_flow_controller->web_contents();
+
+  EXPECT_EQ("NotSupportedError", content::EvalJs(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({audio: true, video: true})
+      .then(() => 'allowed')
+      .catch(err => err.name);
+  )"));
 
   GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
   HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
@@ -3128,6 +3141,147 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   dialog_view()->CloseDialog();
   ASSERT_TRUE(WaitForObservedEvent());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
+                       CameraBlockedByPermissionsPolicy) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* web_flow_controller = static_cast<PaymentHandlerWebFlowViewController*>(
+      test_api(dialog_view()).controller_map()->at(top_view).get());
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  ASSERT_TRUE(content::ExecJs(payment_handler_contents, R"(
+    new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      iframe.allow = "camera 'none'";
+      iframe.src = location.href;
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  content::RenderFrameHost* subframe_rfh =
+      content::ChildFrameAt(payment_handler_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(nullptr, subframe_rfh);
+
+  EXPECT_EQ("NotAllowedError", content::EvalJs(subframe_rfh, R"(
+    navigator.mediaDevices.getUserMedia({video: true})
+      .then(() => 'allowed')
+      .catch(err => err.name);
+  )"));
+
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
+                       NonCameraPermissionRequestsDenied) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* web_flow_controller = static_cast<PaymentHandlerWebFlowViewController*>(
+      test_api(dialog_view()).controller_map()->at(top_view).get());
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     payment_app_url, payment_app_url,
+                                     ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ("default", content::EvalJs(payment_handler_contents,
+                                       "Notification.requestPermission()"));
+  EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     payment_app_url, payment_app_url,
+                                     ContentSettingsType::NOTIFICATIONS));
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  // Every non-camera permission request type sent to PermissionRequestManager
+  // is immediately cancelled without showing a prompt.
+  for (int i = 0; i <= std::to_underlying(permissions::RequestType::kMaxValue);
+       ++i) {
+    auto request_type = static_cast<permissions::RequestType>(i);
+    if (request_type == permissions::RequestType::kCameraStream) {
+      continue;
+    }
+    permissions::MockPermissionRequest::MockPermissionRequestState state;
+    manager->AddRequest(payment_handler_contents->GetPrimaryMainFrame(),
+                        std::make_unique<permissions::MockPermissionRequest>(
+                            request_type, state.GetWeakPtr()));
+    EXPECT_TRUE(state.cancelled);
+    EXPECT_FALSE(state.granted);
+    EXPECT_FALSE(manager->IsRequestInProgress());
+    EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  }
+
+  // Camera requests with pan-tilt-zoom are rejected as unsupported without
+  // prompting.
+  EXPECT_EQ("NotSupportedError", content::EvalJs(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: {pan: true}})
+      .then(() => 'allowed')
+      .catch(e => e.name);
+  )"));
+  EXPECT_FALSE(manager->IsRequestInProgress());
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            settings_map->GetContentSetting(
+                payment_app_url, payment_app_url,
+                ContentSettingsType::CAMERA_PAN_TILT_ZOOM));
+
+  // Pre-existing ALLOW grants in the user's profile continue working without
+  // prompting.
+  settings_map->SetContentSettingDefaultScope(
+      payment_app_url, payment_app_url, ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_ALLOW);
+  EXPECT_EQ("granted", content::EvalJs(payment_handler_contents,
+                                       "Notification.requestPermission()"));
 }
 
 }  // namespace payments

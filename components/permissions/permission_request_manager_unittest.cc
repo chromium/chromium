@@ -13,6 +13,7 @@
 #include <variant>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -412,6 +413,35 @@ TEST_F(PermissionRequestManagerTest, RequestsNotSupported) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        CreateRequest(request2_, request2_state.GetWeakPtr()));
   EXPECT_TRUE(request2_state.cancelled);
+}
+
+TEST_F(PermissionRequestManagerTest, AllowlistForPermissionRequests) {
+  manager_->set_allowlist_for_permission_requests(
+      base::flat_set<RequestType>{RequestType::kCameraStream});
+
+  MockPermissionRequest::MockPermissionRequestState disallowed_state;
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       CreateRequest(request1_, disallowed_state.GetWeakPtr()));
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(disallowed_state.cancelled);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+
+  MockPermissionRequest::MockPermissionRequestState allowed_state;
+  manager_->AddRequest(
+      web_contents()->GetPrimaryMainFrame(),
+      CreateRequest(request_camera_, allowed_state.GetWeakPtr()));
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  Accept();
+  EXPECT_TRUE(allowed_state.granted);
+
+  manager_->set_allowlist_for_permission_requests(std::nullopt);
+  MockPermissionRequest::MockPermissionRequestState reset_state;
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       CreateRequest(request2_, reset_state.GetWeakPtr()));
+  WaitForBubbleToBeShown();
+  Accept();
+  EXPECT_TRUE(reset_state.granted);
 }
 
 TEST_F(PermissionRequestManagerTest, UkmSourceIdIsCorrectlyPopulated) {
