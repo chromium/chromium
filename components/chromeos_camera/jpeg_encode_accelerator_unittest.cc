@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/path_service.h"
@@ -277,8 +278,8 @@ JpegEncodeAcceleratorTestEnvironment::GetOriginalOrTestDataFilePath(
 
 class JpegClient : public JpegEncodeAccelerator::Client {
  public:
-  JpegClient(const std::vector<TestImage*>& test_aligned_images,
-             const std::vector<TestImage*>& test_images,
+  JpegClient(const std::vector<raw_ptr<TestImage>>& test_aligned_images,
+             const std::vector<raw_ptr<TestImage>>& test_images,
              media::test::ClientStateNotification<ClientState>* note,
              size_t exif_size);
 
@@ -324,11 +325,11 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   // JpegClient doesn't own |test_aligned_images_|.
   // The resolutions of these images are all aligned. HW Accelerator must
   // support them.
-  const raw_ref<const std::vector<TestImage*>> test_aligned_images_;
+  const raw_ref<const std::vector<raw_ptr<TestImage>>> test_aligned_images_;
 
   // JpegClient doesn't own |test_unaligned_images_|.
   // The resolutions of these images may be unaligned.
-  const raw_ref<const std::vector<TestImage*>> test_unaligned_images_;
+  const raw_ref<const std::vector<raw_ptr<TestImage>>> test_unaligned_images_;
 
   // A map that stores HW encoding start timestamp for each output buffer id.
   std::map<int, base::TimeTicks> buffer_id_to_start_time_;
@@ -364,10 +365,11 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
 };
 
-JpegClient::JpegClient(const std::vector<TestImage*>& test_aligned_images,
-                       const std::vector<TestImage*>& test_images,
-                       media::test::ClientStateNotification<ClientState>* note,
-                       size_t exif_size)
+JpegClient::JpegClient(
+    const std::vector<raw_ptr<TestImage>>& test_aligned_images,
+    const std::vector<raw_ptr<TestImage>>& test_images,
+    media::test::ClientStateNotification<ClientState>* note,
+    size_t exif_size)
     : test_aligned_images_(test_aligned_images),
       test_unaligned_images_(test_images),
       state_(ClientState::CREATED),
@@ -740,8 +742,8 @@ class JpegEncodeAcceleratorTest : public ::testing::Test {
 
   // The elements of |test_aligned_images_| and |test_unaligned_images_| are
   // owned by JpegEncodeAcceleratorTestEnvironment.
-  std::vector<TestImage*> test_aligned_images_;
-  std::vector<TestImage*> test_unaligned_images_;
+  std::vector<raw_ptr<TestImage>> test_aligned_images_;
+  std::vector<raw_ptr<TestImage>> test_unaligned_images_;
 };
 
 void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,
