@@ -69,10 +69,20 @@ consoles.console_view(
     title = "Code Coverage CI Builders",
 )
 
-def coverage_builder(**kwargs):
+def nightly_coverage_builder(**kwargs):
     kwargs.setdefault("triggered_by", ["code-coverage-gitiles-trigger"])
     kwargs.setdefault("triggering_policy", scheduler.greedy_batching(
         max_concurrent_invocations = 2,
+    ))
+    return ci.builder(
+        schedule = "triggered",
+        **kwargs
+    )
+
+def continuous_coverage_builder(**kwargs):
+    kwargs.setdefault("triggered_by", ["chromium-gitiles-trigger"])
+    kwargs.setdefault("triggering_policy", scheduler.greedy_batching(
+        max_concurrent_invocations = 1,
     ))
     return ci.builder(
         schedule = "triggered",
@@ -89,7 +99,7 @@ def coverage_webview_builder(**kwargs):
         **kwargs
     )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "android-code-coverage",
     description_html = "Builder for creating Android ARM64 Java code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -218,7 +228,7 @@ coverage_webview_builder(
     use_java_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "android-x86-code-coverage",
     description_html = "Builder for creating x86 Android code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -426,7 +436,7 @@ coverage_builder(
     use_java_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "android-code-coverage-native",
     description_html = "Builder for creating Android ARM64 Clang native code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -629,7 +639,7 @@ coverage_webview_builder(
     use_clang_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "android-cronet-code-coverage-java",
     description_html = "Builder for Cronet java code coverage",
     builder_spec = builder_config.builder_spec(
@@ -696,7 +706,7 @@ coverage_builder(
     use_java_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "android-cronet-code-coverage-native",
     description_html = "Builder for Cronet clang coverage",
     builder_spec = builder_config.builder_spec(
@@ -765,7 +775,7 @@ coverage_builder(
 )
 
 # fuschia runs outside of chromium, so we do not enable zoss for it.
-coverage_builder(
+nightly_coverage_builder(
     name = "fuchsia-code-coverage",
     description_html = "Builder for creating Fuchsia x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -922,7 +932,7 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "ios-simulator-code-coverage",
     description_html = "Builder for creating iOS ARM64 simulator Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -985,7 +995,7 @@ coverage_builder(
     xcode = xcode.xcode_default,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "linux-chromeos-code-coverage",
     description_html = "Builder for creating Ash Chrome (linux-chromeos) x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -1063,7 +1073,7 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "linux-js-code-coverage",
     description_html = "Builder for creating Linux x64 JavaScript code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -1114,7 +1124,7 @@ coverage_builder(
     use_javascript_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "chromeos-js-code-coverage",
     description_html = "Builder for creating Ash Chrome (linux-chromeos) x64 JavaScript code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -1167,14 +1177,10 @@ coverage_builder(
 )
 
 # Experimental builder. Does not export_coverage_to_zoss.
-coverage_builder(
+continuous_coverage_builder(
     name = "linux-fuzz-coverage",
     description_html = "Experimental builder for creating Linux x64 libFuzzer Clang code coverage builds.",
     executable = "recipe:chromium/fuzz",
-    triggered_by = ["chromium-gitiles-trigger"],
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 1,
-    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1227,14 +1233,10 @@ coverage_builder(
 )
 
 # Experimental builder. Does not export_coverage_to_zoss.
-coverage_builder(
+continuous_coverage_builder(
     name = "linux-centipede-fuzz-coverage",
     description_html = "This builder collects code coverage for centipede.",
     executable = "recipe:chromium/fuzz",
-    triggered_by = ["chromium-gitiles-trigger"],
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 1,
-    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1289,7 +1291,7 @@ coverage_builder(
 )
 
 # Experimental builder. Does not export_coverage_to_zoss.
-coverage_builder(
+nightly_coverage_builder(
     name = "linux-x64-fuzzilli-coverage",
     description_html = "This builder collects code coverage for V8 Fuzzilli tests.",
     executable = "recipe:chromium/fuzz",
@@ -1338,7 +1340,7 @@ coverage_builder(
     },
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "linux-code-coverage",
     description_html = "Builder for creating Linux x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -1491,7 +1493,7 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "mac-code-coverage",
     description_html = "Builder for creating Mac ARM64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -1569,13 +1571,10 @@ coverage_builder(
 )
 
 # Experimental builder. Does not export_coverage_to_zoss.
-coverage_builder(
+continuous_coverage_builder(
     name = "mac-libfuzzer-coverage",
     description_html = "This builder collects code coverage for fuzz targets on Mac.",
     executable = "recipe:chromium/fuzz",
-    # TODO(crbug.com/537414135): Add triggering policy once builder is stable
-    triggered_by = [],
-    triggering_policy = None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1627,7 +1626,7 @@ coverage_builder(
     },
 )
 
-coverage_builder(
+nightly_coverage_builder(
     name = "win10-code-coverage",
     description_html = "Builder for creating Windows 10 x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
@@ -1767,13 +1766,10 @@ coverage_builder(
 )
 
 # Experimental builder. Does not export_coverage_to_zoss.
-coverage_builder(
+continuous_coverage_builder(
     name = "win-libfuzzer-coverage",
     description_html = "This builder collects code coverage for fuzz targets on Windows.",
     executable = "recipe:chromium/fuzz",
-    # TODO(crbug.com/537414135): Add triggering policy once builder is stable
-    triggered_by = [],
-    triggering_policy = None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
