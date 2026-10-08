@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 
@@ -19,19 +20,24 @@ namespace session_manager {
 class SessionManager;
 }  // namespace session_manager
 
-// A class provides DriveFs service for active profile. Encapsulates the logic
-// to observe UserSession and Profile change and trigger the callback when
-// profile change.
+// Provides the DriveFs service for a given user. Encapsulates the logic to
+// observe the user session and trigger the callback when the active user
+// changes.
 class ProjectorDriveFsProvider
     : public session_manager::SessionManagerObserver,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
-  static drive::DriveIntegrationService* GetActiveDriveIntegrationService();
-  static bool IsDriveFsMounted();
-  static bool IsDriveFsMountFailed();
-  static base::FilePath GetDriveFsMountPointPath();
+  // All of these are keyed on the user whose DriveFS is being asked about;
+  // callers take the AccountId from OnDriveFsObservationChangeCallback.
+  static drive::DriveIntegrationService* GetDriveIntegrationService(
+      const AccountId& account_id);
+  static bool IsDriveFsMounted(const AccountId& account_id);
+  static bool IsDriveFsMountFailed(const AccountId& account_id);
+  static base::FilePath GetDriveFsMountPointPath(const AccountId& account_id);
 
-  using OnDriveFsObservationChangeCallback = base::RepeatingCallback<void()>;
+  // Runs with the AccountId of the user whose DriveFS should now be observed.
+  using OnDriveFsObservationChangeCallback =
+      base::RepeatingCallback<void(const AccountId&)>;
   explicit ProjectorDriveFsProvider(
       OnDriveFsObservationChangeCallback on_drivefs_observation_change);
   ProjectorDriveFsProvider(const ProjectorDriveFsProvider&) = delete;
@@ -45,7 +51,7 @@ class ProjectorDriveFsProvider
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
 
-  void OnProfileSwitch();
+  void OnActiveUserSwitch(const AccountId& account_id);
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

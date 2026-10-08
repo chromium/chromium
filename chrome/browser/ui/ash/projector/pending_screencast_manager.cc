@@ -104,11 +104,12 @@ void ParseFileIdOnGetMetaData(
 // the given file path. To execute the `callback`, we need to know the server
 // side file id, which could be learned from metadata.
 void GetDriveFileMetadata(
+    const AccountId& account_id,
     const base::FilePath& drive_relative_path,
     PendingScreencastManager::OnGetFileIdCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   auto* drive_integration_service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   if (!drive_integration_service) {
     return;
   }
@@ -380,7 +381,7 @@ void PendingScreencastManager::OnUnmounted() {
 // download event. Find a way to filter out the upload event.
 void PendingScreencastManager::OnSyncingStatusUpdate(
     const drivefs::mojom::SyncingStatus& status) {
-  if (!ProjectorDriveFsProvider::IsDriveFsMounted()) {
+  if (!ProjectorDriveFsProvider::IsDriveFsMounted(account_id_)) {
     return;
   }
   std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
@@ -423,10 +424,10 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
   // within 1s. Add a repeat timer to trigger this task for less frequency.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(ProcessAndGenerateNewScreencasts,
-                     std::move(pending_webm_or_projector_events),
-                     error_syncing_files_,
-                     ProjectorDriveFsProvider::GetDriveFsMountPointPath()),
+      base::BindOnce(
+          ProcessAndGenerateNewScreencasts,
+          std::move(pending_webm_or_projector_events), error_syncing_files_,
+          ProjectorDriveFsProvider::GetDriveFsMountPointPath(account_id_)),
       base::BindOnce(
           &PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished,
           weak_ptr_factory_.GetWeakPtr(),
@@ -470,9 +471,10 @@ void PendingScreencastManager::SetProjectorXhrSenderForTest(
   xhr_sender_ = std::move(xhr_sender);
 }
 
-void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
+void PendingScreencastManager::MaybeSwitchDriveFsObservation(
+    const AccountId& account_id) {
   drive::DriveIntegrationService* const service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   if (!service) {
     return;
   }
@@ -484,6 +486,9 @@ void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
 
   pending_screencast_cache_.clear();
   error_syncing_files_.clear();
+  // Every provider call below is keyed on it, so remember whose DriveFS this
+  // is.
+  account_id_ = account_id;
 
   Observe(host);
 }
@@ -492,7 +497,7 @@ void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
     const std::vector<base::FilePath>& paths,
     bool suppress) {
   auto* drivefs_integration =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id_);
   if (!drivefs_integration) {
     return;
   }
@@ -576,7 +581,7 @@ void PendingScreencastManager::OnFileSyncedCompletely(
     // ParseFileIdOnGetMetaData() -> on_get_file_id_callback.
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&GetDriveFileMetadata, event_file,
+        base::BindOnce(&GetDriveFileMetadata, account_id_, event_file,
                        std::move(on_get_file_id_callback)),
         kDriveGetMetadataDelay);
     syncing_metadata_files_.erase(iter);

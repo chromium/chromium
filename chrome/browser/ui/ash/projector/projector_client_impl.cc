@@ -209,7 +209,7 @@ bool ProjectorClientImpl::GetBaseStoragePath(base::FilePath* result) const {
     return true;
   }
 
-  *result = ProjectorDriveFsProvider::GetDriveFsMountPointPath();
+  *result = ProjectorDriveFsProvider::GetDriveFsMountPointPath(account_id_);
   return true;
 }
 
@@ -223,11 +223,11 @@ bool ProjectorClientImpl::IsDriveFsMounted() const {
     // folder for Projector storage.
     return true;
   }
-  return ProjectorDriveFsProvider::IsDriveFsMounted();
+  return ProjectorDriveFsProvider::IsDriveFsMounted(account_id_);
 }
 
 bool ProjectorClientImpl::IsDriveFsMountFailed() const {
-  return ProjectorDriveFsProvider::IsDriveFsMountFailed();
+  return ProjectorDriveFsProvider::IsDriveFsMountFailed(account_id_);
 }
 
 void ProjectorClientImpl::OpenProjectorApp() const {
@@ -341,12 +341,17 @@ void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
                           base::Unretained(this)));
 }
 
-void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
+void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation(
+    const AccountId& account_id) {
   drive::DriveIntegrationService* const service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   if (!service || service == drive_observation_.GetSource()) {
     return;
   }
+
+  // The ash::ProjectorClient methods below are called from //ash with no
+  // account, so remember whose DriveFS this is.
+  account_id_ = account_id;
 
   drive_observation_.Reset();
   drive_observation_.Observe(service);

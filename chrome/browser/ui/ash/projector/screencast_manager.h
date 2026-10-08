@@ -10,6 +10,7 @@
 
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "components/account_id/account_id.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -33,7 +34,9 @@ class ScreencastManager {
   // Projector app. The `resource_key` is an additional security token needed to
   // gain access to link-shared files. Since the `resource_key` is currently
   // only used by Googlers, the `resource_key` might be empty.
-  void GetVideo(const std::string& video_file_id,
+  // `account_id` is the user whose DriveFS holds the video.
+  void GetVideo(const AccountId& account_id,
+                const std::string& video_file_id,
                 const std::optional<std::string>& resource_key,
                 ProjectorAppClient::OnGetVideoCallback callback) const;
 
@@ -45,6 +48,7 @@ class ScreencastManager {
   // If `paths` has no error, suppresses the notification for the give path and
   // triggers video duration verification on `video_metadata_task_runner_`.
   void OnVideoFilePathLocated(
+      const AccountId& account_id,
       const std::string& video_id,
       ProjectorAppClient::OnGetVideoCallback callback,
       std::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);

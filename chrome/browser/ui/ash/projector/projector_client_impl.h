@@ -82,7 +82,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
   // Maybe observe the Drive integration service of active profile when
   // ActiveUserChanged and OnUserProfileLoaded.
-  void MaybeSwitchDriveIntegrationServiceObservation();
+  void MaybeSwitchDriveIntegrationServiceObservation(
+      const AccountId& account_id);
 
  private:
   void SpeechRecognitionEnded(bool forced);
@@ -110,6 +111,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
       drive_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  // The account whose DriveFS is currently observed; empty before the first
+  // observation starts.
+  AccountId account_id_;
 
   ProjectorDriveFsProvider drive_helper_;
 

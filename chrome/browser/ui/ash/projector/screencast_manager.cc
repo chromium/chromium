@@ -119,6 +119,7 @@ ScreencastManager::ScreencastManager()
 ScreencastManager::~ScreencastManager() = default;
 
 void ScreencastManager::GetVideo(
+    const AccountId& account_id,
     const std::string& video_file_id,
     const std::optional<std::string>& resource_key,
     ProjectorAppClient::OnGetVideoCallback callback) const {
@@ -126,12 +127,12 @@ void ScreencastManager::GetVideo(
   // supports it.
 
   drive::DriveIntegrationService* integration_service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   integration_service->LocateFilesByItemIds(
       {video_file_id},
       base::BindOnce(&ScreencastManager::OnVideoFilePathLocated,
-                     weak_ptr_factory_.GetMutableWeakPtr(), video_file_id,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetMutableWeakPtr(), account_id,
+                     video_file_id, std::move(callback)));
 }
 
 void ScreencastManager::ResetScopeSuppressDriveNotifications() {
@@ -139,6 +140,7 @@ void ScreencastManager::ResetScopeSuppressDriveNotifications() {
 }
 
 void ScreencastManager::OnVideoFilePathLocated(
+    const AccountId& account_id,
     const std::string& video_id,
     ProjectorAppClient::OnGetVideoCallback callback,
     std::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
@@ -168,7 +170,7 @@ void ScreencastManager::OnVideoFilePathLocated(
   }
 
   const base::FilePath& mounted_path =
-      ProjectorDriveFsProvider::GetDriveFsMountPointPath();
+      ProjectorDriveFsProvider::GetDriveFsMountPointPath(account_id);
   const base::FilePath& video_path = mounted_path.Append(relative_drivefs_path);
 
   // Suppresses the notification before calling GetVideoMetadata, which might

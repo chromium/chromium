@@ -8,35 +8,45 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 
 // static
 drive::DriveIntegrationService*
-ProjectorDriveFsProvider::GetActiveDriveIntegrationService() {
+ProjectorDriveFsProvider::GetDriveIntegrationService(
+    const AccountId& account_id) {
+  content::BrowserContext* const context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!context) {
+    return nullptr;
+  }
   return drive::DriveIntegrationServiceFactory::FindForProfile(
-      ProfileManager::GetActiveUserProfile());
+      Profile::FromBrowserContext(context));
 }
 
 // static
-bool ProjectorDriveFsProvider::IsDriveFsMounted() {
+bool ProjectorDriveFsProvider::IsDriveFsMounted(const AccountId& account_id) {
   drive::DriveIntegrationService* integration_service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   return integration_service && integration_service->IsMounted();
 }
 
 // static
-bool ProjectorDriveFsProvider::IsDriveFsMountFailed() {
+bool ProjectorDriveFsProvider::IsDriveFsMountFailed(
+    const AccountId& account_id) {
   drive::DriveIntegrationService* integration_service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   return integration_service && integration_service->mount_failed();
 }
 
 // static
-base::FilePath ProjectorDriveFsProvider::GetDriveFsMountPointPath() {
+base::FilePath ProjectorDriveFsProvider::GetDriveFsMountPointPath(
+    const AccountId& account_id) {
   drive::DriveIntegrationService* integration_service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+      ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   return integration_service ? integration_service->GetMountPointPath()
                              : base::FilePath();
 }
@@ -60,7 +70,7 @@ ProjectorDriveFsProvider::~ProjectorDriveFsProvider() = default;
 
 void ProjectorDriveFsProvider::OnUserProfileLoaded(
     const AccountId& account_id) {
-  OnProfileSwitch();
+  OnActiveUserSwitch(account_id);
 }
 
 void ProjectorDriveFsProvider::ActiveUserChanged(
@@ -68,15 +78,18 @@ void ProjectorDriveFsProvider::ActiveUserChanged(
   // After user login, the first ActiveUserChanged() might be called before
   // profile is loaded.
   if (active_user->is_profile_created()) {
-    OnProfileSwitch();
+    OnActiveUserSwitch(active_user->GetAccountId());
   }
 }
 
-void ProjectorDriveFsProvider::OnProfileSwitch() {
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  if (!IsProjectorAllowedForProfile(profile)) {
+void ProjectorDriveFsProvider::OnActiveUserSwitch(const AccountId& account_id) {
+  content::BrowserContext* const context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!context ||
+      !IsProjectorAllowedForProfile(Profile::FromBrowserContext(context))) {
     return;
   }
 
-  on_drivefs_observation_change_.Run();
+  on_drivefs_observation_change_.Run(account_id);
 }

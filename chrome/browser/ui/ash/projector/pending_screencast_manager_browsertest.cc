@@ -891,7 +891,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   const base::FilePath thumbnail =
       container_folder.Append(kScreencastDefaultThumbnailFileName);
   const base::FilePath drivefs_mounted_point =
-      ProjectorDriveFsProvider::GetDriveFsMountPointPath();
+      ProjectorDriveFsProvider::GetDriveFsMountPointPath(
+          pending_screencast_manager()->account_id());
   app_client->ToggleFileSyncingNotificationForPaths(
       {GetDriveFsAbsolutePath(media_file.value()),
        GetDriveFsAbsolutePath(metadata_file.value()),

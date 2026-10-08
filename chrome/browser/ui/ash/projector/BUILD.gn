@@ -50,6 +50,7 @@ static_library("projector") {
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
