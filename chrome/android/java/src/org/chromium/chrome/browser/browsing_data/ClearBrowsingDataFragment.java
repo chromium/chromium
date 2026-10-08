@@ -361,7 +361,11 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
      */
     public static Bundle createFragmentArgs(String referrer) {
         Bundle bundle = new Bundle();
-        bundle.putString(ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, referrer);
+        // Only a SearchActivity referrer changes the page (see getDialogOptions). Any other would
+        // just put an activity class name in the page's settings Url.
+        if (TextUtils.equals(referrer, SearchActivity.class.getName())) {
+            bundle.putString(ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, referrer);
+        }
         return bundle;
     }
 

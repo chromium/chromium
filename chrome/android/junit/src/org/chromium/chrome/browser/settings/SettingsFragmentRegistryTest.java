@@ -464,6 +464,15 @@ public class SettingsFragmentRegistryTest {
     }
 
     @Test
+    public void testCreateUrlForFragment_clearBrowsingDataOmitsReferrer() {
+        Bundle args = ClearBrowsingDataFragment.createFragmentArgs(Activity.class.getName());
+        assertEquals(
+                "chrome://settings/clearBrowsingData",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        ClearBrowsingDataFragment.class, args));
+    }
+
+    @Test
     public void testUrlPreservesArgs_unregisteredIntLosesItsType() {
         // An int argument whose key has no registered query parameter is still written out, under
         // its raw key, but it is read back as the String "3" because there is no type information
