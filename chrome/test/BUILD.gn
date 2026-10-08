@@ -731,11 +731,6 @@ if (is_android) {
 }
 
 if (is_chromeos && is_chromeos_device) {
-  copy("crosier_metadata") {
-    sources = [ "base/chromeos/crosier/ash_integration_test_test.yaml" ]
-    outputs = [ "$root_out_dir/crosier_metadata/{{source_file_part}}" ]
-  }
-
   copy("crosier_js_helpers") {
     sources = [ "../browser/ash/accessibility/google_tts_test_support.js" ]
     outputs = [ "$root_out_dir/crosier_js_helpers/{{source_file_part}}" ]
@@ -744,27 +739,11 @@ if (is_chromeos && is_chromeos_device) {
   test("chromeos_integration_tests") {
     configs += [ "//build/config:precompiled_headers" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "base/chromeos/crosier/chromeos_tests_main.cc",
-      "base/chromeos/crosier/demo_integration_test.cc",
-    ]
+    sources = [ "base/chromeos/crosier/chromeos_tests_main.cc" ]
     deps = [
       ":test_support",
       "//chrome/test/base/chromeos/crosier:test_support",
-      "//components/app_constants",
     ]
-
-    # Note: for each test case in the below list, add a metadata file
-    # in the `crosier_metadata` build rule above.
-    sources += [
-      "base/chromeos/crosier/ash_integration_test_test.cc",
-      "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
-      "base/chromeos/crosier/upstart_test.cc",
-    ]
-
-    if (is_chrome_branded) {
-      sources += [ "base/chromeos/crosier/test_accounts_test.cc" ]
-    }
 
     data = [
       "//chrome/test/data/chromeos/web_handwriting/",
@@ -772,24 +751,16 @@ if (is_chromeos && is_chromeos_device) {
     ]
 
     deps += [
-      "//chrome/browser/ash/file_manager",
-      "//chrome/test/base/chromeos/crosier:ash_test_support",
-      "//chrome/test/base/chromeos/crosier:proto",
-      "//chrome/test/base/chromeos/crosier/helper:common",
-      "//chromeos/ash/components/dbus/printscanmgr",
-      "//ui/events:test_support",
-    ]
-
-    deps += [
       # Gather tests from other build files:
       "//chrome/browser/ash:integration_tests",
       "//chrome/browser/ui/ash:integration_tests",
       "//chrome/browser/ui/webui/ash:integration_tests",
+      "//chrome/test/base/chromeos/crosier:integration_tests",
+      "//chrome/test/base/chromeos/crosier/helper:integration_tests",
     ]
 
     data_deps = [
       ":crosier_js_helpers",
-      ":crosier_metadata",
       "//chrome:packed_resources",
       "//chrome/test/base/chromeos/crosier/helper",
       "//chrome/test/base/chromeos/crosier/helper/fake_chrome",
