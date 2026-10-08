@@ -88,6 +88,10 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
       base::Milliseconds(500);
   static constexpr base::TimeDelta kPostHideCaptureDuration =
       base::Milliseconds(200);
+  // How often to check whether the mouse button has been released while a
+  // dismissal is deferred (see `HandleWidgetDeactivated()`).
+  static constexpr base::TimeDelta kPendingDismissalPollInterval =
+      base::Milliseconds(50);
 
   enum ContextMenuCommandId {
     kUndo = 1,
@@ -210,6 +214,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   void OnHotkeyDropdownOpened();
   void OnHotkeyDropdownClosed();
+
+  void OnDragEntered();
+  void OnDragExited();
 
   using RegionCaptureSource = OmniboxEverywhereService::RegionCaptureSource;
 
@@ -353,12 +360,19 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   void CleanUpWidget();
 
+  // Cancels any pending deactivation tasks or deferred-dismissal poll timer.
+  void CancelPendingDeactivation();
+
   // Cancels transient UI state (pending dismissal tasks, activation grace
   // period timestamp, and any open context menu).
   void CancelTransientUiState();
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
   void HandleWidgetDeactivated();
+  // Runs on `pending_dismissal_timer_` until the mouse button is released,
+  // then either re-focuses the widget (if a drag entered the WebContents and
+  // was dropped onto it) or performs the deferred dismissal.
+  void OnPendingDismissalPoll();
   void CheckDeactivationAfterHotkeyDropdownClosed();
   void OnScreenshotDisclosureClosed(base::OnceClosure on_accepted,
                                     base::OnceClosure on_cancelled,
@@ -395,6 +409,10 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_permission_prompt_open_ = false;
   bool suppress_restore_on_screenshare_picker_closed_ = false;
   bool is_dragging_ = false;
+  // True while an external drag is hovering over `web_contents()` during a
+  // deferred dismissal (`PreHandleDragUpdate()` fired without a subsequent
+  // `PreHandleDragExit()`).
+  bool is_drag_over_web_contents_ = false;
   // Re-entrancy guard to prevent recursive closing or processing deactivation
   // events while Close() is executing synchronously on the stack.
   bool is_closing_ = false;
@@ -412,6 +430,10 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // reactivate the widget after the grace period.
   base::CancelableOnceClosure deactivation_task_;
   base::CancelableOnceClosure hotkey_dropdown_deactivation_task_;
+  // Running while a deactivation-triggered dismissal is deferred because a
+  // mouse button was held at deactivation time (potential drag onto the
+  // widget). See `HandleWidgetDeactivated()`.
+  base::RepeatingTimer pending_dismissal_timer_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
   PrefChangeRegistrar profile_pref_change_registrar_;

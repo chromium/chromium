@@ -193,6 +193,28 @@ SkRegion ComputeDraggableRegion(
   return draggable_region;
 }
 
+class OmniboxEverywhereContentsWrapper
+    : public WebUIContentsWrapperT<OmniboxEverywhereUI> {
+ public:
+  using WebUIContentsWrapperT<OmniboxEverywhereUI>::WebUIContentsWrapperT;
+
+  // content::WebContentsDelegate:
+  void PreHandleDragUpdate(const content::DropData& /*drop_data*/,
+                           const gfx::PointF& /*client_pt*/) override {
+    if (auto* ui_manager =
+            static_cast<OmniboxEverywhereUIManager*>(GetHost().get())) {
+      ui_manager->OnDragEntered();
+    }
+  }
+
+  void PreHandleDragExit() override {
+    if (auto* ui_manager =
+            static_cast<OmniboxEverywhereUIManager*>(GetHost().get())) {
+      ui_manager->OnDragExited();
+    }
+  }
+};
+
 }  // namespace
 
 OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
@@ -274,8 +296,7 @@ content::WebContents* OmniboxEverywhereUIManager::web_contents() const {
 
 void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
                                                 gfx::NativeWindow context) {
-  deactivation_task_.Cancel();
-  hotkey_dropdown_deactivation_task_.Cancel();
+  CancelPendingDeactivation();
   last_shown_time_ = base::TimeTicks::Now();
   if (widget_ && profile_ == profile) {
     ActivateAndFocus();
@@ -652,8 +673,7 @@ void OmniboxEverywhereUIManager::Close() {
   base::AutoReset<bool> closing_reset(&is_closing_, true);
   MaybeRecordFreImpression();
   last_shown_time_.reset();
-  deactivation_task_.Cancel();
-  hotkey_dropdown_deactivation_task_.Cancel();
+  CancelPendingDeactivation();
   if (widget_) {
     if (HasOpenModalDialog()) {
       CleanUpWidget();
@@ -734,8 +754,7 @@ void OmniboxEverywhereUIManager::Minimize() {
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   capture_release_timer_.Stop();
-  deactivation_task_.Cancel();
-  hotkey_dropdown_deactivation_task_.Cancel();
+  CancelPendingDeactivation();
   if (disclosure_dialog_widget_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(disclosure_dialog_widget_));
@@ -793,10 +812,16 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   ReleaseKeepAlives();
 }
 
-void OmniboxEverywhereUIManager::CancelTransientUiState() {
-  last_shown_time_.reset();
+void OmniboxEverywhereUIManager::CancelPendingDeactivation() {
   deactivation_task_.Cancel();
   hotkey_dropdown_deactivation_task_.Cancel();
+  pending_dismissal_timer_.Stop();
+  is_drag_over_web_contents_ = false;
+}
+
+void OmniboxEverywhereUIManager::CancelTransientUiState() {
+  last_shown_time_.reset();
+  CancelPendingDeactivation();
   if (is_context_menu_open_ && context_menu_runner_) {
     context_menu_runner_->Cancel();
     is_context_menu_open_ = false;
@@ -804,8 +829,7 @@ void OmniboxEverywhereUIManager::CancelTransientUiState() {
 }
 
 void OmniboxEverywhereUIManager::Shutdown() {
-  deactivation_task_.Cancel();
-  hotkey_dropdown_deactivation_task_.Cancel();
+  CancelPendingDeactivation();
   last_shown_time_.reset();
   permission_prompt_observation_.Reset();
   browser_collection_observation_.Reset();
@@ -838,8 +862,7 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
   if (active) {
-    deactivation_task_.Cancel();
-    hotkey_dropdown_deactivation_task_.Cancel();
+    CancelPendingDeactivation();
     const bool was_demoted = std::exchange(is_demoted_, false);
     if (!HasOpenModalDialog() && !is_context_menu_open_ && web_contents()) {
       web_contents()->Focus();
@@ -906,6 +929,8 @@ void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
   }
   if (last_shown_time_.has_value() &&
       base::TimeTicks::Now() - *last_shown_time_ < kActivationGracePeriod) {
+    pending_dismissal_timer_.Stop();
+    is_drag_over_web_contents_ = false;
     deactivation_task_.Reset(
         base::BindOnce(&OmniboxEverywhereUIManager::ActivateAndFocus,
                        weak_factory_.GetWeakPtr()));
@@ -913,10 +938,51 @@ void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
         FROM_HERE, deactivation_task_.callback());
     return;
   }
+  // In ephemeral mode, a deactivation that arrives while a mouse button is
+  // held was caused by a press in another window. That press may be the start
+  // of a drag (e.g. a file from Finder) whose target is this widget, which
+  // cannot be known until the button is released; hiding now would destroy the
+  // drop target. Defer the decision until release.
+  if (prefs::IsEphemeralModelEnabled() && widget_->IsMouseButtonDown()) {
+    deactivation_task_.Cancel();
+    if (!pending_dismissal_timer_.IsRunning()) {
+      is_drag_over_web_contents_ = false;
+      pending_dismissal_timer_.Start(
+          FROM_HERE, kPendingDismissalPollInterval, this,
+          &OmniboxEverywhereUIManager::OnPendingDismissalPoll);
+    }
+    return;
+  }
+  pending_dismissal_timer_.Stop();
+  is_drag_over_web_contents_ = false;
   deactivation_task_.Reset(base::BindOnce(&OmniboxEverywhereUIManager::CloseUI,
                                           weak_factory_.GetWeakPtr()));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, deactivation_task_.callback());
+}
+
+void OmniboxEverywhereUIManager::OnPendingDismissalPoll() {
+  if (is_closing_ || !widget_ || !widget_->IsVisible() ||
+      widget_->IsMinimized() || is_demoted_ || HasOpenModalDialog() ||
+      is_context_menu_open_) {
+    pending_dismissal_timer_.Stop();
+    is_drag_over_web_contents_ = false;
+    return;
+  }
+  if (widget_->IsMouseButtonDown()) {
+    return;
+  }
+  pending_dismissal_timer_.Stop();
+  // If an external drag was over the WebContents when the mouse button was
+  // released (`PreHandleDragUpdate()` fired without a subsequent
+  // `PreHandleDragExit()`), the press ended as a drop onto this widget.
+  // Dropping does not make the window key, so re-focus it to let the user keep
+  // typing.
+  if (std::exchange(is_drag_over_web_contents_, false)) {
+    ActivateAndFocus();
+    return;
+  }
+  CloseUI();
 }
 
 void OmniboxEverywhereUIManager::OnWidgetDestroying(views::Widget* widget) {
@@ -1043,6 +1109,16 @@ void OmniboxEverywhereUIManager::CheckDeactivationAfterHotkeyDropdownClosed() {
   }
 }
 
+void OmniboxEverywhereUIManager::OnDragEntered() {
+  if (pending_dismissal_timer_.IsRunning()) {
+    is_drag_over_web_contents_ = true;
+  }
+}
+
+void OmniboxEverywhereUIManager::OnDragExited() {
+  is_drag_over_web_contents_ = false;
+}
+
 void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
   is_screenshare_picker_open_ = true;
   UpdateModalInteractionState();
@@ -1166,8 +1242,7 @@ void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
     base::OnceClosure on_accepted,
     base::OnceClosure on_cancelled,
     views::Widget::ClosedReason reason) {
-  deactivation_task_.Cancel();
-  hotkey_dropdown_deactivation_task_.Cancel();
+  CancelPendingDeactivation();
   if (disclosure_dialog_widget_) {
     disclosure_dialog_widget_->Hide();
   }
@@ -1709,7 +1784,7 @@ OmniboxEverywhereUIManager::CreateContentsWrapper(Profile* profile) {
   // Do not close UI immediately on Escape in PreHandleKeyboardEvent so that the
   // WebUI searchbox and composebox can staged-unwind (clear input or context)
   // before dismissing the popup.
-  return std::make_unique<WebUIContentsWrapperT<OmniboxEverywhereUI>>(
+  return std::make_unique<OmniboxEverywhereContentsWrapper>(
       GURL(chrome::kChromeUIOmniboxEverywhereURL), profile,
       IDS_TASK_MANAGER_OMNIBOX, /*esc_closes_ui=*/false,
       /*supports_draggable_regions=*/true);
