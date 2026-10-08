@@ -15057,6 +15057,26 @@
             ]
         }
     ],
+    "ResourcePoolResize": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InvalidateResourcesOnSizeChange",
+                        "ResourcePoolPreferExactSizeReuse"
+                    ]
+                }
+            ]
+        }
+    ],
     "RestrictPendingInputEventTypeToBlockMainThread": [
         {
             "platforms": [
