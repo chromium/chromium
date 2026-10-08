@@ -16505,6 +16505,7 @@ from previous Chrome versions.
   <int value="489533404" label="GetDisplayMediaConfersActivation:enabled"/>
   <int value="491126080"
       label="ProfileCreationFrictionReductionExperimentPrefillNameRequirement:enabled"/>
+  <int value="491251936" label="OctoberTestUXR:disabled"/>
   <int value="491258649" label="UseFirstPartySet"/>
   <int value="492113129" label="ExperimentalAppBanners:enabled"/>
   <int value="492184007" label="PdfSearchify:enabled"/>
@@ -17729,6 +17730,7 @@ from previous Chrome versions.
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>
   <int value="857922806" label="CCTAuthTab:enabled"/>
+  <int value="857943721" label="OctoberTestUXR:enabled"/>
   <int value="858458360" label="CrOSLateBootBluetoothAudioLEAudioOnly:enabled"/>
   <int value="859031214"
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:enabled"/>
