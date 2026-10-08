@@ -176,33 +176,6 @@ class ContextualTasksPermissionDelegationBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,
-                       GetEmbeddingOriginOverride) {
-  GURL contextual_tasks_url(chrome::kChromeUIContextualTasksURL);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), contextual_tasks_url));
-  content::WebContents* outer_web_contents = GetWebContents();
-
-  // Wait for the WebUI to initialize and spawn the inner <webview> guest
-  // WebContents.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return !outer_web_contents->GetInnerWebContents().empty(); }));
-
-  content::WebContents* inner_web_contents =
-      outer_web_contents->GetInnerWebContents()[0];
-  ASSERT_TRUE(inner_web_contents);
-  EXPECT_EQ(outer_web_contents, inner_web_contents->GetOuterWebContents());
-
-  // Verify that GetEmbeddingOriginOverride correctly traverses from the inner
-  // <webview> guest WebContents up to the outer WebUI WebContents.
-  GURL requesting_origin("https://example.com");
-  std::optional<GURL> override_origin =
-      ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
-          requesting_origin, inner_web_contents->GetPrimaryMainFrame());
-
-  ASSERT_TRUE(override_origin.has_value());
-  EXPECT_EQ(contextual_tasks_url, *override_origin);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,
                        RequestPermissionInWebView) {
   GURL default_ai_url =
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(

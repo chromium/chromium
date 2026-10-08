@@ -18,6 +18,7 @@
 #include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace content {
 class RenderFrameHost;
@@ -116,9 +117,11 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   std::optional<GURL> GetCanonicalOriginOverride(
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
   std::optional<GURL> GetEmbeddingOriginOverride(
       const GURL& requesting_origin,
       content::RenderFrameHost* render_frame_host) override;
+#endif
   std::optional<content::PermissionResult> GetPermissionResultOverride(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
