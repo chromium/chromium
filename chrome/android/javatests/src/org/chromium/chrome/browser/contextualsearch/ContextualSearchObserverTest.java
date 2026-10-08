@@ -171,6 +171,8 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    // TODO(crbug.com/571163328): Re-enable this test.
+    @DisabledTest(message = "https://crbug.com/571163328")
     public void testNotifyObserversOnExpandSelection() throws Exception {
         mPolicy.overrideDecidedStateForTesting(true);
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
