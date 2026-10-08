@@ -480,8 +480,6 @@ TEST_F(BubbleManagerImplTest,
   bubble_manager().OnBubbleHiddenByController(*password_controller_2,
                                               /*show_next_bubble=*/true);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
-  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.Replaced",
-                                       BubbleType::kPassword, 1);
 }
 
 // Test that a higher-priority bubble does NOT preempt a lower-priority one if

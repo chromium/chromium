@@ -3471,18 +3471,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Bubble.Queue.Replaced" enum="AutofillBubbleType"
-    expires_after="2026-10-22">
-  <owner>vidhanj@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logged when a bubble in the queue is replaced by a new bubble of the same
-    type due to the bubble type's immediate preemption policy (e.g., for
-    passwords), not due to a timeout. This metric is recorded once a bubble is
-    hidden and the pending queue of bubbles is cleaned up.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Bubble.Queue.ShownFromQueue"
     enum="AutofillBubbleType" expires_after="2027-02-28">
   <owner>vidhanj@google.com</owner>

@@ -277,15 +277,10 @@ void BubbleManagerImpl::AddToPendingQueue(
     const bool bubble_has_timed_out =
         (now - it->time_added) > kPendingRequestTimeout;
     if (ShouldAlwaysPreemptSameType(new_bubble_type) || bubble_has_timed_out) {
-      if (bubble_has_timed_out) {
-        if (it->controller) {
-          it->controller->OnBubbleDiscarded();
-          base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
-                                        it->controller->GetBubbleType());
-        }
-      } else {
-        base::UmaHistogramEnumeration("Autofill.Bubble.Queue.Replaced",
-                                      new_bubble_type);
+      if (bubble_has_timed_out && it->controller) {
+        it->controller->OnBubbleDiscarded();
+        base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
+                                      it->controller->GetBubbleType());
       }
       pending_bubbles_queue_.erase(it);
       pending_bubbles_queue_.insert(PendingRequest(controller, now, priority));
