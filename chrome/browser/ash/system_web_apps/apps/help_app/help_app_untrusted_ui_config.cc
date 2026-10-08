@@ -164,9 +164,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     // actively browsing the help app (such as UI-only features), avoid querying
     // them in the background page.
     source->AddBoolean("HelpAppAppsGamesBannerV2", true);
-    source->AddBoolean(
-        "HelpAppAppDetailPage",
-        base::FeatureList::IsEnabled(ash::features::kHelpAppAppDetailPage));
+    source->AddBoolean("HelpAppAppDetailPage", true);
     source->AddBoolean("HelpAppAppsList", base::FeatureList::IsEnabled(
                                               ash::features::kHelpAppAppsList));
     source->AddBoolean("HelpAppHomePageAppArticles",

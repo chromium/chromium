@@ -948,9 +948,6 @@ BASE_FEATURE(kHeliumArcvmKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 // Should stay disabled by default.
 BASE_FEATURE(kHeliumArcvmKioskDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Help app will render the App Detail Page and entry point.
-BASE_FEATURE(kHelpAppAppDetailPage, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the Help app will render the Apps List page and entry point.
 BASE_FEATURE(kHelpAppAppsList, base::FEATURE_ENABLED_BY_DEFAULT);
 
