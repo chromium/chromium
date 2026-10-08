@@ -1282,8 +1282,7 @@ void GeminiBrowserAgent::HandleDormantStatus(
 void GeminiBrowserAgent::LogLiveStatusTransition(
     ios::provider::GeminiClientMode old_status,
     ios::provider::GeminiClientMode new_status) {
-  if (new_status == ios::provider::GeminiClientMode::kThinking &&
-      old_status != ios::provider::GeminiClientMode::kThinking) {
+  if (gemini::IsGeminiLivePromptSubmitted(old_status, new_status)) {
     bool has_attached_context =
         ios::provider::GetCurrentPageContextAttachmentState() ==
         ios::provider::GeminiPageContextAttachmentState::kAttached;
