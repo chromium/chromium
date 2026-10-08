@@ -20,6 +20,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_svg_path_data_settings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -113,13 +115,8 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
   }
 
   SVGPathQuery path_query(byte_stream);
-  if (length < 0) {
-    length = 0;
-  } else {
-    float computed_length = path_query.GetTotalLength();
-    if (length > computed_length)
-      length = computed_length;
-  }
+  length = std::clamp(length, 0.0f, path_query.GetTotalLength());
+
   gfx::PointF point = path_query.GetPointAtLength(length);
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -163,13 +160,8 @@ SVGPathSegment* SVGPathElement::getPathSegmentAtLength(float distance) {
     return nullptr;
   }
 
-  // `distance` must be clamped to [0, total length].
   SVGPathQuery path_query(byte_stream);
-  if (distance < 0) {
-    distance = 0;
-  } else {
-    distance = std::min(distance, path_query.GetTotalLength());
-  }
+  distance = std::clamp(distance, 0.0f, path_query.GetTotalLength());
 
   SVGPathSegmentsBuilder builder;
   PathSegmentData segment_data = path_query.GetSegmentAtLength(distance);
