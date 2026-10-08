@@ -15,14 +15,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
+#include "components/trusted_vault/local_domains_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
-#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
-#include "components/trusted_vault/test/legacy_fake_file_access.h"
+#include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
@@ -110,32 +108,24 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
 
   void ResetRecoveryFactor(const CoreAccountInfo account_info) {
     // Destroy `recovery_factor_`, otherwise it would hold a reference to
-    // `storage_` and `adapter_` which are destroyed before `recovery_factor_`
-    // below.
+    // `storage_` which is destroyed before `recovery_factor_` below.
     recovery_factor_ = nullptr;
 
-    auto file_access = std::make_unique<LegacyFakeFileAccess>();
+    auto file_access = std::make_unique<FakeLocalDomainsStorageFileAccess>();
     if (file_access_) {
       // We only want to reset the recovery factor, not the underlying storage.
-      file_access->SetStoredLocalTrustedVault(
-          file_access_->GetStoredLocalTrustedVault());
+      file_access->SetStoredLocalDomainsData(
+          file_access_->GetStoredLocalDomainsData());
     }
     file_access_ = file_access.get();
-    auto storage = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
-        std::move(file_access));
-    storage_ = storage.get();
+    storage_ = LocalDomainsStorage::CreateForTesting(std::move(file_access));
     storage_->ReadDataFromDisk();
-    // Create a user vault if none exists yet.
-    storage_->MutateUserVault(account_info.gaia, [](UserVault&) {});
 
     connection_ =
         std::make_unique<NiceMock<MockTrustedVaultThrottlingConnection>>();
 
-    // TODO(crbug.com/542895033): Use the new storage format in tests.
-    adapter_ = std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
-        std::move(storage));
     recovery_factor_ = std::make_unique<ICloudKeychainRecoveryFactor>(
-        kKeychainAccessGroupPrefix, adapter_.get(), adapter_.get(),
+        kKeychainAccessGroupPrefix, storage_.get(), storage_.get(),
         connection_.get(), account_info);
   }
 
@@ -149,28 +139,23 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     return connection_.get();
   }
 
-  LegacyStandaloneTrustedVaultStorage* storage() { return storage_.get(); }
+  LocalDomainsStorage* storage() { return storage_.get(); }
 
-  LegacyFakeFileAccess* file_access() { return file_access_; }
+  FakeLocalDomainsStorageFileAccess* file_access() { return file_access_; }
 
   ICloudKeychainRecoveryFactor* recovery_factor() {
     return recovery_factor_.get();
   }
 
   // Stores `vault_keys` in storage.
-  void StoreKeys(CoreAccountInfo account_info,
-                 const std::vector<std::vector<uint8_t>>& vault_keys,
-                 int last_vault_key_version) {
+  void StoreKeys(
+      CoreAccountInfo account_info,
+      const std::vector<std::vector<uint8_t>>& vault_keys,
+      int last_vault_key_version,
+      SecurityDomainId security_domain_id = SecurityDomainId::kChromeSync) {
     CHECK(!vault_keys.empty());
-    storage_->MutateUserVault(account_info.gaia, [&](UserVault& user_vault) {
-      user_vault.set_last_vault_key_version(last_vault_key_version);
-      user_vault.set_keys_marked_as_stale_by_consumer(false);
-      user_vault.clear_vault_key();
-      for (const std::vector<uint8_t>& key : vault_keys) {
-        AssignBytesToProtoString(
-            key, user_vault.add_vault_key()->mutable_key_material());
-      }
-    });
+    storage_->SetVaultKeys(account_info.gaia, security_domain_id, vault_keys,
+                           last_vault_key_version);
   }
 
   std::unique_ptr<ICloudRecoveryKey> CreateICloudKey(
@@ -447,18 +432,11 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     return registered_public_key;
   }
 
-  trusted_vault_pb::ICloudKeychainRegistrationInfo GetICloudRegistrationInfo(
-      CoreAccountInfo account_info) {
-    return storage_->GetUserVault(account_info.gaia)
-        .icloud_keychain_registration_info();
-  }
-
  private:
   std::unique_ptr<NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
-  std::unique_ptr<LegacyStandaloneTrustedVaultStorageAdapter> adapter_;
-  raw_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
-  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
+  std::unique_ptr<LocalDomainsStorage> storage_;
+  raw_ptr<FakeLocalDomainsStorageFileAccess> file_access_ = nullptr;
   std::unique_ptr<ICloudKeychainRecoveryFactor> recovery_factor_;
 
   crypto::apple::ScopedFakeKeychainV2 fake_keychain_{kKeychainAccessGroup};
@@ -738,10 +716,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest, ShouldSucceedWithMultipleMembers) {
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotRegisterWhenAlreadyRegistered) {
-  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
-    user_vault.mutable_icloud_keychain_registration_info()->set_registered(
-        true);
-  });
+  storage()->SetRecoveryFactorRegistered(
+      account_info().gaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kICloudKeychain, true);
 
   MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
@@ -749,9 +726,8 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotRegisterWhenLocalDataObsolete) {
-  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
-    user_vault.set_last_registration_returned_local_data_obsolete(true);
-  });
+  storage()->SetLastRegistrationReturnedLocalDataObsolete(
+      account_info().gaia, SecurityDomainId::kChromeSync, true);
 
   MaybeRegisterAndExpectNotAttempted(
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kLocalKeysAreStale);
@@ -844,9 +820,8 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
       TrustedVaultRegistrationStatus::kLocalDataObsolete,
       /*registration_key_version=*/0, registration_callback.Get());
 
-  const UserVault& per_user_vault =
-      storage()->GetUserVault(account_info().gaia);
-  EXPECT_TRUE(per_user_vault.last_registration_returned_local_data_obsolete());
+  EXPECT_TRUE(storage()->GetLastRegistrationReturnedLocalDataObsolete(
+      account_info().gaia, SecurityDomainId::kChromeSync));
 }
 
 TEST_F(ICloudKeychainRecoveryFactorTest, RegistrationShouldSucceed) {
@@ -905,10 +880,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        MarkAsNotRegisteredShouldClearRegistrationData) {
-  storage()->MutateUserVault(account_info().gaia, [](UserVault& user_vault) {
-    user_vault.mutable_icloud_keychain_registration_info()->set_registered(
-        true);
-  });
+  storage()->SetRecoveryFactorRegistered(
+      account_info().gaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kICloudKeychain, true);
 
   EXPECT_TRUE(recovery_factor()->IsRegistered(SecurityDomainId::kChromeSync));
 
@@ -916,7 +890,9 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
   // Now the device should no longer be registered.
   EXPECT_FALSE(recovery_factor()->IsRegistered(SecurityDomainId::kChromeSync));
-  EXPECT_FALSE(GetICloudRegistrationInfo(account_info()).registered());
+  EXPECT_FALSE(storage()->IsRecoveryFactorRegistered(
+      account_info().gaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kICloudKeychain));
 }
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
@@ -1124,12 +1100,280 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
   second_recovery_run_loop.Run();
 }
 
-// TODO(crbug.com/542895033): The current test fixture (based on
-// LegacyStandaloneTrustedVaultStorageAdapter) only supports
-// SecurityDomainId::kChromeSync. Add unit tests for multi-domain use-cases
-// (e.g., concurrent recovery and registration attempts across domains, partial
-// failures, and domain-scoped cancellations) in a follow-up once multi-domain
-// storage is available.
+TEST_F(
+    ICloudKeychainRecoveryFactorTest,
+    ShouldSupportConcurrentRegistrationAcrossDomainsAndDomainScopedCancellation) {
+  StoreKeys(account_info(), kVaultKeys, kLastKeyVersion,
+            SecurityDomainId::kChromeSync);
+  StoreKeys(account_info(), kVaultKeys, kLastKeyVersion,
+            SecurityDomainId::kPasskeys);
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      first_sync_registration_callback;
+  base::RunLoop first_sync_factor_run_loop;
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info()), Eq(SecurityDomainId::kChromeSync), _, _,
+          Eq(AuthenticationFactorTypeAndRegistrationParams(ICloudKeychain())),
+          _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        first_sync_registration_callback = std::move(callback);
+        first_sync_factor_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      passkeys_registration_callback;
+  base::RunLoop passkeys_factor_run_loop;
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info()), Eq(SecurityDomainId::kPasskeys), _, _,
+          Eq(AuthenticationFactorTypeAndRegistrationParams(ICloudKeychain())),
+          _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        passkeys_registration_callback = std::move(callback);
+        passkeys_factor_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<LocalRecoveryFactor::RegisterCallback>
+      first_sync_register_callback;
+  base::RunLoop first_sync_cancelled_run_loop;
+  recovery_factor()->MaybeRegister(
+      SecurityDomainId::kChromeSync,
+      first_sync_register_callback.Get().Then(
+          first_sync_cancelled_run_loop.QuitClosure()));
+
+  base::MockCallback<LocalRecoveryFactor::RegisterCallback>
+      passkeys_register_callback;
+  base::RunLoop passkeys_register_run_loop;
+  recovery_factor()->MaybeRegister(
+      SecurityDomainId::kPasskeys,
+      passkeys_register_callback.Get().Then(
+          passkeys_register_run_loop.QuitClosure()));
+
+  first_sync_factor_run_loop.Run();
+  passkeys_factor_run_loop.Run();
+  ASSERT_FALSE(first_sync_registration_callback.is_null());
+  ASSERT_FALSE(passkeys_registration_callback.is_null());
+
+  // Starting a second registration for kChromeSync cancels ONLY the first
+  // kChromeSync registration, leaving kPasskeys registration in flight.
+  EXPECT_CALL(
+      first_sync_register_callback,
+      Run(SecurityDomainId::kChromeSync,
+          TrustedVaultRegistrationStatus::kRegistrationCancelled, _, _));
+  EXPECT_CALL(passkeys_register_callback, Run).Times(0);
+
+  TrustedVaultConnection::DownloadAuthenticationFactorsRegistrationStateCallback
+      sync_download_state_callback;
+  base::RunLoop sync_download_state_run_loop;
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(
+                  account_info(), Eq(SecurityDomainId::kChromeSync), _, _, _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    std::set<trusted_vault_pb::SecurityDomainMember_MemberType>,
+                    TrustedVaultConnection::
+                        DownloadAuthenticationFactorsRegistrationStateCallback
+                            callback,
+                    base::RepeatingClosure) {
+        sync_download_state_callback = std::move(callback);
+        sync_download_state_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      second_sync_registration_callback;
+  base::RunLoop second_sync_factor_run_loop;
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info()), Eq(SecurityDomainId::kChromeSync), _, _,
+          Eq(AuthenticationFactorTypeAndRegistrationParams(ICloudKeychain())),
+          _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        second_sync_registration_callback = std::move(callback);
+        second_sync_factor_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<LocalRecoveryFactor::RegisterCallback>
+      second_sync_register_callback;
+  base::RunLoop second_sync_register_run_loop;
+  recovery_factor()->MaybeRegister(
+      SecurityDomainId::kChromeSync,
+      second_sync_register_callback.Get().Then(
+          second_sync_register_run_loop.QuitClosure()));
+
+  first_sync_cancelled_run_loop.Run();
+  sync_download_state_run_loop.Run();
+  ASSERT_FALSE(sync_download_state_callback.is_null());
+
+  std::move(sync_download_state_callback)
+      .Run(CreateDownloadAuthenticationFactorsRegistrationStateResult(
+          DownloadAuthenticationFactorsRegistrationStateResult::State::
+              kRecoverable,
+          /*vault_members=*/{}));
+  second_sync_factor_run_loop.Run();
+  ASSERT_FALSE(second_sync_registration_callback.is_null());
+
+  // Partial failure: kPasskeys fails with kOtherError while kChromeSync
+  // succeeds.
+  EXPECT_CALL(passkeys_register_callback,
+              Run(SecurityDomainId::kPasskeys,
+                  TrustedVaultRegistrationStatus::kOtherError, _, _));
+  std::move(passkeys_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kOtherError, kLastKeyVersion);
+  passkeys_register_run_loop.Run();
+
+  EXPECT_CALL(
+      second_sync_register_callback,
+      Run(SecurityDomainId::kChromeSync,
+          TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion, _));
+  std::move(second_sync_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
+  second_sync_register_run_loop.Run();
+
+  EXPECT_TRUE(recovery_factor()->IsRegistered(SecurityDomainId::kChromeSync));
+  EXPECT_FALSE(recovery_factor()->IsRegistered(SecurityDomainId::kPasskeys));
+}
+
+TEST_F(
+    ICloudKeychainRecoveryFactorTest,
+    ShouldSupportConcurrentRecoveryAcrossDomainsAndDomainScopedCancellation) {
+  std::unique_ptr<ICloudRecoveryKey> sync_icloud_key =
+      CreateICloudKey(SecurityDomainId::kChromeSync);
+  CreateICloudKey(SecurityDomainId::kPasskeys);
+
+  TrustedVaultConnection::DownloadAuthenticationFactorsRegistrationStateCallback
+      first_sync_download_state_callback;
+  base::RunLoop first_sync_fetch_run_loop;
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(
+                  account_info(), Eq(SecurityDomainId::kChromeSync), _, _, _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    std::set<trusted_vault_pb::SecurityDomainMember_MemberType>,
+                    TrustedVaultConnection::
+                        DownloadAuthenticationFactorsRegistrationStateCallback
+                            callback,
+                    base::RepeatingClosure) {
+        first_sync_download_state_callback = std::move(callback);
+        first_sync_fetch_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  TrustedVaultConnection::DownloadAuthenticationFactorsRegistrationStateCallback
+      passkeys_download_state_callback;
+  base::RunLoop passkeys_fetch_run_loop;
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(
+                  account_info(), Eq(SecurityDomainId::kPasskeys), _, _, _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    std::set<trusted_vault_pb::SecurityDomainMember_MemberType>,
+                    TrustedVaultConnection::
+                        DownloadAuthenticationFactorsRegistrationStateCallback
+                            callback,
+                    base::RepeatingClosure) {
+        passkeys_download_state_callback = std::move(callback);
+        passkeys_fetch_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
+      first_sync_recovery_callback;
+  base::RunLoop first_sync_cancelled_run_loop;
+  recovery_factor()->AttemptRecovery(
+      SecurityDomainId::kChromeSync,
+      first_sync_recovery_callback.Get().Then(
+          first_sync_cancelled_run_loop.QuitClosure()));
+
+  base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
+      passkeys_recovery_callback;
+  base::RunLoop passkeys_recovery_run_loop;
+  recovery_factor()->AttemptRecovery(
+      SecurityDomainId::kPasskeys,
+      passkeys_recovery_callback.Get().Then(
+          passkeys_recovery_run_loop.QuitClosure()));
+
+  first_sync_fetch_run_loop.Run();
+  passkeys_fetch_run_loop.Run();
+  ASSERT_FALSE(first_sync_download_state_callback.is_null());
+  ASSERT_FALSE(passkeys_download_state_callback.is_null());
+
+  // Starting a second recovery for kChromeSync cancels ONLY the first
+  // kChromeSync recovery, leaving kPasskeys recovery in flight.
+  EXPECT_CALL(first_sync_recovery_callback,
+              Run(SecurityDomainId::kChromeSync,
+                  LocalRecoveryFactor::RecoveryStatus::kFailure, _, _));
+  EXPECT_CALL(passkeys_recovery_callback, Run).Times(0);
+
+  TrustedVaultConnection::DownloadAuthenticationFactorsRegistrationStateCallback
+      second_sync_download_state_callback;
+  base::RunLoop second_sync_fetch_run_loop;
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(
+                  account_info(), Eq(SecurityDomainId::kChromeSync), _, _, _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    std::set<trusted_vault_pb::SecurityDomainMember_MemberType>,
+                    TrustedVaultConnection::
+                        DownloadAuthenticationFactorsRegistrationStateCallback
+                            callback,
+                    base::RepeatingClosure) {
+        second_sync_download_state_callback = std::move(callback);
+        second_sync_fetch_run_loop.Quit();
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
+      second_sync_recovery_callback;
+  base::RunLoop second_sync_recovery_run_loop;
+  recovery_factor()->AttemptRecovery(
+      SecurityDomainId::kChromeSync,
+      second_sync_recovery_callback.Get().Then(
+          second_sync_recovery_run_loop.QuitClosure()));
+
+  first_sync_cancelled_run_loop.Run();
+  second_sync_fetch_run_loop.Run();
+  ASSERT_FALSE(second_sync_download_state_callback.is_null());
+
+  // Partial failure: kPasskeys fails with kError while kChromeSync succeeds.
+  EXPECT_CALL(passkeys_recovery_callback,
+              Run(SecurityDomainId::kPasskeys,
+                  LocalRecoveryFactor::RecoveryStatus::kFailure, _, _));
+  std::move(passkeys_download_state_callback)
+      .Run(CreateDownloadAuthenticationFactorsRegistrationStateResult(
+          DownloadAuthenticationFactorsRegistrationStateResult::State::kError,
+          std::vector<VaultMember>()));
+  passkeys_recovery_run_loop.Run();
+
+  std::vector<VaultMember> sync_members;
+  sync_members.emplace_back(CreateVaultMember(
+      sync_icloud_key->key()->public_key(), kVaultKeys, kLastKeyVersion));
+  EXPECT_CALL(second_sync_recovery_callback,
+              Run(SecurityDomainId::kChromeSync,
+                  LocalRecoveryFactor::RecoveryStatus::kSuccess, kVaultKeys,
+                  kLastKeyVersion));
+  std::move(second_sync_download_state_callback)
+      .Run(CreateDownloadAuthenticationFactorsRegistrationStateResult(
+          DownloadAuthenticationFactorsRegistrationStateResult::State::
+              kRecoverable,
+          std::move(sync_members)));
+  second_sync_recovery_run_loop.Run();
+}
 
 }  // namespace
 
