@@ -6013,6 +6013,50 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GroupSingleTabInSplitView) {
   EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
 }
 
+// Verifies that TabsCreateSplitFunction and TabsCreateFunction (with
+// splitWithTabId) return an error rather than crashing on a null TabInterface
+// when targeting a standalone WebContents without a TabInterface.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCreateSplit_StandaloneTabRejected) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const int standalone_tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(standalone_tab_id, api::tabs::TAB_ID_NONE);
+
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+  standalone_controller.SetBrowserWindowInterfaceForLookup(
+      browser_window_interface());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("CreateSplitStandaloneTabTest").Build();
+  {
+    auto function = base::MakeRefCounted<TabsCreateSplitFunction>();
+    function->set_extension(extension.get());
+    std::string args = base::StringPrintf(R"([[%d, %d]])", standalone_tab_id,
+                                          standalone_tab_id + 1);
+    std::string error =
+        utils::RunFunctionAndReturnError(function.get(), args, profile());
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
+  }
+  {
+    auto function = base::MakeRefCounted<TabsCreateFunction>();
+    function->set_extension(extension.get());
+    const int browser_window_id =
+        ExtensionTabUtil::GetWindowId(browser_window_interface());
+    std::string args = base::StringPrintf(
+        R"([{"windowId": %d, "splitWithTabId": %d}])", browser_window_id,
+        standalone_tab_id);
+    std::string error =
+        utils::RunFunctionAndReturnError(function.get(), args, profile());
+    EXPECT_EQ(tabs_constants::kSplitViewCreationFailedError, error);
+  }
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

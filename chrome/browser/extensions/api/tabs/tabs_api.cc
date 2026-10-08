@@ -2236,8 +2236,15 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
             kTabNotFoundError, base::NumberToString(*split_with_tab_id_))));
       }
 
-      // 2. Check that the split-with tab is not already in a split view.
-      if (::tabs::TabInterface::GetFromContents(target_contents)->IsSplit()) {
+      // 2. Check that the split-with tab is backed by a TabInterface
+      // (standalone windows such as Document PiP do not have one) and is not
+      // already in a split view.
+      ::tabs::TabInterface* target_tab =
+          ::tabs::TabInterface::MaybeGetFromContents(target_contents);
+      if (!target_tab) {
+        return RespondNow(Error(tabs_constants::kSplitViewCreationFailedError));
+      }
+      if (target_tab->IsSplit()) {
         return RespondNow(Error(ErrorUtils::FormatErrorMessage(
             tabs_constants::kSplitWithTabAlreadyInSplitViewError,
             base::NumberToString(*split_with_tab_id_))));
@@ -3625,17 +3632,21 @@ ExtensionFunction::ResponseAction TabsCreateSplitFunction::Run() {
     if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
     }
+    // 2. Check that the tab is backed by a TabInterface (standalone windows
+    // such as Document PiP do not have one).
     ::tabs::TabInterface* tab =
-        ::tabs::TabInterface::GetFromContents(web_contents);
-    CHECK(tab);
-    // 2. Check that the tab is not already in a split view.
+        ::tabs::TabInterface::MaybeGetFromContents(web_contents);
+    if (!tab) {
+      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+    }
+    // 3. Check that the tab is not already in a split view.
     if (tab->IsSplit()) {
       return RespondNow(Error(ErrorUtils::FormatErrorMessage(
           tabs_constants::kSplitWithTabAlreadyInSplitViewError,
           base::NumberToString(tab_ids[i]))));
     }
 
-    // 3. Check that tab is in the same window, has matching pinned and group ID
+    // 4. Check that tab is in the same window, has matching pinned and group ID
     // states, and is adjacent.
     if (i == 0) {
       // Use the first tab to set the baseline state for validation.
