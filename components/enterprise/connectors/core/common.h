@@ -354,9 +354,12 @@ enum class EventResult {
 // string returned is processed by the sever.
 std::string EventResultToString(EventResult result);
 
+// DEPRECATED. Prefer GetProfileEmail(Profile* profile) instead.
 // Returns the email address of the unconsented account signed in to the profile
 // or an empty string if no account is signed in.  If `identity_manager` is null
 // then the empty string is returned.
+// TODO(crbug.com/571187038): Remove this function once all callers are migrated
+// to GetProfileEmail(Profile* profile).
 std::string GetProfileEmail(signin::IdentityManager* identity_manager);
 
 // Returns the UMA metrics for tracking the successful uploaded event duration.

@@ -35,6 +35,7 @@ source_set("unit_tests") {
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/profiles:test_support",
       "//components/enterprise:test_support",
+      "//components/enterprise/isolated_mode",
     ]
 
     if (is_chromeos) {

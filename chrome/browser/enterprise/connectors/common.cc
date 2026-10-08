@@ -164,6 +164,12 @@ std::string GetProfileEmail(Profile* profile) {
     return std::string();
   }
 
+  // If the profile is an Enterprise Isolated Mode profile, we need to get the
+  // original profile to get the email. For other off-the-record profiles, we
+  // can use the profile directly and get empty email.
+  if (profile->IsEnterpriseIsolatedModeProfile()) {
+    profile = profile->GetOriginalProfile();
+  }
   std::string email =
       GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
 
