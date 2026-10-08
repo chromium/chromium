@@ -5430,10 +5430,6 @@ crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/share
 crbug.com/1234057 external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
 
 
-# Sheriff 2021-07-29
-crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
-
-
 # Sheriff 2021-08-12
 crbug.com/1239175 http/tests/navigation/same-and-different-back.html [ Failure Pass ]
 

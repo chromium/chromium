@@ -223,16 +223,22 @@ window.onload = function()
 
     // Ask the child frame to verify that our xss attempt above
     // didn't modify any actual values.  The child frame will
-    // post "TEST-COMPLETED" when the verification is done.
+    // post a "TEST-COMPLETED" message carrying its results when
+    // the verification is done. The child is cross-origin (and
+    // out-of-process), so its results are relayed here and logged
+    // from this frame to keep the output ordering deterministic.
     window.addEventListener("message", receiveMessage, false);
     targetWindow.postMessage("READY-FOR-OLD-VALUES-VERIFICATION", "*");
     function receiveMessage(event) {
-        if (event.data != "TEST-COMPLETED") {
-            log("UNEXPECTED MESSAGE: " + event.data);
+        if (!event.data || event.data.type != "TEST-COMPLETED") {
+            log("UNEXPECTED MESSAGE: " + JSON.stringify(event.data));
             return;
         }
 
-        // log(targetWindow.focus.__proto__);
+        log("CHILD FRAME: verification results");
+        for (var i = 0; i < event.data.results.length; i++)
+            log(event.data.results[i]);
+
         log("MAIN WINDOW: !!-- Test ended--!!");
 
         window.stop();

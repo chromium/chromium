@@ -2,9 +2,16 @@
 <html>
 <head>
     <script type="text/javascript">
+        // Results are collected here and sent to the parent frame in a
+        // single postMessage once verification is complete. This frame is
+        // cross-origin (and therefore out-of-process) relative to the test
+        // page, so logging via console.log would race with the parent's
+        // text dump and produce nondeterministic output.
+        var results = [];
+
         function log(s)
         {
-            document.getElementById("console").appendChild(document.createTextNode(s + "\n"));
+            results.push(s);
         }
 
         function shouldBe(a, b, shouldNotPrintValues)
@@ -29,12 +36,7 @@
                message = "*** FAIL: " + a + " should be '" + evalB + "' but instead is " + evalA + ". ***";
             }
 
-            message = String(message).replace(/\n/g, "");
-            if (window.testRunner) {
-                console.log(message);
-            } else {
-                log(message);
-            }
+            log(String(message).replace(/\n/g, ""));
         }
     </script>
 </head>
@@ -410,15 +412,15 @@
 
             // Using shouldBe for parent and top causes extraneous warnings due to cross-orgin toString'ing.
             if (window.parent === parentOld) {
-                console.log("PASS: window.parent should be parentOld and is.");
+                log("PASS: window.parent should be parentOld and is.");
             } else {
-                console.log("*** FAIL: window.parent should be parentOld but instead is " + window.parent + ". ***");
+                log("*** FAIL: window.parent should be parentOld but instead is " + window.parent + ". ***");
             }
 
             if (window.top === topOld) {
-                console.log("PASS: window.top should be topOld and is.");
+                log("PASS: window.top should be topOld and is.");
             } else {
-                console.log("*** FAIL: window.top should be topOld but instead is " + window.top + ". ***");
+                log("*** FAIL: window.top should be topOld but instead is " + window.top + ". ***");
             }
 
             // Functions
@@ -455,7 +457,7 @@
 
             shouldBe("window.stop", "stopOld");
 
-            window.parent.postMessage("TEST-COMPLETED", "*");
+            window.parent.postMessage({ type: "TEST-COMPLETED", results: results }, "*");
         }
     </script>
 </body>

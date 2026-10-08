@@ -1,370 +1,371 @@
-CONSOLE MESSAGE: line 34: PASS: window.Attr should be 'function Attr() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.CDATASection should be 'function CDATASection() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.CharacterData should be 'function CharacterData() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Comment should be 'function Comment() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.CSSRule should be 'function CSSRule() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.CSSStyleDeclaration should be 'function CSSStyleDeclaration() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Document should be 'function Document() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.DocumentFragment should be 'function DocumentFragment() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.DocumentType should be 'function DocumentType() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.DOMException should be 'function DOMException() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.DOMImplementation should be 'function DOMImplementation() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.DOMParser should be 'function DOMParser() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Element should be 'function Element() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Entity should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.EntityReference should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.EvalError should be 'function EvalError() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Event should be 'function Event() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLAnchorElement should be 'function HTMLAnchorElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLAreaElement should be 'function HTMLAreaElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLBaseElement should be 'function HTMLBaseElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLBodyElement should be 'function HTMLBodyElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLBRElement should be 'function HTMLBRElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLButtonElement should be 'function HTMLButtonElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLCanvasElement should be 'function HTMLCanvasElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLDirectoryElement should be 'function HTMLDirectoryElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLDivElement should be 'function HTMLDivElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLDListElement should be 'function HTMLDListElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLDocument should be 'function HTMLDocument() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLElement should be 'function HTMLElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLFieldSetElement should be 'function HTMLFieldSetElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLFontElement should be 'function HTMLFontElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLFormElement should be 'function HTMLFormElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLFrameElement should be 'function HTMLFrameElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLFrameSetElement should be 'function HTMLFrameSetElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLHeadElement should be 'function HTMLHeadElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLHeadingElement should be 'function HTMLHeadingElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLHRElement should be 'function HTMLHRElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLHtmlElement should be 'function HTMLHtmlElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLIFrameElement should be 'function HTMLIFrameElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLImageElement should be 'function HTMLImageElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLInputElement should be 'function HTMLInputElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLIsIndexElement should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLLabelElement should be 'function HTMLLabelElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLLegendElement should be 'function HTMLLegendElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLLIElement should be 'function HTMLLIElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLLinkElement should be 'function HTMLLinkElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLMapElement should be 'function HTMLMapElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLMarqueeElement should be 'function HTMLMarqueeElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLMenuElement should be 'function HTMLMenuElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLMetaElement should be 'function HTMLMetaElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLModElement should be 'function HTMLModElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLOListElement should be 'function HTMLOListElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLOptGroupElement should be 'function HTMLOptGroupElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLOptionElement should be 'function HTMLOptionElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLParagraphElement should be 'function HTMLParagraphElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLParamElement should be 'function HTMLParamElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLPreElement should be 'function HTMLPreElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLQuoteElement should be 'function HTMLQuoteElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLScriptElement should be 'function HTMLScriptElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLSelectElement should be 'function HTMLSelectElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLStyleElement should be 'function HTMLStyleElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTableCaptionElement should be 'function HTMLTableCaptionElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTableCellElement should be 'function HTMLTableCellElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTableColElement should be 'function HTMLTableColElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTableElement should be 'function HTMLTableElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTableRowElement should be 'function HTMLTableRowElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTableSectionElement should be 'function HTMLTableSectionElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTextAreaElement should be 'function HTMLTextAreaElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLTitleElement should be 'function HTMLTitleElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.HTMLUListElement should be 'function HTMLUListElement() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.MutationEvent should be 'function MutationEvent() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Node should be 'function Node() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.NodeFilter should be 'function NodeFilter() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.ProcessingInstruction should be 'function ProcessingInstruction() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Range should be 'function Range() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.RangeError should be 'function RangeError() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.ReferenceError should be 'function ReferenceError() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.SyntaxError should be 'function SyntaxError() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.Text should be 'function Text() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.TypeError should be 'function TypeError() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.URIError should be 'function URIError() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.XMLDocument should be 'function XMLDocument() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.XMLSerializer should be 'function XMLSerializer() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.XPathEvaluator should be 'function XPathEvaluator() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.XPathResult should be 'function XPathResult() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.clientInformation should be '[object Navigator]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.closed should be 'false' and is.
-CONSOLE MESSAGE: line 34: PASS: window.console should be '[object Object]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.crypto should be '[object Crypto]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.defaultStatus should be '' and is.
-CONSOLE MESSAGE: line 34: PASS: window.defaultstatus should be '' and is.
-CONSOLE MESSAGE: line 34: PASS: window.devicePixelRatio should be '1' and is.
-CONSOLE MESSAGE: line 34: PASS: window.document should be '[object HTMLDocument]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.embeds should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.frameElement should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.frames should be '[object Window]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.history should be '[object History]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.images should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.innerHeight should be '150' and is.
-CONSOLE MESSAGE: line 34: PASS: window.innerWidth should be '300' and is.
-CONSOLE MESSAGE: line 34: PASS: window.length should be '0' and is.
-CONSOLE MESSAGE: line 34: PASS: window.locationbar should be '[object BarProp]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.menubar should be '[object BarProp]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.name should be '' and is.
-CONSOLE MESSAGE: line 34: PASS: window.navigator should be '[object Navigator]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.offscreenBuffering should be 'true' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onabort should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onbeforeunload should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onblur should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onchange should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onclick should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.ondblclick should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onerror should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onfocus should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onkeydown should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onkeypress should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onkeyup should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onload should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onmousedown should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onmousemove should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onmouseout should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onmouseover should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onmouseup should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onmousewheel should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onreset should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onresize should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onscroll should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onsearch should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onselect should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onsubmit should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.onunload should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.opener should be 'null' and is.
-CONSOLE MESSAGE: line 34: PASS: window.outerHeight matched the expected value.
-CONSOLE MESSAGE: line 34: PASS: window.outerWidth matched the expected value.
-CONSOLE MESSAGE: line 34: PASS: window.pageXOffset should be '0' and is.
-CONSOLE MESSAGE: line 34: PASS: window.pageYOffset should be '0' and is.
-CONSOLE MESSAGE: line 34: PASS: window.personalbar should be '[object BarProp]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.plugins should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.screen should be '[object Screen]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.screenLeft matched the expected value.
-CONSOLE MESSAGE: line 34: PASS: window.screenTop matched the expected value.
-CONSOLE MESSAGE: line 34: PASS: window.screenX matched the expected value.
-CONSOLE MESSAGE: line 34: PASS: window.screenY matched the expected value.
-CONSOLE MESSAGE: line 34: PASS: window.scrollbars should be '[object BarProp]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.scrollX should be '0' and is.
-CONSOLE MESSAGE: line 34: PASS: window.scrollY should be '0' and is.
-CONSOLE MESSAGE: line 34: PASS: window.self should be '[object Window]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.status should be '' and is.
-CONSOLE MESSAGE: line 34: PASS: window.statusbar should be '[object BarProp]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.toolbar should be '[object BarProp]' and is.
-CONSOLE MESSAGE: line 34: PASS: window.window should be '[object Window]' and is.
-CONSOLE MESSAGE: line 413: PASS: window.parent should be parentOld and is.
-CONSOLE MESSAGE: line 419: PASS: window.top should be topOld and is.
-CONSOLE MESSAGE: line 34: PASS: window.addEventListener should be 'function addEventListener() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.alert should be 'function alert() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.atob should be 'function atob() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.blur should be 'function blur() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.btoa should be 'function btoa() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.captureEvents should be 'function captureEvents() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.clearInterval should be 'function clearInterval() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.clearTimeout should be 'function clearTimeout() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.close should be 'function close() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.confirm should be 'function confirm() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.eval should be 'function eval() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.find should be 'function find() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.focus should be 'function focus() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.getComputedStyle should be 'function getComputedStyle() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.getMatchedCSSRules should be 'undefined' and is.
-CONSOLE MESSAGE: line 34: PASS: window.getSelection should be 'function getSelection() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.moveBy should be 'function moveBy() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.moveTo should be 'function moveTo() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.open should be 'function open() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.print should be 'function print() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.prompt should be 'function prompt() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.releaseEvents should be 'function releaseEvents() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.removeEventListener should be 'function removeEventListener() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.resizeBy should be 'function resizeBy() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.resizeTo should be 'function resizeTo() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.scroll should be 'function scroll() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.scrollBy should be 'function scrollBy() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.scrollTo should be 'function scrollTo() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.setInterval should be 'function setInterval() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.setTimeout should be 'function setTimeout() { [native code] }' and is.
-CONSOLE MESSAGE: line 34: PASS: window.stop should be 'function stop() { [native code] }' and is.
 This test checks cross-frame access security of window attribute setters (rdar://problem/5326791).
 
-PASS: Unable to set property Attr: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property CDATASection: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property CharacterData: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Comment: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property CSSRule: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property CSSStyleDeclaration: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Document: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property DocumentFragment: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property DocumentType: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property DOMException: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property DOMImplementation: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property DOMParser: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Element: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property EvalError: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Event: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLAnchorElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLAreaElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLBaseElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLBodyElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLBRElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLButtonElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLCanvasElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLDirectoryElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLDivElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLDListElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLDocument: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLFieldSetElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLFontElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLFormElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLFrameElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLFrameSetElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLHeadElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLHeadingElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLHRElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLHtmlElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLIFrameElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLImageElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLInputElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLLabelElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLLegendElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLLIElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLLinkElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLMapElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLMarqueeElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLMenuElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLMetaElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLModElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLOListElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLOptGroupElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLOptionElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLParagraphElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLParamElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLPreElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLQuoteElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLScriptElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLSelectElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLStyleElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTableCaptionElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTableCellElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTableColElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTableElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTableRowElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTableSectionElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTextAreaElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLTitleElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property HTMLUListElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property MutationEvent: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Node: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property NodeFilter: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property ProcessingInstruction: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Range: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property RangeError: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property ReferenceError: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property SyntaxError: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property Text: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property TypeError: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property URIError: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property XMLDocument: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property XMLSerializer: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property XPathEvaluator: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property XPathResult: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property clientInformation: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property closed: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property console: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property crypto: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property defaultStatus: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property defaultstatus: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property devicePixelRatio: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property document: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property embeds: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property event: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property frameElement: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property frames: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property history: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property images: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property innerHeight: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property innerWidth: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property length: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property locationbar: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property menubar: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property name: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property navigator: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property offscreenBuffering: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onabort: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onbeforeunload: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onblur: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onchange: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onclick: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property ondblclick: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onerror: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onfocus: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onkeydown: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onkeypress: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onkeyup: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onload: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onmousedown: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onmousemove: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onmouseout: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onmouseover: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onmouseup: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onmousewheel: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onreset: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onresize: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onscroll: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onsearch: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onselect: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onsubmit: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property onunload: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property opener: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property outerHeight: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property outerWidth: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property pageXOffset: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property pageYOffset: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property personalbar: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property plugins: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property screen: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property screenLeft: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property screenTop: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property screenX: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property screenY: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property scrollbars: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property scrollX: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property scrollY: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property self: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property status: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property statusbar: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property toolbar: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property window: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property parent: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property addEventListener: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property alert: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property atob: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property blur: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property btoa: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property captureEvents: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property clearInterval: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property clearTimeout: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property close: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property confirm: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property constructor: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property eval: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property find: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property focus: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property getComputedStyle: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property getMatchedCSSRules: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property getSelection: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property moveBy: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property moveTo: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property open: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property print: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property prompt: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property releaseEvents: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property removeEventListener: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property resizeBy: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property resizeTo: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property scroll: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property scrollBy: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property scrollTo: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property setInterval: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property setTimeout: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
-PASS: Unable to set property stop: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Attr: SecurityError: Failed to set a named property 'Attr' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property CDATASection: SecurityError: Failed to set a named property 'CDATASection' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property CharacterData: SecurityError: Failed to set a named property 'CharacterData' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Comment: SecurityError: Failed to set a named property 'Comment' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property CSSRule: SecurityError: Failed to set a named property 'CSSRule' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property CSSStyleDeclaration: SecurityError: Failed to set a named property 'CSSStyleDeclaration' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Document: SecurityError: Failed to set a named property 'Document' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property DocumentFragment: SecurityError: Failed to set a named property 'DocumentFragment' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property DocumentType: SecurityError: Failed to set a named property 'DocumentType' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property DOMException: SecurityError: Failed to set a named property 'DOMException' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property DOMImplementation: SecurityError: Failed to set a named property 'DOMImplementation' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property DOMParser: SecurityError: Failed to set a named property 'DOMParser' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Element: SecurityError: Failed to set a named property 'Element' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property EvalError: SecurityError: Failed to set a named property 'EvalError' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Event: SecurityError: Failed to set a named property 'Event' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLAnchorElement: SecurityError: Failed to set a named property 'HTMLAnchorElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLAreaElement: SecurityError: Failed to set a named property 'HTMLAreaElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLBaseElement: SecurityError: Failed to set a named property 'HTMLBaseElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLBodyElement: SecurityError: Failed to set a named property 'HTMLBodyElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLBRElement: SecurityError: Failed to set a named property 'HTMLBRElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLButtonElement: SecurityError: Failed to set a named property 'HTMLButtonElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLCanvasElement: SecurityError: Failed to set a named property 'HTMLCanvasElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLDirectoryElement: SecurityError: Failed to set a named property 'HTMLDirectoryElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLDivElement: SecurityError: Failed to set a named property 'HTMLDivElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLDListElement: SecurityError: Failed to set a named property 'HTMLDListElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLDocument: SecurityError: Failed to set a named property 'HTMLDocument' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLElement: SecurityError: Failed to set a named property 'HTMLElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLFieldSetElement: SecurityError: Failed to set a named property 'HTMLFieldSetElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLFontElement: SecurityError: Failed to set a named property 'HTMLFontElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLFormElement: SecurityError: Failed to set a named property 'HTMLFormElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLFrameElement: SecurityError: Failed to set a named property 'HTMLFrameElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLFrameSetElement: SecurityError: Failed to set a named property 'HTMLFrameSetElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLHeadElement: SecurityError: Failed to set a named property 'HTMLHeadElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLHeadingElement: SecurityError: Failed to set a named property 'HTMLHeadingElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLHRElement: SecurityError: Failed to set a named property 'HTMLHRElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLHtmlElement: SecurityError: Failed to set a named property 'HTMLHtmlElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLIFrameElement: SecurityError: Failed to set a named property 'HTMLIFrameElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLImageElement: SecurityError: Failed to set a named property 'HTMLImageElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLInputElement: SecurityError: Failed to set a named property 'HTMLInputElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLLabelElement: SecurityError: Failed to set a named property 'HTMLLabelElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLLegendElement: SecurityError: Failed to set a named property 'HTMLLegendElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLLIElement: SecurityError: Failed to set a named property 'HTMLLIElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLLinkElement: SecurityError: Failed to set a named property 'HTMLLinkElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLMapElement: SecurityError: Failed to set a named property 'HTMLMapElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLMarqueeElement: SecurityError: Failed to set a named property 'HTMLMarqueeElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLMenuElement: SecurityError: Failed to set a named property 'HTMLMenuElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLMetaElement: SecurityError: Failed to set a named property 'HTMLMetaElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLModElement: SecurityError: Failed to set a named property 'HTMLModElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLOListElement: SecurityError: Failed to set a named property 'HTMLOListElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLOptGroupElement: SecurityError: Failed to set a named property 'HTMLOptGroupElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLOptionElement: SecurityError: Failed to set a named property 'HTMLOptionElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLParagraphElement: SecurityError: Failed to set a named property 'HTMLParagraphElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLParamElement: SecurityError: Failed to set a named property 'HTMLParamElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLPreElement: SecurityError: Failed to set a named property 'HTMLPreElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLQuoteElement: SecurityError: Failed to set a named property 'HTMLQuoteElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLScriptElement: SecurityError: Failed to set a named property 'HTMLScriptElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLSelectElement: SecurityError: Failed to set a named property 'HTMLSelectElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLStyleElement: SecurityError: Failed to set a named property 'HTMLStyleElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTableCaptionElement: SecurityError: Failed to set a named property 'HTMLTableCaptionElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTableCellElement: SecurityError: Failed to set a named property 'HTMLTableCellElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTableColElement: SecurityError: Failed to set a named property 'HTMLTableColElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTableElement: SecurityError: Failed to set a named property 'HTMLTableElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTableRowElement: SecurityError: Failed to set a named property 'HTMLTableRowElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTableSectionElement: SecurityError: Failed to set a named property 'HTMLTableSectionElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTextAreaElement: SecurityError: Failed to set a named property 'HTMLTextAreaElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLTitleElement: SecurityError: Failed to set a named property 'HTMLTitleElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property HTMLUListElement: SecurityError: Failed to set a named property 'HTMLUListElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property MutationEvent: SecurityError: Failed to set a named property 'MutationEvent' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Node: SecurityError: Failed to set a named property 'Node' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property NodeFilter: SecurityError: Failed to set a named property 'NodeFilter' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property ProcessingInstruction: SecurityError: Failed to set a named property 'ProcessingInstruction' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Range: SecurityError: Failed to set a named property 'Range' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property RangeError: SecurityError: Failed to set a named property 'RangeError' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property ReferenceError: SecurityError: Failed to set a named property 'ReferenceError' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property SyntaxError: SecurityError: Failed to set a named property 'SyntaxError' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property Text: SecurityError: Failed to set a named property 'Text' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property TypeError: SecurityError: Failed to set a named property 'TypeError' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property URIError: SecurityError: Failed to set a named property 'URIError' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property XMLDocument: SecurityError: Failed to set a named property 'XMLDocument' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property XMLSerializer: SecurityError: Failed to set a named property 'XMLSerializer' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property XPathEvaluator: SecurityError: Failed to set a named property 'XPathEvaluator' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property XPathResult: SecurityError: Failed to set a named property 'XPathResult' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property clientInformation: SecurityError: Failed to set a named property 'clientInformation' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property closed: SecurityError: Failed to set a named property 'closed' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property console: SecurityError: Failed to set a named property 'console' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property crypto: SecurityError: Failed to set a named property 'crypto' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property defaultStatus: SecurityError: Failed to set a named property 'defaultStatus' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property defaultstatus: SecurityError: Failed to set a named property 'defaultstatus' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property devicePixelRatio: SecurityError: Failed to set a named property 'devicePixelRatio' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property document: SecurityError: Failed to set a named property 'document' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property embeds: SecurityError: Failed to set a named property 'embeds' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property event: SecurityError: Failed to set a named property 'event' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property frameElement: SecurityError: Failed to set a named property 'frameElement' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property frames: SecurityError: Failed to set a named property 'frames' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property history: SecurityError: Failed to set a named property 'history' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property images: SecurityError: Failed to set a named property 'images' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property innerHeight: SecurityError: Failed to set a named property 'innerHeight' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property innerWidth: SecurityError: Failed to set a named property 'innerWidth' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property length: SecurityError: Failed to set a named property 'length' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property locationbar: SecurityError: Failed to set a named property 'locationbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property menubar: SecurityError: Failed to set a named property 'menubar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property name: SecurityError: Failed to set a named property 'name' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property navigator: SecurityError: Failed to set a named property 'navigator' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property offscreenBuffering: SecurityError: Failed to set a named property 'offscreenBuffering' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onabort: SecurityError: Failed to set a named property 'onabort' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onbeforeunload: SecurityError: Failed to set a named property 'onbeforeunload' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onblur: SecurityError: Failed to set a named property 'onblur' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onchange: SecurityError: Failed to set a named property 'onchange' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onclick: SecurityError: Failed to set a named property 'onclick' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property ondblclick: SecurityError: Failed to set a named property 'ondblclick' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onerror: SecurityError: Failed to set a named property 'onerror' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onfocus: SecurityError: Failed to set a named property 'onfocus' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onkeydown: SecurityError: Failed to set a named property 'onkeydown' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onkeypress: SecurityError: Failed to set a named property 'onkeypress' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onkeyup: SecurityError: Failed to set a named property 'onkeyup' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onload: SecurityError: Failed to set a named property 'onload' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onmousedown: SecurityError: Failed to set a named property 'onmousedown' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onmousemove: SecurityError: Failed to set a named property 'onmousemove' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onmouseout: SecurityError: Failed to set a named property 'onmouseout' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onmouseover: SecurityError: Failed to set a named property 'onmouseover' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onmouseup: SecurityError: Failed to set a named property 'onmouseup' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onmousewheel: SecurityError: Failed to set a named property 'onmousewheel' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onreset: SecurityError: Failed to set a named property 'onreset' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onresize: SecurityError: Failed to set a named property 'onresize' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onscroll: SecurityError: Failed to set a named property 'onscroll' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onsearch: SecurityError: Failed to set a named property 'onsearch' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onselect: SecurityError: Failed to set a named property 'onselect' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onsubmit: SecurityError: Failed to set a named property 'onsubmit' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property onunload: SecurityError: Failed to set a named property 'onunload' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property opener: SecurityError: Failed to set a named property 'opener' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property outerHeight: SecurityError: Failed to set a named property 'outerHeight' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property outerWidth: SecurityError: Failed to set a named property 'outerWidth' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property pageXOffset: SecurityError: Failed to set a named property 'pageXOffset' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property pageYOffset: SecurityError: Failed to set a named property 'pageYOffset' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property personalbar: SecurityError: Failed to set a named property 'personalbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property plugins: SecurityError: Failed to set a named property 'plugins' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property screen: SecurityError: Failed to set a named property 'screen' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property screenLeft: SecurityError: Failed to set a named property 'screenLeft' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property screenTop: SecurityError: Failed to set a named property 'screenTop' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property screenX: SecurityError: Failed to set a named property 'screenX' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property screenY: SecurityError: Failed to set a named property 'screenY' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property scrollbars: SecurityError: Failed to set a named property 'scrollbars' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property scrollX: SecurityError: Failed to set a named property 'scrollX' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property scrollY: SecurityError: Failed to set a named property 'scrollY' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property self: SecurityError: Failed to set a named property 'self' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property status: SecurityError: Failed to set a named property 'status' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property statusbar: SecurityError: Failed to set a named property 'statusbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property toolbar: SecurityError: Failed to set a named property 'toolbar' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property window: SecurityError: Failed to set a named property 'window' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property parent: SecurityError: Failed to set a named property 'parent' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property addEventListener: SecurityError: Failed to set a named property 'addEventListener' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property alert: SecurityError: Failed to set a named property 'alert' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property atob: SecurityError: Failed to set a named property 'atob' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property blur: SecurityError: Failed to set a named property 'blur' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property btoa: SecurityError: Failed to set a named property 'btoa' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property captureEvents: SecurityError: Failed to set a named property 'captureEvents' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property clearInterval: SecurityError: Failed to set a named property 'clearInterval' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property clearTimeout: SecurityError: Failed to set a named property 'clearTimeout' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property close: SecurityError: Failed to set a named property 'close' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property confirm: SecurityError: Failed to set a named property 'confirm' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property constructor: SecurityError: Failed to set a named property 'constructor' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property eval: SecurityError: Failed to set a named property 'eval' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property find: SecurityError: Failed to set a named property 'find' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property focus: SecurityError: Failed to set a named property 'focus' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property getComputedStyle: SecurityError: Failed to set a named property 'getComputedStyle' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property getMatchedCSSRules: SecurityError: Failed to set a named property 'getMatchedCSSRules' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property getSelection: SecurityError: Failed to set a named property 'getSelection' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property moveBy: SecurityError: Failed to set a named property 'moveBy' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property moveTo: SecurityError: Failed to set a named property 'moveTo' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property open: SecurityError: Failed to set a named property 'open' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property print: SecurityError: Failed to set a named property 'print' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property prompt: SecurityError: Failed to set a named property 'prompt' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property releaseEvents: SecurityError: Failed to set a named property 'releaseEvents' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property removeEventListener: SecurityError: Failed to set a named property 'removeEventListener' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property resizeBy: SecurityError: Failed to set a named property 'resizeBy' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property resizeTo: SecurityError: Failed to set a named property 'resizeTo' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property scroll: SecurityError: Failed to set a named property 'scroll' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property scrollBy: SecurityError: Failed to set a named property 'scrollBy' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property scrollTo: SecurityError: Failed to set a named property 'scrollTo' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property setInterval: SecurityError: Failed to set a named property 'setInterval' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property setTimeout: SecurityError: Failed to set a named property 'setTimeout' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+PASS: Unable to set property stop: SecurityError: Failed to set a named property 'stop' on 'Window': Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
+CHILD FRAME: verification results
+PASS: window.Attr should be 'function Attr() { [native code] }' and is.
+PASS: window.CDATASection should be 'function CDATASection() { [native code] }' and is.
+PASS: window.CharacterData should be 'function CharacterData() { [native code] }' and is.
+PASS: window.Comment should be 'function Comment() { [native code] }' and is.
+PASS: window.CSSRule should be 'function CSSRule() { [native code] }' and is.
+PASS: window.CSSStyleDeclaration should be 'function CSSStyleDeclaration() { [native code] }' and is.
+PASS: window.Document should be 'function Document() { [native code] }' and is.
+PASS: window.DocumentFragment should be 'function DocumentFragment() { [native code] }' and is.
+PASS: window.DocumentType should be 'function DocumentType() { [native code] }' and is.
+PASS: window.DOMException should be 'function DOMException() { [native code] }' and is.
+PASS: window.DOMImplementation should be 'function DOMImplementation() { [native code] }' and is.
+PASS: window.DOMParser should be 'function DOMParser() { [native code] }' and is.
+PASS: window.Element should be 'function Element() { [native code] }' and is.
+PASS: window.Entity should be 'undefined' and is.
+PASS: window.EntityReference should be 'undefined' and is.
+PASS: window.EvalError should be 'function EvalError() { [native code] }' and is.
+PASS: window.Event should be 'function Event() { [native code] }' and is.
+PASS: window.HTMLAnchorElement should be 'function HTMLAnchorElement() { [native code] }' and is.
+PASS: window.HTMLAreaElement should be 'function HTMLAreaElement() { [native code] }' and is.
+PASS: window.HTMLBaseElement should be 'function HTMLBaseElement() { [native code] }' and is.
+PASS: window.HTMLBodyElement should be 'function HTMLBodyElement() { [native code] }' and is.
+PASS: window.HTMLBRElement should be 'function HTMLBRElement() { [native code] }' and is.
+PASS: window.HTMLButtonElement should be 'function HTMLButtonElement() { [native code] }' and is.
+PASS: window.HTMLCanvasElement should be 'function HTMLCanvasElement() { [native code] }' and is.
+PASS: window.HTMLDirectoryElement should be 'function HTMLDirectoryElement() { [native code] }' and is.
+PASS: window.HTMLDivElement should be 'function HTMLDivElement() { [native code] }' and is.
+PASS: window.HTMLDListElement should be 'function HTMLDListElement() { [native code] }' and is.
+PASS: window.HTMLDocument should be 'function HTMLDocument() { [native code] }' and is.
+PASS: window.HTMLElement should be 'function HTMLElement() { [native code] }' and is.
+PASS: window.HTMLFieldSetElement should be 'function HTMLFieldSetElement() { [native code] }' and is.
+PASS: window.HTMLFontElement should be 'function HTMLFontElement() { [native code] }' and is.
+PASS: window.HTMLFormElement should be 'function HTMLFormElement() { [native code] }' and is.
+PASS: window.HTMLFrameElement should be 'function HTMLFrameElement() { [native code] }' and is.
+PASS: window.HTMLFrameSetElement should be 'function HTMLFrameSetElement() { [native code] }' and is.
+PASS: window.HTMLHeadElement should be 'function HTMLHeadElement() { [native code] }' and is.
+PASS: window.HTMLHeadingElement should be 'function HTMLHeadingElement() { [native code] }' and is.
+PASS: window.HTMLHRElement should be 'function HTMLHRElement() { [native code] }' and is.
+PASS: window.HTMLHtmlElement should be 'function HTMLHtmlElement() { [native code] }' and is.
+PASS: window.HTMLIFrameElement should be 'function HTMLIFrameElement() { [native code] }' and is.
+PASS: window.HTMLImageElement should be 'function HTMLImageElement() { [native code] }' and is.
+PASS: window.HTMLInputElement should be 'function HTMLInputElement() { [native code] }' and is.
+PASS: window.HTMLIsIndexElement should be 'undefined' and is.
+PASS: window.HTMLLabelElement should be 'function HTMLLabelElement() { [native code] }' and is.
+PASS: window.HTMLLegendElement should be 'function HTMLLegendElement() { [native code] }' and is.
+PASS: window.HTMLLIElement should be 'function HTMLLIElement() { [native code] }' and is.
+PASS: window.HTMLLinkElement should be 'function HTMLLinkElement() { [native code] }' and is.
+PASS: window.HTMLMapElement should be 'function HTMLMapElement() { [native code] }' and is.
+PASS: window.HTMLMarqueeElement should be 'function HTMLMarqueeElement() { [native code] }' and is.
+PASS: window.HTMLMenuElement should be 'function HTMLMenuElement() { [native code] }' and is.
+PASS: window.HTMLMetaElement should be 'function HTMLMetaElement() { [native code] }' and is.
+PASS: window.HTMLModElement should be 'function HTMLModElement() { [native code] }' and is.
+PASS: window.HTMLOListElement should be 'function HTMLOListElement() { [native code] }' and is.
+PASS: window.HTMLOptGroupElement should be 'function HTMLOptGroupElement() { [native code] }' and is.
+PASS: window.HTMLOptionElement should be 'function HTMLOptionElement() { [native code] }' and is.
+PASS: window.HTMLParagraphElement should be 'function HTMLParagraphElement() { [native code] }' and is.
+PASS: window.HTMLParamElement should be 'function HTMLParamElement() { [native code] }' and is.
+PASS: window.HTMLPreElement should be 'function HTMLPreElement() { [native code] }' and is.
+PASS: window.HTMLQuoteElement should be 'function HTMLQuoteElement() { [native code] }' and is.
+PASS: window.HTMLScriptElement should be 'function HTMLScriptElement() { [native code] }' and is.
+PASS: window.HTMLSelectElement should be 'function HTMLSelectElement() { [native code] }' and is.
+PASS: window.HTMLStyleElement should be 'function HTMLStyleElement() { [native code] }' and is.
+PASS: window.HTMLTableCaptionElement should be 'function HTMLTableCaptionElement() { [native code] }' and is.
+PASS: window.HTMLTableCellElement should be 'function HTMLTableCellElement() { [native code] }' and is.
+PASS: window.HTMLTableColElement should be 'function HTMLTableColElement() { [native code] }' and is.
+PASS: window.HTMLTableElement should be 'function HTMLTableElement() { [native code] }' and is.
+PASS: window.HTMLTableRowElement should be 'function HTMLTableRowElement() { [native code] }' and is.
+PASS: window.HTMLTableSectionElement should be 'function HTMLTableSectionElement() { [native code] }' and is.
+PASS: window.HTMLTextAreaElement should be 'function HTMLTextAreaElement() { [native code] }' and is.
+PASS: window.HTMLTitleElement should be 'function HTMLTitleElement() { [native code] }' and is.
+PASS: window.HTMLUListElement should be 'function HTMLUListElement() { [native code] }' and is.
+PASS: window.MutationEvent should be 'undefined' and is.
+PASS: window.Node should be 'function Node() { [native code] }' and is.
+PASS: window.NodeFilter should be 'function NodeFilter() { [native code] }' and is.
+PASS: window.ProcessingInstruction should be 'function ProcessingInstruction() { [native code] }' and is.
+PASS: window.Range should be 'function Range() { [native code] }' and is.
+PASS: window.RangeError should be 'function RangeError() { [native code] }' and is.
+PASS: window.ReferenceError should be 'function ReferenceError() { [native code] }' and is.
+PASS: window.SyntaxError should be 'function SyntaxError() { [native code] }' and is.
+PASS: window.Text should be 'function Text() { [native code] }' and is.
+PASS: window.TypeError should be 'function TypeError() { [native code] }' and is.
+PASS: window.URIError should be 'function URIError() { [native code] }' and is.
+PASS: window.XMLDocument should be 'function XMLDocument() { [native code] }' and is.
+PASS: window.XMLSerializer should be 'function XMLSerializer() { [native code] }' and is.
+PASS: window.XPathEvaluator should be 'function XPathEvaluator() { [native code] }' and is.
+PASS: window.XPathResult should be 'function XPathResult() { [native code] }' and is.
+PASS: window.clientInformation should be '[object Navigator]' and is.
+PASS: window.closed should be 'false' and is.
+PASS: window.console should be '[object console]' and is.
+PASS: window.crypto should be '[object Crypto]' and is.
+PASS: window.defaultStatus should be 'undefined' and is.
+PASS: window.defaultstatus should be 'undefined' and is.
+PASS: window.devicePixelRatio should be '1' and is.
+PASS: window.document should be '[object HTMLDocument]' and is.
+PASS: window.embeds should be 'undefined' and is.
+PASS: window.frameElement should be 'null' and is.
+PASS: window.frames should be '[object Window]' and is.
+PASS: window.history should be '[object History]' and is.
+PASS: window.images should be 'undefined' and is.
+PASS: window.innerHeight should be '150' and is.
+PASS: window.innerWidth should be '300' and is.
+PASS: window.length should be '0' and is.
+PASS: window.locationbar should be '[object BarProp]' and is.
+PASS: window.menubar should be '[object BarProp]' and is.
+PASS: window.name should be '' and is.
+PASS: window.navigator should be '[object Navigator]' and is.
+PASS: window.offscreenBuffering should be 'true' and is.
+PASS: window.onabort should be 'null' and is.
+PASS: window.onbeforeunload should be 'null' and is.
+PASS: window.onblur should be 'null' and is.
+PASS: window.onchange should be 'null' and is.
+PASS: window.onclick should be 'null' and is.
+PASS: window.ondblclick should be 'null' and is.
+PASS: window.onerror should be 'null' and is.
+PASS: window.onfocus should be 'null' and is.
+PASS: window.onkeydown should be 'null' and is.
+PASS: window.onkeypress should be 'null' and is.
+PASS: window.onkeyup should be 'null' and is.
+PASS: window.onload should be 'null' and is.
+PASS: window.onmousedown should be 'null' and is.
+PASS: window.onmousemove should be 'null' and is.
+PASS: window.onmouseout should be 'null' and is.
+PASS: window.onmouseover should be 'null' and is.
+PASS: window.onmouseup should be 'null' and is.
+PASS: window.onmousewheel should be 'null' and is.
+PASS: window.onreset should be 'null' and is.
+PASS: window.onresize should be 'null' and is.
+PASS: window.onscroll should be 'null' and is.
+PASS: window.onsearch should be 'null' and is.
+PASS: window.onselect should be 'null' and is.
+PASS: window.onsubmit should be 'null' and is.
+PASS: window.onunload should be 'null' and is.
+PASS: window.opener should be 'null' and is.
+PASS: window.outerHeight matched the expected value.
+PASS: window.outerWidth matched the expected value.
+PASS: window.pageXOffset should be '0' and is.
+PASS: window.pageYOffset should be '0' and is.
+PASS: window.personalbar should be '[object BarProp]' and is.
+PASS: window.plugins should be 'undefined' and is.
+PASS: window.screen should be '[object Screen]' and is.
+PASS: window.screenLeft matched the expected value.
+PASS: window.screenTop matched the expected value.
+PASS: window.screenX matched the expected value.
+PASS: window.screenY matched the expected value.
+PASS: window.scrollbars should be '[object BarProp]' and is.
+PASS: window.scrollX should be '0' and is.
+PASS: window.scrollY should be '0' and is.
+PASS: window.self should be '[object Window]' and is.
+PASS: window.status should be '' and is.
+PASS: window.statusbar should be '[object BarProp]' and is.
+PASS: window.toolbar should be '[object BarProp]' and is.
+PASS: window.window should be '[object Window]' and is.
+PASS: window.parent should be parentOld and is.
+PASS: window.top should be topOld and is.
+PASS: window.addEventListener should be 'function addEventListener() { [native code] }' and is.
+PASS: window.alert should be 'function alert() { [native code] }' and is.
+PASS: window.atob should be 'function atob() { [native code] }' and is.
+PASS: window.blur should be 'function blur() { [native code] }' and is.
+PASS: window.btoa should be 'function btoa() { [native code] }' and is.
+PASS: window.captureEvents should be 'function captureEvents() { [native code] }' and is.
+PASS: window.clearInterval should be 'function clearInterval() { [native code] }' and is.
+PASS: window.clearTimeout should be 'function clearTimeout() { [native code] }' and is.
+PASS: window.close should be 'function close() { [native code] }' and is.
+PASS: window.confirm should be 'function confirm() { [native code] }' and is.
+PASS: window.eval should be 'function eval() { [native code] }' and is.
+PASS: window.find should be 'function find() { [native code] }' and is.
+PASS: window.focus should be 'function focus() { [native code] }' and is.
+PASS: window.getComputedStyle should be 'function getComputedStyle() { [native code] }' and is.
+PASS: window.getMatchedCSSRules should be 'undefined' and is.
+PASS: window.getSelection should be 'function getSelection() { [native code] }' and is.
+PASS: window.moveBy should be 'function moveBy() { [native code] }' and is.
+PASS: window.moveTo should be 'function moveTo() { [native code] }' and is.
+PASS: window.open should be 'function open() { [native code] }' and is.
+PASS: window.print should be 'function print() { [native code] }' and is.
+PASS: window.prompt should be 'function prompt() { [native code] }' and is.
+PASS: window.releaseEvents should be 'function releaseEvents() { [native code] }' and is.
+PASS: window.removeEventListener should be 'function removeEventListener() { [native code] }' and is.
+PASS: window.resizeBy should be 'function resizeBy() { [native code] }' and is.
+PASS: window.resizeTo should be 'function resizeTo() { [native code] }' and is.
+PASS: window.scroll should be 'function scroll() { [native code] }' and is.
+PASS: window.scrollBy should be 'function scrollBy() { [native code] }' and is.
+PASS: window.scrollTo should be 'function scrollTo() { [native code] }' and is.
+PASS: window.setInterval should be 'function setInterval() { [native code] }' and is.
+PASS: window.setTimeout should be 'function setTimeout() { [native code] }' and is.
+PASS: window.stop should be 'function stop() { [native code] }' and is.
 MAIN WINDOW: !!-- Test ended--!!
 
