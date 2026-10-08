@@ -156,6 +156,9 @@ int QuicSessionPool::AsyncDnsJob::Run(CompletionOnceCallback callback) {
 
 void QuicSessionPool::AsyncDnsJob::SetRequestExpectations(
     QuicSessionRequest* request) {
+  if (last_attempt_failure_.has_value()) {
+    request->set_last_attempt_failure(last_attempt_failure_->rv);
+  }
   if (!host_resolution_notified_) {
     request->ExpectOnHostResolution();
   }
@@ -171,9 +174,8 @@ void QuicSessionPool::AsyncDnsJob::SetRequestExpectations(
     return;
   }
   // Promise the session creation signal only while it can still fire. That
-  // is before the host resolution signal fired, while an attempt of either
-  // connector has not finished creating its session, or while a failed
-  // session creation result is being held for later delivery.
+  // is before the host resolution signal fired, or while an attempt of either
+  // connector has not finished creating its session.
   if (!host_resolution_notified_ ||
       (fresh_state_.primary_connector &&
        fresh_state_.primary_connector->AwaitingSessionCreation()) ||
@@ -182,8 +184,7 @@ void QuicSessionPool::AsyncDnsJob::SetRequestExpectations(
       (stale_state_.primary_connector &&
        stale_state_.primary_connector->AwaitingSessionCreation()) ||
       (stale_state_.secondary_connector &&
-       stale_state_.secondary_connector->AwaitingSessionCreation()) ||
-      held_session_creation_result_.has_value()) {
+       stale_state_.secondary_connector->AwaitingSessionCreation())) {
     request->ExpectQuicSessionCreation();
   }
 }
@@ -250,7 +251,10 @@ void QuicSessionPool::AsyncDnsJob::OnServiceEndpointsUpdated() {
 
   std::optional<int> rv = ProcessServiceEndpointResults();
   if (!rv.has_value()) {
-    // Nothing to attempt yet. Wait for the next update or the final result.
+    if (!host_resolution_notified_ && LastFailureResult().has_value()) {
+      NotifyRequestsOfHostResolution(*LastFailureResult());
+    }
+    // Nothing is in flight yet. Wait for the next update or the final result.
     return;
   }
   MaybeNotifyHostResolutionAndComplete(*rv);
@@ -270,7 +274,9 @@ void QuicSessionPool::AsyncDnsJob::MaybeNotifyHostResolutionAndComplete(
     int rv) {
   if (!host_resolution_notified_) {
     auto weak_this = weak_factory_.GetWeakPtr();
-    NotifyRequestsOfHostResolution(rv);
+    NotifyRequestsOfHostResolution(
+        rv == ERR_IO_PENDING ? LastFailureResult().value_or(ERR_IO_PENDING)
+                             : rv);
     if (!weak_this) {
       return;
     }
@@ -291,21 +297,11 @@ void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
   stale_state_.secondary_connector.reset();
   RecordMetrics(rv);
   LogJobComplete(rv);
-  if (!session_creation_notified_) {
-    if (rv == OK) {
-      auto weak_this = weak_factory_.GetWeakPtr();
-      NotifyRequestsOfSessionCreation(OK);
-      if (!weak_this) {
-        return;
-      }
-    } else if (held_session_creation_result_.has_value()) {
-      // The job is completing, so no later attempt can replace this result.
-      // Deliver the held failure now.
-      auto weak_this = weak_factory_.GetWeakPtr();
-      NotifyRequestsOfSessionCreation(*held_session_creation_result_);
-      if (!weak_this) {
-        return;
-      }
+  if (!session_creation_notified_ && rv == OK) {
+    auto weak_this = weak_factory_.GetWeakPtr();
+    NotifyRequestsOfSessionCreation(OK);
+    if (!weak_this) {
+      return;
     }
   }
   if (!callback_.is_null()) {
@@ -492,19 +488,13 @@ void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(
     // The other connector already decided the signal. Its result stands.
     return;
   }
-  if (rv != OK && rv != ERR_IO_PENDING) {
-    if (features::kAsyncDnsQuicJobFastFail.Get()) {
-      NotifyRequestsOfSessionCreation(rv);
-      return;
-    }
-    // A failure signal makes the waiting requests give up on QUIC, but this
-    // job may still try another candidate. Hold the result until the job's
-    // outcome is known.
-    held_session_creation_result_ = rv;
-    net_log_.AddEventWithIntParams(
-        NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_HELD,
-        "net_error", rv);
-    return;
+  if (rv != OK && rv != ERR_IO_PENDING && !last_attempt_failure_.has_value()) {
+    // OnSessionCreationDecided() runs before OnAttemptComplete() records the
+    // failure. Populate `last_attempt_failure_` now in case a session creation
+    // callback reentrantly adds a new request to the job.
+    NetErrorDetails details;
+    connector.PopulateNetErrorDetails(&details);
+    last_attempt_failure_ = AttemptFailure{rv, details};
   }
   NotifyRequestsOfSessionCreation(rv);
 }
@@ -512,7 +502,6 @@ void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(
 void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfSessionCreation(int rv) {
   CHECK(!session_creation_notified_);
   session_creation_notified_ = true;
-  held_session_creation_result_.reset();
 
   net_log_.AddEventWithIntParams(
       NetLogEventType::

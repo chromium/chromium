@@ -727,7 +727,11 @@ int HttpStreamFactory::Job::DoInitConnection() {
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_INIT_CONNECTION);
   int result = DoInitConnectionImpl();
   if (!expect_on_quic_session_created_ && !expect_on_quic_host_resolution_) {
-    delegate_->OnConnectionInitialized(this, result);
+    int init_result =
+        result == ERR_IO_PENDING
+            ? quic_request_.last_attempt_failure().value_or(ERR_IO_PENDING)
+            : result;
+    delegate_->OnConnectionInitialized(this, init_result);
   }
   return result;
 }

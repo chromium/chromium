@@ -622,6 +622,9 @@ class HttpStreamFactoryJobControllerTest
   void TestOnConnectionInitialized(bool use_alternative_job,
                                    int rv,
                                    bool expect_immediate_resume);
+  void TestFirstQuicCandidateFails(bool async_quic_session,
+                                   bool fast_fail,
+                                   bool async_dns = false);
 };
 
 // Tests that are run with Happy Eyeballs v3 both enabled and disabled.
@@ -4673,6 +4676,151 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   TestOnConnectionInitialized(/*use_alternative_job=*/true,
                               ERR_QUIC_PROTOCOL_ERROR,
                               /*expect_immediate_resume=*/false);
+}
+
+void HttpStreamFactoryJobControllerTest::TestFirstQuicCandidateFails(
+    bool async_quic_session,
+    bool fast_fail,
+    bool async_dns) {
+  SetAsyncQuicSession(async_quic_session);
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
+      {{features::kAsyncDnsQuicJob,
+        {{"AsyncDnsQuicJobFastFail", fast_fail ? "true" : "false"}}}},
+      {features::kAdditionalDelayMainJob});
+
+  session_deps_.host_resolver->set_synchronous_mode(!async_dns);
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "www.google.com", "192.168.0.1,192.168.0.2", "");
+
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
+
+  quic_data2_ = std::make_unique<MockQuicData>(version_);
+  if (async_quic_session) {
+    quic_data2_->AddConnect(ASYNC, ERR_IO_PENDING);
+  } else {
+    quic_data2_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  }
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+
+  Initialize(request_info);
+
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_has_quic_ever_worked_on_current_network(true);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(100);
+  session_->http_server_properties()->SetServerNetworkStats(
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      NetworkAnonymizationKey(), stats);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_TRUE(job_controller_->alternative_job());
+
+  if (fast_fail) {
+    if (async_quic_session || async_dns) {
+      // With AsyncQuicSession or asynchronous DNS, the first candidate's
+      // failure is reported on a posted task; once it runs, the main job is
+      // resumed with 0 delay.
+      EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+      base::RunLoop run_loop;
+      EXPECT_CALL(*job_factory_.main_job(), Resume())
+          .Times(1)
+          .WillOnce([this, &run_loop]() {
+            job_factory_.main_job()->DoResume();
+            run_loop.Quit();
+          });
+      FastForwardBy(base::TimeDelta());
+      run_loop.Run();
+    } else {
+      // With SyncQuicSession and synchronous DNS, the first candidate fails
+      // synchronously during `alternative_job_->Start()` before
+      // `main_job_->Start()` enters its waiting state, clearing
+      // `main_job_wait_time_` so `main_job_` never waits.
+      EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+    }
+  } else {
+    EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+    EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+    FastForwardBy(base::TimeDelta());
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(*job_factory_.main_job(), Resume())
+        .Times(1)
+        .WillOnce([this, &run_loop]() {
+          job_factory_.main_job()->DoResume();
+          run_loop.Quit();
+        });
+    FastForwardBy(base::Milliseconds(150));
+    run_loop.Run();
+  }
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsOnDnsCacheHitSyncQuicSessionFastFail) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/false,
+                              /*fast_fail=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsOnDnsCacheHitAsyncQuicSessionFastFail) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/true,
+                              /*fast_fail=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsOnDnsCacheHitSyncQuicSessionDelayedByDefault) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/false,
+                              /*fast_fail=*/false);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsOnDnsCacheHitAsyncQuicSessionDelayedByDefault) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/true,
+                              /*fast_fail=*/false);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsAsyncDnsSyncQuicSessionFastFail) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/false,
+                              /*fast_fail=*/true,
+                              /*async_dns=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsAsyncDnsAsyncQuicSessionFastFail) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/true,
+                              /*fast_fail=*/true,
+                              /*async_dns=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsAsyncDnsSyncQuicSessionDelayedByDefault) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/false,
+                              /*fast_fail=*/false,
+                              /*async_dns=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       FirstQuicCandidateFailsAsyncDnsAsyncQuicSessionDelayedByDefault) {
+  TestFirstQuicCandidateFails(/*async_quic_session=*/true,
+                              /*fast_fail=*/false,
+                              /*async_dns=*/true);
 }
 
 // Test that main job is blocked for kMaxDelayTimeForMainJob(3s) if

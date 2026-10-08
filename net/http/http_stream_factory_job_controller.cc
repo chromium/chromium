@@ -685,6 +685,7 @@ void HttpStreamFactory::JobController::MaybeResumeMainJob(
   }
 
   main_job_is_blocked_ = false;
+  main_job_wait_time_ = delay;
 
   if (!main_job_->is_waiting()) {
     // There are two cases where the main job is not in WAIT state:
@@ -694,8 +695,6 @@ void HttpStreamFactory::JobController::MaybeResumeMainJob(
     //      to be resumed.
     return;
   }
-
-  main_job_wait_time_ = delay;
 
   ResumeMainJobLater(main_job_wait_time_);
 }

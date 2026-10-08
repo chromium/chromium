@@ -211,8 +211,8 @@ class QuicSessionPool::AsyncDnsJob
 
   // Called by `connector` when its attempt finished creating its session.
   // ERR_IO_PENDING means the session was created and its crypto handshake
-  // is still in flight. A failed result is held until the job's outcome is
-  // known, because a later attempt may still create a session.
+  // is still in flight. The first decision fires the one-shot session creation
+  // signal.
   void OnSessionCreationDecided(int rv, const EndpointConnector& connector);
 
   // Called by `connector` when it settled successfully or when it ran out of
@@ -318,7 +318,8 @@ class QuicSessionPool::AsyncDnsJob
   // no attempt failed.
   std::optional<int> LastFailureResult() const;
 
-  // Delivers any undelivered session creation result and completes the job.
+  // Notifies requests of session creation if the job succeeded without an
+  // attempt deciding it (e.g. via pooling), and completes the job.
   void CompleteJob(int rv);
 
   // Delivers the host resolution signal if not already notified, and completes
@@ -367,9 +368,6 @@ class QuicSessionPool::AsyncDnsJob
   // Set when the one-shot session creation signal fired. Later creation
   // results are dropped.
   bool session_creation_notified_ = false;
-  // A failed session creation result waiting for the job's outcome. Set
-  // while another attempt could still create a session.
-  std::optional<int> held_session_creation_result_;
   // Cleared after the first IP pooling check that saw endpoints. Later
   // checks do not record negative metric entries.
   bool log_negative_ip_pool_result_ = true;

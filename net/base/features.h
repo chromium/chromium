@@ -430,8 +430,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncQuicSession);
 // HostResolver::ServiceEndpointRequest, for direct QUIC sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncDnsQuicJob);
 
-// Whether AsyncDnsJob notifies waiting requests immediately on the first
-// attempt's session creation failure instead of holding the error.
+// Whether HttpStreamFactory::JobController resumes the main job without delay
+// when a QUIC job reports a connection initialization failure.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kAsyncDnsQuicJobFastFail);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

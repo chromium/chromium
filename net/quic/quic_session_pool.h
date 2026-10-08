@@ -271,6 +271,16 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
     return dns_resolution_end_time_;
   }
 
+  // Set by `AsyncDnsJob` when a prior candidate attempt has already failed at
+  // the time request expectations are configured, allowing
+  // `HttpStreamFactory::Job::DoInitConnection()` to surface that failure to
+  // `OnConnectionInitialized()` even when `Request()` returns `ERR_IO_PENDING`
+  // for a subsequent candidate.
+  void set_last_attempt_failure(int rv) { last_attempt_failure_ = rv; }
+  std::optional<int> last_attempt_failure() const {
+    return last_attempt_failure_;
+  }
+
   // Checks that the request is only added to, and removed from, a job once.
   // See https://crbug.com/404586727.
   void AddedToJob() {
@@ -299,6 +309,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
 
   base::TimeTicks dns_resolution_start_time_;
   base::TimeTicks dns_resolution_end_time_;
+  std::optional<int> last_attempt_failure_;
 
   // Set in Request(). If true, then OnHostResolutionComplete() is expected to
   // be called in the future.

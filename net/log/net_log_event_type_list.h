@@ -2643,15 +2643,6 @@ EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SERVICE_ENDPOINT_REQUEST_FINISHED)
 //   }
 EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_HOST_RESOLUTION_SIGNALED)
 
-// This event indicates that an AsyncDnsJob held a failed session creation
-// result, because another attempt may still create a session.
-//
-// The event parameters are:
-//   {
-//     "net_error": <Net error code the held result carries>,
-//   }
-EVENT_TYPE(QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_HELD)
-
 // This event indicates that an AsyncDnsJob fired the session creation signal
 // of its requests. ERR_IO_PENDING means the session was created and its
 // cryptographic handshake is still running.

@@ -229,8 +229,9 @@ void SocketDataProvider::DetachSocket() {
 SocketDataProvider::SocketDataProvider() = default;
 
 SocketDataProvider::~SocketDataProvider() {
-  if (socket_)
-    socket_->OnDataProviderDestroyed();
+  if (socket_) {
+    socket_.ExtractAsDangling()->OnDataProviderDestroyed();
+  }
 }
 
 bool SocketDataProvider::IsNextReadAsyncOrPause() const {
@@ -2163,6 +2164,7 @@ void MockUDPClientSocket::OnConnectComplete(const MockConnect& data) {
 
 void MockUDPClientSocket::OnDataProviderDestroyed() {
   data_ = nullptr;
+  pending_connect_callback_.Reset();
 }
 
 int MockUDPClientSocket::CompleteRead() {
