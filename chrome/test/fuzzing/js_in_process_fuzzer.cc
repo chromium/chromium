@@ -16,6 +16,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -129,6 +135,30 @@ void JsInProcessFuzzer::SetUpOnMainThread() {
 
   GURL url = embedded_https_test_server().GetURL("/mojo_fuzzer.html");
   CHECK(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Grant all permissions so that fuzzed JS can reach permission-gated APIs.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::PermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  HostContentSettingsMap* host_content_settings_map =
+      permissions::PermissionsClient::Get()->GetSettingsMap(
+          web_contents->GetBrowserContext());
+  content_settings::ContentSettingsRegistry* content_settings_registry =
+      content_settings::ContentSettingsRegistry::GetInstance();
+  for (int i = static_cast<int>(ContentSettingsType::kMinValue);
+       i <= static_cast<int>(ContentSettingsType::kMaxValue); i++) {
+    auto content_settings_type = static_cast<ContentSettingsType>(i);
+    const content_settings::ContentSettingsInfo* content_settings_info =
+        content_settings_registry->Get(content_settings_type);
+    if (content_settings_info &&
+        content_settings_info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW)) {
+      host_content_settings_map->SetDefaultContentSetting(
+          content_settings_type, CONTENT_SETTING_ALLOW);
+    }
+  }
 #if BUILDFLAG(IS_FUZZILLI)
   // Fuzzilli needs to see this. Unfortunately, we install a signal handler at
   // //content/public/test/browser_test_base.cc that exits when one of those
