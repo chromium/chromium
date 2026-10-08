@@ -236,6 +236,7 @@ struct TestParams {
   bool no_webview = false;
   bool skills_v2 = false;
   bool enable_embedded_pdf_bytes_extraction = false;
+  bool enable_ssr = false;
 };
 
 class WithTestParams : public testing::WithParamInterface<TestParams> {
@@ -247,6 +248,11 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
       enabled_features.push_back(features::kGlicNoWebview);
     } else {
       disabled_features.push_back(features::kGlicNoWebview);
+    }
+    if (GetParam().enable_ssr) {
+      enabled_features.push_back(features::kGlicSsr);
+    } else {
+      disabled_features.push_back(features::kGlicSsr);
     }
     test_param_features_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -277,6 +283,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.enable_embedded_pdf_bytes_extraction) {
       result.push_back("EnableEmbeddedPdfBytesExtraction");
+    }
+    if (info.param.enable_ssr) {
+      result.push_back("EnableSsr");
     }
     if (result.empty()) {
       return "Default";
@@ -3649,7 +3658,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
   ExecuteJsTest({.params = base::Value(
                      base::DictValue().Set("rpcUrls", std::move(rpc_urls)))});
 
-  auto request_header_matcher = testing::AllOf(
+  auto base_header_matcher = testing::AllOf(
       testing::Contains(testing::Pair(testing::StrCaseEq("x-glic"), "1")),
       testing::Contains(testing::Pair(
           testing::StrCaseEq("x-glic-chrome-channel"),
@@ -3657,8 +3666,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
       testing::Contains(
           testing::Pair(testing::StrCaseEq("x-glic-chrome-version"),
                         version_info::GetVersionNumber())),
-      testing::Contains(testing::Pair(
-          testing::StrCaseEq("x-glic-onboarding-completed"), "true")),
       testing::Not(testing::Contains(
           testing::Key(testing::StrCaseEq("x-glic-onboarding-arm")))));
 
@@ -3673,17 +3680,24 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
     return it == captured_requests.end() ? nullptr : &(*it);
   };
 
-  auto* main_request = find_request(GetGuestURL().GetPath());
-  ASSERT_TRUE(main_request);
-  EXPECT_THAT(main_request->headers, request_header_matcher);
+  auto check_headers = [&](const net::test_server::HttpRequest* request) {
+    ASSERT_TRUE(request);
+    EXPECT_THAT(request->headers, base_header_matcher);
+    if (GetParam().enable_ssr) {
+      EXPECT_THAT(
+          request->headers,
+          testing::Contains(testing::Pair(
+              testing::StrCaseEq("x-glic-onboarding-completed"), "true")));
+    } else {
+      EXPECT_THAT(request->headers,
+                  testing::Not(testing::Contains(testing::Key(
+                      testing::StrCaseEq("x-glic-onboarding-completed")))));
+    }
+  };
 
-  auto* rpc_request = find_request("/fake-rpc");
-  ASSERT_TRUE(rpc_request);
-  EXPECT_THAT(rpc_request->headers, request_header_matcher);
-
-  auto* cross_origin_rpc_request = find_request("/fake-rpc/cors");
-  ASSERT_TRUE(cross_origin_rpc_request);
-  EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
+  check_headers(find_request(GetGuestURL().GetPath()));
+  check_headers(find_request("/fake-rpc"));
+  check_headers(find_request("/fake-rpc/cors"));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor,
@@ -3692,18 +3706,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor,
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 
-  auto request_header_matcher = testing::AllOf(
+  auto base_header_matcher = testing::AllOf(
       testing::Contains(testing::Pair(testing::StrCaseEq("x-glic"), "1")),
       testing::Contains(testing::Pair(
           testing::StrCaseEq("x-glic-chrome-channel"),
           testing::AnyOf("unknown", "canary", "dev", "beta", "stable"))),
       testing::Contains(
           testing::Pair(testing::StrCaseEq("x-glic-chrome-version"),
-                        version_info::GetVersionNumber())),
-      testing::Contains(testing::Pair(
-          testing::StrCaseEq("x-glic-onboarding-completed"), "false")),
-      testing::Contains(
-          testing::Pair(testing::StrCaseEq("x-glic-onboarding-arm"), "2")));
+                        version_info::GetVersionNumber())));
 
   const std::vector<net::test_server::HttpRequest> captured_requests =
       requests();
@@ -3718,7 +3728,23 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor,
 
   auto* main_request = find_request(GetGuestURL().GetPath());
   ASSERT_TRUE(main_request);
-  EXPECT_THAT(main_request->headers, request_header_matcher);
+  EXPECT_THAT(main_request->headers, base_header_matcher);
+  if (GetParam().enable_ssr) {
+    EXPECT_THAT(
+        main_request->headers,
+        testing::AllOf(
+            testing::Contains(testing::Pair(
+                testing::StrCaseEq("x-glic-onboarding-completed"), "false")),
+            testing::Contains(testing::Pair(
+                testing::StrCaseEq("x-glic-onboarding-arm"), "2"))));
+  } else {
+    EXPECT_THAT(
+        main_request->headers,
+        testing::AllOf(testing::Not(testing::Contains(testing::Key(
+                           testing::StrCaseEq("x-glic-onboarding-completed")))),
+                       testing::Not(testing::Contains(testing::Key(
+                           testing::StrCaseEq("x-glic-onboarding-arm"))))));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
@@ -5339,7 +5365,16 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithRequestMonitor,
-                         DefaultTestParamSet(),
+#if BUILDFLAG(IS_ANDROID)
+                         testing::Values(TestParams{},
+                                         TestParams{.enable_ssr = true}),
+#else
+                         testing::Values(TestParams{},
+                                         TestParams{.enable_ssr = true},
+                                         TestParams{.no_webview = true},
+                                         TestParams{.no_webview = true,
+                                                    .enable_ssr = true}),
+#endif
                          &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(

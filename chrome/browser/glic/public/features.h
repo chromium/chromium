@@ -237,6 +237,9 @@ BASE_DECLARE_FEATURE(kGlicWarmOnIph);
 BASE_DECLARE_FEATURE(kGlicBackfillWarmingUsePerformanceManager);
 
 BASE_DECLARE_FEATURE(kGlicColdWarmingUsePerformanceManager);
+
+BASE_DECLARE_FEATURE(kGlicSsr);
+extern const base::FeatureParam<std::string> kGlicActionableMarkName;
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

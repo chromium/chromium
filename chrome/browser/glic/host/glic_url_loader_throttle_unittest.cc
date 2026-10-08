@@ -7,7 +7,9 @@
 #include <optional>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_request_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -28,9 +30,36 @@ namespace {
 
 class GlicURLLoaderThrottleTest : public testing::Test {
  protected:
+  GlicURLLoaderThrottleTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicSsr);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
+
+TEST_F(GlicURLLoaderThrottleTest,
+       SetHeaders_SsrDisabled_OmitsOnboardingHeaders) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicSsr);
+
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+
+  net::HttpRequestHeaders headers;
+  GlicURLLoaderThrottle::SetHeaders(&headers, &profile_);
+
+  EXPECT_EQ(headers.GetHeader(kGlicHeaderName), kGlicHeaderValue);
+  EXPECT_EQ(headers.GetHeader(kGlicVersionHeaderName),
+            version_info::GetVersionNumber());
+  EXPECT_EQ(headers.GetHeader(kGlicChannelHeaderName),
+            version_info::GetChannelString(chrome::GetChannel()));
+  EXPECT_EQ(headers.GetHeader(kGlicOnboardingCompletedHeaderName),
+            std::nullopt);
+  EXPECT_EQ(headers.GetHeader(kGlicOnboardingArmHeaderName), std::nullopt);
+}
 
 TEST_F(GlicURLLoaderThrottleTest, SetHeaders_NullProfile) {
   net::HttpRequestHeaders headers;

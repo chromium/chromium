@@ -20,8 +20,9 @@ export class GlicRequestHeaderInjector {
   private onDestroy: () => void = () => {};
   constructor(
       webview: WebViewType, private chromeVersion: string,
-      private chromeChannel: string, private onboardingCompleted: boolean,
-      private onboardingArm: string, requestTypes: string) {
+      private chromeChannel: string, private glicSsr: boolean,
+      private onboardingCompleted: boolean, private onboardingArm: string,
+      requestTypes: string) {
     if (requestTypes === '') {
       return;
     }
@@ -77,16 +78,18 @@ export class GlicRequestHeaderInjector {
         name: 'X-Glic-Chrome-Channel',
         value: this.chromeChannel,
       },
-      {
+    ];
+    if (this.glicSsr) {
+      headers.push({
         name: 'X-Glic-Onboarding-Completed',
         value: this.onboardingCompleted ? 'true' : 'false',
-      },
-    ];
-    if (this.onboardingArm) {
-      headers.push({
-        name: 'X-Glic-Onboarding-Arm',
-        value: this.onboardingArm,
       });
+      if (this.onboardingArm) {
+        headers.push({
+          name: 'X-Glic-Onboarding-Arm',
+          value: this.onboardingArm,
+        });
+      }
     }
     return headers;
   }

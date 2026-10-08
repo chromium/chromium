@@ -93,8 +93,10 @@ void GlicURLLoaderThrottle::SetHeaders(net::HttpRequestHeaders* headers,
   headers->SetHeader(kGlicVersionHeaderName, version_info::GetVersionNumber());
   headers->SetHeader(kGlicChannelHeaderName,
                      version_info::GetChannelString(chrome::GetChannel()));
-  SetOnboardingCompletedHeader(headers, profile);
-  MaybeSetOnboardingArmHeader(headers, profile);
+  if (base::FeatureList::IsEnabled(features::kGlicSsr)) {
+    SetOnboardingCompletedHeader(headers, profile);
+    MaybeSetOnboardingArmHeader(headers, profile);
+  }
 }
 
 GlicURLLoaderThrottle::GlicURLLoaderThrottle() = default;

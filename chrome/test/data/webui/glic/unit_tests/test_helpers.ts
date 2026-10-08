@@ -19,6 +19,7 @@ export function configureLoadTimeData(overrides: Record<string, any> = {}) {
         devMode: false,
         chromeVersion: '123.0.0.0',
         chromeChannel: 'stable',
+        glicSsr: false,
         onboardingCompleted: true,
         onboardingArm: '',
         glicHeaderRequestTypes: '',
