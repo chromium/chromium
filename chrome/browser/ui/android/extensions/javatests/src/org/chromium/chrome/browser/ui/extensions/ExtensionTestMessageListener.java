@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CommandLine;
@@ -32,7 +35,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionTestMessageListener implements AutoCloseable {
-    private long mNativeExtensionTestMessageListenerAndroid;
+    @JniType("::extensions::ExtensionTestMessageListenerAndroid")
+    interface NativeExtensionTestMessageListenerAndroid extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeExtensionTestMessageListenerAndroid> mNative;
 
     /**
      * @param expectedMessage The message to listen for. If null or empty, listens for any message.
@@ -44,7 +50,7 @@ public class ExtensionTestMessageListener implements AutoCloseable {
                     "ExtensionTestMessageListener must be used in tests with the --test-type"
                             + " flag.");
         }
-        mNativeExtensionTestMessageListenerAndroid =
+        mNative =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 ExtensionTestMessageListenerJni.get()
@@ -73,12 +79,7 @@ public class ExtensionTestMessageListener implements AutoCloseable {
     }
 
     public void destroy() {
-        assert mNativeExtensionTestMessageListenerAndroid != 0;
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        ExtensionTestMessageListenerJni.get()
-                                .destroy(mNativeExtensionTestMessageListenerAndroid));
-        mNativeExtensionTestMessageListenerAndroid = 0;
+        ThreadUtils.runOnUiThreadBlocking(mNative::destroy);
     }
 
     /**
@@ -87,12 +88,9 @@ public class ExtensionTestMessageListener implements AutoCloseable {
      * @return true if the message was received, false if interrupted or failed.
      */
     public boolean waitUntilSatisfied() {
-        assert mNativeExtensionTestMessageListenerAndroid != 0;
         try {
             CriteriaHelper.pollUiThread(
-                    () ->
-                            ExtensionTestMessageListenerJni.get()
-                                    .wasSatisfied(mNativeExtensionTestMessageListenerAndroid),
+                    () -> ExtensionTestMessageListenerJni.get().wasSatisfied(mNative),
                     10000L,
                     CriteriaHelper.DEFAULT_POLLING_INTERVAL);
             return true;
@@ -107,37 +105,30 @@ public class ExtensionTestMessageListener implements AutoCloseable {
      * @param message The reply message.
      */
     public void reply(String message) {
-        assert mNativeExtensionTestMessageListenerAndroid != 0;
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        ExtensionTestMessageListenerJni.get()
-                                .reply(mNativeExtensionTestMessageListenerAndroid, message));
+                () -> ExtensionTestMessageListenerJni.get().reply(mNative, message));
     }
 
     /**
      * @return The last received message.
      */
     public String getMessage() {
-        assert mNativeExtensionTestMessageListenerAndroid != 0;
         return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        ExtensionTestMessageListenerJni.get()
-                                .getMessage(mNativeExtensionTestMessageListenerAndroid));
+                () -> ExtensionTestMessageListenerJni.get().getMessage(mNative));
     }
 
     @NativeMethods
     interface Natives {
-        long create(@JniType("std::string") String expectedMessage, boolean willReply);
+        JniUniquePtr<NativeExtensionTestMessageListenerAndroid> create(
+                @JniType("std::string") String expectedMessage, boolean willReply);
 
-        void destroy(long nativeExtensionTestMessageListenerAndroid);
-
-        boolean wasSatisfied(long nativeExtensionTestMessageListenerAndroid);
+        boolean wasSatisfied(JniPtr<NativeExtensionTestMessageListenerAndroid> self);
 
         void reply(
-                long nativeExtensionTestMessageListenerAndroid,
+                JniPtr<NativeExtensionTestMessageListenerAndroid> self,
                 @JniType("std::string") String message);
 
         @JniType("std::string")
-        String getMessage(long nativeExtensionTestMessageListenerAndroid);
+        String getMessage(JniPtr<NativeExtensionTestMessageListenerAndroid> self);
     }
 }
