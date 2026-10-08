@@ -3476,13 +3476,10 @@ test("unit_tests") {
   }
 
   if (enable_compose) {
-    sources += [
-      "../browser/ui/views/compose/compose_dialog_view_unittest.cc",
-      "../common/compose/type_conversions_unittest.cc",
-    ]
+    sources += [ "../common/compose/type_conversions_unittest.cc" ]
     deps += [
       "//chrome/browser/compose:unit_tests",
-      "//chrome/browser/ui/views/compose",
+      "//chrome/browser/ui/views/compose:unit_tests",
       "//chrome/common/compose",
       "//components/compose/core/browser",
     ]
@@ -3776,11 +3773,6 @@ test("unit_tests") {
     }
   } else {
     # !is_android
-    sources += [
-      "../browser/ui/views/context_hub/save_to_memory_bank_bubble_view_unittest.cc",
-      "../browser/ui/views/infobars/infobar_view_unittest.cc",
-    ]
-
     deps += [
       "//chrome/browser/autofill/actor:unit_tests",
       "//chrome/browser/contextual_cueing:unit_tests",
@@ -4079,9 +4071,6 @@ test("unit_tests") {
 
   if (is_chromeos) {
     sources += [
-      "../browser/ui/views/mahi/mahi_condensed_menu_view_unittest.cc",
-      "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
-      "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
       "../test/base/ash/v8_unit_test.cc",
       "../test/base/ash/v8_unit_test.h",
     ]
@@ -4143,7 +4132,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/session:test_support",
       "//chrome/browser/ui/ash/wallpaper:test_support",
       "//chrome/browser/ui/browser_window/test:test_support",
-      "//chrome/browser/ui/views/mahi",
+      "//chrome/browser/ui/views/mahi:unit_tests",
       "//chrome/browser/ui/webui/about:unit_tests",
       "//chrome/browser/ui/webui/help:unit_tests",
       "//chrome/test:test_support",
@@ -4500,13 +4489,11 @@ test("unit_tests") {
   }
   if (!is_android && !is_chromeos) {
     if (is_linux || is_win || is_mac) {
-      sources +=
-          [ "../browser/ui/views/policy/enterprise_startup_dialog_unittest.cc" ]
-
       deps += [
         "//chrome/browser/ui/views/media_preview:unit_tests",
         "//chrome/browser/ui/views/media_preview/camera_preview:unit_tests",
         "//chrome/browser/ui/views/media_preview/mic_preview:unit_tests",
+        "//chrome/browser/ui/views/policy:unit_tests",
       ]
     }
 
@@ -4528,10 +4515,12 @@ test("unit_tests") {
       "//chrome/browser/ui/views/apps/app_info_dialog:unit_tests",
       "//chrome/browser/ui/views/bookmarks:unit_tests",
       "//chrome/browser/ui/views/commerce:unit_tests",
+      "//chrome/browser/ui/views/context_hub:unit_tests",
       "//chrome/browser/ui/views/controls:unit_tests",
       "//chrome/browser/ui/views/desktop_capture:unit_tests",
       "//chrome/browser/ui/views/frame:test_support",
       "//chrome/browser/ui/views/global_media_controls:unit_tests",
+      "//chrome/browser/ui/views/hats:unit_tests",
       "//chrome/browser/ui/views/indigo:unit_tests",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/infobars:unit_tests",
@@ -4577,13 +4566,6 @@ test("unit_tests") {
       "../../ui/views/controls/webview/unhandled_keyboard_event_handler_unittest.cc",
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
-      "../browser/ui/views/hats/hats_next_web_dialog_unittest.cc",
-      "../browser/ui/views/location_bar/selected_keyword_view_unittest.cc",
-      "../browser/ui/views/location_bar/webui_location_bar_unittest.cc",
-    ]
-
-    deps += [
-      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
     ]
 
     deps += [

@@ -338,7 +338,9 @@ source_set("unit_tests") {
     "icon_label_bubble_view_unittest.cc",
     "location_icon_state_helper_unittest.cc",
     "location_icon_view_unittest.cc",
+    "selected_keyword_view_unittest.cc",
     "webui_content_setting_image_control_unittest.cc",
+    "webui_location_bar_unittest.cc",
   ]
   deps = [
     ":icon_label_bubble",

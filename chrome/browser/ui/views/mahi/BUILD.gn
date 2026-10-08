@@ -61,3 +61,27 @@ source_set("browser_tests") {
     "//ui/views:view_pixel_diff_test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "mahi_condensed_menu_view_unittest.cc",
+    "mahi_menu_controller_unittest.cc",
+    "mahi_menu_view_unittest.cc",
+  ]
+  deps = [
+    ":mahi",
+    "//base",
+    "//chrome/browser/ash/mahi/web_contents/test_support",
+    "//chrome/browser/ui/ash/editor_menu:utils",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/strings",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

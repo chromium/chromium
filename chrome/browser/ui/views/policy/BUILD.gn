@@ -68,4 +68,14 @@ if (!is_chromeos) {
       "//testing/gtest",
     ]
   }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "enterprise_startup_dialog_unittest.cc" ]
+    deps = [
+      ":enterprise_startup_dialog",
+      "//chrome/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

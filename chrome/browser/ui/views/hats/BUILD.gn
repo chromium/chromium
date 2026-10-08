@@ -70,3 +70,13 @@ source_set("browser_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "hats_next_web_dialog_unittest.cc" ]
+  deps = [
+    ":hats",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}

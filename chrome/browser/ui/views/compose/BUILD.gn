@@ -42,6 +42,16 @@ source_set("impl") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "compose_dialog_view_unittest.cc" ]
+  deps = [
+    ":compose",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
