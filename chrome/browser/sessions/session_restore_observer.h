@@ -38,6 +38,19 @@ class SessionRestoreObserver {
       Profile* profile,
       bool for_app,
       const std::vector<const sessions::SessionWindow*>& windows) {}
+
+  // OnProfileSessionRestored() is called when a session restore for `profile`
+  // finishes (either after creating the restored windows and starting tab
+  // loading, or when cancelled), reporting how many normal and app windows were
+  // restored. Both counts are 0 if there was nothing to restore or if the
+  // restore was cancelled. At the point this is called, SessionRestore no
+  // longer reports `profile` as restoring, though concurrent restores of other
+  // profiles may still be in flight (see
+  // SessionRestore::IsAnySessionCurrentlyRestoring()). Restores of a session
+  // from another device do not call this.
+  virtual void OnProfileSessionRestored(Profile* profile,
+                                        int normal_windows,
+                                        int app_windows) {}
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_OBSERVER_H_

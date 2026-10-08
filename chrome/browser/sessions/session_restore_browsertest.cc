@@ -59,6 +59,7 @@
 #include "chrome/browser/sessions/app_session_service_test_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore_metrics.h"
+#include "chrome/browser/sessions/session_restore_observer.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -1106,6 +1107,235 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, WindowBoundsAreRestored) {
     EXPECT_EQ(expected_bounds, restored->GetWindow()->GetBounds());
 #endif
   }
+}
+
+namespace {
+
+// Counts the OnProfileSessionRestored() notifications sent while it is alive
+// and tracks the state observed during notifications.
+class SessionRestoreCompleteCounter : public SessionRestoreObserver {
+ public:
+  SessionRestoreCompleteCounter() { SessionRestore::AddObserver(this); }
+  ~SessionRestoreCompleteCounter() { SessionRestore::RemoveObserver(this); }
+
+  int count() const { return count_; }
+  Profile* last_profile() const { return last_profile_; }
+  int last_normal_windows() const { return last_normal_windows_; }
+  int last_app_windows() const { return last_app_windows_; }
+  bool was_restoring_in_started() const { return was_restoring_in_started_; }
+  bool was_restoring_in_callback() const { return was_restoring_in_callback_; }
+
+  // SessionRestoreObserver:
+  void OnSessionRestoreStartedLoadingTabs() override {
+    was_restoring_in_started_ =
+        SessionRestore::IsAnySessionCurrentlyRestoring();
+  }
+
+  void OnProfileSessionRestored(Profile* profile,
+                                int normal_windows,
+                                int app_windows) override {
+    ++count_;
+    last_profile_ = profile;
+    last_normal_windows_ = normal_windows;
+    last_app_windows_ = app_windows;
+    was_restoring_in_callback_ =
+        SessionRestore::IsAnySessionCurrentlyRestoring();
+  }
+
+ private:
+  int count_ = 0;
+  raw_ptr<Profile> last_profile_ = nullptr;
+  int last_normal_windows_ = 0;
+  int last_app_windows_ = 0;
+  bool was_restoring_in_started_ = false;
+  bool was_restoring_in_callback_ = true;
+};
+
+// Observes tab strip additions to sample IsAnySessionCurrentlyRestoring() while
+// a foreign tab restore is taking place.
+class ForeignTabRestoreObserver : public TabStripModelObserver {
+ public:
+  explicit ForeignTabRestoreObserver(TabStripModel* tab_strip_model)
+      : tab_strip_model_(tab_strip_model) {
+    tab_strip_model_->AddObserver(this);
+  }
+  ~ForeignTabRestoreObserver() override {
+    tab_strip_model_->RemoveObserver(this);
+  }
+
+  const std::optional<bool>& was_restoring() const { return was_restoring_; }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (!was_restoring_.has_value() &&
+        change.type() == TabStripModelChange::kInserted) {
+      was_restoring_ = SessionRestore::IsAnySessionCurrentlyRestoring();
+    }
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_model_;
+  std::optional<bool> was_restoring_;
+};
+
+}  // namespace
+
+// Restoring a session from another device is not a restore of this profile's
+// own session, so observers must not be told one completed, and
+// IsAnySessionCurrentlyRestoring() must ignore foreign restorers while they
+// are in flight.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
+                       ForeignRestoresDoNotNotifyObservers) {
+  Profile* profile = browser()->GetProfile();
+
+  GURL url1("https://a.com");
+  GURL url2("https://b.com");
+
+  SessionRestoreCompleteCounter counter;
+
+  // Restore a single foreign tab.
+  sessions::SessionTab tab;
+  tab.tab_visual_index = 0;
+  tab.current_navigation_index = 0;
+  tab.pinned = false;
+  tab.navigations.push_back(
+      ContentTestHelper::CreateNavigation(url1.spec(), "one"));
+  tab.navigations[0].set_index(0);
+
+  ForeignTabRestoreObserver tab_observer(browser()->tab_strip_model());
+  content::WebContents* tab_content = SessionRestore::RestoreForeignSessionTab(
+      browser()->tab_strip_model()->GetActiveWebContents(), tab,
+      WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(tab_content);
+  EXPECT_EQ(counter.count(), 0);
+  ASSERT_TRUE(tab_observer.was_restoring().has_value());
+  EXPECT_FALSE(*tab_observer.was_restoring());
+
+  // Restore a foreign window.
+  sessions::SessionWindow window;
+  {
+    auto window_tab = std::make_unique<sessions::SessionTab>();
+    window_tab->tab_visual_index = 0;
+    window_tab->current_navigation_index = 0;
+    window_tab->navigations.push_back(
+        ContentTestHelper::CreateNavigation(url2.spec(), "two"));
+    window.tabs.push_back(std::move(window_tab));
+  }
+  std::vector<const sessions::SessionWindow*> session;
+  session.push_back(&window);
+
+  base::test::TestFuture<std::vector<BrowserWindowInterface*>> future;
+  std::optional<bool> was_restoring_in_windows_callback;
+  SessionRestore::RestoreForeignSessionWindows(
+      profile, session.begin(), session.end(),
+      base::BindLambdaForTesting(
+          [&](std::vector<BrowserWindowInterface*> windows) {
+            was_restoring_in_windows_callback =
+                SessionRestore::IsAnySessionCurrentlyRestoring();
+            future.SetValue(std::move(windows));
+          }));
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(counter.count(), 0);
+  ASSERT_TRUE(was_restoring_in_windows_callback.has_value());
+  EXPECT_FALSE(*was_restoring_in_windows_callback);
+}
+
+// Verifies that OnProfileSessionRestored() notifies observers when a normal
+// session restore completes, reporting accurate window counts, and that
+// IsAnySessionCurrentlyRestoring() is false inside the callback.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OnProfileSessionRestored) {
+  Profile* profile = browser()->GetProfile();
+
+  SessionRestoreCompleteCounter counter;
+  EXPECT_FALSE(SessionRestore::IsAnySessionCurrentlyRestoring());
+  EXPECT_EQ(counter.count(), 0);
+
+  BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
+  ASSERT_TRUE(new_browser);
+
+  EXPECT_EQ(counter.count(), 1);
+  EXPECT_EQ(counter.last_profile(), profile);
+  EXPECT_EQ(counter.last_normal_windows(), 1);
+  EXPECT_EQ(counter.last_app_windows(), 0);
+  EXPECT_TRUE(counter.was_restoring_in_started());
+  EXPECT_FALSE(counter.was_restoring_in_callback());
+  EXPECT_FALSE(SessionRestore::IsAnySessionCurrentlyRestoring());
+}
+
+// Verifies that OnProfileSessionRestored() reports correct window counts when
+// restoring both normal and app windows, and that
+// IsAnySessionCurrentlyRestoring() returns false inside the observer callback.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
+                       OnProfileSessionRestoredWithNormalAndAppWindows) {
+  Profile* profile = browser()->GetProfile();
+
+  // Create two trusted app popup browsers of TYPE_APP so the app window count
+  // is 2, distinct from the 1 normal browser window.
+  BrowserWindowCreateParams app_params1 =
+      BrowserWindowCreateParams::CreateForApp(
+          "TestApp1", /*trusted_source=*/true, gfx::Rect(), profile,
+          /*user_gesture=*/true);
+  BrowserWindowInterface* app_browser1 =
+      CreateBrowserWindow(std::move(app_params1));
+  AddBlankTabAndShow(app_browser1);
+  ASSERT_EQ(app_browser1->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+
+  BrowserWindowCreateParams app_params2 =
+      BrowserWindowCreateParams::CreateForApp(
+          "TestApp2", /*trusted_source=*/true, gfx::Rect(), profile,
+          /*user_gesture=*/true);
+  BrowserWindowInterface* app_browser2 =
+      CreateBrowserWindow(std::move(app_params2));
+  AddBlankTabAndShow(app_browser2);
+  ASSERT_EQ(app_browser2->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+
+  ASSERT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Simulate an exit by shutting down session services so closing windows
+  // does not discard them from the saved session.
+  SessionServiceFactory::ShutdownForProfile(profile);
+  AppSessionServiceFactory::ShutdownForProfile(profile);
+
+  // Keep the profile and process alive while all windows are closed.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  CloseBrowserSynchronously(app_browser1);
+  CloseBrowserSynchronously(app_browser2);
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Start the services in restore mode.
+  AppSessionServiceFactory::GetForProfileForSessionRestore(profile);
+  SessionServiceFactory::GetForProfileForSessionRestore(profile);
+
+  SessionRestoreCompleteCounter counter;
+  EXPECT_FALSE(SessionRestore::IsAnySessionCurrentlyRestoring());
+  EXPECT_EQ(counter.count(), 0);
+
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  EXPECT_EQ(counter.count(), 1);
+  EXPECT_EQ(counter.last_profile(), profile);
+  EXPECT_EQ(counter.last_normal_windows(), 1);
+  EXPECT_EQ(counter.last_app_windows(), 2);
+  EXPECT_TRUE(counter.was_restoring_in_started());
+  EXPECT_FALSE(counter.was_restoring_in_callback());
+  EXPECT_FALSE(SessionRestore::IsAnySessionCurrentlyRestoring());
+  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
 }
 
 namespace {

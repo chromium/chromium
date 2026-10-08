@@ -121,6 +121,11 @@ class SessionRestore {
   // Returns true if we're in the process of restoring |profile|.
   static bool IsRestoring(const Profile* profile);
 
+  // Returns true if any profile's own last session is currently being
+  // restored. Restores of sessions from other devices (foreign sessions) are
+  // ignored.
+  static bool IsAnySessionCurrentlyRestoring();
+
   // Returns true if any session has been restored during the current process
   // lifetime.
   static bool IsAnySessionRestored();
