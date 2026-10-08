@@ -4237,14 +4237,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(WaitForAttach(tab_strip2, 4));
 
   // Drag to the trailing end of the tabstrip to ensure we're in a
-  // predictable spot within the strip. Because the split tab is dragged by its
-  // leading half (`tab_at(0)`), offset toward the trailing edge of `tab_at(3)`
-  // (staying strictly inside `tab_strip2`) so the combined split tab's leading
-  // edge stays past the trailing insertion threshold.
+  // predictable spot within the strip. Target the trailing edge of `tab_strip2`
+  // directly rather than `tab_at(1)` or `tab_at(3)` because those slots may be
+  // occupied by the dragged split tabs (which are narrower than regular tabs
+  // and skipped by `SnapToIdealBounds()`).
   StopAnimating(tab_strip2);
-  ASSERT_TRUE(
-      DragInputToCenter(tab_strip2->tab_at(3),
-                        gfx::Vector2d(tab_strip2->tab_at(3)->width() / 4, 0)));
+  BrowserView::GetBrowserViewForBrowser(browser2)
+      ->GetWidget()
+      ->LayoutRootViewIfNecessary();
+  ASSERT_TRUE(DragInputToCenter(
+      tab_strip2, gfx::Vector2d(tab_strip2->width() / 2 - 10, 0)));
   // Release mouse or touch, stopping the drag session.
   ASSERT_TRUE(ReleaseInput());
 
