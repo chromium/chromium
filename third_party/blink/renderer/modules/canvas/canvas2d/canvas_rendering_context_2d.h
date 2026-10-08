@@ -246,7 +246,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // TODO(crbug.com/352263194): Migrate canvas_rendering_context_2d_test.cc
   // callsites and make this method private.
   CanvasHibernationHandler* GetHibernationHandler() const;
-  using BaseRenderingContext2D::GetSharedImageProvider;
 
   void EnableAccelerationIfPossible() override;
   base::ByteSize AllocatedBufferSize() const override;

@@ -686,10 +686,10 @@ MATCHER(IsValid, "") {
 TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
   CreateContext(kNonOpaque);
   ASSERT_TRUE(Context2D()->InitializeBacking());
-  if (Context2D()->GetSharedImageProvider()) {
-    auto* provider = Context2D()->GetSharedImageProvider();
+  if (Context2D()->GetSharedImageProviderForTesting()) {
+    auto* provider = Context2D()->GetSharedImageProviderForTesting();
     Context2D()->fillRect(3, 3, 1, 1);
-    EXPECT_EQ(provider, Context2D()->GetSharedImageProvider());
+    EXPECT_EQ(provider, Context2D()->GetSharedImageProviderForTesting());
   } else {
     auto* surface = Context2D()->GetSoftwareSurfaceForTesting();
     Context2D()->fillRect(3, 3, 1, 1);
@@ -1568,7 +1568,8 @@ TEST_P(CanvasRenderingContext2DTest,
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
-  EXPECT_FALSE(Context2D()->GetSharedImageProvider()->IsSingleBuffered());
+  EXPECT_FALSE(
+      Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 }
 
@@ -1887,13 +1888,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
+              Pointee(IsValid()));
 
   // Lose the GPU context.
   EventWatcher lost_event(CanvasElement(), kContextlost);
   LoseContext();
   EXPECT_TRUE(Context2D()->IsContextLost());
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), IsNull());
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), IsNull());
   lost_event.Wait();
 
   // Wait for context to be restored.
@@ -1904,7 +1906,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_TRUE(restored_event.WasInvoked());
     EXPECT_FALSE(Context2D()->IsContextLost());
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-    EXPECT_THAT(Context2D()->GetSharedImageProvider(), Pointee(IsValid()));
+    EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
+                Pointee(IsValid()));
   }
 }
 
@@ -1916,12 +1919,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
+              Pointee(IsValid()));
 
   EventWatcher lost_event(CanvasElement(), event_type_names::kContextlost);
   LoseContext();
   EXPECT_TRUE(Context2D()->IsContextLost());
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), IsNull());
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), IsNull());
   lost_event.Wait();
 
   // Context restoration will fail, wait for the context to give up.
@@ -1933,7 +1937,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
         BaseRenderingContext2D::kTryRestoreContextInterval);
     run_loop.Run();
     EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetSharedImageProvider(), IsNull());
+    EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), IsNull());
   }
 }
 
@@ -2143,7 +2147,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Trigger resource provider creation.
   Context2D()->fillRect(3, 3, 1, 1);
-  EXPECT_TRUE(!!Context2D()->GetSharedImageProvider());
+  EXPECT_TRUE(!!Context2D()->GetSharedImageProviderForTesting());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
   auto* box = CanvasElement().GetLayoutBoxModelObject();
@@ -2167,7 +2171,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
             painting_layer->SelfNeedsRepaint());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
-            !Context2D()->GetSharedImageProvider());
+            !Context2D()->GetSharedImageProviderForTesting());
 
   // The page is hidden so it doesn't make sense to paint, and doing so will
   // DCHECK. Update all other lifecycle phases.
@@ -2391,7 +2395,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(Context2D()->IsContextLost());
   LoseContext();
   EXPECT_TRUE(Context2D()->IsContextLost());
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), IsNull());
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), IsNull());
 
   WaitForHibernation();
   EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
@@ -2408,7 +2412,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   restored_event.Wait();
   EXPECT_FALSE(Context2D()->IsContextLost());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
+              Pointee(IsValid()));
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -3105,12 +3110,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoResourceRecyclingWhenPageHidden) {
   CreateContext(kNonOpaque);
 
-  EXPECT_THAT(Context2D()->GetSharedImageProvider(), IsNull());
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), IsNull());
 
   Context2D()->fillRect(3, 3, 1, 1);
 
   const Canvas2DResourceProvider* provider =
-      Context2D()->GetSharedImageProvider();
+      Context2D()->GetSharedImageProviderForTesting();
   ASSERT_THAT(provider, NotNull());
   EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
@@ -3237,7 +3242,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(handler.IsHibernating());
 
   WaitForHibernation();
-  EXPECT_FALSE(Context2D()->GetSharedImageProvider());
+  EXPECT_FALSE(Context2D()->GetSharedImageProviderForTesting());
   EXPECT_TRUE(handler.IsHibernating());
 
   // Wait for encoding to complete on a background thread.
@@ -3276,7 +3281,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   WaitForHibernation();
 
-  ASSERT_FALSE(Context2D()->GetSharedImageProvider());
+  ASSERT_FALSE(Context2D()->GetSharedImageProviderForTesting());
   ASSERT_TRUE(handler.IsHibernating());
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 
@@ -3437,7 +3442,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
-  EXPECT_FALSE(Context2D()->GetSharedImageProvider()->IsSingleBuffered());
+  EXPECT_FALSE(
+      Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 }
 
@@ -3721,13 +3727,14 @@ TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_TRUE(Context2D()->GetSharedImageProvider()->IsSingleBuffered());
+  EXPECT_TRUE(
+      Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
   auto frame1_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -3763,13 +3770,14 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_TRUE(Context2D()->GetSharedImageProvider()->IsSingleBuffered());
+  EXPECT_TRUE(
+      Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
   auto frame1_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
-      Context2D()->GetSharedImageProvider()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -4025,7 +4033,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, FlushForImage) {
 
   src_context->fillRect(0, 0, 10, 10);
 
-  PaintImage paint_image = src_context->GetSharedImageProvider()
+  PaintImage paint_image = src_context->GetSharedImageProviderForTesting()
                                ->Snapshot()
                                ->PaintImageForCurrentFrame();
   PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
