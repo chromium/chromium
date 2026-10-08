@@ -5,16 +5,22 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_
 
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/inference/base_model_executor_helpers.h"
 #include "components/optimization_guide/core/inference/execution_status.h"
 #include "components/optimization_guide/core/inference/tflite_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/tflite/src/tensorflow/lite/c/common.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h"
 
 namespace optimization_guide {
 
@@ -23,18 +29,18 @@ namespace optimization_guide {
 // |ModelHandler|, whereas the handle is the actual class that calling code
 // would own and call into.
 template <class OutputType, class InputType>
-class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
-                          public InferenceDelegate<OutputType, InputType> {
+class BaseModelExecutor
+    : public TFLiteModelExecutor<OutputType,
+                                 InputType,
+                                 tflite::task::core::TfLiteEngine> {
  public:
-  using ModelExecutionTask =
-      tflite::task::core::BaseTaskApi<OutputType, InputType>;
+  using ModelExecutionTask = tflite::task::core::TfLiteEngine;
 
   BaseModelExecutor() = default;
   ~BaseModelExecutor() override = default;
   BaseModelExecutor(const BaseModelExecutor&) = delete;
   BaseModelExecutor& operator=(const BaseModelExecutor&) = delete;
 
- public:
   // TFLiteModelExecutor:
   void InitializeAndMoveToExecutionThread(
       std::optional<base::TimeDelta> model_inference_timeout,
@@ -44,7 +50,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
     num_threads_ = features::OverrideNumThreadsForOptTarget(optimization_target)
                        .value_or(-1);
-    TFLiteModelExecutor<OutputType, InputType>::
+    TFLiteModelExecutor<OutputType, InputType, ModelExecutionTask>::
         InitializeAndMoveToExecutionThread(
             model_inference_timeout, optimization_target,
             model_loading_task_runner, execution_task_runner,
@@ -55,14 +61,30 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
   std::optional<OutputType> Execute(ModelExecutionTask* execution_task,
                                     ExecutionStatus* out_status,
                                     InputType input) override {
-    return static_cast<GenericModelExecutionTask<OutputType, InputType>*>(
-               execution_task)
-        ->Execute(this, out_status, input);
+    if (!Preprocess(execution_task->GetInputs(), input)) {
+      *out_status = ExecutionStatus::kErrorUnknown;
+      return std::nullopt;
+    }
+    absl::Status status =
+        execution_task->interpreter_wrapper()->InvokeWithoutFallback();
+    if (absl::IsCancelled(status)) {
+      *out_status = ExecutionStatus::kErrorCancelled;
+      return std::nullopt;
+    }
+    if (!status.ok()) {
+      *out_status = ExecutionStatus::kErrorUnknown;
+      return std::nullopt;
+    }
+    std::optional<OutputType> output =
+        Postprocess(execution_task->GetOutputs());
+    *out_status =
+        output ? ExecutionStatus::kSuccess : ExecutionStatus::kErrorUnknown;
+    return output;
   }
 
   using BuildModelExecutionTaskCallback =
-      typename TFLiteModelExecutor<OutputType,
-                                   InputType>::BuildModelExecutionTaskCallback;
+      typename TFLiteModelExecutor<OutputType, InputType, ModelExecutionTask>::
+          BuildModelExecutionTaskCallback;
 
   BuildModelExecutionTaskCallback GetBuildModelExecutionTaskCallback()
       override {
@@ -70,11 +92,14 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
                                num_threads_);
   }
 
-  // InferenceDelegate:
-  bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  InputType input) override = 0;
-  std::optional<OutputType> Postprocess(
-      const std::vector<const TfLiteTensor*>& output_tensors) override = 0;
+  // Preprocesses |input| into |input_tensors|. Returns true on success.
+  virtual bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
+                          InputType input) = 0;
+
+  // Postprocesses |output_tensors| into the desired |OutputType|, returning
+  // std::nullopt on error.
+  virtual std::optional<OutputType> Postprocess(
+      const std::vector<const TfLiteTensor*>& output_tensors) = 0;
 
  private:
   static base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
@@ -107,8 +132,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
       return base::unexpected(ExecutionStatus::kErrorUnknown);
     }
 
-    return std::make_unique<GenericModelExecutionTask<OutputType, InputType>>(
-        std::move(tflite_engine));
+    return std::move(tflite_engine);
   }
 
   // -1 tells TFLite to use its own default number of threads.

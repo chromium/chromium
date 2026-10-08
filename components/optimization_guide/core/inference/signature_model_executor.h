@@ -20,8 +20,7 @@ namespace optimization_guide {
 template <class OutputType, class InputType>
 class SignatureModelExecutor : public BaseModelExecutor<OutputType, InputType> {
  public:
-  using ModelExecutionTask =
-      tflite::task::core::BaseTaskApi<OutputType, InputType>;
+  using ModelExecutionTask = tflite::task::core::TfLiteEngine;
 
   SignatureModelExecutor() = default;
   ~SignatureModelExecutor() override = default;
@@ -53,9 +52,7 @@ class SignatureModelExecutor : public BaseModelExecutor<OutputType, InputType> {
                                     ExecutionStatus* out_status,
                                     InputType input) override {
     tflite::SignatureRunner* signature_runner =
-        static_cast<GenericModelExecutionTask<OutputType, InputType>*>(
-            execution_task)
-            ->GetSignatureRunner(GetSignature());
+        execution_task->interpreter()->GetSignatureRunner(GetSignature());
     if (!signature_runner) {
       *out_status = ExecutionStatus::kErrorModelFileNotValid;
       return std::nullopt;

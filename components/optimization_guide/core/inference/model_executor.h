@@ -23,8 +23,8 @@ namespace optimization_guide {
 // class is meant to be used and owned by an instance of |ModelHandler|. A
 // ModelExecutor must be passed to a ModelHandler's constructor, this design
 // allows the implementer of a ModelExecutor to define how the model is built
-// and executed. See also tflite_model_executor.h, base_model_executor.h, and
-// base_model_executor_helpers.h in this directory for helpful derived classes.
+// and executed. See also tflite_model_executor.h and base_model_executor.h in
+// this directory for helpful derived classes.
 //
 // Lifetime: This class can be constructed on any thread but cannot do anything
 // useful until |InitializeAndMoveToExecutionThread| is called. After that

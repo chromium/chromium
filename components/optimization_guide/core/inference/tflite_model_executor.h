@@ -307,8 +307,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   }
 
  protected:
-  using ModelExecutionTask =
-      tflite::task::core::BaseTaskApi<OutputType, InputType>;
+  using ModelExecutionTask = ModelExecutionTaskType;
 
   // Executes the model using |execution_task| on |args|, returning the model
   // output and setting |out_status| with the status of the execution attempt.

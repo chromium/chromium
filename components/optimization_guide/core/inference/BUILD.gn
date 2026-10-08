@@ -36,7 +36,6 @@ static_library("inference") {
   configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
   sources = [
     "base_model_executor.h",
-    "base_model_executor_helpers.h",
     "bert_model_executor.cc",
     "bert_model_executor.h",
     "bert_model_handler.cc",
