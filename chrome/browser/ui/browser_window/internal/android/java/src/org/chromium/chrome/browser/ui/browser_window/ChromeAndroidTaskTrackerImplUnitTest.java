@@ -21,12 +21,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -39,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNative
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowShowState;
 
@@ -203,6 +207,19 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
+    public void createPendingTask_requestsUnsupportedShowState_throwsException() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.INACTIVE);
+
+        // Act and Assert.
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> createPendingTaskWithExistingTask(mockParams));
+    }
+
+    @Test
     public void createPendingTask_requestsUnsupportedWindowType_throwsException() {
         // Arrange.
         AndroidBrowserWindowCreateParams mockCreateParams =
@@ -213,6 +230,44 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> createPendingTaskWithExistingTask(mockCreateParams));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void createPendingTask_requestsMaximizedShowState_createsPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MAXIMIZED);
+
+        // Act.
+        var task =
+                (ChromeAndroidTaskImpl)
+                        assertNonNull(createPendingTaskWithExistingTask(mockParams));
+
+        // Assert.
+        var pendingActionManager = task.getPendingActionManagerForTesting();
+        assertTrue(pendingActionManager.isActionRequested(PendingAction.MAXIMIZE));
+        assertEquals(PendingAction.MAXIMIZE, pendingActionManager.getPendingActionsForTesting()[0]);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void createPendingTask_requestsMinimizedShowState_createsPendingAction() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MINIMIZED);
+
+        // Act.
+        var task =
+                (ChromeAndroidTaskImpl)
+                        assertNonNull(createPendingTaskWithExistingTask(mockParams));
+
+        // Assert.
+        var pendingActionManager = task.getPendingActionManagerForTesting();
+        assertTrue(pendingActionManager.isActionRequested(PendingAction.MINIMIZE));
+        assertEquals(PendingAction.MINIMIZE, pendingActionManager.getPendingActionsForTesting()[0]);
     }
 
     @Test
@@ -785,6 +840,16 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertEquals("The pointer array should only contain the alive task.", 1, ptrs.length);
     }
 
+    @Test
+    public void obtainTask_fromPendingState_dispatchesPendingShowInactive() {
+        doTestDispatchPendingShowInactiveOrDeactivate(PendingAction.SHOW_INACTIVE);
+    }
+
+    @Test
+    public void obtainTask_fromPendingState_dispatchesPendingDeactivate() {
+        doTestDispatchPendingShowInactiveOrDeactivate(PendingAction.DEACTIVATE);
+    }
+
     /**
      * @see #createPendingTaskWithExistingTask(AndroidBrowserWindowCreateParams, JniOnceCallback)
      */
@@ -812,5 +877,53 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         return mChromeAndroidTaskTracker.createPendingTask(
                 createParams, taskCreationCallbackForNative);
+    }
+
+    private void doTestDispatchPendingShowInactiveOrDeactivate(@PendingAction int action) {
+        assert action == PendingAction.SHOW_INACTIVE || action == PendingAction.DEACTIVATE;
+        // Arrange: Create live task and make it the top resumed task.
+        int initialTopResumedTaskId = 0;
+        var initialTopResumedActivityScopedObjects =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        initialTopResumedTaskId);
+        var initialTopResumedTask =
+                (ChromeAndroidTaskImpl)
+                        mChromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.NORMAL,
+                                initialTopResumedActivityScopedObjects,
+                                /* pendingId= */ null);
+        initialTopResumedTask.onTopResumedActivityChangedWithNative(true);
+        var mockWindowAndroid = assumeNonNull(initialTopResumedTask.getTopActivityWindowAndroid());
+        var mockActivity = assumeNonNull(mockWindowAndroid.getActivity().get());
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        // Arrange: Create pending task.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var pendingTask =
+                assertNonNull(mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
+        // Arrange: Request SHOW_INACTIVE or DEACTIVATE on the pending task.
+        if (action == PendingAction.SHOW_INACTIVE) {
+            pendingTask.showInactive();
+        } else {
+            pendingTask.deactivate();
+        }
+
+        // Act: Simulate newly created activity gains focus.
+        mFakeTime.advanceMillis(100);
+
+        var newActivityScopedObjects =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        /* taskId= */ 2, mockParams.getProfile());
+        var newTask =
+                (ChromeAndroidTaskImpl)
+                        mChromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.NORMAL,
+                                newActivityScopedObjects,
+                                assumeNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId);
+        newTask.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: Penultimately activated task gets activated.
+        verify(mockActivityManager).moveTaskToFront(initialTopResumedTaskId, 0);
     }
 }
