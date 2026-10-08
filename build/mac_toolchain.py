@@ -74,48 +74,6 @@ TOOLCHAIN_ROOT = os.path.join(BASE_DIR, 'mac_files')
 # Note the trailing \n!
 PARANOID_MODE = '$ParanoidMode CheckIntegrity\n'
 
-XCODE_LICENSE_PLIST_PATH = '/Library/Preferences/com.apple.dt.Xcode.plist'
-GM_VERSION_KEY = 'IDEXcodeVersionForAgreedToGMLicense'
-GM_LICENSE_KEY = 'IDELastGMLicenseAgreedTo'
-PTR_VERSION_KEY = 'IDEXcodeVersionForAgreedToPTRLicense'
-PTR_LICENSE_KEY = 'IDELastPTRLicenseAgreedTo'
-
-
-def _ParseVersion(version):
-    """Parses a dot-separated version string into a tuple of integers."""
-    return tuple(int(v) for v in version.split('.'))
-
-
-def _IsLicenseAccepted(license_plist_path, target_xcode_version):
-    """Returns True if `license_plist_path` covers `target_xcode_version`.
-
-    Starting in Xcode 26, `xcodebuild -license accept` records both `PTR` and
-    `GM` license keys, and `DVTSystemPrerequisites.framework` checks
-    `IDEXcodeVersionForAgreedToPTRLicense` before
-    `IDEXcodeVersionForAgreedToGMLicense`. If
-    `IDEXcodeVersionForAgreedToPTRLicense` is present with an older version than
-    `target_xcode_version`, system `xcrun` ignores the newer
-    `IDEXcodeVersionForAgreedToGMLicense` and fails when
-    `IDELastGMLicenseAgreedTo` does not match the system Xcode's `licenseID`.
-    """
-    if not os.path.exists(license_plist_path):
-        return False
-
-    current_license_plist = LoadPList(license_plist_path)
-    gm_version = current_license_plist.get(GM_VERSION_KEY)
-    if gm_version is None:
-        return False
-
-    target_version = _ParseVersion(target_xcode_version)
-    if _ParseVersion(gm_version) < target_version:
-        return False
-
-    ptr_version = current_license_plist.get(PTR_VERSION_KEY)
-    if ptr_version is not None and _ParseVersion(ptr_version) < target_version:
-        return False
-
-    return True
-
 
 def PlatformMeetsHermeticXcodeRequirements():
     if sys.platform != 'darwin':
@@ -226,7 +184,19 @@ def InstallXcodeBinaries():
     cipd_license_plist = LoadPList(cipd_license_path)
     cipd_license_version = cipd_license_plist['licenseID']
 
-    if _IsLicenseAccepted(XCODE_LICENSE_PLIST_PATH, cipd_xcode_version):
+    should_overwrite_license = True
+    current_license_path = '/Library/Preferences/com.apple.dt.Xcode.plist'
+    if os.path.exists(current_license_path):
+        current_license_plist = LoadPList(current_license_path)
+        xcode_version = current_license_plist.get(
+            'IDEXcodeVersionForAgreedToGMLicense'
+        )
+        if xcode_version is not None and xcode_version.split(
+            '.'
+        ) >= cipd_xcode_version.split('.'):
+            should_overwrite_license = False
+
+    if not should_overwrite_license:
         return 0
 
     # Use puppet's sudoers script to accept the license if its available.
@@ -239,31 +209,30 @@ def InstallXcodeBinaries():
             cipd_license_version,
         ]
         subprocess.check_call(args)
-        if _IsLicenseAccepted(XCODE_LICENSE_PLIST_PATH, cipd_xcode_version):
-            return 0
+        return 0
 
     # Otherwise manually accept the license. This will prompt for sudo.
-    print(
-        f'Accepting new Xcode {cipd_xcode_version} ({cipd_license_version}) '
-        f'license in {XCODE_LICENSE_PLIST_PATH}. Requires sudo.'
-    )
+    print('Accepting new Xcode license. Requires sudo.')
     sys.stdout.flush()
-    for key, value in (
-        (GM_VERSION_KEY, cipd_xcode_version),
-        (GM_LICENSE_KEY, cipd_license_version),
-        (PTR_VERSION_KEY, cipd_xcode_version),
-        (PTR_LICENSE_KEY, cipd_license_version),
-    ):
-        args = [
-            'sudo',
-            'defaults',
-            'write',
-            XCODE_LICENSE_PLIST_PATH,
-            key,
-            value,
-        ]
-        subprocess.check_call(args)
-    args = ['sudo', 'plutil', '-convert', 'xml1', XCODE_LICENSE_PLIST_PATH]
+    args = [
+        'sudo',
+        'defaults',
+        'write',
+        current_license_path,
+        'IDEXcodeVersionForAgreedToGMLicense',
+        cipd_xcode_version,
+    ]
+    subprocess.check_call(args)
+    args = [
+        'sudo',
+        'defaults',
+        'write',
+        current_license_path,
+        'IDELastGMLicenseAgreedTo',
+        cipd_license_version,
+    ]
+    subprocess.check_call(args)
+    args = ['sudo', 'plutil', '-convert', 'xml1', current_license_path]
     subprocess.check_call(args)
 
     return 0
