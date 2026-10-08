@@ -5,7 +5,9 @@
 #ifndef NET_LOG_NET_LOG_HEAVILY_REDACTED_ALLOWLIST_H_
 #define NET_LOG_NET_LOG_HEAVILY_REDACTED_ALLOWLIST_H_
 
-#include <array>
+#include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 
 namespace net {
 
@@ -50,56 +52,57 @@ namespace net {
 //
 // TODO(https://crbug.com/410018349): this list is probably incomplete. Add
 // more entries.
-inline constexpr std::array kNetLogHeavilyRedactedParamAllowlist = {
-    "allow_cached_response",
-    "allow_dns_over_https_upgrade",
-    "append_to_multi_label_name",
-    "attempts",
-    "backup_job",
-    "byte_count",
-    "cached",
-    "can_use_insecure_dns_transactions",
-    "can_use_secure_dns_transactions",
-    "dns_over_tls_active",
-    "dns_query_type",
-    "doh_attempts",
-    "elapsed",
-    "error_ttl_sec",
-    "expect_spdy",
-    "extraction_error",
-    "get_address_net_error",
-    "get_sts_state_result",
-    "host_found_in_hsts_bypass_list",
-    "ipv6_available",
-    "is_preconnect",
-    "is_speculative",
-    "load_flags",
-    "method",
-    "ndots",
-    "net_error",
-    "num_hosts",
-    "os_error",
-    "priority",
-    "privacy_mode",
-    "queued_transactions",
-    "request_type",
-    "rotate",
-    "secure_dns_mode",
-    "secure_dns_policy",
-    "secure",
-    "should_upgrade_to_ssl",
-    "should_wait",
-    "source_dependency",
-    "started_transactions",
-    "thread_number",
-    "timedout",
-    "timeout",
-    "transactions_needed",
-    "type",
-    "unhandled_options",
-    "use_local_ipv6",
-    "using_quic",
-};
+inline constexpr auto kNetLogHeavilyRedactedParamAllowlist =
+    base::MakeFixedFlatSet<std::string_view>({
+        "allow_cached_response",
+        "allow_dns_over_https_upgrade",
+        "append_to_multi_label_name",
+        "attempts",
+        "backup_job",
+        "byte_count",
+        "cached",
+        "can_use_insecure_dns_transactions",
+        "can_use_secure_dns_transactions",
+        "dns_over_tls_active",
+        "dns_query_type",
+        "doh_attempts",
+        "elapsed",
+        "error_ttl_sec",
+        "expect_spdy",
+        "extraction_error",
+        "get_address_net_error",
+        "get_sts_state_result",
+        "host_found_in_hsts_bypass_list",
+        "ipv6_available",
+        "is_preconnect",
+        "is_speculative",
+        "load_flags",
+        "method",
+        "ndots",
+        "net_error",
+        "num_hosts",
+        "os_error",
+        "priority",
+        "privacy_mode",
+        "queued_transactions",
+        "request_type",
+        "rotate",
+        "secure_dns_mode",
+        "secure_dns_policy",
+        "secure",
+        "should_upgrade_to_ssl",
+        "should_wait",
+        "source_dependency",
+        "started_transactions",
+        "thread_number",
+        "timedout",
+        "timeout",
+        "transactions_needed",
+        "type",
+        "unhandled_options",
+        "use_local_ipv6",
+        "using_quic",
+    });
 
 }  // namespace net
 
