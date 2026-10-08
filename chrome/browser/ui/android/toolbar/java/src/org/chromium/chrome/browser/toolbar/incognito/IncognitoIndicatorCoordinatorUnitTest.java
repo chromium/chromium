@@ -7,29 +7,15 @@ package org.chromium.chrome.browser.toolbar.incognito;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Rect;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.view.ViewTreeObserver;
-
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -57,7 +44,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -66,94 +52,35 @@ import java.util.function.Supplier;
 /** Unit tests for {@link IncognitoIndicatorCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoIndicatorCoordinatorUnitTest {
-    private static final int BUTTON_WIDTH = 40;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenario =
-            new ActivityScenarioRule<>(TestActivity.class);
-
-    @Mock private ToolbarLayout mParentToolbar;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
-    @Mock private ViewStub mIncognitoIndicatorStub;
-    @Mock private View mIncognitoIndicatorView;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private Supplier<@Nullable Tracker> mTrackerSupplier;
     @Mock private Tracker mTracker;
-    @Mock private Context mContext;
-    @Mock private Resources mResources;
-    @Mock private ViewTreeObserver mViewTreeObserver;
 
     private Activity mActivity;
+    private int mDefaultFallbackWidth;
     private IncognitoIndicatorCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        mActivityScenario.getScenario().onActivity(activity -> mActivity = spy(activity));
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        when(mParentToolbar.findViewById(eq(R.id.incognito_indicator_stub)))
-                .thenReturn(mIncognitoIndicatorStub);
-        when(mIncognitoIndicatorStub.inflate()).thenReturn(mIncognitoIndicatorView);
-        final int[] visibility = new int[] {View.GONE};
-        doAnswer(
-                        invocation -> {
-                            visibility[0] = invocation.getArgument(0);
-                            return null;
-                        })
-                .when(mIncognitoIndicatorView)
-                .setVisibility(anyInt());
-        when(mIncognitoIndicatorView.getVisibility()).thenAnswer(invocation -> visibility[0]);
-        when(mIncognitoIndicatorView.getRootView()).thenReturn(mIncognitoIndicatorView);
-        when(mIncognitoIndicatorView.isAttachedToWindow()).thenReturn(true);
-        when(mIncognitoIndicatorView.getWidth()).thenReturn(100);
-        when(mIncognitoIndicatorView.getHeight()).thenReturn(100);
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = 100;
-                            location[1] = 100;
-                            return null;
-                        })
-                .when(mIncognitoIndicatorView)
-                .getLocationInWindow(any(int[].class));
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = 100;
-                            location[1] = 100;
-                            return null;
-                        })
-                .when(mIncognitoIndicatorView)
-                .getLocationOnScreen(any(int[].class));
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, 1080, 1920);
-                            return null;
-                        })
-                .when(mIncognitoIndicatorView)
-                .getWindowVisibleDisplayFrame(any(Rect.class));
-        when(mIncognitoIndicatorView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
-        when(mIncognitoIndicatorView.getResources()).thenReturn(mResources);
-        when(mIncognitoIndicatorView.getContext()).thenAnswer(invocation -> mActivity);
-        when(mIncognitoIndicatorView.getLayoutParams())
-                .thenReturn(
-                        new ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.WRAP_CONTENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
-        when(mParentToolbar.getContext()).thenReturn(mContext);
-        when(mContext.getResources()).thenReturn(mResources);
+        ToolbarLayout parentToolbar =
+                (ToolbarLayout)
+                        mActivity.getLayoutInflater().inflate(R.layout.toolbar_tablet, null);
+        mActivity.setContentView(parentToolbar);
         when(mTrackerSupplier.get()).thenReturn(mTracker);
-        when(mResources.getDisplayMetrics()).thenReturn(new DisplayMetrics());
-        when(mResources.getDimensionPixelSize(anyInt())).thenReturn(BUTTON_WIDTH);
+        mDefaultFallbackWidth =
+                3 * mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         mCoordinator =
                 new IncognitoIndicatorCoordinator(
-                        mParentToolbar,
+                        parentToolbar,
                         mUserEducationHelper,
                         mTrackerSupplier,
                         mThemeColorProvider,
@@ -179,33 +106,31 @@ public class IncognitoIndicatorCoordinatorUnitTest {
 
         // Transition to incognito.
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
-        assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
-        verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        clearInvocations(mIncognitoIndicatorView);
+        View indicator = mCoordinator.getIncognitoIndicatorView();
+        assertNotNull("Indicator should be inflated.", indicator);
+        assertEquals(View.VISIBLE, indicator.getVisibility());
 
         // Transition back out of incognito.
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ false);
-        verify(mIncognitoIndicatorView).setVisibility(View.GONE);
+        assertEquals(View.GONE, indicator.getVisibility());
     }
 
     @Test
     public void testSetVisibility_TogglesVisibility() {
         // Start in incognito.
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
-        assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
-        verify(mIncognitoIndicatorView).setVisibility(View.GONE);
-        clearInvocations(mIncognitoIndicatorView);
+        View indicator = mCoordinator.getIncognitoIndicatorView();
+        assertNotNull("Indicator should be inflated.", indicator);
+        assertEquals(View.GONE, indicator.getVisibility());
 
         // Show toolbar buttons.
         mCoordinator.setVisibility(/* visible= */ true);
-        assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
-        verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        clearInvocations(mIncognitoIndicatorView);
+        assertSame(indicator, mCoordinator.getIncognitoIndicatorView());
+        assertEquals(View.VISIBLE, indicator.getVisibility());
 
         // Hide toolbar buttons.
         mCoordinator.setVisibility(/* visible= */ false);
-        verify(mIncognitoIndicatorView).setVisibility(View.GONE);
-        clearInvocations(mIncognitoIndicatorView);
+        assertEquals(View.GONE, indicator.getVisibility());
     }
 
     @Test
@@ -219,8 +144,6 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateVisibility_ToggleIncognito() {
-        doReturn(0).when(mIncognitoIndicatorView).getMeasuredWidth();
-
         // Start not in incognito.
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ false);
         assertEquals(0, mCoordinator.updateVisibility(500));
@@ -228,39 +151,38 @@ public class IncognitoIndicatorCoordinatorUnitTest {
 
         // Switch to incognito.
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        View indicator = mCoordinator.getIncognitoIndicatorView();
+        assertNotNull("Indicator should be inflated.", indicator);
+        // Force the indicator to measure to a width of 0 so that the fallback width is used.
+        indicator.getLayoutParams().width = 0;
         assertEquals(
                 "The coordinator should have consumed 3 times the button width by default.",
-                120,
+                mDefaultFallbackWidth,
                 mCoordinator.updateVisibility(500));
-        assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
-        verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        clearInvocations(mIncognitoIndicatorView);
+        assertEquals(View.VISIBLE, indicator.getVisibility());
 
         assertEquals(
                 "The coordinator should still consume 3 times the button width.",
-                120,
+                mDefaultFallbackWidth,
                 mCoordinator.updateVisibility(500));
-        verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        clearInvocations(mIncognitoIndicatorView);
+        assertEquals(View.VISIBLE, indicator.getVisibility());
 
-        // Update the indicator's width measured width.
-        doReturn(100).when(mIncognitoIndicatorView).getMeasuredWidth();
+        // Update the indicator's measured width.
+        indicator.getLayoutParams().width = 100;
 
         assertEquals(
                 "The coordinator should now consume the previously measured width of the"
                         + " indicator.",
                 100,
                 mCoordinator.updateVisibility(500));
-        verify(mIncognitoIndicatorView).setVisibility(View.VISIBLE);
-        clearInvocations(mIncognitoIndicatorView);
+        assertEquals(View.VISIBLE, indicator.getVisibility());
 
         // Hide the indicator when there isn't enough available width.
         assertEquals(
                 "The coordinator should consume the remaining width, but not show.",
                 50,
                 mCoordinator.updateVisibility(50));
-        verify(mIncognitoIndicatorView).setVisibility(View.GONE);
-        clearInvocations(mIncognitoIndicatorView);
+        assertEquals(View.GONE, indicator.getVisibility());
     }
 
     @Test
@@ -268,11 +190,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
         assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
 
-        final int windowCount = 1;
-        when(mResources.getQuantityString(
-                        eq(R.plurals.menu_close_all_incognito_windows), eq(windowCount), anyInt()))
-                .thenReturn("Close Incognito windows");
-        MultiWindowUtils.setInstanceCountForTesting(windowCount);
+        MultiWindowUtils.setInstanceCountForTesting(1);
 
         ModelList modelList = mCoordinator.buildMenuItems(mActivity);
         mCoordinator.createAndShowMenu(mActivity, modelList);
@@ -282,12 +200,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
 
     @Test
     public void testBuildMenuItems() {
-        final int windowCount = 5;
-        final String expectedTitle = "Close " + windowCount + " Incognito windows";
-        when(mResources.getQuantityString(
-                        R.plurals.menu_close_all_incognito_windows, windowCount, windowCount))
-                .thenReturn(expectedTitle);
-        MultiWindowUtils.setInstanceCountForTesting(windowCount);
+        MultiWindowUtils.setInstanceCountForTesting(5);
 
         ModelList items = mCoordinator.buildMenuItems(mActivity);
         assertEquals(1, items.size());
@@ -296,7 +209,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 items.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Menu item title is incorrect.",
-                expectedTitle,
+                "Close 5 Incognito windows",
                 items.get(0).model.get(ListMenuItemProperties.TITLE));
     }
 
@@ -313,7 +226,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         IphCommand command = captor.getValue();
         assertEquals(
                 FeatureConstants.IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS, command.featureName);
-        assertEquals(mIncognitoIndicatorView, command.anchorView);
+        assertEquals(mCoordinator.getIncognitoIndicatorView(), command.anchorView);
 
         // Hiding and showing again should trigger it again (though BE might block it,
         // coordinator should still request it).
@@ -329,7 +242,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         mCoordinator.setVisibility(/* visible= */ true);
 
         // Trigger click.
-        mCoordinator.onClick(mIncognitoIndicatorView);
+        mCoordinator.getIncognitoIndicatorView().performClick();
 
         // Verify event notified.
         verify(mTracker).notifyEvent(EventConstants.INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_USED);

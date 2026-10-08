@@ -8,16 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,10 +25,7 @@ import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import android.widget.PopupWindow;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,14 +68,11 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.widget.ChromePopupWindow;
-import org.chromium.ui.widget.UiWidgetFactory;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -95,7 +86,6 @@ import java.util.function.BooleanSupplier;
     ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS,
     ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ToolbarLongPressMenuHandlerUnitTest {
     private static final int URLBAR_LEFT = 100;
     private static final int URLBAR_TOP = 20;
@@ -105,21 +95,13 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     private static final int LONG_PRESS_MENU_HEIGHT = 30;
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
-    @Mock private UrlBar mUrlBar;
-    @Mock private ViewGroup mContentViewGroup;
     @Mock private BasicListMenu mBasicListMenu;
     @Mock private ViewRectProvider mViewRectProvider;
-    @Mock UiWidgetFactory mMockUiWidgetFactory;
     @Mock Profile mProfile;
     @Mock Tracker mTracker;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DisplayAndroid mDisplayAndroid;
-    private ChromePopupWindow mSpyPopupWindow;
     @Mock LocalStatePrefs.Natives mLocalStatePrefsNatives;
     @Mock PrefService mLocalPrefService;
 
@@ -127,6 +109,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
 
     private Activity mActivity;
+    private UrlBar mUrlBar;
     private boolean mShouldSuppress;
     private final BooleanSupplier mSuppressSupplier = () -> mShouldSuppress;
     private SharedPreferencesManager mSharedPreferencesManager;
@@ -135,12 +118,13 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(mActivity.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, false);
 
-        UrlBar urlBar = new UrlBarApi26(mActivity, null);
-        mUrlBar = spy(urlBar);
+        // Attach the URL bar so that the popup window can be shown anchored to it.
+        mUrlBar = new UrlBarApi26(mActivity, /* attrs= */ null);
+        mActivity.setContentView(mUrlBar);
 
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
 
@@ -197,7 +181,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @After
     public void tearDown() throws Exception {
         mSharedPreferencesManager.removeKey(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
-        UiWidgetFactory.setInstance(null);
     }
 
     @Test
@@ -216,26 +199,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Test
     @Restriction({DeviceFormFactor.PHONE})
     public void testDisplayLongpressMenu() {
-        // Spy the popupwindow
-        mSpyPopupWindow = spy(UiWidgetFactory.getInstance().createPopupWindow(mActivity));
-        UiWidgetFactory.setInstance(mMockUiWidgetFactory);
-        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
-
-        // Making sure the popupwindow is big enough to display.
-        doReturn(true).when(mUrlBar).isAttachedToWindow();
-        doReturn(mContentViewGroup).when(mSpyPopupWindow).getContentView();
-        doReturn(100).when(mContentViewGroup).getMeasuredWidth();
-        doReturn(100).when(mContentViewGroup).getMeasuredHeight();
-        doNothing()
-                .when(mSpyPopupWindow)
-                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
-
         mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
-        verify(mSpyPopupWindow).showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+        PopupWindow popupWindow = mToolbarLongPressMenuHandler.getPopupWindowForTesting();
+        assertNotNull(popupWindow);
+        assertTrue(popupWindow.isShowing());
 
         verify(mTracker).notifyEvent(EventConstants.BOTTOM_TOOLBAR_MENU_TRIGGERED);
-
-        assertNotNull(mToolbarLongPressMenuHandler.getPopupWindowForTesting());
     }
 
     @Test
@@ -483,29 +452,15 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     public void testScreenDpChange_onConfigurationChanged() {
-        // Spy the popupwindow
-        mSpyPopupWindow = spy(UiWidgetFactory.getInstance().createPopupWindow(mActivity));
-        UiWidgetFactory.setInstance(mMockUiWidgetFactory);
-        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
-
-        // Making sure the popupwindow is big enough to display.
-        doReturn(true).when(mUrlBar).isAttachedToWindow();
-        doReturn(mContentViewGroup).when(mSpyPopupWindow).getContentView();
-        doReturn(100).when(mContentViewGroup).getMeasuredWidth();
-        doReturn(100).when(mContentViewGroup).getMeasuredHeight();
-        doNothing()
-                .when(mSpyPopupWindow)
-                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
-
         mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
-        verify(mSpyPopupWindow).showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+        PopupWindow popupWindow = mToolbarLongPressMenuHandler.getPopupWindowForTesting();
+        assertNotNull(popupWindow);
+        assertTrue(popupWindow.isShowing());
 
         verify(mTracker).notifyEvent(EventConstants.BOTTOM_TOOLBAR_MENU_TRIGGERED);
 
-        assertNotNull(mToolbarLongPressMenuHandler.getPopupWindowForTesting());
-
         // Store the initial width of the popup for later verification.
-        int initialMenuWidth = mToolbarLongPressMenuHandler.getPopupWindowForTesting().getWidth();
+        int initialMenuWidth = popupWindow.getWidth();
 
         // Act: Simulate a configuration change with a smaller screen width.
         // This simulates a screen rotation or window resizing, where the screen width is reduced.
@@ -523,8 +478,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         assertFalse(mToolbarLongPressMenuHandler.getPopupWindowForTesting().isShowing());
 
         mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
-        verify(mSpyPopupWindow, times(2))
-                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+        assertTrue(mToolbarLongPressMenuHandler.getPopupWindowForTesting().isShowing());
 
         // This ensures the popup doesn't exceed the screen's bounds after a configuration change.
         assertEquals(
@@ -535,23 +489,13 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Test
     @Restriction({DeviceFormFactor.PHONE})
     public void testDestroy_dismissesPopupMenu() {
-        mSpyPopupWindow = spy(UiWidgetFactory.getInstance().createPopupWindow(mActivity));
-        UiWidgetFactory.setInstance(mMockUiWidgetFactory);
-        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
-
-        doReturn(true).when(mUrlBar).isAttachedToWindow();
-        doReturn(mContentViewGroup).when(mSpyPopupWindow).getContentView();
-        doReturn(100).when(mContentViewGroup).getMeasuredWidth();
-        doReturn(100).when(mContentViewGroup).getMeasuredHeight();
-        doNothing()
-                .when(mSpyPopupWindow)
-                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
-
         mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
-        assertNotNull(mToolbarLongPressMenuHandler.getPopupWindowForTesting());
+        PopupWindow popupWindow = mToolbarLongPressMenuHandler.getPopupWindowForTesting();
+        assertNotNull(popupWindow);
+        assertTrue(popupWindow.isShowing());
 
         mToolbarLongPressMenuHandler.destroy();
-        assertFalse(mToolbarLongPressMenuHandler.getPopupWindowForTesting().isShowing());
+        assertFalse(popupWindow.isShowing());
         verify(mActivityLifecycleDispatcher).unregister(mToolbarLongPressMenuHandler);
     }
 
