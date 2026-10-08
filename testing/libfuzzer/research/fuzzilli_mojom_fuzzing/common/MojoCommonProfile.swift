@@ -18,7 +18,7 @@
 ///
 /// Naming Conventions:
 /// 1. Group names:
-///    - Module and type name, seperated by dots (e.g.
+///    - Module and type name, separated by dots (e.g.
 ///      "mojoBase.mojom.String16", "url.mojom.Url").
 /// 2. `ILType` names:
 ///    - The unique name is the namespace concatenated with the type name, in
@@ -26,12 +26,12 @@
 ///      "SkiaMojomBitmapN32").
 ///    - ILType: `js<UniqueName>` (e.g. `jsMojoBaseMojomString16`).
 ///    - Constructors: `js<UniqueName>Constructor`.
-/// 4. `ObjectGroup` and `OptionsBag` names:
+/// 3. `ObjectGroup` and `OptionsBag` names:
 ///    - Namespace concatenated with the type name, in camelCase (e.g.
 ///      "urlMojomUrl")
-/// 5. CodeGenerator names:
+/// 4. CodeGenerator names:
 ///    - `Mojo<namespace><type name>Generator` (e.g. `MojoUrlMojomUrlGenerator`)
-/// 6. Module lists (of ObjectGroups, CodeGenerators, etc.):
+/// 5. Module lists (of ObjectGroups, CodeGenerators, etc.):
 ///    - Namespace concatenated with the registry kind, in camelCase (e.g.
 ///      `urlMojomObjectGroups`, `mojoBaseMojomCodeGenerators`).
 
