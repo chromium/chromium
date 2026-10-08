@@ -436,7 +436,9 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
     FROM bounces
     WHERE site=?
   )SQL";
-  CHECK(db_->IsSQLValid(kReadSql), base::NotFatalUntil::M158);
+  // TODO(570577090): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK(db_->IsSQLValid(kReadSql));
 
   SCOPED_UMA_HISTOGRAM_TIMER("Privacy.DIPS.Database.Operation.ReadTime");
 
