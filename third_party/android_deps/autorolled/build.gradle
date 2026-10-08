@@ -387,7 +387,6 @@ versionCache['com.squareup.okio:okio'] = '3.17.0'
 versionCache['com.squareup.okio:okio-jvm'] = '3.18.2'
 versionCache['com.squareup.wire:wire-runtime'] = '6.4.7'
 versionCache['com.squareup.wire:wire-runtime-jvm'] = '6.4.7'
-versionCache['com.squareup:javapoet'] = '1.13.0'
 versionCache['com.squareup:javawriter'] = '2.1.1'
 versionCache['io.github.eisop:dataflow-errorprone'] = '3.41.0-eisop1'
 versionCache['io.github.java-diff-utils:java-diff-utils'] = '4.12'
@@ -571,9 +570,6 @@ dependencies {
 
     // Needed by androidx and by doubledown targets.
     compileLatest 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22'
-
-    // Used by ModuleInterfaceProcessor.java
-    buildCompileLatest 'com.squareup:javapoet:1.13.0'
 
     // Used by resource shrinking.
     // buildCompileNoDepsLatest targets do not bring in any of their

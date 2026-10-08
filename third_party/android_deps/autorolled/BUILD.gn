@@ -59,13 +59,6 @@ template("define_autorolled_targets") {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_squareup_javapoet_java") {
-    jar_path = "autorolled/cipd/libs/com_squareup_javapoet/javapoet.jar"
-    output_name = "com_squareup_javapoet"
-    enable_bytecode_checks = false
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jspecify_jspecify_java") {
     jar_path = "autorolled/cipd/libs/org_jspecify_jspecify/jspecify.jar"
     output_name = "org_jspecify_jspecify"

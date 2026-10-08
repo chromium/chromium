@@ -1865,11 +1865,6 @@
         "version": "6.4.7"
     },
     {
-        "name": "javapoet",
-        "group": "com.squareup",
-        "version": "1.13.0"
-    },
-    {
         "name": "javawriter",
         "group": "com.squareup",
         "version": "2.1.1"

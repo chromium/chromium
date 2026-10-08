@@ -74,7 +74,6 @@
     "cipd/libs/com_google_truth_truth",
     "cipd/libs/com_googlecode_java_diff_utils_diffutils",
     "cipd/libs/com_squareup_curtains_curtains",
-    "cipd/libs/com_squareup_javapoet",
     "cipd/libs/com_squareup_leakcanary_leakcanary_android",
     "cipd/libs/com_squareup_leakcanary_leakcanary_android_core",
     "cipd/libs/com_squareup_leakcanary_leakcanary_android_instrumentation",
