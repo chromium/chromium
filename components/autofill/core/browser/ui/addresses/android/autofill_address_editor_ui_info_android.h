@@ -19,7 +19,6 @@ namespace autofill {
 // pass the information about the list of fields to display in the Chrome
 // address editors.
 struct COMPONENT_EXPORT(AUTOFILL) AutofillAddressEditorUiInfoAndroid {
- public:
   static jni_zero::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
       const AutofillAddressEditorUiInfoAndroid& component);

@@ -16,7 +16,6 @@ namespace autofill {
 // org.chromium.components.autofill.DropdownKeyValue. It is used to pass
 // key-value pairs to populate a dropdown list in Android.
 struct COMPONENT_EXPORT(AUTOFILL) DropdownKeyValueAndroid {
- public:
   static jni_zero::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
       const DropdownKeyValueAndroid& key_value);

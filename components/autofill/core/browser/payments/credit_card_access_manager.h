@@ -50,7 +50,6 @@ class CreditCardFormEventLogger;
 
 // TODO(crbug.com/40927041): Remove CVC from CachedServerCardInfo.
 struct CachedServerCardInfo {
- public:
   // An unmasked CreditCard.
   CreditCard card;
 

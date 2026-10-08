@@ -49,7 +49,6 @@ enum class BnplIssuerEligibilityForPage {
 
 // A struct containing a BNPL issuer and the context necessary to display it.
 struct BnplIssuerContext {
- public:
   BnplIssuerContext();
   BnplIssuerContext(BnplIssuer issuer,
                     BnplIssuerEligibilityForPage eligibility);

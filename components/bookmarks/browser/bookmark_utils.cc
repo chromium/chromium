@@ -252,7 +252,7 @@ BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
   static constexpr size_t kMaxMRUFolders = 5;
 
   std::vector<raw_ptr<const BookmarkNode>> mru_nodes =
-      bookmarks::GetMostRecentlyModifiedUserFolders(model);
+      GetMostRecentlyModifiedUserFolders(model);
   const BookmarkNode* const most_recent_node =
       mru_nodes.empty() ? nullptr : mru_nodes[0];
 
@@ -426,7 +426,7 @@ std::vector<const BookmarkNode*> GetBookmarksMatchingProperties(
 
 // Parses the provided query and returns a vector of query words.
 std::vector<std::u16string> ParseBookmarkQuery(
-    const bookmarks::QueryFields& query) {
+    const QueryFields& query) {
   std::vector<std::u16string> query_words;
   if (query.word_phrase_query) {
     query_parser::QueryParser::ParseQueryWords(

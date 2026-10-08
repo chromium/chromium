@@ -11,7 +11,6 @@ namespace autofill {
 
 // Represents all the cloud tokenization data related to the server credit card.
 struct CreditCardCloudTokenData {
- public:
   CreditCardCloudTokenData();
   CreditCardCloudTokenData(const CreditCardCloudTokenData& cloud_token_data);
   ~CreditCardCloudTokenData();
