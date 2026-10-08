@@ -5,6 +5,7 @@
 #include "ash/wm/window_mirror_view.h"
 
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -13,6 +14,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -204,6 +207,80 @@ TEST_F(WindowMirrorViewTest, ExcludeShadow) {
     EXPECT_EQ(0, CountNinePatchLayers(mirror_view->GetMirrorLayerForTesting()));
     contents_view->RemoveChildViewT(mirror_view);
   }
+}
+
+TEST_F(WindowMirrorViewTest, MinimizedWindowPreservesHiddenViewLayers) {
+  constexpr char kHiddenViewLayerName[] = "HiddenViewLayer";
+  constexpr char kChildWindowLayerName[] = "ChildWindowLayer";
+  constexpr char kGrandchildWindowLayerName[] = "GrandchildWindowLayer";
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 200, 200));
+  auto* widget_contents = widget->widget_delegate()->GetContentsView();
+
+  // Add an intentionally hidden views::View with a layer.
+  auto* hidden_view =
+      widget_contents->AddChildView(std::make_unique<views::View>());
+  hidden_view->SetPaintToLayer();
+  hidden_view->layer()->SetName(kHiddenViewLayerName);
+  hidden_view->SetVisible(false);
+
+  // Add a visible NativeViewHost hosting a child aura::Window and a
+  // grandchild aura::Window.
+  auto* native_view_host =
+      widget_contents->AddChildView(std::make_unique<views::NativeViewHost>());
+  native_view_host->SetBounds(0, 0, 100, 100);
+
+  auto child_window = std::make_unique<aura::Window>(nullptr);
+  child_window->SetType(aura::client::WINDOW_TYPE_CONTROL);
+  child_window->Init(ui::LAYER_NOT_DRAWN);
+  child_window->layer()->SetName(kChildWindowLayerName);
+
+  auto grandchild_window = std::make_unique<aura::Window>(nullptr);
+  grandchild_window->SetType(aura::client::WINDOW_TYPE_CONTROL);
+  grandchild_window->Init(ui::LAYER_SURFACE);
+  grandchild_window->layer()->SetName(kGrandchildWindowLayerName);
+  grandchild_window->Show();
+  child_window->AddChild(grandchild_window.get());
+
+  native_view_host->Attach(child_window.get());
+
+  // Minimize the widget and hide the descendant window.
+  widget->Minimize();
+  grandchild_window->Hide();
+  ASSERT_FALSE(widget->GetNativeWindow()->layer()->visible());
+  ASSERT_FALSE(child_window->layer()->visible());
+  ASSERT_FALSE(grandchild_window->layer()->visible());
+  ASSERT_FALSE(hidden_view->layer()->visible());
+
+  auto mirror_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* mirror_view =
+      mirror_widget->widget_delegate()->GetContentsView()->AddChildView(
+          std::make_unique<WindowMirrorView>(widget->GetNativeWindow()));
+  mirror_view->RecreateMirrorLayers();
+
+  ui::Layer* mirror_root = mirror_view->GetMirrorLayerForTesting();
+  ASSERT_TRUE(mirror_root);
+  EXPECT_TRUE(mirror_root->visible());
+  EXPECT_EQ(1.f, mirror_root->opacity());
+
+  ui::Layer* mirrored_hidden_view =
+      FindLayerWithName(mirror_root, kHiddenViewLayerName);
+  ASSERT_TRUE(mirrored_hidden_view);
+  EXPECT_FALSE(mirrored_hidden_view->visible());
+
+  ui::Layer* mirrored_child_window =
+      FindLayerWithName(mirror_root, kChildWindowLayerName);
+  ASSERT_TRUE(mirrored_child_window);
+  EXPECT_TRUE(mirrored_child_window->visible());
+
+  ui::Layer* mirrored_grandchild_window =
+      FindLayerWithName(mirror_root, kGrandchildWindowLayerName);
+  ASSERT_TRUE(mirrored_grandchild_window);
+  EXPECT_TRUE(mirrored_grandchild_window->visible());
+
+  native_view_host->Detach();
 }
 
 }  // namespace

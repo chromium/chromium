@@ -10,6 +10,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -27,13 +28,30 @@
 namespace ash {
 namespace {
 
-void EnsureAllChildrenAreVisible(ui::Layer* layer) {
-  for (ui::Layer* child : layer->children()) {
-    EnsureAllChildrenAreVisible(child);
+void CollectWindowLayers(const aura::Window* window,
+                         base::flat_set<const ui::Layer*>& window_layers) {
+  window_layers.insert(window->layer());
+  for (const aura::Window* child : window->children()) {
+    CollectWindowLayers(child, window_layers);
+  }
+}
+
+void EnsureWindowLayersAreVisible(
+    const base::flat_set<const ui::Layer*>& window_layers,
+    const ui::Layer* src_layer,
+    ui::Layer* mirror_layer) {
+  if (window_layers.contains(src_layer)) {
+    mirror_layer->SetVisible(true);
+    mirror_layer->SetOpacity(1.f);
+  } else if (!mirror_layer->visible()) {
+    return;
   }
 
-  layer->SetVisible(true);
-  layer->SetOpacity(1);
+  CHECK_EQ(src_layer->children().size(), mirror_layer->children().size());
+  for (size_t i = 0; i < src_layer->children().size(); ++i) {
+    EnsureWindowLayersAreVisible(window_layers, src_layer->children()[i],
+                                 mirror_layer->children()[i]);
+  }
 }
 
 void DeleteNode(ui::Layer* node) {
@@ -193,14 +211,6 @@ void WindowMirrorView::InitLayerOwner() {
   layer_owner_ = wm::MirrorLayers(source_, sync_bounds_);
   layer_owner_->root()->SetOpacity(1.f);
 
-  if (exclude_shadow_) {
-    ui::Decoration* shadow_decoration =
-        ::wm::ShadowController::GetShadowDecorationForWindow(source_);
-    ExcludeShadowContainer(
-        layer_owner_->root(),
-        shadow_decoration ? shadow_decoration->layer() : nullptr);
-  }
-
   SetPaintToLayer();
 
   ui::Layer* mirror_layer = GetMirrorLayer();
@@ -210,7 +220,17 @@ void WindowMirrorView::InitLayerOwner() {
   // offscreen or is on an inactive desk.
   if (window_util::IsMinimizedOrTucked(source_) ||
       !desks_util::BelongsToActiveDesk(source_)) {
-    EnsureAllChildrenAreVisible(mirror_layer);
+    base::flat_set<const ui::Layer*> window_layers;
+    CollectWindowLayers(source_, window_layers);
+    EnsureWindowLayersAreVisible(window_layers, source_->layer(), mirror_layer);
+  }
+
+  if (exclude_shadow_) {
+    ui::Decoration* shadow_decoration =
+        ::wm::ShadowController::GetShadowDecorationForWindow(source_);
+    ExcludeShadowContainer(
+        layer_owner_->root(),
+        shadow_decoration ? shadow_decoration->layer() : nullptr);
   }
 
   DeprecatedLayoutImmediately();
