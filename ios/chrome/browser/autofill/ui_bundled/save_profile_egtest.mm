@@ -61,6 +61,11 @@ constexpr char kFormElementSubmit[] = "submit_profile";
 // prefer giving extra buffer as there are probably other latencies.
 constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 
+// Overall timeout for retrying a verified web element tap. A single verified
+// tap attempt can take up to ~8 seconds when it misses, so this leaves room for
+// a few attempts.
+constexpr base::TimeDelta kWebElementTapTimeout = base::Seconds(30);
+
 // Email value used by the tests.
 constexpr std::string_view kEmail = "missing_names@gmail.com";
 
@@ -391,6 +396,49 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       stringWithFormat:@"document.getElementById('%s').value.length > 0",
                        kFormElementName];
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
+
+  // Settle the keyboard so the web view layout is stable before any subsequent
+  // coordinate-based tap. `TapWebElementWithId` computes its tap point when the
+  // action is created, so an in-flight keyboard transition after autofill can
+  // make the tap miss its target. Depending on the iOS version the keyboard may
+  // or may not still be up after autofill, so blur the focused element (a
+  // no-op when nothing is focused) instead of using EarlGrey's keyboard
+  // dismissal, which fails when the keyboard isn't showing.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"document.activeElement.blur();"];
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+}
+
+// Scrolls the web element with `elementID` into view and taps it natively,
+// which is required to give it native keyboard focus (JS `focus()` doesn't on
+// iOS 27+). The tap is retried with a freshly created action, hence a freshly
+// computed tap point, because `TapWebElementWithId` computes its point once at
+// creation and a focus zoom or viewport resize can make it land on a
+// neighboring field. Finally verifies that the element got the focus.
+- (void)scrollToAndTapWebElementWithID:(const char*)elementID {
+  NSString* scrollScript = [NSString
+      stringWithFormat:@"document.getElementById('%s').scrollIntoView({block: "
+                       @"'center'});",
+                       elementID];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:scrollScript];
+
+  GREYCondition* tapped = [GREYCondition
+      conditionWithName:@"Tap web element"
+                  block:^BOOL {
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                                            WebViewMatcher()]
+                        performAction:chrome_test_util::TapWebElementWithId(
+                                          elementID)
+                                error:&error];
+                    return error == nil;
+                  }];
+  GREYAssertTrue([tapped waitWithTimeout:kWebElementTapTimeout.InSecondsF()],
+                 @"Failed to tap web element with ID %s", elementID);
+
+  NSString* focusedCondition = [NSString
+      stringWithFormat:@"document.activeElement.id === '%s'", elementID];
+  [ChromeEarlGrey waitForJavaScriptCondition:focusedCondition];
 }
 
 #pragma mark - Tests
@@ -407,8 +455,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [self focusOnNameAndAutofill];
 
   // Tap on email field.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementEmail)];
+  [self scrollToAndTapWebElementWithID:kFormElementEmail];
 
   // Wait for the keyboard to appear.
   [ChromeEarlGrey waitForKeyboardToAppear];
@@ -427,9 +474,18 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
                                 flags:0];
   }
 
-  // Submit the form.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementSubmit)];
+  // Make sure all the simulated key events landed before submitting, since
+  // they are delivered asynchronously. Only the length is checked because the
+  // exact characters depend on keyboard behavior (e.g. auto-capitalization,
+  // shifted symbols), which this test doesn't care about.
+  NSString* emailTypedCondition = [NSString
+      stringWithFormat:@"document.getElementById('%s').value.length === %zu",
+                       kFormElementEmail, kEmail.length()];
+  [ChromeEarlGrey waitForJavaScriptCondition:emailTypedCondition];
+
+  // Submit the form. Use a JS click rather than a coordinate-based tap since
+  // the keyboard is up and can offset the computed tap point.
+  [ChromeEarlGrey tapWebStateElementWithID:@(kFormElementSubmit)];
 
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
 
