@@ -14,8 +14,7 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_above="@+id/safety_promo_button_container"
-      android:fillViewport="true"
-      android:scrollbars="none">
+      android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +27,8 @@ found in the LICENSE file.
           android:layout_width="@dimen/safety_fre_logo_size"
           android:layout_height="@dimen/safety_fre_logo_size"
           android:layout_gravity="center"
-          android:layout_marginTop="@dimen/safety_fre_carousel_icon_margin_top"
+          android:layout_marginTop=
+              "@dimen/safety_fre_carousel_portrait_icon_margin_top"
           android:layout_marginBottom="@dimen/fre_spacing"
           android:scaleType="fitCenter"
           android:adjustViewBounds="true"
@@ -40,7 +40,8 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="center"
-          android:layout_marginBottom="@dimen/safety_fre_carousel_title_margin_bottom"
+          android:layout_marginBottom=
+              "@dimen/safety_fre_carousel_portrait_title_margin_bottom"
           android:layout_marginHorizontal="@dimen/fre_spacing"
           android:textAppearance="@style/TextAppearance.HeadlineLargeThick.Primary" />
 
@@ -68,7 +69,7 @@ found in the LICENSE file.
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop=
-              "@dimen/safety_fre_carousel_page_indicator_top_margin" />
+              "@dimen/safety_fre_carousel_portrait_indicator_margin_top" />
     </LinearLayout>
   </ScrollView>
 
@@ -86,7 +87,8 @@ found in the LICENSE file.
         style="@style/FilledButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/safety_fre_carousel_button_margin_bottom"
+        android:layout_marginBottom=
+            "@dimen/safety_fre_carousel_portrait_button_margin_bottom"
         android:text="@string/safety_fre_promo_start_browsing_button" />
 
     <org.chromium.ui.widget.ButtonCompat

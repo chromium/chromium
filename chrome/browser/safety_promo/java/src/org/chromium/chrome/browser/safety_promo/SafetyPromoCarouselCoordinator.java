@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_promo;
 
+import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ON_CONTINUE_CLICKED;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.SUBTITLE_RES_ID;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.TITLE_RES_ID;
@@ -129,6 +130,6 @@ public class SafetyPromoCarouselCoordinator {
         SafetyPromoItem item = mItems.get(position);
         mModel.set(TITLE_RES_ID, item.carouselTitleResId);
         mModel.set(SUBTITLE_RES_ID, item.carouselSubtitleResId);
-        mModel.set(SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX, position);
+        mModel.set(ACTIVE_PAGE_INDEX, position);
     }
 }

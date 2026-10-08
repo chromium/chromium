@@ -18,14 +18,14 @@ found in the LICENSE file.
     <dimen name="safety_fre_logo_size">48dp</dimen>
     <dimen name="safety_fre_title_margin_bottom">36dp</dimen>
 
-    <!-- Safety FRE Carousel dimensions -->
-    <dimen name="safety_fre_carousel_icon_margin_top">64dp</dimen>
-    <dimen name="safety_fre_carousel_title_margin_bottom">8dp</dimen>
-    <dimen name="safety_fre_carousel_button_margin_bottom">8dp</dimen>
-    <dimen name="safety_fre_carousel_corner_radius">24dp</dimen>
+    <!-- Safety FRE carousel portrait dimensions -->
+    <dimen name="safety_fre_carousel_portrait_icon_margin_top">64dp</dimen>
+    <dimen name="safety_fre_carousel_portrait_title_margin_bottom">8dp</dimen>
+    <dimen name="safety_fre_carousel_portrait_button_margin_bottom">8dp</dimen>
+    <dimen name="safety_fre_carousel_portrait_indicator_margin_top">16dp</dimen>
 
-    <!-- Safety FRE carousel page indicator dimensions -->
+    <!-- Safety FRE carousel shared dimensions -->
+    <dimen name="safety_fre_carousel_corner_radius">24dp</dimen>
     <dimen name="safety_fre_carousel_page_indicator_dot_size">8dp</dimen>
     <dimen name="safety_fre_carousel_page_indicator_padding">8dp</dimen>
-    <dimen name="safety_fre_carousel_page_indicator_top_margin">16dp</dimen>
 </resources>

@@ -42,7 +42,7 @@ android_resources("java_resources") {
     "java/res/drawable/safety_promo_password_manager_carousel_illustration.xml",
     "java/res/drawable/safety_promo_password_manager_illustration.xml",
     "java/res/layout/safety_promo_card_item.xml",
-    "java/res/layout/safety_promo_carousel_illustration.xml",
+    "java/res/layout/safety_promo_carousel_portrait_illustration.xml",
     "java/res/layout/safety_promo_fre_cards_landscape_view.xml",
     "java/res/layout/safety_promo_fre_cards_portrait_view.xml",
     "java/res/layout/safety_promo_fre_carousel_portrait_view.xml",

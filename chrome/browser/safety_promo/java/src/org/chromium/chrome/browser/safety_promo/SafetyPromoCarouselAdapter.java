@@ -30,7 +30,10 @@ public class SafetyPromoCarouselAdapter
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view =
                 LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.safety_promo_carousel_illustration, parent, false);
+                        .inflate(
+                                R.layout.safety_promo_carousel_portrait_illustration,
+                                parent,
+                                false);
         return new ViewHolder(view);
     }
 
