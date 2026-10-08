@@ -550,6 +550,10 @@ bool AutofillClient::IsGlicEnabled() const {
   return false;
 }
 
+bool AutofillClient::IsGlicConsented() const {
+  return false;
+}
+
 bool AutofillClient::IsAutofillTypeBlockedByPolicy(
     const GURL& url,
     AutofillPolicyDataCategory category) const {

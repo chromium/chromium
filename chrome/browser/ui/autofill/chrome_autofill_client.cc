@@ -1867,12 +1867,11 @@ void ChromeAutofillClient::OpenGmailForOtps() {
 }
 
 void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
-  Profile* profile = GetProfile();
-  if (!profile || !glic::GlicEnabling::IsEnabledForProfile(profile)) {
+  if (!IsGlicEnabled()) {
     return;
   }
   glic::GlicKeyedService* glic_keyed_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
   if (!glic_keyed_service) {
     return;
   }
@@ -1888,8 +1887,11 @@ void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
 }
 
 bool ChromeAutofillClient::IsGlicEnabled() const {
-  Profile* profile = GetProfile();
-  return profile && glic::GlicEnabling::IsEnabledForProfile(profile);
+  return glic::GlicEnabling::IsEnabledForProfile(GetProfile());
+}
+
+bool ChromeAutofillClient::IsGlicConsented() const {
+  return glic::GlicEnabling::HasConsentedForProfile(GetProfile());
 }
 
 }  // namespace autofill

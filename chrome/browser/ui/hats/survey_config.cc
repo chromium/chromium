@@ -768,33 +768,51 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                                "referring_app"});
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
+  auto with_client_context_psd_fields = [](std::vector<std::string> fields) {
+    fields.insert(
+        fields.end(),
+        {
+            // Whether the user has accepted the Gemini in Chrome opt-in.
+            "GIC opt-in accepted",
+            // Whether Personal Intelligence is available for the user.
+            "Personal Intelligence available",
+            // eTLD+1 of the origin of the primary main frame where the survey
+            // was triggered.
+            "Origin of the website (eTLD+1)",
+        });
+    return fields;
+  };
   const std::vector<std::string>
-      autofill_personalization_and_trust_product_specific_data = {
-          // Comma-separated list of all field types in the submitted form. The
-          // types are sent in canonical order with duplicates removed.
-          "All field types",
+      autofill_personalization_and_trust_product_specific_data =
+          with_client_context_psd_fields({
+              // Comma-separated list of all field types in the submitted form.
+              // The types are sent in canonical order with duplicates removed.
+              "All field types",
 
-          "Total number of fields in form",
-          "Number of correctly filled fields",
-          "Number of fields that were submitted empty without filling",
-          "Number of fields that were modified after filling",
-          "Number of fields that were cleared after filling",
-          "Number of fields that were manually filled without filling",
+              "Total number of fields in form",
+              "Number of correctly filled fields",
+              "Number of fields that were submitted empty without filling",
+              "Number of fields that were modified after filling",
+              "Number of fields that were cleared after filling",
+              "Number of fields that were manually filled without filling",
 
-          // Comma-separated list of the filling products that were used on the
-          // fields of the submitted form. The list is in canonical order with
-          // duplicates removed.
-          "Filling products used",
-          // For each filling using AutofillAi, the kind of record that was used
-          // (local, wallet, personal context).
-          "AutofillAi entity record types used",
-          // For each filling using AutofillAi, the entity type that was filled.
-          "AutofillAi entity types used",
-          // Indicates whether a BNPL virtual card was used to fill any field.
-          "BNPL used",
-          // Time between form submission and the last Autofill use, in seconds.
-          "Time since last Autofill use",
-      };
+              // Comma-separated list of the filling products that were used on
+              // the fields of the submitted form. The list is in canonical
+              // order with duplicates removed.
+              "Filling products used",
+              // For each filling using AutofillAi, the kind of record that was
+              // used (local, wallet, personal context).
+              "AutofillAi entity record types used",
+              // For each filling using AutofillAi, the entity type that was
+              // filled.
+              "AutofillAi entity types used",
+              // Indicates whether a BNPL virtual card was used to fill any
+              // field.
+              "BNPL used",
+              // Time between form submission and the last Autofill use, in
+              // seconds.
+              "Time since last Autofill use",
+          });
   survey_configs.emplace_back(
       &::autofill::features::kAutofillPersonalizationAndTrustAddressSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled,
@@ -833,20 +851,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{});
+      /*product_specific_string_data_fields=*/
+      with_client_context_psd_fields({}));
   survey_configs.emplace_back(
       &::autofill::features::kAutofillPersonalizationAndTrustAtMemorySurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
+      with_client_context_psd_fields({
           // Description of how the AtMemory popup was dismissed.
           "Type of dismissal",
           // Number of queries during AtMemory session.
           "Query count",
           // Number of results that were found for the last query.
-          "Query results count"});
+          "Query results count",
+      }));
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::

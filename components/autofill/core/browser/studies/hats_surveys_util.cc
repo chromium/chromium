@@ -31,6 +31,10 @@
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/personal_context/core/personal_context_types.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -226,9 +230,13 @@ void MaybeTriggerFormSubmissionHatsSurveys(
       // attempt to show survey. To prevent timing-dependent behavior when
       // triggering multiple surveys, return after first attempt to start a
       // survey. For this reason, try to trigger rarely used products first.
-      client.TriggerPersonalizationAndTrustSurveys(
-          filling_product, CollectPersonalizationAndTrustFillingData(
-                               submitted_form, client.GetAutofillAiManager()));
+      HatsSurveyStringData survey_data =
+          CollectPersonalizationAndTrustFillingData(
+              submitted_form, client.GetAutofillAiManager());
+      survey_data.merge(
+          CollectPersonalizationAndTrustClientContextData(client));
+      client.TriggerPersonalizationAndTrustSurveys(filling_product,
+                                                   std::move(survey_data));
       return;
     }
   }
@@ -237,6 +245,26 @@ void MaybeTriggerFormSubmissionHatsSurveys(
 std::string FormatCountForHats(int count, int limit) {
   return count >= limit ? base::StrCat({base::NumberToString(limit), "+"})
                         : base::NumberToString(count);
+}
+
+HatsSurveyStringData CollectPersonalizationAndTrustClientContextData(
+    const AutofillClient& client) {
+  personal_context::PersonalContextEligibilityService* eligibility_service =
+      client.GetPersonalContextEligibilityService();
+  const bool pi_available =
+      eligibility_service &&
+      eligibility_service->GetEligibilityState() ==
+          personal_context::PersonalContextEligibilityState::kEligible;
+
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      client.GetLastCommittedPrimaryMainFrameOrigin(),
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  return {
+      {"GIC opt-in accepted", client.IsGlicConsented() ? "true" : "false"},
+      {"Personal Intelligence available", pi_available ? "true" : "false"},
+      {"Origin of the website (eTLD+1)", std::move(domain)},
+  };
 }
 
 RecentUserAutofillAiInteractionsForHats::

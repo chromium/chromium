@@ -227,6 +227,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void OpenGmailForOtps() final;
   void OpenGeminiInSidebar(const std::u16string& prompt) final;
   bool IsGlicEnabled() const final;
+  bool IsGlicConsented() const final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;
   void TriggerPersonalizationAndTrustSurveys(
       FillingProduct filling_product,

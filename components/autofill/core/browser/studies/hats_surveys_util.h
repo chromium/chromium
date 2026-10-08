@@ -44,6 +44,11 @@ void MaybeTriggerFormSubmissionHatsSurveys(AutofillClient& client,
 // naturally avoid the issue.
 std::string FormatCountForHats(int count, int limit);
 
+// Collects client context product-specific data (PSD) for personalization and
+// trust surveys.
+HatsSurveyStringData CollectPersonalizationAndTrustClientContextData(
+    const AutofillClient& client);
+
 // Keeps track of the most recent user interactions in the context of
 // `AutofillAiManager`. This information is used for collecting the
 // product-specific data (PSD) of HaTS surveys.

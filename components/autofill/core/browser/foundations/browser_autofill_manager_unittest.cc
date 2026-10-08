@@ -7841,7 +7841,10 @@ TEST_F(BrowserAutofillManagerTest,
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
       {"BNPL used", "false"},
-      {"Time since last Autofill use", "42"}};
+      {"Time since last Autofill use", "42"},
+      {"GIC opt-in accepted", "false"},
+      {"Personal Intelligence available", "false"},
+      {"Origin of the website (eTLD+1)", "example.test"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kAddress), _))
       .Times(0);
@@ -7902,7 +7905,10 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
       {"BNPL used", "false"},
-      {"Time since last Autofill use", "0"}};
+      {"Time since last Autofill use", "0"},
+      {"GIC opt-in accepted", "false"},
+      {"Personal Intelligence available", "false"},
+      {"Origin of the website (eTLD+1)", "example.test"}};
 
   // AutofillAi was not used, should trigger Address survey.
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
@@ -7919,6 +7925,15 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   FormSubmitted(response_data);
 
   Mock::VerifyAndClearExpectations(&autofill_client());
+
+  autofill_client().set_is_glic_consented(true);
+  NiceMock<personal_context::MockPersonalContextEligibilityService>
+      mock_eligibility_service;
+  ON_CALL(mock_eligibility_service, GetEligibilityState)
+      .WillByDefault(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+  autofill_client().set_personal_context_eligibility_service(
+      &mock_eligibility_service);
 
   // Fill the Autofill AI field.
   autofill_manager().FillOrPreviewField(
@@ -7958,7 +7973,10 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
       {"AutofillAi entity record types used", "PersonalContext"},
       {"AutofillAi entity types used", "Passport"},
       {"BNPL used", "false"},
-      {"Time since last Autofill use", "0"}};
+      {"Time since last Autofill use", "0"},
+      {"GIC opt-in accepted", "true"},
+      {"Personal Intelligence available", "true"},
+      {"Origin of the website (eTLD+1)", "example.test"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kAutofillAi), _))
       .Times(0);
@@ -7971,6 +7989,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
                   FillingProduct::kAutofillAi, expected_second_survey_data));
 
   FormSubmitted(response_data);
+  autofill_client().set_personal_context_eligibility_service(nullptr);
 }
 
 // Tests that the personalization survey is triggered when a credit card form is
@@ -8001,7 +8020,10 @@ TEST_F(BrowserAutofillManagerTest, PersonalizationAndTrust_CreditCard) {
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
       {"BNPL used", "false"},
-      {"Time since last Autofill use", "0"}};
+      {"Time since last Autofill use", "0"},
+      {"GIC opt-in accepted", "false"},
+      {"Personal Intelligence available", "false"},
+      {"Origin of the website (eTLD+1)", "example.test"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kCreditCard), _))
       .Times(0);
@@ -8050,7 +8072,10 @@ TEST_F(BrowserAutofillManagerTest, PersonalizationAndTrust_CreditCard_Bnpl) {
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
       {"BNPL used", "true"},
-      {"Time since last Autofill use", "0"}};
+      {"Time since last Autofill use", "0"},
+      {"GIC opt-in accepted", "false"},
+      {"Personal Intelligence available", "false"},
+      {"Origin of the website (eTLD+1)", "example.test"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kCreditCard), _))
       .Times(0);
@@ -8113,7 +8138,10 @@ TEST_F(BrowserAutofillManagerTest,
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
       {"BNPL used", "false"},
-      {"Time since last Autofill use", "0"}};
+      {"Time since last Autofill use", "0"},
+      {"GIC opt-in accepted", "false"},
+      {"Personal Intelligence available", "false"},
+      {"Origin of the website (eTLD+1)", "example.test"}};
 
   // OTP was used and should take precedence over Address.
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(

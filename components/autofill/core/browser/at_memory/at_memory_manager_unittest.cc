@@ -3438,8 +3438,13 @@ TEST_F(AtMemoryManagerTestBase,
 
 // Tests that a survey is shown after accepting an AtMemory suggestion.
 TEST_F(AtMemoryManagerTestBase, FillSearchResult_TriggersSurvey) {
-  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey(
-                                     /*is_dismissed=*/false, _));
+  EXPECT_CALL(autofill_client(),
+              TriggerAtMemoryPersonalizationAndTrustSurvey(
+                  /*is_dismissed=*/false,
+                  HatsSurveyStringData{
+                      {"GIC opt-in accepted", "false"},
+                      {"Personal Intelligence available", "true"},
+                      {"Origin of the website (eTLD+1)", "example.test"}}));
 
   const auto [form_id, field_id] = SeeFormAndShowPopup();
   manager().FillSearchResult(
@@ -3477,9 +3482,13 @@ TEST_F(AtMemoryManagerTestBase, OnPopupHidden_TriggersSurveyAfterDelay) {
   EXPECT_CALL(autofill_client(),
               TriggerAtMemoryPersonalizationAndTrustSurvey(
                   /*is_dismissed=*/true,
-                  HatsSurveyStringData{{"Type of dismissal", "User dismissed"},
-                                       {"Query count", "1"},
-                                       {"Query results count", "2"}}));
+                  HatsSurveyStringData{
+                      {"Type of dismissal", "User dismissed"},
+                      {"Query count", "1"},
+                      {"Query results count", "2"},
+                      {"GIC opt-in accepted", "false"},
+                      {"Personal Intelligence available", "true"},
+                      {"Origin of the website (eTLD+1)", "example.test"}}));
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
@@ -3505,9 +3514,13 @@ TEST_F(AtMemoryManagerTestBase,
   EXPECT_CALL(autofill_client(),
               TriggerAtMemoryPersonalizationAndTrustSurvey(
                   /*is_dismissed=*/true,
-                  HatsSurveyStringData{{"Type of dismissal", "User dismissed"},
-                                       {"Query count", "10+"},
-                                       {"Query results count", "10+"}}));
+                  HatsSurveyStringData{
+                      {"Type of dismissal", "User dismissed"},
+                      {"Query count", "10+"},
+                      {"Query results count", "10+"},
+                      {"GIC opt-in accepted", "false"},
+                      {"Personal Intelligence available", "true"},
+                      {"Origin of the website (eTLD+1)", "example.test"}}));
   task_environment_.FastForwardBy(base::Seconds(15));
 }
 

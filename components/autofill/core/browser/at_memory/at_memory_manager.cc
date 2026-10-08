@@ -56,6 +56,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -568,6 +569,8 @@ void AtMemoryManager::OnPopupHidden(SuggestionHidingReason reason) {
            FormatCountForHats(recorder->query_count(), kCountLimit)},
           {"Query results count",
            FormatCountForHats(recorder->query_results_count(), kCountLimit)}};
+      survey_data.merge(
+          CollectPersonalizationAndTrustClientContextData(*client_));
       // AtMemory was dismissed without filling any suggestion. Delay the survey
       // to avoid triggering on accidental dismissal.
       hats_survey_dismissal_timer_.Start(
@@ -1408,7 +1411,8 @@ void AtMemoryManager::FillField(BrowserAutofillManager& bam,
                          /*field_type_used=*/std::nullopt);
   client_->TriggerAtMemoryPersonalizationAndTrustSurvey(
       /*is_dismissed=*/false,
-      /*product_specific_data=*/{});
+      /*product_specific_data=*/
+      CollectPersonalizationAndTrustClientContextData(*client_));
 }
 
 void AtMemoryManager::OnAutofillManagerStateChanged(

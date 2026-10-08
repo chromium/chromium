@@ -677,6 +677,10 @@ class AutofillClient {
   // Returns true if the Glic sidebar is enabled and can be opened.
   virtual bool IsGlicEnabled() const;
 
+  // Returns true if the user has completed onboarding / opted in to Gemini in
+  // Chrome (Glic).
+  virtual bool IsGlicConsented() const;
+
   // Update the data list values shown by the Autofill suggestions, if visible.
   virtual void UpdateAutofillDataListValues(
       const LocalFrameToken& frame_token,
