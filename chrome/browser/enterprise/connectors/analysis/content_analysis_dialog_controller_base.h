@@ -5,9 +5,17 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_CONTROLLER_BASE_H_
 
+#include <memory>
+
 #include "components/enterprise/connectors/core/common.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace enterprise_connectors {
+
+class ContentAnalysisDelegateBase;
 
 // Platform-agnostic interface for the UI shown while content analysis is
 // pending and once a verdict is available. `ContentAnalysisDelegate` only
@@ -20,6 +28,18 @@ namespace enterprise_connectors {
 // they must never delete themselves synchronously from `ShowResult()`.
 class ContentAnalysisDialogControllerBase {
  public:
+  // Creates the controller for the current platform. The returned controller
+  // owns `delegate` and deletes itself.
+  // TODO(crbug.com/428696170): Implement for Android. Until then, this is only
+  // defined on desktop.
+  static ContentAnalysisDialogControllerBase* Create(
+      std::unique_ptr<ContentAnalysisDelegateBase> delegate,
+      bool is_cloud,
+      content::WebContents* web_contents,
+      DeepScanAccessPoint access_point,
+      int files_count,
+      FinalContentAnalysisResult final_result);
+
   ContentAnalysisDialogControllerBase(
       const ContentAnalysisDialogControllerBase&) = delete;
   ContentAnalysisDialogControllerBase& operator=(

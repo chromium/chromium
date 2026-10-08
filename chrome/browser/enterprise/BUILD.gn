@@ -263,6 +263,8 @@ source_set("enterprise") {
     }
   }
 
+  # TODO(b/571082119): Add `is_android` to `enterprise_cloud_content_analysis`
+  # build flag.
   if (enterprise_cloud_content_analysis || is_android ||
       safe_browsing_mode == 1) {
     public += [
@@ -326,16 +328,21 @@ source_set("enterprise") {
     public += [ "signals/device_info_fetcher_linux.h" ]
   }
 
-  if (enterprise_cloud_content_analysis) {
+  if (enterprise_cloud_content_analysis || is_android) {
     public += [
       "connectors/analysis/content_analysis_delegate.h",
-      "connectors/analysis/content_analysis_dialog_controller.h",
       "connectors/analysis/content_analysis_dialog_controller_base.h",
+      "connectors/analysis/files_request_handler.h",
+    ]
+  }
+
+  if (enterprise_cloud_content_analysis) {
+    public += [
+      "connectors/analysis/content_analysis_dialog_controller.h",
       "connectors/analysis/content_analysis_dialog_delegate.h",
       "connectors/analysis/content_analysis_downloads_delegate.h",
       "connectors/analysis/content_analysis_views.h",
       "connectors/analysis/copy_warning_delegate_tracker.h",
-      "connectors/analysis/files_request_handler.h",
       "connectors/analysis/network_request_content_analysis_info.h",
       "connectors/analysis/network_request_proxying_url_loader_factory.h",
       "connectors/analysis/page_print_analysis_request.h",
@@ -731,21 +738,26 @@ source_set("impl") {
     deps += [ "//components/enterprise/common/proto:chrome_reporting_entity" ]
   }
 
-  if (enterprise_cloud_content_analysis) {
+  if (enterprise_cloud_content_analysis || is_android) {
     sources += [
       "connectors/analysis/content_analysis_delegate.cc",
+      "connectors/analysis/files_request_handler.cc",
+    ]
+    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
+  }
+
+  if (enterprise_cloud_content_analysis) {
+    sources += [
       "connectors/analysis/content_analysis_dialog_controller.cc",
       "connectors/analysis/content_analysis_dialog_delegate.cc",
       "connectors/analysis/content_analysis_downloads_delegate.cc",
       "connectors/analysis/content_analysis_views.cc",
       "connectors/analysis/copy_warning_delegate_tracker.cc",
-      "connectors/analysis/files_request_handler.cc",
       "connectors/analysis/network_request_content_analysis_info.cc",
       "connectors/analysis/network_request_proxying_url_loader_factory.cc",
       "connectors/analysis/page_print_analysis_request.cc",
       "connectors/analysis/page_print_request_handler.cc",
     ]
-    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
   }
 
   if (enterprise_local_content_analysis) {

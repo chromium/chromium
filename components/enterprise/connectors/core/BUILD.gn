@@ -118,6 +118,10 @@ if (enterprise_cloud_content_analysis || is_android) {
       "cloud_content_scanning/binary_upload_request.cc",
       "cloud_content_scanning/binary_upload_request.h",
       "cloud_content_scanning/binary_upload_service.h",
+      "cloud_content_scanning/clipboard_analysis_request.cc",
+      "cloud_content_scanning/clipboard_analysis_request.h",
+      "cloud_content_scanning/clipboard_request_handler.cc",
+      "cloud_content_scanning/clipboard_request_handler.h",
       "cloud_content_scanning/cloud_binary_upload_service_base.cc",
       "cloud_content_scanning/cloud_binary_upload_service_base.h",
       "cloud_content_scanning/common.cc",
@@ -160,15 +164,6 @@ if (enterprise_cloud_content_analysis || is_android) {
       "//services/network/public/cpp",
       "//services/network/public/mojom",
     ]
-
-    if (enterprise_cloud_content_analysis) {
-      sources += [
-        "cloud_content_scanning/clipboard_analysis_request.cc",
-        "cloud_content_scanning/clipboard_analysis_request.h",
-        "cloud_content_scanning/clipboard_request_handler.cc",
-        "cloud_content_scanning/clipboard_request_handler.h",
-      ]
-    }
 
     if (!is_ios) {
       deps += [ "//components/safe_browsing/content/browser/web_ui" ]

@@ -59,6 +59,20 @@ base::TimeDelta ContentAnalysisDialogController::ShowDialogDelay() {
   return show_dialog_delay_;
 }
 
+// static
+ContentAnalysisDialogControllerBase*
+ContentAnalysisDialogControllerBase::Create(
+    std::unique_ptr<ContentAnalysisDelegateBase> delegate,
+    bool is_cloud,
+    content::WebContents* web_contents,
+    DeepScanAccessPoint access_point,
+    int files_count,
+    FinalContentAnalysisResult final_result) {
+  return new ContentAnalysisDialogController(std::move(delegate), is_cloud,
+                                             web_contents, access_point,
+                                             files_count, final_result);
+}
+
 ContentAnalysisDialogController::ContentAnalysisDialogController(
     std::unique_ptr<ContentAnalysisDelegateBase> delegate,
     bool is_cloud,
