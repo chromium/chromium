@@ -17,13 +17,12 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
+#include "components/trusted_vault/local_domains_storage.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/test/legacy_fake_file_access.h"
+#include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -67,13 +66,9 @@ class MockObserver
 class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
  public:
   TrustedVaultDegradedRecoverabilityHandlerTest() {
-    auto file_access = std::make_unique<LegacyFakeFileAccess>();
+    auto file_access = std::make_unique<FakeLocalDomainsStorageFileAccess>();
     file_access_ = file_access.get();
-    auto storage = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
-        std::move(file_access));
-    // TODO(crbug.com/542895033): Use the new storage format in tests.
-    storage_ = std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
-        std::move(storage));
+    storage_ = LocalDomainsStorage::CreateForTesting(std::move(file_access));
   }
   ~TrustedVaultDegradedRecoverabilityHandlerTest() override = default;
 
@@ -96,8 +91,8 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<LegacyStandaloneTrustedVaultStorageAdapter> storage_;
-  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
+  std::unique_ptr<LocalDomainsStorage> storage_;
+  raw_ptr<FakeLocalDomainsStorageFileAccess> file_access_ = nullptr;
 };
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
