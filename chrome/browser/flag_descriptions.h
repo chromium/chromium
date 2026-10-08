@@ -5224,6 +5224,14 @@ inline constexpr char kPromptAPIDescription[] =
 inline constexpr const char* kAIAPIsLinks[1] = {
     "https://developer.chrome.com/docs/ai/built-in"};
 
+inline constexpr char kDecisionsAPIName[] = "Decisions API";
+inline constexpr char kDecisionsAPIDescription[] =
+    "Enables the Built-in AI Decisions API (DecisionModel) for on-device "
+    "verification, classification, and decisions regarding unstructured data, "
+    "over a developer-defined schema. See the explainer [1] for details.";
+inline constexpr const char* kDecisionsAPILinks[1] = {
+    "https://github.com/explainers-by-googlers/decisions-api"};
+
 inline constexpr char kGemma4ForBuiltInAIName[] = "Gemma 4 for Built-in AI";
 inline constexpr char kGemma4ForBuiltInAIDescription[] =
     "Enables all built-in AI APIs (Prompt, Summarizer, Writer, etc.) to use "

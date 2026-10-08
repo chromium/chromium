@@ -2713,6 +2713,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "decisions-api",
+    "owners": [ "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "declarative-performance-observer",
     "owners": [ "sisidovski@chromium.org" ],
     "expiry_milestone": 160

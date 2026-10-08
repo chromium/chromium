@@ -39,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_decision_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
@@ -408,7 +409,6 @@ TEST_F(AIManagerTest, CanCreateSemanticEmbedderCrashLimit) {
   service_launcher->controller()->MaybeUpdateModelInfo(std::nullopt);
 }
 
-
 TEST_F(AIManagerTest, CanCreateFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -431,6 +431,77 @@ TEST_F(AIManagerTest, CanCreateFeatureDisabled) {
   ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(AIManagerTest, CanCreateDecisionModel) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kAIDecisionModelAPI);
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled);
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kAIDecisionModelAPI);
+  {
+    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+    options->expected_input_languages = MakeLanguageCodeVector({"tlh"});
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(std::move(options),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+  }
+  {
+    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+    auto question = blink::mojom::AIDecisionModelQuestion::New();
+    question->id = "urgent";
+    question->prompt = "Is it urgent?";
+    question->type = blink::mojom::AIDecisionModelQuestionType::kBoolean;
+    options->questions.push_back(std::move(question));
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(std::move(options),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelNotEligible);
+  }
+  {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client;
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
+    mojo::test::BadMessageObserver bad_message_observer;
+    GetAIManagerRemote()->CreateDecisionModel(
+        std::move(client), blink::mojom::AIDecisionModelCreateOptions::New(),
+        mojo::NullRemote());
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "At least one question is required.");
+  }
+  {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client;
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
+    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+    options->expected_input_languages = MakeLanguageCodeVector({"tlh"});
+    mojo::test::BadMessageObserver bad_message_observer;
+    GetAIManagerRemote()->CreateDecisionModel(
+        std::move(client), std::move(options), mojo::NullRemote());
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "Unsupported language options");
+  }
+}
+#else
+TEST_F(AIManagerTest, CanCreateDecisionModelUnavailableOnAndroid) {
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateDecisionModel(
+      blink::mojom::AIDecisionModelCreateOptions::New(), future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableFeatureNotEnabled);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
   SetBuiltInAIAPIsEnterprisePolicy(false);

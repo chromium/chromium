@@ -14,7 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_proofreader.h"
@@ -35,6 +37,10 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ai/decision_model_schema_compiler.h"
+#endif
 
 namespace base {
 class SupportsUserData;
@@ -196,6 +202,14 @@ class AIManager : public base::SupportsUserData::Data,
   void OnSemanticEmbedderModelReady(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
           client);
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::expected<DecisionModelSchemaCompiler::CompiledSchema,
+                 blink::mojom::ModelAvailabilityCheckResult>
+  CheckDecisionModelOptions(
+      blink::mojom::AIDecisionModelCreateOptionsPtr& options,
+      bool require_questions);
+#endif
 
   // Creates an `AILanguageModel`, as a new session. Clones are created
   // internally within the `AILanguageModel` object.

@@ -28,6 +28,9 @@ source_set("ai") {
     "features.cc",
     "features.h",
   ]
+  if (!is_android) {
+    sources += [ "decision_model_schema_compiler.h" ]
+  }
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -65,6 +68,9 @@ source_set("impl") {
     "ai_utils.cc",
     "ai_writer.cc",
   ]
+  if (!is_android) {
+    sources += [ "decision_model_schema_compiler.cc" ]
+  }
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -144,6 +150,7 @@ source_set("unit_tests") {
       "ai_rewriter_unittest.cc",
       "ai_semantic_embedder_service_launcher_unittest.cc",
       "ai_writer_unittest.cc",
+      "decision_model_schema_compiler_unittest.cc",
     ]
   }
   deps = [

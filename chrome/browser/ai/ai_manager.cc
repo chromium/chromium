@@ -239,7 +239,6 @@ bool HasInvalidOutputTypes(
   return false;
 }
 
-
 on_device_model::Capabilities GetExpectedInputCapabilities(
     base::optional_ref<
         const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
@@ -485,6 +484,18 @@ bool AreLanguagesEnabled(
   });
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+template <>
+LanguageSet GetLanguages(
+    const blink::mojom::AIDecisionModelCreateOptionsPtr& options) {
+  LanguageSet languages;
+  if (options && options->expected_input_languages.has_value()) {
+    Insert(languages, options->expected_input_languages.value());
+  }
+  return languages;
+}
+#endif
+
 // Returns whether an output language was specified or initialized here using an
 // inferred language, i.e. when all input languages use the same base language.
 template <typename OptionsWithOutputLanguagePtrType>
@@ -529,6 +540,16 @@ bool CheckAndFixOutputLanguage(
   }
   return false;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// The Decisions API has no output language.
+template <>
+bool CheckAndFixOutputLanguage(
+    blink::mojom::AIDecisionModelCreateOptionsPtr& options,
+    const LanguageSet& languages) {
+  return true;
+}
+#endif
 
 bool IsLanguageInSet(const blink::mojom::AILanguageCodePtr& language,
                      const base::flat_set<std::string>& set) {
@@ -824,7 +845,6 @@ void AIManager::CreateLanguageModel(
     receivers_.ReportBadMessage("Unsupported language options");
     return;
   }
-
 
   CheckAndLogEligibility(
       browser_context_, optimization_guide::mojom::OnDeviceFeature::kPromptApi);
@@ -1928,11 +1948,72 @@ void AIManager::OnSemanticEmbedderModelReady(
   client_remote->OnResult(std::move(pending_remote));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+base::expected<DecisionModelSchemaCompiler::CompiledSchema,
+               blink::mojom::ModelAvailabilityCheckResult>
+AIManager::CheckDecisionModelOptions(
+    blink::mojom::AIDecisionModelCreateOptionsPtr& options,
+    bool require_questions) {
+  CHECK(options);
+  // TODO(crbug.com/565849508): Track supported languages for DecisionModel.
+  if (!CheckAndFixLanguages(
+          options, "DecisionModel",
+          AILanguageModel::GetEnabledLanguageBaseCodes(),
+          AILanguageModel::GetDefaultSupportedLanguageBaseCodes())) {
+    if (require_questions) {
+      receivers_.ReportBadMessage("Unsupported language options");
+    }
+    return base::unexpected(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+  }
+  // `availability()` may be called without a schema.
+  if (!require_questions && options->questions.empty()) {
+    return DecisionModelSchemaCompiler::CompiledSchema();
+  }
+  auto schema = DecisionModelSchemaCompiler::Compile(options->context,
+                                                     options->questions);
+  if (!schema.has_value()) {
+    // The renderer enforces the same rules before calling into the browser.
+    receivers_.ReportBadMessage(schema.error());
+    return base::unexpected(
+        blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown);
+  }
+  return std::move(schema).value();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 void AIManager::CanCreateDecisionModel(
     blink::mojom::AIDecisionModelCreateOptionsPtr options,
     CanCreateDecisionModelCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(blink::features::kAIDecisionModelAPI)) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled);
+    return;
+  }
+  // TODO(crbug.com/565849508): Use a decision-specific permissions policy.
+  if (IsPermissionsPolicyBlocked(
+          network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
+  if (auto pref_blocked_result = GetPrefBlockedResult()) {
+    std::move(callback).Run(*pref_blocked_result);
+    return;
+  }
+  if (auto schema =
+          CheckDecisionModelOptions(options, /*require_questions=*/false);
+      !schema.has_value()) {
+    std::move(callback).Run(schema.error());
+    return;
+  }
+  // TODO(crbug.com/565849508): Implement the DecisionModel backend.
+  std::move(callback).Run(
+      blink::mojom::ModelAvailabilityCheckResult::kUnavailableModelNotEligible);
+#else
   std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                               kUnavailableFeatureNotEnabled);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void AIManager::CreateDecisionModel(
@@ -1940,6 +2021,23 @@ void AIManager::CreateDecisionModel(
         client,
     blink::mojom::AIDecisionModelCreateOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(options);
+  if (!base::FeatureList::IsEnabled(blink::features::kAIDecisionModelAPI)) {
+    receivers_.ReportBadMessage("Feature not enabled");
+    return;
+  }
+  // TODO(crbug.com/565849508): Use a decision-specific permissions policy.
+  if (IsBlocked(network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+    receivers_.ReportBadMessage("Policy or user setting disabled");
+    return;
+  }
+  if (!CheckDecisionModelOptions(options, /*require_questions=*/true)
+           .has_value()) {
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/565849508): Implement the DecisionModel backend.
   mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient> client_remote(
       std::move(client));
   on_device_ai::SendClientRemoteError(

@@ -4778,6 +4778,11 @@ const FeatureEntry::Choice kGemma4Choices[] = {
      "OptimizationGuideManifestBroker,"
      "AIApiFoundationalModel:model_version/v4"}};
 
+const FeatureEntry::Choice kDecisionsAPIChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "AIDecisionModelAPI"}};
+
 const FeatureEntry::Choice kSpeculativeDecodingChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
@@ -10481,6 +10486,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"gemma4-for-built-in-ai", flag_descriptions::kGemma4ForBuiltInAIName,
      flag_descriptions::kGemma4ForBuiltInAIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kGemma4Choices), flag_descriptions::kAIAPIsLinks},
+
+    {"decisions-api", flag_descriptions::kDecisionsAPIName,
+     flag_descriptions::kDecisionsAPIDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kDecisionsAPIChoices),
+     flag_descriptions::kDecisionsAPILinks},
 
     {"summarizer-api-performance-preference",
      flag_descriptions::kSummarizerAPIWithPerformancePreferenceName,
