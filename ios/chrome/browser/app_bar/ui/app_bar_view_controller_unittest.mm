@@ -633,4 +633,85 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonMenuDisabledButton) {
                         configurationForMenuAtLocation:CGPointZero]);
 }
 
+// Test that the user interface style is overridden to dark in the Tab Grid or
+// Incognito when `kLightAppBar` is enabled.
+TEST_F(AppBarViewControllerTest, TestLightAppBarInterfaceStyle) {
+  base::test::ScopedFeatureList scoped_feature_list(kLightAppBar);
+
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleUnspecified);
+
+  [view_controller_ setTabGridVisible:YES];
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleDark);
+
+  [view_controller_ setTabGridVisible:NO];
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleUnspecified);
+
+  [view_controller_ setIncognito:YES];
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleDark);
+
+  [view_controller_ setIncognito:NO];
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleUnspecified);
+}
+
+// Test that the user interface style is not overridden when `kLightAppBar` is
+// disabled.
+TEST_F(AppBarViewControllerTest, TestLightAppBarDisabledInterfaceStyle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kLightAppBar);
+
+  [view_controller_ setTabGridVisible:YES];
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleUnspecified);
+
+  [view_controller_ setIncognito:YES];
+  EXPECT_EQ(view_controller_.overrideUserInterfaceStyle,
+            UIUserInterfaceStyleUnspecified);
+}
+
+// Test that button shadow opacity updates for light and dark interface styles
+// when `kLightAppBar` is enabled vs. disabled.
+TEST_F(AppBarViewControllerTestManual, TestLightAppBarButtonShadowOpacity) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kLightAppBar);
+
+    AppBarViewController* vc = [[AppBarViewController alloc] init];
+    vc.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    [vc loadViewIfNeeded];
+
+    UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
+    ASSERT_NE(assistantButton, nil);
+    EXPECT_GT(assistantButton.layer.shadowOpacity, 0.0f);
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list(kLightAppBar);
+
+    AppBarViewController* vc = [[AppBarViewController alloc] init];
+    vc.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    [vc loadViewIfNeeded];
+
+    UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
+    UIButton* openNewTabButton = [vc valueForKey:@"openNewTabButton"];
+    UIButton* tabGridButton = [vc valueForKey:@"tabGridButton"];
+    ASSERT_NE(assistantButton, nil);
+    ASSERT_NE(openNewTabButton, nil);
+    ASSERT_NE(tabGridButton, nil);
+    EXPECT_EQ(assistantButton.layer.shadowOpacity, 0.0f);
+    EXPECT_EQ(openNewTabButton.layer.shadowOpacity, 0.0f);
+    EXPECT_EQ(tabGridButton.layer.shadowOpacity, 0.0f);
+
+    [vc setIncognito:YES];
+    [vc.view layoutIfNeeded];
+    EXPECT_GT(assistantButton.layer.shadowOpacity, 0.0f);
+    EXPECT_GT(openNewTabButton.layer.shadowOpacity, 0.0f);
+    EXPECT_GT(tabGridButton.layer.shadowOpacity, 0.0f);
+  }
+}
+
 }  // namespace

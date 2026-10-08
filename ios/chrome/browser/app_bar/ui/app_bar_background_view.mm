@@ -17,9 +17,12 @@ namespace {
 constexpr CGFloat kColorTransitionDuration = 0.2;
 
 // Constants for the shadow.
-constexpr CGFloat kShadowRadius = 31;
-constexpr CGFloat kShadowOpacity = 0.8;
-constexpr CGFloat kShadowOffset = 13;
+constexpr CGFloat kLightShadowRadius = 47;
+constexpr CGFloat kDarkShadowRadius = 31;
+constexpr CGFloat kLightShadowOpacity = 0.15;
+constexpr CGFloat kDarkShadowOpacity = 0.8;
+constexpr CGFloat kLightShadowOffset = 15;
+constexpr CGFloat kDarkShadowOffset = 13;
 
 // Adds the cutout shape (arcs and line) to the path.
 // Assumes the path is already at the starting point (bounds.size.width,
@@ -54,9 +57,8 @@ void AddCutoutToPath(UIBezierPath* path,
   CGRect _lastBounds;
   CAShapeLayer* _shadowLayer;
 
-  // The blur view and its blur (when one is used).
+  // The blur view (when one is used).
   UIVisualEffectView* _blurView;
-  UIVisualEffect* _blur;
   // Shape layer used to render the background color. This allows the view's own
   // background color to remain transparent/clear, preventing EarlGrey from
   // incorrectly identifying the entire bounding box of the view as opaque and
@@ -78,16 +80,15 @@ void AddCutoutToPath(UIBezierPath* path,
     }
 
     [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                       withAction:@selector(updateBackgroundColor)];
+                       withAction:@selector(updateForUserInterfaceStyle)];
 
     _maskLayer = [CAShapeLayer layer];
     _maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.layer.mask = _maskLayer;
 
     if (IsFullscreenRefactoringEnabled()) {
-      _blur =
-          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterialDark];
-      _blurView = [[UIVisualEffectView alloc] initWithEffect:_blur];
+      _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];
+      [self updateBlur];
       [self addSubview:_blurView];
     }
 
@@ -126,6 +127,8 @@ void AddCutoutToPath(UIBezierPath* path,
   [UIView animateWithDuration:kColorTransitionDuration
                    animations:^{
                      [self updateBackgroundColor];
+                     [self updateBlur];
+                     [self updateShadow];
                    }];
 }
 
@@ -133,9 +136,7 @@ void AddCutoutToPath(UIBezierPath* path,
   if (_hideColorBackground == hideColorBackground) {
     return;
   }
-  CAShapeLayer* shadowLayer = _shadowLayer;
   UIVisualEffectView* blurView = _blurView;
-  UIVisualEffect* blur = _blur;
   _hideColorBackground = hideColorBackground;
 
   if (!hideColorBackground) {
@@ -145,8 +146,8 @@ void AddCutoutToPath(UIBezierPath* path,
   [UIView animateWithDuration:kColorTransitionDuration
       animations:^{
         [self updateBackgroundColor];
-        shadowLayer.opacity = hideColorBackground ? 0 : 1;
-        blurView.effect = hideColorBackground ? nil : blur;
+        [self updateBlur];
+        [self updateShadow];
       }
       completion:^(BOOL finished) {
         if (hideColorBackground) {
@@ -170,6 +171,44 @@ void AddCutoutToPath(UIBezierPath* path,
 }
 
 #pragma mark - Private
+
+// Updates the blur effect of the app bar.
+- (void)updateBlur {
+  if (_hideColorBackground) {
+    _blurView.effect = nil;
+    return;
+  }
+
+  UIBlurEffectStyle blurStyle;
+  if (IsLightAppBarEnabled()) {
+    blurStyle = _incognito ? UIBlurEffectStyleSystemMaterialDark
+                           : UIBlurEffectStyleSystemMaterial;
+  } else {
+    blurStyle = UIBlurEffectStyleSystemMaterialDark;
+  }
+  _blurView.effect = [UIBlurEffect effectWithStyle:blurStyle];
+}
+
+// Updates for user interface style changes.
+- (void)updateForUserInterfaceStyle {
+  [self updateBackgroundColor];
+  [self updateShadow];
+}
+
+// Updates the shadow of the app bar.
+- (void)updateShadow {
+  if (!_incognito &&
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight &&
+      IsLightAppBarEnabled()) {
+    _shadowLayer.opacity = _hideColorBackground ? 0 : kLightShadowOpacity;
+    _shadowLayer.shadowOffset = CGSizeMake(0, kLightShadowOffset);
+    _shadowLayer.shadowRadius = kLightShadowRadius;
+  } else {
+    _shadowLayer.opacity = _hideColorBackground ? 0 : kDarkShadowOpacity;
+    _shadowLayer.shadowOffset = CGSizeMake(0, kDarkShadowOffset);
+    _shadowLayer.shadowRadius = kDarkShadowRadius;
+  }
+}
 
 // Updates the background color of the app bar.
 - (void)updateBackgroundColor {
@@ -236,9 +275,11 @@ void AddCutoutToPath(UIBezierPath* path,
   AddCutoutToPath(shadowSourcePath, bounds, self.cornerRadius, yOffset);
 
   // Now close the path by going up and around above the view bounds.
-  [shadowSourcePath addLineToPoint:CGPointMake(0, yOffset - kShadowRadius * 2)];
-  [shadowSourcePath addLineToPoint:CGPointMake(bounds.size.width,
-                                               yOffset - kShadowRadius * 2)];
+  [shadowSourcePath
+      addLineToPoint:CGPointMake(0, yOffset - kLightShadowRadius * 2)];
+  [shadowSourcePath
+      addLineToPoint:CGPointMake(bounds.size.width,
+                                 yOffset - kLightShadowRadius * 2)];
   [shadowSourcePath closePath];
 
   CGPathRef oldShadowPath = _shadowLayer.shadowPath;
@@ -253,10 +294,9 @@ void AddCutoutToPath(UIBezierPath* path,
   _animatingCornerRadius = NO;
 
   _shadowLayer.shadowColor = [UIColor blackColor].CGColor;
-  _shadowLayer.shadowOpacity = kShadowOpacity;
-  _shadowLayer.shadowOffset = CGSizeMake(0, kShadowOffset);
-  _shadowLayer.shadowRadius = kShadowRadius;
+  _shadowLayer.shadowOpacity = 1;
   _shadowLayer.shadowPath = shadowSourcePath.CGPath;
+  [self updateShadow];
 }
 
 - (void)animatePathChangeInLayer:(CAShapeLayer*)layer
