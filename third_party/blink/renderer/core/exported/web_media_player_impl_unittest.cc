@@ -484,8 +484,15 @@ class WebMediaPlayerImplTest
     compositor_ = compositor.get();
 
     CHECK(!wmpi_);
+    WebLocalFrame* frame = GetWebLocalFrame();
     wmpi_ = std::make_unique<WebMediaPlayerImpl>(
-        GetWebLocalFrame(), client_.Get(), &encrypted_client_, &delegate_,
+        frame->Scheduler(), frame->GetSecurityOrigin(),
+        frame->GetDocument().Url(), frame->GetDocument().Title(),
+        // Unretained() is safe because `wmpi_` is destroyed before
+        // `web_view_helper_`, which owns the frame.
+        BindRepeating(&WebLocalFrame::HasTransientUserActivation,
+                      Unretained(frame)),
+        client_.Get(), &encrypted_client_, &delegate_,
         std::move(factory_selector), url_index_.get(), std::move(compositor),
         std::move(media_log), player_id, WebMediaPlayerBuilder::DeferLoadCB(),
         audio_sink_, media_thread_.task_runner(), media_thread_.task_runner(),

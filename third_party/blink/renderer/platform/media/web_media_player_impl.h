@@ -83,6 +83,10 @@ class PipelineController;
 class SwitchableAudioRendererSink;
 }  // namespace media
 
+namespace url {
+class Origin;
+}
+
 namespace viz {
 class RasterContextProvider;
 }
@@ -90,6 +94,7 @@ class RasterContextProvider;
 namespace blink {
 
 class BufferedDataSourceHostImpl;
+class FrameScheduler;
 class PowerStatusHelper;
 class KURL;
 class ThreadSafeBrowserInterfaceBrokerProxy;
@@ -99,8 +104,9 @@ class VideoFrameCompositor;
 class WatchTimeReporter;
 class WebAudioSourceProviderImpl;
 class WebContentDecryptionModule;
-class WebLocalFrame;
 class WebMediaPlayerEncryptedMediaClient;
+class WebString;
+class WebURL;
 
 // The set of split histograms that are supported. Keeping them in an enum
 // helps prevent raw strings from being scattered throughout the source, and
@@ -128,7 +134,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Constructs a WebMediaPlayer implementation using Chromium's media stack.
   // |delegate| and |renderer_factory_selector| must not be null.
   WebMediaPlayerImpl(
-      WebLocalFrame* frame,
+      FrameScheduler* frame_scheduler,
+      const url::Origin& security_origin,
+      const WebURL& document_url,
+      const WebString& document_title,
+      WebMediaPlayerBuilder::HasTransientUserActivationCB
+          has_transient_user_activation_cb,
       MediaPlayerClient* client,
       WebMediaPlayerEncryptedMediaClient* encrypted_client,
       WebMediaPlayerDelegate* delegate,
@@ -740,7 +751,13 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Notifies the `client_` and the `delegate_` about metadata change.
   void DidMediaMetadataChange();
 
-  raw_ptr<WebLocalFrame> frame_ = nullptr;
+  // Scheduler of the frame the player belongs to.
+  raw_ptr<FrameScheduler> frame_scheduler_ = nullptr;
+
+  // Returns whether the user recently interacted with the frame, to tell
+  // user-initiated play and pause apart.
+  const WebMediaPlayerBuilder::HasTransientUserActivationCB
+      has_transient_user_activation_cb_;
 
   WebMediaPlayer::NetworkState network_state_ =
       WebMediaPlayer::kNetworkStateEmpty;

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -24,52 +23,62 @@
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
-#include "third_party/blink/public/web/web_associated_url_loader_options.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
 #include "third_party/blink/renderer/platform/media/web_media_player_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 
 namespace blink {
 
 namespace {
 
-class FrameFetchContext : public ResourceFetchContext {
+class UrlLoaderFetchContext : public ResourceFetchContext {
  public:
-  explicit FrameFetchContext(WebLocalFrame& frame) : frame_(frame) {}
-  FrameFetchContext(const FrameFetchContext&) = delete;
-  FrameFetchContext& operator=(const FrameFetchContext&) = delete;
-  ~FrameFetchContext() override = default;
-
-  WebLocalFrame& frame() const { return *frame_; }
+  explicit UrlLoaderFetchContext(
+      WebMediaPlayerBuilder::CreateUrlLoaderCB create_url_loader_cb)
+      : create_url_loader_cb_(std::move(create_url_loader_cb)) {}
+  UrlLoaderFetchContext(const UrlLoaderFetchContext&) = delete;
+  UrlLoaderFetchContext& operator=(const UrlLoaderFetchContext&) = delete;
+  ~UrlLoaderFetchContext() override = default;
 
   // ResourceFetchContext:
   std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
       const WebAssociatedURLLoaderOptions& options) override {
-    return frame_->CreateAssociatedURLLoader(options);
+    return create_url_loader_cb_.Run(options);
   }
 
  private:
-  const raw_ref<WebLocalFrame> frame_;
+  const WebMediaPlayerBuilder::CreateUrlLoaderCB create_url_loader_cb_;
 };
 
 }  // namespace
 
 WebMediaPlayerBuilder::WebMediaPlayerBuilder(
-    WebLocalFrame& frame,
-    scoped_refptr<base::SingleThreadTaskRunner> network_task_runner)
-    : fetch_context_(std::make_unique<FrameFetchContext>(frame)),
-      url_index_(std::make_unique<UrlIndex>(fetch_context_.get(),
-                                            std::move(network_task_runner))) {}
+    FrameScheduler& frame_scheduler,
+    media::RequestRoutingTokenCallback request_routing_token_cb,
+    HasTransientUserActivationCB has_transient_user_activation_cb,
+    CreateUrlLoaderCB create_url_loader_cb)
+    : frame_scheduler_(frame_scheduler.GetWeakPtr()),
+      request_routing_token_cb_(std::move(request_routing_token_cb)),
+      has_transient_user_activation_cb_(
+          std::move(has_transient_user_activation_cb)),
+      fetch_context_(std::make_unique<UrlLoaderFetchContext>(
+          std::move(create_url_loader_cb))),
+      url_index_(std::make_unique<UrlIndex>(
+          fetch_context_.get(),
+          frame_scheduler.GetTaskRunner(TaskType::kNetworkingUnfreezable))) {}
 
 WebMediaPlayerBuilder::~WebMediaPlayerBuilder() = default;
 
 std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
-    WebLocalFrame* frame,
+    const WebSecurityOrigin& security_origin,
+    const WebURL& document_url,
+    const WebString& document_title,
     WebMediaPlayerClient* client,
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
     WebMediaPlayerDelegate* delegate,
@@ -85,7 +94,6 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     scoped_refptr<base::SingleThreadTaskRunner>
         video_frame_compositor_task_runner,
     WebContentDecryptionModule* initial_cdm,
-    media::RequestRoutingTokenCallback request_routing_token_cb,
     base::WeakPtr<media::MediaObserver> media_observer,
     bool embedded_media_experience_enabled,
     CrossVariantMojoRemote<media::mojom::MediaMetricsProviderInterfaceBase>
@@ -97,19 +105,20 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     bool is_background_video_track_optimization_supported,
     std::unique_ptr<media::Demuxer> demuxer_override,
     scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces) {
-  CHECK_EQ(&static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
-           frame);
+  CHECK(frame_scheduler_);
   auto video_frame_compositor = std::make_unique<VideoFrameCompositor>(
       video_frame_compositor_task_runner, std::move(video_frame_submitter));
   return std::make_unique<WebMediaPlayerImpl>(
-      frame, static_cast<MediaPlayerClient*>(client), encrypted_client,
-      delegate, std::move(factory_selector), url_index_.get(),
+      frame_scheduler_.get(), security_origin, document_url, document_title,
+      has_transient_user_activation_cb_,
+      static_cast<MediaPlayerClient*>(client), encrypted_client, delegate,
+      std::move(factory_selector), url_index_.get(),
       std::move(video_frame_compositor), std::move(media_log), player_id,
       std::move(defer_load_cb), std::move(audio_renderer_sink),
       std::move(media_task_runner), std::move(worker_task_runner),
       std::move(compositor_task_runner),
       std::move(video_frame_compositor_task_runner), initial_cdm,
-      std::move(request_routing_token_cb), std::move(media_observer),
+      request_routing_token_cb_, std::move(media_observer),
       embedded_media_experience_enabled, std::move(metrics_provider),
       std::move(create_bridge_callback), std::move(raster_context_provider),
       is_background_suspend_enabled, is_background_video_playback_enabled,
