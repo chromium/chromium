@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +39,17 @@ ProfileSelections BuildCrossDevicePrefTrackerProfileSelections() {
       .Build();
 }
 
+std::unique_ptr<KeyedService> BuildCrossDevicePrefTracker(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto pref_provider = std::make_unique<ChromeCrossDevicePrefProvider>();
+  return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
+      static_cast<sync_preferences::PrefServiceSyncable*>(profile->GetPrefs()),
+      g_browser_process->local_state(),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile), std::move(pref_provider));
+}
+
 }  // namespace
 
 CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory()
@@ -63,16 +75,24 @@ CrossDevicePrefTrackerFactory* CrossDevicePrefTrackerFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+CrossDevicePrefTrackerFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildCrossDevicePrefTracker);
+}
+
 std::unique_ptr<KeyedService>
 CrossDevicePrefTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  auto pref_provider = std::make_unique<ChromeCrossDevicePrefProvider>();
-  return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
-      static_cast<sync_preferences::PrefServiceSyncable*>(profile->GetPrefs()),
-      g_browser_process->local_state(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile), std::move(pref_provider));
+  return BuildCrossDevicePrefTracker(context);
+}
+
+bool CrossDevicePrefTrackerFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+bool CrossDevicePrefTrackerFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 #if BUILDFLAG(IS_ANDROID)

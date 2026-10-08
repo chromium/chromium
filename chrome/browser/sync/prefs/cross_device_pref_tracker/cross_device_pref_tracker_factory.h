@@ -23,6 +23,9 @@ class CrossDevicePrefTrackerFactory : public ProfileKeyedServiceFactory {
   static sync_preferences::CrossDevicePrefTracker* GetForProfile(
       Profile* profile);
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
   CrossDevicePrefTrackerFactory(const CrossDevicePrefTrackerFactory&) = delete;
   CrossDevicePrefTrackerFactory& operator=(
       const CrossDevicePrefTrackerFactory&) = delete;
@@ -36,6 +39,8 @@ class CrossDevicePrefTrackerFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory override:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_

@@ -64,8 +64,10 @@ class IOSPromosUtilsTest : public testing::Test {
     builder.AddTestingFactory(
         DeviceInfoSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateTestDeviceInfoSyncService));
+    builder.AddTestingFactory(
+        CrossDevicePrefTrackerFactory::GetInstance(),
+        CrossDevicePrefTrackerFactory::GetDefaultFactory());
     profile_ = builder.Build();
-    CrossDevicePrefTrackerFactory::GetForProfile(profile());
   }
 
   void TearDown() override {
