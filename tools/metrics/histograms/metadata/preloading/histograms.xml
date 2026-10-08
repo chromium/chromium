@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.Prefetch.PrePrefetch.PrePrefetchServiceThreadBlockTime"
-    units="ms" expires_after="2026-10-18">
+    units="ms" expires_after="2027-04-18">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Prefetch.PrePrefetch.StartResult"
-    enum="PrePrefetchStartResult" expires_after="2026-10-18">
+    enum="PrePrefetchStartResult" expires_after="2027-04-18">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
