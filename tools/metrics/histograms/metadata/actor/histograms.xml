@@ -901,6 +901,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.SafetyListParseResult.PaymentIframeAllowed"
+    enum="SafetyListParseResult" expires_after="2027-03-07">
+  <owner>otara@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Records the outcome of parsing the payment iframe allowed static safety
+    list. Recorded every time an attempt is made to parse the static safety
+    lists JSON, regardless of whether or not the parse was successful.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Count.{StoppedReason}" units="count"
     expires_after="2027-02-14">
   <owner>dtapuska@google.com</owner>

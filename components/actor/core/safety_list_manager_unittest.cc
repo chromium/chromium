@@ -18,6 +18,7 @@
 #include "components/actor/core/actor_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace actor {
 namespace {
@@ -50,6 +51,12 @@ class SafetyListManagerTest : public ::testing::TestWithParam<bool> {
     return future.Get();
   }
 
+  bool IsPaymentIframeOriginAllowed(const url::Origin& origin) {
+    base::test::TestFuture<bool> future;
+    manager().IsPaymentIframeOriginAllowed(origin, future.GetCallback());
+    return future.Get();
+  }
+
   void SetSafetyLists(std::string json) {
     SetSafetyListsForTesting(&manager(), std::move(json));
   }
@@ -76,6 +83,8 @@ TEST_P(SafetyListManagerTest, DefaultInstance) {
       Decision::kNone);
   EXPECT_EQ(Find(GURL("https://anything.com"), GURL("https://corp.google.com")),
             Decision::kNone);
+  EXPECT_FALSE(IsPaymentIframeOriginAllowed(
+      url::Origin::Create(GURL("https://anything.com"))));
 }
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_LazyUntilFirstFind) {
@@ -1169,6 +1178,178 @@ TEST_P(SafetyListManagerTest, Find_SameOrigin) {
     SetSafetyLists(test_case.json);
     EXPECT_EQ(Find(url, url), test_case.expected);
   }
+}
+
+TEST_P(SafetyListManagerTest, ParsePaymentIframeAllowed_Validity) {
+  const struct {
+    std::string desc;
+    std::string json;
+    ParseResult expected_result;
+  } kTestCases[] = {
+      {
+          "malformed_json",
+          "this isn't json",
+          ParseResult::kInvalidJson,
+      },
+      {
+          "top_level_not_dictionary",
+          R"json([])json",
+          ParseResult::kInvalidJson,
+      },
+      {
+          "key_value_not_a_list",
+          R"json({ "payment_iframe_allowed": 123 })json",
+          ParseResult::kJsonKeyValueNotAList,
+      },
+      {
+          "list_value_not_a_string",
+          R"json({ "payment_iframe_allowed": [ 123 ] })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "list_value_dictionary_not_a_string",
+          R"json({ "payment_iframe_allowed": [ {} ] })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "invalid_url",
+          R"json({ "payment_iframe_allowed": [ "not a url" ] })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "http_origin_not_allowed",
+          R"json({ "payment_iframe_allowed": [ "http://example.com" ] })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "url_with_path_not_allowed",
+          R"json({
+            "payment_iframe_allowed": [ "https://example.com/path" ]
+          })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "url_with_query_not_allowed",
+          R"json({
+            "payment_iframe_allowed": [ "https://example.com?q=1" ]
+          })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "wildcard_pattern_not_allowed",
+          R"json({
+            "payment_iframe_allowed": [ "https://[*.]example.com" ]
+          })json",
+          ParseResult::kEntryFormatInvalid,
+      },
+      {
+          "empty_list",
+          R"json({ "payment_iframe_allowed": [] })json",
+          ParseResult::kSuccess,
+      },
+      {
+          "missing_key_succeeds",
+          R"json({})json",
+          ParseResult::kSuccess,
+      },
+      {
+          "valid_https_origins",
+          R"json({
+            "payment_iframe_allowed": [
+              "https://foo.bar.test",
+              "https://example.com"
+            ]
+          })json",
+          ParseResult::kSuccess,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    base::HistogramTester histogram_tester;
+    SetSafetyLists(test_case.json);
+    // Trigger lazy parsing via `IsPaymentIframeOriginAllowed`.
+    IsPaymentIframeOriginAllowed(
+        url::Origin::Create(GURL("https://example.com")));
+
+    histogram_tester.ExpectUniqueSample(
+        "Actor.SafetyListParseResult.PaymentIframeAllowed",
+        test_case.expected_result, 1);
+  }
+}
+
+TEST_P(SafetyListManagerTest, IsPaymentIframeOriginAllowed) {
+  base::HistogramTester histogram_tester;
+  SetSafetyLists(R"json({
+    "payment_iframe_allowed": [
+      "https://foo.bar.test",
+      "https://example.com"
+    ]
+  })json");
+
+  EXPECT_TRUE(IsPaymentIframeOriginAllowed(
+      url::Origin::Create(GURL("https://foo.bar.test"))));
+  EXPECT_TRUE(IsPaymentIframeOriginAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_FALSE(IsPaymentIframeOriginAllowed(
+      url::Origin::Create(GURL("https://other.test"))));
+  // HTTP version of an allowed host is not allowed.
+  EXPECT_FALSE(IsPaymentIframeOriginAllowed(
+      url::Origin::Create(GURL("http://foo.bar.test"))));
+  // Opaque origin is not allowed.
+  EXPECT_FALSE(IsPaymentIframeOriginAllowed(url::Origin()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.SafetyListParseResult.PaymentIframeAllowed", ParseResult::kSuccess,
+      1);
+}
+
+TEST_P(SafetyListManagerTest, ParsePaymentIframeAllowed_MultipleParses) {
+  const url::Origin origin_1 =
+      url::Origin::Create(GURL("https://foo.bar.test"));
+  const url::Origin origin_2 = url::Origin::Create(GURL("https://example.com"));
+
+  base::HistogramTester histogram_tester;
+  SetSafetyLists(R"json({
+    "payment_iframe_allowed": [
+      "https://foo.bar.test"
+    ]
+  })json");
+  EXPECT_TRUE(IsPaymentIframeOriginAllowed(origin_1));
+  EXPECT_FALSE(IsPaymentIframeOriginAllowed(origin_2));
+
+  SetSafetyLists(R"json({
+    "payment_iframe_allowed": [
+      "https://example.com"
+    ]
+  })json");
+  EXPECT_FALSE(IsPaymentIframeOriginAllowed(origin_1));
+  EXPECT_TRUE(IsPaymentIframeOriginAllowed(origin_2));
+  histogram_tester.ExpectBucketCount(
+      "Actor.SafetyListParseResult.PaymentIframeAllowed", ParseResult::kSuccess,
+      2);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParsePaymentIframeAllowed_InvalidUpdatePreservesList) {
+  const url::Origin allowed_origin =
+      url::Origin::Create(GURL("https://foo.bar.test"));
+
+  SetSafetyLists(R"json({
+    "payment_iframe_allowed": [
+      "https://foo.bar.test"
+    ]
+  })json");
+  EXPECT_TRUE(IsPaymentIframeOriginAllowed(allowed_origin));
+
+  base::HistogramTester histogram_tester;
+  SetSafetyLists(R"json({
+    "payment_iframe_allowed": [ "http://invalid-http-origin.test" ]
+  })json");
+  EXPECT_TRUE(IsPaymentIframeOriginAllowed(allowed_origin));
+  histogram_tester.ExpectUniqueSample(
+      "Actor.SafetyListParseResult.PaymentIframeAllowed",
+      ParseResult::kEntryFormatInvalid, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SafetyListManagerTest, testing::Bool());

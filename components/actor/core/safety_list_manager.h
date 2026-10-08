@@ -11,12 +11,13 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace base {
 template <typename T>
@@ -47,7 +48,9 @@ class SafetyListManager {
     kInvalidFromField = 6,
     // The `from` field was not a valid URL pattern.
     kInvalidFromUrlPattern = 7,
-    kMaxValue = kInvalidFromUrlPattern,
+    // A value in the list was not in the expected format.
+    kEntryFormatInvalid = 8,
+    kMaxValue = kEntryFormatInvalid,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:SafetyListParseResult)
 
@@ -62,6 +65,7 @@ class SafetyListManager {
   };
 
   using FindCallback = base::OnceCallback<void(Decision)>;
+  using PaymentIframeOriginAllowedCallback = base::OnceCallback<void(bool)>;
   using LoadSafetyListsClosure =
       base::OnceCallback<std::optional<std::string>()>;
 
@@ -86,8 +90,20 @@ class SafetyListManager {
   // `callback` with `Decision::kNone`.
   void Find(const GURL& source, const GURL& destination, FindCallback callback);
 
+  // Checks whether `origin` is in the payment iframe allowlist and invokes
+  // `callback` with the result.
+  //
+  // If the safety lists have not yet been parsed but the data is available for
+  // parsing, this triggers parsing off the main thread before resolving the
+  // lookup. If the safety lists have not yet been parsed and the data is not
+  // available for parsing (and no parse is currently in progress), this invokes
+  // `callback` with `false`.
+  void IsPaymentIframeOriginAllowed(
+      const url::Origin& origin,
+      PaymentIframeOriginAllowedCallback callback);
+
   // Stores `closure` to be invoked and parsed off the main thread when `Find()`
-  // is next called.
+  // or `IsPaymentIframeOriginAllowed()` is next called.
   void SetLoadSafetyListsClosure(LoadSafetyListsClosure closure);
 
  private:
@@ -97,10 +113,16 @@ class SafetyListManager {
 
   using PendingFinds = std::vector<base::OnceClosure>;
 
+  struct ParsedSafetyLists {
+    std::unique_ptr<content_settings::HostIndexedContentSettings> settings;
+    std::optional<base::flat_set<url::Origin>> payment_iframe_allowed_origins;
+  };
+
   struct ParseResultsAndSettings {
     ParseResult allowed_result;
     ParseResult blocked_result;
-    std::unique_ptr<content_settings::HostIndexedContentSettings> settings;
+    ParseResult payment_iframe_allowed_result;
+    ParsedSafetyLists parsed_lists;
   };
 
   // Private static so it can use ParseResultsAndSettings.
@@ -108,12 +130,9 @@ class SafetyListManager {
       std::string_view json_string);
 
   // Private static so it can use ParseSafetyListsInternal.
-  static std::unique_ptr<content_settings::HostIndexedContentSettings>
-  DoParseSafetyLists(LoadSafetyListsClosure closure);
+  static ParsedSafetyLists DoParseSafetyLists(LoadSafetyListsClosure closure);
 
-  void OnParsedSafetyLists(
-      std::unique_ptr<content_settings::HostIndexedContentSettings>
-          new_navigation_settings);
+  void OnParsedSafetyLists(ParsedSafetyLists parsed_lists);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -125,6 +144,7 @@ class SafetyListManager {
 
   // Synchronously evaluates the lookup against the current data.
   Decision FindSync(const GURL& source, const GURL& destination) const;
+  bool IsPaymentIframeOriginAllowedSync(const url::Origin& origin) const;
 
   // Producer closure to read the raw JSON string when `Find()` is first called.
   // May be null. Must not be invoked on the main thread.
@@ -137,6 +157,9 @@ class SafetyListManager {
   std::unique_ptr<content_settings::HostIndexedContentSettings>
       navigation_settings_ =
           std::make_unique<content_settings::HostIndexedContentSettings>();
+
+  // Allowed origins for cross-origin payment iframes.
+  base::flat_set<url::Origin> payment_iframe_allowed_origins_;
 
   // Used for `OnParsedSafetyLists` replies so in-flight parses can be
   // invalidated if a newer closure is provided before parsing finishes.
