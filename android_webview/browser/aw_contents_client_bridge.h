@@ -24,12 +24,12 @@ class GURL;
 namespace content {
 class ClientCertificateDelegate;
 class WebContents;
-}
+}  // namespace content
 
 namespace net {
 class SSLCertRequestInfo;
 class X509Certificate;
-}
+}  // namespace net
 
 namespace android_webview {
 

@@ -31,14 +31,17 @@ void AwRenderViewHostExt::BindFrameHost(
     mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver,
     content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   auto* aw_contents = AwContents::FromWebContents(web_contents);
-  if (!aw_contents)
+  if (!aw_contents) {
     return;
+  }
   auto* aw_rvh_ext = aw_contents->render_view_host_ext();
-  if (!aw_rvh_ext)
+  if (!aw_rvh_ext) {
     return;
+  }
   aw_rvh_ext->frame_host_receivers_.Bind(rfh, std::move(receiver));
 }
 
@@ -77,20 +80,23 @@ mojom::HitTestDataPtr AwRenderViewHostExt::TakeLastHitTestData() {
 
 void AwRenderViewHostExt::SetTextZoomFactor(float factor) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote()) {
     local_main_frame_remote->SetTextZoomFactor(factor);
+  }
 }
 
 void AwRenderViewHostExt::ResetScrollAndScaleState() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote()) {
     local_main_frame_remote->ResetScrollAndScaleState();
+  }
 }
 
 void AwRenderViewHostExt::SetInitialPageScale(double page_scale_factor) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote()) {
     local_main_frame_remote->SetInitialPageScale(page_scale_factor);
+  }
 }
 
 void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
@@ -100,8 +106,9 @@ void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
 void AwRenderViewHostExt::SmoothScroll(int target_x,
                                        int target_y,
                                        base::TimeDelta duration) {
-  if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote()) {
     local_main_frame_remote->SmoothScroll(target_x, target_y, duration);
+  }
 }
 
 void AwRenderViewHostExt::PostEmbedderMessageEvent(
@@ -116,16 +123,18 @@ void AwRenderViewHostExt::PostEmbedderMessageEvent(
 
 void AwRenderViewHostExt::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (will_suppress_error_page_)
+  if (will_suppress_error_page_) {
     navigation_handle->SetSilentlyIgnoreErrors();
+  }
 }
 
 void AwRenderViewHostExt::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
 
   // Only record a visit if the navigation affects user-facing session history
   // (i.e. it occurs in the primary frame tree).

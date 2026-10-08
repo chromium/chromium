@@ -159,8 +159,7 @@ public class AwContentsTest extends AwParameterizedTest {
         mActivityTestRule.startBrowserProcess();
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.WebView.WebContent.AdoptResult",
-                        AwContents.AdoptResult.SUCCESS);
+                        "Android.WebView.WebContent.AdoptResult", AwContents.AdoptResult.SUCCESS);
 
         MutableContextWrapper oldContext =
                 new MutableContextWrapper(mActivityTestRule.getActivity());
@@ -241,7 +240,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         Assert.assertNotNull(
                 "AwContents.adopt() must register an OnApplyWindowInsetsListener on the new"
-                    + " container.",
+                        + " container.",
                 newContainer.mInsetsListener);
     }
 
@@ -2036,14 +2035,16 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView oldView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
 
-        int oldColor = ThreadUtils.runOnUiThreadBlocking(
-                () -> oldView.getAwContents().getEdgeEffectColor());
+        int oldColor =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> oldView.getAwContents().getEdgeEffectColor());
 
         AwTestContainerView newView =
                 mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
 
-        int newColor = ThreadUtils.runOnUiThreadBlocking(
-                () -> newView.getAwContents().getEdgeEffectColor());
+        int newColor =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> newView.getAwContents().getEdgeEffectColor());
 
         Assert.assertNotEquals(oldColor, newColor);
     }
@@ -2087,9 +2088,10 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView oldView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            oldView.getAwContents().getZoomControlsForTest().invokeZoomPicker();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    oldView.getAwContents().getZoomControlsForTest().invokeZoomPicker();
+                });
 
         AwTestContainerView newView =
                 mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
@@ -2152,4 +2154,3 @@ public class AwContentsTest extends AwParameterizedTest {
                 "\"success\"", resultFuture.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 }
-

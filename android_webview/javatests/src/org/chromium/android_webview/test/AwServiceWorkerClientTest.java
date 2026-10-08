@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -40,27 +39,27 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
 
     private static final String INDEX_HTML =
             """
-        <!DOCTYPE html>
-        <html>
-          <body>
-            <script>
-              console.log("Registering serviceworker");
-              success = 0;
-              navigator.serviceWorker.register('sw.js').then(function(reg) {
-                 success = 1;
-              }).catch(function(err) {
-                 console.error(err);
-              });
-            </script>
-          </body>
-        </html>
-        """;
+            <!DOCTYPE html>
+            <html>
+              <body>
+                <script>
+                  console.log("Registering serviceworker");
+                  success = 0;
+                  navigator.serviceWorker.register('sw.js').then(function(reg) {
+                     success = 1;
+                  }).catch(function(err) {
+                     console.error(err);
+                  });
+                </script>
+              </body>
+            </html>
+            """;
 
     private static final String SW_HTML =
             """
-        console.log("Running in serviceworker");
-        fetch('fetch.html');
-        """;
+            console.log("Running in serviceworker");
+            fetch('fetch.html');
+            """;
     private static final String FETCH_HTML = ";)";
 
     public AwServiceWorkerClientTest(AwSettingsMutation param) {

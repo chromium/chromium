@@ -49,8 +49,9 @@ namespace {
 void CallOnReceivedError(AwContentsClientBridge* client,
                          AwWebResourceRequest request,
                          content::NavigationEntry* entry) {
-  if (!client)
+  if (!client) {
     return;
+  }
   // We have no way of telling if a navigation was renderer initiated if entry
   // is null but OnReceivedError requires the value to be set, we default to
   // false for that case.
@@ -149,8 +150,9 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   // performing the check if we can't find the |client|, since the |client| may
   // be null for some service worker requests (see https://crbug.com/979321).
   bool safe_browsing_enabled = client ? client->GetSafeBrowsingEnabled() : true;
-  if (!safe_browsing_enabled)
+  if (!safe_browsing_enabled) {
     return true;
+  }
 
   // If this is a hardcoded WebUI URL we use for testing, do not skip the safe
   // browsing check. We do not check user consent here because we do not ever
@@ -161,8 +163,9 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   bool is_hardcoded_url =
       original_url.SchemeIs(content::kChromeUIScheme) &&
       original_url.GetHost() == safe_browsing::kChromeUISafeBrowsingHost;
-  if (is_hardcoded_url)
+  if (is_hardcoded_url) {
     return false;
+  }
 
   // Skip the check if we can't call GMS APIs.
   bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
@@ -262,8 +265,9 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
   content::WebContents* web_contents =
       safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
   // |web_contents| can be null after RenderFrameHost is destroyed.
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   if (!reporting) {
     AwBrowserContext* browser_context =

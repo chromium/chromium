@@ -59,8 +59,9 @@ class UserData : public base::SupportsUserData::Data {
  public:
   static AwContentsClientBridge* GetContents(
       content::WebContents* web_contents) {
-    if (!web_contents)
+    if (!web_contents) {
       return nullptr;
+    }
     UserData* data = static_cast<UserData*>(
         web_contents->GetUserData(kAwContentsClientBridge));
     return data ? data->contents_.get() : nullptr;
@@ -137,8 +138,9 @@ void AwContentsClientBridge::AllowCertificateError(int cert_error,
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
 
   std::string_view der_string =
       net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer());
@@ -179,8 +181,9 @@ void AwContentsClientBridge::SelectClientCertificate(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
 
   // Build the |key_types| JNI parameter, as a String[]
   std::vector<std::string> key_types = net::SignatureAlgorithmsToJavaKeyTypes(
@@ -337,8 +340,9 @@ bool AwContentsClientBridge::ShouldOverrideUrlLoading(
   *ignore_navigation = false;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return true;
+  }
   devtools_instrumentation::ScopedEmbedderCallbackTask embedder_callback(
       "shouldOverrideUrlLoading");
 
@@ -365,8 +369,9 @@ bool AwContentsClientBridge::ShouldOverrideUrlLoading(
 bool AwContentsClientBridge::SendBrowseIntent(const std::u16string& url) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return false;
+  }
   return Java_AwContentsClientBridge_sendBrowseIntent(env, obj, url);
 }
 
@@ -378,8 +383,9 @@ void AwContentsClientBridge::NewDownload(const GURL& url,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
 
   Java_AwContentsClientBridge_newDownload(env, obj, url.spec(), user_agent,
                                           content_disposition, mime_type,
@@ -392,8 +398,9 @@ void AwContentsClientBridge::NewLoginRequest(const std::string& realm,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
   // The API expects nullptr rather than empty string if account is missing.
   const std::string* account_or_null = account.empty() ? nullptr : &account;
   Java_AwContentsClientBridge_newLoginRequest(env, obj, realm, account_or_null,
@@ -409,8 +416,9 @@ void AwContentsClientBridge::OnReceivedError(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
 
   Java_AwContentsClientBridge_onReceivedError(
       env, obj, request, request.is_renderer_initiated.value_or(false),
@@ -428,8 +436,9 @@ void AwContentsClientBridge::OnSafeBrowsingHit(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
 
   Java_AwContentsClientBridge_onSafeBrowsingHit(
       env, obj, request, static_cast<int>(threat_type), request_id);
@@ -441,8 +450,9 @@ void AwContentsClientBridge::OnReceivedHttpError(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj)
+  if (!obj) {
     return;
+  }
 
   Java_AwContentsClientBridge_onReceivedHttpError(
       env, obj, request, http_error_info->mime_type, http_error_info->encoding,

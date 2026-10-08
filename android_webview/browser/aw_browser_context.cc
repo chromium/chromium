@@ -125,8 +125,6 @@ bool IgnoreOriginSecurityCheck(const GURL& url) {
   return true;
 }
 
-
-
 base::FilePath BuildCachePath(const base::FilePath& relative_path) {
   FilePath cache_path;
   if (!base::PathService::Get(base::DIR_CACHE, &cache_path)) {
@@ -650,8 +648,9 @@ void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
     JNIEnv* env) {
   content::OriginTrialsControllerDelegate* delegate =
       GetOriginTrialsControllerDelegate();
-  if (delegate)
+  if (delegate) {
     delegate->ClearPersistedTokens();
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

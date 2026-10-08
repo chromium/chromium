@@ -491,7 +491,6 @@ public class Features {
     public static final String NAVIGATION_GET_WEB_RESOURCE_ERROR =
             "NAVIGATION_GET_WEB_RESOURCE_ERROR";
 
-
     // WebViewCompat.navigate
     public static final String WEBVIEW_NAVIGATE_V1 = "WEBVIEW_NAVIGATE_V1";
 

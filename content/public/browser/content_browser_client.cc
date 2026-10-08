@@ -668,8 +668,6 @@ bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
   return false;
 }
 
-
-
 bool ContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,

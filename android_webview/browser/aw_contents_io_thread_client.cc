@@ -332,8 +332,9 @@ ClientMapEntryUpdater::ClientMapEntryUpdater(
   DCHECK(web_contents);
   DCHECK(jdelegate);
 
-  if (web_contents->GetPrimaryMainFrame())
+  if (web_contents->GetPrimaryMainFrame()) {
     RenderFrameCreated(web_contents->GetPrimaryMainFrame());
+  }
 
   WebContentsToIoThreadClientMap::GetInstance()->Set(
       GetWebContentsKey(*web_contents), jdelegate_);
@@ -470,7 +471,6 @@ AwContentsIoThreadClient::CacheMode AwContentsIoThreadClient::GetCacheMode()
   return static_cast<AwContentsIoThreadClient::CacheMode>(
       Java_AwContentsIoThreadClient_getCacheMode(env, java_object_));
 }
-
 
 namespace {
 

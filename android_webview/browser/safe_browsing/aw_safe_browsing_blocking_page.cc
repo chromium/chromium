@@ -163,8 +163,9 @@ void AwSafeBrowsingBlockingPage::FinishThreatDetails(
     bool did_proceed,
     int num_visits) {
   // Not all interstitials collect threat details, e.g. when not opted in.
-  if (!threat_details_in_progress_)
+  if (!threat_details_in_progress_) {
     return;
+  }
 
   // Finish computing threat details. TriggerManager will decide if it is safe
   // to send the report.
