@@ -27,6 +27,7 @@ public class CommandLineFlagsWithClassAnnotationCheckTest {
 
     @Test
     @CommandLineFlags.Remove("some-switch")
+    @DisabledTest(message = "https://crbug.com/570781966")
     public void testRemoveSwitch_method() throws Throwable {
         Assert.assertTrue(
                 "CommandLine switches should be removed by the method",
