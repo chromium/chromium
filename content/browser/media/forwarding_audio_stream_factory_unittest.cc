@@ -8,16 +8,22 @@
 #include <tuple>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/unguessable_token.h"
+#include "content/browser/media/audio_output_stream_broker.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
+#include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
@@ -41,6 +47,20 @@ namespace content {
 namespace {
 
 using AudioProcessingConfigPtr = media::mojom::AudioProcessingConfigPtr;
+
+media::AudioParameters GetPlaybackParams() {
+  media::AudioParameters params =
+      media::AudioParameters::UnavailableDeviceParams();
+  params.set_latency_tag(media::AudioLatency::Type::kPlayback);
+  return params;
+}
+
+mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
+MakeProviderClientRemote() {
+  mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
+  return client;
+}
 
 class MockStreamFactory final : public audio::FakeStreamFactory,
                                 public media::mojom::LocalMuter {
@@ -68,11 +88,19 @@ class MockStreamFactory final : public audio::FakeStreamFactory,
   mojo::AssociatedReceiver<media::mojom::LocalMuter> muter_receiver_{this};
 };
 
-class MockBroker : public AudioStreamBroker {
+class MockBroker : public AudioOutputStreamBroker {
  public:
-  explicit MockBroker(RenderFrameHost* rfh)
-      : AudioStreamBroker(rfh->GetProcess()->GetDeprecatedID(),
-                          rfh->GetRoutingID()),
+  explicit MockBroker(RenderFrameHost* rfh,
+                      const std::string& output_device_id = "test output id")
+      : AudioOutputStreamBroker(rfh->GetProcess()->GetDeprecatedID(),
+                                rfh->GetRoutingID(),
+                                rfh->GetMainFrame()->GetGlobalFrameToken(),
+                                /*stream_id=*/0,
+                                output_device_id,
+                                GetPlaybackParams(),
+                                base::UnguessableToken::Create(),
+                                base::DoNothing(),
+                                MakeProviderClientRemote()),
         main_frame_token_(rfh->GetMainFrame()->GetGlobalFrameToken()) {}
 
   MockBroker(const MockBroker&) = delete;
@@ -256,8 +284,9 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
   }
 
   base::WeakPtr<MockBroker> ExpectOutputBrokerConstruction(
-      RenderFrameHost* rfh) {
-    auto broker = std::make_unique<StrictMock<MockBroker>>(rfh);
+      RenderFrameHost* rfh,
+      const std::string& device_id = kOutputDeviceId) {
+    auto broker = std::make_unique<StrictMock<MockBroker>>(rfh, device_id);
     auto weak_broker = broker->GetWeakPtr();
     broker_factory_->ExpectOutputStreamBrokerCreation(std::move(broker));
     return weak_broker;
@@ -834,6 +863,84 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   EXPECT_TRUE(factory.IsMuted());
   EXPECT_TRUE(stream_factory_.IsConnected());
   EXPECT_TRUE(stream_factory_.IsMuterConnected());
+}
+
+TEST_F(ForwardingAudioStreamFactoryTest,
+       DestroyFrame_ReparentsDefaultOutputStreamToSurvivingSameProcessFrame) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  other_rfh_ = nullptr;
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                    GURL("https://a.com"));
+
+  RenderFrameHost* same_process_subframe =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("same_process");
+  RenderFrameHostTester::For(same_process_subframe)
+      ->InitializeRenderFrameIfNeeded();
+  ASSERT_EQ(main_rfh()->GetProcess(), same_process_subframe->GetProcess());
+
+  RenderFrameHost* subframe_1 =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("subframe_1");
+  subframe_1 = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://b.com/1"), subframe_1);
+  RenderFrameHost* subframe_2 =
+      RenderFrameHostTester::For(subframe_1)->AppendChild("subframe_2");
+  RenderFrameHostTester::For(subframe_2)->InitializeRenderFrameIfNeeded();
+  ASSERT_NE(main_rfh()->GetProcess(), subframe_1->GetProcess());
+  ASSERT_EQ(subframe_1->GetProcess(), subframe_2->GetProcess());
+
+  base::WeakPtr<MockBroker> same_process_broker =
+      ExpectOutputBrokerConstruction(
+          same_process_subframe,
+          media::AudioDeviceDescription::kDefaultDeviceId);
+
+  base::WeakPtr<MockBroker> cross_process_broker =
+      ExpectOutputBrokerConstruction(
+          subframe_1, media::AudioDeviceDescription::kDefaultDeviceId);
+
+  ForwardingAudioStreamFactory factory(web_contents(),
+                                       std::move(broker_factory_));
+
+  {
+    EXPECT_CALL(*same_process_broker, CreateStream(NotNull()));
+    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
+        output_client;
+    std::ignore = output_client.InitWithNewPipeAndPassReceiver();
+    factory.core()->CreateOutputStream(
+        same_process_subframe->GetProcess()->GetDeprecatedID(),
+        same_process_subframe->GetRoutingID(),
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+        std::move(output_client));
+    testing::Mock::VerifyAndClear(&*same_process_broker);
+  }
+  {
+    EXPECT_CALL(*cross_process_broker, CreateStream(NotNull()));
+    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
+        output_client;
+    std::ignore = output_client.InitWithNewPipeAndPassReceiver();
+    factory.core()->CreateOutputStream(
+        subframe_1->GetProcess()->GetDeprecatedID(), subframe_1->GetRoutingID(),
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+        std::move(output_client));
+    testing::Mock::VerifyAndClear(&*cross_process_broker);
+  }
+
+  // A subframe in the same process as the main frame never owns shared mixer
+  // streams, so deleting it destroys its broker immediately.
+  factory.RenderFrameDeleted(same_process_subframe);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !same_process_broker; }));
+
+  // Since |subframe_2| is live and in the same cross-process renderer as
+  // |subframe_1|, deleting |subframe_1| reparents the broker to |subframe_2|.
+  factory.RenderFrameDeleted(subframe_1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return cross_process_broker && cross_process_broker->render_frame_id() ==
+                                       subframe_2->GetRoutingID();
+  }));
+
+  // Deleting |subframe_2| (leaving no surviving frames in that process) now
+  // destroys the reparented broker.
+  RenderFrameHostTester::For(subframe_1)->Detach();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !cross_process_broker; }));
 }
 
 TEST_F(ForwardingAudioStreamFactoryTest,

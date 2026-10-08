@@ -75,7 +75,10 @@ class CONTENT_EXPORT AudioStreamBroker {
 
  protected:
   const int render_process_id_;
-  const int render_frame_id_;
+
+  // Mutable so shared audio output stream brokers can be reparented to a
+  // surviving frame in the same process when their original frame is deleted.
+  int render_frame_id_;
 };
 
 // Used for dependency injection into ForwardingAudioStreamFactory. Used on the

@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/guest_page_holder_impl.h"
+#include "content/browser/media/audio_output_stream_broker.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -63,8 +64,9 @@ ForwardingAudioStreamFactory::Core::Core(
 
 ForwardingAudioStreamFactory::Core::~Core() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
-  for (AudioStreamBroker::LoopbackSink* sink : loopback_sinks_)
+  for (AudioStreamBroker::LoopbackSink* sink : loopback_sinks_) {
     sink->OnSourceGone();
+  }
 }
 
 base::WeakPtr<ForwardingAudioStreamFactory::Core>
@@ -170,8 +172,9 @@ void ForwardingAudioStreamFactory::Core::SetMuted(bool muted) {
   }
 
   muter_.emplace(group_id_);
-  if (remote_factory_)
+  if (remote_factory_) {
     muter_->Connect(remote_factory_.get());
+  }
 }
 
 void ForwardingAudioStreamFactory::Core::AddLoopbackSink(
@@ -285,14 +288,50 @@ void ForwardingAudioStreamFactory::RenderFrameDeleted(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(render_frame_host, base::NotFatalUntil::M160);
 
+  // Default-device audio output streams in a renderer process are shared across
+  // all frames belonging to the same main frame via AudioRendererMixerManager.
+  // When the main frame is in the same process, AudioRendererMixerManager
+  // already binds shared mixer sinks directly to the main frame. However, when
+  // the main frame is remote to those subframes' process, the mixer sink is
+  // initially created through whichever subframe requested audio first. If that
+  // subframe is deleted while other subframes in the same process and main
+  // frame remain alive, reparent the shared stream broker to a surviving frame
+  // instead of tearing down audio for the remaining subframes.
+  //
+  // Note: This reparents all mixable default-device output brokers of the
+  // deleted frame regardless of whether the sink is currently active/playing
+  // (since a surviving subframe may hold a paused mixer input that will later
+  // resume playback on the shared sink). If the deleted frame was the only
+  // consumer of the sink, the renderer will close the sink once its input is
+  // removed, bounding the broker's lifetime.
+  std::optional<int> fallback_render_frame_id;
+  RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
+  RenderProcessHost* process = render_frame_host->GetProcess();
+  if (render_frame_host != main_frame && main_frame->GetProcess() != process) {
+    main_frame->ForEachRenderFrameHostWithAction(
+        [render_frame_host, main_frame, process,
+         &fallback_render_frame_id](RenderFrameHost* rfh) {
+          if (rfh->GetMainFrame() != main_frame) {
+            return RenderFrameHost::FrameIterationAction::kSkipChildren;
+          }
+          if (rfh != render_frame_host && rfh->IsRenderFrameLive() &&
+              rfh->IsActive() && rfh->GetProcess() == process) {
+            fallback_render_frame_id = rfh->GetRoutingID();
+            return RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        });
+  }
+
   // Unretained is safe since the destruction of |core_| will be posted to the
   // IO thread later.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&Core::CleanupStreamsBelongingTo,
+      base::BindOnce(&Core::CleanupOrReparentStreamsBelongingTo,
                      base::Unretained(core_.get()),
                      render_frame_host->GetProcess()->GetDeprecatedID(),
-                     render_frame_host->GetRoutingID()));
+                     render_frame_host->GetRoutingID(),
+                     fallback_render_frame_id));
 }
 
 void ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
@@ -300,12 +339,13 @@ void ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
   GetAudioStreamFactoryBinderOverride() = std::move(binder);
 }
 
-void ForwardingAudioStreamFactory::Core::CleanupStreamsBelongingTo(
+void ForwardingAudioStreamFactory::Core::CleanupOrReparentStreamsBelongingTo(
     int render_process_id,
-    int render_frame_id) {
+    int render_frame_id,
+    std::optional<int> fallback_render_frame_id) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
 
-  TRACE_EVENT_BEGIN("audio", "CleanupStreamsBelongingTo", "group",
+  TRACE_EVENT_BEGIN("audio", "CleanupOrReparentStreamsBelongingTo", "group",
                     group_id_.GetLowForSerialization(), "process id",
                     render_process_id);
 
@@ -316,7 +356,22 @@ void ForwardingAudioStreamFactory::Core::CleanupStreamsBelongingTo(
            broker->render_frame_id() == render_frame_id;
   };
 
-  base::EraseIf(outputs_, match_rfh);
+  auto match_or_reparent_output =
+      [render_process_id, render_frame_id, fallback_render_frame_id](
+          const std::unique_ptr<AudioStreamBroker>& broker) -> bool {
+    if (broker->render_process_id() != render_process_id ||
+        broker->render_frame_id() != render_frame_id) {
+      return false;
+    }
+    if (fallback_render_frame_id.has_value() &&
+        static_cast<AudioOutputStreamBroker*>(broker.get())
+            ->Reparent(*fallback_render_frame_id)) {
+      return false;
+    }
+    return true;
+  };
+
+  base::EraseIf(outputs_, match_or_reparent_output);
   base::EraseIf(inputs_, match_rfh);
 
   ResetRemoteFactoryPtrIfIdle();
@@ -359,8 +414,9 @@ ForwardingAudioStreamFactory::Core::GetFactory() {
         base::Unretained(this)));
 
     // Restore the muting session on reconnect.
-    if (muter_)
+    if (muter_) {
       muter_->Connect(remote_factory_.get());
+    }
   }
 
   return remote_factory_.get();
@@ -368,8 +424,9 @@ ForwardingAudioStreamFactory::Core::GetFactory() {
 
 void ForwardingAudioStreamFactory::Core::ResetRemoteFactoryPtrIfIdle() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
-  if (inputs_.empty() && outputs_.empty())
+  if (inputs_.empty() && outputs_.empty()) {
     ResetRemoteFactoryPtr();
+  }
 }
 
 void ForwardingAudioStreamFactory::Core::ResetRemoteFactoryPtr() {

@@ -114,13 +114,21 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     const base::UnguessableToken& GetGroupID() final;  // Actually const.
 
    private:
-    // For CleanupStreamsBelongingTo.
+    // For CleanupOrReparentStreamsBelongingTo.
     friend class ForwardingAudioStreamFactory;
 
     using StreamBrokerSet = base::flat_set<std::unique_ptr<AudioStreamBroker>,
                                            base::UniquePtrComparator>;
 
-    void CleanupStreamsBelongingTo(int render_process_id, int render_frame_id);
+    // Cleans up streams belonging to the specified frame. If
+    // `fallback_render_frame_id` is provided, output streams that support
+    // reparenting (such as default-device output streams that may be shared
+    // across same-process frames) are reparented to `*fallback_render_frame_id`
+    // instead of being destroyed.
+    void CleanupOrReparentStreamsBelongingTo(
+        int render_process_id,
+        int render_frame_id,
+        std::optional<int> fallback_render_frame_id = std::nullopt);
 
     void RemoveInput(AudioStreamBroker* handle);
     void RemoveOutput(AudioStreamBroker* handle);

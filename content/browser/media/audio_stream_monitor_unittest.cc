@@ -11,8 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
+#include "content/browser/renderer_host/media/audio_output_stream_observer_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/navigation_simulator.h"
@@ -156,6 +161,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
 
  protected:
   raw_ptr<AudioStreamMonitor> monitor_;
+  MockWebContentsDelegate mock_web_contents_delegate_;
 
  private:
   void ExpectWasRecentlyAudible() const {
@@ -165,8 +171,6 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   void ExpectNotRecentlyAudible() const {
     EXPECT_FALSE(monitor_->WasRecentlyAudible());
   }
-
-  MockWebContentsDelegate mock_web_contents_delegate_;
 };
 
 TEST_F(AudioStreamMonitorTest, MonitorsWhenProvidedAStream) {
@@ -484,6 +488,69 @@ TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
   ExpectCurrentlyAudibleChangeNotification(false);
   UpdateAudibleState(kRenderFrameHostId, kStreamId, false);
   ExpectNotCurrentlyAudible();
+}
+
+TEST_F(AudioStreamMonitorTest, ObserverReparentTransfersFrameAudibleState) {
+  ExpectNotCurrentlyAudible();
+  constexpr char kDefaultTestUrl[] = "https://google.com/";
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+
+  auto* render_frame_host_tester =
+      RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame());
+  auto* child_1 = static_cast<RenderFrameHostImpl*>(
+      render_frame_host_tester->AppendChild("child_1"));
+  auto* child_2 = static_cast<RenderFrameHostImpl*>(
+      render_frame_host_tester->AppendChild("child_2"));
+
+  auto flush_ui_tasks = [this]() {
+    base::RunLoop run_loop;
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_web_contents_delegate_);
+  };
+
+  AudioOutputStreamObserverImpl observer(
+      child_1->GetProcess()->GetDeprecatedID(), child_1->GetRoutingID(),
+      kStreamId);
+
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  observer.DidStartPlaying();
+  observer.DidChangeAudibleState(true);
+  flush_ui_tasks();
+
+  ExpectIsCurrentlyAudible();
+  ExpectIsMonitoring(child_1->GetGlobalId(), kStreamId, true);
+  ExpectIsMonitoring(child_2->GetGlobalId(), kStreamId, false);
+  EXPECT_TRUE(child_1->HasMediaStreams(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream));
+  EXPECT_FALSE(child_2->HasMediaStreams(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream));
+
+  // Reparent the observer from child_1 to child_2: child_2 should become
+  // audible, child_1 should no longer be audible, and the tab should remain
+  // continuously audible without any audio state change notification.
+  observer.Reparent(child_2->GetRoutingID());
+  flush_ui_tasks();
+
+  ExpectIsCurrentlyAudible();
+  ExpectIsMonitoring(child_1->GetGlobalId(), kStreamId, false);
+  ExpectIsMonitoring(child_2->GetGlobalId(), kStreamId, true);
+  EXPECT_FALSE(child_1->HasMediaStreams(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream));
+  EXPECT_TRUE(child_2->HasMediaStreams(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream));
+
+  // Stopping playback clears audibility on child_2 and the tab.
+  ExpectCurrentlyAudibleChangeNotification(false);
+  observer.DidStopPlaying();
+  flush_ui_tasks();
+
+  ExpectNotCurrentlyAudible();
+  ExpectIsMonitoring(child_2->GetGlobalId(), kStreamId, false);
+  EXPECT_FALSE(child_2->HasMediaStreams(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream));
 }
 
 }  // namespace content

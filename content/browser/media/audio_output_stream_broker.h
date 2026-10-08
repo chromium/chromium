@@ -28,7 +28,7 @@ namespace content {
 // AudioOutputStreamBroker is used to broker a connection between a client
 // (typically renderer) and the audio service. It also sets up all objects
 // used for monitoring the stream.
-class CONTENT_EXPORT AudioOutputStreamBroker final
+class CONTENT_EXPORT AudioOutputStreamBroker
     : public AudioStreamBroker,
       public AudioOutputDeviceSwitcher {
  public:
@@ -47,13 +47,20 @@ class CONTENT_EXPORT AudioOutputStreamBroker final
   AudioOutputStreamBroker(const AudioOutputStreamBroker&) = delete;
   AudioOutputStreamBroker& operator=(const AudioOutputStreamBroker&) = delete;
 
-  ~AudioOutputStreamBroker() final;
+  ~AudioOutputStreamBroker() override;
 
   // Creates the stream.
-  void CreateStream(media::mojom::AudioStreamFactory* factory) final;
+  void CreateStream(media::mojom::AudioStreamFactory* factory) override;
+
+  // Attempts to reparent this stream broker to `new_render_frame_id` in the
+  // same renderer process and main frame when its initial frame is deleted.
+  // Returns true if the broker can be shared across frames (default-device
+  // playback audio output) and was reparented, or false if the broker is tied
+  // to its original frame and cannot be reparented.
+  bool Reparent(int new_render_frame_id);
 
   // AudioOutputDeviceSwitcher implementation.
-  void SwitchAudioOutputDeviceId(const std::string& device_id) final;
+  void SwitchAudioOutputDeviceId(const std::string& device_id) override;
 
   bool IsSwitchableStreamCreatedForTesting() const {
     return device_switch_interface_.is_bound();
@@ -79,6 +86,7 @@ class CONTENT_EXPORT AudioOutputStreamBroker final
   SEQUENCE_CHECKER(owning_sequence_);
 
   const GlobalRenderFrameHostToken main_frame_token_;
+  const bool is_default_device_;
   std::string output_device_id_;
   const media::AudioParameters params_;
   const base::UnguessableToken group_id_;

@@ -263,6 +263,42 @@ TEST(AudioOutputStreamBrokerTest, StoresProcessAndFrameId) {
 
   EXPECT_EQ(kRenderProcessId, broker.render_process_id());
   EXPECT_EQ(kRenderFrameId, broker.render_frame_id());
+  EXPECT_FALSE(broker.Reparent(kRenderFrameId + 1));
+  EXPECT_EQ(kRenderFrameId, broker.render_frame_id());
+}
+
+TEST(AudioOutputStreamBrokerTest, ReparentDefaultDeviceBroker) {
+  BrowserTaskEnvironment env;
+  MockDeleterCallback deleter;
+  StrictMock<MockAudioOutputStreamProviderClient> provider_client_1;
+  StrictMock<MockAudioOutputStreamProviderClient> provider_client_2;
+
+  constexpr int kNewRenderFrameId = kRenderFrameId + 1;
+
+  // Non-playback latency streams (e.g. WebRTC or interactive WebAudio) are not
+  // shared across frames and should not be reparented even on the default
+  // device.
+  media::AudioParameters rtc_params = TestParams();
+  rtc_params.set_latency_tag(media::AudioLatency::Type::kRtc);
+  AudioOutputStreamBroker rtc_broker(
+      kRenderProcessId, kRenderFrameId, kMainFrameHostToken, kStreamId,
+      media::AudioDeviceDescription::kDefaultDeviceId, rtc_params,
+      base::UnguessableToken::Create(), deleter.Get(),
+      provider_client_1.MakePendingRemote());
+  EXPECT_FALSE(rtc_broker.Reparent(kNewRenderFrameId));
+  EXPECT_EQ(kRenderFrameId, rtc_broker.render_frame_id());
+
+  // Playback latency streams on the default device can be shared via
+  // AudioRendererMixerManager and should be reparented.
+  media::AudioParameters playback_params = TestParams();
+  playback_params.set_latency_tag(media::AudioLatency::Type::kPlayback);
+  AudioOutputStreamBroker playback_broker(
+      kRenderProcessId, kRenderFrameId, kMainFrameHostToken, kStreamId,
+      media::AudioDeviceDescription::kDefaultDeviceId, playback_params,
+      base::UnguessableToken::Create(), deleter.Get(),
+      provider_client_2.MakePendingRemote());
+  EXPECT_TRUE(playback_broker.Reparent(kNewRenderFrameId));
+  EXPECT_EQ(kNewRenderFrameId, playback_broker.render_frame_id());
 }
 
 TEST(AudioOutputStreamBrokerTest, ClientDisconnect_CallsDeleter) {
