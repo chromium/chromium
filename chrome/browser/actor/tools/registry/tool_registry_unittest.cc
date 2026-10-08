@@ -187,6 +187,17 @@ TEST(ToolRegistryTest, SeekMediaToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(SeekMediaToolRequest::kTimecodeParam));
 }
 
+TEST(ToolRegistryTest, PauseMediaToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      PauseMediaToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kPauseVideo);
+  EXPECT_EQ(definition->name, PauseMediaToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -300,6 +311,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsSeekMediaTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kSeekToTimestamp,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsPauseMediaTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kPauseVideo, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

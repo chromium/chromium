@@ -39,7 +39,9 @@ enum class ToolId {
   kReloadPage = 9,
   // Seeks to a specific timestamp in the media in the active tab.
   kSeekToTimestamp = 10,
-  kMaxValue = kSeekToTimestamp,
+  // Pauses media playback in the active tab.
+  kPauseVideo = 11,
+  kMaxValue = kPauseVideo,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

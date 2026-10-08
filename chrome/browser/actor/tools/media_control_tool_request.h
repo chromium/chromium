@@ -33,9 +33,15 @@ class PlayMediaToolRequest : public TabToolRequest {
 class PauseMediaToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "PauseMedia";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "pause_video";
 
   explicit PauseMediaToolRequest(tabs::TabHandle tab_handle);
   ~PauseMediaToolRequest() override;
+
+  // Returns the `ToolId::kPauseVideo` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // TabToolRequest:
   CreateToolResult CreateTool(TaskId task_id,

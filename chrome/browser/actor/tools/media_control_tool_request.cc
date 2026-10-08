@@ -27,6 +27,9 @@ namespace actor {
 
 namespace {
 
+// Default description for the `pause_video` tool.
+constexpr std::string_view kPauseMediaToolDescription = "Pause video playback.";
+
 // Default description for the `seek_to_timestamp` tool.
 constexpr std::string_view kSeekMediaToolDescription =
     "Jump the video to a specific timecode.";
@@ -79,6 +82,13 @@ PauseMediaToolRequest::PauseMediaToolRequest(tabs::TabHandle tab_handle)
     : TabToolRequest(tab_handle) {}
 
 PauseMediaToolRequest::~PauseMediaToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> PauseMediaToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kPauseVideo, kModelFacingName,
+                               kPauseMediaToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult PauseMediaToolRequest::CreateTool(
     TaskId task_id,
