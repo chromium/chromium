@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -21,6 +22,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -36,12 +41,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -442,6 +450,23 @@ class ActorUiTabControllerNavigationConfirmTest
     tab->GetContents()->GetController().LoadURLWithParams(params);
   }
 
+  // Emulates paste, Esc, Return. Return with the popup closed opens a kNoMatch
+  // selection, so AcceptInput() commits the pasted URL as
+  // LINK | FROM_ADDRESS_BAR instead of TYPED.
+  void PasteIntoOmniboxAndSubmitWithPopupClosed(const GURL& url) {
+    LocationBar* location_bar =
+        BrowserWindow::FromBrowser(browser())->GetLocationBar();
+    OmniboxEditModel* model =
+        location_bar->GetOmniboxController()->edit_model();
+    model->OnSetFocus(/*control_down=*/false);
+    location_bar->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(url.spec()));
+    // SetUserText() clears the paste state, so mark the paste afterwards.
+    model->OnPaste();
+    model->OpenSelection(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+                         base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB,
+                         /*via_keyboard=*/true);
+  }
+
   views::Widget* WaitForConfirmDialog(ActorUiTabController* controller) {
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return controller->GetActiveNavigationConfirmDialogWidgetForTesting() !=
@@ -490,6 +515,122 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 
   views::Widget* dialog = WaitForConfirmDialog(controller);
   ASSERT_NE(dialog, nullptr);
+  dialog->widget_delegate()->AsDialogDelegate()->CancelDialog();
+
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), initial_url);
+  EXPECT_NE(actor_keyed_service()->GetTask(task_id), nullptr);
+
+  actor_keyed_service()->StopTask(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
+}
+
+// Submitting the current URL from the omnibox reloads the page instead of
+// leaving it. Like Reload, it is not confirmed and the task keeps running.
+IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
+                       UserUiNavigation_SameUrlReloadsWithoutConfirm) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ASSERT_NE(controller, nullptr);
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), url));
+
+  actor::TaskId task_id = StartTaskOnTabs({tab});
+
+  bool navigation_committed = false;
+  content::DidFinishNavigationObserver navigation_observer(
+      tab->GetContents(),
+      base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+        if (handle->IsInPrimaryMainFrame() && handle->HasCommitted()) {
+          navigation_committed = true;
+        }
+      }));
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), url.spec());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return navigation_committed ||
+           controller->GetActiveNavigationConfirmDialogWidgetForTesting();
+  }));
+
+  EXPECT_EQ(controller->GetActiveNavigationConfirmDialogWidgetForTesting(),
+            nullptr);
+  EXPECT_TRUE(navigation_committed);
+  EXPECT_NE(actor_keyed_service()->GetTask(task_id), nullptr);
+
+  actor_keyed_service()->StopTask(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
+}
+
+// Submitting the current URL while a confirmation is open supersedes the
+// pending navigation. Its dialog closes, the page reloads without a new
+// confirmation and the task keeps running.
+IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
+                       UserUiNavigation_SameUrlWhileDialogOpen) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ASSERT_NE(controller, nullptr);
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL destination_url = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), initial_url));
+
+  actor::TaskId task_id = StartTaskOnTabs({tab});
+
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), destination_url.spec());
+  ASSERT_NE(WaitForConfirmDialog(controller), nullptr);
+
+  bool navigation_committed = false;
+  content::DidFinishNavigationObserver navigation_observer(
+      tab->GetContents(),
+      base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+        if (handle->IsInPrimaryMainFrame() && handle->HasCommitted()) {
+          navigation_committed = true;
+        }
+      }));
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), initial_url.spec());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return navigation_committed; }));
+
+  EXPECT_EQ(controller->GetActiveNavigationConfirmDialogWidgetForTesting(),
+            nullptr);
+  EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), initial_url);
+  EXPECT_NE(actor_keyed_service()->GetTask(task_id), nullptr);
+
+  actor_keyed_service()->StopTask(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
+}
+
+// A pasted URL submitted with the popup closed is committed as
+// LINK | FROM_ADDRESS_BAR. It leaves the page, so it is confirmed like a typed
+// URL.
+IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
+                       UserUiNavigation_PastedUrlWithPopupClosedConfirms) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ASSERT_NE(controller, nullptr);
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL destination_url = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), initial_url));
+
+  actor::TaskId task_id = StartTaskOnTabs({tab});
+
+  bool navigation_committed = false;
+  content::DidFinishNavigationObserver navigation_observer(
+      tab->GetContents(),
+      base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+        if (handle->IsInPrimaryMainFrame() && handle->HasCommitted()) {
+          navigation_committed = true;
+        }
+      }));
+  PasteIntoOmniboxAndSubmitWithPopupClosed(destination_url);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return navigation_committed ||
+           controller->GetActiveNavigationConfirmDialogWidgetForTesting();
+  }));
+
+  views::Widget* dialog =
+      controller->GetActiveNavigationConfirmDialogWidgetForTesting();
+  ASSERT_NE(dialog, nullptr);
+  EXPECT_FALSE(navigation_committed);
   dialog->widget_delegate()->AsDialogDelegate()->CancelDialog();
 
   EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), initial_url);

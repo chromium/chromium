@@ -53,6 +53,10 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
     virtual bool MaybeDeferNavigation(tabs::TabInterface* tab,
                                       const GURL& url,
                                       NavigationConfirmedCallback callback) = 0;
+
+    // Closes the confirmation pending on `tab`, if any. Called when a
+    // navigation that needs no confirmation replaces the deferred one.
+    virtual void CancelNavigationConfirmation(tabs::TabInterface* tab) {}
   };
 
   static ActorNavigationThrottle CreateForTesting(

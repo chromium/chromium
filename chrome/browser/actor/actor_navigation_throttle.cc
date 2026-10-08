@@ -237,6 +237,12 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
         (transition & ::ui::PAGE_TRANSITION_HOME_PAGE);
 
 #if !BUILDFLAG(IS_ANDROID)
+    // Omnibox navigations carry FROM_ADDRESS_BAR, but an accepted paste
+    // commits as LINK and a keyword search as KEYWORD.
+    if (transition & ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) {
+      is_user_ui_navigation = true;
+    }
+
     // TODO(crbug.com/559772874): Enable on Android.
     // Exclude session history navigations. A back/forward navigation replays
     // the core transition of the entry it restores, so returning to a page the
@@ -273,6 +279,23 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
 #endif
+
+    // A navigation to the current URL (ignoring the fragment) reloads the page
+    // instead of leaving it, so proceed without confirmation, as for Reload.
+    content::WebContents* web_contents = navigation_handle()->GetWebContents();
+    if (web_contents &&
+        navigation_url.EqualsIgnoringRef(web_contents->GetLastCommittedURL())) {
+      journal.Log(navigation_url, task_id_, "NavThrottle",
+                  JournalDetailsBuilder()
+                      .Add("navigate", "Same URL as current page")
+                      .Build());
+      // This navigation replaces any deferred one, so close its confirmation.
+      if (task->navigation_delegate()) {
+        task->navigation_delegate()->CancelNavigationConfirmation(
+            tabs::TabInterface::MaybeGetFromContents(web_contents));
+      }
+      return content::NavigationThrottle::PROCEED;
+    }
 
     if (task->navigation_delegate()) {
       auto* tab = tabs::TabInterface::MaybeGetFromContents(

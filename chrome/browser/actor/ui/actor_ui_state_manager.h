@@ -82,6 +82,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface,
   bool MaybeDeferNavigation(tabs::TabInterface* tab,
                             const GURL& url,
                             NavigationConfirmedCallback callback) override;
+  void CancelNavigationConfirmation(tabs::TabInterface* tab) override;
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   // Shows toast that notifies user the Actor is working in the background.

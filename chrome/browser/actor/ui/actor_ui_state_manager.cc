@@ -529,6 +529,15 @@ bool ActorUiStateManager::MaybeDeferNavigation(
   return false;
 }
 
+void ActorUiStateManager::CancelNavigationConfirmation(
+    tabs::TabInterface* tab) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* tab_controller = ActorUiTabController::From(tab)) {
+    tab_controller->CancelNavigationConfirmation();
+  }
+#endif
+}
+
 void ActorUiStateManager::SetTabPendingActuation(tabs::TabHandle tab_handle) {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab) {

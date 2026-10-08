@@ -48,6 +48,10 @@ class TestActorNavigationDelegate : public ActorNavigationThrottle::Delegate {
     return false;
   }
 
+  void CancelNavigationConfirmation(tabs::TabInterface* tab) override {
+    cancel_navigation_confirmation_called_ = true;
+  }
+
   void RespondToNavigation(bool proceed) {
     if (pending_callback_) {
       std::move(pending_callback_).Run(proceed);
@@ -55,6 +59,9 @@ class TestActorNavigationDelegate : public ActorNavigationThrottle::Delegate {
   }
 
   bool confirm_navigation_called() const { return confirm_navigation_called_; }
+  bool cancel_navigation_confirmation_called() const {
+    return cancel_navigation_confirmation_called_;
+  }
   void set_should_defer(bool should_defer) { should_defer_ = should_defer; }
 
   base::WeakPtr<TestActorNavigationDelegate> GetWeakPtr() {
@@ -64,6 +71,7 @@ class TestActorNavigationDelegate : public ActorNavigationThrottle::Delegate {
  private:
   bool should_defer_ = false;
   bool confirm_navigation_called_ = false;
+  bool cancel_navigation_confirmation_called_ = false;
   base::OnceCallback<void(bool)> pending_callback_;
   base::WeakPtrFactory<TestActorNavigationDelegate> weak_factory_{this};
 };
@@ -345,6 +353,197 @@ TEST_F(ActorNavigationThrottleTest, BrowserInitiated_NoDeferForBackForward) {
   handle.set_is_renderer_initiated(false);
   handle.set_page_transition(::ui::PageTransitionFromInt(
       ::ui::PAGE_TRANSITION_TYPED | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillStartRequest().action());
+  EXPECT_FALSE(test_delegate.confirm_navigation_called());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Pressing Return in the omnibox on the current URL starts a new navigation
+// rather than a reload. It does not leave the page, so like Reload it proceeds
+// without confirmation and the task keeps running.
+TEST_F(ActorNavigationThrottleTest, BrowserInitiated_NoDeferForSameUrl) {
+  const GURL kPageUrl("https://site.com/page");
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(kPageUrl);
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(kPageUrl, main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_TYPED | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillStartRequest().action());
+  EXPECT_FALSE(test_delegate.confirm_navigation_called());
+  EXPECT_TRUE(test_delegate.cancel_navigation_confirmation_called());
+  EXPECT_EQ(task, service->GetTask(task_id));
+}
+
+// A bookmark to the current page without its fragment reloads the same page.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_NoDeferForSameUrlWithoutRef) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://site.com/page#section"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://site.com/page"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillStartRequest().action());
+  EXPECT_FALSE(test_delegate.confirm_navigation_called());
+  EXPECT_TRUE(test_delegate.cancel_navigation_confirmation_called());
+}
+
+// Only the current URL is exempt. Another page on the same site still leaves
+// the current page, so it is confirmed.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_DeferForSameSiteDifferentUrl) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://site.com/page"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://site.com/other"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_TYPED | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+  EXPECT_FALSE(test_delegate.cancel_navigation_confirmation_called());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// A pasted URL accepted while the omnibox popup is closed is committed as
+// LINK | FROM_ADDRESS_BAR instead of TYPED. It still leaves the page, so it is
+// confirmed.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_DeferForPastedUrlFromAddressBar) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://source.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+}
+
+// A tab-to-search query is committed as KEYWORD | FROM_ADDRESS_BAR.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_DeferForKeywordSearchFromAddressBar) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://source.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com/search?q=query"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_KEYWORD | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+}
+
+// Going back to an entry that was committed from the address bar keeps the
+// FROM_ADDRESS_BAR qualifier. The FORWARD_BACK exclusion must still apply.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_NoDeferForBackForwardFromAddressBar) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://source.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR |
+      ::ui::PAGE_TRANSITION_FORWARD_BACK));
 
   content::MockNavigationThrottleRegistry registry(&handle);
   ActorNavigationThrottle throttle =
