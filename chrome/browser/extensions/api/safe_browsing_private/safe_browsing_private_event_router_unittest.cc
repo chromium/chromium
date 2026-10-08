@@ -18,10 +18,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -98,16 +102,18 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   ~SafeBrowsingPrivateEventRouterTestBase() override = default;
 
   void SetUp() override {
-    profile_ = profile_manager_.CreateTestingProfile("test-user");
+    profile_ = profile_manager_.CreateTestingProfile(
+        "test-user", IdentityTestEnvironmentProfileAdaptor::
+                         GetIdentityTestEnvironmentFactories());
+    AdjustProfilePrefs();
     event_router_ = extensions::CreateAndUseTestEventRouter(profile_);
     SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(
                       &safe_browsing::BuildSafeBrowsingPrivateEventRouter));
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     identity_test_environment_ =
-        std::make_unique<signin::IdentityTestEnvironment>();
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetIdentityManagerForTesting(
-            identity_test_environment_->identity_manager());
+        identity_test_env_adaptor_->identity_test_env();
   }
 
   void TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(bool warning_shown) {
@@ -148,10 +154,14 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   }
 
  protected:
+  virtual void AdjustProfilePrefs() {}
+
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_environment_ = nullptr;
   raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
 };
 
@@ -169,6 +179,25 @@ class SafeBrowsingPrivateEventRouterTest
           g_browser_process->local_state(),
           ash::CrosSettings::Get())};
 #endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+class SafeBrowsingPrivateEventRouterIsolatedModeTest
+    : public SafeBrowsingPrivateEventRouterTest {
+ public:
+  SafeBrowsingPrivateEventRouterIsolatedModeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  }
+
+ protected:
+  void AdjustProfilePrefs() override {
+    profile_->GetPrefs()->SetInteger(
+        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+        static_cast<int>(
+            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {
@@ -279,6 +308,32 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
       "profile@example.com", signin::ConsentLevel::kSignin);
   TriggerOnSecurityInterstitialShownEvent();
   captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
+  EXPECT_EQ("profile@example.com",
+            CHECK_DEREF(captured_args.FindString("userName")));
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterIsolatedModeTest, TestProfileUsername) {
+  SafeBrowsingEventObserver event_observer(
+      api::safe_browsing_private::OnSecurityInterstitialShown::kEventName);
+  event_router_->AddEventObserver(&event_observer);
+
+  identity_test_environment_->MakePrimaryAccountAvailable(
+      "profile@example.com", signin::ConsentLevel::kSignin);
+
+  TestingProfile* isolated_profile =
+      TestingProfile::Builder().BuildIncognito(profile_);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
+      isolated_profile,
+      base::BindRepeating(&safe_browsing::BuildSafeBrowsingPrivateEventRouter));
+
+  SafeBrowsingPrivateEventRouterFactory::GetForProfile(isolated_profile)
+      ->OnSecurityInterstitialShown(GURL("https://phishing.com/"), "PHISHING",
+                                    /*net_error_code=*/0);
+
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("profile@example.com",
             CHECK_DEREF(captured_args.FindString("userName")));

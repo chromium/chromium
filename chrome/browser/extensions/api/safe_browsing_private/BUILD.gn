@@ -46,6 +46,7 @@ if (enterprise_cloud_content_analysis) {
       "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
       "//components/enterprise/connectors/core:test_support",
+      "//components/enterprise/isolated_mode",
       "//components/safe_browsing/core/common",
       "//components/signin/public/identity_manager:test_support",
       "//extensions/browser:test_support",

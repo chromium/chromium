@@ -12,11 +12,10 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
-#include "components/enterprise/connectors/core/common.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -39,8 +38,6 @@ SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)
     : context_(context) {
   event_router_ = EventRouter::Get(context_);
-  identity_manager_ = IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(context_));
 }
 
 SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() = default;
@@ -98,7 +95,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   params.url = url.spec();
   params.file_name = file_name;
   params.download_digest_sha256 = download_digest_sha256;
-  params.user_name = enterprise_connectors::GetProfileEmail(identity_manager_);
+  params.user_name = enterprise_connectors::GetProfileEmail(
+      Profile::FromBrowserContext(context_));
 
   // |event_router_| can be null in tests.
   if (event_router_) {
@@ -123,7 +121,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   if (net_error_code < 0) {
     params.net_error_code = base::NumberToString(net_error_code);
   }
-  params.user_name = enterprise_connectors::GetProfileEmail(identity_manager_);
+  params.user_name = enterprise_connectors::GetProfileEmail(
+      Profile::FromBrowserContext(context_));
 
   // |event_router_| can be null in tests.
   if (event_router_) {
@@ -148,7 +147,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   if (net_error_code < 0) {
     params.net_error_code = base::NumberToString(net_error_code);
   }
-  params.user_name = enterprise_connectors::GetProfileEmail(identity_manager_);
+  params.user_name = enterprise_connectors::GetProfileEmail(
+      Profile::FromBrowserContext(context_));
 
   // |event_router_| can be null in tests.
   if (event_router_) {
@@ -161,11 +161,6 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
         std::move(event_value));
     event_router_->BroadcastEvent(std::move(extension_event));
   }
-}
-
-void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(
-    signin::IdentityManager* identity_manager) {
-  identity_manager_ = identity_manager;
 }
 
 }  // namespace extensions
