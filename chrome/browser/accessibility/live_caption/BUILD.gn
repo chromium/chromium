@@ -45,7 +45,6 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/on_device_translation",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//components/live_caption",
     "//components/live_caption:constants",
@@ -58,7 +57,10 @@ source_set("impl") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/accessibility" ]
+    deps += [
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/profiles",
+    ]
   }
 
   if (is_win) {

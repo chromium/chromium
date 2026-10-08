@@ -53,6 +53,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/cryptohome",

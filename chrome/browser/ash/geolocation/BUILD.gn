@@ -59,6 +59,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ui/ash/login",
     "//chrome/test:test_support",
     "//components/prefs",
     "//services/device/public/cpp/geolocation",

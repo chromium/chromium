@@ -606,6 +606,7 @@ source_set("browser_tests") {
 
     # Tests from subdirectories:
     "osauth:browser_tests",
+    "//chrome/browser/ash/account_manager",
   ]
 }
 

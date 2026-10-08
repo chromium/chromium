@@ -154,6 +154,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/sync/base",
     "//components/sync_preferences:test_support",
+    "//components/user_data_importer/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

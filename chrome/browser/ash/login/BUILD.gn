@@ -558,6 +558,7 @@ source_set("browser_tests") {
     "session:browser_tests",
     "signin:browser_tests",
     "users:browser_tests",
+    "//chrome/browser/net",
   ]
 
   if (enable_rlz) {

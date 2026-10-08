@@ -100,7 +100,6 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/on_device_translation",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//components/live_caption:live_translate",
@@ -131,6 +130,11 @@ source_set("impl") {
 
   if (enable_extensions && is_chromeos) {
     sources += [ "accessibility_extension_api_ash.cc" ]
+    deps += [
+      "//ash",
+      "//chrome/browser/ash/profiles",
+      "//ui/strings:ui_strings",
+    ]
   }
 
   public_deps = [
