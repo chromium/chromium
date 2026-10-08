@@ -1057,24 +1057,22 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   InitializeFloatAndHalfFloatFeatures(extensions);
 
   // Check for multisample support
-  if (!workarounds_.disable_chromium_framebuffer_multisample) {
-    bool ext_has_multisample =
-        (gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample") &&
-         gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit")) ||
-        gl_version_info_->is_es3;
-    if (gl_version_info_->is_angle || gl_version_info_->is_swiftshader) {
-      ext_has_multisample |=
-          gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_multisample");
-    }
-    if (ext_has_multisample) {
-      feature_flags_.chromium_framebuffer_multisample = true;
-      validators_.framebuffer_target.AddValue(GL_READ_FRAMEBUFFER);
-      validators_.framebuffer_target.AddValue(GL_DRAW_FRAMEBUFFER);
-      validators_.g_l_state.AddValue(GL_READ_FRAMEBUFFER_BINDING);
-      validators_.g_l_state.AddValue(GL_MAX_SAMPLES_EXT);
-      validators_.render_buffer_parameter.AddValue(GL_RENDERBUFFER_SAMPLES_EXT);
-      AddExtensionString("GL_CHROMIUM_framebuffer_multisample");
-    }
+  bool ext_has_multisample =
+      (gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample") &&
+       gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit")) ||
+      gl_version_info_->is_es3;
+  if (gl_version_info_->is_angle || gl_version_info_->is_swiftshader) {
+    ext_has_multisample |=
+        gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_multisample");
+  }
+  if (ext_has_multisample) {
+    feature_flags_.chromium_framebuffer_multisample = true;
+    validators_.framebuffer_target.AddValue(GL_READ_FRAMEBUFFER);
+    validators_.framebuffer_target.AddValue(GL_DRAW_FRAMEBUFFER);
+    validators_.g_l_state.AddValue(GL_READ_FRAMEBUFFER_BINDING);
+    validators_.g_l_state.AddValue(GL_MAX_SAMPLES_EXT);
+    validators_.render_buffer_parameter.AddValue(GL_RENDERBUFFER_SAMPLES_EXT);
+    AddExtensionString("GL_CHROMIUM_framebuffer_multisample");
   }
 
   if (gfx::HasExtension(extensions, "GL_EXT_multisampled_render_to_texture")) {

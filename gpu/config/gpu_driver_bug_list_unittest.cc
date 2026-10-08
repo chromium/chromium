@@ -94,8 +94,8 @@ TEST_F(GpuDriverBugListTest, DisableProgramCacheForImagination) {
 
 TEST_F(GpuDriverBugListTest, AppendSingleWorkaround) {
   base::CommandLine command_line(0, nullptr);
-  command_line.AppendSwitch(GpuDriverBugWorkaroundTypeToString(
-      DISABLE_CHROMIUM_FRAMEBUFFER_MULTISAMPLE));
+  command_line.AppendSwitch(
+      GpuDriverBugWorkaroundTypeToString(DISABLE_PROGRAM_CACHE));
   std::set<int> workarounds;
   workarounds.insert(EXIT_ON_CONTEXT_LOST);
   workarounds.insert(GL_CLEAR_BROKEN);
@@ -103,7 +103,7 @@ TEST_F(GpuDriverBugListTest, AppendSingleWorkaround) {
   GpuDriverBugList::AppendWorkaroundsFromCommandLine(
       &workarounds, command_line);
   EXPECT_EQ(3u, workarounds.size());
-  EXPECT_EQ(1u, workarounds.count(DISABLE_CHROMIUM_FRAMEBUFFER_MULTISAMPLE));
+  EXPECT_EQ(1u, workarounds.count(DISABLE_PROGRAM_CACHE));
 }
 
 TEST_F(GpuDriverBugListTest, AppendForceGPUWorkaround) {
