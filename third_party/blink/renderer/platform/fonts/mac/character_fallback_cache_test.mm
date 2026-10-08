@@ -101,4 +101,47 @@ TEST(CharacterFallbackKey, Helvetica) {
   EXPECT_EQ(CharacterFallbackKeyHashTraits::GetHash(*key), 1508599061u);
 }
 
+TEST(CharacterFallbackKey, CharacterAndFlags) {
+  ScopedCFTypeRef<CTFontRef> helvetica_font(
+      CTFontCreateWithName(CFSTR("Helvetica"), kTestFontSize, nullptr));
+  ASSERT_TRUE(helvetica_font);
+
+  std::optional<CharacterFallbackKey> ideographic_key =
+      CharacterFallbackKey::Make(
+          helvetica_font.get(), kNormalWeightValue.RawValue(),
+          kNormalSlopeValue.RawValue(),
+          static_cast<uint8_t>(FontOrientation::kHorizontal), kTestFontSize);
+  std::optional<CharacterFallbackKey> char_a_key = CharacterFallbackKey::Make(
+      helvetica_font.get(), kNormalWeightValue.RawValue(),
+      kNormalSlopeValue.RawValue(),
+      static_cast<uint8_t>(FontOrientation::kHorizontal), kTestFontSize,
+      U'\u3042', 1);
+  std::optional<CharacterFallbackKey> char_b_key = CharacterFallbackKey::Make(
+      helvetica_font.get(), kNormalWeightValue.RawValue(),
+      kNormalSlopeValue.RawValue(),
+      static_cast<uint8_t>(FontOrientation::kHorizontal), kTestFontSize,
+      U'\u3044', 1);
+  std::optional<CharacterFallbackKey> char_a_bold_flags_key =
+      CharacterFallbackKey::Make(
+          helvetica_font.get(), kNormalWeightValue.RawValue(),
+          kNormalSlopeValue.RawValue(),
+          static_cast<uint8_t>(FontOrientation::kHorizontal), kTestFontSize,
+          U'\u3042', 0x21);
+
+  ASSERT_TRUE(ideographic_key.has_value());
+  ASSERT_TRUE(char_a_key.has_value());
+  ASSERT_TRUE(char_b_key.has_value());
+  ASSERT_TRUE(char_a_bold_flags_key.has_value());
+
+  EXPECT_NE(*ideographic_key, *char_a_key);
+  EXPECT_NE(*char_a_key, *char_b_key);
+  EXPECT_NE(*char_a_key, *char_a_bold_flags_key);
+  EXPECT_NE(CharacterFallbackKeyHashTraits::GetHash(*ideographic_key),
+            CharacterFallbackKeyHashTraits::GetHash(*char_a_key));
+  EXPECT_NE(CharacterFallbackKeyHashTraits::GetHash(*char_a_key),
+            CharacterFallbackKeyHashTraits::GetHash(*char_b_key));
+  EXPECT_NE(CharacterFallbackKeyHashTraits::GetHash(*char_a_key),
+            CharacterFallbackKeyHashTraits::GetHash(*char_a_bold_flags_key));
+}
+
 }  // namespace blink

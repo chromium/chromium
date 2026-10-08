@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -160,8 +161,8 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   // (text) presentation of emoji. To do that we will replace colored emoji font
   // with the "Apple Symbols" monochromatic emoji font with the color emoji
   // cascade list since it has better glyph coverage.
-  if (IsAppleColorEmojiFont(substitute_font.get()) &&
-      Character::IsEmoji(character)) {
+  if (Character::IsEmoji(character) &&
+      IsAppleColorEmojiFont(substitute_font.get())) {
     NSArray* lang_list = @[ @"en" ];
     NSArray* cascade_list =
         CFToNSOwnershipCast(CTFontCopyDefaultCascadeListForLanguages(
@@ -253,14 +254,15 @@ const FontPlatformData* GetAlternateFontPlatformData(
           CTFontGetSymbolicTraits(best_variation.get());
       float best_variation_font_weight =
           get_ct_font_weight(best_variation.get());
-      ScopedCFTypeRef<CFCharacterSetRef> char_set(
-          CTFontCopyCharacterSet(best_variation.get()));
-      if ((!ct_font || best_variation_font_traits != substitute_font_traits ||
-           best_variation_font_weight != substitute_font_weight) &&
-          char_set &&
-          CFCharacterSetIsLongCharacterMember(char_set.get(), character)) {
-        substitute_font = best_variation;
-        substitute_font_traits = CTFontGetSymbolicTraits(substitute_font.get());
+      if (!ct_font || best_variation_font_traits != substitute_font_traits ||
+          best_variation_font_weight != substitute_font_weight) {
+        ScopedCFTypeRef<CFCharacterSetRef> char_set(
+            CTFontCopyCharacterSet(best_variation.get()));
+        if (char_set &&
+            CFCharacterSetIsLongCharacterMember(char_set.get(), character)) {
+          substitute_font = best_variation;
+          substitute_font_traits = best_variation_font_traits;
+        }
       }
     }
   }
@@ -327,31 +329,45 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   std::optional<CharacterFallbackKey> key;
 
-  // Caching results of going through the cascade list can introduces
-  // context sensitivity of fallback for individual characters. The
-  // cache may return a font that was the result for a previous fallback
-  // request. But if we had asked CoreText for the fallback for the
-  // current character, the result might have been different. This is
-  // particularly striking for symbols or emoji. Emoji in particular
-  // also need to go through fallback uncached to handle variation
-  // selectors right. To minimize risk of context sensitivity, perform
-  // caching only for ideographic codepoints, Unicode property
-  // [:Ideographic=Yes:].
-  if (Character::IsIdeographic(character) &&
-      RuntimeEnabledFeatures::MacCharacterFallbackCacheEnabled()) {
+  // For ideographic codepoints (Unicode property [:Ideographic=Yes:]), share a
+  // single cache entry (character == 0) verified via unicharToGlyph(). For
+  // non-ideographic codepoints, include the exact codepoint and fallback
+  // priority in the key so repeated fallback lookups of the same character do
+  // not re-invoke CoreText cascade and typeface creation while avoiding any
+  // cross-character context sensitivity.
+  if (RuntimeEnabledFeatures::MacCharacterFallbackCacheEnabled()) {
+    constexpr uint8_t kFallbackPriorityMask = 0x1F;
+    constexpr uint8_t kSyntheticBoldFlag = 1 << 5;
+    constexpr uint8_t kSyntheticItalicFlag = 1 << 6;
+    static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
+                  kFallbackPriorityMask);
+
+    // U+3006 (IDEOGRAPHIC CLOSING MARK) is the lowest Unicode codepoint with
+    // [:Ideographic=Yes:].
+    const bool is_ideographic =
+        character >= 0x3006 && Character::IsIdeographic(character);
+    const UChar32 key_char = is_ideographic ? 0 : character;
+    const uint8_t key_flags = static_cast<uint8_t>(
+        (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
+        (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
+        (is_ideographic ? 0
+                        : (static_cast<uint8_t>(fallback_priority) &
+                           kFallbackPriorityMask)));
     key = CharacterFallbackKey::Make(
         platform_data.CtFont(), font_description.Weight().RawValue(),
         font_description.Style().RawValue(),
         static_cast<uint8_t>(font_description.Orientation()),
-        font_description.EffectiveFontSize());
+        font_description.EffectiveFontSize(), key_char, key_flags);
   }
 
   if (key) {
     CharacterFallbackCache::iterator found =
         character_fallback_cache_.find(*key);
-    if (found != character_fallback_cache_.end() &&
+    if (found != character_fallback_cache_.end() && found->value &&
         found->value->PlatformData().TypefaceSp() &&
-        found->value->PlatformData().TypefaceSp()->unicharToGlyph(character)) {
+        (key->character != 0 ||
+         found->value->PlatformData().TypefaceSp()->unicharToGlyph(
+             character))) {
       return found->value;
     }
   }
@@ -366,6 +382,10 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
       FontDataFromFontPlatformData(alternate_font);
 
   if (key) {
+    constexpr wtf_size_t kMaxCharacterFallbackCacheEntries = 512;
+    if (character_fallback_cache_.size() >= kMaxCharacterFallbackCacheEntries) {
+      character_fallback_cache_.clear();
+    }
     character_fallback_cache_.insert(*key, fallback_font_data);
   }
 
