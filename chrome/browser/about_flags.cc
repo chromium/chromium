@@ -2031,11 +2031,12 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation kOmniboxFuseboxPopupVariationsVariants[] =
     {
-        {"Context Menu", kOmniboxFuseboxContextMenu, nullptr},
-        {"Bottom Sheet w/ Carousel", kOmniboxFuseboxBottomSheetCarousel,
+        {"Arm 1 - Context Menu", kOmniboxFuseboxContextMenu, nullptr},
+        {"Arm 2 - Bottom Sheet with Carousel",
+         kOmniboxFuseboxBottomSheetCarousel, nullptr},
+        {"Arm 3 - Bottom Sheet with List", kOmniboxFuseboxBottomSheetList,
          nullptr},
-        {"Bottom Sheet w/ List", kOmniboxFuseboxBottomSheetList, nullptr},
-        {"Bottom Sheet w/ Scrollable Carousel",
+        {"Arm 4 - Bottom Sheet with Scrollable Carousel",
          kOmniboxFuseboxBottomSheetScrollableCarousel, nullptr},
 };
 
