@@ -48,11 +48,20 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   PageInfoBubbleViewBase(const PageInfoBubbleViewBase&) = delete;
   PageInfoBubbleViewBase& operator=(const PageInfoBubbleViewBase&) = delete;
 
+  // Returns true if a page info bubble is showing for the given WebContents.
+  static bool IsShowing(content::WebContents* web_contents);
+
   // Returns the type of the bubble being shown. For testing only.
   static BubbleType GetShownBubbleType();
+  static BubbleType GetShownBubbleType(content::WebContents* web_contents);
 
   // Returns the page info bubble being shown.
   static views::BubbleDialogDelegateView* GetPageInfoBubbleForTesting();
+  static views::BubbleDialogDelegateView* GetPageInfoBubbleForTesting(
+      content::WebContents* web_contents);
+
+  // Returns the specific bubble type for this instance.
+  BubbleType type() const { return type_; }
 
  protected:
   PageInfoBubbleViewBase(views::BubbleAnchor anchor,
@@ -75,6 +84,8 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryPageChanged(content::Page& page) override;
   void DidChangeVisibleSecurityState() override;
+
+  const BubbleType type_ = BUBBLE_NONE;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_BASE_H_

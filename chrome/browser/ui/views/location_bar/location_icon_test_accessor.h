@@ -41,10 +41,10 @@ class LocationIconTestAccessor {
   std::u16string GetText();
 
   // Returns the legacy LocationIconView if in Views mode, or nullptr if WebUI.
-  LocationIconView* GetLocationIconView();
+  LocationIconView* GetLocationIconView() const;
 
  private:
-  content::WebContents* GetWebContents();
+  content::WebContents* GetWebContents() const;
 
   raw_ptr<BrowserWindowInterface> browser_;
 };

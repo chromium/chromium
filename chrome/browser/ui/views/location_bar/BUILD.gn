@@ -343,6 +343,7 @@ source_set("unit_tests") {
     ":icon_label_bubble",
     ":location_bar",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ui/views/page_info",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/omnibox/browser",

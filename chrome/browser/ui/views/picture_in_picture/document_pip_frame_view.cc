@@ -135,9 +135,11 @@ class OriginChipView : public IconLabelBubbleView {
  public:
   OriginChipView(const gfx::FontList& font_list,
                  IconLabelBubbleView::Delegate* delegate,
-                 base::RepeatingCallback<bool()> show_page_info)
+                 base::RepeatingCallback<bool()> show_page_info,
+                 base::RepeatingCallback<bool()> is_bubble_showing)
       : IconLabelBubbleView(font_list, delegate),
-        show_page_info_(std::move(show_page_info)) {
+        show_page_info_(std::move(show_page_info)),
+        is_bubble_showing_(std::move(is_bubble_showing)) {
     // Enable the security-text slide animation and let the explicit PiP
     // foreground color drive the label color (no auto-contrast adjustment).
     SetUpForAnimation();
@@ -184,16 +186,15 @@ class OriginChipView : public IconLabelBubbleView {
   bool ShowBubble(const ui::Event& event) override {
     return show_page_info_.Run();
   }
-  bool IsBubbleShowing() const override {
-    return PageInfoBubbleView::GetShownBubbleType() !=
-           PageInfoBubbleView::BUBBLE_NONE;
-  }
+  bool IsBubbleShowing() const override { return is_bubble_showing_.Run(); }
+
   // Match the browser-backed LocationIconView: never draw the trailing
   // separator (there is no omnibox decoration to separate from).
   bool ShouldShowSeparator() const override { return false; }
 
  private:
   base::RepeatingCallback<bool()> show_page_info_;
+  base::RepeatingCallback<bool()> is_bubble_showing_;
 };
 
 BEGIN_METADATA(OriginChipView)
@@ -308,6 +309,12 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
           },
           // Safety: The widget owns the frame view and this chip, so the
           // callback cannot outlive the widget.
+          base::Unretained(this)),
+      base::BindRepeating(
+          [](DocumentPipFrameView* frame_view) {
+            return PageInfoBubbleViewBase::IsShowing(
+                frame_view->host_->GetOpenerWebContents());
+          },
           base::Unretained(this)));
   origin_chip->SetProperty(views::kElementIdentifierKey,
                            kLocationIconElementId);

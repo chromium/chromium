@@ -594,10 +594,9 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
 
   if (omnibox_controller_ &&
       omnibox_controller_->edit_model()->user_input_in_progress() &&
-          (!ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
-              GetWebContents()) ||
-          omnibox_controller_->IsPopupOpen())
-      ) {
+      (!ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
+           GetWebContents()) ||
+       omnibox_controller_->IsPopupOpen())) {
     // Permission requests get cancelled if user edits the URL.
     // (And won't show up if it was already edited when they occurred).
     bool has_visible_chip = GetChipController()->chip()->GetVisible();
@@ -618,9 +617,9 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
   auto accessibility_state = location_bar::GetSecurityChipAccessibilityState(
       model, is_editing_or_empty, security_chip_text);
 
+  content::WebContents* const web_contents = GetWebContents();
   const bool is_context_menu_visible =
-      PageInfoBubbleView::GetShownBubbleType() !=
-      PageInfoBubbleView::BUBBLE_NONE;
+      web_contents && PageInfoBubbleViewBase::IsShowing(web_contents);
 
   auto lhs_chips_state = toolbar_ui_api::mojom::LhsChipsState::New(
       toolbar_ui_api::mojom::SecurityChipState::New(
@@ -901,8 +900,9 @@ void WebUILocationBar::SetSuppressionThresholdForTesting(
       threshold);
   page_action_control_.SetSuppressionThresholdForTesting(threshold);  // IN-TEST
   if (permission_dashboard_controller_) {
-    permission_dashboard_controller_->SetSuppressionThresholdForTesting(  // IN-TEST
-        threshold);
+    permission_dashboard_controller_
+        ->SetSuppressionThresholdForTesting(  // IN-TEST
+            threshold);
   }
 }
 

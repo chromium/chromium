@@ -1288,14 +1288,30 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   page_info_bubble->OpenSecurityPage();
   page_info_bubble->OpenCookiesPage();
 
-  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
-  // Verify clicking the app icon button a second time closes the bubble.
-  views::test::ButtonTestApi(location_icon_view)
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), base::TimeTicks(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON));
+  // In a real browser, clicking the app icon while the bubble is showing
+  // deactivates the bubble widget (closing it), while LocationIconView captures
+  // suppression on mouse press so the subsequent mouse release does not
+  // re-open the bubble. Simulate this sequence in the browser test:
+  views::Widget* bubble_widget = bubble->GetWidget();
+  views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+
+  const gfx::Point center = location_icon_view->GetLocalBounds().CenterPoint();
+  const ui::MouseEvent press_event(
+      ui::EventType::kMousePressed, center, center, base::TimeTicks::Now(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  location_icon_view->OnMousePressed(press_event);
+
+  // Simulate the bubble being closed due to losing focus.
+  bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   waiter.Wait();
+
+  const ui::MouseEvent release_event(
+      ui::EventType::kMouseReleased, center, center, base::TimeTicks::Now(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  location_icon_view->OnMouseReleased(release_event);
+
+  // Because the button release was suppressed, no new bubble was created and
+  // the bubble remains closed.
   EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
 }
 

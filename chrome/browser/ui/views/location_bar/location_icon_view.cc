@@ -127,8 +127,8 @@ bool LocationIconView::ShowBubble(const ui::Event& event) {
 }
 
 bool LocationIconView::IsBubbleShowing() const {
-  return PageInfoBubbleView::GetShownBubbleType() !=
-         PageInfoBubbleView::BUBBLE_NONE;
+  content::WebContents* const web_contents = delegate_->GetWebContents();
+  return web_contents && PageInfoBubbleViewBase::IsShowing(web_contents);
 }
 
 void LocationIconView::OnGestureEvent(ui::GestureEvent* event) {

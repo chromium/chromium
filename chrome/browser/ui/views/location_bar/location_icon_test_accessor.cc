@@ -51,7 +51,7 @@ LocationIconTestAccessor::LocationIconTestAccessor(
 
 LocationIconTestAccessor::~LocationIconTestAccessor() = default;
 
-LocationIconView* LocationIconTestAccessor::GetLocationIconView() {
+LocationIconView* LocationIconTestAccessor::GetLocationIconView() const {
   if (!browser_) {
     return nullptr;
   }
@@ -66,8 +66,10 @@ LocationIconView* LocationIconTestAccessor::GetLocationIconView() {
 }
 
 bool LocationIconTestAccessor::IsBubbleShowing() const {
-  return PageInfoBubbleViewBase::GetShownBubbleType() !=
-         PageInfoBubbleViewBase::BUBBLE_NONE;
+  if (auto* icon_view = GetLocationIconView()) {
+    return icon_view->IsBubbleShowing();
+  }
+  return PageInfoBubbleViewBase::IsShowing(GetWebContents());
 }
 
 // Returns true if the icon is visible.
@@ -139,7 +141,7 @@ void LocationIconTestAccessor::Click() {
   }
 }
 
-content::WebContents* LocationIconTestAccessor::GetWebContents() {
+content::WebContents* LocationIconTestAccessor::GetWebContents() const {
   if (!browser_) {
     return nullptr;
   }
