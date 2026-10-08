@@ -242,8 +242,19 @@ void GlicHandler::HandleSetGlicShortcut(const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const std::string accelerator_string = args[1].GetString();
-  g_browser_process->local_state()->SetString(glic::prefs::kGlicLauncherHotkey,
-                                              accelerator_string);
+  PrefService* local_state = g_browser_process->local_state();
+  const bool had_hotkey =
+      !local_state->GetString(glic::prefs::kGlicLauncherHotkey).empty();
+  local_state->SetString(glic::prefs::kGlicLauncherHotkey, accelerator_string);
+
+  if (had_hotkey && accelerator_string.empty()) {
+    auto default_scope = static_cast<glic::prefs::DefaultHotkeyScope>(
+        local_state->GetInteger(glic::prefs::kGlicDefaultHotkeyScope));
+    glic::RecordHotkeyCleared(
+        default_scope,
+        local_state->GetBoolean(glic::prefs::kGlicHotkeyGlobalScopeEnabled),
+        local_state->GetBoolean(glic::prefs::kGlicLauncherEnabled));
+  }
 
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       web_ui()->GetWebContents()->GetBrowserContext(),

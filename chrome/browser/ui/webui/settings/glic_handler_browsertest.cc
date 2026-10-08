@@ -237,6 +237,93 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, OnHotkeyScopeSettingsChange) {
                                      2);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, OnHotkeyCleared) {
+  base::HistogramTester histogram_tester;
+
+  // Default Global, Global Scope Enabled:
+  g_browser_process->local_state()->SetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(glic::prefs::DefaultHotkeyScope::kGlobal));
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicHotkeyGlobalScopeEnabled, true);
+
+  // Setting a non-empty shortcut should not record HotkeyCleared:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append("Ctrl+A"));
+  histogram_tester.ExpectTotalCount("Glic.Preferences.HotkeyCleared", 0);
+
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Preferences.HotkeyCleared",
+      glic::GlicHotkeyCleared::kDefaultGlobalWithGlobalScope, 1);
+
+  // Clearing when already empty should not record an extra sample:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectTotalCount("Glic.Preferences.HotkeyCleared", 1);
+
+  // Default Global, Local Scope Enabled:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append("Ctrl+A"));
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicHotkeyGlobalScopeEnabled, false);
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyCleared",
+      glic::GlicHotkeyCleared::kDefaultGlobalWithLocalScope, 1);
+
+  // Default Local, Global Scope Enabled:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append("Ctrl+A"));
+  g_browser_process->local_state()->SetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(glic::prefs::DefaultHotkeyScope::kLocal));
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicHotkeyGlobalScopeEnabled, true);
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyCleared",
+      glic::GlicHotkeyCleared::kDefaultLocalWithGlobalScope, 1);
+
+  // Default Local, Local Scope Enabled:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append("Ctrl+A"));
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicHotkeyGlobalScopeEnabled, false);
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyCleared",
+      glic::GlicHotkeyCleared::kDefaultLocalWithLocalScope, 1);
+
+  // Not migrated (kGlicHotkeyLocalScope disabled), launcher disabled should not
+  // record:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append("Ctrl+A"));
+  g_browser_process->local_state()->SetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(glic::prefs::DefaultHotkeyScope::kNotMigrated));
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicLauncherEnabled, false);
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectTotalCount("Glic.Preferences.HotkeyCleared", 4);
+
+  // Not migrated (kGlicHotkeyLocalScope disabled), launcher enabled:
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append("Ctrl+A"));
+  g_browser_process->local_state()->SetBoolean(
+      glic::prefs::kGlicLauncherEnabled, true);
+  glic_handler()->HandleSetGlicShortcut(
+      base::ListValue().Append("callback_id").Append(""));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyCleared",
+      glic::GlicHotkeyCleared::kDefaultGlobalWithGlobalScope, 2);
+}
+
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetActorLoginPermissions) {
   glic_handler()->AllowJavascript();
 

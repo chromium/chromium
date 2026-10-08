@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -423,6 +424,11 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };
+
+// Records the hotkey cleared preference metric.
+void RecordHotkeyCleared(prefs::DefaultHotkeyScope default_scope,
+                         bool is_global,
+                         bool launcher_enabled);
 
 // Records the hotkey scope change preference metric.
 void RecordHotkeyScopeChange(GlicHotkeyScopeChange scope_change);

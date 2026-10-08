@@ -2689,6 +2689,19 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="PanelEvent"/>
 </histogram>
 
+<histogram name="Glic.Preferences.HotkeyCleared" enum="GlicHotkeyCleared"
+    expires_after="2027-02-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Recorded when a non-empty Glic hotkey is cleared (set to an empty string) in
+    Glic settings. Records the user's default hotkey scope established at
+    migration and their currently active hotkey scope at the time of clearing.
+    Also records DefaultGlobalWithGlobalScope when the user has not been
+    migrated (kGlicHotkeyLocalScope disabled) and the launcher is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Preferences.HotkeyScopeChange"
     enum="GlicHotkeyScopeChange" expires_after="2027-02-01">
   <owner>perrier@chromium.org</owner>

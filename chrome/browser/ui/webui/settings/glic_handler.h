@@ -65,6 +65,7 @@ class GlicHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, OnHotkeyScopeSettingsChange);
+  FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, OnHotkeyCleared);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest,
                            ToggleActorLoginPermissionsObservation);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, GetActorLoginPermissions);

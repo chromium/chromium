@@ -21,6 +21,20 @@ enum class ZoomSource {
   kMaxValue = kScroll,
 };
 
+// Represents the hotkey scope state when the user clears the hotkey in
+// settings.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicHotkeyCleared)
+enum class GlicHotkeyCleared {
+  kDefaultGlobalWithGlobalScope = 0,
+  kDefaultGlobalWithLocalScope = 1,
+  kDefaultLocalWithGlobalScope = 2,
+  kDefaultLocalWithLocalScope = 3,
+  kMaxValue = kDefaultLocalWithLocalScope,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicHotkeyCleared)
+
 // Represents hotkey scope changes in settings.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
