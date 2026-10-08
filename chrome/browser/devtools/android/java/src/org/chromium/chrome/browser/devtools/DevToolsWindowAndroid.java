@@ -59,6 +59,15 @@ public class DevToolsWindowAndroid {
     }
 
     /**
+     * Opens a DevTools window in element inspection mode for the given WebContents.
+     *
+     * @param webContents The web contents to be inspected by DevTools.
+     */
+    public static void openDevToolsInspect(WebContents webContents) {
+        DevToolsWindowAndroidJni.get().openDevToolsInspect(webContents);
+    }
+
+    /**
      * Attaches the DevTools frontend web contents to the browser window.
      *
      * @param webContents DevTools frontend web contents.
@@ -73,6 +82,8 @@ public class DevToolsWindowAndroid {
         void openDevTools(WebContents webContents);
 
         void openDevToolsConsole(WebContents webContents);
+
+        void openDevToolsInspect(WebContents webContents);
 
         boolean isDevToolsAllowedFor(Profile profile, @Nullable WebContents webContents);
 

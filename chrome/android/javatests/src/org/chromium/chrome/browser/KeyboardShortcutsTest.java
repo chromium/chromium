@@ -869,6 +869,15 @@ public class KeyboardShortcutsTest {
                         /* isCurrentTabVisible= */ true));
         verify(mMenuOrKeyboardActionController, times(1))
                 .onMenuOrKeyboardAction(eq(R.id.dev_tools_console), eq(false));
+
+        clearInvocations(mMenuOrKeyboardActionController);
+        assertTrue(
+                keyDown(
+                        KeyEvent.KEYCODE_C,
+                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON,
+                        /* isCurrentTabVisible= */ true));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(eq(R.id.dev_tools_inspect), eq(false));
     }
 
     private void testOpenBookmarks(

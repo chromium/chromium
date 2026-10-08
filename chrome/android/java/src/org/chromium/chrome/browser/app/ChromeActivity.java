@@ -3422,6 +3422,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
+        if (id == R.id.dev_tools_inspect
+                && DevToolsWindowAndroid.isDevToolsAllowedFor(
+                        this, currentTab.getProfile(), webContents)) {
+            DevToolsWindowAndroid.openDevToolsInspect(webContents);
+            return true;
+        }
+
         return false;
     }
 
