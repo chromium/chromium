@@ -818,15 +818,6 @@
     },
     {
       "id": 67,
-      "description": "GpuControlListEntryTest.HardwareOverlay",
-      "vendor_id": "0x8086",
-      "hardware_overlay": "unsupported",
-      "features": [
-        "test_feature_0"
-      ]
-    },
-    {
-      "id": 68,
       "description": "GpuControlListEntryTest.GpuGeneration",
       "intel_gpu_generation": {
         "op": "<",
@@ -837,7 +828,7 @@
       ]
     },
     {
-      "id": 69,
+      "id": 68,
       "description": "GpuControlListEntryTest.GpuGenerationActive",
       "intel_gpu_generation": {
         "op": "<",
@@ -849,7 +840,7 @@
       ]
     },
     {
-      "id": 70,
+      "id": 69,
       "description": "GpuControlListEntryTest.GpuGenerationAny",
       "intel_gpu_generation": {
         "op": "<",
@@ -861,7 +852,7 @@
       ]
     },
     {
-      "id": 71,
+      "id": 70,
       "description": "GpuControlListEntryTest.GpuGenerationPrimary",
       "intel_gpu_generation": {
         "op": "<",
@@ -873,7 +864,7 @@
       ]
     },
     {
-      "id": 72,
+      "id": 71,
       "description": "GpuControlListEntryTest.GpuGenerationSecondary",
       "intel_gpu_generation": {
         "op": "<",
@@ -885,7 +876,7 @@
       ]
     },
     {
-      "id": 73,
+      "id": 72,
       "description": "GpuControlListEntryTest.SubpixelFontRendering",
       "os": {
         "type": "chromeos"
@@ -902,7 +893,7 @@
       ]
     },
     {
-      "id": 74,
+      "id": 73,
       "description": "GpuControlListEntryTest.SubpixelFontRenderingDontCare",
       "os": {
         "type": "chromeos"
@@ -913,7 +904,7 @@
       ]
     },
     {
-      "id": 75,
+      "id": 74,
       "description": "GpuControlListEntryTest.IntelDriverVendorEntry",
       "os": {
         "type": "win"
@@ -931,7 +922,7 @@
       ]
     },
     {
-      "id": 76,
+      "id": 75,
       "description": "GpuControlListEntryTest.IntelDriverVersionEntry",
       "os": {
         "type": "win"
@@ -947,7 +938,7 @@
       ]
     },
     {
-      "id": 77,
+      "id": 76,
       "description": "GpuControlListEntryTest.DeviceRevisionEntry",
       "os": {
         "type": "win"
@@ -976,7 +967,7 @@
       ]
     },
     {
-      "id": 78,
+      "id": 77,
       "description": "GpuControlListEntryTest.DeviceRevisionUnspecifiedEntry",
       "os": {
         "type": "win"
@@ -988,7 +979,7 @@
       ]
     },
     {
-      "id": 79,
+      "id": 78,
       "description": "GpuControlListEntryTest.AnyDriverVersion",
       "os": {
         "type": "macosx"
@@ -1004,7 +995,7 @@
       ]
     },
     {
-      "id": 80,
+      "id": 79,
       "description": "GpuControlListEntryTest.ActiveDriverVersion",
       "os": {
         "type": "macosx"
@@ -1020,7 +1011,7 @@
       ]
     },
     {
-      "id": 81,
+      "id": 80,
       "description": "GpuControlListEntryTest.NativeAngleRenderer",
       "gl_renderer": "ANGLE \\(Samsung Xclipse 920\\) on Vulkan 1.1.179",
       "features": [
@@ -1028,7 +1019,7 @@
       ]
     },
     {
-      "id": 82,
+      "id": 81,
       "description": "GpuControlListEntryTest.GlTypeEntry",
       "os": {
         "type": "android"
@@ -1039,7 +1030,7 @@
       ]
     },
     {
-      "id": 83,
+      "id": 82,
       "description": "GpuControlListEntryTest.GLES30Exception",
       "os": {
         "type": "android"
@@ -1061,7 +1052,7 @@
       ]
     },
     {
-      "id": 84,
+      "id": 83,
       "description": "GpuControlListEntryTest.WrongANGLEException",
       "os": {
         "type": "android"
@@ -1079,7 +1070,7 @@
       ]
     },
     {
-      "id": 85,
+      "id": 84,
       "description": "GpuControlListEntryTest.ANGLEException",
       "os": {
         "type": "android"
@@ -1103,7 +1094,7 @@
       ]
     },
     {
-      "id": 86,
+      "id": 85,
       "description": "GpuControlListEntryTest.GlTypeAngleGl",
       "os": {
         "type": "linux"
@@ -1118,7 +1109,7 @@
       ]
     },
     {
-      "id": 87,
+      "id": 86,
       "description": "GpuControlListEntryTest.GLVersionOnly",
       "os": {
         "type": "android"
@@ -1132,7 +1123,7 @@
       ]
     },
     {
-      "id": 88,
+      "id": 87,
       "description": "GpuControlListEntryTest.D3DFeatureLevel",
       "os": {
         "type": "win"

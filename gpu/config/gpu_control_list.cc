@@ -382,22 +382,7 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     }
   }
 #endif
-  switch (hardware_overlay) {
-    case kDontCare:
-      break;
-    case kSupported:
-#if BUILDFLAG(IS_WIN)
-      if (!gpu_info.overlay_info.supports_overlays)
-        return false;
-#endif  // BUILDFLAG(IS_WIN)
-      break;
-    case kUnsupported:
-#if BUILDFLAG(IS_WIN)
-      if (gpu_info.overlay_info.supports_overlays)
-        return false;
-#endif  // BUILDFLAG(IS_WIN)
-      break;
-  }
+
   if ((subpixel_font_rendering == kUnsupported &&
        gpu_info.subpixel_font_rendering) ||
       (subpixel_font_rendering == kSupported &&

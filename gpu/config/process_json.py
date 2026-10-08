@@ -543,7 +543,6 @@ def write_conditions(
   gl_reset_notification_strategy = None
   direct_rendering_version = None
   gpu_count = None
-  hardware_overlay = None
   test_group = 0
   machine_model_name = None
   machine_model_version = None
@@ -626,8 +625,6 @@ def write_conditions(
       direct_rendering_version = entry[key]
     elif key == 'gpu_count':
       gpu_count = entry[key]
-    elif key == 'hardware_overlay':
-      hardware_overlay = entry[key]
     elif key == 'test_group':
       assert entry[key] > 0
       test_group = entry[key]
@@ -756,7 +753,6 @@ def write_conditions(
     or gl_reset_notification_strategy != None  # noqa: E711
     or direct_rendering_version != None  # noqa: E711
     or gpu_count != None  # noqa: E711
-    or hardware_overlay != None  # noqa: E711
     or test_group != 0  # noqa: E711
     or subpixel_font_rendering != None  # noqa: E711
   ):  # noqa: E711
@@ -772,7 +768,6 @@ def write_conditions(
       gl_reset_notification_strategy,
       direct_rendering_version,
       gpu_count,
-      hardware_overlay,
       test_group,
       subpixel_font_rendering,
       data_file,
@@ -794,7 +789,6 @@ def write_entry_more_data(
   gl_reset_notification_strategy,
   direct_rendering_version,
   gpu_count,
-  hardware_overlay,
   test_group,
   subpixel_font_rendering,
   data_file,
@@ -828,7 +822,6 @@ def write_entry_more_data(
     direct_rendering_version, 'direct_rendering_version', data_helper_file
   )
   write_version(gpu_count, 'gpu_count', data_helper_file)
-  write_supported_or_not(hardware_overlay, 'hardware_overlay', data_helper_file)
   write_integer_value(test_group, 'test_group', data_helper_file)
   write_supported_or_not(
     subpixel_font_rendering, 'subpixel_font_rendering', data_helper_file

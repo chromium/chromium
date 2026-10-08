@@ -174,7 +174,6 @@ class GPU_CONFIG_EXPORT GpuControlList {
     uint32_t gl_reset_notification_strategy;
     Version direct_rendering_version;
     Version gpu_count;
-    SupportedOrNot hardware_overlay;
 
     uint32_t test_group;
 

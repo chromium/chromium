@@ -87,17 +87,13 @@
 //     "elkhartlake", "jasperlake", "tigerlake", "rocketlake", "DG1",
 //     "alderlake", "alchemist", "raptorlake", "meteorlake", "arrowlake",
 //     "lunarlake", "battlemage", "pantherlake".
-// 30. "hardware_overlay" is either "supported" or "unsupported". Currently it
-//     only applies on Windows where hardware overlays may be supported on
-//     certain Intel GPUs. By default it's "dont_care" and there is no need to
-//     specify that.
-// 31. "intel_gpu_generation" is a VERSION structure. Each Intel GPU has a
+// 30. "intel_gpu_generation" is a VERSION structure. Each Intel GPU has a
 //     specific integer (meaning generation) associated.
-// 32. "subpixel_font_rendering" is either "supported" or "unsupported".
+// 31. "subpixel_font_rendering" is either "supported" or "unsupported".
 //     Currently it only applies on ChromeOS where subpixel font rendering
 //     causes a glitch on Mali GPUs. By default it's "dont_care" and there is
 //     no need to specify that.
-// 33. "driver_update_link" provides a link where affected users with older
+// 32. "driver_update_link" provides a link where affected users with older
 //     drivers can download a newer driver to avoid triggering this entry.
 //     Such link will be displayed in chrome://gpu for affected devices.
 //

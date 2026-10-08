@@ -177,7 +177,7 @@ static const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry65 = {
         },
     }};
 
-static const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry73 = {
+static const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry72 = {
     {
         {
             GpuControlList::kOsAny,  // os_type
@@ -189,10 +189,10 @@ static const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry73 = {
             GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
             nullptr,                                     // driver info
-            &kGLStringsForGpuControlTestingEntry73Exception0,  // GL strings
+            &kGLStringsForGpuControlTestingEntry72Exception0,  // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry73_1440601243Exception0,  // more data
+            &kMoreForEntry72_1440601243Exception0,  // more data
         },
         {
             GpuControlList::kOsAny,  // os_type
@@ -204,7 +204,7 @@ static const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry73 = {
             GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
             nullptr,                                     // driver info
-            &kGLStringsForGpuControlTestingEntry73Exception1,  // GL strings
+            &kGLStringsForGpuControlTestingEntry72Exception1,  // GL strings
             nullptr,  // machine model info
             nullptr,  // Intel conditions
             nullptr,  // more conditions
@@ -219,14 +219,14 @@ static const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry73 = {
             GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
             nullptr,                                     // driver info
-            &kGLStringsForGpuControlTestingEntry73Exception2,  // GL strings
+            &kGLStringsForGpuControlTestingEntry72Exception2,  // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry73_1440601243Exception2,  // more data
+            &kMoreForEntry72_1440601243Exception2,  // more data
         },
     }};
 
-static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {
+static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry76 = {
     {
         {
             GpuControlList::kOsAny,  // os_type
@@ -235,10 +235,10 @@ static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {
              nullptr},  // os_version
             0x1002,     // vendor_id
             base::span(
-                kDevicesForGpuControlTestingEntry77Exception0),  // Devices
+                kDevicesForGpuControlTestingEntry76Exception0),  // Devices
             GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-            &kDriverInfoForGpuControlTestingEntry77Exception0,  // driver info
+            &kDriverInfoForGpuControlTestingEntry76Exception0,  // driver info
             nullptr,                                            // GL strings
             nullptr,  // machine model info
             nullptr,  // Intel conditions
@@ -251,14 +251,33 @@ static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {
              nullptr},  // os_version
             0x1002,     // vendor_id
             base::span(
-                kDevicesForGpuControlTestingEntry77Exception1),  // Devices
+                kDevicesForGpuControlTestingEntry76Exception1),  // Devices
             GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-            &kDriverInfoForGpuControlTestingEntry77Exception1,  // driver info
+            &kDriverInfoForGpuControlTestingEntry76Exception1,  // driver info
             nullptr,                                            // GL strings
             nullptr,  // machine model info
             nullptr,  // Intel conditions
             nullptr,  // more conditions
+        },
+    }};
+
+static const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry82 = {
+    {
+        {
+            GpuControlList::kOsAndroid,  // os_type
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                                   // os_version
+            0x00,                                        // vendor_id
+            base::span<const GpuControlList::Device>(),  // Devices
+            GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
+            nullptr,                                     // driver info
+            nullptr,                                     // GL strings
+            nullptr,                                     // machine model info
+            nullptr,                                     // Intel conditions
+            &kMoreForEntry82_1440601243Exception0,       // more data
         },
     }};
 
@@ -274,33 +293,14 @@ static const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry83 = {
             GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
             nullptr,                                     // driver info
-            nullptr,                                     // GL strings
-            nullptr,                                     // machine model info
-            nullptr,                                     // Intel conditions
-            &kMoreForEntry83_1440601243Exception0,       // more data
-        },
-    }};
-
-static const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry84 = {
-    {
-        {
-            GpuControlList::kOsAndroid,  // os_type
-            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-             GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                   // os_version
-            0x00,                                        // vendor_id
-            base::span<const GpuControlList::Device>(),  // Devices
-            GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
-            GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
-            nullptr,                                     // driver info
-            &kGLStringsForGpuControlTestingEntry84Exception0,  // GL strings
+            &kGLStringsForGpuControlTestingEntry83Exception0,  // GL strings
             nullptr,  // machine model info
             nullptr,  // Intel conditions
             nullptr,  // more conditions
         },
     }};
 
-static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry85 = {
+static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry84 = {
     {
         {
             GpuControlList::kOsAndroid,  // os_type
@@ -315,7 +315,7 @@ static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry85 = {
             nullptr,                                     // GL strings
             nullptr,                                     // machine model info
             nullptr,                                     // Intel conditions
-            &kMoreForEntry85_1440601243Exception0,       // more data
+            &kMoreForEntry84_1440601243Exception0,       // more data
         },
         {
             GpuControlList::kOsAndroid,  // os_type
@@ -330,7 +330,7 @@ static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry85 = {
             nullptr,                                     // GL strings
             nullptr,                                     // machine model info
             nullptr,                                     // Intel conditions
-            &kMoreForEntry85_1440601243Exception1,       // more data
+            &kMoreForEntry84_1440601243Exception1,       // more data
         },
     }};
 

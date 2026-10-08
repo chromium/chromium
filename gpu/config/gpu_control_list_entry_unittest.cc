@@ -1045,19 +1045,6 @@ TEST_F(GpuControlListEntryTest, GpuGenerationSecondary) {
   }
 }
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(GpuControlListEntryTest, HardwareOverlay) {
-  const Entry& entry = GetEntry(kGpuControlListEntryTest_HardwareOverlay);
-  GPUInfo gpu_info;
-  gpu_info.gpu.vendor_id = 0x8086;
-  gpu_info.overlay_info.supports_overlays = true;
-  EXPECT_FALSE(entry.Contains(kOsWin, "10.0", gpu_info));
-
-  gpu_info.overlay_info.supports_overlays = false;
-  EXPECT_TRUE(entry.Contains(kOsWin, "10.0", gpu_info));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 TEST_F(GpuControlListEntryTest, TestSubpixelFontRendering) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_SubpixelFontRendering);
 

@@ -17,11 +17,11 @@
 
 namespace gpu {
 
-const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
+const std::array<GpuControlList::Entry, 87>& GetGpuControlListTestingEntries() {
 #include "gpu/config/gpu_control_list_testing_arrays_and_structs_autogen.h"
 #include "gpu/config/gpu_control_list_testing_exceptions_autogen.h"
 
-  static const std::array<GpuControlList::Entry, 88>
+  static const std::array<GpuControlList::Entry, 87>
       kGpuControlListTestingEntries = {{
           {
               1,  // id
@@ -1684,33 +1684,8 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
           },
           {
               67,  // id
-              "GpuControlListEntryTest.HardwareOverlay",
-              base::span(kFeatureListForGpuControlTestingEntry67),  // features
-              base::span<const char* const>(),  // DisabledExtensions
-              base::span<const char* const>(),  // DisabledWebGLExtensions
-              base::span<const uint32_t>(),     // CrBugs
-              {
-                  GpuControlList::kOsAny,  // os_type
-                  {GpuControlList::kUnknown,
-                   GpuControlList::kVersionStyleNumerical,
-                   GpuControlList::kVersionSchemaCommon, nullptr,
-                   nullptr},                                   // os_version
-                  0x8086,                                      // vendor_id
-                  base::span<const GpuControlList::Device>(),  // Devices
-                  GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
-                  GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-                  nullptr,                                // driver info
-                  nullptr,                                // GL strings
-                  nullptr,                                // machine model info
-                  nullptr,                                // Intel conditions
-                  &kMoreForEntry67_1440601243,            // more data
-              },
-              base::span<const GpuControlList::Conditions>(),  // exceptions
-          },
-          {
-              68,  // id
               "GpuControlListEntryTest.GpuGeneration",
-              base::span(kFeatureListForGpuControlTestingEntry68),  // features
+              base::span(kFeatureListForGpuControlTestingEntry67),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1727,15 +1702,15 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                 // driver info
                   nullptr,                                 // GL strings
                   nullptr,                                 // machine model info
-                  &kIntelConditionsForEntry68_1440601243,  // Intel conditions
+                  &kIntelConditionsForEntry67_1440601243,  // Intel conditions
                   nullptr,                                 // more conditions
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              69,  // id
+              68,  // id
               "GpuControlListEntryTest.GpuGenerationActive",
-              base::span(kFeatureListForGpuControlTestingEntry69),  // features
+              base::span(kFeatureListForGpuControlTestingEntry68),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1753,15 +1728,15 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                 // driver info
                   nullptr,                                 // GL strings
                   nullptr,                                 // machine model info
-                  &kIntelConditionsForEntry69_1440601243,  // Intel conditions
+                  &kIntelConditionsForEntry68_1440601243,  // Intel conditions
                   nullptr,                                 // more conditions
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              70,  // id
+              69,  // id
               "GpuControlListEntryTest.GpuGenerationAny",
-              base::span(kFeatureListForGpuControlTestingEntry70),  // features
+              base::span(kFeatureListForGpuControlTestingEntry69),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1778,15 +1753,15 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                 // driver info
                   nullptr,                                 // GL strings
                   nullptr,                                 // machine model info
-                  &kIntelConditionsForEntry70_1440601243,  // Intel conditions
+                  &kIntelConditionsForEntry69_1440601243,  // Intel conditions
                   nullptr,                                 // more conditions
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              71,  // id
+              70,  // id
               "GpuControlListEntryTest.GpuGenerationPrimary",
-              base::span(kFeatureListForGpuControlTestingEntry71),  // features
+              base::span(kFeatureListForGpuControlTestingEntry70),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1804,15 +1779,15 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                 // driver info
                   nullptr,                                 // GL strings
                   nullptr,                                 // machine model info
-                  &kIntelConditionsForEntry71_1440601243,  // Intel conditions
+                  &kIntelConditionsForEntry70_1440601243,  // Intel conditions
                   nullptr,                                 // more conditions
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              72,  // id
+              71,  // id
               "GpuControlListEntryTest.GpuGenerationSecondary",
-              base::span(kFeatureListForGpuControlTestingEntry72),  // features
+              base::span(kFeatureListForGpuControlTestingEntry71),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1830,15 +1805,15 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                 // driver info
                   nullptr,                                 // GL strings
                   nullptr,                                 // machine model info
-                  &kIntelConditionsForEntry72_1440601243,  // Intel conditions
+                  &kIntelConditionsForEntry71_1440601243,  // Intel conditions
                   nullptr,                                 // more conditions
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              73,  // id
+              72,  // id
               "GpuControlListEntryTest.SubpixelFontRendering",
-              base::span(kFeatureListForGpuControlTestingEntry73),  // features
+              base::span(kFeatureListForGpuControlTestingEntry72),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1858,12 +1833,12 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                // Intel conditions
                   nullptr,                                // more conditions
               },
-              base::span(kExceptionsForEntry73),  // exceptions
+              base::span(kExceptionsForEntry72),  // exceptions
           },
           {
-              74,  // id
+              73,  // id
               "GpuControlListEntryTest.SubpixelFontRenderingDontCare",
-              base::span(kFeatureListForGpuControlTestingEntry74),  // features
+              base::span(kFeatureListForGpuControlTestingEntry73),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1878,7 +1853,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   GpuControlList::kMultiGpuCategoryNone,   // multi_gpu_category
                   GpuControlList::kMultiGpuStyleNone,      // multi_gpu_style
                   nullptr,                                 // driver info
-                  &kGLStringsForGpuControlTestingEntry74,  // GL strings
+                  &kGLStringsForGpuControlTestingEntry73,  // GL strings
                   nullptr,                                 // machine model info
                   nullptr,                                 // Intel conditions
                   nullptr,                                 // more conditions
@@ -1886,8 +1861,33 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              75,  // id
+              74,  // id
               "GpuControlListEntryTest.IntelDriverVendorEntry",
+              base::span(kFeatureListForGpuControlTestingEntry74),  // features
+              base::span<const char* const>(),  // DisabledExtensions
+              base::span<const char* const>(),  // DisabledWebGLExtensions
+              base::span<const uint32_t>(),     // CrBugs
+              {
+                  GpuControlList::kOsWin,  // os_type
+                  {GpuControlList::kUnknown,
+                   GpuControlList::kVersionStyleNumerical,
+                   GpuControlList::kVersionSchemaCommon, nullptr,
+                   nullptr},                                   // os_version
+                  0x8086,                                      // vendor_id
+                  base::span<const GpuControlList::Device>(),  // Devices
+                  GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
+                  GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
+                  &kDriverInfoForGpuControlTestingEntry74,  // driver info
+                  nullptr,                                  // GL strings
+                  nullptr,  // machine model info
+                  nullptr,  // Intel conditions
+                  nullptr,  // more conditions
+              },
+              base::span<const GpuControlList::Conditions>(),  // exceptions
+          },
+          {
+              75,  // id
+              "GpuControlListEntryTest.IntelDriverVersionEntry",
               base::span(kFeatureListForGpuControlTestingEntry75),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
@@ -1912,33 +1912,8 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
           },
           {
               76,  // id
-              "GpuControlListEntryTest.IntelDriverVersionEntry",
-              base::span(kFeatureListForGpuControlTestingEntry76),  // features
-              base::span<const char* const>(),  // DisabledExtensions
-              base::span<const char* const>(),  // DisabledWebGLExtensions
-              base::span<const uint32_t>(),     // CrBugs
-              {
-                  GpuControlList::kOsWin,  // os_type
-                  {GpuControlList::kUnknown,
-                   GpuControlList::kVersionStyleNumerical,
-                   GpuControlList::kVersionSchemaCommon, nullptr,
-                   nullptr},                                   // os_version
-                  0x8086,                                      // vendor_id
-                  base::span<const GpuControlList::Device>(),  // Devices
-                  GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
-                  GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-                  &kDriverInfoForGpuControlTestingEntry76,  // driver info
-                  nullptr,                                  // GL strings
-                  nullptr,  // machine model info
-                  nullptr,  // Intel conditions
-                  nullptr,  // more conditions
-              },
-              base::span<const GpuControlList::Conditions>(),  // exceptions
-          },
-          {
-              77,  // id
               "GpuControlListEntryTest.DeviceRevisionEntry",
-              base::span(kFeatureListForGpuControlTestingEntry77),  // features
+              base::span(kFeatureListForGpuControlTestingEntry76),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1958,12 +1933,12 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                // Intel conditions
                   nullptr,                                // more conditions
               },
-              base::span(kExceptionsForEntry77),  // exceptions
+              base::span(kExceptionsForEntry76),  // exceptions
           },
           {
-              78,  // id
+              77,  // id
               "GpuControlListEntryTest.DeviceRevisionUnspecifiedEntry",
-              base::span(kFeatureListForGpuControlTestingEntry78),  // features
+              base::span(kFeatureListForGpuControlTestingEntry77),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -1974,7 +1949,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                    GpuControlList::kVersionSchemaCommon, nullptr,
                    nullptr},  // os_version
                   0x1002,     // vendor_id
-                  base::span(kDevicesForGpuControlTestingEntry78),  // Devices
+                  base::span(kDevicesForGpuControlTestingEntry77),  // Devices
                   GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
                   GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
                   nullptr,                                // driver info
@@ -1986,9 +1961,9 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              79,  // id
+              78,  // id
               "GpuControlListEntryTest.AnyDriverVersion",
-              base::span(kFeatureListForGpuControlTestingEntry79),  // features
+              base::span(kFeatureListForGpuControlTestingEntry78),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -2002,7 +1977,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   base::span<const GpuControlList::Device>(),  // Devices
                   GpuControlList::kMultiGpuCategoryAny,  // multi_gpu_category
                   GpuControlList::kMultiGpuStyleNone,    // multi_gpu_style
-                  &kDriverInfoForGpuControlTestingEntry79,  // driver info
+                  &kDriverInfoForGpuControlTestingEntry78,  // driver info
                   nullptr,                                  // GL strings
                   nullptr,  // machine model info
                   nullptr,  // Intel conditions
@@ -2011,9 +1986,9 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              80,  // id
+              79,  // id
               "GpuControlListEntryTest.ActiveDriverVersion",
-              base::span(kFeatureListForGpuControlTestingEntry80),  // features
+              base::span(kFeatureListForGpuControlTestingEntry79),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -2028,7 +2003,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   GpuControlList::
                       kMultiGpuCategoryActive,         // multi_gpu_category
                   GpuControlList::kMultiGpuStyleNone,  // multi_gpu_style
-                  &kDriverInfoForGpuControlTestingEntry80,  // driver info
+                  &kDriverInfoForGpuControlTestingEntry79,  // driver info
                   nullptr,                                  // GL strings
                   nullptr,  // machine model info
                   nullptr,  // Intel conditions
@@ -2037,9 +2012,9 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              81,  // id
+              80,  // id
               "GpuControlListEntryTest.NativeAngleRenderer",
-              base::span(kFeatureListForGpuControlTestingEntry81),  // features
+              base::span(kFeatureListForGpuControlTestingEntry80),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -2054,7 +2029,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   GpuControlList::kMultiGpuCategoryNone,   // multi_gpu_category
                   GpuControlList::kMultiGpuStyleNone,      // multi_gpu_style
                   nullptr,                                 // driver info
-                  &kGLStringsForGpuControlTestingEntry81,  // GL strings
+                  &kGLStringsForGpuControlTestingEntry80,  // GL strings
                   nullptr,                                 // machine model info
                   nullptr,                                 // Intel conditions
                   nullptr,                                 // more conditions
@@ -2062,8 +2037,33 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
-              82,  // id
+              81,  // id
               "GpuControlListEntryTest.GlTypeEntry",
+              base::span(kFeatureListForGpuControlTestingEntry81),  // features
+              base::span<const char* const>(),  // DisabledExtensions
+              base::span<const char* const>(),  // DisabledWebGLExtensions
+              base::span<const uint32_t>(),     // CrBugs
+              {
+                  GpuControlList::kOsAndroid,  // os_type
+                  {GpuControlList::kUnknown,
+                   GpuControlList::kVersionStyleNumerical,
+                   GpuControlList::kVersionSchemaCommon, nullptr,
+                   nullptr},                                   // os_version
+                  0x00,                                        // vendor_id
+                  base::span<const GpuControlList::Device>(),  // Devices
+                  GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
+                  GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
+                  nullptr,                                // driver info
+                  nullptr,                                // GL strings
+                  nullptr,                                // machine model info
+                  nullptr,                                // Intel conditions
+                  &kMoreForEntry81_1440601243,            // more data
+              },
+              base::span<const GpuControlList::Conditions>(),  // exceptions
+          },
+          {
+              82,  // id
+              "GpuControlListEntryTest.GLES30Exception",
               base::span(kFeatureListForGpuControlTestingEntry82),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
@@ -2082,13 +2082,13 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                // GL strings
                   nullptr,                                // machine model info
                   nullptr,                                // Intel conditions
-                  &kMoreForEntry82_1440601243,            // more data
+                  nullptr,                                // more conditions
               },
-              base::span<const GpuControlList::Conditions>(),  // exceptions
+              base::span(kExceptionsForEntry82),  // exceptions
           },
           {
               83,  // id
-              "GpuControlListEntryTest.GLES30Exception",
+              "GpuControlListEntryTest.WrongANGLEException",
               base::span(kFeatureListForGpuControlTestingEntry83),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
@@ -2113,7 +2113,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
           },
           {
               84,  // id
-              "GpuControlListEntryTest.WrongANGLEException",
+              "GpuControlListEntryTest.ANGLEException",
               base::span(kFeatureListForGpuControlTestingEntry84),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
@@ -2138,13 +2138,13 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
           },
           {
               85,  // id
-              "GpuControlListEntryTest.ANGLEException",
+              "GpuControlListEntryTest.GlTypeAngleGl",
               base::span(kFeatureListForGpuControlTestingEntry85),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
               {
-                  GpuControlList::kOsAndroid,  // os_type
+                  GpuControlList::kOsLinux,  // os_type
                   {GpuControlList::kUnknown,
                    GpuControlList::kVersionStyleNumerical,
                    GpuControlList::kVersionSchemaCommon, nullptr,
@@ -2157,19 +2157,19 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                // GL strings
                   nullptr,                                // machine model info
                   nullptr,                                // Intel conditions
-                  nullptr,                                // more conditions
+                  &kMoreForEntry85_1440601243,            // more data
               },
-              base::span(kExceptionsForEntry85),  // exceptions
+              base::span<const GpuControlList::Conditions>(),  // exceptions
           },
           {
               86,  // id
-              "GpuControlListEntryTest.GlTypeAngleGl",
+              "GpuControlListEntryTest.GLVersionOnly",
               base::span(kFeatureListForGpuControlTestingEntry86),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
               {
-                  GpuControlList::kOsLinux,  // os_type
+                  GpuControlList::kOsAndroid,  // os_type
                   {GpuControlList::kUnknown,
                    GpuControlList::kVersionStyleNumerical,
                    GpuControlList::kVersionSchemaCommon, nullptr,
@@ -2188,33 +2188,8 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
           },
           {
               87,  // id
-              "GpuControlListEntryTest.GLVersionOnly",
-              base::span(kFeatureListForGpuControlTestingEntry87),  // features
-              base::span<const char* const>(),  // DisabledExtensions
-              base::span<const char* const>(),  // DisabledWebGLExtensions
-              base::span<const uint32_t>(),     // CrBugs
-              {
-                  GpuControlList::kOsAndroid,  // os_type
-                  {GpuControlList::kUnknown,
-                   GpuControlList::kVersionStyleNumerical,
-                   GpuControlList::kVersionSchemaCommon, nullptr,
-                   nullptr},                                   // os_version
-                  0x00,                                        // vendor_id
-                  base::span<const GpuControlList::Device>(),  // Devices
-                  GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
-                  GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-                  nullptr,                                // driver info
-                  nullptr,                                // GL strings
-                  nullptr,                                // machine model info
-                  nullptr,                                // Intel conditions
-                  &kMoreForEntry87_1440601243,            // more data
-              },
-              base::span<const GpuControlList::Conditions>(),  // exceptions
-          },
-          {
-              88,  // id
               "GpuControlListEntryTest.D3DFeatureLevel",
-              base::span(kFeatureListForGpuControlTestingEntry88),  // features
+              base::span(kFeatureListForGpuControlTestingEntry87),  // features
               base::span<const char* const>(),  // DisabledExtensions
               base::span<const char* const>(),  // DisabledWebGLExtensions
               base::span<const uint32_t>(),     // CrBugs
@@ -2232,7 +2207,7 @@ const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
                   nullptr,                                // GL strings
                   nullptr,                                // machine model info
                   nullptr,                                // Intel conditions
-                  &kMoreForEntry88_1440601243,            // more data
+                  &kMoreForEntry87_1440601243,            // more data
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
