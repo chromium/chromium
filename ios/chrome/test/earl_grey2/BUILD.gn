@@ -175,6 +175,7 @@ _ui_eg2tests_deps = [
   "//ios/chrome/browser/intelligence/proto_wrappers:eg2_tests",
   "//ios/chrome/browser/keyboard/ui_bundled:eg2_tests",
   "//ios/chrome/browser/lens_overlay/ui:eg2_tests",
+  "//ios/chrome/browser/level_up/test:eg2_tests",
   "//ios/chrome/browser/link_to_text/ui_bundled:eg2_tests",
   "//ios/chrome/browser/location_bar/badge/ui:eg2_tests",
   "//ios/chrome/browser/ntp/ui_bundled:eg2_tests",

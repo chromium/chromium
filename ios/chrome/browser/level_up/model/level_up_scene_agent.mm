@@ -127,6 +127,11 @@
     return;
   }
 
+  std::string message = taskInfo->GetCompletionSnackbarMessage();
+  if (message.empty()) {
+    return;
+  }
+
   Browser* browser = [self currentBrowser];
   CHECK(browser);
 
@@ -138,9 +143,8 @@
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
 
-  SnackbarMessage* snackbarMessage = [[SnackbarMessage alloc]
-      initWithTitle:base::SysUTF8ToNSString(
-                        taskInfo->GetCompletionSnackbarMessage())];
+  SnackbarMessage* snackbarMessage =
+      [[SnackbarMessage alloc] initWithTitle:base::SysUTF8ToNSString(message)];
 
   SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.title = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_SNACKBAR_ACTION);

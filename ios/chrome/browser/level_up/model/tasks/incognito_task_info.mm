@@ -35,9 +35,7 @@ class IncognitoTaskInfo : public TaskInfo {
   std::string GetTriggerUserAction() const override {
     return "MobileIncognitoBrowserShown";
   }
-  std::string GetCompletionSnackbarMessage() const override {
-    return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_INCOGNITO);
-  }
+  std::string GetCompletionSnackbarMessage() const override { return ""; }
   TaskInfo::NavigationAction GetNavigationAction() const override {
     return base::BindRepeating(
         ^(CommandDispatcher* dispatcher, Browser* browser) {
