@@ -18,6 +18,8 @@ action("device_policy_remover_generate") {
   chrome_device_policy_pb2_dir = "$root_out_dir/pyproto/components/policy/proto"
   chrome_device_policy_pb2_path =
       "$chrome_device_policy_pb2_dir/chrome_device_policy_pb2.py"
+  policy_common_definitions_pb2_path =
+      "$chrome_device_policy_pb2_dir/policy_common_definitions_pb2.py"
 
   sources = [
     # It's important to explicitly list which files provided by this action's
@@ -25,6 +27,7 @@ action("device_policy_remover_generate") {
     # automatically re-run on changes in one of the public_deps. See
     # https://crbug.com/40614497 for more information.
     chrome_device_policy_pb2_path,
+    policy_common_definitions_pb2_path,
   ]
 
   outputs = [ device_policy_remover_path ]
@@ -40,6 +43,7 @@ action("device_policy_remover_generate") {
   ]
 
   deps = [
+    "//components/policy/proto:policy_common_definitions_compile_proto_gen",
     "//components/policy/proto:proto_internal_gen",
     "//third_party/protobuf:py_proto",
   ]
