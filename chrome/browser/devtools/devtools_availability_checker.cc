@@ -199,15 +199,34 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   policy::DeveloperToolsPolicyChecker* checker =
       policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
   if (checker) {
-    auto url_availability =
+    using DevToolsAvailability =
+        policy::DeveloperToolsPolicyChecker::DevToolsAvailability;
+    // Evaluate both the visible URL and the last committed URL and enforce
+    // whichever is more restrictive. Checking only the visible URL would allow
+    // a page to spoof its URL via a pending navigation, while checking only the
+    // committed URL lags behind the visible URL during BFCache transitions.
+    const DevToolsAvailability visible_availability =
         checker->GetDevToolsAvailabilityForUrl(web_contents->GetURL());
+    const DevToolsAvailability committed_availability =
+        checker->GetDevToolsAvailabilityForUrl(
+            web_contents->GetLastCommittedURL());
+    // Restrictiveness order: kDisallowed > kNotSet > kAllowed. kNotSet falls
+    // back to the general policy, which may still disallow DevTools, so it is
+    // more restrictive than an explicit kAllowed.
+    DevToolsAvailability url_availability = DevToolsAvailability::kAllowed;
+    if (visible_availability == DevToolsAvailability::kDisallowed ||
+        committed_availability == DevToolsAvailability::kDisallowed) {
+      url_availability = DevToolsAvailability::kDisallowed;
+    } else if (visible_availability == DevToolsAvailability::kNotSet ||
+               committed_availability == DevToolsAvailability::kNotSet) {
+      url_availability = DevToolsAvailability::kNotSet;
+    }
     switch (url_availability) {
-      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kAllowed:
+      case DevToolsAvailability::kAllowed:
         return true;
-      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::
-          kDisallowed:
+      case DevToolsAvailability::kDisallowed:
         return false;
-      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+      case DevToolsAvailability::kNotSet:
         break;
     }
   }

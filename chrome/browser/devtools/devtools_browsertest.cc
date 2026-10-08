@@ -4440,6 +4440,60 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
   EXPECT_FALSE(client.closed());
 }
 
+// Verifies that a pending navigation to an allowlisted URL cannot be used to
+// bypass the policy while a non-allowlisted document is still committed. The
+// visible URL updates as soon as the navigation starts, but the policy must be
+// enforced against the committed document as well.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
+                       PendingNavigationToAllowlistedUrlDoesNotBypassPolicy) {
+  GURL blocked_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL allowed_url(
+      embedded_test_server()->GetURL("b.com", "/devtools/empty.html"));
+
+  // Allowlist only `allowed_url`; everything else is disallowed.
+  base::ListValue allowlist;
+  allowlist.Append(allowed_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailabilityAllowlist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(allowlist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
+  Profile* profile = chrome_test_utils::GetProfile(this);
+
+  // Commit a non-allowlisted page. DevTools must be disallowed.
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, blocked_url));
+  EXPECT_FALSE(DevToolsWindow::AllowDevToolsFor(profile, web_contents));
+
+  // Start a navigation to the allowlisted URL but pause it before it commits.
+  content::TestNavigationManager manager(web_contents, allowed_url);
+  web_contents->GetController().LoadURL(allowed_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_TYPED,
+                                        std::string());
+  ASSERT_TRUE(manager.WaitForRequestStart());
+
+  // The visible URL already reflects the pending allowlisted navigation, while
+  // the committed document is still the non-allowlisted page.
+  EXPECT_EQ(web_contents->GetURL(), allowed_url);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), blocked_url);
+
+  // DevTools must still be disallowed and must not open.
+  EXPECT_FALSE(DevToolsWindow::AllowDevToolsFor(profile, web_contents));
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+  EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
+  // Once the allowlisted navigation commits, DevTools become allowed.
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), allowed_url);
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(profile, web_contents));
+}
+
 class DevToolsPolicyBFCacheTest : public DevToolsPolicyTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
