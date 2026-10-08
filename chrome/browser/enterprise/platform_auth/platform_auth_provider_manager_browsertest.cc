@@ -37,8 +37,14 @@ class PlatformAuthManagerBrowserTest : public PlatformBrowserTest {
       const PlatformAuthManagerBrowserTest&) = delete;
 };
 
+// TODO(crbug.com/571205394): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DataWithoutOriginFiltering DISABLED_DataWithoutOriginFiltering
+#else
+#define MAYBE_DataWithoutOriginFiltering DataWithoutOriginFiltering
+#endif
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
-                       DataWithoutOriginFiltering) {
+                       MAYBE_DataWithoutOriginFiltering) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Install a mock provider.
   auto mock_provider =
