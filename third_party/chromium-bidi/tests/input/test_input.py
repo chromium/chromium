@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
+
 import pytest
 from anys import ANY_STR
 from syrupy.filters import props
@@ -1100,3 +1102,60 @@ async def test_input_keyDown_closes_browsing_context(websocket, context_id, html
         "message": ANY_STR,
         "type": "error",
     }
+
+
+@pytest.mark.asyncio
+async def test_input_performActions_mouse_clicks_fast(
+    websocket, context_id, html, activate_main_tab
+):
+    # Regression test for https://crbug.com/411434092.
+    # Track the total number of click events dispatched to the page.
+    await goto_url(
+        websocket,
+        context_id,
+        html(
+            "<script>window.clickCount = 0; window.addEventListener('click', () => ++window.clickCount);</script>"
+        ),
+    )
+    await activate_main_tab()
+
+    # Dispatch 1000 clicks at varying coordinates so each click triggers a `mouseMoved`
+    # followed by `mousePressed` and `mouseReleased` without stalling on 60Hz VSync (~16.7s).
+    start_time = time.perf_counter()
+    for i in range(1, 1001):
+        await execute_command(
+            websocket,
+            {
+                "method": "input.performActions",
+                "params": {
+                    "context": context_id,
+                    "actions": [
+                        {
+                            "type": "pointer",
+                            "id": "main_mouse",
+                            "actions": [
+                                {"type": "pointerMove", "x": i % 100, "y": i % 100},
+                                {"type": "pointerDown", "button": 0},
+                                {"type": "pointerUp", "button": 0},
+                            ],
+                        }
+                    ],
+                },
+            },
+        )
+    elapsed = time.perf_counter() - start_time
+
+    # Verify all 1000 clicks were delivered and completed well below the 60Hz VSync-bound duration.
+    result = await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.clickCount",
+                "awaitPromise": False,
+                "target": {"context": context_id},
+            },
+        },
+    )
+    assert result["result"] == {"type": "number", "value": 1000}
+    assert elapsed < 8.0, f"1000 clicks took {elapsed:.3f}s"

@@ -83,13 +83,26 @@ async function getElementCenter(
 }
 
 export class ActionDispatcher {
-  static isMacOS = async (context: BrowsingContextImpl): Promise<boolean> => {
-    const hiddenSandboxRealm = await context.getOrCreateHiddenSandbox();
-    const result = await hiddenSandboxRealm.callFunction(IS_MAC_DECL, false);
-    assert(result.type !== 'exception');
-    assert(result.result.type === 'boolean');
-    return result.result.value;
-  };
+  // Cached host platform check (`navigator.platform`), evaluated lazily only for key actions.
+  // See https://crbug.com/411434092.
+  static #isMacOS?: boolean;
+
+  static async #getIsMacOS(context: BrowsingContextImpl): Promise<boolean> {
+    if (ActionDispatcher.#isMacOS === undefined) {
+      // Query the host platform once via CDP and cache it for subsequent key actions.
+      ActionDispatcher.#isMacOS = await (async () => {
+        const hiddenSandboxRealm = await context.getOrCreateHiddenSandbox();
+        const result = await hiddenSandboxRealm.callFunction(
+          IS_MAC_DECL,
+          false,
+        );
+        assert(result.type !== 'exception');
+        assert(result.result.type === 'boolean');
+        return result.result.value;
+      })().catch(() => false);
+    }
+    return ActionDispatcher.#isMacOS;
+  }
 
   readonly #browsingContextStorage: BrowsingContextStorage;
 
@@ -97,18 +110,22 @@ export class ActionDispatcher {
   #tickDuration = 0;
   #inputState: InputState;
   #contextId: string;
-  #isMacOS: boolean;
+  // Holds in-flight CDP `Input.dispatchMouseEvent` (`mouseMoved`) promises for
+  // zero-duration hover moves so they do not block the next tick. In Chromium's
+  // `MainThreadEventQueue`, `kMouseMove` is rAF-aligned (waits up to 16.67ms for
+  // 60Hz VSync), whereas `kMouseDown` (`pointerDown`) and `kMouseUp` (`pointerUp`) are
+  // non-rAF-aligned and immediately flush queued `kMouseMove` events when pipelined behind them.
+  // See https://crbug.com/411434092.
+  #pendingMovePromises: Promise<unknown>[] = [];
 
   constructor(
     inputState: InputState,
     browsingContextStorage: BrowsingContextStorage,
     contextId: string,
-    isMacOS: boolean,
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#inputState = inputState;
     this.#contextId = contextId;
-    this.#isMacOS = isMacOS;
   }
 
   /**
@@ -118,12 +135,31 @@ export class ActionDispatcher {
     return this.#browsingContextStorage.getContext(this.#contextId);
   }
 
+  /**
+   * Awaits and clears all deferred zero-duration hover `mouseMoved` CDP commands.
+   */
+  async #flushPendingMovePromises(): Promise<void> {
+    if (this.#pendingMovePromises.length === 0) {
+      return;
+    }
+    // Snapshot and clear before awaiting to prevent re-entrant duplicate waits.
+    const promises = this.#pendingMovePromises;
+    this.#pendingMovePromises = [];
+    // Wait for all in-flight move commands to settle even if one fails (e.g. target closed).
+    await Promise.allSettled(promises);
+  }
+
   async dispatchActions(
     optionsByTick: readonly (readonly Readonly<ActionOption>[])[],
   ): Promise<void> {
     await this.#inputState.queue.run(async () => {
-      for (const options of optionsByTick) {
-        await this.dispatchTickActions(options);
+      try {
+        for (const options of optionsByTick) {
+          await this.dispatchTickActions(options);
+        }
+      } finally {
+        // Ensure any trailing deferred `mouseMoved` commands settle before `performActions` completes.
+        await this.#flushPendingMovePromises();
       }
     });
   }
@@ -131,21 +167,35 @@ export class ActionDispatcher {
   async dispatchTickActions(
     options: readonly Readonly<ActionOption>[],
   ): Promise<void> {
-    this.#tickStart = performance.now();
     this.#tickDuration = 0;
     for (const {action} of options) {
       if ('duration' in action && action.duration !== undefined) {
         this.#tickDuration = Math.max(this.#tickDuration, action.duration);
       }
     }
-    const promises: Promise<void>[] = [
-      new Promise((resolve) => setTimeout(resolve, this.#tickDuration)),
-    ];
+    if (this.#tickDuration > 0) {
+      // Complete any deferred moves before starting a timed tick or pause duration.
+      await this.#flushPendingMovePromises();
+    }
+    // Record tick start after flushing prior moves so interpolation timing is accurate.
+    this.#tickStart = performance.now();
+    const promises: Promise<void>[] = [];
+    if (this.#tickDuration > 0) {
+      // Zero-duration ticks need no timer wait; setTimeout(0) throttles in background tabs.
+      promises.push(
+        new Promise((resolve) => setTimeout(resolve, this.#tickDuration)),
+      );
+    }
     for (const option of options) {
       // In theory we have to wait for each action to happen, but CDP is serial,
       // so as an optimization, we queue all CDP commands at once and await all
       // of them.
       promises.push(this.#dispatchAction(option));
+    }
+    if (options.some(({action}) => action.type !== 'pointerMove')) {
+      // A non-move action (e.g. `pointerDown`) was just queued in CDP behind any deferred
+      // `mouseMoved` commands, flushing the renderer queue; await them together now.
+      promises.push(this.#flushPendingMovePromises());
     }
     await Promise.all(promises);
   }
@@ -288,10 +338,11 @@ export class ActionDispatcher {
         );
         break;
     }
+    // --- Platform-specific code ends here ---
+
     source.radiusX = radiusX;
     source.radiusY = radiusY;
     source.force = pressure;
-    // --- Platform-specific code ends here ---
   }
 
   #dispatchPointerUpAction(
@@ -401,29 +452,64 @@ export class ActionDispatcher {
         // --- Platform-specific code begins here ---
         const {modifiers} = keyState;
         switch (pointerType) {
-          case Input.PointerType.Mouse:
-            // TODO: Implement width and height when available.
-            await this.#context.cdpTarget.cdpClient.sendCommand(
-              'Input.dispatchMouseEvent',
-              {
-                type: 'mouseMoved',
-                x,
-                y,
-                modifiers,
-                clickCount: 0,
-                button: getCdpButton(source.pressed.values().next().value ?? 5),
-                buttons: source.buttons,
-                pointerType,
-                tangentialPressure,
-                tiltX,
-                tiltY,
-                twist,
-                force: pressure,
-              },
-            );
+          case Input.PointerType.Mouse: {
+            if (duration === 0 && source.pressed.size === 0) {
+              // Defer awaiting zero-duration hover `mouseMoved` so a subsequent `pointerDown`
+              // in the next tick flushes Chromium's rAF-aligned `MainThreadEventQueue` without waiting for VSync.
+              // TODO: Implement width and height when available.
+              this.#pendingMovePromises.push(
+                this.#context.cdpTarget.cdpClient.sendCommand(
+                  'Input.dispatchMouseEvent',
+                  {
+                    type: 'mouseMoved',
+                    x,
+                    y,
+                    modifiers,
+                    clickCount: 0,
+                    button: getCdpButton(
+                      source.pressed.values().next().value ?? 5,
+                    ),
+                    buttons: source.buttons,
+                    pointerType,
+                    tangentialPressure,
+                    tiltX,
+                    tiltY,
+                    twist,
+                    force: pressure,
+                  },
+                ),
+              );
+            } else {
+              // Flush any deferred hover `mouseMoved` before sending an interpolated or drag `mouseMoved`.
+              await this.#flushPendingMovePromises();
+              // TODO: Implement width and height when available.
+              await this.#context.cdpTarget.cdpClient.sendCommand(
+                'Input.dispatchMouseEvent',
+                {
+                  type: 'mouseMoved',
+                  x,
+                  y,
+                  modifiers,
+                  clickCount: 0,
+                  button: getCdpButton(
+                    source.pressed.values().next().value ?? 5,
+                  ),
+                  buttons: source.buttons,
+                  pointerType,
+                  tangentialPressure,
+                  tiltX,
+                  tiltY,
+                  twist,
+                  force: pressure,
+                },
+              );
+            }
             break;
+          }
           case Input.PointerType.Pen:
             if (source.pressed.size !== 0) {
+              // Ensure any prior deferred mouse moves complete before dispatching pen movement.
+              await this.#flushPendingMovePromises();
               // Empty `source.pressed.size` means the pen is not detected by digitizer.
               // Dispatch a mouse event for the pen only if either:
               // 1. the pen is hovering over the digitizer (0);
@@ -455,6 +541,8 @@ export class ActionDispatcher {
             break;
           case Input.PointerType.Touch:
             if (source.pressed.size !== 0) {
+              // Ensure any prior deferred mouse moves complete before dispatching touch movement.
+              await this.#flushPendingMovePromises();
               await this.#context.cdpTarget.cdpClient.sendCommand(
                 'Input.dispatchTouchEvent',
                 {
@@ -494,6 +582,8 @@ export class ActionDispatcher {
     if (this.#context.id === this.#context.cdpTarget.id) {
       return {x: 0, y: 0};
     }
+    // Flush deferred moves before querying frame layout in case prior moves affected it.
+    await this.#flushPendingMovePromises();
     // https://github.com/w3c/webdriver/pull/1847 proposes dispatching events from
     // the top-level browsing context. This implementation dispatches it on the top-most
     // same-target frame, which is not top-level one in case of OOPiF.
@@ -529,6 +619,8 @@ export class ActionDispatcher {
         targetY = startY + offsetY + frameOffset.y;
         break;
       default: {
+        // Flush deferred moves before querying element bounds so hover/move layout effects apply first.
+        await this.#flushPendingMovePromises();
         const {x: posX, y: posY} = await getElementCenter(
           this.#context,
           origin.element,
@@ -654,10 +746,12 @@ export class ActionDispatcher {
     const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
     const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     let command: string | undefined;
+    // Lazily query and cache whether the host platform is macOS (https://crbug.com/411434092).
+    const isMacOS = await ActionDispatcher.#getIsMacOS(this.#context);
     // The following commands need to be declared because Chromium doesn't
     // handle them. See
     // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/editing/editing_behavior.cc;l=169;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4;bpv=0;bpt=1.
-    if (this.#isMacOS && source.meta) {
+    if (isMacOS && source.meta) {
       switch (code) {
         case 'KeyA':
           command = 'SelectAll';
@@ -698,7 +792,7 @@ export class ActionDispatcher {
     if (key === 'Escape') {
       if (
         !source.alt &&
-        ((this.#isMacOS && !source.ctrl && !source.meta) || !this.#isMacOS)
+        ((isMacOS && !source.ctrl && !source.meta) || !isMacOS)
       ) {
         promises.push(
           this.#context.cdpTarget.cdpClient.sendCommand('Input.cancelDragging'),

@@ -50,7 +50,6 @@ export class InputProcessor {
       inputState,
       this.#browsingContextStorage,
       params.context,
-      await ActionDispatcher.isMacOS(context).catch(() => false),
     );
     await dispatcher.dispatchActions(actionsByTick);
     return {};
@@ -66,7 +65,6 @@ export class InputProcessor {
       inputState,
       this.#browsingContextStorage,
       params.context,
-      await ActionDispatcher.isMacOS(context).catch(() => false),
     );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
     this.#inputStateManager.delete(topContext);
