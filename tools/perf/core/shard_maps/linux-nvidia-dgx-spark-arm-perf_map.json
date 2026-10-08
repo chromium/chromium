@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "rendering.desktop": {
-                "abridged": false
+                "abridged": true
             },
             "rendering.desktop.notracing": {
                 "abridged": false
@@ -77,11 +77,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 450,
-        "predicted_min_shard_time": 6048.0,
+        "num_stories": 113,
+        "predicted_min_shard_time": 2678.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 6048.0,
+        "predicted_max_shard_time": 2678.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 6048.0
+        "shard #0": 2678.0
     }
 }
