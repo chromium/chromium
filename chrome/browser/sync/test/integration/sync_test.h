@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -63,8 +62,6 @@
 #define E2E_ENABLED(test_name) MACRO_CONCAT(test_name, E2ETest)
 
 class BrowserWindowInterface;
-class FakeSyncGCMDriver;
-class KeyedService;
 class ProfileManager;
 class SyncServiceImplHarness;
 
@@ -335,10 +332,6 @@ class SyncTest : public PlatformBrowserTest,
   // determined at runtime based on server type.
   bool CreateProfile(int index);
 
-  // Creates a fake GCMProfileService to simulate sync invalidations.
-  std::unique_ptr<KeyedService> CreateGCMProfileService(
-      content::BrowserContext* context);
-
 #if !BUILDFLAG(IS_ANDROID)
   // Called when the |browser| was removed externally. This just marks the
   // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
@@ -435,13 +428,6 @@ class SyncTest : public PlatformBrowserTest,
   // Collection of sync clients used by a test, storing each client's profile,
   // sync harness, and browser windows.
   std::vector<SyncClientState> clients_;
-
-  // Used to deliver invalidations to different profiles within
-  // FakeSyncServerInvalidationSender.
-  // TODO(crbug.com/40855871): Move this into SyncClientState.
-  std::map<raw_ptr<Profile, AcrossTasksDanglingUntriaged>,
-           raw_ptr<FakeSyncGCMDriver, AcrossTasksDanglingUntriaged>>
-      profile_to_fake_gcm_driver_;
 
   syncer::DataTypeSet excluded_types_from_check_for_data_type_failures_;
 
