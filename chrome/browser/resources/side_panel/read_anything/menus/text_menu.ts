@@ -43,6 +43,7 @@ export class TextMenuElement extends TextMenuElementBase implements
     return {
       settingsPrefs: {type: Object},
       lineSpacing: {type: Number},
+      letterSpacing: {type: Number},
       nonModal: {type: Boolean},
       areFontsLoaded: {type: Boolean},
       pageLanguage: {type: String},
@@ -52,6 +53,7 @@ export class TextMenuElement extends TextMenuElementBase implements
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor lineSpacing: number = 0;
+  accessor letterSpacing: number = 0;
   accessor nonModal: boolean = false;
   accessor areFontsLoaded: boolean = false;
   accessor pageLanguage: string = '';
@@ -140,6 +142,7 @@ export class TextMenuElement extends TextMenuElementBase implements
 
     if (changedProperties.has('settingsPrefs') ||
         changedProperties.has('lineSpacing') ||
+        changedProperties.has('letterSpacing') ||
         changedProperties.has('pageLanguage') ||
         changedProperties.has('areFontsLoaded')) {
       this.updateOptionsForFont_();
@@ -163,13 +166,6 @@ export class TextMenuElement extends TextMenuElementBase implements
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
   }
 
-  protected onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
-    const newSpacing = event.detail.data;
-    this.visualBrowserProxy_.onLetterSpacingChange(newSpacing);
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.LETTER_SPACING_CHANGE);
-  }
-
   private updateOptionsForFont_() {
     const currentFont = this.visualBrowserProxy_.getFontName();
     this.fontOptions_.forEach(option => {
@@ -184,9 +180,8 @@ export class TextMenuElement extends TextMenuElementBase implements
   }
 
   private updateOptionsForLetterSpacing_() {
-    const currentSpacing = this.settingsPrefs.letterSpacing;
     this.letterSpacingOptions_.forEach(option => {
-      option.selected = option.data === currentSpacing;
+      option.selected = option.data === this.letterSpacing;
     });
   }
 

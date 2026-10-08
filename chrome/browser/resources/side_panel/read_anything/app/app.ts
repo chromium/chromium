@@ -85,6 +85,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       enabledLangs_: {type: Array},
       theme_: {type: Number},
       lineSpacing_: {type: Number},
+      letterSpacing_: {type: Number},
       settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
@@ -171,6 +172,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   // syncSettings_() and passed down to the toolbar.
   protected accessor theme_: number = 0;
   protected accessor lineSpacing_: number = 0;
+  protected accessor letterSpacing_: number = 0;
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
@@ -232,7 +234,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.showLoading();
 
     this.settingsPrefs_ = {
-      letterSpacing: this.visualBrowserProxy_.getLetterSpacing(),
       speechRate: this.audioBrowserProxy_.getSpeechRate(),
       font: this.visualBrowserProxy_.getFontName(),
       highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
@@ -701,6 +702,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   private syncSettings_() {
     this.theme_ = this.visualBrowserProxy_.getColorTheme();
     this.lineSpacing_ = this.visualBrowserProxy_.getLineSpacing();
+    this.letterSpacing_ = this.visualBrowserProxy_.getLetterSpacing();
   }
 
   protected onSpeechRateChange_() {
@@ -715,7 +717,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private restoreSettingsFromPrefs_() {
     this.settingsPrefs_ = {
-      letterSpacing: this.visualBrowserProxy_.getLetterSpacing(),
       speechRate: this.audioBrowserProxy_.getSpeechRate(),
       font: this.visualBrowserProxy_.getFontName(),
       highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
@@ -741,11 +742,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.onTextLocationsChange_();
   }
 
-  protected onLetterSpacingChange_() {
-    this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
-      letterSpacing: this.visualBrowserProxy_.getLetterSpacing(),
-    };
+  protected onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
+    this.visualBrowserProxy_.onLetterSpacingChange(event.detail.data);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LETTER_SPACING_CHANGE);
+    this.syncSettings_();
     this.styleUpdater_.setLetterSpacing();
     this.onTextLocationsChange_();
   }

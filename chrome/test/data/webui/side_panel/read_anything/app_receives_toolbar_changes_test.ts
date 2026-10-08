@@ -81,8 +81,8 @@ suite('AppReceivesToolbarChanges', () => {
   }
 
   function emitLetterSpacing(spacingEnumValue: number): void {
-    visualBrowserProxy.onLetterSpacingChange(spacingEnumValue);
-    emitEvent(app, ToolbarEvent.LETTER_SPACING);
+    emitEvent(
+        app, ToolbarEvent.LETTER_SPACING, {detail: {data: spacingEnumValue}});
   }
 
   function emitColorTheme(colorEnumValue: number): void {
@@ -760,6 +760,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('restoreSettingsFromPrefs updates toolbar settings', async () => {
+    visualBrowserProxy.letterSpacing = 1;
     visualBrowserProxy.lineSpacing = 2;
     visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
 
@@ -767,6 +768,7 @@ suite('AppReceivesToolbarChanges', () => {
     await microtasksFinished();
 
     const toolbar = app.$.toolbar;
+    assertEquals(1, toolbar.letterSpacing);
     assertEquals(2, toolbar.lineSpacing);
     assertEquals(visualBrowserProxy.darkTheme, toolbar.theme);
   });
@@ -938,6 +940,18 @@ suite('AppReceivesToolbarChanges', () => {
           ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
           await metrics.whenCalled('recordTextSettingsChange'));
       assertEquals(2, app.$.toolbar.lineSpacing);
+    });
+
+    test('letter spacing', async () => {
+      emitLetterSpacing(2);
+      await microtasksFinished();
+
+      assertEquals(
+          2, await visualBrowserProxy.whenCalled('onLetterSpacingChange'));
+      assertEquals(
+          ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
+          await metrics.whenCalled('recordTextSettingsChange'));
+      assertEquals(2, app.$.toolbar.letterSpacing);
     });
   });
 
