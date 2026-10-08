@@ -81,6 +81,10 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
         u"Primary Button");
     primary_button->SetProperty(kElementIdentifierKey, kPrimaryButtonId);
     primary_button->SetIsDefault(true);
+    primary_button->AddAccelerator(
+        ui::Accelerator(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN));
+    primary_button->AddAccelerator(
+        ui::Accelerator(ui::VKEY_RIGHT, ui::EF_SHIFT_DOWN));
     gfx::Rect primary_button_bounds(kPrimaryButtonOrigin, kButtonSize);
     primary_button->SetBoundsRect(primary_button_bounds);
     contents->AddChildView(std::move(primary_button));
@@ -99,6 +103,7 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
     contents->AddChildView(std::move(secondary_button));
 
     widget_->SetContentsView(std::move(contents));
+    widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
     WidgetVisibleWaiter waiter(widget_.get());
     widget_->Show();
     waiter.Wait();
@@ -206,6 +211,40 @@ TEST_F(InputProtectionInteractiveUiTest,
       TriggerShowCooldown(kPrimaryButtonId), FocusElement(kSecondaryButtonId),
       KeyPressAndRelease(kSecondaryButtonId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
       CheckViewProperty(kPrimaryButtonId, &View::HasFocus, true));
+}
+
+// Verifies that unmodified arrow key focus navigation is not blocked during
+// input protection.
+TEST_F(InputProtectionInteractiveUiTest,
+       ArrowKeyTraversalAllowedDuringInputProtection) {
+  RunTestSequence(EnableInputEventActivationProtection(),
+                  TriggerShowCooldown(kPrimaryButtonId),
+                  FocusElement(kPrimaryButtonId),
+                  KeyPressAndRelease(kPrimaryButtonId, ui::VKEY_DOWN),
+                  CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true),
+                  KeyPressAndRelease(kSecondaryButtonId, ui::VKEY_UP),
+                  CheckViewProperty(kPrimaryButtonId, &View::HasFocus, true));
+}
+
+// Verifies that arrow keys with modifiers (e.g. Ctrl+Down or Shift+Right) are
+// not treated as focus navigation and are blocked during input protection.
+TEST_F(InputProtectionInteractiveUiTest,
+       ModifiedArrowKeysBlockedDuringInputProtection) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      TriggerShowCooldown(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_DOWN,
+                                         primary_click_count(),
+                                         ui::EF_CONTROL_DOWN),
+      CheckViewProperty(kPrimaryButtonId, &View::HasFocus, true),
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_RIGHT,
+                                         primary_click_count(),
+                                         ui::EF_SHIFT_DOWN),
+      CheckViewProperty(kPrimaryButtonId, &View::HasFocus, true),
+      AdvancePastInputProtectionInterval(),
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_DOWN,
+                                         primary_click_count(),
+                                         ui::EF_CONTROL_DOWN));
 }
 
 // Verifies that pressing the Space key on a focused button is blocked during
@@ -437,6 +476,18 @@ TEST_F(InputProtectionInteractiveUiTest, TabKeyTraversalAllowedWhileOccluded) {
       // Reactivate target surface so it can receive focus (required on macOS).
       ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
       KeyPressAndRelease(kPrimaryButtonId, ui::VKEY_TAB),
+      CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
+}
+
+// Verifies that unmodified arrow key focus navigation is not blocked even when
+// an element is actively occluded by an Always-On-Top window.
+TEST_F(InputProtectionInteractiveUiTest,
+       ArrowKeyTraversalAllowedWhileOccluded) {
+  RunTestSequence(
+      OccludeElementWithAotWindow(kPrimaryButtonId),
+      // Reactivate target surface so it can receive focus (required on macOS).
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      KeyPressAndRelease(kPrimaryButtonId, ui::VKEY_DOWN),
       CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
 }
 
