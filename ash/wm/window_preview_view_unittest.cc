@@ -248,8 +248,7 @@ bool HasNinePatchLayer(ui::Layer* layer) {
 
 }  // namespace
 
-// TODO(crbug.com/562105237): Re-enable this test
-TEST_F(WindowPreviewViewTest, DISABLED_ExcludeShadow) {
+TEST_F(WindowPreviewViewTest, ExcludeShadow) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetBounds(gfx::Rect{0, 0, 100, 100});
   ::wm::SetShadowElevation(widget->GetNativeWindow(),
