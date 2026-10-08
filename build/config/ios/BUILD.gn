@@ -122,6 +122,12 @@ config("runtime_library") {
     _sdk_root,
   ]
 
+  # rustc locates the SDK via `SDKROOT` and falls back to `xcrun`, which is
+  # unavailable on non-Mac hosts.
+  # TODO(https://crbug.com/442128549): see if we can convince upstream rust to
+  # add an -isysroot flag instead.
+  rustenv = [ "SDKROOT=$_sdk_root" ]
+
   if (target_environment == "catalyst") {
     common_flags += [
       "-isystem",
