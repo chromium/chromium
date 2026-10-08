@@ -75,7 +75,6 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
-#include "chrome/browser/ash/borealis/borealis_motd_ui_impl.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
@@ -143,8 +142,6 @@
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "chromeos/ash/components/emoji/emoji_search.mojom.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd.mojom.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
@@ -270,10 +267,6 @@ void PopulateChromeWebUIFrameBindersPartsCros(
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
       ash::NetworkUI, ash::OobeUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      ash::borealis_motd::mojom::PageHandlerFactory,
-      borealis::BorealisMotdUiImpl>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::crostini_installer::mojom::PageHandlerFactory,

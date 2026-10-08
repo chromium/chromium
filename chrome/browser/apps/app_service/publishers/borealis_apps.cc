@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -243,10 +242,7 @@ void BorealisApps::LaunchAppWithIntent(const std::string& app_id,
                                        LaunchSource launch_source,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
-  // Borealis is being removed, instead of launching the application
-  // the MOTD will be shown with information about the removal and an
-  // option to uninstall it.
-  borealis::BorealisMOTDDialog::MaybeShow(profile(), base::DoNothing());
+  std::move(callback).Run(LaunchResult::kFailed);
 }
 
 void BorealisApps::SetPermission(const std::string& app_id,

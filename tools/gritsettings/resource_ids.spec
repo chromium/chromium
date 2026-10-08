@@ -967,10 +967,6 @@
     "META": {"sizes": {"includes": [45],}},
     "includes" : [5740],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/ash/experiences/guest_os/borealis/motd/resources/resources.grd": {
-    "META": {"sizes": {"includes": [5],}},
-    "includes": [5750],
-   },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5780],
   },

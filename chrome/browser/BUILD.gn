@@ -881,8 +881,6 @@ if (is_chromeos) {
       "//chrome/browser/ui/webui/nearby_share",
       "//chrome/common:chrome_features",
       "//chromeos/ash/components/local_search_service/public/mojom",
-      "//chromeos/ash/experiences/guest_os/borealis/motd",
-      "//chromeos/ash/experiences/guest_os/borealis/motd:mojo_bindings",
       "//chromeos/ash/services/multidevice_setup",
       "//chromeos/ash/services/orca/public/mojom",
       "//chromeos/constants",

@@ -8298,20 +8298,6 @@ To shut down the device, press and hold the power button on the device again.
         Settings
       </message>
 
-      <!-- Borealis MOTD -->
-      <message name="IDS_ASH_BOREALIS_MOTD_DISMISS_TEXT" desc="Text on dismiss button in Borealis MOTD. Clicking on it will dismiss the dialog.">
-        Dismiss
-      </message>
-      <message name="IDS_ASH_BOREALIS_MOTD_PLACEHOLDER_TEXT" desc="Placeholder text for Borealis MOTD. Shown if the message of the day is unable to be retrieved from the Static Content Service.">
-        Unable to retrieve Steam for Chromebook news.
-      </message>
-      <message name="IDS_ASH_BOREALIS_MOTD_UNINSTALL_TEXT" desc="Text on button in Borealis MOTD. Clicking on it will trigger uninstallation of the borealis.">
-        Uninstall
-      </message>
-      <message name="IDS_ASH_BOREALIS_MOTD_TITLE_TEXT" desc="Title text for Borealis MOTD. Shown at the top of the dialog.">
-        Steam for Chromebook News
-      </message>
-
       <!-- Kiosk mode (app_mode) -->
       <message name="IDS_KIOSK_APP_ERROR_EXTENSIONS_LOAD_TIMEOUT" desc="Error message used when a kiosk app fails to load force-installed extensions within the time limit.">
         Failed to load extensions within the time limit. Please contact your administrator.
