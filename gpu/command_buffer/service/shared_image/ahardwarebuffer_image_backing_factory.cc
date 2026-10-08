@@ -733,6 +733,9 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
   } else if (context_state->IsGraphiteVulkan()) {
 #if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
     auto vulkan_image = CreateVulkanImageFromAHB(context_state.get());
+    if (!vulkan_image) {
+      return nullptr;
+    }
     return std::make_unique<SkiaGraphiteVkAHBImageRepresentation>(
         manager, this, std::move(context_state), tracker,
         std::move(vulkan_image));
@@ -753,6 +756,9 @@ AHardwareBufferImageBacking::ProduceSkiaGanesh(
   // Skia representation.
   if (context_state->GrContextIsVulkan()) {
     auto vulkan_image = CreateVulkanImageFromAHB(context_state.get());
+    if (!vulkan_image) {
+      return nullptr;
+    }
     return std::make_unique<SkiaVkAHBImageRepresentation>(
         manager, this, std::move(context_state), std::move(vulkan_image),
         tracker);
