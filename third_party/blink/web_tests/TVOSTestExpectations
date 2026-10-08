@@ -2130,7 +2130,6 @@ crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-access-
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-mouse-source-capabilities.html [ Skip Timeout ]
-crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/inactive-document-with-empty-security-origin.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/xss-DENIED-xml-external-entity.xhtml [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/serviceworker/clients-openwindow.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/serviceworker/navigation_preload/use-counter.html [ Failure ]
