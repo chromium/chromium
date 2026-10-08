@@ -48,9 +48,6 @@
 // Updates the App Bar's subviews for a given rotation angle.
 - (void)updateForAngle:(CGFloat)angle;
 
-// Unhides the spotlight anchor view if `shouldShow`.
-- (void)toggleSpotlightView:(BOOL)shouldShow;
-
 // Shows the blue-ish background with a circular gradient.
 // If `centered` is YES, the gradient is centered. Otherwise, it is left-bottom
 // aligned.
