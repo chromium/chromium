@@ -414,7 +414,31 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     std::optional<ui::ColorId> submenu_background_color,
     std::optional<ui::ColorId> foreground_color,
     std::optional<ui::ColorId> selected_color_id) {
+  if (type == Type::kSeparator) {
+    AddSeparatorAt(index, separator_style);
+    return nullptr;
+  }
+  auto item = base::WrapUnique(new MenuItemView(this, item_id, type));
+  item->SetTitle(label.empty() && GetDelegate()
+                     ? GetDelegate()->GetLabel(item_id)
+                     : label);
+  item->SetSecondaryTitle(secondary_label);
+  item->SetMinorText(minor_text);
+  item->SetMinorIcon(minor_icon);
+  item->SetIcon(icon);
+  item->SetForegroundColorId(foreground_color);
+  item->SetSelectedColorId(selected_color_id);
+  return AddMenuItemViewImpl(std::move(item), index, submenu_background_color);
+}
+
+MenuItemView* MenuItemView::AddMenuItemViewImpl(
+    std::unique_ptr<MenuItemView> item,
+    std::optional<size_t> index,
+    std::optional<ui::ColorId> submenu_background_color) {
+  CHECK(item);
+  const Type type = item->GetType();
   DCHECK_NE(type, Type::kEmpty);
+  DCHECK_NE(type, Type::kSeparator);
   if (!submenu_) {
     CreateSubmenu();
     // Set the submenu border color to be the same as the first submenu
@@ -425,33 +449,20 @@ MenuItemView* MenuItemView::AddMenuItemAt(
           views::CreateSolidBackground(submenu_background_color.value()));
     }
   }
-  DCHECK_LE(index, submenu_->children().size());
-  if (type == Type::kSeparator) {
-    submenu_->AddChildViewAt(std::make_unique<MenuSeparator>(separator_style),
-                             index);
-    return nullptr;
-  }
-  MenuItemView* item = new MenuItemView(this, item_id, type);
-  item->SetTitle(label.empty() && GetDelegate()
-                     ? GetDelegate()->GetLabel(item_id)
-                     : label);
-  item->SetSecondaryTitle(secondary_label);
-  item->SetMinorText(minor_text);
-  item->SetMinorIcon(minor_icon);
-  item->SetIcon(icon);
-  item->SetForegroundColorId(foreground_color);
-  item->SetSelectedColorId(selected_color_id);
+  const size_t insert_index = index.value_or(submenu_->children().size());
+  DCHECK_LE(insert_index, submenu_->children().size());
+
   if (type == Type::kSubMenu || type == Type::kActionableSubMenu) {
     item->CreateSubmenu();
   }
   if (type == Type::kHighlighted) {
     item->set_vertical_margin(MenuConfig::instance().footnote_vertical_margin);
   }
-  if (GetDelegate() && !GetDelegate()->IsCommandVisible(item_id)) {
+  if (GetDelegate() && !GetDelegate()->IsCommandVisible(item->GetCommand())) {
     item->SetVisible(false);
   }
 
-  auto* added_item = submenu_->AddChildViewAt(item, index);
+  auto* added_item = submenu_->AddChildViewAt(std::move(item), insert_index);
 
   added_item->UpdateTooltipText();
 

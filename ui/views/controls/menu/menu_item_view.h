@@ -195,6 +195,14 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
       std::optional<ui::ColorId> foreground_color = std::nullopt,
       std::optional<ui::ColorId> selected_color_id = std::nullopt);
 
+  // Appends `item` to the menu, or inserts it at `index` if specified.
+  template <typename T>
+    requires(std::derived_from<T, MenuItemView>)
+  T* AddMenuItemView(std::unique_ptr<T> item,
+                     std::optional<size_t> index = std::nullopt) {
+    return static_cast<T*>(AddMenuItemViewImpl(std::move(item), index));
+  }
+
   void SetMenuItemBackground(
       std::optional<MenuItemBackground> menu_item_background) {
     menu_item_background_ = menu_item_background;
@@ -551,6 +559,11 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
                int command,
                Type type,
                MenuDelegate* delegate);
+
+  MenuItemView* AddMenuItemViewImpl(
+      std::unique_ptr<MenuItemView> item,
+      std::optional<size_t> index,
+      std::optional<ui::ColorId> submenu_background_color = std::nullopt);
 
   const SubmenuView* GetContainingSubmenu() const {
     return parent_menu_item_->GetSubmenu();
