@@ -21,7 +21,7 @@ const CGFloat kInfobarBannerRevampIconSize = 24.0f;
 const CGFloat kInfobarBannerRevampCornerRadius = 26.0f;
 
 const CGFloat kInfobarBannerRevampContainerShadowRadius = 12.0f;
-const CGFloat kInfobarBannerRevampContainerShadowOpacity = 0.12f;
+const CGFloat kInfobarBannerRevampContainerShadowOpacity = 0.25f;
 const CGFloat kInfobarBannerRevampContainerShadowYOffset = 4.0f;
 
 const CGFloat kInfobarBannerRevampButtonShadowRadius = 4.0f;

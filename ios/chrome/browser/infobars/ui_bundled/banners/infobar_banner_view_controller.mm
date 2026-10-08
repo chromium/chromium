@@ -360,9 +360,7 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
       CGSizeMake(0.0, kInfobarBannerRevampContainerShadowYOffset);
   viewLayer.shadowRadius = kInfobarBannerRevampContainerShadowRadius;
   viewLayer.shadowOpacity = kInfobarBannerRevampContainerShadowOpacity;
-  [self.traitCollection performAsCurrentTraitCollection:^{
-    viewLayer.shadowColor = [UIColor colorNamed:kToolbarShadowColor].CGColor;
-  }];
+  viewLayer.shadowColor = [UIColor blackColor].CGColor;
 
   // Icon setup.
   UIView* iconContainerView = [self configureIconContainer];
@@ -1029,11 +1027,12 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   if ([self.traitCollection
           hasDifferentColorAppearanceComparedToTraitCollection:
               previousTraitCollection]) {
-    self.view.layer.shadowColor =
-        [UIColor colorNamed:kToolbarShadowColor].CGColor;
     if (IsInfobarBannerRevampEnabled()) {
       self.infobarButton.layer.shadowColor =
           [UIColor colorNamed:kBlueColor].CGColor;
+    } else {
+      self.view.layer.shadowColor =
+          [UIColor colorNamed:kToolbarShadowColor].CGColor;
     }
   }
 }
