@@ -406,14 +406,14 @@ suite('TabPickerTest', () => {
       });
 
   test('Dark mode reflects attribute correctly', async () => {
-    assertFalse(app.getDarkModeForTesting());
+    assertFalse(app.darkMode);
     assertFalse(app.hasAttribute('dark-mode'));
 
-    app.setDarkModeForTesting(true);
+    app.darkMode = true;
     await microtasksFinished();
     assertTrue(app.hasAttribute('dark-mode'));
 
-    app.setDarkModeForTesting(false);
+    app.darkMode = false;
     await microtasksFinished();
     assertFalse(app.hasAttribute('dark-mode'));
   });
@@ -428,7 +428,7 @@ suite('TabPickerTest', () => {
     const [item0] = items;
     assert(item0);
 
-    app.setDarkModeForTesting(true);
+    app.darkMode = true;
     await microtasksFinished();
 
     const color = window.getComputedStyle(item0).color;

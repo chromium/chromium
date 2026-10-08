@@ -59,7 +59,6 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       darkMode: {
         type: Boolean,
         reflect: true,
-        attribute: 'dark-mode',
       },
     };
   }
@@ -68,9 +67,10 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   accessor selectedTabs: TabInfo[] = [];
   accessor tabMenuOpen: boolean = false;
   accessor recentTabId: number|null = null;
-  protected accessor sharingTabsText_: string = '';
   accessor useUnbounded: boolean = true;
   accessor darkMode: boolean = false;
+
+  protected accessor sharingTabsText_: string = '';
 
   private closeTimer_: number|null = null;
   private browserProxy_: TabPickerBrowserProxy =
@@ -271,14 +271,6 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       window.clearTimeout(this.closeTimer_);
       this.closeTimer_ = null;
     }
-  }
-
-  setDarkModeForTesting(darkMode: boolean) {
-    this.darkMode = darkMode;
-  }
-
-  getDarkModeForTesting(): boolean {
-    return this.darkMode;
   }
 }
 
