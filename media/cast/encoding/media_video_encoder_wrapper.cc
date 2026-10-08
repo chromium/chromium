@@ -377,7 +377,11 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
   CachedMetadata& metadata = recent_metadata_.front();
   auto encoded_frame = std::make_unique<SenderEncodedFrame>();
   encoded_frame->is_key_frame = output.key_frame;
-  encoded_frame->frame_id = next_frame_id_++;
+  // An empty output means the encoder dropped the frame (e.g. due to rate
+  // control). Dropped frames never become references, so don't consume a
+  // FrameId: the next emitted frame should reference the last emitted one.
+  encoded_frame->frame_id =
+      output.data.empty() ? next_frame_id_ : next_frame_id_++;
   encoded_frame->referenced_frame_id = encoded_frame->is_key_frame
                                            ? encoded_frame->frame_id
                                            : encoded_frame->frame_id - 1;

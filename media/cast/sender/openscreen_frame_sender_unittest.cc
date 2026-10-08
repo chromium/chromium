@@ -9,6 +9,7 @@
 #include <numeric>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "media/base/audio_codecs.h"
@@ -223,6 +224,120 @@ TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
   video_frame_two->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
             video_sender().EnqueueFrame(std::move(video_frame_two)));
+}
+
+// Frames that reference a FrameId that was never enqueued (for example, because
+// the frame was dropped after encoding) cannot be decoded by the receiver and
+// must be dropped until the next key frame.
+TEST_F(OpenscreenFrameSenderTest, DropsFramesReferencingNeverEnqueuedFrames) {
+  RtpTimeTicks rtp_timestamp{0};
+  const auto enqueue = [&](int frame_id, int referenced_frame_id) {
+    rtp_timestamp += RtpTimeDelta::FromTicks(300);
+    auto frame = std::make_unique<SenderEncodedFrame>();
+    frame->is_key_frame = frame_id == referenced_frame_id;
+    frame->frame_id = FrameId::first() + frame_id;
+    frame->referenced_frame_id = FrameId::first() + referenced_frame_id;
+    frame->reference_time = base::TimeTicks::Now();
+    frame->rtp_timestamp = rtp_timestamp;
+    frame->data = base::HeapArray<uint8_t>::WithSize(10);
+    return video_sender().EnqueueFrame(std::move(frame));
+  };
+
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped, enqueue(0, 0));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped, enqueue(1, 0));
+
+  // Frame 2 is never enqueued, so frames depending on it are dropped until the
+  // next key frame.
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            enqueue(3, 2));
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            enqueue(4, 3));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped, enqueue(5, 5));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped, enqueue(6, 5));
+
+  // Same again, now that the frame IDs have already diverged.
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            enqueue(8, 7));
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            enqueue(9, 8));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped, enqueue(10, 10));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped, enqueue(11, 10));
+}
+
+// Verifies the frame IDs handed to the Open Screen sender when it rejects a
+// frame after encoding.
+TEST_F(OpenscreenFrameSenderTest, MapsFrameIdsAfterOpenscreenRejectsFrame) {
+  auto mock_sender = std::make_unique<testing::NiceMock<MockSender>>();
+  MockSender& mock = *mock_sender;
+  FrameId next_openscreen_frame_id = FrameId::first();
+  ON_CALL(mock, GetNextFrameId()).WillByDefault([&] {
+    return next_openscreen_frame_id;
+  });
+
+  OpenscreenFrameSender sender(cast_environment(), kVideoConfig,
+                               std::move(mock_sender), *this);
+
+  struct EnqueuedIds {
+    FrameId frame_id;
+    FrameId referenced_frame_id;
+    bool operator==(const EnqueuedIds&) const = default;
+  };
+  std::vector<EnqueuedIds> enqueued;
+  const auto enqueue =
+      [&](int frame_id, int referenced_frame_id,
+          openscreen::cast::Sender::EnqueueFrameResult result) {
+        EXPECT_CALL(mock, EnqueueFrame(testing::_))
+            .WillOnce([&, result](const openscreen::cast::EncodedFrame& frame) {
+              enqueued.push_back({frame.frame_id, frame.referenced_frame_id});
+              if (result == openscreen::cast::Sender::OK) {
+                ++next_openscreen_frame_id;
+              }
+              return result;
+            });
+        auto frame = std::make_unique<SenderEncodedFrame>();
+        frame->is_key_frame = frame_id == referenced_frame_id;
+        frame->frame_id = FrameId::first() + frame_id;
+        frame->referenced_frame_id = FrameId::first() + referenced_frame_id;
+        frame->reference_time = base::TimeTicks::Now();
+        frame->data = base::HeapArray<uint8_t>::WithSize(10);
+        const CastStreamingFrameDropReason reason =
+            sender.EnqueueFrame(std::move(frame));
+        testing::Mock::VerifyAndClearExpectations(&mock);
+        return reason;
+      };
+
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            enqueue(0, 0, openscreen::cast::Sender::OK));
+  EXPECT_EQ(CastStreamingFrameDropReason::kInFlightDurationTooHighAfterEncoding,
+            enqueue(1, 0, openscreen::cast::Sender::MAX_DURATION_IN_FLIGHT));
+
+  // Frame 2 depends on rejected frame 1, so it must never reach Open Screen.
+  EXPECT_CALL(mock, EnqueueFrame(testing::_)).Times(0);
+  auto frame_2 = std::make_unique<SenderEncodedFrame>();
+  frame_2->frame_id = FrameId::first() + 2;
+  frame_2->referenced_frame_id = FrameId::first() + 1;
+  frame_2->reference_time = base::TimeTicks::Now();
+  frame_2->data = base::HeapArray<uint8_t>::WithSize(10);
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            sender.EnqueueFrame(std::move(frame_2)));
+  testing::Mock::VerifyAndClearExpectations(&mock);
+
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            enqueue(3, 3, openscreen::cast::Sender::OK));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            enqueue(4, 3, openscreen::cast::Sender::OK));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            enqueue(5, 4, openscreen::cast::Sender::OK));
+
+  const FrameId first = FrameId::first();
+  EXPECT_THAT(enqueued,
+              testing::ElementsAre(EnqueuedIds{first, first},
+                                   // Rejected by Open Screen.
+                                   EnqueuedIds{first + 1, first},
+                                   // Key frame 3 takes over Open Screen ID 1.
+                                   EnqueuedIds{first + 1, first + 1},
+                                   EnqueuedIds{first + 2, first + 1},
+                                   EnqueuedIds{first + 3, first + 2}));
 }
 
 TEST_F(OpenscreenFrameSenderTest, ClampsLargePlayoutDelay) {

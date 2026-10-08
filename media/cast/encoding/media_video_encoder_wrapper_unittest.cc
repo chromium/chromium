@@ -130,12 +130,15 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
                      .frame_duration = base::Milliseconds(30)};
   }
 
-  // Sets up expectations for a video frame.
-  void ExpectVideoFrameEncoded(const FrameInfo& frame_info) {
+  // Sets up expectations for a video frame. If `dropped_by_encoder` is true,
+  // the encoder emits an empty output, as it does when rate control drops the
+  // frame.
+  void ExpectVideoFrameEncoded(const FrameInfo& frame_info,
+                               bool dropped_by_encoder = false) {
     EXPECT_CALL(*mock_encoder_,
                 Encode(FrameInfosAreEqual(frame_info),
                        FrameTypeIsEqual(frame_info.frame_type), _))
-        .WillOnce([&, frame_info](
+        .WillOnce([&, frame_info, dropped_by_encoder](
                       scoped_refptr<VideoFrame> frame,
                       const media::VideoEncoder::EncodeOptions& options,
                       media::VideoEncoder::EncoderStatusCB done) {
@@ -144,8 +147,10 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
             VideoEncoderOutput output;
             output.key_frame = frame_info.frame_type == FrameType::kKey;
             output.timestamp = frame_info.reference_time - base::TimeTicks();
-            output.data = base::HeapArray<uint8_t>::WithSize(
-                100);  // Dummy data for lossiness
+            if (!dropped_by_encoder) {
+              output.data = base::HeapArray<uint8_t>::WithSize(
+                  100);  // Dummy data for lossiness
+            }
             output_cb_.Run(std::move(output), std::nullopt);
           }
         });
@@ -232,6 +237,37 @@ TEST_F(MediaVideoEncoderWrapperTest, SendsIntermediateFramesAfterKeyFrames) {
 
   EXPECT_NE(EncodeVideoFrame(frame_info), nullptr);
   EXPECT_NE(EncodeVideoFrame(second_frame_info), nullptr);
+}
+
+// Frames dropped by the encoder (empty output) must not consume a FrameId, so
+// that the next emitted frame references the last emitted frame rather than
+// one that will never be sent.
+TEST_F(MediaVideoEncoderWrapperTest, EncoderDroppedFrameDoesNotConsumeFrameId) {
+  ExpectEncoderInitialized();
+
+  const FrameInfo key_frame_info = CreateFrameInfo(FrameType::kKey);
+  ExpectVideoFrameEncoded(key_frame_info);
+  AdvanceClock(base::Milliseconds(30));
+  const FrameInfo dropped_frame_info =
+      CreateFrameInfo(FrameType::kIntermediate);
+  ExpectVideoFrameEncoded(dropped_frame_info, /*dropped_by_encoder=*/true);
+  AdvanceClock(base::Milliseconds(30));
+  const FrameInfo delta_frame_info = CreateFrameInfo(FrameType::kIntermediate);
+  ExpectVideoFrameEncoded(delta_frame_info);
+
+  const auto key_frame = EncodeVideoFrame(key_frame_info);
+  ASSERT_NE(key_frame, nullptr);
+  EXPECT_EQ(key_frame->frame_id, FrameId::first());
+  EXPECT_EQ(key_frame->referenced_frame_id, FrameId::first());
+
+  const auto dropped_frame = EncodeVideoFrame(dropped_frame_info);
+  ASSERT_NE(dropped_frame, nullptr);
+  EXPECT_TRUE(dropped_frame->data.empty());
+
+  const auto delta_frame = EncodeVideoFrame(delta_frame_info);
+  ASSERT_NE(delta_frame, nullptr);
+  EXPECT_EQ(delta_frame->frame_id, FrameId::first() + 1);
+  EXPECT_EQ(delta_frame->referenced_frame_id, FrameId::first());
 }
 
 TEST_F(MediaVideoEncoderWrapperTest, CanGenerateKeyFrame) {

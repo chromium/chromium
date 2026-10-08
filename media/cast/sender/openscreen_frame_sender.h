@@ -10,7 +10,6 @@
 #include <array>
 #include <optional>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -89,6 +88,15 @@ class OpenscreenFrameSender : public FrameSender,
 
   base::TimeDelta GetInFlightMediaDuration() const;
 
+  // Returns the Open Screen frame ID that `frame` should reference, given that
+  // `frame` will be enqueued as `openscreen_frame_id`. Returns std::nullopt if
+  // the referenced frame was never accepted by the Open Screen sender (e.g., it
+  // was rejected after encoding), meaning `frame` cannot be decoded by the
+  // receiver.
+  std::optional<FrameId> GetOpenscreenReferencedFrameId(
+      const SenderEncodedFrame& frame,
+      FrameId openscreen_frame_id) const;
+
  private:
   friend class OpenscreenFrameSenderTest;
 
@@ -127,15 +135,16 @@ class OpenscreenFrameSender : public FrameSender,
   // The ID of the last acknowledged/"cancelled" frame.
   FrameId last_acked_frame_id_;
 
-  // The ID of the frame that was the first one to have a different identifier
-  // used inside of Open Screen. This only occurs if a frame is dropped.
-  std::optional<FrameId> diverged_frame_id_;
-
-  // Since the encoder emits frames that depend on each other, and the Open
-  // Screen sender demands that we use its FrameIDs for enqueued frames, we
-  // have to keep a map of the encoder's frame id to the Open Screen
-  // sender's frame id. This map is cleared on each keyframe.
-  base::flat_map<FrameId, FrameId> frame_id_map_;
+  // The identifiers of the last frame accepted by the Open Screen sender, in
+  // both the producer's (e.g., encoder's) and the Open Screen sender's frame ID
+  // spaces. These diverge whenever a frame is dropped after it was assigned a
+  // FrameId, since the Open Screen sender only advances its FrameId for frames
+  // it accepts.
+  struct AcceptedFrameIds {
+    FrameId frame_id;
+    FrameId openscreen_frame_id;
+  };
+  std::optional<AcceptedFrameIds> last_accepted_frame_ids_;
 
   // This is the maximum delay that the sender should get ack from receiver.
   // Counts how many RTCP reports are being "aggressively" sent (i.e., one per
