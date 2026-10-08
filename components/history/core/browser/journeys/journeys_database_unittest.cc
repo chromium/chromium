@@ -53,22 +53,23 @@ testing::Matcher<const JourneyRow&> MatchesJourney(const JourneyRow& expected) {
             UnorderedElementsAreArray(expected.continuation_queries)));
 }
 
+base::Time TimeFromMicros(int64_t micros) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(micros));
+}
+
 JourneyRow CreateTestJourney(const std::string& journey_id,
                              const std::string& title,
                              int64_t creation_time_micros) {
   return JourneyRow(
       journey_id, title,
       /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(creation_time_micros)),
+      TimeFromMicros(creation_time_micros),
       /*emoji=*/"✈️",
       /*overview=*/"Trip overview",
       /*short_overview=*/"Short overview",
       /*history_entries=*/
-      {JourneyHistoryEntry(
-           base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000))),
-       JourneyHistoryEntry(
-           base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000)))},
+      {JourneyHistoryEntry(TimeFromMicros(1000)),
+       JourneyHistoryEntry(TimeFromMicros(2000))},
       /*continuation_queries=*/
       {JourneyContinuationQuery("Next flights", "Find more flights"),
        JourneyContinuationQuery("Hotels", "Find hotels in Paris")});
@@ -179,12 +180,9 @@ TEST_F(JourneysDatabaseTest, AddAndGetJourneysBatch) {
 // History entries are read in visit time order and continuation queries in
 // insertion order, from both getters.
 TEST_F(JourneysDatabaseTest, ChildRowsAreReadInOrder) {
-  const base::Time time1 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-  const base::Time time2 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
-  const base::Time time3 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000));
+  const base::Time time1 = TimeFromMicros(1000);
+  const base::Time time2 = TimeFromMicros(2000);
+  const base::Time time3 = TimeFromMicros(3000);
   JourneyRow journey = CreateTestJourney("journey_1", "Trip to Paris",
                                          /*creation_time_micros=*/5000);
   journey.history_entries = {JourneyHistoryEntry(time3),
@@ -210,17 +208,13 @@ TEST_F(JourneysDatabaseTest, ChildRowsAreReadInOrder) {
 TEST_F(JourneysDatabaseTest, ChildRowsAttachToTheirOwnJourney) {
   JourneyRow paris = CreateTestJourney("journey_1", "Trip to Paris",
                                        /*creation_time_micros=*/5000);
-  paris.history_entries = {JourneyHistoryEntry(
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000)))};
+  paris.history_entries = {JourneyHistoryEntry(TimeFromMicros(1000))};
   paris.continuation_queries = {
       JourneyContinuationQuery("Hotels", "Find hotels in Paris")};
   JourneyRow london = CreateTestJourney("journey_2", "Trip to London",
                                         /*creation_time_micros=*/6000);
-  london.history_entries = {
-      JourneyHistoryEntry(
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000))),
-      JourneyHistoryEntry(
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000)))};
+  london.history_entries = {JourneyHistoryEntry(TimeFromMicros(2000)),
+                            JourneyHistoryEntry(TimeFromMicros(3000))};
   london.continuation_queries = {
       JourneyContinuationQuery("Museums", "Find museums in London"),
       JourneyContinuationQuery("Theatre", "Find shows in London")};
@@ -242,10 +236,8 @@ TEST_F(JourneysDatabaseTest, ChildRowsAttachToTheirOwnJourney) {
 }
 
 TEST_F(JourneysDatabaseTest, AddAndGetMinimalJourney) {
-  JourneyRow minimal(
-      "minimal_1", "Minimal Title",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(12345)));
+  JourneyRow minimal("minimal_1", "Minimal Title",
+                     /*creation_time=*/TimeFromMicros(12345));
 
   EXPECT_TRUE(journeys_db()->AddOrUpdateJourneys({minimal}));
   EXPECT_THAT(journeys_db()->GetJourney("minimal_1"),
@@ -262,11 +254,8 @@ TEST_F(JourneysDatabaseTest, UpdateJourneysBatch) {
   // Update with completely different history entries and continuation queries.
   journey.title = "Updated Title";
   journey.emoji = "🗼";
-  journey.history_entries = {
-      JourneyHistoryEntry(
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000))),
-      JourneyHistoryEntry(
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(4000)))};
+  journey.history_entries = {JourneyHistoryEntry(TimeFromMicros(3000)),
+                             JourneyHistoryEntry(TimeFromMicros(4000))};
   journey.continuation_queries = {
       JourneyContinuationQuery("Car rentals", "Rent a car in Paris")};
 
@@ -391,10 +380,8 @@ TEST_F(JourneysDatabaseTest, ReadErrorReturnsNoJourneys) {
 TEST_F(JourneysDatabaseTest, DuplicateHistoryEntriesHandledGracefully) {
   JourneyRow journey = CreateTestJourney("journey_1", "Trip with Duplicates",
                                          /*creation_time_micros=*/5000);
-  base::Time visit_time_1 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-  base::Time visit_time_2 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  base::Time visit_time_1 = TimeFromMicros(1000);
+  base::Time visit_time_2 = TimeFromMicros(2000);
   // Add duplicate visit timestamp 1000 (already in CreateTestJourney).
   journey.history_entries.emplace_back(visit_time_1);
 
