@@ -131,7 +131,8 @@ float CalculationExpressionColorChannelKeywordNode::Evaluate(
   if (evaluation_input.color_channel_keyword_values.empty()) {
     return 0;
   }
-  return evaluation_input.color_channel_keyword_values.at(channel_);
+  // If the value is missing ('none'), return zero.
+  return evaluation_input.color_channel_keyword_values.at(channel_).value_or(0);
 }
 
 // ------ CalculationExpressionPixelsAndPercentNode ------

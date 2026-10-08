@@ -20,6 +20,9 @@ class Length;
 // a fit-content/stretch basis to auto.
 enum class CalcSizeKeywordBehavior { kAsSpecified, kAsAuto };
 
+using ColorChannelKeywordMap =
+    base::flat_map<ColorChannelKeyword, std::optional<float>>;
+
 struct EvaluationInput {
   STACK_ALLOCATED();
 
@@ -30,7 +33,7 @@ struct EvaluationInput {
   std::optional<IntrinsicLengthEvaluator> intrinsic_evaluator = std::nullopt;
   CalcSizeKeywordBehavior calc_size_keyword_behavior =
       CalcSizeKeywordBehavior::kAsSpecified;
-  base::flat_map<ColorChannelKeyword, float> color_channel_keyword_values;
+  ColorChannelKeywordMap color_channel_keyword_values;
 };
 }  // namespace blink
 

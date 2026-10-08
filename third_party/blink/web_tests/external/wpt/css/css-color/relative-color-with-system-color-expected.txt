@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] light-dark color
-  assert_equals: expected "hsl(from currentcolor h s calc(32 + l))" but got "color(srgb 0.32 0.32 0.32)"
+  assert_equals: expected "hsl(from currentcolor h s calc(32 + l))" but got "hsl(none 0% 32%)"
 [FAIL] light-dark + sibling-index()
-  assert_equals: expected "hsl(from currentcolor h s 1)" but got "color(srgb 0.01 0.01 0.01)"
+  assert_equals: expected "hsl(from currentcolor h s 1)" but got "hsl(none 0% 1%)"
 Harness: the test ran to completion.
 

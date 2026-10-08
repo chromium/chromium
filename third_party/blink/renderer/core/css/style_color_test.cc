@@ -506,12 +506,15 @@ TEST_F(StyleColorTest, UnresolvedAlphaColor_Resolve) {
       StyleColor(red), none, length_resolver);
   Color resolved_none = alpha_none->Resolve(Color::kBlack);
   EXPECT_TRUE(resolved_none.AlphaIsNone());
-  // A legacy color space cannot represent a "none" alpha in its serialization,
-  // so the result is converted to the modern sRGB color space.
-  EXPECT_EQ(resolved_none.GetColorSpace(), Color::ColorSpace::kSRGB);
-  EXPECT_FLOAT_EQ(resolved_none.Param0(), 1.f);
-  EXPECT_FLOAT_EQ(resolved_none.Param1(), 0.f);
-  EXPECT_FLOAT_EQ(resolved_none.Param2(), 0.f);
+  // Since the color contains a missing / "none" component it is not considered
+  // to be "legacy syntax" anymore, but we represent "modern syntax" rgb()
+  // using the same color-space.
+  EXPECT_EQ(resolved_none.GetColorSpace(), Color::ColorSpace::kSRGBLegacy);
+  EXPECT_FALSE(resolved_none.IsLegacy());
+  // Color components should be preserved (legacy sRGB uses 0-255 range).
+  EXPECT_FLOAT_EQ(resolved_none.Param0(), red.Param0());
+  EXPECT_FLOAT_EQ(resolved_none.Param1(), red.Param1());
+  EXPECT_FLOAT_EQ(resolved_none.Param2(), red.Param2());
 
   // alpha(from semiTransparentBlue / alpha) => preserves alpha from origin
   CSSValue* alpha_keyword = CSSIdentifierValue::Create(CSSValueID::kAlpha);
