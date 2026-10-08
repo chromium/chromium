@@ -98,8 +98,8 @@ class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase,
   Persistent<PaintTimingRecordObserverClient> main_frame_client_;
 };
 
-class ImagePaintTimingDetectorTest : public ImagePaintTimingDetectorTestBase,
-                                     public PaintTestConfigurations {
+class ImagePaintTimingDetectorTest : public PaintTestConfigurations,
+                                     public ImagePaintTimingDetectorTestBase {
  public:
   ImagePaintTimingDetectorTest() = default;
 };
@@ -875,10 +875,68 @@ TEST_P(ImagePaintTimingDetectorTest, BackgroundImage_IgnoreBody) {
   EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
 }
 
+TEST_P(ImagePaintTimingDetectorTest, BackgroundImage_IgnoreBodyPseudoElement) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      body::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background-image: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+}
+
 TEST_P(ImagePaintTimingDetectorTest, BackgroundImage_IgnoreHtml) {
   SetMainFrameBodyContent("<style>html { background-image: url(" SIMPLE_IMAGE
                           ")}</style>");
   SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+}
+
+TEST_P(ImagePaintTimingDetectorTest, BackgroundImage_IgnoreHtmlPseudoElement) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      html::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background-image: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+}
+
+TEST_P(ImagePaintTimingDetectorTest,
+       BackgroundImage_IgnoreDisplayContentsPseudoElement) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      #target {
+        display: contents;
+      }
+      #target::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background-image: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  EXPECT_FALSE(target->GetLayoutObject());
+  ASSERT_TRUE(target->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_TRUE(target->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
   EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
 }
 
@@ -1363,6 +1421,41 @@ TEST_P(ImagePaintTimingDetectorTest, LargestIgnoredImageRemovedBeforePaint) {
     <img id="target"></img>
   )HTML");
   SetImageContent("target", 5, 5);
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+  EXPECT_TRUE(HasLargestIgnoredImage());
+
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(HasLargestIgnoredImage());
+
+  GetElementById("target")->remove();
+  EXPECT_FALSE(HasLargestIgnoredImage());
+
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 0u);
+}
+
+TEST_P(ImagePaintTimingDetectorTest,
+       LargestIgnoredPseudoElementBackgroundImageRemovedBeforePaint) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+      #target::before {
+        content: "";
+        display: block;
+        width: 5px;
+        height: 5px;
+        background-image: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
   EXPECT_TRUE(HasLargestIgnoredImage());

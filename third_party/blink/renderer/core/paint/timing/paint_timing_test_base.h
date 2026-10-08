@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -26,6 +27,8 @@
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -207,6 +210,7 @@ class PaintTimingTestBase : public RenderingTest {
   }
 
   void TearDown() override {
+    MemoryCache::Get()->EvictResources();
     mock_callback_manager_->Shutdown();
     RenderingTest::TearDown();
   }
@@ -302,6 +306,28 @@ class PaintTimingTestBase : public RenderingTest {
       ImageStatus status = ImageStatus::kLoaded) {
     return SetImageContentImpl(ChildDocument().getElementById(AtomicString(id)),
                                width, height, bytes, status);
+  }
+
+  // Creates an `ImageResource` for `url` and adds it to `MemoryCache` so CSS
+  // `url(...)` references (e.g. `background-image`) resolve to it in tests.
+  ImageResourceContent* AddImageToMemoryCache(const char* url,
+                                              int width,
+                                              int height,
+                                              int bytes,
+                                              ImageStatus status) {
+    ImageResourceContent* content =
+        CreateImageForTest(width, height, bytes, status);
+    ResourceRequest request{KURL(url)};
+    request.SetRequestorOrigin(
+        GetDocument().GetExecutionContext()->GetSecurityOrigin());
+    auto* image_resource = MakeGarbageCollected<ImageResource>(
+        request, ResourceLoaderOptions(/*world_for_csp=*/nullptr), content);
+    image_resource->SetStatus(status == ImageStatus::kLoaded
+                                  ? ResourceStatus::kCached
+                                  : ResourceStatus::kPending);
+    image_resource->SetCacheIdentifier(MemoryCache::DefaultCacheIdentifier());
+    MemoryCache::Get()->Add(image_resource);
+    return content;
   }
 
  private:

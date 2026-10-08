@@ -168,7 +168,7 @@ void LargestContentfulPaintManager::OnImageRemoved(const LayoutObject& object,
   // `LayoutObject`s as well since the `MediaTiming` can be shared.
   ImageRecord* record = GetLargestIgnoredImageIfNotRemoved();
   if (!record || (record->GetMediaTiming() == timing &&
-                  record->GetLayoutObject() == &object)) {
+                  record->ImageGeneratingLayoutObject() == &object)) {
     largest_ignored_image_ = nullptr;
   }
 }

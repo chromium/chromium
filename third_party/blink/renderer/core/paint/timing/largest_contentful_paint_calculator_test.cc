@@ -479,6 +479,47 @@ TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
   trace_analyzer::Stop();
 }
 
+TEST_F(LargestContentfulPaintCalculatorTest,
+       RemoveLargestPendingPseudoElementBackgroundImage) {
+  AddImageToMemoryCache("https://example.com/test.png", 100, 300, 800,
+                        ImageStatus::kPending);
+
+  SetMainFrameBodyContent(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #large::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 300px;
+        background-image: url('https://example.com/test.png');
+      }
+    </style>
+    <div><img id='small' width=3 height=3 /></div>
+    <div id='large'></div>
+  )HTML");
+  SetImageContent("small", 3, 3, 18);
+  SimulateRenderingAndPresentationTime();
+  auto initial_presentation_time = base::TimeTicks::Now();
+
+  EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 30000u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_time, 0u);
+  EXPECT_EQ(LcpDetailsForReporting().merged_unclamped_paint_time,
+            base::TimeTicks());
+
+  AdvanceClock(base::Milliseconds(100));
+
+  GetDocument().getElementById(AtomicString("large"))->remove();
+  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
+  EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
+  EXPECT_GT(LcpDetailsForReporting().image_paint_time, 0u);
+  EXPECT_EQ(LcpDetailsForReporting().merged_unclamped_paint_time,
+            initial_presentation_time);
+  trace_analyzer::Stop();
+}
+
 TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   // TODO(crbug.com/466437443): The divs are necessary here to make the images
   // layout vertically since otherwise the (union of the) spaces between images

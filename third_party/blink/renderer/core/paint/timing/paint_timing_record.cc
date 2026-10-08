@@ -19,7 +19,7 @@ PaintTimingRecord::PaintTimingRecord(Node* node,
                                      const gfx::Rect& frame_visual_rect,
                                      const gfx::RectF& root_visual_rect)
     : node_(node),
-      layout_object_(node->GetLayoutObject()),
+      node_layout_object_(node->GetLayoutObject()),
       root_visual_rect_(root_visual_rect),
       lcp_rect_info_(PaintTimingVisualizer::IsTracingEnabled()
                          ? std::make_optional<LCPRectInfo>(
@@ -31,7 +31,7 @@ PaintTimingRecord::PaintTimingRecord(Node* node,
 
 void PaintTimingRecord::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
-  visitor->Trace(layout_object_);
+  visitor->Trace(node_layout_object_);
   visitor->Trace(soft_navigation_context_);
 }
 
@@ -50,7 +50,7 @@ void PaintTimingRecord::PopulateTraceValue(TracedValue& value) const {
 
 bool PaintTimingRecord::WasNodeRemoved() const {
   return !node_ || !node_->GetLayoutObject() ||
-         node_->GetLayoutObject() != layout_object_;
+         node_->GetLayoutObject() != node_layout_object_;
 }
 
 TextRecord::TextRecord(Node* node,
@@ -64,12 +64,14 @@ TextRecord::TextRecord(Node* node,
 
 ImageRecord::ImageRecord(
     Node* node,
+    const LayoutObject* image_generating_layout_object,
     const MediaTiming* new_media_timing,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
     MediaRecordIdHash hash,
     const EffectiveVisualSizeResult& effective_visual_size_result)
     : PaintTimingRecord(node, frame_visual_rect, root_visual_rect),
+      image_generating_layout_object_(image_generating_layout_object),
       media_timing_(new_media_timing),
       hash_(hash),
       is_cors_same_origin_(new_media_timing &&
@@ -86,6 +88,7 @@ std::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {
 }
 
 void ImageRecord::Trace(Visitor* visitor) const {
+  visitor->Trace(image_generating_layout_object_);
   visitor->Trace(media_timing_);
   PaintTimingRecord::Trace(visitor);
 }

@@ -32,8 +32,8 @@ BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box)
     : BoxPainterBase(box.GetDocument(), box.StyleRef(), GetNode(box)),
       box_model_(box) {}
 
-Node* BoxModelObjectPainter::ImageGeneratingNode() const {
-  return box_model_.GeneratingNode();
+const LayoutObject* BoxModelObjectPainter::PaintTimingLayoutObject() const {
+  return &box_model_;
 }
 
 PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(

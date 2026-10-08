@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -38,6 +39,11 @@
 namespace blink {
 
 namespace {
+
+bool IsBodyOrDocumentElement(const LayoutObject& object) {
+  return IsA<LayoutView>(object) || object.IsBody() ||
+         object.IsDocumentElement();
+}
 
 bool IsSufficientlyLoadedForReporting(const MediaTiming& media_timing) {
   if (media_timing.IsSufficientContentLoadedForPaint()) {
@@ -84,18 +90,32 @@ void ImagePaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
 }
 
 void ImagePaintTimingDetector::RecordImage(
-    const LayoutObject& object,
+    const LayoutObject& image_layout_object,
     const gfx::Size& intrinsic_size,
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const StyleImage* style_image,
     const gfx::Rect& image_border) {
-  Node* node = object.GetNode();
-  if (!node) {
+  Node* node = style_image ? image_layout_object.GeneratingNode()
+                           : image_layout_object.GetNode();
+  // `node` can have a null `LayoutObject` if `image_layout_object` is a
+  // pseudo-element (e.g. `::before` with a background image) whose originating
+  // element has `display: contents`.
+  if (!node || !node->GetLayoutObject()) {
     return;
   }
 
-  if (paint_timing::ShouldIgnoreImageContentForPaintTiming(object,
+  // Background images attached to <body> or <html> (or a pseudo-element
+  // thereof) are ignored.
+  //
+  // TODO(crbug.com/571179206): Consider moving this to
+  // `PaintTimingDetector::NotifyBackgroundImagePaint` once generating node is
+  // used for all images.
+  if (style_image && IsBodyOrDocumentElement(*node->GetLayoutObject())) {
+    return;
+  }
+
+  if (paint_timing::ShouldIgnoreImageContentForPaintTiming(image_layout_object,
                                                            &media_timing)) {
     return;
   }
@@ -116,11 +136,11 @@ void ImagePaintTimingDetector::RecordImage(
   if (PaintTimingVisualizer* visualizer =
           paint_timing_detector_->Visualizer()) {
     visualizer->DumpImageDebuggingRect(
-        object, mapped_visual_rect,
+        image_layout_object, mapped_visual_rect,
         media_timing.IsSufficientContentLoadedForPaint(), media_timing.Url());
   }
 
-  MediaRecordId record_id(&object, &media_timing);
+  MediaRecordId record_id(&image_layout_object, &media_timing);
   MediaRecordIdHash record_id_hash = record_id.GetHash();
 
   // `record` will be non-null if the first paint for the image was recorded but
@@ -146,7 +166,7 @@ void ImagePaintTimingDetector::RecordImage(
   // in that case.
   if (record && record->GetMediaTiming() != &media_timing &&
       media_timing.IsVideo()) {
-    NotifyImageRemoved(object, record->GetMediaTiming());
+    NotifyImageRemoved(image_layout_object, record->GetMediaTiming());
     record = nullptr;
   }
 
@@ -169,7 +189,7 @@ void ImagePaintTimingDetector::RecordImage(
     // Compute the effective visual size for LCP and ICP.
     EffectiveVisualSizeResult effective_visual_size_result =
         LargestContentfulPaintCalculator::ComputeEffectiveVisualSize(
-            object, media_timing, image_border, mapped_visual_rect,
+            image_layout_object, media_timing, image_border, mapped_visual_rect,
             intrinsic_size, ViewportSize(), *paint_timing_detector_);
 
     // Don't process the image yet if it is invisible, as it may later become
@@ -183,8 +203,8 @@ void ImagePaintTimingDetector::RecordImage(
     }
 
     record = MakeGarbageCollected<ImageRecord>(
-        node, &media_timing, image_border, mapped_visual_rect,
-        record_id.GetHash(), effective_visual_size_result);
+        node, &image_layout_object, &media_timing, image_border,
+        mapped_visual_rect, record_id.GetHash(), effective_visual_size_result);
 
     if (ignore_paint_depth > 0) {
       if (auto* manager = GetLargestContentfulPaintManager()) {

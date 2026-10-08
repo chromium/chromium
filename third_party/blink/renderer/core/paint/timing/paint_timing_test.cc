@@ -17,7 +17,10 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 using testing::_;
 using testing::A;
@@ -765,6 +768,102 @@ TEST_P(PaintTimingOutOfOrderPresentationTimeTest, TestOutOfOrderHistogram) {
   histogram_tester.ExpectTimeBucketCount(
       kPresentationTimeDeltaMetricName, presentation_time3 - presentation_time1,
       1);
+}
+
+// Regression test for crbug.com/557111456: when a pseudo-element with a pending
+// background image is removed, its pending ImageRecord must be removed from
+// `pending_images_` so that if its originating element is garbage collected and
+// a new element reuses the layout object address, painting the loaded image
+// creates a new record rather than reusing a stale record with a null Node*.
+TEST_F(PaintTimingTest, PseudoElementPendingBackgroundImage) {
+  Persistent<ImageResourceContent> content = AddImageToMemoryCache(
+      "https://example.com/test.png", 100, 100, 0, ImageStatus::kPending);
+
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      #target::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background-image: url('https://example.com/test.png');
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  WeakPersistent<Element> target = GetElementById("target");
+  ASSERT_TRUE(target);
+
+  WeakPersistent<ImageRecord> first_paint_record;
+  EXPECT_CALL(Client(), OnElementFirstContentfulPaint(_))
+      .WillOnce([&](ImageRecord* record) { first_paint_record = record; });
+  EXPECT_CALL(Client(), OnPaintFinished(IsEmpty(), IsEmpty()));
+  SimulateRendering();
+  VerifyAndClearExpectations();
+
+  ASSERT_TRUE(first_paint_record);
+  EXPECT_EQ(first_paint_record->GetNode(), target);
+
+  // Ensure `SoftNavigationHeuristics` exists to observe paint timing
+  // notifications.
+  EXPECT_TRUE(GetDocument().domWindow()->GetSoftNavigationHeuristics());
+
+  // Removing target detaches the ::before pseudo-element and notifies that the
+  // image was removed for the pseudo-element's LayoutObject.
+  const LayoutObject* removed_layout_object = nullptr;
+  EXPECT_CALL(Client(), OnImageRemoved(_, _))
+      .WillOnce(
+          [&](const LayoutObject& object, const MediaTiming* media_timing) {
+            removed_layout_object = &object;
+          });
+
+  // Remove the target element from the DOM and run GC to collect it.
+  target->remove();
+  EXPECT_EQ(removed_layout_object,
+            first_paint_record->ImageGeneratingLayoutObject());
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(target);
+  EXPECT_FALSE(first_paint_record);
+
+  // Now create a new target element with the same style.
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      #target::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background-image: url('https://example.com/test.png');
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Element* new_target = GetElementById("target");
+  ASSERT_TRUE(new_target);
+
+  // Mark the image load as completed.
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
+  buffer->Append(base::span_from_cstring(SIMPLE_IMAGE));
+  std::ignore = content->UpdateImage(
+      buffer, ResourceStatus::kCached, ImageResourceContent::kUpdateImage,
+      /*all_data_received=*/true, /*is_multipart=*/false);
+
+  ImageRecord* first_paint_record2 = nullptr;
+  ImageRecord* painted_record = nullptr;
+  EXPECT_CALL(Client(), OnElementFirstContentfulPaint(_))
+      .WillOnce([&](ImageRecord* record) { first_paint_record2 = record; });
+  EXPECT_CALL(Client(),
+              OnPaintFinished(ElementsAre(ForNode(new_target)), IsEmpty()))
+      .WillOnce([&](const HeapVector<Member<ImageRecord>>& image_records,
+                    const HeapVector<Member<TextRecord>>&) {
+        painted_record = image_records[0].Get();
+      });
+  SimulateRendering();
+
+  ASSERT_TRUE(painted_record);
+  EXPECT_EQ(painted_record, first_paint_record2);
+  EXPECT_EQ(painted_record->GetNode(), new_target);
 }
 
 }  // namespace blink

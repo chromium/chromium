@@ -152,23 +152,29 @@ void ElementTiming::NotifyImagePaint(
 }
 
 void ElementTiming::NotifyBackgroundImagePaint(
-    Node& generating_node,
+    const LayoutObject& image_layout_object,
     const StyleImage& background_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
+  Node* generating_node = image_layout_object.GeneratingNode();
+  // `generating_node` can have a null `LayoutObject` if `image_layout_object`
+  // is a pseudo-element (e.g. `::before` with a background image) whose
+  // originating element has `display: contents`.
+  if (!generating_node || !generating_node->GetLayoutObject()) {
+    return;
+  }
   const ImageResourceContent* cached_image = background_image.CachedImage();
   if (!cached_image) {
     return;
   }
-  NotifyImagePaintedInternal(generating_node,
-                             CHECK_DEREF(generating_node.GetLayoutObject()),
+  NotifyImagePaintedInternal(*generating_node, image_layout_object,
                              *cached_image, current_paint_chunk_properties,
                              image_border, &background_image);
 }
 
 void ElementTiming::NotifyImagePaintedInternal(
     Node& generating_node,
-    const LayoutObject& layout_object,
+    const LayoutObject& image_layout_object,
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border,
@@ -196,23 +202,23 @@ void ElementTiming::NotifyImagePaintedInternal(
   // Since the image is loaded, mark it as recorded now so we don't reconsider
   // it later. If the content has already been recorded, there's nothing to do.
   auto result = recorded_images_.insert(
-      MediaRecordId::GenerateHash(&layout_object, cached_image));
+      MediaRecordId::GenerateHash(&image_layout_object, cached_image));
   if (!result.is_new_entry) {
     return;
   }
 
   base::TimeTicks load_time =
       style_image ? image_paint_timing_detector_->LoadTime(*style_image)
-                  : image_paint_timing_detector_->LoadTime(&layout_object,
+                  : image_paint_timing_detector_->LoadTime(&image_layout_object,
                                                            cached_image);
   QueueElementTimingInfoForReportingIfNeeded(
-      generating_node, layout_object, *cached_image,
+      generating_node, image_layout_object, *cached_image,
       current_paint_chunk_properties, image_border, load_time);
 }
 
 void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
     Node& generating_node,
-    const LayoutObject& layout_object,
+    const LayoutObject& image_layout_object,
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border,
@@ -229,7 +235,7 @@ void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
   // This is called during paint, and we should not be painting detached
   // frames.
   CHECK(frame);
-  CHECK_EQ(frame, layout_object.GetDocument().GetFrame());
+  CHECK_EQ(frame, image_layout_object.GetDocument().GetFrame());
 
   // Non-elements and shadow tree nodes should have been filtered out by
   // `IsNeededForElementOrContainerTiming()`.
@@ -237,7 +243,7 @@ void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
   CHECK(!generating_node.IsInShadowTree());
 
   RespectImageOrientationEnum respect_orientation =
-      layout_object.StyleRef().ImageOrientation();
+      image_layout_object.StyleRef().ImageOrientation();
 
   gfx::RectF intersection_rect = ComputeIntersectionRect(
       frame, image_border, current_paint_chunk_properties);

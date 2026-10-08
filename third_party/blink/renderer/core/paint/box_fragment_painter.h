@@ -109,8 +109,8 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
   PhysicalRect AdjustRectForScrolledContent(GraphicsContext&,
                                             const PhysicalBoxStrut& borders,
                                             const PhysicalRect&) const override;
-  Node* ImageGeneratingNode() const override {
-    return box_fragment_.GeneratingNode();
+  const LayoutObject* PaintTimingLayoutObject() const override {
+    return box_fragment_.GetLayoutObject();
   }
 
  private:

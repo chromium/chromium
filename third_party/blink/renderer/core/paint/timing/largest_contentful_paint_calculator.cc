@@ -556,7 +556,7 @@ void LargestContentfulPaintCalculator::OnImageRemoved(
     return;
   }
   if (largest_pending_image_->GetMediaTiming() == timing &&
-      largest_pending_image_->GetLayoutObject() == &object) {
+      largest_pending_image_->ImageGeneratingLayoutObject() == &object) {
     largest_pending_image_ = nullptr;
   }
 }

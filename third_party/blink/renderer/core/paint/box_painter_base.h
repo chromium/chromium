@@ -33,6 +33,7 @@ class FillLayer;
 class GraphicsContext;
 class ImageResourceObserver;
 class LayoutBox;
+class LayoutObject;
 class Node;
 struct BorderShapeReferenceRects;
 struct PaintInfo;
@@ -187,13 +188,12 @@ class BoxPainterBase {
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space,
       PaintFlags paint_flags) const = 0;
-  // The node that the paint-timing path attributes a fill-layer image to,
-  // resolved by the subclass with LayoutObject::GeneratingNode(). Kept separate
-  // from `node_` so DevTools and image-animation paths continue to see the raw
-  // box node. Only called when a layer actually draws an image: resolving it
-  // walks the layout tree and dereferences the Node, and box painters are
-  // constructed for every box in every paint phase.
-  virtual Node* ImageGeneratingNode() const = 0;
+  // Returns the `LayoutObject` that generated the background image. Should only
+  // be used for paint timing, which currently uses a LayoutObject-based
+  // architecture. This should not be used in general (see `BoxPainterBase`
+  // class comment).
+  virtual const LayoutObject* PaintTimingLayoutObject() const = 0;
+
   static void PaintInsetBoxShadow(
       const PaintInfo&,
       const ContouredRect&,

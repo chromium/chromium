@@ -71,7 +71,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // Records an image paint for <img> tags, background images, <video> poster
   // images, and first video frames. The `StyleImage` will be nullptr unless
   // there is a background image.
-  void RecordImage(const LayoutObject&,
+  void RecordImage(const LayoutObject& image_layout_object,
                    const gfx::Size& intrinsic_size,
                    const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,

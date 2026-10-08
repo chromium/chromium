@@ -223,6 +223,62 @@ TEST_P(ElementTimingTest, BackgroundImageRemoved) {
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
+TEST_P(ElementTimingTest, PseudoElementBackgroundImageRemoved) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      #target::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+    <div elementtiming="time-my-background-image" id="target"></div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  Element* before = target->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+  LayoutObject* object = before->GetLayoutObject();
+  ASSERT_TRUE(object);
+  ImageResourceContent* content =
+      object->StyleRef().BackgroundLayers().GetImage()->CachedImage();
+  EXPECT_EQ(RecordedImagesSize(), 1u);
+  EXPECT_TRUE(IsRecorded(object, content));
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
+
+  target->remove();
+  EXPECT_EQ(RecordedImagesSize(), 0u);
+}
+
+TEST_P(ElementTimingTest, PseudoElementBackgroundImage_IgnoreDisplayContents) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      #target {
+        display: contents;
+      }
+      #target::before {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 100px;
+        background: url()HTML" SIMPLE_IMAGE R"HTML();
+      }
+    </style>
+    <div elementtiming="time-my-background-image" id="target"></div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  EXPECT_FALSE(target->GetLayoutObject());
+  ASSERT_TRUE(target->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_TRUE(target->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
+  EXPECT_EQ(RecordedImagesSize(), 0u);
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
 TEST_P(ElementTimingTest, LateAddedElementTimingBeforePaint) {
   SetMainFrameBodyContent(R"HTML(
     <img id="target" style='width: 100px; height: 100px;'/>
