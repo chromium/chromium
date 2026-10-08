@@ -52,6 +52,10 @@ class ToolSchemaBuilder {
   ToolSchemaBuilder& AddNumberProperty(std::string_view name,
                                        std::string_view description);
 
+  // Adds a required boolean property to the schema.
+  ToolSchemaBuilder& AddBooleanProperty(std::string_view name,
+                                        std::string_view description);
+
   // Consumes the accumulated properties and returns the top-level JSON Schema
   // object dictionary. Call at most once: `Build()` moves out the builder's
   // state, so the builder must not be reused afterwards.

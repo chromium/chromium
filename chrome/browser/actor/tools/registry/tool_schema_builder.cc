@@ -27,6 +27,7 @@ constexpr std::string_view kTypeObject = "object";
 constexpr std::string_view kTypeString = "string";
 constexpr std::string_view kTypeInteger = "integer";
 constexpr std::string_view kTypeNumber = "number";
+constexpr std::string_view kTypeBoolean = "boolean";
 
 base::DictValue CreateProperty(std::string_view type,
                                std::string_view description) {
@@ -80,6 +81,13 @@ ToolSchemaBuilder& ToolSchemaBuilder::AddNumberProperty(
     std::string_view name,
     std::string_view description) {
   AddPropertyImpl(name, CreateProperty(kTypeNumber, description));
+  return *this;
+}
+
+ToolSchemaBuilder& ToolSchemaBuilder::AddBooleanProperty(
+    std::string_view name,
+    std::string_view description) {
+  AddPropertyImpl(name, CreateProperty(kTypeBoolean, description));
   return *this;
 }
 

@@ -112,5 +112,23 @@ TEST(ToolSchemaBuilderTest, AddsNumberProperty) {
   EXPECT_EQ(schema, expected);
 }
 
+TEST(ToolSchemaBuilderTest, AddsBooleanProperty) {
+  base::DictValue schema =
+      ToolSchemaBuilder()
+          .AddBooleanProperty("submit", "Whether to submit.")
+          .Build();
+  base::DictValue expected =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "submit", base::DictValue()
+                                 .Set("type", "boolean")
+                                 .Set("description", "Whether to submit.")))
+          .Set("required", base::ListValue().Append("submit"))
+          .Set("additionalProperties", false);
+  EXPECT_EQ(schema, expected);
+}
+
 }  // namespace
 }  // namespace actor
