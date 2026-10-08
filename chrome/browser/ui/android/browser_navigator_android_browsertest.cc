@@ -723,6 +723,27 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Async_Disposition_CurrentTab_TabsClosedBeforeCallback) {
+  StartAtURL("/title1.html");
+
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.source_contents = nullptr;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+
+  // Close all tabs after Navigate() has queued the async navigation task,
+  // before GetTabAndPerformNavigationAsync() executes.
+  CloseAllTabs();
+  ASSERT_EQ(0, tab_list_->GetTabCount());
+
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  EXPECT_FALSE(handle);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Async_Navigate_ProfileShutdown) {
   const GURL url1 = StartAtURL("/title1.html");
 
@@ -1282,7 +1303,6 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_EQ(target_url,
             tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }
-
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_SwitchToTab_NoMatch_NewForegroundTab_Async) {

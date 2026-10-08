@@ -21,7 +21,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -3774,17 +3773,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
             actor::ActorTask::State::kWaitingOnUser);
 }
 
-// TODO(crbug.com/570150703): Consistently failing on Android Desktop.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-#define MAYBE_testPopupOpens DISABLED_testPopupOpens
-#else
-#define MAYBE_testPopupOpens testPopupOpens
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testPopupOpens) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_EQ(GetPopupCount(), 0);
+  content::TestNavigationObserver observer(GURL("https://www.chromium.org"));
+  observer.WatchExistingWebContents();
+  observer.StartWatchingNewWebContents();
   ExecuteJsTest();
-  ASSERT_OK(RunUntilEqual([&]() { return GetPopupCount(); }, 1));
+  observer.Wait();
+  EXPECT_EQ(GetPopupCount(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testWindowOpenOpensTab) {

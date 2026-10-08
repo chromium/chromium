@@ -441,7 +441,9 @@ tabs::TabInterface* GetOrCreateTabForDisposition(NavigateParams* params) {
       // A new tab is already created when the new window is created on Android.
       // Just get the active tab.
       tabs::TabInterface* active_tab = tab_model->GetActiveTab();
-      CHECK(active_tab);
+      if (!active_tab) {
+        return nullptr;
+      }
       params->source_contents = active_tab->GetContents();
       return active_tab;
     }
