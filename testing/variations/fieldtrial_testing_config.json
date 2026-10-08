@@ -9099,6 +9099,22 @@
             ]
         }
     ],
+    "HarfBuzzZeroCopyFontTable": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HarfBuzzZeroCopyFontTable"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsAudio": [
         {
             "platforms": [
@@ -9543,6 +9559,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HttpsFirstModeV2ForTypicallySecureUsers"
+                    ]
+                }
+            ]
+        }
+    ],
+    "I18nOptimizations": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "I18nOptimizations"
                     ]
                 }
             ]
@@ -13857,6 +13893,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PreFirstRunDesktopRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PreReadIcuData": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreReadIcuData"
                     ]
                 }
             ]
