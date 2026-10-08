@@ -76,8 +76,8 @@ suite('AppReceivesToolbarChanges', () => {
   }
 
   function emitLineSpacing(spacingEnumValue: number): void {
-    visualBrowserProxy.onLineSpacingChange(spacingEnumValue);
-    emitEvent(app, ToolbarEvent.LINE_SPACING);
+    emitEvent(
+        app, ToolbarEvent.LINE_SPACING, {detail: {data: spacingEnumValue}});
   }
 
   function emitLetterSpacing(spacingEnumValue: number): void {
@@ -760,12 +760,14 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('restoreSettingsFromPrefs updates toolbar settings', async () => {
+    visualBrowserProxy.lineSpacing = 2;
     visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
 
     visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
     await microtasksFinished();
 
     const toolbar = app.$.toolbar;
+    assertEquals(2, toolbar.lineSpacing);
     assertEquals(visualBrowserProxy.darkTheme, toolbar.theme);
   });
 
@@ -924,6 +926,18 @@ suite('AppReceivesToolbarChanges', () => {
           ReadAnythingSettingsChange.THEME_CHANGE,
           await metrics.whenCalled('recordTextSettingsChange'));
       assertEquals(visualBrowserProxy.darkTheme, app.$.toolbar.theme);
+    });
+
+    test('line spacing', async () => {
+      emitLineSpacing(2);
+      await microtasksFinished();
+
+      assertEquals(
+          2, await visualBrowserProxy.whenCalled('onLineSpacingChange'));
+      assertEquals(
+          ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
+          await metrics.whenCalled('recordTextSettingsChange'));
+      assertEquals(2, app.$.toolbar.lineSpacing);
     });
   });
 

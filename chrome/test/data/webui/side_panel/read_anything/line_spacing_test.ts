@@ -5,27 +5,20 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {LineSpacingMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {DEFAULT_SETTINGS, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('LineSpacing', () => {
   let lineSpacingMenu: LineSpacingMenuElement;
-  let metrics: TestMetricsBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
-
-  suiteSetup(() => {
-    assertTestSettingsAreNotDefaultSettings();
-  });
 
   setup(() => {
     const result = setupTestEnvironment();
     visualBrowserProxy = result.visualBrowserProxy;
-    metrics = result.metrics;
 
     lineSpacingMenu = document.createElement('line-spacing-menu');
     document.body.appendChild(lineSpacingMenu);
@@ -35,45 +28,12 @@ suite('LineSpacing', () => {
     assertCheckMarksForDropdown(lineSpacingMenu);
   });
 
-
-
-  test('spacing change', async () => {
-    const veryLoose = visualBrowserProxy.getVeryLooseLineSpacing();
-    const numberOfItems = 3;
-
-    const closePromise1 =
-        eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
+  test('spacing change closes all menus', async () => {
+    const closePromise = eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
     lineSpacingMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.LINE_SPACING, {detail: {data: veryLoose}}));
-    await closePromise1;
-    assertEquals(
-        veryLoose, await visualBrowserProxy.whenCalled('onLineSpacingChange'));
-
-    visualBrowserProxy.resetResolver('onLineSpacingChange');
-    const loose = visualBrowserProxy.getLooseLineSpacing();
-    const closePromise2 =
-        eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
-    lineSpacingMenu.$.menu.dispatchEvent(
-        new CustomEvent(ToolbarEvent.LINE_SPACING, {detail: {data: loose}}));
-    await closePromise2;
-    assertEquals(
-        loose, await visualBrowserProxy.whenCalled('onLineSpacingChange'));
-
-    visualBrowserProxy.resetResolver('onLineSpacingChange');
-    const standard = visualBrowserProxy.getStandardLineSpacing();
-    const closePromise3 =
-        eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
-    lineSpacingMenu.$.menu.dispatchEvent(
-        new CustomEvent(ToolbarEvent.LINE_SPACING, {detail: {data: standard}}));
-    await closePromise3;
-    assertEquals(
-        standard, await visualBrowserProxy.whenCalled('onLineSpacingChange'));
-
-    assertEquals(
-        ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
-        await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(
-        numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
+        ToolbarEvent.LINE_SPACING,
+        {detail: {data: visualBrowserProxy.getVeryLooseLineSpacing()}}));
+    await closePromise;
   });
 
   test('restores saved spacing option', async () => {
@@ -81,10 +41,7 @@ suite('LineSpacing', () => {
     const startingIndex = lineSpacingMenu.$.menu.currentSelectedIndex;
     assertNotEquals(spacing, startingIndex);
 
-    lineSpacingMenu.settingsPrefs = {
-      ...DEFAULT_SETTINGS,
-      lineSpacing: spacing,
-    };
+    lineSpacingMenu.lineSpacing = spacing;
     await microtasksFinished();
 
     assertNotEquals(startingIndex, lineSpacingMenu.$.menu.currentSelectedIndex);
@@ -93,10 +50,7 @@ suite('LineSpacing', () => {
   test('does nothing if saved spacing is the same', async () => {
     const startingIndex = lineSpacingMenu.$.menu.currentSelectedIndex;
 
-    lineSpacingMenu.settingsPrefs = {
-      ...TEST_RANDOM_VALUE_SETTINGS,
-      lineSpacing: 0,
-    };
+    lineSpacingMenu.lineSpacing = 0;
     await microtasksFinished();
 
     assertEquals(startingIndex, lineSpacingMenu.$.menu.currentSelectedIndex);

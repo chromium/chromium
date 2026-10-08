@@ -25,6 +25,7 @@ export function getHtml(this: AppElement) {
         .isReadAloudPlayable="${this.computeIsReadAloudPlayable()}"
         .selectedVoice="${this.selectedVoice_}"
         .settingsPrefs="${this.settingsPrefs_}" .theme="${this.theme_}"
+        .lineSpacing="${this.lineSpacing_}"
         .enabledLangs="${this.enabledLangs_}"
         .availableVoices="${this.availableVoices_}"
         .previewVoicePlaying="${this.previewVoicePlaying_}"

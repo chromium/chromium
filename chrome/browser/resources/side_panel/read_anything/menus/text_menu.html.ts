@@ -11,7 +11,6 @@ export function getHtml(this: TextMenuElement) {
 <grouped-action-menu id="menu" label="$i18n{textSettingsTitle}"
     .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
     .closeOnClick="${false}" @font-change="${this.onFontChange_}"
-    @line-spacing-change="${this.onLineSpacingChange_}"
     @letter-spacing-change="${this.onLetterSpacingChange_}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;

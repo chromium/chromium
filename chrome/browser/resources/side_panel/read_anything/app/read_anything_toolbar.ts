@@ -119,6 +119,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       previewVoicePlaying: {type: Object},
       settingsPrefs: {type: Object},
       theme: {type: Number},
+      lineSpacing: {type: Number},
       areFontsLoaded_: {type: Boolean},
       textStyleOptions_: {type: Array},
       hideSpinner_: {type: Boolean},
@@ -158,6 +159,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   // Current user settings, owned by the app and passed down to the menus.
   accessor theme: number = 0;
+  accessor lineSpacing: number = 0;
   accessor selectedVoice: SpeechSynthesisVoice|null = null;
   accessor pageLanguage: string = '';
   accessor isImmersiveMode: boolean = false;

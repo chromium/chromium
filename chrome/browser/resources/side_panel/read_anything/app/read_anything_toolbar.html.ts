@@ -115,7 +115,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .theme="${this.theme}" @close-all-menus="${this.onCloseAllMenus_}">
   </color-menu>
   <line-spacing-menu id="lineSpacingMenu" class="settings-submenu"
-      .nonModal="${true}" .settingsPrefs="${this.settingsPrefs}"
+      .nonModal="${true}" .lineSpacing="${this.lineSpacing}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </line-spacing-menu>
   <letter-spacing-menu id="letterSpacingMenu" class="settings-submenu"
@@ -150,7 +150,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </audio-menu>
   <text-menu id="textMenu" class="settings-submenu" non-modal
-      .settingsPrefs="${this.settingsPrefs}"
+      .settingsPrefs="${this.settingsPrefs}" .lineSpacing="${this.lineSpacing}"
       .areFontsLoaded="${this.areFontsLoaded_}"
       .pageLanguage="${this.pageLanguage}"
       @close-all-menus="${this.onCloseAllMenus_}">

@@ -42,6 +42,7 @@ export class TextMenuElement extends TextMenuElementBase implements
   static override get properties() {
     return {
       settingsPrefs: {type: Object},
+      lineSpacing: {type: Number},
       nonModal: {type: Boolean},
       areFontsLoaded: {type: Boolean},
       pageLanguage: {type: String},
@@ -50,6 +51,7 @@ export class TextMenuElement extends TextMenuElementBase implements
   }
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor lineSpacing: number = 0;
   accessor nonModal: boolean = false;
   accessor areFontsLoaded: boolean = false;
   accessor pageLanguage: string = '';
@@ -137,6 +139,7 @@ export class TextMenuElement extends TextMenuElementBase implements
     }
 
     if (changedProperties.has('settingsPrefs') ||
+        changedProperties.has('lineSpacing') ||
         changedProperties.has('pageLanguage') ||
         changedProperties.has('areFontsLoaded')) {
       this.updateOptionsForFont_();
@@ -160,13 +163,6 @@ export class TextMenuElement extends TextMenuElementBase implements
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
   }
 
-  protected onLineSpacingChange_(event: CustomEvent<{data: number}>) {
-    const newSpacing = event.detail.data;
-    this.visualBrowserProxy_.onLineSpacingChange(newSpacing);
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE);
-  }
-
   protected onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
     const newSpacing = event.detail.data;
     this.visualBrowserProxy_.onLetterSpacingChange(newSpacing);
@@ -182,9 +178,8 @@ export class TextMenuElement extends TextMenuElementBase implements
   }
 
   private updateOptionsForLineSpacing_() {
-    const currentSpacing = this.settingsPrefs.lineSpacing;
     this.lineSpacingOptions_.forEach(option => {
-      option.selected = option.data === currentSpacing;
+      option.selected = option.data === this.lineSpacing;
     });
   }
 

@@ -84,6 +84,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       isAudioCurrentlyPlaying_: {type: Boolean},
       enabledLangs_: {type: Array},
       theme_: {type: Number},
+      lineSpacing_: {type: Number},
       settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
@@ -169,6 +170,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   // Current user settings, mirrored from the browser proxies by
   // syncSettings_() and passed down to the toolbar.
   protected accessor theme_: number = 0;
+  protected accessor lineSpacing_: number = 0;
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
@@ -231,7 +233,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     this.settingsPrefs_ = {
       letterSpacing: this.visualBrowserProxy_.getLetterSpacing(),
-      lineSpacing: this.visualBrowserProxy_.getLineSpacing(),
       speechRate: this.audioBrowserProxy_.getSpeechRate(),
       font: this.visualBrowserProxy_.getFontName(),
       highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
@@ -699,6 +700,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   // settings write so the props passed to the toolbar stay current.
   private syncSettings_() {
     this.theme_ = this.visualBrowserProxy_.getColorTheme();
+    this.lineSpacing_ = this.visualBrowserProxy_.getLineSpacing();
   }
 
   protected onSpeechRateChange_() {
@@ -714,7 +716,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   private restoreSettingsFromPrefs_() {
     this.settingsPrefs_ = {
       letterSpacing: this.visualBrowserProxy_.getLetterSpacing(),
-      lineSpacing: this.visualBrowserProxy_.getLineSpacing(),
       speechRate: this.audioBrowserProxy_.getSpeechRate(),
       font: this.visualBrowserProxy_.getFontName(),
       highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
@@ -731,11 +732,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
     }
   }
 
-  protected onLineSpacingChange_() {
-    this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
-      lineSpacing: this.visualBrowserProxy_.getLineSpacing(),
-    };
+  protected onLineSpacingChange_(event: CustomEvent<{data: number}>) {
+    this.visualBrowserProxy_.onLineSpacingChange(event.detail.data);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE);
+    this.syncSettings_();
     this.styleUpdater_.setLineSpacing();
     this.onTextLocationsChange_();
   }

@@ -197,7 +197,6 @@ export enum SettingsOption {
 // mode. Used to set the initial values for the toolbar buttons and menus.
 export interface SettingsPrefs {
   letterSpacing: number;
-  lineSpacing: number;
   speechRate: number;
   font: string;
   highlightGranularity: number;
@@ -206,7 +205,6 @@ export interface SettingsPrefs {
 }
 export const DEFAULT_SETTINGS: SettingsPrefs = {
   letterSpacing: 0,
-  lineSpacing: 0,
   speechRate: 0,
   font: '',
   highlightGranularity: 0,
