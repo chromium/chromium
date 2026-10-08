@@ -3238,11 +3238,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "eche-swa-send-start-signaling",
-    "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "edge-to-edge-automotive",
     "owners": ["clhager@google.com", "twellington@chromium.org"],
     "expiry_milestone": 170

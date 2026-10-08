@@ -7794,12 +7794,6 @@ inline constexpr char kEcheSWAMeasureLatencyDescription[] =
     "Measure Eche E2E Latency and print all E2E latency logs of Eche in "
     "Console";
 
-inline constexpr char kEcheSWASendStartSignalingName[] =
-    "Enable Eche Send Start Signaling";
-inline constexpr char kEcheSWASendStartSignalingDescription[] =
-    "Allows sending start signaling action to establish Eche's WebRTC "
-    "connection";
-
 inline constexpr char kEcheSWADisableStunServerName[] =
     "Disable Eche STUN server";
 inline constexpr char kEcheSWADisableStunServerDescription[] =

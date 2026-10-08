@@ -555,9 +555,6 @@ BASE_FEATURE(kEcheSWADebugMode, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the E2E latecny measurement of Eche.
 BASE_FEATURE(kEcheSWAMeasureLatency, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables sending start signaling to establish Eche's WebRTC connection.
-BASE_FEATURE(kEcheSWASendStartSignaling, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows disabling the stun servers when establishing a WebRTC connection to
 // Eche.
 BASE_FEATURE(kEcheSWADisableStunServer, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -103,9 +103,7 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(
       kJsonMeasureLatencyKey,
       base::FeatureList::IsEnabled(features::kEcheSWAMeasureLatency));
-  json_dictionary.Set(
-      kJsonSendStartSignalingKey,
-      base::FeatureList::IsEnabled(features::kEcheSWASendStartSignaling));
+  json_dictionary.Set(kJsonSendStartSignalingKey, true);
   json_dictionary.Set(
       kJsonDisableStunServerKey,
       base::FeatureList::IsEnabled(features::kEcheSWADisableStunServer));
