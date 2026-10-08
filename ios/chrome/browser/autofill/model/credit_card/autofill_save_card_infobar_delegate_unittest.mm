@@ -666,6 +666,10 @@ class AutofillSaveCardInfoBarDelegateMetricsTestWithCardSaveType
         return ".SavingWithCvc";
       case payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly:
         return ".SavingWithoutCvc";
+      case payments::PaymentsAutofillClient::CardSaveType::
+          kCardholderNameUpdateOnly:
+        // This flow is not available on iOS.
+        NOTREACHED();
     }
   }
 };

@@ -22,6 +22,9 @@ enum class PaymentsBubbleType {
   // card.
   kUploadCvcSave,
 
+  // Save prompt for updating the cardholder name for an existing server card.
+  kUploadCardholderNameUpdate,
+
   // Credit card upload is in progress.
   kUploadInProgress,
 

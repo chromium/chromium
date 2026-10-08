@@ -174,6 +174,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kCardSaveWithCvc = 1,
     // Only CVC is saved.
     kCvcSaveOnly = 2,
+    // Only cardholder name is updated for an existing server card.
+    kCardholderNameUpdateOnly = 3,
   };
 
   enum class SourceFeature {

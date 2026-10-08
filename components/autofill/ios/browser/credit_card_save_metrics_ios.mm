@@ -60,6 +60,10 @@ std::string_view GetSuffixForSaveType(
     case payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
       // This flow is now logged via LogSaveCvcPromptOfferedIOS.
       NOTREACHED();
+    case payments::PaymentsAutofillClient::CardSaveType::
+        kCardholderNameUpdateOnly:
+      // This flow is not available on iOS.
+      NOTREACHED();
   }
 }
 }  // namespace

@@ -112,6 +112,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     case PaymentsBubbleType::kLocalCvcSave:
     case PaymentsBubbleType::kUploadSave:
     case PaymentsBubbleType::kUploadCvcSave:
+    case PaymentsBubbleType::kUploadCardholderNameUpdate:
     case PaymentsBubbleType::kUploadInProgress:
       return ShowBubble<SaveCardOfferBubbleViews>(
           toolbar_button_provider_, kActionShowPaymentsBubbleOrPage,

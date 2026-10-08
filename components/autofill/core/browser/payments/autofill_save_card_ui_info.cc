@@ -48,6 +48,9 @@ static std::u16string GetConfirmButtonText(
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT);
     }
+    case CardSaveType::kCardholderNameUpdateOnly:
+      // This flow is not available on Android.
+      NOTREACHED();
   }
 #elif BUILDFLAG(IS_IOS)
   if (options.source_feature == SourceFeature::kScanCardSaveAndFill) {
@@ -65,6 +68,9 @@ static std::u16string GetConfirmButtonText(
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT);
     }
+    case CardSaveType::kCardholderNameUpdateOnly:
+      // This flow is not available on iOS.
+      NOTREACHED();
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();
@@ -167,6 +173,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL);
       break;
     }
+    case CardSaveType::kCardholderNameUpdateOnly:
+      // This flow is not available on Android.
+      NOTREACHED();
   }
 #elif BUILDFLAG(IS_IOS)
   // On iOS, the UI (infobar vs. bottom sheet) and title are determined by
@@ -206,6 +215,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL_SAVE_IOS);
       break;
     }
+    case CardSaveType::kCardholderNameUpdateOnly:
+      // This flow is not available on iOS.
+      NOTREACHED();
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();
@@ -326,6 +338,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
               : IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD);
       break;
     }
+    case CardSaveType::kCardholderNameUpdateOnly:
+      // This flow is not available on Android.
+      NOTREACHED();
   }
 #elif BUILDFLAG(IS_IOS)
   is_for_bottom_sheet = ShouldShowSaveCardBottomSheet(
@@ -376,6 +391,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
           base::UTF8ToUTF16(displayed_target_account.GetEmail()));
       break;
     }
+    case CardSaveType::kCardholderNameUpdateOnly:
+      // This flow is not available on iOS.
+      NOTREACHED();
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();

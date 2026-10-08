@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -2283,6 +2284,99 @@ TEST_F(SaveCardBubbleControllerImplTest,
       "Autofill.SaveCreditCardPromptOffer.Local.FirstShow", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow", 0);
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       UploadCardholderNameUpdateOnlyDialogContent) {
+  ShowUploadBubble(
+      /*options=*/SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
+          .with_should_request_name_from_user(true)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(PaymentsBubbleType::kUploadCardholderNameUpdate,
+            controller()->GetPaymentsBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_PROMPT_UPLOAD_SAVE_TITLE));
+  EXPECT_EQ(
+      controller()->GetExplanatoryMessage(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_PROMPT_UPLOAD_SAVE_EXPLANATION));
+  EXPECT_EQ(controller()->GetAcceptButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_BUBBLE_UPLOAD_SAVE_ACCEPT));
+  EXPECT_EQ(
+      controller()->GetDeclineButtonText(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE));
+  EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       UploadCardholderNameUpdateOnly_OnSave_TrimsNameAndRunsCallback) {
+  base::MockCallback<
+      payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+      callback;
+  controller()->OfferUploadSave(
+      autofill::test::GetMaskedServerCard(), LegalMessageLines(),
+      SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
+          .with_should_request_name_from_user(true)
+          .with_show_prompt(true),
+      callback.Get());
+
+  ASSERT_EQ(PaymentsBubbleType::kUploadCardholderNameUpdate,
+            controller()->GetPaymentsBubbleType());
+
+  EXPECT_CALL(
+      callback,
+      Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+              kAccepted,
+          testing::Field(&payments::PaymentsAutofillClient::
+                             UserProvidedCardDetails::cardholder_name,
+                         u"John Doe")));
+
+  payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = u"  John Doe  ";
+  controller()->OnSaveButton(details);
+
+  EXPECT_EQ(PaymentsBubbleType::kUploadInProgress,
+            controller()->GetPaymentsBubbleType());
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_PROMPT_UPLOAD_SAVE_TITLE));
+  EXPECT_EQ(
+      controller()->GetExplanatoryMessage(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_PROMPT_UPLOAD_SAVE_EXPLANATION));
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       UploadCardholderNameUpdateOnly_OnDecline_RunsCallback) {
+  base::MockCallback<
+      payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+      callback;
+  controller()->OfferUploadSave(
+      autofill::test::GetMaskedServerCard(), LegalMessageLines(),
+      SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
+          .with_should_request_name_from_user(true)
+          .with_show_prompt(true),
+      callback.Get());
+
+  EXPECT_CALL(
+      callback,
+      Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+              kDeclined,
+          testing::Field(&payments::PaymentsAutofillClient::
+                             UserProvidedCardDetails::cardholder_name,
+                         u"")));
+
+  CloseBubble(PaymentsUiClosedReason::kCancelled);
+
+  EXPECT_EQ(PaymentsBubbleType::kInactive,
+            controller()->GetPaymentsBubbleType());
 }
 
 }  // namespace

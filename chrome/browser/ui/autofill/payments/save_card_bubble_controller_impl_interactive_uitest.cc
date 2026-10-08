@@ -126,6 +126,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
       case PaymentsBubbleType::kManageCards:
         controller_->ShowBubbleForManageCardsForTesting(test::GetCreditCard());
         break;
+      case PaymentsBubbleType::kUploadCardholderNameUpdate:
       case PaymentsBubbleType::kUploadInProgress:
       case PaymentsBubbleType::kUploadComplete:
       case PaymentsBubbleType::kInactive:

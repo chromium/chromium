@@ -757,6 +757,8 @@ class SaveCardInfobarModalOverlayMediatorMetricsTest
         break;
       case autofill::payments::PaymentsAutofillClient::CardSaveType::
           kCvcSaveOnly:
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCardholderNameUpdateOnly:
         ADD_FAILURE() << "This test case shouldn't exist for the banner UI.";
         break;
     }

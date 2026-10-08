@@ -471,6 +471,8 @@ class SaveCardInfobarBannerOverlayMediatorMetricsTest
         break;
       case autofill::payments::PaymentsAutofillClient::CardSaveType::
           kCvcSaveOnly:
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCardholderNameUpdateOnly:
         ADD_FAILURE() << "This test case shouldn't exist for the banner UI.";
         break;
     }
@@ -498,6 +500,8 @@ TEST_P(SaveCardInfobarBannerOverlayMediatorMetricsTest, LogsOfferBannerShown) {
       suffix = ".SavingWithoutCvc";
       break;
     case autofill::payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::
+        kCardholderNameUpdateOnly:
       FAIL() << "This test case shouldn't exist for the banner UI.";
   }
 

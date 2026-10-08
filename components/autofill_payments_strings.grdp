@@ -85,6 +85,9 @@
       <message name="IDS_AUTOFILL_SAVE_CARD_BUBBLE_UPLOAD_SAVE_ACCEPT" desc="Text to show for the Autofill save credit card upload save bubble accept button.">
         Save
       </message>
+      <message name="IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_BUBBLE_UPLOAD_SAVE_ACCEPT" desc="Text to show for the Autofill save cardholder name upload save bubble accept button.">
+        Confirm
+      </message>
     </else>
   </if>
   <if expr="is_android">
@@ -162,6 +165,11 @@
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill CVC upload prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     Save security code?
   </message>
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_PROMPT_UPLOAD_SAVE_TITLE" desc="Title text for the Autofill save cardholder name upload save prompt that offers to save the cardholder name to Google Wallet for an existing nameless server card.">
+      Save cardholder name?
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARD_DESCRIPTION" desc="Accessibility description for the credit card chip containing the network icon and card labels on the Autofill save card prompt when the card is to be saved (either locally or by uploading it to Google Payments).">
     <ph name="CARD_NETWORK_NAME">$1<ex>Visa</ex></ph>, <ph name="CARD_LAST_FOUR_DIGITS">$2<ex>4444</ex></ph>, expires <ph name="CARD_EXPIRATION">$3<ex>01/2025</ex></ph>
   </message>
@@ -199,6 +207,11 @@
   <message name="IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC to Google Wallet prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in Google Wallet for faster checkout
   </message>
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_PROMPT_UPLOAD_SAVE_EXPLANATION" desc="Explanation text for the Autofill save cardholder name upload save prompt that offers to save the cardholder name to Google Wallet for an existing nameless server card.">
+      To have it filled automatically at checkout, save the cardholder name for this card in Google Wallet
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
     Pay faster when your card is saved. Card details are encrypted in your Google Account.
   </message>

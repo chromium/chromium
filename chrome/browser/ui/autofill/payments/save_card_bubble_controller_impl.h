@@ -86,7 +86,9 @@ class SaveCardBubbleControllerImpl
   // offer-to-save card bubble is shown. If the value is
   // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
   // and the users are informed that the CVC will also be stored. If the type is
-  // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
+  // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown. If the
+  // type is `CardSaveType::kCardholderNameUpdateOnly`, the offer-to-save
+  // cardholder name bubble is shown.
   void OfferUploadSave(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
