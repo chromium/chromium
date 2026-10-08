@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -25,6 +26,10 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/accessibility/platform/assistive_tech.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace password_manager {
@@ -118,6 +123,43 @@ class PasswordGenerationPopupControllerImplTest
   content::WebContents* web_contents() { return web_contents_.get(); }
   PasswordGenerationUIData& ui_data() { return ui_data_; }
 
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> GetOrCreateController(
+      base::WeakPtr<PasswordGenerationPopupControllerImpl> previous = nullptr) {
+    return PasswordGenerationPopupControllerImpl::GetOrCreate(
+        previous, ui_data().bounds, ui_data(), weak_driver(),
+        /*observer=*/nullptr, web_contents(), main_rfh());
+  }
+
+  base::WeakPtr<PasswordGenerationPopupControllerImpl>
+  CreateControllerWithView() {
+    base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+        GetOrCreateController();
+    controller->SetViewForTesting(popup_view());
+    return controller;
+  }
+
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> ShowOfferGenerationPopup(
+      bool is_manually_triggered = false) {
+    base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+        CreateControllerWithView();
+    controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+    controller->Show(
+        PasswordGenerationPopupController::GenerationUIState::kOfferGeneration,
+        is_manually_triggered);
+    return controller;
+  }
+
+  bool SimulateKeyPress(
+      base::WeakPtr<PasswordGenerationPopupControllerImpl> controller,
+      int windows_key_code,
+      int modifiers = blink::WebInputEvent::kNoModifiers) {
+    input::NativeWebKeyboardEvent event(
+        blink::WebInputEvent::Type::kRawKeyDown, modifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = windows_key_code;
+    return controller->HandleKeyPressEventForTesting(event);
+  }
+
  private:
   StubPasswordManagerClient client_;
   std::unique_ptr<MockPasswordManagerDriver> driver_;
@@ -140,6 +182,8 @@ void PasswordGenerationPopupControllerImplTest::SetUp() {
       std::make_unique<PasswordGenerationFrameHelper>(&client_, driver_.get());
   ON_CALL(driver(), GetPasswordGenerationHelper)
       .WillByDefault(Return(pw_generation_helper_.get()));
+  ON_CALL(*popup_view(), UpdateBoundsAndRedrawPopup)
+      .WillByDefault(Return(true));
 }
 
 void PasswordGenerationPopupControllerImplTest::TearDown() {
@@ -414,6 +458,246 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
 
   EXPECT_FALSE(controller);
   web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       UnenteredTabFallsThroughToBlink) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      CreateControllerWithView();
+  // Prior to Show() or when not offering generation, IsSelectable() is false
+  // and key presses must not be consumed.
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_TAB));
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  // When the popup is unentered, pressing Tab or Shift+Tab must return false
+  // so Blink handles standard form field focus navigation without trapping
+  // keyboard users inside the password field.
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_TAB));
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_TAB,
+                                blink::WebInputEvent::kShiftKey));
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       DownArrowEntryAndIntraPopupTabCycling) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup();
+
+  // Down arrow from unentered state selects the Accept button first.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_DOWN));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  // Once entered, Tab cycles to the Cancel button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_TAB));
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_TRUE(controller->cancel_button_selected_for_testing());
+
+  // Tab on the Cancel button wraps around to the Accept button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_TAB));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  // Shift+Tab on the Accept button wraps around to the Cancel button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_TAB,
+                               blink::WebInputEvent::kShiftKey));
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_TRUE(controller->cancel_button_selected_for_testing());
+
+  // Shift+Tab on the Cancel button cycles back to the Accept button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_TAB,
+                               blink::WebInputEvent::kShiftKey));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       UpArrowEntrySelectsCancelButton) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup();
+
+  // Up arrow from unentered state selects the Cancel button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_UP));
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_TRUE(controller->cancel_button_selected_for_testing());
+
+  // Tab then cycles to the Accept button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_TAB));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       ReturnKeyOnAcceptButtonAcceptsPasswordAndAdvancesFocus) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup();
+
+  // Enter popup via Down arrow to select Accept button.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_DOWN));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+
+  EXPECT_CALL(driver(),
+              GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
+  EXPECT_CALL(driver(), FocusNextFieldAfterPasswords());
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_RETURN));
+
+  // Accepting the generated password executes HideImpl(), which destroys the
+  // controller and closes the popup dialog.
+  EXPECT_FALSE(controller);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       ManuallyTriggeredInitialSelection) {
+  // When generation is triggered manually (e.g. via the context menu "Suggest
+  // strong password"), the popup should immediately enter the selected state
+  // so the user can interact directly without needing arrow key navigation
+  // first.
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup(/*is_manually_triggered=*/true);
+
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       ModifiedKeyPressesAreIgnored) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup();
+
+  // Modified arrow and escape keys must not enter or dismiss the popup.
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_DOWN,
+                                blink::WebInputEvent::kShiftKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_DOWN,
+                                blink::WebInputEvent::kControlKey));
+  EXPECT_FALSE(
+      SimulateKeyPress(controller, ui::VKEY_UP, blink::WebInputEvent::kAltKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_ESCAPE,
+                                blink::WebInputEvent::kShiftKey));
+  ASSERT_TRUE(controller);
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  // Enter the popup so the Accept button is selected.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_DOWN));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+
+  EXPECT_CALL(driver(), GeneratedPasswordAccepted(_, _, _)).Times(0);
+  EXPECT_CALL(driver(), GeneratedPasswordRejected()).Times(0);
+
+  // Modified Tab, arrow, Return, and Escape keys must not be consumed or
+  // change the selection state.
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_TAB,
+                                blink::WebInputEvent::kControlKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_TAB,
+                                blink::WebInputEvent::kAltKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_TAB,
+                                blink::WebInputEvent::kMetaKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_DOWN,
+                                blink::WebInputEvent::kShiftKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_DOWN,
+                                blink::WebInputEvent::kControlKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_RETURN,
+                                blink::WebInputEvent::kControlKey));
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_ESCAPE,
+                                blink::WebInputEvent::kShiftKey));
+
+  ASSERT_TRUE(controller);
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       TransitionToEditGeneratedPasswordResetsSelection) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup();
+
+  // Select the Cancel button in kOfferGeneration, then transition to
+  // kEditGeneratedPassword.
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_UP));
+  EXPECT_TRUE(controller->cancel_button_selected_for_testing());
+
+  controller->Show(PasswordGenerationPopupController::GenerationUIState::
+                       kEditGeneratedPassword);
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  // Pressing Return in kEditGeneratedPassword must not crash or reject.
+  EXPECT_CALL(driver(), GeneratedPasswordRejected()).Times(0);
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_RETURN));
+  ASSERT_TRUE(controller);
+
+  // Transition back to kOfferGeneration, select the Accept button, and
+  // transition to kEditGeneratedPassword again.
+  controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+  EXPECT_TRUE(SimulateKeyPress(controller, ui::VKEY_DOWN));
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+
+  controller->Show(PasswordGenerationPopupController::GenerationUIState::
+                       kEditGeneratedPassword);
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+
+  EXPECT_CALL(driver(), GeneratedPasswordAccepted(_, _, _)).Times(0);
+  EXPECT_FALSE(SimulateKeyPress(controller, ui::VKEY_RETURN));
+  EXPECT_TRUE(controller);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       ManuallyTriggeredReShowUpdatesButtonSelection) {
+  EXPECT_CALL(*popup_view(), UpdateState());
+  EXPECT_CALL(*popup_view(), ButtonSelectionUpdated());
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup(/*is_manually_triggered=*/true);
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  testing::Mock::VerifyAndClearExpectations(popup_view());
+
+  // Calling Show(kOfferGeneration, /*is_manually_triggered=*/true) again when
+  // the view already exists (which recreates the buttons via UpdateState())
+  // must reset and re-apply the selection so ButtonSelectionUpdated() is
+  // notified.
+  ON_CALL(*popup_view(), UpdateBoundsAndRedrawPopup)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*popup_view(), UpdateState());
+  EXPECT_CALL(*popup_view(), ButtonSelectionUpdated());
+  controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration,
+      /*is_manually_triggered=*/true);
+  EXPECT_TRUE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       AutomaticallyTriggeredDoesNotAutoSelectEvenWithScreenReaderActive) {
+  const ui::AssistiveTech previous_tech =
+      ui::AXPlatform::GetInstance().active_assistive_tech();
+  ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
+      ui::AssistiveTech::kGenericScreenReader);
+  base::ScopedClosureRunner restore_assistive_tech(base::BindOnce(
+      [](ui::AssistiveTech tech) {
+        ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(tech);
+      },
+      previous_tech));
+  ASSERT_TRUE(ui::AXPlatform::GetInstance().IsScreenReaderActive());
+
+  // An automatically triggered popup must not auto-select the accept button on
+  // show, even when a screen reader is active, so that focus stays in the
+  // password input until the user explicitly navigates into the popup.
+  EXPECT_CALL(*popup_view(), ButtonSelectionUpdated()).Times(0);
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      ShowOfferGenerationPopup(/*is_manually_triggered=*/false);
+  EXPECT_FALSE(controller->accept_button_selected_for_testing());
+  EXPECT_FALSE(controller->cancel_button_selected_for_testing());
 }
 
 }  // namespace password_manager

@@ -87,7 +87,7 @@ class PasswordGenerationPopupControllerImpl
       autofill::password_generation::PasswordGenerationType generation_type);
 
   // Create a PasswordGenerationPopupView if one doesn't already exist.
-  void Show(GenerationUIState state);
+  void Show(GenerationUIState state, bool is_manually_triggered = false);
 
   // Update the value of the generated password to be displayed in the UI (e.g.
   // upon editing the generated password).
@@ -134,6 +134,16 @@ class PasswordGenerationPopupControllerImpl
   }
   void SelectCancelButtonForTesting() {
     SelectElement(PasswordGenerationPopupElement::kCancelButton);
+  }
+  bool HandleKeyPressEventForTesting(
+      const input::NativeWebKeyboardEvent& event) {
+    return HandleKeyPressEvent(event);
+  }
+  bool accept_button_selected_for_testing() const {
+    return accept_button_selected();
+  }
+  bool cancel_button_selected_for_testing() const {
+    return cancel_button_selected();
   }
 #endif
 

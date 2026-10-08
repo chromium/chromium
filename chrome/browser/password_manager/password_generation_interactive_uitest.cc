@@ -171,9 +171,7 @@ class PasswordGenerationInteractiveTest
   }
 
   void NavigateToAndAcceptSuggestedPassword() {
-    // Cancel button is the first focusable element, hence two down button
-    // presses to reach the accept button.
-    SendKeyToPopup(ui::VKEY_DOWN);
+    // Down arrow from the unentered state selects the accept button first.
     SendKeyToPopup(ui::VKEY_DOWN);
     SendKeyToPopup(ui::VKEY_RETURN);
   }
@@ -295,7 +293,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       autofill::ContentAutofillClient::FromWebContents(WebContents()));
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
-  NavigateToAndAcceptSuggestedPassword();
+  // When manually triggered, Accept button is selected on show; accept
+  // directly.
+  SendKeyToPopup(ui::VKEY_RETURN);
 
   // Wait until the password is filled.
   WaitForNonEmptyFieldValue("password_field");
@@ -369,6 +369,8 @@ IN_PROC_BROWSER_TEST_F(
   password_manager_util::UserTriggeredManualGenerationFromContextMenu(
       ChromePasswordManagerClient::FromWebContents(WebContents()),
       autofill::ContentAutofillClient::FromWebContents(WebContents()));
+  // When manually triggered, the Accept button is pre-selected on show.
+  // A single Down arrow press moves selection to the Cancel button.
   SendKeyToPopup(ui::VKEY_DOWN);
   SendKeyToPopup(ui::VKEY_RETURN);
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
@@ -522,6 +524,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   WaitForGenerationPopupShowing();
 
   // Reject generation by navigating to "Cancel" button.
+  // When automatically triggered, 1st Down arrow enters and selects Accept,
+  // 2nd Down arrow moves selection to Cancel.
+  SendKeyToPopup(ui::VKEY_DOWN);
   SendKeyToPopup(ui::VKEY_DOWN);
   SendKeyToPopup(ui::VKEY_RETURN);
 

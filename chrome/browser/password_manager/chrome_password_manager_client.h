@@ -507,7 +507,8 @@ class ChromePasswordManagerClient
   void ShowPasswordGenerationPopup(
       autofill::password_generation::PasswordGenerationType type,
       password_manager::ContentPasswordManagerDriver* driver,
-      const autofill::password_generation::PasswordGenerationUIData& ui_data);
+      const autofill::password_generation::PasswordGenerationUIData& ui_data,
+      bool is_manually_triggered);
   void MaybeShowSavePasswordPrimingPromo(const url::Origin& origin) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 

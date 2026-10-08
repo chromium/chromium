@@ -1664,7 +1664,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
 
   if (!ui_data.generation_rejected) {
     ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
-                                ui_data);
+                                ui_data, /*is_manually_triggered=*/false);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -2253,7 +2253,8 @@ void ChromePasswordManagerClient::GenerationResultAvailable(
   password_generation_controller->ShowManualGenerationDialog(driver.get(),
                                                              ui_data.value());
 #else
-  ShowPasswordGenerationPopup(type, driver.get(), *ui_data);
+  ShowPasswordGenerationPopup(type, driver.get(), *ui_data,
+                              /*is_manually_triggered=*/true);
 #endif
 }
 
@@ -2262,7 +2263,8 @@ void ChromePasswordManagerClient::GenerationResultAvailable(
 void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
     PasswordGenerationType type,
     password_manager::ContentPasswordManagerDriver* driver,
-    const autofill::password_generation::PasswordGenerationUIData& ui_data) {
+    const autofill::password_generation::PasswordGenerationUIData& ui_data,
+    bool is_manually_triggered) {
   gfx::RectF element_bounds_in_top_frame_space =
       TransformToRootCoordinates(*driver->render_frame_host(), ui_data.bounds);
 
@@ -2278,7 +2280,8 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
       driver->render_frame_host());
 
   popup_controller_->GeneratePasswordValue(type);
-  popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration);
+  popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration,
+                          is_manually_triggered);
 
   driver->SetSuggestionAvailability(
       ui_data.generation_element_id,
