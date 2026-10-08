@@ -131,6 +131,9 @@ void ReadAloudPlaybackController::InitializeAudio(
     return;
   }
   resources.audio_renderer->SetPlaybackRate(playback_rate_);
+  resources.audio_renderer->SetWordBoundaryCallback(
+      base::BindRepeating(&ReadAloudPlaybackController::OnWordBoundaryReached,
+                          session_weak_factory_.GetWeakPtr()));
 
   resources.audio_output_stream.Bind(std::move(stream));
 
@@ -603,6 +606,20 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
                                         std::move(result.timings));
 
   decoder_sequencer_.ReplenishBuffer();
+}
+
+void ReadAloudPlaybackController::OnWordBoundaryReached(
+    uint32_t start_character_offset,
+    uint32_t end_character_offset,
+    base::TimeDelta audio_timestamp) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!client_.is_bound()) {
+    return;
+  }
+  // TODO(b/524283143): Send (start, end) once OnWordBoundaryReached's
+  // signature changes. Until then the browser only reads `audio_timestamp`.
+  client_->OnWordBoundaryReached(/*segment_index=*/0, start_character_offset,
+                                 audio_timestamp);
 }
 
 }  // namespace readaloud
