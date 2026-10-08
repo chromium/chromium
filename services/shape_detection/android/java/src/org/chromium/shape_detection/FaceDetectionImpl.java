@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
-import org.chromium.build.annotations.NullMarked;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,12 +13,17 @@ import android.media.FaceDetector.Face;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.gfx.mojom.RectF;
+import org.chromium.mojo.bindings.ExecutorFactory;
 import org.chromium.mojo.system.MojoException;
+import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.shape_detection.mojom.FaceDetection;
 import org.chromium.shape_detection.mojom.FaceDetectionResult;
 import org.chromium.shape_detection.mojom.FaceDetectorOptions;
 import org.chromium.shape_detection.mojom.Landmark;
+
+import java.util.concurrent.Executor;
 
 /**
  * Android implementation of the FaceDetection service defined in
@@ -71,6 +75,11 @@ public class FaceDetectionImpl implements FaceDetection {
         final Bitmap unPremultipliedBitmap =
                 Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
 
+        // Java Mojo bindings are not thread-safe. Calling `callback` from the worker races the
+        // binding thread closing the pipe when the peer disconnects, which can cause a
+        // use-after-free. Capture the binding thread's executor so the response is sent from it.
+        final Executor bindingThreadExecutor = getResponseExecutor();
+
         // FaceDetector creation and findFaces() might take a long time and trigger a
         // "StrictMode policy violation": they should happen in a background thread.
         PostTask.postTask(
@@ -102,8 +111,13 @@ public class FaceDetectionImpl implements FaceDetection {
                         faceArray[i].landmarks = new Landmark[0];
                     }
 
-                    callback.call(faceArray);
+                    bindingThreadExecutor.execute(() -> callback.call(faceArray));
                 });
+    }
+
+    /** Returns an executor that runs tasks on the calling thread. Overridden in tests. */
+    Executor getResponseExecutor() {
+        return ExecutorFactory.getExecutorForCurrentThread(CoreImpl.getInstance());
     }
 
     @Override
