@@ -34,6 +34,14 @@ void MaxVoteAggregator::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+std::optional<Vote> MaxVoteAggregator::GetVote(VoteContext vote_context) const {
+  auto it = vote_data_map_.find(vote_context);
+  if (it == vote_data_map_.end()) {
+    return std::nullopt;
+  }
+  return it->second.GetTopVote();
+}
+
 bool MaxVoteAggregator::HasVotes(VoteContext vote_context) const {
   // Entries are erased when their last vote is removed.
   return vote_data_map_.contains(vote_context);
@@ -99,6 +107,9 @@ void MaxVoteAggregator::NotifyTopVoteChanged(VoteContext vote_context,
                    },
                    [&](const WorkerNode* worker_node) {
                      observer.OnWorkerTopVoteChanged(worker_node, vote);
+                   },
+                   [&](const PageNode* page_node) {
+                     observer.OnPageTopVoteChanged(page_node, vote);
                    },
                    [&](const ProcessNode* process_node) {
                      observer.OnProcessTopVoteChanged(process_node, vote);

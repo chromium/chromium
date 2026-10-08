@@ -70,6 +70,10 @@ class ForwardingObserver : public MaxVoteAggregator::Observer {
                               const std::optional<Vote>& vote) override {
     voting_channel_.SetVote(worker_node, vote);
   }
+  void OnPageTopVoteChanged(const PageNode* page_node,
+                            const std::optional<Vote>& vote) override {
+    voting_channel_.SetVote(page_node, vote);
+  }
   void OnProcessTopVoteChanged(const ProcessNode* process_node,
                                const std::optional<Vote>& vote) override {
     voting_channel_.SetVote(process_node, vote);
@@ -288,6 +292,25 @@ TEST_F(MaxVoteAggregatorTest, HasVotes) {
 
   voter0.SetVote(kVoteContext0, std::nullopt);
   EXPECT_FALSE(aggregator()->HasVotes(kVoteContext0));
+}
+
+TEST_F(MaxVoteAggregatorTest, GetVote) {
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
+  VotingChannel voter1 = aggregator()->GetVotingChannel();
+  EXPECT_EQ(aggregator()->GetVote(kVoteContext0), std::nullopt);
+
+  voter0.SetVote(kVoteContext0, kLowPriorityVote0);
+  EXPECT_EQ(aggregator()->GetVote(kVoteContext0), kLowPriorityVote0);
+
+  voter1.SetVote(kVoteContext0, kHighPriorityVote1);
+  EXPECT_EQ(aggregator()->GetVote(kVoteContext0), kHighPriorityVote1);
+  EXPECT_EQ(aggregator()->GetVote(kVoteContext1), std::nullopt);
+
+  voter1.SetVote(kVoteContext0, std::nullopt);
+  EXPECT_EQ(aggregator()->GetVote(kVoteContext0), kLowPriorityVote0);
+
+  voter0.SetVote(kVoteContext0, std::nullopt);
+  EXPECT_EQ(aggregator()->GetVote(kVoteContext0), std::nullopt);
 }
 
 namespace {

@@ -75,6 +75,8 @@ static_library("performance_manager") {
     "execution_context_priority/loading_page_voter.cc",
     "execution_context_priority/loading_page_voter.h",
     "execution_context_priority/max_vote_aggregator.cc",
+    "execution_context_priority/page_to_frame_vote_expander.cc",
+    "execution_context_priority/page_to_frame_vote_expander.h",
     "execution_context_priority/priority_setter.cc",
     "execution_context_priority/priority_setter.h",
     "execution_context_priority/priority_voting_system.cc",

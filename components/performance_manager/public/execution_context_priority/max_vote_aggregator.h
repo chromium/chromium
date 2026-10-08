@@ -37,6 +37,8 @@ class MaxVoteAggregator : public VoteObserver {
                                        const std::optional<Vote>& vote) {}
     virtual void OnWorkerTopVoteChanged(const WorkerNode* worker_node,
                                         const std::optional<Vote>& vote) {}
+    virtual void OnPageTopVoteChanged(const PageNode* page_node,
+                                      const std::optional<Vote>& vote) {}
     virtual void OnProcessTopVoteChanged(const ProcessNode* process_node,
                                          const std::optional<Vote>& vote) {}
   };
@@ -52,6 +54,10 @@ class MaxVoteAggregator : public VoteObserver {
   // Observers are notified in the order they are added.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Returns the current top vote for `vote_context`, or nullopt if there are no
+  // votes for it.
+  std::optional<Vote> GetVote(VoteContext vote_context) const;
 
   // Returns true if at least one vote is currently cast on `vote_context`.
   bool HasVotes(VoteContext vote_context) const;
@@ -138,9 +144,9 @@ class MaxVoteAggregator : public VoteObserver {
   void NotifyTopVoteChanged(VoteContext vote_context,
                             const std::optional<Vote>& vote);
 
-  // Votes can be cast while observers are being notified (e.g. setting the
-  // priority of a frame changes the vote on its process), so notifications are
-  // re-entrant. Cycles are caught by `notifying_vote_contexts_` instead.
+  // Observers cast votes while being notified (e.g. page votes expanded to
+  // frames), so notifications are re-entrant. Cycles are caught by
+  // `notifying_vote_contexts_` instead.
   base::ReentrantObserverList<Observer> observers_;
 
   // The vote contexts whose observers are being notified, innermost last.

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -23,6 +24,7 @@ namespace performance_manager::execution_context_priority {
 namespace {
 
 constexpr char kFrameReason[] = "frame reason";
+constexpr char kPageReason[] = "page reason";
 constexpr char kProcessReason[] = "process reason";
 constexpr char kWorkerReason[] = "worker reason";
 
@@ -68,6 +70,118 @@ class PriorityVotingSystemTest : public GraphTestHarness {
 };
 
 }  // namespace
+
+// Tests that a page vote goes through the whole voting system and is applied to
+// every frame of the page.
+TEST_F(PriorityVotingSystemTest, PageVoteAppliedToFrames) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+  auto* page = mock_graph.page.get();
+  auto* frame = mock_graph.frame.get();
+  auto* child_frame = mock_graph.child_frame.get();
+
+  const PriorityAndReason kPagePriorityAndReason(
+      base::Process::Priority::kUserBlocking, kPageReason);
+  voter_->SetVote(page,
+                  Vote(base::Process::Priority::kUserBlocking, kPageReason));
+  EXPECT_EQ(frame->GetPriorityAndReason(), kPagePriorityAndReason);
+  EXPECT_EQ(child_frame->GetPriorityAndReason(), kPagePriorityAndReason);
+
+  // Removing the page vote resets the frames to the default priority.
+  const PriorityAndReason kDefaultPriorityAndReason(
+      base::Process::Priority::kMinValue,
+      FrameNodeImpl::kDefaultPriorityReason);
+  voter_->SetVote(page, std::nullopt);
+  EXPECT_EQ(frame->GetPriorityAndReason(), kDefaultPriorityAndReason);
+  EXPECT_EQ(child_frame->GetPriorityAndReason(), kDefaultPriorityAndReason);
+}
+
+// Tests that the priority of a frame is the highest of its own vote and the
+// vote of its page.
+TEST_F(PriorityVotingSystemTest, HighestOfFrameAndPageVote) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page = mock_graph.page.get();
+  auto* frame = mock_graph.frame.get();
+
+  const Vote kLowFrameVote(base::Process::Priority::kBestEffort, kFrameReason);
+  const Vote kHighFrameVote(base::Process::Priority::kUserBlocking,
+                            kFrameReason);
+  const Vote kMediumPageVote(base::Process::Priority::kUserVisible,
+                             kPageReason);
+
+  // The page vote wins over a lower frame vote.
+  voter_->SetVote(frame, kLowFrameVote);
+  voter_->SetVote(page, kMediumPageVote);
+  EXPECT_EQ(frame->GetPriorityAndReason(),
+            PriorityAndReason(kMediumPageVote.value(), kPageReason));
+
+  // The frame vote wins over a lower page vote.
+  voter_->SetVote(frame, kHighFrameVote);
+  EXPECT_EQ(frame->GetPriorityAndReason(),
+            PriorityAndReason(kHighFrameVote.value(), kFrameReason));
+
+  // Removing the frame vote falls back to the page vote.
+  voter_->SetVote(frame, std::nullopt);
+  EXPECT_EQ(frame->GetPriorityAndReason(),
+            PriorityAndReason(kMediumPageVote.value(), kPageReason));
+
+  // Removing the page vote falls back to the frame vote, even if it has the
+  // same priority as the default priority.
+  voter_->SetVote(frame, kLowFrameVote);
+  voter_->SetVote(page, std::nullopt);
+  EXPECT_EQ(frame->GetPriorityAndReason(),
+            PriorityAndReason(kLowFrameVote.value(), kFrameReason));
+
+  voter_->SetVote(frame, std::nullopt);
+}
+
+// Tests that a page vote only applies to the frames of that page, and not to
+// workers, even those whose client is a frame of the page. Workers only inherit
+// the priority of their client frames through the InheritClientPriorityVoter,
+// which is not added in this test.
+TEST_F(PriorityVotingSystemTest, PageVoteOnlyAppliesToItsFrames) {
+  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+
+  const PriorityAndReason kDefaultPriorityAndReason(
+      base::Process::Priority::kMinValue,
+      FrameNodeImpl::kDefaultPriorityReason);
+
+  voter_->SetVote(mock_graph.page.get(),
+                  Vote(base::Process::Priority::kUserBlocking, kPageReason));
+  EXPECT_EQ(
+      mock_graph.frame->GetPriorityAndReason(),
+      PriorityAndReason(base::Process::Priority::kUserBlocking, kPageReason));
+  EXPECT_EQ(mock_graph.other_frame->GetPriorityAndReason(),
+            kDefaultPriorityAndReason);
+  EXPECT_EQ(mock_graph.worker->GetPriorityAndReason().priority(),
+            base::Process::Priority::kMinValue);
+
+  voter_->SetVote(mock_graph.page.get(), std::nullopt);
+  EXPECT_EQ(mock_graph.frame->GetPriorityAndReason(),
+            kDefaultPriorityAndReason);
+}
+
+// Tests that a frame added to a page that has a vote gets that vote, and that
+// the vote is removed when the frame is removed.
+TEST_F(PriorityVotingSystemTest, PageVoteAppliesToAddedFrame) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page = mock_graph.page.get();
+
+  const PriorityAndReason kPagePriorityAndReason(
+      base::Process::Priority::kUserVisible, kPageReason);
+  voter_->SetVote(page,
+                  Vote(base::Process::Priority::kUserVisible, kPageReason));
+
+  auto child_frame = CreateFrameNodeAutoId(mock_graph.process.get(), page,
+                                           mock_graph.frame.get());
+  EXPECT_EQ(child_frame->GetPriorityAndReason(), kPagePriorityAndReason);
+
+  // Removing the frame removes its page vote. Otherwise, this would hit the
+  // CHECK that no votes remain on a removed frame.
+  child_frame.reset();
+  EXPECT_EQ(mock_graph.frame->GetPriorityAndReason(), kPagePriorityAndReason);
+
+  voter_->SetVote(page, std::nullopt);
+}
 
 // Tests that worker votes go through the whole voting system.
 TEST_F(PriorityVotingSystemTest, WorkerVote) {
@@ -169,21 +283,22 @@ TEST_F(PriorityVotingSystemTest, ProcessPriorityFromFramesAndWorkers) {
 // Tests that adding and removing a frame updates the priority of its process.
 TEST_F(PriorityVotingSystemTest, ProcessPriorityFollowsAddedAndRemovedFrame) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page = mock_graph.page.get();
   auto process = CreateRendererProcessNode();
 
-  // A frame without votes lowers the process to the default priority.
-  auto child_frame = CreateFrameNodeAutoId(process.get(), mock_graph.page.get(),
-                                           mock_graph.frame.get());
-  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kMinValue);
+  voter_->SetVote(page,
+                  Vote(base::Process::Priority::kUserVisible, kPageReason));
 
-  voter_->SetVote(child_frame.get(),
-                  Vote(base::Process::Priority::kUserVisible, kFrameReason));
+  // The added frame inherits the page vote, which is cast on its process.
+  auto child_frame =
+      CreateFrameNodeAutoId(process.get(), page, mock_graph.frame.get());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserVisible);
 
   // Removing the frame removes its vote on the process.
-  voter_->SetVote(child_frame.get(), std::nullopt);
   child_frame.reset();
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kMinValue);
+
+  voter_->SetVote(page, std::nullopt);
 }
 
 // Tests that a vote cast directly on a process is aggregated with the
