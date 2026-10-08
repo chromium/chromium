@@ -4629,6 +4629,42 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(5, input.selectionEnd);
  });
 
+ test(
+     'RightClickOnAllSelectedText_DoesNotUnelideOrModifySelection',
+     async () => {
+       const elidedText = 'example.com';
+       const fullUrl = 'https://example.com/';
+       callbackRouter.setInputState(createDefaultOmniboxInputState({
+         text: elidedText,
+         fullUrl: fullUrl,
+         isFocused: true,
+         selection: {start: 0, end: elidedText.length},
+       }));
+       await microtasksFinished();
+
+       const input = searchbox.getInputElement().inputElement;
+       assertEquals(elidedText, input.value);
+       assertEquals(0, input.selectionStart);
+       assertEquals(elidedText.length, input.selectionEnd);
+
+       // Right-click mousedown on already-focused input with all text selected.
+       searchbox.getInputElement().dispatchEvent(new MouseEvent('mousedown', {
+         button: 2,
+         buttons: 2,
+         clientX: 20,
+         clientY: 20,
+         detail: 1,
+         bubbles: true,
+         composed: true,
+       }));
+       await microtasksFinished();
+
+       // Verify text did not unelide and selection was not modified/collapsed.
+       assertEquals(elidedText, input.value);
+       assertEquals(0, input.selectionStart);
+       assertEquals(elidedText.length, input.selectionEnd);
+     });
+
  test('KeydownDuringMouseDown_CancelsSelectAll', async () => {
    callbackRouter.setInputState(createDefaultOmniboxInputState({
      text: 'https://example.com',
