@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -37,7 +36,6 @@ public class BottomBarPromoDialogCoordinator
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final OneshotSupplier<String> mCountrySupplier;
 
     private @Nullable BottomBarPromoDialogListener mListener;
     private @Nullable PropertyModel mDialogModel;
@@ -49,15 +47,12 @@ public class BottomBarPromoDialogCoordinator
      * @param context The {@link Context} used to retrieve resources and inflate the layout.
      * @param modalDialogManagerSupplier The supplier of {@link ModalDialogManager} used to display
      *     the dialog.
-     * @param countrySupplier The supplier for the latest variations country code.
      */
     public BottomBarPromoDialogCoordinator(
             Context context,
-            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            OneshotSupplier<String> countrySupplier) {
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mModalDialogManager = modalDialogManagerSupplier.get();
-        mCountrySupplier = countrySupplier;
     }
 
     @Override
@@ -86,15 +81,9 @@ public class BottomBarPromoDialogCoordinator
         }
 
         Profile originalProfile = profile.getOriginalProfile();
-        String country = mCountrySupplier.get();
-
-        if (!BottomBarActionEligibility.isCandidateResolutionReady(originalProfile, country)) {
-            return false;
-        }
 
         @ActionId
-        int eligibleAction =
-                BottomBarActionEligibility.getCandidateExtraAction(originalProfile, country);
+        int eligibleAction = BottomBarActionEligibility.getCandidateExtraAction(originalProfile);
         if (eligibleAction != ActionId.GLIC) {
             return false;
         }

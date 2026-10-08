@@ -2005,8 +2005,6 @@ public abstract class ChromeFeatureList {
     // go/keep-sorted start
     public static final BooleanCachedFeatureParam sAndroidBottomBarAlwaysUseFilledGlicIcon =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "always_use_filled_glic_icon", true);
-    public static final BooleanCachedFeatureParam sAndroidBottomBarBypassGlicGeofencing =
-            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "bypass_glic_geofencing", false);
     // Default value of the user's "Show bottom toolbar" setting while the user has not touched it.
     // Once the user flips the toggle, their explicit choice wins over this param. Cached because
     // the resulting enablement is read pre-native while the toolbar layout is inflated.
@@ -2397,7 +2395,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
                     sAndroidAppRatingPromptBypassChecks,
                     sAndroidBottomBarAlwaysUseFilledGlicIcon,
-                    sAndroidBottomBarBypassGlicGeofencing,
                     sAndroidBottomBarDefaultUserEnabled,
                     sAndroidBottomBarHeightDp,
                     sAndroidBottomBarKeepAppMenuInToolbar,

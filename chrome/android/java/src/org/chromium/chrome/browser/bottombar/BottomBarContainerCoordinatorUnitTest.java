@@ -91,7 +91,6 @@ public class BottomBarContainerCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createNullable();
-    private OneshotSupplierImpl<String> mCountrySupplier;
 
     private Activity mActivity;
     private FrameLayout mBottomBarContainer;
@@ -102,8 +101,6 @@ public class BottomBarContainerCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        mCountrySupplier.set("us");
         mTabSupplier.set(null);
         when(mActionRegistry.get(anyInt())).thenReturn(mActionSupplier);
         when(mActionRegistry.get(ActionId.GLIC)).thenReturn(mGlicActionSupplier);
@@ -134,7 +131,6 @@ public class BottomBarContainerCoordinatorUnitTest {
                                             mThemeColorProvider,
                                             mHomepageEnabledSupplier,
                                             mProfileSupplier,
-                                            mCountrySupplier,
                                             mOmniboxFocusStateSupplier,
                                             mModalDialogManagerSupplier,
                                             new OneshotSupplierImpl<AppMenuCoordinator>(),
@@ -366,11 +362,10 @@ public class BottomBarContainerCoordinatorUnitTest {
     }
 
     @Test
-    public void testCountrySupplier_DelayedSupply_BindsExtraButtonWhenAvailable() {
+    public void testProfileSupplier_DelayedSupply_BindsExtraButtonWhenAvailable() {
         GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        OneshotSupplierImpl<String> countrySupplier = new OneshotSupplierImpl<>();
         mCoordinator.destroy();
 
         PropertyModel glicModel =
@@ -382,6 +377,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                         .build();
         mGlicActionSupplier.set(glicModel);
 
+        mProfileSupplier.set(null);
         mCoordinator =
                 new BottomBarContainerCoordinator(
                         mBottomBarContainer,
@@ -391,7 +387,6 @@ public class BottomBarContainerCoordinatorUnitTest {
                         mThemeColorProvider,
                         mHomepageEnabledSupplier,
                         mProfileSupplier,
-                        countrySupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         new OneshotSupplierImpl<AppMenuCoordinator>(),
@@ -401,7 +396,7 @@ public class BottomBarContainerCoordinatorUnitTest {
         View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
         assertNull(extraButton);
 
-        countrySupplier.set("us");
+        mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
 
         extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
@@ -411,11 +406,10 @@ public class BottomBarContainerCoordinatorUnitTest {
     }
 
     @Test
-    public void testCountrySupplier_EmptyCountry_FailsClosedAndRemainsHidden() {
-        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
+    public void testExtraButton_GlicDisabled_FailsClosedAndRemainsHidden() {
+        GlicEnabling.setEnabledForTesting(/* isEnabled= */ false);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        OneshotSupplierImpl<String> countrySupplier = new OneshotSupplierImpl<>();
         mCoordinator.destroy();
 
         PropertyModel glicModel =
@@ -436,59 +430,10 @@ public class BottomBarContainerCoordinatorUnitTest {
                         mThemeColorProvider,
                         mHomepageEnabledSupplier,
                         mProfileSupplier,
-                        countrySupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         new OneshotSupplierImpl<AppMenuCoordinator>(),
                         mLayoutStateProvider);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        countrySupplier.set("");
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
-        assertNull(extraButton);
-        View extraContainer =
-                mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button_container);
-        assertNotNull(extraContainer);
-        assertEquals(View.GONE, extraContainer.getVisibility());
-    }
-
-    @Test
-    public void testCountrySupplier_FrCountry_FailsClosedAndRemainsHidden() {
-        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
-        OneshotSupplierImpl<String> countrySupplier = new OneshotSupplierImpl<>();
-        mCoordinator.destroy();
-
-        PropertyModel glicModel =
-                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
-                        .with(
-                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
-                                context -> "Ask Gemini")
-                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
-                        .build();
-        mGlicActionSupplier.set(glicModel);
-
-        mCoordinator =
-                new BottomBarContainerCoordinator(
-                        mBottomBarContainer,
-                        mRequestLayerUpdateCallback,
-                        mActionRegistry,
-                        mTabSupplier,
-                        mThemeColorProvider,
-                        mHomepageEnabledSupplier,
-                        mProfileSupplier,
-                        countrySupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        new OneshotSupplierImpl<AppMenuCoordinator>(),
-                        mLayoutStateProvider);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // "fr" is not in GLIC_ALLOWED_COUNTRIES.
-        countrySupplier.set("fr");
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);

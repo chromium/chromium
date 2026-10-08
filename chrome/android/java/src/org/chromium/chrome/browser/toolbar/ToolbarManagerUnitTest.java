@@ -553,7 +553,6 @@ public class ToolbarManagerUnitTest {
                         mOmniboxChipManager,
                         mBottomBarHostManager,
                         mActionRegistry,
-                        /* countrySupplier= */ null,
                         /* toggleGlicCallback= */ (preventClose, invocationSource) -> {},
                         /* suppressTabStripAtStart= */ false,
                         mHubManagerSupplier);

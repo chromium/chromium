@@ -246,7 +246,6 @@ import org.chromium.chrome.browser.ui.actions.ActionUtils;
 import org.chromium.chrome.browser.ui.app_rating.AppRatingPromoController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
@@ -734,7 +733,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mBottomOverviewColorSupplier =
                         initHubOverviewColorSupplier(hubManagerSupplier, supplierGetter);
             }
-            mCountrySupplier = new OneshotSupplierImpl<>();
             mActionRegistry = new ActionRegistry();
             ActionUtils.registerBottomBarActions(mActionRegistry);
         }
@@ -1309,16 +1307,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
-
-        if (mCountrySupplier != null && mCountrySupplier.get() == null) {
-            String country =
-                    BottomBarActionEligibility.resolveCountryCodeWithLocalDevFallback(
-                            ChromeActivitySessionTracker.getInstance()
-                                    .getVariationsLatestCountry());
-            if (country != null && !country.isEmpty()) {
-                mCountrySupplier.set(country);
-            }
-        }
 
         mAdvancedProtectionCoordinator =
                 new AdvancedProtectionCoordinator(mWindowAndroid, PrivacySettings.class);
@@ -3451,11 +3439,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Nullable GlicPromoCoordinator getGlicPromoCoordinatorForTesting() {
         return mGlicPromoCoordinator;
-    }
-
-    @Override
-    public @Nullable OneshotSupplier<String> getCountrySupplierForTesting() {
-        return mCountrySupplier;
     }
 
     /** Returns the {@link TabSearchOverlayCoordinator} for testing. */

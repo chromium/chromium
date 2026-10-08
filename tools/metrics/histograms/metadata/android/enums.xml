@@ -124,11 +124,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidBottomBarGlicIneligibilityReason">
   <int value="0" label="ProfileIneligible"/>
-  <int value="1" label="CountryGeofenced"/>
+  <int value="1" label="(Obsolete) CountryGeofenced"/>
   <int value="2" label="UserDisabledInSettings"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:GlicIneligibilityReason) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarGlicIneligibilityReason) -->
 
 <!-- LINT.IfChange(AndroidBottomBarIphEvent) -->
 

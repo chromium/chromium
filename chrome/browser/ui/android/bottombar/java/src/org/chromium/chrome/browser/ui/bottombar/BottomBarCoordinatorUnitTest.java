@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -104,7 +103,6 @@ public class BottomBarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createNullable();
-    private OneshotSupplierImpl<String> mCountrySupplier;
 
     private Activity mActivity;
     private FrameLayout mParent;
@@ -132,8 +130,6 @@ public class BottomBarCoordinatorUnitTest {
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        mCountrySupplier.set("us");
         mCoordinator =
                 new BottomBarCoordinator(
                         mParent,
@@ -143,7 +139,6 @@ public class BottomBarCoordinatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
-                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         mLayoutStateProvider);
@@ -453,52 +448,6 @@ public class BottomBarCoordinatorUnitTest {
         GlicEnabling.setEnabledForTesting(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        // Recreate coordinator with null profile initially.
-        mProfileSupplier.set(null);
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        mCountrySupplier.set("us");
-        mCoordinator.destroy();
-        mCoordinator =
-                new BottomBarCoordinator(
-                        mParent,
-                        mActionRegistry,
-                        mThemeColorProvider,
-                        mTabSupplier,
-                        mHomepageEnabledSupplier,
-                        mVisibilityDelegate,
-                        mProfileSupplier,
-                        mCountrySupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        mLayoutStateProvider);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        PropertyModel glicModel =
-                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
-                        .with(
-                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
-                                context -> "Ask Gemini")
-                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
-                        .build();
-        mGlicActionSupplier.set(glicModel);
-
-        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
-        assertNull(extraButton);
-
-        // Profile becomes available.
-        mProfileSupplier.set(mProfile);
-        RobolectricUtil.runAllBackgroundAndUi();
-        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
-        assertNotNull(extraButton);
-        assertEquals(View.VISIBLE, extraButton.getVisibility());
-        assertEquals("Ask Gemini", extraButton.getContentDescription());
-    }
-
-    @Test
-    public void testCountrySupplier_DelayedSupply_BindsCandidate() {
-        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
         AtomicBoolean glicClicked = new AtomicBoolean(false);
         AtomicBoolean glicLongClicked = new AtomicBoolean(false);
 
@@ -515,11 +464,10 @@ public class BottomBarCoordinatorUnitTest {
                                 ActionProperties.ON_LONG_PRESS_CALLBACK,
                                 (v) -> glicLongClicked.set(true))
                         .build();
-
         mGlicActionSupplier.set(glicModel);
 
-        // Recreate coordinator with unfulfilled country initially.
-        mCountrySupplier = new OneshotSupplierImpl<>();
+        // Recreate coordinator with null profile initially.
+        mProfileSupplier.set(null);
         mCoordinator.destroy();
         mCoordinator =
                 new BottomBarCoordinator(
@@ -530,21 +478,17 @@ public class BottomBarCoordinatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
-                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         mLayoutStateProvider);
-
-        mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
         assertNull(extraButton);
 
-        // Supply country to trigger candidate resolution.
-        mCountrySupplier.set("us");
+        // Profile becomes available.
+        mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
-
         extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
         assertNotNull(extraButton);
         assertEquals(View.VISIBLE, extraButton.getVisibility());
@@ -560,8 +504,8 @@ public class BottomBarCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testCountrySupplier_DelayedSupply_FrCountry_ResolvesNone() {
-        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
+    public void testExtraButton_GlicDisabled_ResolvesNone() {
+        GlicEnabling.setEnabledForTesting(/* isEnabled= */ false);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         PropertyModel glicModel =
@@ -576,8 +520,6 @@ public class BottomBarCoordinatorUnitTest {
 
         mGlicActionSupplier.set(glicModel);
 
-        // Recreate coordinator with unfulfilled country initially.
-        mCountrySupplier = new OneshotSupplierImpl<>();
         mCoordinator.destroy();
         mCoordinator =
                 new BottomBarCoordinator(
@@ -588,7 +530,6 @@ public class BottomBarCoordinatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
-                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         mLayoutStateProvider);
@@ -597,13 +538,6 @@ public class BottomBarCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
-        assertNull(extraButton);
-
-        // Supply France ("fr") -> GLIC not allowed.
-        mCountrySupplier.set("fr");
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
         assertNull(extraButton);
         View extraContainer = mCoordinator.getView().findViewById(R.id.extra_button_container);
         assertNotNull(extraContainer);

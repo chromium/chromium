@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -93,7 +92,6 @@ public class BottomBarMediatorUnitTest {
     private ArgumentCaptor<GlicKeyedService.AllowedChangedObserver> mAllowedChangedObserverCaptor;
 
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
-    private OneshotSupplierImpl<String> mCountrySupplier;
 
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -109,8 +107,6 @@ public class BottomBarMediatorUnitTest {
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mProfileSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier.set(mProfile);
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        mCountrySupplier.set("us");
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
         mModel = new PropertyModel(BottomBarProperties.ALL_KEYS);
@@ -414,7 +410,6 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
-                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         mActionRegistry,
@@ -525,22 +520,6 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testGlicInitiallyDisabled_CountryResolvesToDisallowed_UnregistersObserver() {
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
-
-        createMediator();
-
-        verify(mGlicKeyedService).addAllowedChangedObserver(any());
-
-        mCountrySupplier.set("fr");
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mGlicKeyedService).removeAllowedChangedObserver(any());
-        verify(mButtonManager, never()).setButtonVisibility(ActionId.GLIC, true);
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testOnSharedPreferenceChanged_TogglesGlicVisibility() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
@@ -571,45 +550,8 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testActionNone_NoObserversRegistered() {
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        mCountrySupplier.set("fr");
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
-
-        createMediator();
-
-        assertNotNull(mMediator);
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
-        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
-    }
-
-    @Test
-    public void testDeferredCandidateResolution_ProfileFirst_CountrySecond() {
-        mProfileSupplier.set(mProfile);
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-
-        createMediator();
-
-        // While country is null, extra buttons should remain hidden and no dynamic observers
-        // attached.
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
-        verify(mGlicKeyedService, never()).addAllowedChangedObserver(any());
-
-        // Country arrives.
-        mCountrySupplier.set("us");
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // Candidate resolves to GLIC and becomes visible.
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
-        verify(mGlicKeyedService).addAllowedChangedObserver(any());
-    }
-
-    @Test
-    public void testDeferredCandidateResolution_CountryFirst_ProfileSecond() {
+    public void testDeferredCandidateResolution_ProfileDeferred() {
         mProfileSupplier.set(null);
-        mCountrySupplier = new OneshotSupplierImpl<>();
-        mCountrySupplier.set("us");
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
         createMediator();
@@ -623,19 +565,6 @@ public class BottomBarMediatorUnitTest {
         mProfileSupplier.set(mProfile);
 
         // Candidate resolves to GLIC and becomes visible.
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
-        verify(mGlicKeyedService).addAllowedChangedObserver(any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_glic_geofencing/true")
-    public void testDeferredCandidateResolution_BypassGeofencing_NullCountry() {
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        mCountrySupplier = new OneshotSupplierImpl<>();
-
-        createMediator();
-
-        // Geofencing is bypassed -> candidate resolves to GLIC immediately despite null country.
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
         verify(mGlicKeyedService).addAllowedChangedObserver(any());
     }
@@ -671,6 +600,45 @@ public class BottomBarMediatorUnitTest {
                         BottomBarMetrics.CandidateAction.NONE);
         mProfileSupplier.set(newProfile);
         newProfileWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCandidateExtraActionResolved_ActionNone_RecordsMetricOnce() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.ExtraAction.CandidateResolved",
+                                BottomBarMetrics.CandidateAction.NONE)
+                        .expectIntRecord(
+                                "Android.BottomBar.Glic.IneligibilityReason",
+                                GlicIneligibilityReason.PROFILE_INELIGIBLE)
+                        .build();
+
+        createMediator();
+        watcher.assertExpected();
+
+        // Subsequent updates for the same profile should not re-run candidate resolution or re-log
+        // ineligibility reasons.
+        var secondWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BottomBar.ExtraAction.CandidateResolved")
+                        .expectNoRecords("Android.BottomBar.Glic.IneligibilityReason")
+                        .build();
+        mProfileSupplier.set(mProfile);
+        secondWatcher.assertExpected();
+    }
+
+    @Test
+    public void testUpdateObservers_ProfileChanged_CleansUpObservers() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        createMediator();
+
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
+
+        // When profile becomes null, observers should be cleaned up.
+        mProfileSupplier.set(null);
+        verify(mGlicKeyedService).removeAllowedChangedObserver(any());
     }
 
     @Test
@@ -767,7 +735,6 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
-                        mCountrySupplier,
                         mOmniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         mActionRegistry,

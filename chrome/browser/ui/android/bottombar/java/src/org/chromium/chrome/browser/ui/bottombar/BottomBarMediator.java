@@ -16,7 +16,6 @@ import org.chromium.base.TriStateUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -77,7 +76,6 @@ public class BottomBarMediator
     private final NonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
-    private final OneshotSupplier<String> mCountrySupplier;
     private final NullableObservableSupplier<PropertyModel> mGlicActionSupplier;
     private final NullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
 
@@ -116,7 +114,6 @@ public class BottomBarMediator
      * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
      * @param profileSupplier Supplier of the current profile.
-     * @param countrySupplier Supplier of the latest variations country code.
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
      * @param promoDialogCoordinator The {@link BottomBarPromoDialogCoordinator} for the promo
      *     dialog.
@@ -130,7 +127,6 @@ public class BottomBarMediator
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
             NullableObservableSupplier<Profile> profileSupplier,
-            OneshotSupplier<String> countrySupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomBarPromoDialogCoordinator promoDialogCoordinator,
             ActionRegistry actionRegistry,
@@ -142,7 +138,6 @@ public class BottomBarMediator
         mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
         mProfileSupplier = profileSupplier;
-        mCountrySupplier = countrySupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mPromoDialogCoordinator = promoDialogCoordinator;
         mGlicActionSupplier = actionRegistry.get(ActionId.GLIC);
@@ -157,8 +152,8 @@ public class BottomBarMediator
 
         mThemeColorProvider.addTintObserver(this);
         mModel.set(BottomBarProperties.COLOR_SCHEME, mThemeColorProvider.getBrandedColorScheme());
-        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
-        mCountrySupplier.onAvailable((country) -> updateExtraActionVisibility());
+        mProfileSupplier.addSyncObserver(mProfileObserver);
+        updateExtraActionVisibility();
         mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         updateVisibility();
         mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
@@ -262,12 +257,11 @@ public class BottomBarMediator
         if (profile == null) {
             mResolvedCandidateExtraAction = null;
             updateObservers(/* originalProfile= */ null);
-            setButtonVisibility(ActionId.GLIC, false);
+            setButtonVisibility(ActionId.GLIC, /* visible= */ false);
             return;
         }
 
         Profile originalProfile = profile.getOriginalProfile();
-        String country = mCountrySupplier.get();
 
         if (mOriginalProfile != originalProfile) {
             mResolvedCandidateExtraAction = null;
@@ -276,23 +270,15 @@ public class BottomBarMediator
         }
 
         if (mResolvedCandidateExtraAction == null) {
-            // Check if prerequisites for resolution are satisfied.
-            if (!BottomBarActionEligibility.isCandidateResolutionReady(originalProfile, country)) {
-                // Country code not yet populated and geofencing not bypassed: defer decision.
-                setButtonVisibility(ActionId.GLIC, /* visible= */ false);
-                return;
-            }
-
             long startTime = SystemClock.uptimeMillis();
-            BottomBarActionEligibility.getCandidateExtraAction(originalProfile, country);
+            BottomBarActionEligibility.getCandidateExtraAction(originalProfile);
             Integer candidateExtraAction =
                     BottomBarActionEligibility.getCachedCandidateExtraAction();
             mResolvedCandidateExtraAction = candidateExtraAction;
             long decisionDuration = SystemClock.uptimeMillis() - startTime;
             if (!mCandidateMetricsRecorded) {
                 BottomBarMetrics.recordCandidateDecisionTime(decisionDuration);
-                BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(
-                        originalProfile, country);
+                BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(originalProfile);
 
                 @CandidateAction
                 int candidateMetric =
@@ -323,12 +309,10 @@ public class BottomBarMediator
             return;
         }
 
-        String country = mCountrySupplier.get();
         boolean visible =
                 GlicEnabling.isEnabledForProfile(originalProfile)
                         && (GlicEnabling.isPolicyEnforced(originalProfile)
-                                || BottomBarConfigUtils.isGlicButtonEnabled())
-                        && BottomBarActionEligibility.isGlicAllowedInCountry(country);
+                                || BottomBarConfigUtils.isGlicButtonEnabled());
 
         if (visible && !mGlicWasVisible) {
             mGlicAppearedTimeMs = SystemClock.uptimeMillis();
@@ -357,7 +341,7 @@ public class BottomBarMediator
             mOriginalProfile = originalProfile;
         }
 
-        if (originalProfile == null) {
+        if (mOriginalProfile == null) {
             return;
         }
 
@@ -366,17 +350,11 @@ public class BottomBarMediator
                 candidateExtraAction != null && candidateExtraAction == ActionId.GLIC;
         boolean shouldObserveGlicAllowed = isGlicCandidate;
         if (!shouldObserveGlicAllowed && candidateExtraAction != null) {
-            String country = mCountrySupplier.get();
-            boolean isCountryKnownDisallowed =
-                    country != null
-                            && !country.isBlank()
-                            && !BottomBarActionEligibility.isGlicAllowedInCountry(country);
-            shouldObserveGlicAllowed =
-                    !GlicEnabling.isEnabledForProfile(originalProfile) && !isCountryKnownDisallowed;
+            shouldObserveGlicAllowed = !GlicEnabling.isEnabledForProfile(mOriginalProfile);
         }
         if (shouldObserveGlicAllowed) {
             if (mGlicKeyedService == null) {
-                mGlicKeyedService = GlicKeyedServiceFactory.getForProfile(originalProfile);
+                mGlicKeyedService = GlicKeyedServiceFactory.getForProfile(mOriginalProfile);
                 if (mGlicKeyedService != null) {
                     mGlicKeyedService.addAllowedChangedObserver(mAllowedChangedObserver);
                 }

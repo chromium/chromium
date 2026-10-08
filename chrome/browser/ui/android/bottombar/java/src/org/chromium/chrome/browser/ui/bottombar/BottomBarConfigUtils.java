@@ -138,11 +138,6 @@ public class BottomBarConfigUtils {
         return ChromeFeatureList.sAndroidBottomBarAlwaysUseFilledGlicIcon.getValue();
     }
 
-    /** Whether to bypass geofencing country check for GLIC. */
-    public static boolean bypassGlicGeofencing() {
-        return ChromeFeatureList.sAndroidBottomBarBypassGlicGeofencing.getValue();
-    }
-
     /**
      * Whether the given tab is showing any NTP (regular or incognito).
      *

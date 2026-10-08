@@ -102,13 +102,13 @@ public class BottomBarMetrics {
     /** Reasons why Glic was determined ineligible or not shown in the bottom bar. */
     @IntDef({
         GlicIneligibilityReason.PROFILE_INELIGIBLE,
-        GlicIneligibilityReason.COUNTRY_GEOFENCED,
+        GlicIneligibilityReason.DEPRECATED_COUNTRY_GEOFENCED,
         GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface GlicIneligibilityReason {
         int PROFILE_INELIGIBLE = 0;
-        int COUNTRY_GEOFENCED = 1;
+        int DEPRECATED_COUNTRY_GEOFENCED = 1;
         int USER_DISABLED_IN_SETTINGS = 2;
         int COUNT = 3;
     }
