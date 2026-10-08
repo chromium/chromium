@@ -1075,6 +1075,17 @@ public class BottomSheetMediatorUnitTest {
                         /* browserControlsOffset= */ 0f,
                         /* e2eBottomInset= */ 48),
                 0.0f);
+
+        // When settled at offset <= 0 (target state NONE), e2eBottomInset is also not subtracted.
+        mMediator.setTargetSheetState(SheetState.NONE);
+        assertEquals(
+                1000f,
+                mMediator.calculateSheetTranslationY(
+                        /* containerHeight= */ 1000,
+                        /* currentOffsetPx= */ 0f,
+                        /* browserControlsOffset= */ 0f,
+                        /* e2eBottomInset= */ 48),
+                0.0f);
     }
 
     @Test
