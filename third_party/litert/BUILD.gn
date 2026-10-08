@@ -137,6 +137,7 @@ config("tflite_flags") {
     "-Wno-extern-c-compat",
     "-Wno-gnu-inline-cpp-without-extern",
     "-Wno-loop-analysis",
+    "-Wno-pass-failed",
     "-Wno-shadow",
     "-Wno-deprecated-anon-enum-enum-conversion",
     "-Wno-unused-function",
