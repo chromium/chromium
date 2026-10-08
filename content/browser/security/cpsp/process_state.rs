@@ -76,6 +76,9 @@ pub(crate) mod ffi {
         fn complete_pending_state_removal(child_id: ChildProcessId);
 
         // Per-child process state methods.
+        fn grant_web_ui_bindings(child_id: ChildProcessId);
+        fn has_web_ui_bindings(child_id: ChildProcessId) -> bool;
+
         fn grant_send_midi_message(child_id: ChildProcessId);
         fn grant_send_midi_sysex_message(child_id: ChildProcessId);
         fn can_send_midi_message(child_id: ChildProcessId) -> bool;
@@ -115,6 +118,18 @@ fn prepare_to_remove_state(child_id: ChildProcessId) {
 fn complete_pending_state_removal(child_id: ChildProcessId) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.process_states.complete_pending_state_removal(child_id);
+}
+
+fn grant_web_ui_bindings(child_id: ChildProcessId) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_mut(&child_id) {
+        state.grant_web_ui_bindings();
+    }
+}
+
+fn has_web_ui_bindings(child_id: ChildProcessId) -> bool {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.process_states.get_for_query(&child_id).is_some_and(|state| state.has_web_ui_bindings())
 }
 
 #[allow(unsafe_code)]
@@ -341,6 +356,8 @@ impl ProcessStateMaps {
 /// ChildProcessSecurityPolicy::Handles exist.
 #[derive(Debug)]
 pub(crate) struct ProcessState {
+    /// Whether a child process can host WebUI pages with bindings.
+    has_web_ui_bindings: bool,
     /// Determines if a child process can send MIDI messages.
     midi_permission: MidiPermission,
     /// The typestate-protected ProcessLock for this process. This determines
@@ -354,9 +371,14 @@ impl ProcessState {
     /// ProcessStateMaps.
     fn new() -> Self {
         ProcessState {
+            has_web_ui_bindings: false,
             midi_permission: MidiPermission::CannotSendMidi,
             process_lock: StatefulProcessLock::default(),
         }
+    }
+
+    fn has_web_ui_bindings(&self) -> bool {
+        self.has_web_ui_bindings
     }
 
     fn can_send_midi_message(&self) -> bool {
@@ -396,6 +418,10 @@ impl MutableProcessState {
     /// after the transfer.
     fn into_immutable(self) -> ProcessState {
         self.0
+    }
+
+    fn grant_web_ui_bindings(&mut self) {
+        self.0.has_web_ui_bindings = true;
     }
 
     fn grant_send_midi_message(&mut self) {

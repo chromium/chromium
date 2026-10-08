@@ -232,6 +232,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanDeleteFromFileSystem(int child_id,
                                const std::string& filesystem_id) override;
   bool HasWebUIBindings(ChildProcessId child_id) override;
+  bool HasWebUIBindings_Cpp(ChildProcessId child_id);
   void GrantSendMidiMessage(int child_id) override;
   void GrantSendMidiMessage_Cpp(int child_id);
   void GrantSendMidiSysExMessage(int child_id) override;
@@ -559,6 +560,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // of WebUI bindings are not tracked at this level. Callers are responsible
   // for ensuring the child process is locked to a WebUI-permitted site.
   void GrantWebUIBindings(ChildProcessId child_id);
+  void GrantWebUIBindings_Cpp(ChildProcessId child_id);
 
   // Some APIs for Android WebView and <webview> tags allow bypassing some
   // security checks, such as which URLs are allowed to commit. This method

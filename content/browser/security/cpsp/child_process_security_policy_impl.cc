@@ -1782,6 +1782,13 @@ void ChildProcessSecurityPolicyImpl::GrantRequestScheme(
 
 void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(
     ChildProcessId child_id) {
+  RUST_CPP_PROCESS_STATE_VOID_FUNCTION(
+      rust::child_process_security_policy::grant_web_ui_bindings(child_id),
+      GrantWebUIBindings_Cpp(child_id));
+}
+
+void ChildProcessSecurityPolicyImpl::GrantWebUIBindings_Cpp(
+    ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
   if (auto* state = process_states_.GetProcessStateForMutation(child_id)) {
@@ -2345,6 +2352,13 @@ bool ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile(
 }
 
 bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(ChildProcessId child_id) {
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      rust::child_process_security_policy::has_web_ui_bindings(child_id),
+      HasWebUIBindings_Cpp(child_id));
+}
+
+bool ChildProcessSecurityPolicyImpl::HasWebUIBindings_Cpp(
+    ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
   if (auto* state = process_states_.GetProcessStateForQuery(child_id)) {

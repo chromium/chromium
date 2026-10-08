@@ -1261,6 +1261,46 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
   p->Remove(kRendererProcess);
+
+  // Post a task to the IO loop that then posts a task to the UI loop.
+  // This should cause the |run_loop| to return after the removal has completed.
+  base::RunLoop run_loop;
+  GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(p->HasWebUIBindings(kRendererProcess));
+}
+
+TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindingsWithHandle) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  const GURL url(GetWebUIURL("thumb/http://www.google.com/"));
+
+  p->AddForTesting(kRendererProcess, browser_context());
+  LockProcessIfNeeded(kRendererProcess, browser_context(), url);
+  EXPECT_FALSE(p->HasWebUIBindings(kRendererProcess));
+
+  p->GrantWebUIBindings(kRendererProcess);
+  EXPECT_TRUE(p->HasWebUIBindings(kRendererProcess));
+
+  // Creating a Handle should make the ProcessState live beyond Remove.
+  auto handle = p->CreateHandle(kRendererProcess);
+  p->Remove(kRendererProcess);
+  EXPECT_TRUE(p->HasWebUIBindings(kRendererProcess));
+
+  // Invalidate `handle` so it does not preserve process state anymore.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+
+  // Post a task to the IO loop that then posts a task to the UI loop.
+  // This should cause the |run_loop| to return after the removal has completed.
+  base::RunLoop run_loop;
+  GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(p->HasWebUIBindings(kRendererProcess));
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
