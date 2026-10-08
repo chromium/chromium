@@ -110,6 +110,70 @@ class AnimatedImagesProvider : public cc::ImageProvider {
   raw_ptr<const PictureDrawQuad::ImageAnimationMap> image_animation_map_;
 };
 
+// Returns true if blending a source pixel `s` onto a transparent destination
+// `d = (0, 0, 0, 0)` with `blend_mode` produces `s`, and therefore can be
+// replaced with `SkBlendMode::kSrcOver` (which enables Skia's fast legacy
+// C++/SIMD blitters in SoftwareRenderer).
+bool CanReplaceBlendModeWithSrcOverOnTransparentPass(SkBlendMode blend_mode) {
+  switch (blend_mode) {
+    // Keep kSrc as-is so unscaled sprite blits can still use memcpy.
+    // The remaining modes evaluate to 0 (transparent) when d = 0 (da = 0):
+    // - kClear:    0
+    // - kDst:      d = 0
+    // - kSrcIn:    s * da = 0
+    // - kDstIn:    d * sa = 0
+    // - kDstOut:   d * (1 - sa) = 0
+    // - kSrcATop:  s * da + d * (1 - sa) = 0
+    // - kModulate: s * d = 0
+    case SkBlendMode::kClear:
+    case SkBlendMode::kSrc:
+    case SkBlendMode::kDst:
+    case SkBlendMode::kSrcIn:
+    case SkBlendMode::kDstIn:
+    case SkBlendMode::kDstOut:
+    case SkBlendMode::kSrcATop:
+    case SkBlendMode::kModulate:
+      return false;
+
+    // Porter-Duff and additive modes with source coefficient 1 or (1 - da)
+    // evaluate to `s` when d = 0 (da = 0):
+    // - kSrcOver: s + d * (1 - sa) = s
+    // - kDstOver: s * (1 - da) + d = s
+    // - kSrcOut:  s * (1 - da) = s
+    // - kDstATop: s * (1 - da) + d * sa = s
+    // - kXor:     s * (1 - da) + d * (1 - sa) = s
+    // - kPlus:    min(s + d, 1) = s
+    //
+    // Separable and non-separable blend modes follow the W3C alpha-compositing
+    // formula:
+    //   ra = sa + (1 - sa) * da
+    //   rc = (1 - da) * sc + (1 - sa) * dc + sa * da * B(cd, cs)
+    // When d = 0 (dc = 0, da = 0), this simplifies to ra = sa and rc = sc.
+    case SkBlendMode::kSrcOver:
+    case SkBlendMode::kDstOver:
+    case SkBlendMode::kSrcOut:
+    case SkBlendMode::kDstATop:
+    case SkBlendMode::kXor:
+    case SkBlendMode::kPlus:
+    case SkBlendMode::kScreen:
+    case SkBlendMode::kOverlay:
+    case SkBlendMode::kDarken:
+    case SkBlendMode::kLighten:
+    case SkBlendMode::kColorDodge:
+    case SkBlendMode::kColorBurn:
+    case SkBlendMode::kHardLight:
+    case SkBlendMode::kSoftLight:
+    case SkBlendMode::kDifference:
+    case SkBlendMode::kExclusion:
+    case SkBlendMode::kMultiply:
+    case SkBlendMode::kHue:
+    case SkBlendMode::kSaturation:
+    case SkBlendMode::kColor:
+    case SkBlendMode::kLuminosity:
+      return true;
+  }
+}
+
 }  // namespace
 
 SoftwareRenderer::SoftwareRenderer(
@@ -266,6 +330,10 @@ void SoftwareRenderer::BeginDrawingRenderPass(
   if (needs_clear) {
     ClearFramebuffer();
   }
+  is_render_pass_transparent_ =
+      needs_clear && render_pass->has_transparent_background &&
+      base::FeatureList::IsEnabled(
+          features::kUseSrcOverForFirstQuadInTransparentPass);
 }
 
 bool SoftwareRenderer::IsSoftwareResource(ResourceId resource_id) {
@@ -313,10 +381,19 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     current_sampling_ = SkSamplingOptions(SkFilterMode::kLinear);
   }
 
+  const bool is_first_quad_in_transparent_pass =
+      std::exchange(is_render_pass_transparent_, false);
   if (quad->ShouldDrawWithBlending() ||
       quad->shared_quad_state->blend_mode != SkBlendMode::kSrcOver) {
+    SkBlendMode blend_mode = quad->shared_quad_state->blend_mode;
+    const auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>();
+    if (is_first_quad_in_transparent_pass &&
+        CanReplaceBlendModeWithSrcOverOnTransparentPass(blend_mode) &&
+        (!rpdq || rpdq->backdrop_filters.IsEmpty())) {
+      blend_mode = SkBlendMode::kSrcOver;
+    }
     current_paint_.setAlpha(quad->shared_quad_state->opacity * 255);
-    current_paint_.setBlendMode(quad->shared_quad_state->blend_mode);
+    current_paint_.setBlendMode(blend_mode);
   } else {
     current_paint_.setBlendMode(SkBlendMode::kSrc);
   }

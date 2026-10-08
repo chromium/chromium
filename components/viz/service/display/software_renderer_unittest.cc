@@ -12,11 +12,14 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "cc/test/fake_output_surface_client.h"
+#include "cc/test/pixel_test_output_surface.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -540,6 +543,144 @@ TEST_F(SoftwareRendererTestPartialSwap, PartialSwap) {
                 {.rect = damage_rect, .color = SkColors::kGreen},
             }),
         cc::ExactPixelComparator()));
+  }
+}
+
+class BlendModeRecordingCanvas : public SkNWayCanvas {
+ public:
+  BlendModeRecordingCanvas(int width,
+                           int height,
+                           std::vector<SkBlendMode>* blend_modes)
+      : SkNWayCanvas(width, height), blend_modes_(blend_modes) {}
+
+ protected:
+  void onDrawRect(const SkRect& rect, const SkPaint& paint) override {
+    if (auto mode = paint.asBlendMode()) {
+      blend_modes_->push_back(*mode);
+    }
+    SkNWayCanvas::onDrawRect(rect, paint);
+  }
+
+ private:
+  raw_ptr<std::vector<SkBlendMode>> blend_modes_;
+};
+
+class BlendModeRecordingSoftwareOutputDevice : public SoftwareOutputDevice {
+ public:
+  explicit BlendModeRecordingSoftwareOutputDevice(
+      std::vector<SkBlendMode>* blend_modes)
+      : blend_modes_(blend_modes) {}
+
+  SkCanvas* BeginPaint(const gfx::Rect& damage_rect) override {
+    SkCanvas* base_canvas = SoftwareOutputDevice::BeginPaint(damage_rect);
+    recording_canvas_ = std::make_unique<BlendModeRecordingCanvas>(
+        viewport_pixel_size_.width(), viewport_pixel_size_.height(),
+        blend_modes_);
+    recording_canvas_->addCanvas(base_canvas);
+    return recording_canvas_.get();
+  }
+
+  void EndPaint() override {
+    recording_canvas_.reset();
+    SoftwareOutputDevice::EndPaint();
+  }
+
+ private:
+  raw_ptr<std::vector<SkBlendMode>> blend_modes_;
+  std::unique_ptr<BlendModeRecordingCanvas> recording_canvas_;
+};
+
+TEST_F(SoftwareRendererTest,
+       FirstQuadInTransparentPassUsesSrcOverWhenEquivalent) {
+  gfx::Size viewport_size(100, 100);
+  gfx::Rect rect(viewport_size);
+
+  std::vector<SkBlendMode> drawn_blend_modes;
+  software_renderer_ = nullptr;
+  renderer_.reset();
+  output_surface_ = std::make_unique<cc::PixelTestOutputSurface>(
+      std::make_unique<BlendModeRecordingSoftwareOutputDevice>(
+          &drawn_blend_modes));
+  output_surface_->BindToClient(output_surface_client_.get());
+  auto renderer = std::make_unique<SoftwareRenderer>(
+      &renderer_settings_, &debug_settings_, output_surface_.get(),
+      static_cast<DisplayResourceProviderSoftware*>(resource_provider_.get()),
+      nullptr);
+  software_renderer_ = renderer.get();
+  renderer_ = std::move(renderer);
+  renderer_->Initialize();
+  renderer_->SetHasBackBuffers(true);
+
+  struct TestCase {
+    SkBlendMode quad_blend_mode;
+    SkBlendMode expected_first_quad_blend_mode;
+  };
+  const TestCase test_cases[] = {
+      {SkBlendMode::kPlus, SkBlendMode::kSrcOver},
+      {SkBlendMode::kMultiply, SkBlendMode::kSrcOver},
+      {SkBlendMode::kScreen, SkBlendMode::kSrcOver},
+      {SkBlendMode::kDstOver, SkBlendMode::kSrcOver},
+      {SkBlendMode::kDstIn, SkBlendMode::kDstIn},
+      {SkBlendMode::kSrcIn, SkBlendMode::kSrcIn},
+      {SkBlendMode::kModulate, SkBlendMode::kModulate},
+  };
+
+  for (const auto& test_case : test_cases) {
+    drawn_blend_modes.clear();
+    AggregatedRenderPassList list;
+
+    // Child pass 1 (front-most in root pass, drawn second): green.
+    AggregatedRenderPassId child_pass_1_id{2};
+    auto* child_pass_1 =
+        cc::AddRenderPass(&list, child_pass_1_id, rect, gfx::Transform());
+    cc::AddQuad(child_pass_1, rect, SkColor4f{0.0f, 0.5f, 0.0f, 0.5f});
+
+    // Child pass 2 (back-most in root pass, drawn first): red.
+    AggregatedRenderPassId child_pass_2_id{3};
+    auto* child_pass_2 =
+        cc::AddRenderPass(&list, child_pass_2_id, rect, gfx::Transform());
+    cc::AddQuad(child_pass_2, rect, SkColor4f{0.5f, 0.0f, 0.0f, 0.5f});
+
+    // Root pass starts transparent (`has_transparent_background` defaults to
+    // true) and blends both child passes with `test_case.quad_blend_mode`.
+    AggregatedRenderPassId root_pass_id{1};
+    auto* root_pass =
+        cc::AddRenderPass(&list, root_pass_id, rect, gfx::Transform());
+    ASSERT_TRUE(root_pass->has_transparent_background);
+
+    for (auto* child_pass : {child_pass_1, child_pass_2}) {
+      SharedQuadState* sqs = root_pass->CreateAndAppendSharedQuadState();
+      sqs->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                  /*clip=*/std::nullopt, /*contents_opaque=*/false,
+                  /*opacity_f=*/1.0f, test_case.quad_blend_mode,
+                  /*sorting_context=*/0,
+                  /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+      auto* rpdq =
+          root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+      rpdq->SetNew(sqs, rect, rect, child_pass->id, kInvalidResourceId,
+                   gfx::RectF(), gfx::Size(),
+                   /*force_anti_aliasing_off=*/false);
+    }
+
+    SkBitmap expected_bitmap;
+    expected_bitmap.allocN32Pixels(viewport_size.width(),
+                                   viewport_size.height());
+    expected_bitmap.eraseColor(SkColors::kTransparent);
+    {
+      SkCanvas canvas(expected_bitmap);
+      SkPaint paint;
+      paint.setBlendMode(test_case.quad_blend_mode);
+      paint.setColor(SkColor4f{0.5f, 0.0f, 0.0f, 0.5f});
+      canvas.drawRect(gfx::RectToSkRect(rect), paint);
+      paint.setColor(SkColor4f{0.0f, 0.5f, 0.0f, 0.5f});
+      canvas.drawRect(gfx::RectToSkRect(rect), paint);
+    }
+
+    EXPECT_TRUE(
+        RunPixelTest(&list, expected_bitmap, cc::ExactPixelComparator()));
+    ASSERT_EQ(drawn_blend_modes.size(), 2u);
+    EXPECT_EQ(drawn_blend_modes[0], test_case.expected_first_quad_blend_mode);
+    EXPECT_EQ(drawn_blend_modes[1], test_case.quad_blend_mode);
   }
 }
 

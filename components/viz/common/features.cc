@@ -435,6 +435,13 @@ BASE_FEATURE(kRenderNonMergedSurfaceAtBackingScale,
 BASE_FEATURE(kSoftwareReadbackIntoBlitDestination,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for https://crbug.com/569098933. When enabled, SoftwareRenderer
+// draws the first quad in a freshly cleared transparent render pass with
+// kSrcOver whenever the quad's blend mode evaluates to the source color onto a
+// transparent destination, allowing Skia to use its fast legacy blitters.
+BASE_FEATURE(kUseSrcOverForFirstQuadInTransparentPass,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
 // surface.
