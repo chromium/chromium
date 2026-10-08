@@ -2135,12 +2135,6 @@ if (_is_default_toolchain) {
   }
 
   if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
-    chrome_public_apk_or_module_tmpl("chrome_public_32_apk") {
-      target_type = "android_apk"
-      apk_name = "ChromePublic32"
-      is_64_bit_browser = false
-    }
-
     chrome_public_bundle("chrome_public_32_bundle") {
       bundle_name = "ChromePublic32"
       is_64_bit_browser = false
