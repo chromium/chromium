@@ -1483,14 +1483,23 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_MockOtpIgnoredForNonOtpForm) {
   EXPECT_TRUE(future.Get().empty());
 }
 
-// Tests that a tickle subscription is created upon OtpManagerImpl construction.
-TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedInConstructor) {
+// Tests that a tickle subscription is not created in the constructor or when a
+// non-OTP form is parsed, and is lazily created once an OTP form is parsed.
+TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedLazilyOnOtpFormParsed) {
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
   one_time_tokens::ExpiringSubscriptionManager<void(
       one_time_tokens::OneTimeTokenSource)>
       sub_manager;
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  EXPECT_FALSE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
+
+  // Parsing a non-OTP form should still not subscribe to tickles.
+  AddFormWithFirstNameField();
+  EXPECT_FALSE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
+
+  // Parsing an OTP form should lazily create the tickle subscription.
   EXPECT_CALL(
       mock_ott_service,
       SubscribeToTickles(
@@ -1498,8 +1507,7 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedInConstructor) {
           base::Time::Now() +
               OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration,
           _));
-
-  OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  AddFormWithOtpField();
   EXPECT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   EXPECT_EQ(
       test_api(otp_manager).gmail_otp_tickle_subscription().GetExpirationTime(),
@@ -1507,9 +1515,9 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedInConstructor) {
           OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
-// Tests that an existing tickle subscription's expiration is renewed when an
-// OTP form is parsed (OnFieldTypesDetermined).
-TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnOtpFormParsed) {
+// Tests that an existing tickle subscription's expiration is renewed when a
+// subsequent OTP form is parsed.
+TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnSubsequentOtpFormParsed) {
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
   one_time_tokens::ExpiringSubscriptionManager<void(
       one_time_tokens::OneTimeTokenSource)>
@@ -1517,6 +1525,7 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnOtpFormParsed) {
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  AddFormWithOtpField();
   ASSERT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   base::Time initial_expiration =
       test_api(otp_manager).gmail_otp_tickle_subscription().GetExpirationTime();
@@ -1524,8 +1533,8 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnOtpFormParsed) {
   // Advance clock by 30 seconds.
   task_environment_.FastForwardBy(base::Seconds(30));
 
-  // Parsing an OTP form should renew the subscription expiration to 5 minutes
-  // from now.
+  // Parsing another OTP form should renew the subscription expiration to 5
+  // minutes from now.
   AddFormWithOtpField();
   EXPECT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   EXPECT_GT(
@@ -1548,6 +1557,7 @@ TEST_F(OtpManagerImplTest,
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  AddFormWithOtpField();
   ASSERT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
 
   // Fast-forward past expiration so the subscription expires.
@@ -1576,6 +1586,7 @@ TEST_F(OtpManagerImplTest, TickleReceivedTriggersOnTickleReceived) {
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  AddFormWithOtpField();
   ASSERT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
 
   // Notify tickle to trigger `OnTickleReceived`.

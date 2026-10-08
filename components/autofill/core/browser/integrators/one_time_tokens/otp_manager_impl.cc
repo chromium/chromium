@@ -79,12 +79,6 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
                                 weak_ptr_factory_.GetWeakPtr()));
       }
     }
-    gmail_otp_tickle_subscription_ =
-        one_time_token_service_->SubscribeToTickles(
-            OneTimeTokenSource::kGmail,
-            base::Time::Now() + kGmailOtpTickleSubscriptionDuration,
-            base::BindRepeating(&OtpManagerImpl::OnTickleReceived,
-                                weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
