@@ -5,10 +5,11 @@
 #include "components/history/core/browser/journeys/journeys_database.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "sql/database.h"
@@ -46,6 +47,52 @@ bool RunForJourney(sql::Statement& statement, const std::string& journey_id) {
   statement.Reset(true);
   statement.BindString(0, journey_id);
   return statement.Run();
+}
+
+// Reads journeys and their child rows from prepared, bound statements.
+// `journeys_statement` returns the columns ParseJourneyRow() reads; each
+// child statement returns journey_id first. Child rows of journeys that
+// `journeys_statement` did not return are ignored. Journeys are returned in
+// the order `journeys_statement` returns them.
+std::vector<JourneyRow> ReadJourneys(sql::Statement& journeys_statement,
+                                     sql::Statement& entries,
+                                     sql::Statement& queries) {
+  std::vector<JourneyRow> journeys;
+  absl::flat_hash_map<std::string, size_t> journey_id_to_index;
+
+  // 1. Read the top-level journeys.
+  while (journeys_statement.Step()) {
+    JourneyRow journey = ParseJourneyRow(journeys_statement);
+    journey_id_to_index[journey.journey_id] = journeys.size();
+    journeys.push_back(std::move(journey));
+  }
+
+  if (journeys.empty()) {
+    return journeys;
+  }
+
+  // `journeys` doesn't grow from here on, so the returned pointers stay valid.
+  auto find_journey = [&](std::string_view journey_id) -> JourneyRow* {
+    auto it = journey_id_to_index.find(journey_id);
+    return it != journey_id_to_index.end() ? &journeys[it->second] : nullptr;
+  };
+
+  // 2. Attach history entries.
+  while (entries.Step()) {
+    if (JourneyRow* journey = find_journey(entries.ColumnStringView(0))) {
+      journey->history_entries.emplace_back(entries.ColumnTime(1));
+    }
+  }
+
+  // 3. Attach continuation queries.
+  while (queries.Step()) {
+    if (JourneyRow* journey = find_journey(queries.ColumnStringView(0))) {
+      journey->continuation_queries.emplace_back(queries.ColumnString(1),
+                                                 queries.ColumnString(2));
+    }
+  }
+
+  return journeys;
 }
 
 }  // namespace
@@ -231,97 +278,51 @@ std::optional<JourneyRow> JourneysDatabase::GetJourney(
     return std::nullopt;
   }
 
-  // 1. Fetch main journey fields.
   sql::Statement s_journey(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, title, emoji, overview, short_overview, "
       "creation_time_micros FROM journeys WHERE journey_id = ?"));
   s_journey.BindString(0, journey_id);
 
-  if (!s_journey.Step()) {
-    return std::nullopt;
-  }
-
-  JourneyRow journey = ParseJourneyRow(s_journey);
-
-  // 2. Fetch history entries.
   sql::Statement s_entries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT visit_timestamp_micros FROM journey_history_entries "
+      "SELECT journey_id, visit_timestamp_micros FROM journey_history_entries "
       "WHERE journey_id = ?"));
   s_entries.BindString(0, journey_id);
 
-  while (s_entries.Step()) {
-    journey.history_entries.emplace_back(s_entries.ColumnTime(0));
-  }
-
-  // 3. Fetch continuation queries.
   sql::Statement s_queries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT title, prompt FROM journey_continuation_queries "
+      "SELECT journey_id, title, prompt FROM journey_continuation_queries "
       "WHERE journey_id = ?"));
   s_queries.BindString(0, journey_id);
 
-  while (s_queries.Step()) {
-    journey.continuation_queries.emplace_back(s_queries.ColumnString(0),
-                                              s_queries.ColumnString(1));
+  std::vector<JourneyRow> journeys =
+      ReadJourneys(s_journey, s_entries, s_queries);
+  if (journeys.empty()) {
+    return std::nullopt;
   }
-
-  return journey;
+  // `journey_id` is the primary key.
+  DCHECK_EQ(journeys.size(), 1u);
+  return std::move(journeys.front());
 }
 
 std::vector<JourneyRow> JourneysDatabase::GetAllJourneys() {
-  std::vector<JourneyRow> journeys;
-  absl::flat_hash_map<std::string, size_t> journey_id_to_index;
-
-  // 1. Read all top-level journeys ordered by creation time descending.
   sql::Statement s_journeys(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, title, emoji, overview, short_overview, "
       "creation_time_micros FROM journeys "
       "ORDER BY creation_time_micros DESC"));
 
-  while (s_journeys.Step()) {
-    JourneyRow journey = ParseJourneyRow(s_journeys);
-    journey_id_to_index[journey.journey_id] = journeys.size();
-    journeys.push_back(std::move(journey));
-  }
-
-  if (journeys.empty()) {
-    return journeys;
-  }
-
-  // 2. Fetch all history entries in a single batch query and attach to
-  // journeys.
   sql::Statement s_entries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, visit_timestamp_micros FROM "
       "journey_history_entries"));
 
-  while (s_entries.Step()) {
-    std::string journey_id = s_entries.ColumnString(0);
-    auto it = journey_id_to_index.find(journey_id);
-    if (it != journey_id_to_index.end()) {
-      journeys[it->second].history_entries.emplace_back(
-          s_entries.ColumnTime(1));
-    }
-  }
-
-  // 3. Fetch all continuation queries in a single batch query and attach.
   sql::Statement s_queries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, title, prompt FROM journey_continuation_queries"));
 
-  while (s_queries.Step()) {
-    std::string journey_id = s_queries.ColumnString(0);
-    auto it = journey_id_to_index.find(journey_id);
-    if (it != journey_id_to_index.end()) {
-      journeys[it->second].continuation_queries.emplace_back(
-          s_queries.ColumnString(1), s_queries.ColumnString(2));
-    }
-  }
-
-  return journeys;
+  return ReadJourneys(s_journeys, s_entries, s_queries);
 }
 
 // TODO(crbug.com/526686844): When history is cleared or old visits expire,

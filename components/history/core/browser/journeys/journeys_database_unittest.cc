@@ -175,6 +175,41 @@ TEST_F(JourneysDatabaseTest, AddAndGetJourneysBatch) {
               Optional(MatchesJourney(journey2)));
 }
 
+// Each journey gets only its own child rows, from both getters.
+TEST_F(JourneysDatabaseTest, ChildRowsAttachToTheirOwnJourney) {
+  JourneyRow paris = CreateTestJourney("journey_1", "Trip to Paris",
+                                       /*creation_time_micros=*/5000);
+  paris.history_entries = {JourneyHistoryEntry(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000)))};
+  paris.continuation_queries = {
+      JourneyContinuationQuery("Hotels", "Find hotels in Paris")};
+  JourneyRow london = CreateTestJourney("journey_2", "Trip to London",
+                                        /*creation_time_micros=*/6000);
+  london.history_entries = {
+      JourneyHistoryEntry(
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000))),
+      JourneyHistoryEntry(
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000)))};
+  london.continuation_queries = {
+      JourneyContinuationQuery("Museums", "Find museums in London"),
+      JourneyContinuationQuery("Theatre", "Find shows in London")};
+  JourneyRow empty = CreateTestJourney("journey_3", "Empty Trip",
+                                       /*creation_time_micros=*/4000);
+  empty.history_entries.clear();
+  empty.continuation_queries.clear();
+  ASSERT_TRUE(journeys_db()->AddOrUpdateJourneys({paris, london, empty}));
+
+  EXPECT_THAT(journeys_db()->GetAllJourneys(),
+              ElementsAre(MatchesJourney(london), MatchesJourney(paris),
+                          MatchesJourney(empty)));
+  EXPECT_THAT(journeys_db()->GetJourney("journey_1"),
+              Optional(MatchesJourney(paris)));
+  EXPECT_THAT(journeys_db()->GetJourney("journey_2"),
+              Optional(MatchesJourney(london)));
+  EXPECT_THAT(journeys_db()->GetJourney("journey_3"),
+              Optional(MatchesJourney(empty)));
+}
+
 TEST_F(JourneysDatabaseTest, AddAndGetMinimalJourney) {
   JourneyRow minimal(
       "minimal_1", "Minimal Title",
