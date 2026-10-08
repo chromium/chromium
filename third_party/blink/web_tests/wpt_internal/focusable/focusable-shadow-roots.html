@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Focusable with shadowRoots</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<button id="before"></button>
+<div id="host">
+  <template shadowrootmode="open">
+    <button id="inner1"></button>
+    <slot></slot>
+    <div id="nested-host">
+      <template shadowrootmode="open"><button id="deep"></button></template>
+    </div>
+    <button id="inner2"></button>
+  </template>
+  <button id="slotted"></button>
+</div>
+<div id="other-host">
+  <template shadowrootmode="open"><button id="other-inner"></button></template>
+</div>
+<button id="after"></button>
+
+<script>
+function assert_focusable(actual, { target = null, shadowHost = null } = {}) {
+  assert_not_equals(actual, null);
+  assert_equals(actual.target, target, "target");
+  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+}
+
+// Returns "shadowHost:target" ids for each Focusable from `start` onwards.
+function chain(start, forward = true) {
+  const result = [];
+  for (let f = start; f; f = forward ? f.nextFocusable() : f.previousFocusable()) {
+    result.push(`${f.shadowHost?.id ?? ""}:${f.target?.id ?? ""}`);
+  }
+  return result;
+}
+
+const before = document.getElementById("before");
+const after = document.getElementById("after");
+const host = document.getElementById("host");
+const sr = host.shadowRoot;
+const nestedSR = sr.getElementById("nested-host").shadowRoot;
+const otherSR = document.getElementById("other-host").shadowRoot;
+const inner1 = sr.getElementById("inner1");
+const deep = nestedSR.getElementById("deep");
+
+test((t) => {
+  t.add_cleanup(() => document.activeElement.blur());
+  inner1.focus();
+  const active = document.activeFocusable;
+  assert_focusable(active, { shadowHost: host });
+  assert_focusable(new Focusable(active), { shadowHost: host });
+  assert_focusable(new Focusable(active, {}), { shadowHost: host });
+  assert_focusable(new Focusable(active, { shadowRoots: [otherSR] }), { shadowHost: host });
+  assert_focusable(new Focusable(active, { shadowRoots: [sr] }), { shadowHost: host, target: inner1 });
+}, "new Focusable(activeFocusable, { shadowRoots }) exposes the focused element");
+
+test((t) => {
+  t.add_cleanup(() => document.activeElement.blur());
+  deep.focus();
+  const active = document.activeFocusable;
+  assert_focusable(new Focusable(active, { shadowRoots: [sr] }), { shadowHost: host });
+  assert_focusable(new Focusable(active, { shadowRoots: [nestedSR] }), { shadowHost: host });
+  assert_focusable(new Focusable(active, { shadowRoots: [sr, nestedSR] }), { shadowHost: host, target: deep });
+}, "Nested shadow trees are only exposed if all their shadow roots are given");
+
+test((t) => {
+  const slottedHost = document.createElement("div");
+  slottedHost.id = "slotted-host";
+  const slottedSR = slottedHost.attachShadow({ mode: "open" });
+  const slottedButton = slottedSR.appendChild(document.createElement("button"));
+  slottedButton.id = "slotted-inner";
+  host.append(slottedHost);
+  t.add_cleanup(() => {
+    document.activeElement.blur();
+    slottedHost.remove();
+  });
+
+  slottedButton.focus();
+  const active = document.activeFocusable;
+  assert_focusable(new Focusable(active, { shadowRoots: [slottedSR] }), { shadowHost: host });
+  assert_focusable(new Focusable(active, { shadowRoots: [sr] }), { shadowHost: host });
+  assert_focusable(new Focusable(active, { shadowRoots: [sr, slottedSR] }), { shadowHost: host, target: slottedButton });
+}, "A shadow tree slotted into another shadow tree is only exposed if both shadow roots are given");
+
+test((t) => {
+  t.add_cleanup(() => {
+    document.activeElement.blur();
+    sr.prepend(inner1);
+  });
+  inner1.focus();
+  const active = document.activeFocusable;
+  document.body.append(inner1);
+  assert_focusable(new Focusable(active, { shadowRoots: [sr] }), { shadowHost: host });
+}, "An element removed from the shadow tree is not exposed");
+
+for (const [where, getNewParent] of [
+  ["an iframe", (doc) => doc.body],
+  ["a shadow tree in an iframe", (doc) => {
+    const iframeHost = doc.body.appendChild(doc.createElement("div"));
+    return iframeHost.attachShadow({ mode: "open" });
+  }],
+]) {
+  test((t) => {
+    const iframe = document.createElement("iframe");
+    document.body.append(iframe);
+    t.add_cleanup(() => {
+      document.activeElement.blur();
+      sr.prepend(inner1);
+      iframe.remove();
+    });
+    inner1.focus();
+    const active = document.activeFocusable;
+    getNewParent(iframe.contentDocument).append(inner1);
+    assert_equals(active.nextFocusable(), null, "nextFocusable()");
+    assert_equals(active.previousFocusable(), null, "previousFocusable()");
+    assert_focusable(new Focusable(active, { shadowRoots: [sr] }), { shadowHost: host });
+  }, `An element moved from the shadow tree into ${where} has no adjacent focusables`);
+}
+
+test(() => {
+  assert_array_equals(chain(new Focusable(before)),
+      [":before", "host:", "other-host:", ":after"]);
+  assert_array_equals(chain(new Focusable(before, { shadowRoots: [sr] })),
+      [":before", "host:inner1", "host:slotted", "host:", "host:inner2", "other-host:", ":after"]);
+  assert_array_equals(chain(new Focusable(before, { shadowRoots: [sr, nestedSR] })),
+      [":before", "host:inner1", "host:slotted", "host:deep", "host:inner2", "other-host:", ":after"]);
+  assert_array_equals(chain(new Focusable(before, { shadowRoots: [nestedSR] })),
+      [":before", "host:", "other-host:", ":after"]);
+  assert_array_equals(chain(new Focusable(before, { shadowRoots: [otherSR] })),
+      [":before", "host:", "other-host:other-inner", ":after"]);
+  assert_array_equals(chain(new Focusable(after, { shadowRoots: [sr] }), /*forward=*/false),
+      [":after", "other-host:", "host:inner2", "host:", "host:slotted", "host:inner1", ":before"]);
+}, "nextFocusable() and previousFocusable() keep the shadow roots");
+
+test((t) => {
+  t.add_cleanup(() => document.activeElement.blur());
+  inner1.focus();
+  assert_array_equals(chain(new Focusable(document.activeFocusable, { shadowRoots: [sr] })),
+      ["host:inner1", "host:slotted", "host:", "host:inner2", "other-host:", ":after"]);
+}, "nextFocusable() from new Focusable(activeFocusable, { shadowRoots })");
+</script>

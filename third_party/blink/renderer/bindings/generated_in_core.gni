@@ -246,6 +246,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focus_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focus_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focus_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focusable_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focusable_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_event_init.cc",
