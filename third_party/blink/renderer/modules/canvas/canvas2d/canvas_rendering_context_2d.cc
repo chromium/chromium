@@ -1143,9 +1143,8 @@ bool CanvasRenderingContext2D::IsBackingValid() const {
   return canvas() && BaseRenderingContext2D::IsBackingValid();
 }
 
-Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
-    const {
-  return BaseRenderingContext2D::GetSharedImageProvider();
+bool CanvasRenderingContext2D::IsBackingAccelerated() const {
+  return GetSharedImageProvider() && GetSharedImageProvider()->IsAccelerated();
 }
 
 bool CanvasRenderingContext2D::HasBacking() const {

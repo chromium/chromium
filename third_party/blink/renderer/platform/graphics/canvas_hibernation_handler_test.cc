@@ -57,12 +57,12 @@ class TestHibernationHandlerDelegate final
     is_hibernating_ = is_hibernating;
   }
 
-  Canvas2DResourceProvider* GetSharedImageProvider() const override {
-    return resource_provider_.get();
-  }
   bool HasBacking() const override { return resource_provider_ != nullptr; }
   bool IsBackingValid() const override {
     return resource_provider_ && resource_provider_->IsValid();
+  }
+  bool IsBackingAccelerated() const override {
+    return resource_provider_ && resource_provider_->IsAccelerated();
   }
   void ResetBacking() override { resource_provider_.reset(); }
 
@@ -74,7 +74,7 @@ class TestHibernationHandlerDelegate final
   }
 
   void CreateResourceProvider() {
-    CHECK(!GetSharedImageProvider());
+    CHECK(!HasBacking());
     resource_provider_ = Canvas2DResourceProvider::CreateWithClear(
         size_, GetN32FormatForCanvas(), kPremul_SkAlphaType,
         gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
@@ -185,7 +185,7 @@ void SetPageVisible(
   } else {
     // End hibernation.
     if (hibernation_handler->IsHibernating()) {
-      if (!delegate->GetSharedImageProvider()) {
+      if (!delegate->HasBacking()) {
         delegate->CreateResourceProvider();
       }
       hibernation_handler->Clear();
@@ -303,7 +303,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   EXPECT_FALSE(handler.is_encoded());
 
   EXPECT_FALSE(handler.IsHibernating());
-  EXPECT_TRUE(delegate->GetSharedImageProvider()->IsValid());
+  EXPECT_TRUE(delegate->IsBackingValid());
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundBeforeHibernation) {

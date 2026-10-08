@@ -25,7 +25,6 @@
 
 namespace blink {
 
-class Canvas2DResourceProvider;
 class StaticBitmapImage;
 
 inline constexpr char kCanvasHibernationEventHistogramName[] =
@@ -40,9 +39,9 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
    public:
     virtual ~Delegate() = default;
 
-    virtual Canvas2DResourceProvider* GetSharedImageProvider() const = 0;
     virtual bool HasBacking() const = 0;
     virtual bool IsBackingValid() const = 0;
+    virtual bool IsBackingAccelerated() const = 0;
     virtual bool IsPageVisible() const = 0;
     virtual bool IsContextLost() const = 0;
     virtual void ResetBacking() = 0;
