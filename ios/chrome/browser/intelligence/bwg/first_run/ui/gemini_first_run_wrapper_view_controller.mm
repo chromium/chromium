@@ -418,10 +418,10 @@ const CGFloat kInsetAdjustment = 20;
     RecordFirstRunPromoAction(IOSGeminiFirstRunAction::kAccept);
     [self didAcceptPromo];
   } else if (_currentChildViewController == _consentViewController) {
-    RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kAccept);
     if (_firstRunType == GeminiFirstRunType::kLive) {
       [self.mutator didConsentToLiveGemini];
     } else {
+      RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kAccept);
       [self.mutator didConsentGemini];
     }
   }
@@ -432,10 +432,10 @@ const CGFloat kInsetAdjustment = 20;
     RecordFirstRunPromoAction(IOSGeminiFirstRunAction::kDismiss);
     [self.mutator didCloseGeminiPromo];
   } else if (_currentChildViewController == _consentViewController) {
-    RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kDismiss);
     if (_firstRunType == GeminiFirstRunType::kLive) {
       [self.mutator didRefuseLiveOnboarding];
     } else {
+      RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kDismiss);
       [self.mutator didRefuseGeminiConsent];
     }
   }
