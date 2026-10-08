@@ -10,7 +10,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
-#import "base/no_destructor.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/browser_sync/common_controller_builder.h"
@@ -292,25 +291,6 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-SyncServiceFactory* SyncServiceFactory::GetInstance() {
-  static base::NoDestructor<SyncServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-syncer::SyncService* SyncServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<syncer::SyncService>(
-      profile, /*create*/ true);
-}
-
-// static
-syncer::SyncService* SyncServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<syncer::SyncService>(
-      profile, /*create*/ false);
-}
-
-// static
 syncer::SyncServiceImpl*
 SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
     ProfileIOS* profile) {
@@ -337,9 +317,10 @@ SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSyncService);
 }
 
-SyncServiceFactory::SyncServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SyncService",
-                                    TestingCreation::kNoServiceForTests) {
+SyncServiceFactory::SyncServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SyncService",
+                                         TestingCreation::kNoServiceForTests) {
   // The SyncServiceImpl depends on various KeyedServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
@@ -380,8 +361,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(HomeBackgroundCustomizationServiceFactory::GetInstance());
 }
-
-SyncServiceFactory::~SyncServiceFactory() {}
 
 std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

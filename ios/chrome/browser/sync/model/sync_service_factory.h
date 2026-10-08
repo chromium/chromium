@@ -7,24 +7,26 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace syncer {
 class SyncServiceImpl;
-class SyncService;
 }  // namespace syncer
 
 // Singleton that owns all SyncServices and associates them with
 // ProfileIOS.
-class SyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class SyncServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<SyncServiceFactory,
+                                                syncer::SyncService> {
  public:
-  static syncer::SyncService* GetForProfile(ProfileIOS* profile);
-  static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
+  SyncServiceFactory(PassKey key);
+
+  // Returns the service instance as syncer::SyncServiceImpl. Behavior
+  // is undefined if a test factory has been installed and the service
+  // is not a real instance.
   static syncer::SyncServiceImpl* GetForProfileAsSyncServiceImplForTesting(
       ProfileIOS* profile);
-
-  static SyncServiceFactory* GetInstance();
 
   // Iterates over all profiles that have been loaded so far and extract their
   // SyncService if present. Returned pointers are guaranteed to be not null.
@@ -35,11 +37,6 @@ class SyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<SyncServiceFactory>;
-
-  SyncServiceFactory();
-  ~SyncServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
