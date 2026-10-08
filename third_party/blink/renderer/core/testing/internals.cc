@@ -3295,6 +3295,16 @@ void Internals::setDarkPreferredRootScrollbarColorScheme(Document* document) {
       mojom::blink::PreferredColorScheme::kDark);
 }
 
+void Internals::setAccentColor(const String& color_value) {
+#if BUILDFLAG(IS_MAC)
+  NOTREACHED() << "Accent color customization not supported on Mac.";
+#else   // BUILDFLAG(IS_MAC)
+  if (InternalSettings* internal_settings = settings()) {
+    internal_settings->setAccentColor(color_value);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+}
+
 void Internals::setShouldRevealPassword(Element* element,
                                         bool reveal,
                                         ExceptionState& exception_state) {

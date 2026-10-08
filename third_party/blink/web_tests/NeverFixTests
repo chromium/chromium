@@ -840,6 +840,9 @@ paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html 
 # Tests that use too much storage for automation.
 http/tests/cachestorage/large-put.html [ Skip ]
 
+# System accent color has no override mechanism on mac
+[ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/accent-color-ignored.html [ Skip ]
+
 # Below are manual tests from web-platform-tests without automation.
 external/wpt/css/CSS2/tables/table-footer-group-004.xht [ Skip ]
 external/wpt/css/CSS2/tables/table-header-group-004.xht [ Skip ]

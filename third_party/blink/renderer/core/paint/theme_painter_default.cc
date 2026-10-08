@@ -268,6 +268,7 @@ enum class ClampingBehavior {
 std::optional<SkColor> GetAccentColor(
     const ComputedStyle& style,
     const Document& document,
+    const PaintInfo& paint_info,
     ClampingBehavior clamping_behavior = ClampingBehavior::kNoClamping) {
   std::optional<Color> accent_color = style.AccentColorResolved();
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
@@ -278,7 +279,11 @@ std::optional<SkColor> GetAccentColor(
   // fingerprinting. We also only allow the system accent color to be used in
   // web app contexts on the initial profile, where fingerprinting risk is not
   // as large of a concern and cross-profile fingerprinting is prevented.
-  if (!accent_color &&
+  // In particular, `<canvas layoutsubtree>` children are painted with
+  // PaintFlag::kPrivacyPreserving and their pixels are readable via
+  // drawElementImage()+getImageData(), so the OS accent color must be
+  // suppressed there too.
+  if (!accent_color && !paint_info.IsReadBackAllowedRendering() &&
       !document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
     if (!document.InForcedColorsMode() &&
         RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() &&
@@ -310,10 +315,11 @@ std::optional<SkColor> GetAccentColor(
   if (!accent_color->IsOpaque()) {
     SkColor background_color =
         layout_theme
-            .SystemColor(
-                CSSValueID::kCanvas, color_scheme,
-                document.GetColorProviderForPainting(color_scheme),
-                document.IsInWebAppScope() && document.IsInitialProfile())
+            .SystemColor(CSSValueID::kCanvas, color_scheme,
+                         document.GetColorProviderForPainting(color_scheme),
+                         document.IsInWebAppScope() &&
+                             document.IsInitialProfile() &&
+                             !paint_info.IsReadBackAllowedRendering())
             .Rgb();
     return color_utils::GetResultingPaintColor(accent_color->Rgb(),
                                                background_color);
@@ -354,7 +360,7 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   if (accent_color_affects_color_scheme) {
     color_scheme = GetColorSchemeForAccentColor(
         element, color_scheme,
-        GetAccentColor(style, document,
+        GetAccentColor(style, document, paint_info,
                        ClampingBehavior::kClampSystemAccentColor),
         WebThemeEngine::kPartCheckbox);
   }
@@ -366,7 +372,7 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document,
+      GetAccentColor(style, document, paint_info,
                      ClampingBehavior::kClampSystemAccentColor));
   return false;
 }
@@ -397,7 +403,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   if (accent_color_affects_color_scheme) {
     color_scheme = GetColorSchemeForAccentColor(
         element, color_scheme,
-        GetAccentColor(style, document,
+        GetAccentColor(style, document, paint_info,
                        ClampingBehavior::kClampSystemAccentColor),
         WebThemeEngine::kPartRadio);
   }
@@ -409,7 +415,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document,
+      GetAccentColor(style, document, paint_info,
                      ClampingBehavior::kClampSystemAccentColor));
   return false;
 }
@@ -432,7 +438,7 @@ bool ThemePainterDefault::PaintButton(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document));
+      GetAccentColor(style, document, paint_info));
   return false;
 }
 
@@ -470,7 +476,7 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       element.GetDocument().InForcedColorsMode(), color_scheme,
       element.GetDocument().GetPreferredContrast(), color_provider,
-      GetAccentColor(style, element.GetDocument()));
+      GetAccentColor(style, element.GetDocument(), paint_info));
   return false;
 }
 
@@ -513,7 +519,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document));
+      GetAccentColor(style, document, paint_info));
   return false;
 }
 
@@ -538,7 +544,7 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document));
+      GetAccentColor(style, document, paint_info));
   return false;
 }
 
@@ -659,7 +665,8 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
       GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
   if (accent_color_affects_color_scheme) {
     color_scheme = GetColorSchemeForAccentColor(
-        element, color_scheme, GetAccentColor(style, element.GetDocument()),
+        element, color_scheme,
+        GetAccentColor(style, element.GetDocument(), paint_info),
         WebThemeEngine::kPartSliderTrack);
   }
 
@@ -671,7 +678,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       element.GetDocument().InForcedColorsMode(), color_scheme,
       element.GetDocument().GetPreferredContrast(), color_provider,
-      GetAccentColor(style, element.GetDocument()));
+      GetAccentColor(style, element.GetDocument(), paint_info));
   return false;
 }
 
@@ -695,7 +702,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
   const auto& slider_element = To<SliderThumbElement>(element);
   std::optional<SkColor> accent_color =
       GetAccentColor(*slider_element.HostInput()->EnsureComputedStyle(),
-                     element.GetDocument());
+                     element.GetDocument(), paint_info);
   WebThemeEngine::ExtraParams extra_params(slider);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
 
@@ -707,7 +714,8 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
       GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
   if (accent_color_affects_color_scheme) {
     color_scheme = GetColorSchemeForAccentColor(
-        element, color_scheme, GetAccentColor(style, element.GetDocument()),
+        element, color_scheme,
+        GetAccentColor(style, element.GetDocument(), paint_info),
         WebThemeEngine::kPartSliderThumb);
   }
 
@@ -756,7 +764,7 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       element.GetDocument().InForcedColorsMode(), color_scheme,
       element.GetDocument().GetPreferredContrast(), color_provider,
-      GetAccentColor(style, element.GetDocument()));
+      GetAccentColor(style, element.GetDocument(), paint_info));
   return false;
 }
 
@@ -788,7 +796,8 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   // and `accent_color`, we choose the `color_scheme` here based on the two
   // possible color values for `kPartProgressBar`.
   color_scheme = GetColorSchemeForAccentColor(
-      element, color_scheme, GetAccentColor(style, element.GetDocument()),
+      element, color_scheme,
+      GetAccentColor(style, element.GetDocument(), paint_info),
       WebThemeEngine::kPartProgressBar);
 
   const ui::ColorProvider* color_provider =
@@ -798,7 +807,7 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
       GetWebThemeState(element), rect, &extra_params,
       element.GetDocument().InForcedColorsMode(), color_scheme,
       element.GetDocument().GetPreferredContrast(), color_provider,
-      GetAccentColor(style, element.GetDocument()));
+      GetAccentColor(style, element.GetDocument(), paint_info));
   return false;
 }
 

@@ -289,6 +289,8 @@ interface Internals {
     void setDarkPreferredRootScrollbarColorScheme(Document document);
     void setForcedColorsAndDarkPreferredColorScheme(Document document);
 
+    void setAccentColor(DOMString color_value);
+
     [RaisesException] void setShouldRevealPassword(Element element, boolean reveal);
 
     [CallWith=ScriptState] Promise<any> createResolvedPromise(any value);

@@ -459,6 +459,8 @@ class Internals final : public ScriptWrappable {
   void setDarkPreferredRootScrollbarColorScheme(Document* document);
   void setForcedColorsAndDarkPreferredColorScheme(Document* document);
 
+  void setAccentColor(const String& color_value);
+
   void setShouldRevealPassword(Element*, bool, ExceptionState&);
 
   ScriptPromise<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);

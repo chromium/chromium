@@ -22,6 +22,9 @@ specific_include_rules = {
         "+third_party/blink/renderer/core/exported/web_view_impl.h",
         "+ui/gfx/image/canvas_image_source.h",
     ],
+    'internal_settings\\.cc' : [
+        "+ui/native_theme/native_theme.h",
+    ],
     'worker_internals\\.cc' : [
         "+ui/gfx/image/canvas_image_source.h",
     ],

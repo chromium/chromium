@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="UTF-8">
+<title>drawElementImage does not draw system accent color - ref</title>
+<script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+<style>
+  #child {
+    width: 200px;
+    height: 200px;
+    background: white;
+  }
+  #canvas {
+    background: grey;
+  }
+</style>
+<canvas id=canvas width="200" height="200" content=drawable>
+  <div drawable id="child">
+    <div><input type="checkbox" checked></div>
+    <div><input type="radio" checked></div>
+    <div><input type="range" value="50"></div>
+    <div><progress value="0.5"></progress></div>
+  </div>
+</canvas>
+<script>
+  onload = async () => {
+    await waitForCanvasPaint(canvas);
+    canvas.getContext("2d").drawElementImage(child, 0, 0);
+    takeScreenshot();
+  };
+</script>
+</html>
