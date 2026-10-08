@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/attempt_login_tool.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -49,6 +50,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #else
 #include "base/android/android_info.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -154,6 +157,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
         /*enabled_features=*/
         {password_manager::features::kActorLogin,
          password_manager::features::kActorLoginQualityLogs,
+         password_manager::features::kBiometricTouchToFill,
          features::kGlicActor},
         // TODO(crbug.com/480920277): Remove the FedCM flag once the prototyping
         // is complete.
@@ -863,6 +867,54 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kLoginPageChangedDuringSelection);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Verifies on Android that when AttemptLogin encounters a reauth requirement
+// (such as when the task is not focused / in the background), it pauses,
+// observes `GlobalBrowserCollection`, and resumes AttemptLogin once the
+// task/window regains focus.
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       DeviceReauthRequiredRetriesOnWindowActivation) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  actor_login::Credential persisted_cred = MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true);
+  persisted_cred.has_persistent_permission = true;
+  mock_login_service().SetCredentials(std::vector{persisted_cred});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kErrorDeviceReauthRequired);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return mock_login_service().last_credential_used().has_value();
+  }));
+
+  // The tool should be awaiting focus/activation and not yet complete because
+  // the task is not focused.
+  EXPECT_FALSE(result.IsReady());
+
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // Simulate the user coming back to the task and regaining focus in the
+  // window/tab, which triggers the retry of AttemptLogin.
+  BrowserWindowInterface* browser_window =
+      active_tab()->GetBrowserWindowInterface();
+  ASSERT_TRUE(browser_window);
+  GlobalBrowserCollection::GetInstance()
+      ->GetPlatformDelegate()
+      ->OnBrowserActivated(nullptr, reinterpret_cast<int64_t>(browser_window));
+
+  ExpectOkResult(result);
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(u"username", mock_login_service().last_credential_used()->username);
+}
+#endif
 
 class ActorAttemptLoginToolTestWithFaviconService
     : public ActorAttemptLoginToolTest {
