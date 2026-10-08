@@ -62,10 +62,6 @@
 // Returns a matcher for the AI disclosure footer view.
 + (id<GREYMatcher>)aiDisclosureFooter;
 
-// Returns a matcher for the "Manage settings" link inside the inline privacy
-// notice.
-+ (id<GREYMatcher>)inlineNoticeSettingsLink;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_TEST_AT_MEMORY_TEST_UTIL_H_
