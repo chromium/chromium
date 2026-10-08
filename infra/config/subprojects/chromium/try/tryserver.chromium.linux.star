@@ -1059,6 +1059,7 @@ try_.builder(
     execution_timeout = 5 * time.hour,
     notifies = ["chrome-rust-toolchain"],
     properties = {
+        "disable_tbi": True,
         "$build/chromium_toolchain": {
             "toolchain": "CLANG",
             "trusted_build_instance": "lexan-release-infra-linux-prod",
