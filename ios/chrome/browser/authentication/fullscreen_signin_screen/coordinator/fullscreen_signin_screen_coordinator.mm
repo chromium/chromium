@@ -235,31 +235,26 @@
                              continuationProvider:
                                  _changeProfileContinuationProvider];
   __weak __typeof(self) weakSelf = self;
-  self.addAccountSigninCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf addAccountSigninCompleteWithCoordinator:coordinator
-                                         signinResult:signinResult
-                                   completionIdentity:result.value_or(nil)];
-  };
+  self.addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf addAccountSigninCompleteWithCoordinator:coordinator
+                                             signinResult:result];
+      };
   [self.addAccountSigninCoordinator start];
 }
 
 // Callback handling the completion of the AddAccount action.
-- (void)addAccountSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                                   signinResult:
-                                       (SigninCoordinatorResult)signinResult
-                             completionIdentity:
-                                 (id<SystemIdentity>)signinCompletionIdentity {
+- (void)
+    addAccountSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                               signinResult:
+                                   (const SigninCoordinatorResultOrIdentity&)
+                                       signinResult {
   CHECK_EQ(self.addAccountSigninCoordinator, coordinator);
   [self stopAddAccountCoordinator];
-  if (signinResult == SigninCoordinatorResultSuccess &&
-      self.accountManagerService->IsValidIdentity(
-          signinCompletionIdentity.gaiaId)) {
-    self.mediator.selectedIdentity = signinCompletionIdentity;
+  if (signinResult.has_value() && self.accountManagerService->IsValidIdentity(
+                                      signinResult.value().gaiaId)) {
+    self.mediator.selectedIdentity = signinResult.value();
     self.mediator.addedAccount = YES;
   }
 }
