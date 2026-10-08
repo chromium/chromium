@@ -60,6 +60,17 @@ BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
 BASE_FEATURE(kRecalculateNativeWinOcclusionOnWindowDestroy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, native window occlusion tracking ignores
+// EVENT_OBJECT_LOCATIONCHANGE events that can't change the occlusion state of
+// tracked windows: events for child windows, and events for top-level windows
+// whose ability to occlude other windows and bounds haven't changed since the
+// last occlusion calculation. Layered windows, for example, raise this event
+// every time their contents are updated, even if they don't move. Enabled by
+// default; behind a feature flag so it can be disabled remotely via Finch if a
+// regression is observed.
+BASE_FEATURE(kFilterNativeWinOcclusionLocationChanges,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
     &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};

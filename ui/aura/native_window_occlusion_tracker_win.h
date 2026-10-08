@@ -30,13 +30,10 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/win/power_setting_change_listener.h"
 #include "ui/base/win/session_change_observer.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace base {
 class WaitableEvent;
-}
-
-namespace gfx {
-class Rect;
 }
 
 namespace aura {
@@ -92,7 +89,7 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // This class computes the occlusion state of the tracked windows.
   // It runs on a separate thread, and notifies the main thread of
   // the occlusion state of the tracked windows.
-  class WindowOcclusionCalculator {
+  class AURA_EXPORT WindowOcclusionCalculator {
    public:
     // Creates WindowOcclusionCalculator instance. Must be called on UI thread.
     static void CreateInstance(
@@ -128,6 +125,8 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     void ScheduleOcclusionCalculationIfNeeded();
 
    private:
+    friend class NativeWindowOcclusionTrackerTest;
+
     WindowOcclusionCalculator(
         scoped_refptr<base::SequencedTaskRunner> task_runner,
         scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
@@ -168,6 +167,15 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // windows in `root_window_hwnds_occlusion_state_` and notifies them if
     // their occlusion status has changed.
     void ComputeNativeWindowOcclusionStatus();
+
+    // Handles EVENT_OBJECT_LOCATIONCHANGE for the top-level window `hwnd` by
+    // scheduling an occlusion calculation, unless the location change can't
+    // affect the occlusion state of the tracked root windows. That's the case
+    // if `hwnd` isn't one of them (see `root_window_hwnds_occlusion_state_`),
+    // and either it couldn't occlude other windows during the last occlusion
+    // calculation and still can't, or it could and still can, with the same
+    // bounds.
+    void HandleLocationChanged(HWND hwnd);
 
     // Registers a global event hook (not per process) for the events in the
     // range from `event_min` to `event_max`, inclusive.
@@ -254,21 +262,32 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
 
     // Top-level HWNDs that were determined to be visible, opaque, and on the
     // current virtual desktop during the most recent occlusion calculation
-    // (i.e., they could occlude other windows). Used to filter
-    // EVENT_OBJECT_DESTROY notifications: we only schedule a recalculation
-    // when one of these HWNDs is destroyed. This is important for the case
-    // where the process owning an occluding window is forcibly terminated
-    // (e.g., via TerminateProcess), which doesn't reliably fire
-    // EVENT_OBJECT_HIDE or EVENT_SYSTEM_FOREGROUND. HWND-based filtering is
-    // used (rather than querying GetWindowThreadProcessId) because Win32
-    // calls on a destroyed HWND can return zero. Only populated when
-    // `recalculate_on_window_destroy_` is true.
-    base::flat_set<HWND> occluding_hwnds_;
+    // (i.e., they could occlude other windows), mapped to the bounds used for
+    // them in that calculation. Used to filter EVENT_OBJECT_DESTROY
+    // notifications: we only schedule a recalculation when one of these HWNDs
+    // is destroyed. This is important for the case where the process owning an
+    // occluding window is forcibly terminated (e.g., via TerminateProcess),
+    // which doesn't reliably fire EVENT_OBJECT_HIDE or EVENT_SYSTEM_FOREGROUND.
+    // HWND-based filtering is used (rather than querying
+    // GetWindowThreadProcessId) because Win32 calls on a destroyed HWND can
+    // return zero. Also used by HandleLocationChanged to ignore
+    // EVENT_OBJECT_LOCATIONCHANGE notifications that don't change a window's
+    // bounds, e.g., the ones layered windows raise when updating their
+    // contents. Only populated when `recalculate_on_window_destroy_` or
+    // `filter_location_changes_` is true. ProcessEventHookCallback accesses
+    // this outside of `task_runner_`'s sequence, but on the thread that runs
+    // its tasks (see the comment there), so it's never accessed concurrently.
+    base::flat_map<HWND, gfx::Rect> occluding_window_rects_;
 
     // Cached value of the kRecalculateNativeWinOcclusionOnWindowDestroy
     // feature, captured once at construction so that the calculator behaves
     // consistently across its lifetime even if the feature state changes.
     const bool recalculate_on_window_destroy_;
+
+    // Cached value of the kFilterNativeWinOcclusionLocationChanges feature,
+    // captured once at construction for the same reason as
+    // `recalculate_on_window_destroy_`.
+    const bool filter_location_changes_;
 
     // Timer to delay occlusion update.
     base::OneShotTimer occlusion_update_timer_;

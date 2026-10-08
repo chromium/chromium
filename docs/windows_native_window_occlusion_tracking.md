@@ -54,6 +54,18 @@ isn't calculated until the window stops moving, because moving a window is
 essentially modal, and there's no point in recalculating occlusion over and
 over again for each incremental move event.
 
+EVENT_OBJECT_LOCATIONCHANGE events are reported for every window in a hooked
+process, including child windows, and layered windows raise them every time
+they update their contents, even if they don't move. So, location changes that
+can't change the occlusion state of Chromium windows are ignored. Location
+changes of child windows are ignored, because a child window can only move
+within its parent, and native occlusion is computed from top-level windows only.
+Location changes of top-level windows other than the tracked Chromium windows
+are ignored if the window couldn't occlude other windows during the last
+occlusion calculation and still can't, or if it could and still can, with the
+same bounds. This filtering can be disabled with the
+kFilterNativeWinOcclusionLocationChanges feature.
+
 To calculate occlusion, we first mark minimized Chromium windows as hidden, and
 Chromium windows on a different virtual desktop as occluded.  We compute the
 SKRegion for the virtual screen, which takes multiple monitor configurations

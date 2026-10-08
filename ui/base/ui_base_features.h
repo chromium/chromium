@@ -61,6 +61,8 @@ BASE_DECLARE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kRecalculateNativeWinOcclusionOnWindowDestroy);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kFilterNativeWinOcclusionLocationChanges);
+COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::FeatureParam<std::string>
     kApplyNativeOcclusionToCompositorType;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
