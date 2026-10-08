@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -44,6 +45,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -816,6 +818,55 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElement) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL(
+          "example.com", "/actor/page_with_clickable_element.html")));
+  ASSERT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
+
+  std::optional<int> button_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+  std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "click_element";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", document_id)
+                                            .Set("dom_node_id", *button_id));
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "button_clicked"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElementMissingNodeId) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "click_element";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -841,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 14u);
+  ASSERT_EQ(tools.size(), 15u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -1080,6 +1131,27 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       fullscreen_schema.FindList("required");
   ASSERT_TRUE(fullscreen_required);
   EXPECT_EQ(*fullscreen_required, base::ListValue().Append("fullscreen"));
+
+  const ToolDefinition& click_element = tools[14];
+  EXPECT_EQ(click_element.name, "click_element");
+  EXPECT_FALSE(click_element.description.empty());
+  EXPECT_EQ(click_element.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(click_element.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& click_schema = click_element.parameters_json_schema;
+  const std::string* click_schema_type = click_schema.FindString("type");
+  ASSERT_TRUE(click_schema_type);
+  EXPECT_EQ(*click_schema_type, "object");
+
+  const std::string* node_id_type =
+      click_schema.FindStringByDottedPath("properties.node_id.type");
+  ASSERT_TRUE(node_id_type);
+  EXPECT_EQ(*node_id_type, "integer");
+
+  const base::ListValue* click_required = click_schema.FindList("required");
+  ASSERT_TRUE(click_required);
+  EXPECT_EQ(*click_required, base::ListValue().Append("node_id"));
 }
 
 // The session's actor task is started with the session and stopped when it

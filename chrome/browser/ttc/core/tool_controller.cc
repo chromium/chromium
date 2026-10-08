@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/tabs/public/tab_interface.h"
@@ -183,6 +185,11 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 #if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "set_fullscreen") {
     SetFullscreen(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "click_element") {
+    ClickElement(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -417,6 +424,26 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   set_fullscreen.behavior = ToolDefinition::Behavior::kBlocking;
   set_fullscreen.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(set_fullscreen));
+
+  ToolDefinition click_element;
+  click_element.name = "click_element";
+  click_element.description =
+      "Click or toggle an interactive element (such as a button, radio "
+      "button, or checkbox) on the active webpage.";
+  click_element.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set("node_id",
+                                     base::DictValue()
+                                         .Set("type", "integer")
+                                         .Set("description",
+                                              "The numeric node ID of the "
+                                              "target element (e.g. 101).")))
+          .Set("required", base::ListValue().Append("node_id"));
+  click_element.behavior = ToolDefinition::Behavior::kBlocking;
+  click_element.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(click_element));
 #endif
 
   return tools;
@@ -659,6 +686,37 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::TranslatePageToolRequest>(
             tab_handle, *target_language);
+      },
+      std::move(callback));
+}
+
+void ToolController::ClickElement(const base::DictValue& arguments,
+                                  ToolResponseCallback callback) {
+  const base::DictValue* node_id = arguments.FindDict("node_id");
+  if (!node_id) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing node_id argument"));
+    return;
+  }
+
+  std::optional<int> dom_node_id = node_id->FindInt("dom_node_id");
+  const std::string* document_id = node_id->FindString("document_id");
+  if (!dom_node_id || !document_id) {
+    std::move(callback).Run(ToolResponse::Error(
+        actor::mojom::ActionResultCode::kArgumentsInvalid,
+        "node_id must contain dom_node_id and document_id"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&dom_node_id, &document_id](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::ClickToolRequest>(
+            tab_handle,
+            actor::PageTarget(actor::DomNode{
+                .node_id = *dom_node_id, .document_identifier = *document_id}),
+            actor::mojom::ClickType::kLeft, actor::mojom::ClickCount::kSingle);
       },
       std::move(callback));
 }
