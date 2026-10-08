@@ -521,8 +521,10 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
       DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
   if (!filter_element)
     return nullptr;
-  if (auto* resource_container = resource->ResourceContainerNoCycleCheck())
+  if (auto* resource_container = resource->ResourceContainerNoCycleCheck(
+          SVGResource::Usage::kContent)) {
     resource_container->ClearInvalidationMask();
+  }
 
   std::optional<gfx::SizeF> unzoomed_viewport;
   if (viewport_) {

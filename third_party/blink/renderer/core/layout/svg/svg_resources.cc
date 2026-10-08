@@ -463,19 +463,34 @@ void SVGResourceInvalidator::InvalidateEffects() {
   }
 }
 
+namespace {
+
+LayoutSVGResourcePaintServer* GetPaintServerResource(const SVGPaint& paint) {
+  StyleSVGResource* style_resource = paint.Resource();
+  if (!style_resource) {
+    return nullptr;
+  }
+  SVGResource* resource = style_resource->Resource();
+  if (!resource) {
+    return nullptr;
+  }
+  return DynamicTo<LayoutSVGResourcePaintServer>(
+      resource->ResourceContainerNoCycleCheck(SVGResource::Usage::kElement));
+}
+
+}  // namespace
+
 void SVGResourceInvalidator::InvalidatePaints() {
   SVGElementResourceClient* client = SVGResources::GetClient(object_);
   if (!client)
     return;
   bool needs_invalidation = false;
   const ComputedStyle& style = object_.StyleRef();
-  if (auto* fill = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
-          *client, style.FillPaint().Resource())) {
+  if (auto* fill = GetPaintServerResource(style.FillPaint())) {
     fill->RemoveClientFromCache(*client);
     needs_invalidation = true;
   }
-  if (auto* stroke = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
-          *client, style.StrokePaint().Resource())) {
+  if (auto* stroke = GetPaintServerResource(style.StrokePaint())) {
     stroke->RemoveClientFromCache(*client);
     needs_invalidation = true;
   }

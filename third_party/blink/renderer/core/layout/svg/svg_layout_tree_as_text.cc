@@ -220,7 +220,7 @@ static StringBuilder& operator<<(StringBuilder& ts,
 static void WriteSVGPaintingResource(StringBuilder& ts,
                                      const SVGResource& resource) {
   const LayoutSVGResourceContainer* container =
-      resource.ResourceContainerNoCycleCheck();
+      resource.ResourceContainerNoCycleCheck(SVGResource::Usage::kElement);
   DCHECK(container);
   switch (container->ResourceType()) {
     case kPatternResourceType:
