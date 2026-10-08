@@ -2416,14 +2416,6 @@ crbug.com/488071544 external/wpt/webrtc/simulcast/negotiation-encodings.https.ht
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?interop-2026 [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?rest [ Failure Timeout ]
 
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html [ Crash Failure Timeout ]
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-allowed-by-permissions-policy-attribute.https.sub.html [ Crash Failure Timeout ]
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-allowed-by-permissions-policy.https.sub.html [ Crash Failure Timeout ]
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-default-permissions-policy.https.sub.html [ Crash Failure Timeout ]
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-disabled-by-permissions-policy.https.sub.html [ Crash Failure Timeout ]
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/reporting/bluetooth-report-only.https.html [ Crash Failure Timeout ]
-crbug.com/492578951 virtual/unified-autoplay/external/wpt/permissions-policy/reporting/bluetooth-reporting.https.html [ Crash Failure Timeout ]
-
 crbug.com/494328388 external/wpt/bluetooth/bidi/getDevices/no-granted-devices.https.window.html [ Failure Pass ]
 crbug.com/435989554 external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?1-2 [ Crash Failure Pass ]
 

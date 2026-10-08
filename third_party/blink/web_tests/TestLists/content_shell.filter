@@ -606,6 +606,11 @@ virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-scr
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
+# Mirrors the non-virtual permissions-policy/bluetooth-* entries above: the
+# Web Bluetooth test API (navigator.bluetooth.test) is only available in
+# content shell.
+virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-*
+virtual/unified-autoplay/external/wpt/permissions-policy/reporting/bluetooth-*
 virtual/view-transition-mpa-serialization/*
 virtual/view-transition-mpa-serialization/wpt_internal/*
 # https://github.com/web-platform-tests/wpt/issues/48825
