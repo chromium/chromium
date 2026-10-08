@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "client_certificates.managed_user_config.value",
+      "pref_location": "user_profile",
+      "default_value": {},
+      "values_to_test": [
+        {
+          "common_name_source": "profile_id"
+        },
+        {
+          "common_name_source": "computer_name"
+        }
+      ]
+    }
+  }
+]

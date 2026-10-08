@@ -14,12 +14,18 @@ const char kProvisionManagedClientCertificateForUserPrefs[] =
     "client_certificates.provision_for_user.value";
 const char kProvisionManagedClientCertificateForBrowserPrefs[] =
     "client_certificates.provision_for_browser.value";
+const char kManagedClientCertificateForUserConfigPrefs[] =
+    "client_certificates.managed_user_config.value";
+const char kManagedClientCertificateForBrowserConfigPrefs[] =
+    "client_certificates.managed_browser_config.value";
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kProvisionManagedClientCertificateForUserPrefs,
       /*default_value=*/0);
+  registry->RegisterDictionaryPref(
+      prefs::kManagedClientCertificateForUserConfigPrefs);
   registry->RegisterDictionaryPref(kManagedProfileIdentityName);
   registry->RegisterDictionaryPref(kTemporaryManagedProfileIdentityName);
 }
@@ -28,6 +34,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kProvisionManagedClientCertificateForBrowserPrefs,
       /*default_value=*/0);
+  registry->RegisterDictionaryPref(
+      prefs::kManagedClientCertificateForBrowserConfigPrefs);
   registry->RegisterDictionaryPref(kManagedBrowserIdentityName);
   registry->RegisterDictionaryPref(kTemporaryManagedBrowserIdentityName);
 }

@@ -44,6 +44,13 @@ extern const char kCertificate[];
 // to be expiring soon.
 extern const int kDaysBeforeExpiration;
 
+// Key and values for the "common_name_source" field in
+// ManagedClientCertificateFor{User,Browser}Config policies.
+extern const char kCommonNameSourceKey[];
+extern const char kCommonNameSourceDeviceId[];
+extern const char kCommonNameSourceProfileId[];
+extern const char kCommonNameSourceComputerName[];
+
 }  // namespace client_certificates
 
 #endif  // COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_

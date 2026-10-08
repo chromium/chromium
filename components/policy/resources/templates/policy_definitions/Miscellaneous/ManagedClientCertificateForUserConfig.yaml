@@ -1,0 +1,34 @@
+owners:
+- pleblanc@google.com
+- cbe-device-trust-eng@google.com
+- file://components/enterprise/client_certificates/OWNERS
+caption: Configure managed client certificate for a user or profile
+desc: |-
+  This policy configures the managed client certificate provisioned when <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME">ProvisionManagedClientCertificateForUser</ph> is enabled.
+
+  The <ph name="COMMON_NAME_SOURCE_FIELD">common_name_source</ph> field specifies the source of the certificate's Subject Common Name (CN):
+  - If unset or set to <ph name="PROFILE_ID_VALUE">profile_id</ph>, the certificate's Subject Common Name is set to the browser profile ID.
+  - If set to <ph name="COMPUTER_NAME_VALUE">computer_name</ph>, the certificate's Subject Common Name is set to the machine's hostname. Note: Setting this property to <ph name="COMPUTER_NAME_VALUE">computer_name</ph> uses a device-level property in a profile-scoped certificate, which has privacy implications on unmanaged or shared devices as the machine hostname will be included in the certificate.
+
+  This policy has no effect if <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME">ProvisionManagedClientCertificateForUser</ph> is disabled or unset.
+future_on:
+- chrome.*
+- chrome_os
+- android
+- ios
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+type: dict
+schema:
+  type: object
+  properties:
+    common_name_source:
+      type: string
+      enum:
+      - profile_id
+      - computer_name
+example_value:
+  common_name_source: computer_name
+tags: []

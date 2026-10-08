@@ -275,6 +275,23 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
+  handlers->AddHandler(std::make_unique<
+                       policy::SimpleSchemaValidatingPolicyHandler>(
+      policy::key::kManagedClientCertificateForUserConfig,
+      client_certificates::prefs::kManagedClientCertificateForUserConfigPrefs,
+      chrome_schema, policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
+      policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+
+  handlers->AddHandler(
+      std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
+          policy::key::kManagedClientCertificateForBrowserConfig,
+          client_certificates::prefs::
+              kManagedClientCertificateForBrowserConfigPrefs,
+          chrome_schema, policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+
   handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
       std::make_unique<policy::SimplePolicyHandler>(
           policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,

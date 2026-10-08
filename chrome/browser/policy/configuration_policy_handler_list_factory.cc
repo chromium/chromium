@@ -2562,6 +2562,18 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 const SchemaValidatingPolicyToPreferenceMapEntry kSchemaValidatingPolicyMap[] =
     {
   // Policies for all platforms - Start.
+  { key::kManagedClientCertificateForUserConfig,
+    client_certificates::prefs::kManagedClientCertificateForUserConfigPrefs,
+    SCHEMA_ALLOW_UNKNOWN,
+    SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+    SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
+#if !BUILDFLAG(IS_CHROMEOS)
+  { key::kManagedClientCertificateForBrowserConfig,
+    client_certificates::prefs::kManagedClientCertificateForBrowserConfigPrefs,
+    SCHEMA_ALLOW_UNKNOWN,
+    SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+    SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   // Policies for all platforms - End.
   // Policies for ChromeOS - Start.
 #if BUILDFLAG(IS_CHROMEOS)

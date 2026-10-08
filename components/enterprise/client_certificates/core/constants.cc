@@ -26,4 +26,12 @@ const char kCertificate[] = "Certificate";
 
 const int kDaysBeforeExpiration = 7;
 
+const char kCommonNameSourceKey[] = "common_name_source";
+
+const char kCommonNameSourceDeviceId[] = "device_id";
+
+const char kCommonNameSourceProfileId[] = "profile_id";
+
+const char kCommonNameSourceComputerName[] = "computer_name";
+
 }  // namespace client_certificates

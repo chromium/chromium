@@ -17,6 +17,13 @@ extern const char kProvisionManagedClientCertificateForUserPrefs[];
 // Pref to which the "ProvisionManagedClientCertificateForBrowserPrefs" policy
 // is mapped.
 extern const char kProvisionManagedClientCertificateForBrowserPrefs[];
+
+// Pref to which the "ManagedClientCertificateForUserConfig" policy is mapped.
+extern const char kManagedClientCertificateForUserConfigPrefs[];
+
+// Pref to which the "ManagedClientCertificateForBrowserConfig" policy is
+// mapped.
+extern const char kManagedClientCertificateForBrowserConfigPrefs[];
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

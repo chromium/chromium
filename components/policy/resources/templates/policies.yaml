@@ -1492,6 +1492,8 @@ policies:
   1491: AllHttpAuthSchemesAllowedForProxies
   1492: ClipboardHistoryEnabled
   1493: ExtensionForceInstallWithSearchOrNewTabOverridesEnabled
+  1494: ManagedClientCertificateForBrowserConfig
+  1495: ManagedClientCertificateForUserConfig
 
 atomic_groups:
   1: Homepage

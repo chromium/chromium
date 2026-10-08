@@ -2594,6 +2594,8 @@ chromium-metrics-reviews@google.com.
   <int value="1492" label="ClipboardHistoryEnabled"/>
   <int value="1493"
       label="ExtensionForceInstallWithSearchOrNewTabOverridesEnabled"/>
+  <int value="1494" label="ManagedClientCertificateForBrowserConfig"/>
+  <int value="1495" label="ManagedClientCertificateForUserConfig"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

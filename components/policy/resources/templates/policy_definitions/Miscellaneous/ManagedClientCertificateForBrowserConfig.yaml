@@ -1,0 +1,33 @@
+owners:
+- pleblanc@google.com
+- cbe-device-trust-eng@google.com
+- file://components/enterprise/client_certificates/OWNERS
+caption: Configure managed client certificate for the browser
+desc: |-
+  This policy configures the managed client certificate provisioned when <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME">ProvisionManagedClientCertificateForBrowser</ph> is enabled.
+
+  The <ph name="COMMON_NAME_SOURCE_FIELD">common_name_source</ph> field specifies the source of the certificate's Subject Common Name (CN):
+  - If unset or set to <ph name="DEVICE_ID_VALUE">device_id</ph>, the certificate's Subject Common Name is set to the managed browser's virtual device ID.
+  - If set to <ph name="COMPUTER_NAME_VALUE">computer_name</ph>, the certificate's Subject Common Name is set to the machine's hostname.
+
+  This policy has no effect if <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME">ProvisionManagedClientCertificateForBrowser</ph> is disabled or unset.
+future_on:
+- chrome.*
+- android
+- ios
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: false
+type: dict
+schema:
+  type: object
+  properties:
+    common_name_source:
+      type: string
+      enum:
+      - device_id
+      - computer_name
+example_value:
+  common_name_source: computer_name
+tags: []
