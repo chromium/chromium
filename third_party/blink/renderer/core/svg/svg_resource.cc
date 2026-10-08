@@ -152,12 +152,17 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainerForCycleCheck()
 
 LayoutSVGResourceContainer* SVGResource::ResourceContainer(
     SVGResourceClient& client) const {
-  auto it = clients_.find(&client);
-  if (it == clients_.end())
+  if (!clients_.Contains(&client)) {
     return nullptr;
+  }
   auto* container = ResourceContainerForCycleCheck();
-  if (!container)
+  if (!container) {
     return nullptr;
+  }
+  // ResourceContainerForCycleCheck() can perform a lifecycle update which
+  // allocates memory and triggers a GC that invalidates iterators.
+  auto it = clients_.find(&client);
+  CHECK(it != clients_.end());
   if (it->value.cached_cycle_check == kNeedCheck) {
     it->value.cached_cycle_check = kPerformingCheck;
     bool has_cycle = container->FindCycle();
@@ -175,12 +180,17 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer(
 }
 
 bool SVGResource::FindCycle(SVGResourceClient& client) const {
-  auto it = clients_.find(&client);
-  if (it == clients_.end())
+  if (!clients_.Contains(&client)) {
     return false;
+  }
   auto* container = ResourceContainerForCycleCheck();
-  if (!container)
+  if (!container) {
     return false;
+  }
+  // ResourceContainerForCycleCheck() can perform a lifecycle update which
+  // allocates memory and triggers a GC that invalidates iterators.
+  auto it = clients_.find(&client);
+  CHECK(it != clients_.end());
   switch (it->value.cached_cycle_check) {
     case kNeedCheck: {
       it->value.cached_cycle_check = kPerformingCheck;
