@@ -1064,8 +1064,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         // Allowlist closing sources GRID_TAB_SWITCHER, BOTTOM_TAB_GROUP_STRIP, and QUICK_DELETE
-        // when
-        // the Grid Tab Switcher is enabled.
+        // when the Grid Tab Switcher is enabled.
         if (closingSource == TabClosingSource.QUICK_DELETE) {
             return TabSwitcherUtils.isGridTabSwitcherDisabled();
         }
@@ -4259,7 +4258,17 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     NewWindowAppSource.NUM_ENTRIES);
         }
 
-        if (persistentState != null && persistentState.containsKey(WINDOW_INDEX)) {
+        // For persistentState, also verify that a valid profile type exists for this window
+        // in protobuf. This handles cases where instance data was deleted in protobuf, but
+        // leaving stale data in the persistent state (in which case we should not load data
+        // from  persistentState, but go into `else` clause to open a new window instead).
+        // `savedInstanceState` doesn't need this, since it would be cleared when activity is
+        // destroyed.
+        if (persistentState != null
+                && persistentState.containsKey(WINDOW_INDEX)
+                && MultiWindowUtils.readProfileType(
+                                persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID))
+                        != SupportedProfileType.UNSET) {
             mWindowId = persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID);
             Log.i(TAG_MULTI_INSTANCE, "Retrieved windowId from persistent state.");
             assert mWindowId != INVALID_WINDOW_ID;
