@@ -37,7 +37,7 @@ source_set("unit_tests") {
     "//base/test:test_proto",
     "//base/test:test_support",
     "//ios/chrome/browser/device_reauth/model",
-    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//testing/gtest",
   ]
 }
@@ -52,6 +52,6 @@ source_set("fake_reauthentication_service") {
     ":model",
     "//components/keyed_service/core",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
   ]
 }

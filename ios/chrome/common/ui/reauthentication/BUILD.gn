@@ -19,11 +19,11 @@ source_set("test_support") {
   deps = [ ":reauthentication" ]
 }
 
-source_set("mock_reauthentication_module") {
+source_set("fake_reauthentication_module") {
   testonly = true
   sources = [
-    "mock_reauthentication_module.h",
-    "mock_reauthentication_module.mm",
+    "fake_reauthentication_module.h",
+    "fake_reauthentication_module.mm",
   ]
   deps = [
     "//base",

@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/testing/protocol_fake.h"
@@ -95,14 +95,14 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
                        forProtocol:protocol];
     }
 
-    mock_reauth_module_ =
-        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+    fake_reauth_module_ =
+        base::apple::ObjCCastStrict<FakeReauthenticationModule>(
             ReauthenticationServiceFactory::GetForProfile(profile_.get())
                 ->GetReauthModule());
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldSkipReAuth = NO;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.shouldSkipReAuth = NO;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_window_.Get().rootViewController = root_view_controller_;
@@ -158,7 +158,7 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
   SceneState* scene_state_;
   UIViewController* root_view_controller_;
   ScopedKeyWindow scoped_window_;
-  MockReauthenticationModule* mock_reauth_module_ = nil;
+  FakeReauthenticationModule* fake_reauth_module_ = nil;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester;
   PasswordSettingsCoordinator* coordinator_ = nil;
@@ -187,7 +187,7 @@ TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsPresentedWithAuth) {
   // No visits logged until auth is passed and the surface is uncovered.
   CheckPasswordSettingsVisitMetricsCount(0);
 
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Password Settings visible.
   ASSERT_TRUE(IsPasswordSettingsPresented());
@@ -207,7 +207,7 @@ TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsVisitRecordedOnlyOnce) {
   // No visits logged until auth is passed and the surface is uncovered.
   CheckPasswordSettingsVisitMetricsCount(0);
 
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Password Settings visible.
   ASSERT_TRUE(IsPasswordSettingsPresented());
@@ -220,7 +220,7 @@ TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsVisitRecordedOnlyOnce) {
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Validate no new visits were recorded.
   CheckPasswordSettingsVisitMetricsCount(1);

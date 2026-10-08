@@ -15,7 +15,7 @@
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/providers/signin/test_device_identifier.h"
 #import "ios/public/provider/chrome/browser/signin/device_identifier_api.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +32,7 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     ios::provider::test::SetDeviceIdentifier(kFakeVendorId);
-    reauth_module_ = [[MockReauthenticationModule alloc] init];
+    reauth_module_ = [[FakeReauthenticationModule alloc] init];
     collector_ = std::make_unique<IOSSystemSignalsCollector>(
         base::BindRepeating([] {
           return base::flat_set<std::string>{kFakeDeviceAffiliationId};
@@ -48,7 +48,7 @@ class IOSSystemSignalsCollectorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IOSSystemSignalsCollector> collector_;
 
-  MockReauthenticationModule* reauth_module_;
+  FakeReauthenticationModule* reauth_module_;
 };
 
 TEST_F(IOSSystemSignalsCollectorTest, GetSupportedSignalNames) {

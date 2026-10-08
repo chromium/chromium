@@ -122,7 +122,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/reauthentication",
-    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//ios/chrome/credential_provider_extension/ui",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
     "//testing/gtest",

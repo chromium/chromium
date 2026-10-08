@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"

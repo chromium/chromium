@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 
 #import "base/check.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 
-@interface MockReauthenticationModule ()
+@interface FakeReauthenticationModule ()
 
 // Last handler passed to attemptReauthWithLocalizedReason.
-// Used for letting tests control the timing of emitting mock reauth results.
-// This allows test to validate states before/after mocked reauth result is
+// Used for letting tests control the timing of emitting fake reauth results.
+// This allows test to validate states before/after fake reauth result is
 // emitted.
 @property(nonatomic) ReauthenticationResultBlock reauthResultHandler;
 
 @end
 
-@implementation MockReauthenticationModule
+@implementation FakeReauthenticationModule
 
 @synthesize localizedReasonForAuthentication =
     _localizedReasonForAuthentication;

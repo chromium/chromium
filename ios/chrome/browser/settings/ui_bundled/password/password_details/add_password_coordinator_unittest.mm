@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -92,14 +92,14 @@ class AddPasswordCoordinatorTest : public PlatformTest {
 
     // Init root vc.
     base_view_controller_ = [[UIViewController alloc] init];
-    mock_reauth_module_ =
-        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+    fake_reauth_module_ =
+        base::apple::ObjCCastStrict<FakeReauthenticationModule>(
             ReauthenticationServiceFactory::GetForProfile(profile_.get())
                 ->GetReauthModule());
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldSkipReAuth = NO;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.shouldSkipReAuth = NO;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     coordinator_ = [[AddPasswordCoordinator alloc]
         initWithBaseViewController:base_view_controller_
@@ -149,7 +149,7 @@ class AddPasswordCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UIViewController* base_view_controller_ = nil;
-  MockReauthenticationModule* mock_reauth_module_ = nil;
+  FakeReauthenticationModule* fake_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mocked_scene_handler_;
   base::HistogramTester histogram_tester_;
@@ -194,7 +194,7 @@ TEST_F(AddPasswordCoordinatorTest,
   CheckAddPasswordIsNotTopViewController();
 
   // Successful auth should reveal add password.
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   CheckAddPasswordIsTopViewController();
 }

@@ -9,9 +9,8 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/mock_callback.h"
 #import "base/test/task_environment.h"
-#import "base/test/test.pb.h"
 #import "base/test/test_future.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -19,24 +18,24 @@
 class IOSDeviceAuthenticatorTest : public PlatformTest {
  public:
   IOSDeviceAuthenticatorTest()
-      : mock_reauth_module_([[MockReauthenticationModule alloc] init]) {
+      : fake_reauth_module_([[FakeReauthenticationModule alloc] init]) {
     authenticator_ = std::make_unique<IOSDeviceAuthenticator>(
-        mock_reauth_module_, &proxy_,
+        fake_reauth_module_, &proxy_,
         device_reauth::DeviceAuthParams(
             base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill));
-    mock_reauth_module_.shouldSkipReAuth = YES;
-    mock_reauth_module_.canAttemptWithBiometrics = YES;
-    mock_reauth_module_.canAttempt = YES;
+    fake_reauth_module_.shouldSkipReAuth = YES;
+    fake_reauth_module_.canAttemptWithBiometrics = YES;
+    fake_reauth_module_.canAttempt = YES;
   }
 
   void SimulateReauthSucceeded() {
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
   }
   void SimulateReauthFailed() {
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
   }
   void SimulateReauthBypassed() {
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSkipped;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSkipped;
   }
 
   IOSDeviceAuthenticator* authenticator() { return authenticator_.get(); }
@@ -45,7 +44,7 @@ class IOSDeviceAuthenticatorTest : public PlatformTest {
   }
 
  protected:
-  MockReauthenticationModule* mock_reauth_module_;
+  FakeReauthenticationModule* fake_reauth_module_;
 
  private:
   DeviceAuthenticatorProxy proxy_;
@@ -130,8 +129,8 @@ class IOSDeviceAuthenticatorAvailabilityTest
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   IOSDeviceAuthenticatorAvailabilityTest() {
-    mock_reauth_module_.canAttemptWithBiometrics = BiometricAvailable();
-    mock_reauth_module_.canAttempt =
+    fake_reauth_module_.canAttemptWithBiometrics = BiometricAvailable();
+    fake_reauth_module_.canAttempt =
         BiometricAvailable() || ScreenLockAvailable();
   }
 

@@ -41,7 +41,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

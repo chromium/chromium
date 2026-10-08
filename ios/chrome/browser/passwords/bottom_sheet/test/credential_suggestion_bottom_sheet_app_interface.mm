@@ -11,19 +11,19 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation CredentialSuggestionBottomSheetAppInterface
 
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult {
-  MockReauthenticationModule* mockModule =
-      base::apple::ObjCCastStrict<MockReauthenticationModule>(
+  FakeReauthenticationModule* fakeModule =
+      base::apple::ObjCCastStrict<FakeReauthenticationModule>(
           ReauthenticationServiceFactory::GetForProfile(
               chrome_test_util::GetOriginalProfile())
               ->GetReauthModule());
-  mockModule.expectedResult = expectedResult;
+  fakeModule.expectedResult = expectedResult;
 }
 
 + (void)setDismissCount:(int)dismissCount {

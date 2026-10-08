@@ -63,7 +63,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
-    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//ios/chrome/test/providers/signin:device_identifier",
     "//ios/public/provider/chrome/browser/signin:device_identifier_api",
     "//services/network:test_support",

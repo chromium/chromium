@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -103,14 +103,14 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     // Mock SnackbarCommands.
     HandleCommand(@protocol(SnackbarCommands), dispatcher);
 
-    mock_reauth_module_ =
-        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+    fake_reauth_module_ =
+        base::apple::ObjCCastStrict<FakeReauthenticationModule>(
             ReauthenticationServiceFactory::GetForProfile(profile_.get())
                 ->GetReauthModule());
     // Delay auth result so auth doesn't pass right after requested by the
     // coordinator. Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldSkipReAuth = NO;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.shouldSkipReAuth = NO;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     UINavigationController* navigation_controller =
         [[UINavigationController alloc] init];
@@ -129,7 +129,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   ScopedKeyWindow scoped_window_;
-  MockReauthenticationModule* mock_reauth_module_;
+  FakeReauthenticationModule* fake_reauth_module_;
   SceneState* scene_state_;
   PasswordDetailsCoordinator* coordinator_;
 };
@@ -153,7 +153,7 @@ TEST_F(PasswordDetailsCoordinatorTest, VisitMetricsAreLoggedOnlyOnce) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   // Simulate successful auth.
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Validate no new visits were logged.
   CheckPasswordDetailsVisitMetricsCount(1, histogram_tester);

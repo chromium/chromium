@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -15,24 +15,24 @@ namespace {
 class IOSDeviceAuthAvailabilityCheckerTest : public PlatformTest {
  public:
   IOSDeviceAuthAvailabilityCheckerTest() {
-    mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
+    fake_reauth_module_ = [[FakeReauthenticationModule alloc] init];
     checker_ =
-        std::make_unique<IOSDeviceAuthAvailabilityChecker>(mock_reauth_module_);
+        std::make_unique<IOSDeviceAuthAvailabilityChecker>(fake_reauth_module_);
   }
 
   IOSDeviceAuthAvailabilityChecker* checker() { return checker_.get(); }
-  MockReauthenticationModule* mock_reauth_module() {
-    return mock_reauth_module_;
+  FakeReauthenticationModule* fake_reauth_module() {
+    return fake_reauth_module_;
   }
 
  private:
-  MockReauthenticationModule* mock_reauth_module_;
+  FakeReauthenticationModule* fake_reauth_module_;
   std::unique_ptr<IOSDeviceAuthAvailabilityChecker> checker_;
 };
 
 TEST_F(IOSDeviceAuthAvailabilityCheckerTest, BiometricsAvailable) {
-  mock_reauth_module().canAttemptWithBiometrics = YES;
-  mock_reauth_module().canAttempt = YES;
+  fake_reauth_module().canAttemptWithBiometrics = YES;
+  fake_reauth_module().canAttempt = YES;
 
   EXPECT_TRUE(checker()->CanAuthenticateWithBiometrics());
   EXPECT_TRUE(checker()->CanAuthenticateWithBiometricOrScreenLock());
@@ -40,16 +40,16 @@ TEST_F(IOSDeviceAuthAvailabilityCheckerTest, BiometricsAvailable) {
 
 TEST_F(IOSDeviceAuthAvailabilityCheckerTest,
        BiometricsUnavailableScreenLockAvailable) {
-  mock_reauth_module().canAttemptWithBiometrics = NO;
-  mock_reauth_module().canAttempt = YES;
+  fake_reauth_module().canAttemptWithBiometrics = NO;
+  fake_reauth_module().canAttempt = YES;
 
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometrics());
   EXPECT_TRUE(checker()->CanAuthenticateWithBiometricOrScreenLock());
 }
 
 TEST_F(IOSDeviceAuthAvailabilityCheckerTest, NeitherAvailable) {
-  mock_reauth_module().canAttemptWithBiometrics = NO;
-  mock_reauth_module().canAttempt = NO;
+  fake_reauth_module().canAttemptWithBiometrics = NO;
+  fake_reauth_module().canAttempt = NO;
 
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometrics());
   EXPECT_FALSE(checker()->CanAuthenticateWithBiometricOrScreenLock());

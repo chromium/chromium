@@ -41,7 +41,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/credential_provider_view_controller+Testing.h"
 #import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
@@ -434,10 +434,10 @@ class CredentialProviderViewControllerTest : public PlatformTest {
       }
     };
 
-    mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
-    mock_reauth_module_.shouldSkipReAuth = YES;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
-    controller_.reauthenticationModule = mock_reauth_module_;
+    fake_reauth_module_ = [[FakeReauthenticationModule alloc] init];
+    fake_reauth_module_.shouldSkipReAuth = YES;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    controller_.reauthenticationModule = fake_reauth_module_;
 
     fake_account_verificator_ = [[FakeAccountVerificationProvider alloc] init];
     fake_account_verificator_.isValid = YES;
@@ -514,7 +514,7 @@ class CredentialProviderViewControllerTest : public PlatformTest {
   UIWindow* window_;
   TestCredentialProviderViewController* controller_;
   id mock_extension_context_;
-  MockReauthenticationModule* mock_reauth_module_;
+  FakeReauthenticationModule* fake_reauth_module_;
   FakeAccountVerificationProvider* fake_account_verificator_;
   raw_ptr<FakePasskeyKeychainProvider> fake_keychain_provider_ = nullptr;
   id<CredentialStore> credential_store_;
@@ -842,8 +842,8 @@ TEST_F(CredentialProviderViewControllerTest,
 
   // Verify user verification was marked as completed during `viewWillAppear:`
   // by checking that `performUserVerificationIfNeeded:` immediately succeeds
-  // without invoking `mock_reauth_module_`.
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  // without invoking `fake_reauth_module_`.
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
   TestFuture<BOOL> uv_future;
   [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
                                                    uv_future.GetCallback())];
@@ -890,7 +890,7 @@ TEST_F(CredentialProviderViewControllerTest,
 TEST_F(CredentialProviderViewControllerTest,
        ViewWillAppearWithReauthFailureExitsWithFailedError) {
   AttachControllerToWindow();
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
 
   ASCredentialServiceIdentifier* identifier =
       [[ASCredentialServiceIdentifier alloc]
@@ -928,7 +928,7 @@ TEST_F(
 TEST_F(
     CredentialProviderViewControllerTest,
     ProvideCredentialWithoutUserInteractionWhenCannotAttemptReauthExitsWithUserInteractionRequired) {
-  mock_reauth_module_.canAttempt = NO;
+  fake_reauth_module_.canAttempt = NO;
   ArchivableCredential* password = TestPasswordCredential();
   CreateStoreWithCredentials(@[ password ]);
   ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
@@ -1006,7 +1006,7 @@ TEST_F(
 // quick passkey use count metric.
 TEST_F(CredentialProviderViewControllerTest,
        ProvideCredentialWithoutUserInteractionForPasskeyCompletesAssertion) {
-  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  fake_reauth_module_.canAttemptWithBiometrics = NO;
   ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
   CreateStoreWithCredentials(@[ passkey ]);
   ASPasskeyCredentialRequest* request = CreatePasskeyRequest(passkey);
@@ -1029,7 +1029,7 @@ TEST_F(CredentialProviderViewControllerTest,
 TEST_F(
     CredentialProviderViewControllerTest,
     ProvideCredentialWithoutUserInteractionForMissingPasskeyExitsWithNotFound) {
-  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  fake_reauth_module_.canAttemptWithBiometrics = NO;
   CreateStoreWithCredentials(@[]);
   ArchivableCredential* passkey = TestEncryptedPasskeyCredential();
   ASPasskeyCredentialRequest* request = CreatePasskeyRequest(passkey);
@@ -1082,8 +1082,8 @@ TEST_F(CredentialProviderViewControllerTest,
 
   // Verify user verification was marked as completed by checking that
   // `performUserVerificationIfNeeded:` immediately succeeds without invoking
-  // `mock_reauth_module_`.
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  // `fake_reauth_module_`.
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
   TestFuture<BOOL> uv_future;
   [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
                                                    uv_future.GetCallback())];
@@ -1136,7 +1136,7 @@ TEST_F(
 TEST_F(
     CredentialProviderViewControllerTest,
     PrepareInterfaceToProvidePasswordWithReauthFailureExitsWithUserCanceled) {
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
   ArchivableCredential* password = TestPasswordCredential();
   CreateStoreWithCredentials(@[ password ]);
   ASPasswordCredentialRequest* request = CreatePasswordRequest(password);
@@ -1207,7 +1207,7 @@ TEST_F(CredentialProviderViewControllerTest,
 TEST_F(CredentialProviderViewControllerTest,
        ConditionalPasskeyRegistrationSucceedsWhenEligible) {
   ConfigureEligiblePasskeyCreationDefaults();
-  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  fake_reauth_module_.canAttemptWithBiometrics = NO;
   CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
   ASPasskeyCredentialRequest* request =
       CreatePasskeyRequest(TestPasskeyCredential());
@@ -1226,7 +1226,7 @@ TEST_F(
     CredentialProviderViewControllerTest,
     ConditionalPasskeyRegistrationWithEmptyKeysExitsWithUserInteractionRequiredError) {
   ConfigureEligiblePasskeyCreationDefaults();
-  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  fake_reauth_module_.canAttemptWithBiometrics = NO;
   fake_keychain_provider_->SetKeys({});
   CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
   ASPasskeyCredentialRequest* request =
@@ -1481,7 +1481,7 @@ TEST_F(
   ConfigureEligiblePasskeyCreationDefaults(
       /*automatic_passkey_upgrade_enabled=*/YES,
       /*multi_profile_enabled=*/YES);
-  mock_reauth_module_.canAttemptWithBiometrics = NO;
+  fake_reauth_module_.canAttemptWithBiometrics = NO;
   CreateStoreWithCredentials(@[ TestPasswordCredential() ]);
 
   ASPasskeyCredentialRequest* request =
@@ -1577,8 +1577,8 @@ TEST_F(
 
   // Verify user verification was marked as completed by checking that
   // `performUserVerificationIfNeeded:` immediately succeeds without invoking
-  // `mock_reauth_module_`.
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  // `fake_reauth_module_`.
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
   TestFuture<BOOL> uv_future;
   [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
                                                    uv_future.GetCallback())];
@@ -1657,7 +1657,7 @@ TEST_F(
 // invoking reauthentication when `userVerificationStatus` is not `kRequired`.
 TEST_F(CredentialProviderViewControllerTest,
        PerformUserVerificationWhenNotRequiredCallsCompletionWithYes) {
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
 
   [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
                                                    uv_future_.GetCallback())];
@@ -1672,7 +1672,7 @@ TEST_F(CredentialProviderViewControllerTest,
 TEST_F(CredentialProviderViewControllerTest,
        PerformUserVerificationWhenRequiredAndReauthFailsExitsWithFailedError) {
   SetUserVerificationRequired();
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
 
   [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
                                                    uv_future_.GetCallback())];
@@ -1689,7 +1689,7 @@ TEST_F(CredentialProviderViewControllerTest,
 TEST_F(CredentialProviderViewControllerTest,
        ProviderDidCompleteReauthenticationUpdatesUserVerificationStatus) {
   SetUserVerificationRequired();
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
 
   [controller_ providerDidCompleteReauthentication];
 
@@ -1775,8 +1775,8 @@ TEST_F(
 
   // Verify user verification was marked as completed by checking that
   // `performUserVerificationIfNeeded:` immediately succeeds without invoking
-  // `mock_reauth_module_`.
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  // `fake_reauth_module_`.
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
   [controller_ performUserVerificationIfNeeded:base::CallbackToBlock(
                                                    uv_future_.GetCallback())];
   ASSERT_TRUE(uv_future_.Wait());
@@ -1799,7 +1799,7 @@ TEST_F(CredentialProviderViewControllerTest,
       setObject:kTestEmail
          forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
   SetUserVerificationRequired();
-  mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
 
   [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::
                                                 kFixDegradedRecoverability

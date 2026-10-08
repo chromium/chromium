@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation ReauthenticationAppInterface
@@ -17,26 +17,26 @@
 
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult {
-  [self mockModule].expectedResult = expectedResult;
+  [self fakeModule].expectedResult = expectedResult;
 }
 
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
-  [self mockModule].canAttempt = canAttempt;
+  [self fakeModule].canAttempt = canAttempt;
 }
 
 + (void)mockReauthenticationModuleShouldSkipReAuth:(BOOL)shouldSkipReAuth {
-  [self mockModule].shouldSkipReAuth = shouldSkipReAuth;
+  [self fakeModule].shouldSkipReAuth = shouldSkipReAuth;
 }
 
 + (void)mockReauthenticationModuleReturnMockedResult {
-  [[self mockModule] returnMockedReauthenticationResult];
+  [[self fakeModule] returnMockedReauthenticationResult];
 }
 
 #pragma mark - Private
 
 // Helper for accessing the reauthentication module for the profile.
-+ (MockReauthenticationModule*)mockModule {
-  return base::apple::ObjCCastStrict<MockReauthenticationModule>(
++ (FakeReauthenticationModule*)fakeModule {
+  return base::apple::ObjCCastStrict<FakeReauthenticationModule>(
       ReauthenticationServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile())
           ->GetReauthModule());

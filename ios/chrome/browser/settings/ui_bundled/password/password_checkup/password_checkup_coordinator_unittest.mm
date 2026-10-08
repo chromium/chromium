@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
@@ -116,14 +116,14 @@ class PasswordCheckupCoordinatorTest
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:[[UIViewController alloc] init]];
-    mock_reauth_module_ =
-        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+    fake_reauth_module_ =
+        base::apple::ObjCCastStrict<FakeReauthenticationModule>(
             ReauthenticationServiceFactory::GetForProfile(profile_.get())
                 ->GetReauthModule());
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldSkipReAuth = NO;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.shouldSkipReAuth = NO;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     push_notification_service_ = ios::provider::CreatePushNotificationService();
 
@@ -177,7 +177,7 @@ class PasswordCheckupCoordinatorTest
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UINavigationController* base_navigation_controller_ = nil;
-  MockReauthenticationModule* mock_reauth_module_ = nil;
+  FakeReauthenticationModule* fake_reauth_module_ = nil;
   id mocked_scene_handler_;
   base::HistogramTester histogram_tester_;
   PasswordCheckupCoordinator* coordinator_ = nil;
@@ -211,7 +211,7 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
   // No visits recorded until successful auth.
   CheckPasswordCheckupVisitMetricsCount(0);
 
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Checkup visible.
   CheckPasswordCheckupIsPresented();
@@ -226,7 +226,7 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
        PasswordCheckupVisitRecordedOnlyOnce) {
   CheckPasswordCheckupVisitMetricsCount(0);
 
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should record a visit
   CheckPasswordCheckupVisitMetricsCount(1);
@@ -239,7 +239,7 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   // Simulate successful auth.
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Validate no new visits were logged.
   CheckPasswordCheckupVisitMetricsCount(1);

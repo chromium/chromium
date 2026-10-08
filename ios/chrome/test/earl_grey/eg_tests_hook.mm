@@ -66,7 +66,7 @@
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 #import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -501,7 +501,7 @@ void InjectFakeTabsInBrowser(Browser* browser) {
 }
 
 id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
-  return [[MockReauthenticationModule alloc] init];
+  return [[FakeReauthenticationModule alloc] init];
 }
 
 namespace {

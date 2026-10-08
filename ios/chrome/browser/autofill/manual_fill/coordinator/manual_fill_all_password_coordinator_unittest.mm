@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -82,15 +82,15 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mocked_application_settings_command_handler
                      forProtocol:@protocol(SettingsCommands)];
 
-    mock_reauth_module_ =
-        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+    fake_reauth_module_ =
+        base::apple::ObjCCastStrict<FakeReauthenticationModule>(
             ReauthenticationServiceFactory::GetForProfile(profile_.get())
                 ->GetReauthModule());
 
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldSkipReAuth = NO;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.shouldSkipReAuth = NO;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_window_.Get().rootViewController = root_view_controller_;
@@ -132,7 +132,7 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
   SceneState* scene_state_;
   UIViewController* root_view_controller_;
   ScopedKeyWindow scoped_window_;
-  MockReauthenticationModule* mock_reauth_module_ = nil;
+  FakeReauthenticationModule* fake_reauth_module_ = nil;
   id mocked_scene_handler_;
   ManualFillAllPasswordCoordinator* coordinator_ = nil;
 };
@@ -145,7 +145,7 @@ TEST_F(ManualFillAllPasswordCoordinatorTest,
   // Passwords should be covered until auth is passed.
   ASSERT_FALSE(ArePasswordsVisible());
 
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Passwords visible.
   ASSERT_TRUE(ArePasswordsVisible());

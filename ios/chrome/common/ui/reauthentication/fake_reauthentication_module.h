@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_COMMON_UI_REAUTHENTICATION_MOCK_REAUTHENTICATION_MODULE_H_
-#define IOS_CHROME_COMMON_UI_REAUTHENTICATION_MOCK_REAUTHENTICATION_MODULE_H_
+#ifndef IOS_CHROME_COMMON_UI_REAUTHENTICATION_FAKE_REAUTHENTICATION_MODULE_H_
+#define IOS_CHROME_COMMON_UI_REAUTHENTICATION_FAKE_REAUTHENTICATION_MODULE_H_
 
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
-// Mock reauthentication module, used by eg tests in order to fake
+// Fake reauthentication module, used by tests in order to fake
 // reauthentication.
-@interface MockReauthenticationModule : NSObject <ReauthenticationProtocol>
+@interface FakeReauthenticationModule : NSObject <ReauthenticationProtocol>
 
 // Localized string containing the reason why reauthentication is requested.
 @property(nonatomic, copy) NSString* localizedReasonForAuthentication;
@@ -21,12 +21,12 @@
 // Indicates whether the device is capable of reauthenticating the user.
 @property(atomic, assign) BOOL canAttempt;
 
-// Indicates whether (mock) authentication should succeed or not. Setting
+// Indicates whether (fake) authentication should succeed or not. Setting
 // `shouldSucceed` to any value sets `canAttemptWithBiometrics` and `canAttempt`
 // to YES.
 @property(nonatomic, assign) ReauthenticationResult expectedResult;
 
-// Whether the mock module should return the mocked result when the
+// Whether the fake module should return the mocked result when the
 // reauthentication request is made or wait for
 // `returnMockedReauthenticationResult` to be invoked. Defaults to YES. Use it
 // for testing some state while authentication is being requested.
@@ -38,4 +38,4 @@
 
 @end
 
-#endif  // IOS_CHROME_COMMON_UI_REAUTHENTICATION_MOCK_REAUTHENTICATION_MODULE_H_
+#endif  // IOS_CHROME_COMMON_UI_REAUTHENTICATION_FAKE_REAUTHENTICATION_MODULE_H_

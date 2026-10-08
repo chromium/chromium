@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -41,15 +41,15 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
-    mock_reauth_module_ =
-        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+    fake_reauth_module_ =
+        base::apple::ObjCCastStrict<FakeReauthenticationModule>(
             ReauthenticationServiceFactory::GetForProfile(profile_.get())
                 ->GetReauthModule());
 
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldSkipReAuth = NO;
-    mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+    fake_reauth_module_.shouldSkipReAuth = NO;
+    fake_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     navigation_controller_ = [[UINavigationController alloc] init];
     scoped_window_.Get().rootViewController = navigation_controller_;
@@ -83,7 +83,7 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
   SceneState* scene_state_;
   UINavigationController* navigation_controller_ = nil;
   ScopedKeyWindow scoped_window_;
-  MockReauthenticationModule* mock_reauth_module_ = nil;
+  FakeReauthenticationModule* fake_reauth_module_ = nil;
   PasswordsInOtherAppsCoordinator* coordinator_ = nil;
 };
 
@@ -120,7 +120,7 @@ TEST_F(PasswordsInOtherAppsCoordinatorTest,
   ASSERT_FALSE(IsPasswordsInOtherAppPresented());
 
   // Successful auth should reveal passwords in other apps.
-  [mock_reauth_module_ returnMockedReauthenticationResult];
+  [fake_reauth_module_ returnMockedReauthenticationResult];
 
   ASSERT_TRUE(IsPasswordsInOtherAppPresented());
 }
