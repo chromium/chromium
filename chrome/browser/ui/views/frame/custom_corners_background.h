@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_BACKGROUND_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_BACKGROUND_H_
 
+#include <optional>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -177,6 +178,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   int default_radius_;
   Corners corners_;
   Outline outline_;
+  std::optional<gfx::Rect> backdrop_filter_bounds_;
   std::vector<SkPath> cutout_paths_;
   const raw_ref<views::View> view_;
 };

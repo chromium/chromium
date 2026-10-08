@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <variant>
 
@@ -120,6 +121,8 @@ void CustomCornersBackground::SetCorners(const Corners& corners) {
   }
 
   corners_ = corners;
+  // Reset cached bounds so SetUseBackgroundBlur() recomputes the filter path.
+  backdrop_filter_bounds_.reset();
   view_->SchedulePaint();
 }
 
@@ -155,12 +158,22 @@ void CustomCornersBackground::SetUseBackgroundBlur(bool use_background_blur) {
   }
   auto* const layer = view_->layer();
   CHECK(!layer->fills_bounds_opaquely());
-  if (!use_background_blur) {
-    layer->SetBackgroundBlur(0.0f);
+  const float blur_radius = use_background_blur ? kBackgroundBlurRadius : 0.0f;
+  const std::optional<gfx::Rect> local_bounds =
+      use_background_blur ? std::make_optional(view_->GetLocalBounds())
+                          : std::nullopt;
+  if (layer->background_blur() == blur_radius &&
+      backdrop_filter_bounds_ == local_bounds) {
     return;
   }
-  layer->SetBackgroundBlur(kBackgroundBlurRadius);
-  layer->SetBackdropFilterBounds(GetBackgroundPath(view_->GetLocalBounds()));
+
+  backdrop_filter_bounds_ = local_bounds;
+  if (use_background_blur) {
+    layer->SetBackdropFilterBounds(GetBackgroundPath(*local_bounds));
+  } else {
+    layer->ClearBackdropFilterBounds();
+  }
+  layer->SetBackgroundBlur(blur_radius);
   SchedulePaintHost();
 }
 

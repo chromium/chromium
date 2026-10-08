@@ -1321,25 +1321,6 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     }
   }
 
-  // If the window goes out of glass mode, these changes won't hurt anything.
-  if (in_glass_mode()) {
-    gfx::RoundedCornersF content_corners;
-    if (layout_data_->tab_strip_type == TabStripType::kVertical &&
-        !is_fullscreen(layout_data_->window_state)) {
-      // Note that this will set a lower leading corner on the multi contents
-      // view even if there's a shadow box, but since the curve is effectively
-      // the same this will not produce a visual bug.
-      const int radius =
-          views().vertical_tab_strip_bottom_corner->GetCornerRadius();
-      if (base::i18n::IsRTL()) {
-        content_corners.set_lower_right(radius);
-      } else {
-        content_corners.set_lower_left(radius);
-      }
-    }
-    views().multi_contents_view->SetBackgroundRadii(content_corners);
-  }
-
   // Make final visual adjustments required for child views to paint.
   if (layout_data_->tab_strip_type == TabStripType::kVertical) {
     // Need to know the toolbar height relative to the tabstrip, so that
@@ -1575,14 +1556,7 @@ void BrowserViewTabbedLayoutImpl::OnLayoutParamsChanged(
 }
 
 void BrowserViewTabbedLayoutImpl::OnGlassModeChanged() {
-  if (IsParentedToAndVisible(views().horizontal_tab_strip_region_view,
-                             views().browser_view)) {
-    views().horizontal_tab_strip_region_view->InvalidateLayout();
-  }
-  if (IsParentedToAndVisible(views().vertical_tab_strip_region_view,
-                             views().browser_view)) {
-    views().vertical_tab_strip_region_view->InvalidateLayout();
-  }
+  views().browser_view->InvalidateLayout();
 }
 
 void BrowserViewTabbedLayoutImpl::DoPreLayoutComputations(
@@ -1602,6 +1576,25 @@ void BrowserViewTabbedLayoutImpl::DoPreLayoutComputations(
 
 void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const BrowserLayoutParams& params) {
+  // If the window goes out of glass mode, these changes won't hurt anything.
+  if (in_glass_mode()) {
+    gfx::RoundedCornersF content_corners;
+    if (layout_data_->tab_strip_type == TabStripType::kVertical &&
+        !is_fullscreen(layout_data_->window_state)) {
+      // Note that this will set a lower leading corner on the multi contents
+      // view even if there's a shadow box, but since the curve is effectively
+      // the same this will not produce a visual bug.
+      const int radius =
+          views().vertical_tab_strip_bottom_corner->GetCornerRadius();
+      if (base::i18n::IsRTL()) {
+        content_corners.set_lower_right(radius);
+      } else {
+        content_corners.set_lower_left(radius);
+      }
+    }
+    views().multi_contents_view->SetBackgroundRadii(content_corners);
+  }
+
   // Want to cut the vertical tabstrip and its decorations out of the top
   // container in transparency mode.
   CustomCornersBackground::Cutouts top_container_cutout_views;
@@ -1780,7 +1773,6 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
                 .organizer_tray->background()
                 ->AsA<CustomCornersBackground>()) {
       const bool blur = features::IsGlassFrameEnabled();
-      background->SetUseBackgroundBlur(blur);
 
       const CustomCorners::ColorChoice base_color =
           anim.blend_with_vertical_tabs
@@ -1818,6 +1810,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
             CustomCornersBackground::CornerType::kRounded;
       }
       background->SetCorners(corners);
+      background->SetUseBackgroundBlur(blur);
     }
 
     views().organizer_tray->layer()->SetOpacity(anim.panel_opacity);
