@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +27,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -82,7 +81,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
-import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -101,8 +99,30 @@ import java.util.function.Supplier;
     ChromeFeatureList.SENSITIVE_CONTENT,
     ChromeFeatureList.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NewTabAnimationLayoutUnitTest {
+    private static class FakeBrowserStateBrowserControlsVisibilityDelegate
+            extends BrowserStateBrowserControlsVisibilityDelegate {
+        public int showControlsPersistentCallCount;
+        public int releasePersistentShowingTokenCallCount;
+
+        public FakeBrowserStateBrowserControlsVisibilityDelegate(
+                NonNullObservableSupplier<Boolean> persistentFullscreenMode) {
+            super(persistentFullscreenMode);
+        }
+
+        @Override
+        public int showControlsPersistent() {
+            showControlsPersistentCallCount++;
+            return super.showControlsPersistent();
+        }
+
+        @Override
+        public void releasePersistentShowingToken(int token) {
+            releasePersistentShowingTokenCallCount++;
+            super.releasePersistentShowingToken(token);
+        }
+    }
+
     private static final long FAKE_TIME = 0;
     private static final @TabId int CURRENT_TAB_ID = 321;
     private static final @TabId int NEW_TAB_ID = 123;
@@ -116,7 +136,6 @@ public class NewTabAnimationLayoutUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private OverridableTabCount mOverridableTabCount;
     @Mock private BrowserControlsManager mBrowserControlsManager;
@@ -130,13 +149,9 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Tab mCurrentTab;
     @Mock private Tab mNewTab;
-    @Mock private ToggleTabStackButton mTabSwitcherButton;
-    @Mock private View mToolbar;
     @Mock private NewTabPage mNtp;
     @Mock private TopInsetProvider mTopInsetProvider;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    @Mock private View mBottomBar;
-    @Mock private View mBottomBarTabSwitcherButton;
     private SceneLayer mSceneLayer;
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
@@ -153,6 +168,7 @@ public class NewTabAnimationLayoutUnitTest {
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
+    private CompositorViewHolder mCompositorViewHolder;
     private UserDataHost mUserDataHost;
 
     @Before
@@ -224,8 +240,24 @@ public class NewTabAnimationLayoutUnitTest {
 
     public void onActivity(Activity activity) {
         mContentContainer = new FrameLayout(activity);
-        mAnimationHostView = spy(new FrameLayout(activity));
-        activity.setContentView(mAnimationHostView);
+        mAnimationHostView = new FrameLayout(activity);
+        mCompositorViewHolder = new CompositorViewHolder(activity, /* attrs= */ null);
+        FrameLayout toolbar = new FrameLayout(activity);
+        toolbar.setId(R.id.toolbar);
+        View tabSwitcherButton = new View(activity);
+        tabSwitcherButton.setId(R.id.tab_switcher_button);
+        toolbar.addView(tabSwitcherButton);
+        FrameLayout bottomBar = new FrameLayout(activity);
+        bottomBar.setId(org.chromium.chrome.browser.ui.bottombar.R.id.bottom_bar_container);
+        View bottomBarTabSwitcherButton = new View(activity);
+        bottomBarTabSwitcherButton.setId(R.id.tab_switcher_button);
+        bottomBar.addView(bottomBarTabSwitcherButton);
+        mAnimationHostView.addView(toolbar);
+        mAnimationHostView.addView(bottomBar);
+        mAnimationHostView.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY));
+        mAnimationHostView.layout(0, 0, 1080, 1920);
         mNewTabAnimationLayout =
                 spy(
                         new NewTabAnimationLayout(
@@ -242,23 +274,6 @@ public class NewTabAnimationLayoutUnitTest {
                                 mTransitiveTopInsetProvider));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
-        when(mAnimationHostView.findViewById(R.id.toolbar)).thenReturn(mToolbar);
-        when(mToolbar.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
-        when(mAnimationHostView.findViewById(
-                        org.chromium.chrome.browser.ui.bottombar.R.id.bottom_bar_container))
-                .thenReturn(mBottomBar);
-        when(mBottomBar.findViewById(R.id.tab_switcher_button))
-                .thenReturn(mBottomBarTabSwitcherButton);
-        when(mAnimationHostView.getWidth()).thenReturn(40);
-        when(mAnimationHostView.getHeight()).thenReturn(40);
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, 1080, 1920);
-                            return true;
-                        })
-                .when(mAnimationHostView)
-                .getGlobalVisibleRect(any(Rect.class));
         Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier = () -> mEdgeToEdgeController;
         when(mToolbarManager.getEdgeToEdgeControllerSupplier())
                 .thenReturn(edgeToEdgeControllerSupplier);
@@ -369,7 +384,7 @@ public class NewTabAnimationLayoutUnitTest {
     public void testOnTabCreated_tabCreatedInForeground() {
         LayoutTab[] layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);
-        verify(mAnimationHostView, never()).addView(any());
+        assertNull(findChildView(NewForegroundTabAnimationHostView.class));
 
         mNewTabAnimationLayout.onTabCreated(
                 FAKE_TIME,
@@ -387,13 +402,12 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(NEW_TAB_ID, layoutTabs[1].getId());
         verify(mNewTabAnimationLayout, times(1)).forceAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isRunningAnimations());
-        verify(mAnimationHostView, times(1)).addView(any(NewForegroundTabAnimationHostView.class));
+        assertNotNull(findChildView(NewForegroundTabAnimationHostView.class));
 
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(mNewTabAnimationLayout.isRunningAnimations());
-        verify(mAnimationHostView, times(1))
-                .removeView(any(NewForegroundTabAnimationHostView.class));
+        assertNull(findChildView(NewForegroundTabAnimationHostView.class));
         verify(mTabModelSelector).selectModel(false);
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
     }
@@ -430,7 +444,7 @@ public class NewTabAnimationLayoutUnitTest {
     public void testOnTabCreated_tabCreatedInForeground_bottomBarEnabled() {
         LayoutTab[] layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);
-        verify(mAnimationHostView, never()).addView(any());
+        assertNull(findChildView(NewForegroundTabAnimationHostView.class));
 
         mNewTabAnimationLayout.onTabCreated(
                 FAKE_TIME,
@@ -448,13 +462,12 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(NEW_TAB_ID, layoutTabs[1].getId());
         verify(mNewTabAnimationLayout, times(1)).forceAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isRunningAnimations());
-        verify(mAnimationHostView, times(1)).addView(any(NewForegroundTabAnimationHostView.class));
+        assertNotNull(findChildView(NewForegroundTabAnimationHostView.class));
 
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(mNewTabAnimationLayout.isRunningAnimations());
-        verify(mAnimationHostView, times(1))
-                .removeView(any(NewForegroundTabAnimationHostView.class));
+        assertNull(findChildView(NewForegroundTabAnimationHostView.class));
         verify(mTabModelSelector).selectModel(false);
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
     }
@@ -477,16 +490,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.isIncognitoBranded()).thenReturn(false);
 
         // Viewport of NTP is full screen
-        Rect compositorRect = new Rect(0, 0, 1080, 1920);
-        RectF compositorRectF = new RectF(compositorRect);
-        doAnswer(
-                        invocation -> {
-                            RectF rectF = invocation.getArgument(0);
-                            rectF.set(compositorRectF);
-                            return null;
-                        })
-                .when(mCompositorViewHolder)
-                .getVisibleViewport(any(RectF.class));
+        mCompositorViewHolder.layout(0, 0, 1080, 1920);
 
         mNewTabAnimationLayout.onTabCreated(
                 FAKE_TIME,
@@ -498,11 +502,9 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
 
-        // Capture NewForegroundTabAnimationHostView
-        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
-                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
-        verify(mAnimationHostView).addView(viewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
+        NewForegroundTabAnimationHostView hostView =
+                findChildView(NewForegroundTabAnimationHostView.class);
+        assertNotNull(hostView);
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -540,16 +542,7 @@ public class NewTabAnimationLayoutUnitTest {
                         .getDimensionPixelSize(R.dimen.control_container_height);
 
         // Viewport of Web page excludes bottom controls
-        Rect compositorRect = new Rect(0, 0, 1080, 1920 - controlContainerHeight);
-        RectF compositorRectF = new RectF(compositorRect);
-        doAnswer(
-                        invocation -> {
-                            RectF rectF = invocation.getArgument(0);
-                            rectF.set(compositorRectF);
-                            return null;
-                        })
-                .when(mCompositorViewHolder)
-                .getVisibleViewport(any(RectF.class));
+        mCompositorViewHolder.layout(0, 0, 1080, 1920 - controlContainerHeight);
 
         mNewTabAnimationLayout.onTabCreated(
                 FAKE_TIME,
@@ -561,11 +554,9 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
 
-        // Capture NewForegroundTabAnimationHostView
-        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
-                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
-        verify(mAnimationHostView).addView(viewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
+        NewForegroundTabAnimationHostView hostView =
+                findChildView(NewForegroundTabAnimationHostView.class);
+        assertNotNull(hostView);
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -605,16 +596,7 @@ public class NewTabAnimationLayoutUnitTest {
                 BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
 
         // Viewport of Web page excludes bottom controls and bottom chin
-        Rect compositorRect = new Rect(0, 0, 1080, 1920 - bottomBarHeight - bottomChinHeight);
-        RectF compositorRectF = new RectF(compositorRect);
-        doAnswer(
-                        invocation -> {
-                            RectF rectF = invocation.getArgument(0);
-                            rectF.set(compositorRectF);
-                            return null;
-                        })
-                .when(mCompositorViewHolder)
-                .getVisibleViewport(any(RectF.class));
+        mCompositorViewHolder.layout(0, 0, 1080, 1920 - bottomBarHeight - bottomChinHeight);
 
         mNewTabAnimationLayout.onTabCreated(
                 FAKE_TIME,
@@ -626,11 +608,9 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
 
-        // Capture NewForegroundTabAnimationHostView
-        ArgumentCaptor<NewForegroundTabAnimationHostView> viewCaptor =
-                ArgumentCaptor.forClass(NewForegroundTabAnimationHostView.class);
-        verify(mAnimationHostView).addView(viewCaptor.capture());
-        NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
+        NewForegroundTabAnimationHostView hostView =
+                findChildView(NewForegroundTabAnimationHostView.class);
+        assertNotNull(hostView);
 
         // Use reflection to access private mInitialRect
         Field initialRectField =
@@ -649,7 +629,7 @@ public class NewTabAnimationLayoutUnitTest {
     public void testOnTabCreated_tabCreatedInBackground() {
         LayoutTab[] layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);
-        verify(mAnimationHostView, never()).addView(any());
+        assertNull(findChildView(NewBackgroundTabAnimationHostView.class));
 
         mNewTabAnimationLayout.onTabCreated(
                 FAKE_TIME,
@@ -668,12 +648,11 @@ public class NewTabAnimationLayoutUnitTest {
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
         assertEquals(1, mBrowserVisibilityDelegate.showControlsPersistentCallCount);
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
-        verify(mAnimationHostView, times(1)).addView(any(NewBackgroundTabAnimationHostView.class));
+        assertNotNull(findChildView(NewBackgroundTabAnimationHostView.class));
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mAnimationHostView, times(1))
-                .removeView(any(NewBackgroundTabAnimationHostView.class));
+        assertNull(findChildView(NewBackgroundTabAnimationHostView.class));
         verify(mTabModelSelector, never()).selectModel(false);
         assertEquals(1, mBrowserVisibilityDelegate.releasePersistentShowingTokenCallCount);
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
@@ -787,27 +766,14 @@ public class NewTabAnimationLayoutUnitTest {
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
     }
 
-    private static class FakeBrowserStateBrowserControlsVisibilityDelegate
-            extends BrowserStateBrowserControlsVisibilityDelegate {
-        public int showControlsPersistentCallCount;
-        public int releasePersistentShowingTokenCallCount;
-
-        public FakeBrowserStateBrowserControlsVisibilityDelegate(
-                NonNullObservableSupplier<Boolean> persistentFullscreenMode) {
-            super(persistentFullscreenMode);
+    private <T extends View> T findChildView(Class<T> clazz) {
+        for (int i = 0; i < mAnimationHostView.getChildCount(); i++) {
+            View child = mAnimationHostView.getChildAt(i);
+            if (clazz.isInstance(child)) {
+                return clazz.cast(child);
+            }
         }
-
-        @Override
-        public int showControlsPersistent() {
-            showControlsPersistentCallCount++;
-            return super.showControlsPersistent();
-        }
-
-        @Override
-        public void releasePersistentShowingToken(int token) {
-            releasePersistentShowingTokenCallCount++;
-            super.releasePersistentShowingToken(token);
-        }
+        return null;
     }
 
     private void setNtp() {

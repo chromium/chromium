@@ -123,7 +123,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabSearchOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSearchOverlayCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -131,14 +130,16 @@ public class TabSearchOverlayCoordinatorUnitTest {
     private TabSearchOverlayCoordinator mCoordinator;
     private View mPanelContainer;
     private View mScrim;
+    private UrlBar mUrlBar;
+    private CompositorViewHolder mCompositorViewHolder;
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SearchUiCoordinator mSearchUiCoordinator;
     @Mock private LocationBarCoordinator mLocationBarCoordinator;
     @Mock private UrlBarCoordinator mUrlBarCoordinator;
-    @Mock private View mLocationBarContainerView;
-    @Mock private UrlBar mUrlBar;
+    @Mock private View.OnTouchListener mTouchListener;
+    @Mock private View.OnGenericMotionListener mGenericMotionListener;
 
     @Mock(extraInterfaces = {View.OnKeyListener.class})
     private OmniboxStub mOmniboxStub;
@@ -149,7 +150,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BackPressManager mBackPressManager;
-    @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mTabModel;
@@ -182,6 +182,11 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mActivity = controller.setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
+        mCompositorViewHolder = new CompositorViewHolder(mActivity, /* attrs= */ null);
+        when(mTouchListener.onTouch(any(), any())).thenReturn(true);
+        mCompositorViewHolder.setOnTouchListener(mTouchListener);
+        mCompositorViewHolder.setOnGenericMotionListener(mGenericMotionListener);
+
         mTabModelSelectorSupplier.set(mTabModelSelector);
         mProfileSupplier.set(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -195,8 +200,13 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mLocationBarCoordinator.getOmniboxStub()).thenReturn(mOmniboxStub);
         when(mLocationBarCoordinator.getOmniboxSuggestionsVisualState())
                 .thenReturn(mAutocompleteCoordinator);
-        when(mLocationBarCoordinator.getContainerView()).thenReturn(mLocationBarContainerView);
-        when(mLocationBarContainerView.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
+        doAnswer(
+                        invocation ->
+                                mCoordinator
+                                        .getPanelContainerForTesting()
+                                        .findViewById(R.id.search_location_bar))
+                .when(mLocationBarCoordinator)
+                .getContainerView();
         when(mOmniboxStub.isUrlBarFocused()).thenReturn(true);
         doAnswer(
                         invocation -> {
@@ -240,6 +250,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mPanelContainer = mCoordinator.getPanelContainerForTesting();
         assertNotNull(mPanelContainer);
         mScrim = mPanelContainer.findViewById(R.id.tab_search_overlay_scrim);
+        mUrlBar = mPanelContainer.findViewById(R.id.url_bar);
 
         assertNotNull(mSuggestionsChangeObserver);
 
@@ -359,7 +370,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         verify(mUrlBarCoordinator)
                 .setUrlBarHintText(
                         mActivity.getResources().getString(R.string.hub_search_empty_hint));
-        verify(mUrlBar).setTextAppearance(R.style.TextAppearance_TextMedium);
+        float expectedSize = mActivity.getResources().getDimension(R.dimen.text_size_medium);
+        assertEquals(expectedSize, mUrlBar.getTextSize(), 0.01f);
     }
 
     @Test
@@ -868,7 +880,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mScrim.dispatchGenericMotionEvent(scrollEvent);
 
         ArgumentCaptor<MotionEvent> eventCaptor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mCompositorViewHolder).dispatchGenericMotionEvent(eventCaptor.capture());
+        verify(mGenericMotionListener)
+                .onGenericMotion(eq(mCompositorViewHolder), eventCaptor.capture());
 
         MotionEvent forwardedEvent = eventCaptor.getValue();
         assertEquals(100f, forwardedEvent.getX(), 0.01f);
@@ -880,22 +893,17 @@ public class TabSearchOverlayCoordinatorUnitTest {
     public void testScrimScrollForwarding_RecursionGuard() {
         showOverlay();
 
-        // Configure mock CompositorViewHolder to dispatch back to the scrim
+        // Configure CompositorViewHolder to dispatch back to the scrim
         // when receiving the event. This simulates the ViewGroup hierarchy
         // traversing and trying to dispatch the transformed event to its child (scrim).
-        doAnswer(
-                        invocation -> {
-                            MotionEvent event = invocation.getArgument(0);
-                            return mScrim.dispatchGenericMotionEvent(event);
-                        })
-                .when(mCompositorViewHolder)
-                .dispatchGenericMotionEvent(any(MotionEvent.class));
+        mCompositorViewHolder.setOnGenericMotionListener(
+                (v, event) -> mScrim.dispatchGenericMotionEvent(event));
 
         MotionEvent scrollEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 100f, 150f, 0);
 
         // This call should terminate successfully (no StackOverflowError)
-        // and return false since the recursion was blocked and the target view (mock)
+        // and return false since the recursion was blocked and the target view
         // returned false to the recursive dispatch.
         assertFalse(mScrim.dispatchGenericMotionEvent(scrollEvent));
 
@@ -910,7 +918,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 150f, 0);
         mScrim.dispatchTouchEvent(downEvent);
 
-        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+        verify(mTouchListener, never()).onTouch(any(), any(MotionEvent.class));
 
         // 2. Send ACTION_MOVE beyond touch slop (e.g., dx = 100f) to trigger drag.
         // This should trigger forwarding both the saved ACTION_DOWN and current ACTION_MOVE.
@@ -918,7 +926,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mScrim.dispatchTouchEvent(moveEvent);
 
         ArgumentCaptor<MotionEvent> touchCaptor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mCompositorViewHolder, times(2)).dispatchTouchEvent(touchCaptor.capture());
+        verify(mTouchListener, times(2)).onTouch(eq(mCompositorViewHolder), touchCaptor.capture());
         List<MotionEvent> forwardedEvents = touchCaptor.getAllValues();
         assertEquals(MotionEvent.ACTION_DOWN, forwardedEvents.get(0).getActionMasked());
         assertEquals(100f, forwardedEvents.get(0).getX(), 0.01f);
@@ -926,13 +934,13 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertEquals(MotionEvent.ACTION_MOVE, forwardedEvents.get(1).getActionMasked());
         assertEquals(200f, forwardedEvents.get(1).getX(), 0.01f);
         assertEquals(150f, forwardedEvents.get(1).getY(), 0.01f);
-        clearInvocations(mCompositorViewHolder);
+        clearInvocations(mTouchListener);
 
         // 3. Send ACTION_UP (drag end) - should be forwarded directly.
         MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 200f, 150f, 0);
         mScrim.dispatchTouchEvent(upEvent);
 
-        verify(mCompositorViewHolder).dispatchTouchEvent(touchCaptor.capture());
+        verify(mTouchListener).onTouch(eq(mCompositorViewHolder), touchCaptor.capture());
         assertEquals(MotionEvent.ACTION_UP, touchCaptor.getValue().getActionMasked());
 
         downEvent.recycle();
@@ -957,7 +965,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 150f, 0);
         mScrim.dispatchTouchEvent(downEvent);
 
-        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+        verify(mTouchListener, never()).onTouch(any(), any(MotionEvent.class));
 
         // 2. Send ACTION_UP without exceeding touch slop (same coordinate)
         MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 100f, 150f, 0);
@@ -965,7 +973,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
         // Verify that NO events (neither DOWN, UP, nor CANCEL) were sent to the compositor view,
         // since the touch sequence was a simple tap.
-        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+        verify(mTouchListener, never()).onTouch(any(), any(MotionEvent.class));
 
         // Verify that the scrim click action was triggered to dismiss overlay
         assertTrue(tracker.mClicked);
@@ -985,7 +993,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // 2. Send ACTION_MOVE beyond slop to start dragging
         MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 200f, 150f, 0);
         mScrim.dispatchTouchEvent(moveEvent);
-        clearInvocations(mCompositorViewHolder);
+        clearInvocations(mTouchListener);
 
         // 3. Send ACTION_CANCEL - should be forwarded directly since we are dragging.
         MotionEvent cancelEvent =
@@ -993,7 +1001,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mScrim.dispatchTouchEvent(cancelEvent);
 
         ArgumentCaptor<MotionEvent> touchCaptor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mCompositorViewHolder).dispatchTouchEvent(touchCaptor.capture());
+        verify(mTouchListener).onTouch(eq(mCompositorViewHolder), touchCaptor.capture());
         assertEquals(MotionEvent.ACTION_CANCEL, touchCaptor.getValue().getActionMasked());
 
         downEvent.recycle();
@@ -1014,7 +1022,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 100f, 150f, 0);
         mScrim.dispatchTouchEvent(cancelEvent);
 
-        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+        verify(mTouchListener, never()).onTouch(any(), any(MotionEvent.class));
 
         downEvent.recycle();
         cancelEvent.recycle();
@@ -1185,7 +1193,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 100f, 150f, 0);
         assertTrue(mScrim.dispatchGenericMotionEvent(hoverEvent));
 
-        verify(mCompositorViewHolder, never()).dispatchGenericMotionEvent(any(MotionEvent.class));
+        verify(mGenericMotionListener, never()).onGenericMotion(any(), any(MotionEvent.class));
         clickEvent.recycle();
         hoverEvent.recycle();
     }
@@ -1410,7 +1418,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertEquals(
                 View.IMPORTANT_FOR_ACCESSIBILITY_YES, closeButton.getImportantForAccessibility());
         assertEquals(R.id.search_activity_container, closeButton.getAccessibilityTraversalBefore());
-        verify(mUrlBar).setAccessibilityTraversalAfter(R.id.tab_search_close_button);
+        assertEquals(R.id.tab_search_close_button, mUrlBar.getAccessibilityTraversalAfter());
         assertEquals(
                 mActivity.getString(R.string.close),
                 closeButton.getContentDescription().toString());
@@ -1438,14 +1446,14 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
     @Test
     public void testKeyNavigation_betweenUrlBarAndCloseButton() {
+        showOverlay();
+        mUrlBar.setAllowFocus(true);
+        mUrlBar.requestFocus();
+
         ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
         assertNotNull(closeButton);
-
-        ArgumentCaptor<View.OnKeyListener> urlBarKeyListenerCaptor =
-                ArgumentCaptor.forClass(View.OnKeyListener.class);
-        verify(mUrlBar).setKeyDownListener(urlBarKeyListenerCaptor.capture());
-        View.OnKeyListener urlBarKeyListener = urlBarKeyListenerCaptor.getValue();
-        assertNotNull(urlBarKeyListener);
+        assertTrue(mUrlBar.isFocused());
+        assertFalse(closeButton.isFocused());
 
         KeyEvent shiftTabEvent =
                 new KeyEvent(
@@ -1460,33 +1468,43 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // When at the top suggestion (selectedIndex == 0), Shift+Tab and Up on UrlBar
         // unselect the suggestion (returning focus to UrlBar) and do not focus Close button.
         when(mAutocompleteCoordinator.getSelectedIndex()).thenReturn(0);
-        assertTrue(urlBarKeyListener.onKey(mUrlBar, KeyEvent.KEYCODE_TAB, shiftTabEvent));
+        assertTrue(mUrlBar.dispatchKeyEvent(shiftTabEvent));
         verify(mAutocompleteCoordinator).resetSelection();
+        assertTrue(mUrlBar.isFocused());
         assertFalse(closeButton.isFocused());
 
-        // When unselected in UrlBar (selectedIndex == null), Shift+Tab and Up focus Close button.
+        // When unselected in UrlBar (selectedIndex == null), Shift+Tab focuses Close button.
         when(mAutocompleteCoordinator.getSelectedIndex()).thenReturn(null);
-        assertTrue(urlBarKeyListener.onKey(mUrlBar, KeyEvent.KEYCODE_TAB, shiftTabEvent));
+        assertTrue(mUrlBar.dispatchKeyEvent(shiftTabEvent));
         assertTrue(closeButton.isFocused());
+        assertFalse(mUrlBar.isFocused());
 
-        assertTrue(urlBarKeyListener.onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_UP, upEvent));
+        // Forward Tab on Close button returns focus to UrlBar.
+        KeyEvent tabEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB);
+        closeButton.dispatchKeyEvent(tabEvent);
+        assertTrue(mUrlBar.isFocused());
+        assertFalse(closeButton.isFocused());
+
+        // Up arrow when unselected in UrlBar also focuses Close button.
+        assertTrue(mUrlBar.dispatchKeyEvent(upEvent));
+        assertTrue(closeButton.isFocused());
+        assertFalse(mUrlBar.isFocused());
+
+        // Down arrow on Close button returns focus to UrlBar.
+        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN);
+        closeButton.dispatchKeyEvent(downEvent);
+        assertTrue(mUrlBar.isFocused());
+        assertFalse(closeButton.isFocused());
 
         // When deeper in suggestions (selectedIndex == 1), Up delegates to omnibox stub.
         when(mAutocompleteCoordinator.getSelectedIndex()).thenReturn(1);
         View.OnKeyListener omniboxListener = (View.OnKeyListener) mOmniboxStub;
         when(omniboxListener.onKey(eq(mUrlBar), eq(KeyEvent.KEYCODE_DPAD_UP), eq(upEvent)))
                 .thenReturn(true);
-        assertTrue(urlBarKeyListener.onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_UP, upEvent));
-
-        // Forward Tab on Close button returns focus to UrlBar.
-        KeyEvent tabEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB);
-        closeButton.dispatchKeyEvent(tabEvent);
-        verify(mUrlBar).requestFocus();
-
-        // Down arrow on Close button returns focus to UrlBar.
-        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN);
-        closeButton.dispatchKeyEvent(downEvent);
-        verify(mUrlBar, times(2)).requestFocus();
+        assertTrue(mUrlBar.dispatchKeyEvent(upEvent));
+        verify(omniboxListener).onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_UP, upEvent);
+        assertTrue(mUrlBar.isFocused());
+        assertFalse(closeButton.isFocused());
     }
 
     private void setRawWindowInsets(WindowInsetsCompat windowInsets) {
@@ -1717,9 +1735,17 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
     @Test
     public void testDestroy_removesUrlBarTextWatcher() {
+        showOverlay();
         assertNotNull(mCoordinator.getUrlBarTextWatcherForTesting());
+        mUrlBar.setText("initial query");
+        assertTrue(mCoordinator.getSearchQueryStartTimeMsForTesting() > 0);
+
         mCoordinator.destroy();
-        verify(mUrlBar).removeTextChangedListener(any());
         assertNull(mCoordinator.getUrlBarTextWatcherForTesting());
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
+
+        mCoordinator.getModelForTesting().set(TabSearchOverlayProperties.VISIBLE, true);
+        mUrlBar.setText("query after destroy");
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
     }
 }
