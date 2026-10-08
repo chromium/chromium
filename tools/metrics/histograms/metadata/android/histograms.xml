@@ -6843,6 +6843,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.DropRegion.{WindowRelation}"
+    enum="AndroidVerticalTabsDropRegion" expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>kije@chromium.org</owner>
+  <summary>
+    Records where on the vertical tabs rail a drop landed, when the drag started
+    {WindowRelation}. Recorded once per ACTION_DROP delivered to the rail. The
+    rail accepts drops outside both of its lists, on the header, the new tab
+    button and its own margin, and reparents them against the nearest item; the
+    &quot;Outside both lists&quot; bucket measures how often that path is taken.
+  </summary>
+  <token key="WindowRelation">
+    <variant name="CrossWindow" summary="in a different window"/>
+    <variant name="IntraWindow" summary="in the same window"/>
+  </token>
+</histogram>
+
 <histogram name="Android.VerticalTabs.DurationEnabled" units="ms"
     expires_after="2027-07-22">
   <owner>agazal@google.com</owner>

@@ -5113,6 +5113,22 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
     }
 
+    /**
+     * A rail-originated drag installs a different delegate; leaving the rail must still collapse
+     * it, since the hover controller is fed by the container listener, not by either delegate.
+     */
+    @Test
+    public void testDragLeavesTheRail_OriginatingDrag_CollapsesAHoverExpandedRail() {
+        setUpRailDragSource();
+        createCoordinator();
+        startRailDragAndCaptureDelegate();
+        hoverExpandRail();
+
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_EXITED);
+
+        verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
+    }
+
     /** Delivers a drag event to the rail container's drag listener, as the framework does. */
     private void dispatchToRailDragListener(int action) {
         View container = mCoordinator.getView();
@@ -5147,5 +5163,103 @@ public class VerticalTabListCoordinatorUnitTest {
 
         mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
         clearInvocations(mMockRailStateChangeDelegate);
+    }
+
+    @Test
+    public void testDropRegion_MainList() {
+        setUpRailDragSource();
+        createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DropRegion.IntraWindow",
+                        VerticalTabListCoordinator.DropRegion.MAIN_LIST);
+
+        startRailDragAndCaptureDelegate().handleDrop(mCoordinator.getView(), 50f, 150f);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testDropRegion_OutsideBothLists() {
+        setUpRailDragSource();
+        createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DropRegion.IntraWindow",
+                        VerticalTabListCoordinator.DropRegion.OUTSIDE_BOTH_LISTS);
+
+        // Past the bottom of both lists: the rail's own margin, which still accepts the drop.
+        startRailDragAndCaptureDelegate().handleDrop(mCoordinator.getView(), 50f, 5000f);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testDropRegion_PinnedGrid() {
+        setUpRailDragSource();
+        createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DropRegion.IntraWindow",
+                        VerticalTabListCoordinator.DropRegion.PINNED_GRID);
+
+        startRailDragAndCaptureDelegate().handleDrop(mCoordinator.getView(), 50f, 50f);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testDropRegion_CrossWindowDropIsRecordedSeparately() {
+        createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
+        // isDragSourceInstance() is false, so the drag came from another window.
+        when(mTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.VerticalTabs.DropRegion.CrossWindow",
+                                VerticalTabListCoordinator.DropRegion.MAIN_LIST)
+                        .expectNoRecords("Android.VerticalTabs.DropRegion.IntraWindow")
+                        .build();
+
+        captureNonOriginatingDelegate().handleDrop(mCoordinator.getView(), 50f, 150f);
+
+        watcher.assertExpected();
+    }
+
+    /**
+     * Stubs out what a rail-originated drag needs to get past {@code startTabDragAction}. Must run
+     * before the coordinator is built.
+     */
+    private void setUpRailDragSource() {
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
+        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
+    }
+
+    /** Starts a rail-originated drag and returns the originating delegate it installed. */
+    private TabSwitcherDragHandler.DragHandlerDelegate startRailDragAndCaptureDelegate() {
+        when(mTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                captureNonOriginatingDelegate();
+
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+        assertNotSame(
+                "The drag did not start; this is still the non-originating delegate.",
+                nonOriginatingDelegate,
+                delegate);
+        return delegate;
     }
 }

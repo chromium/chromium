@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.Window;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +32,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -132,6 +134,8 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.widget.RectProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -141,6 +145,24 @@ import java.util.function.Supplier;
 /** Coordinator to manage and display the Vertical Tab List. */
 @NullMarked
 public class VerticalTabListCoordinator {
+    /**
+     * Where on the rail a drop landed. The rail is not only its two lists: between and around them
+     * sit the header, the new tab button and the rail's own margin, and a drop there is currently
+     * accepted and reparented against the nearest item. This records how often that happens, which
+     * is the input to deciding whether it should.
+     */
+    // LINT.IfChange(AndroidVerticalTabsDropRegion)
+    @IntDef({DropRegion.MAIN_LIST, DropRegion.PINNED_GRID, DropRegion.OUTSIDE_BOTH_LISTS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DropRegion {
+        int MAIN_LIST = 0;
+        int PINNED_GRID = 1;
+        int OUTSIDE_BOTH_LISTS = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsDropRegion)
+
     private static @Nullable Supplier<TabSwitcherDragHandler>
             sTabSwitcherDragHandlerSupplierForTesting;
     private final VerticalTabRailLayout mContainerView;
@@ -1501,6 +1523,35 @@ public class VerticalTabListCoordinator {
         return mTabSwitcherDragHandler.onDrag(view, event);
     }
 
+    /**
+     * Records where on the rail a drop landed.
+     *
+     * <p>Split intra- vs cross-window because the two are different interactions with different
+     * aim: an intra-window drop is a reorder the user is watching indicators for, a cross-window
+     * drop is a reparent aimed at a rail in another window. Averaging them hides whichever is
+     * rarer.
+     *
+     * @param view The view the drop event was dispatched to, which the coordinates are relative to.
+     * @param isCrossWindow Whether the drag started in a different window.
+     */
+    private void recordRailDropRegion(View view, float xPx, float yPx, boolean isCrossWindow) {
+        @DropRegion int region;
+        if (VerticalTabDragUtils.isPointInsideView(view, xPx, yPx, mRecyclerView)) {
+            region = DropRegion.MAIN_LIST;
+        } else if (VerticalTabDragUtils.isPointInsideView(
+                view, xPx, yPx, mPinnedTabsRecyclerView)) {
+            region = DropRegion.PINNED_GRID;
+        } else {
+            region = DropRegion.OUTSIDE_BOTH_LISTS;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                isCrossWindow
+                        ? "Android.VerticalTabs.DropRegion.CrossWindow"
+                        : "Android.VerticalTabs.DropRegion.IntraWindow",
+                region,
+                DropRegion.COUNT);
+    }
+
     private void clearDropIndicators() {
         mReorderStrategy.clear();
         mDropIndicatorDecoration.clear();
@@ -1582,6 +1633,8 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDrop(View view, float xPx, float yPx) {
+                recordRailDropRegion(
+                        view, xPx, yPx, /* isCrossWindow= */ !dragHandler.isDragSourceInstance());
                 boolean result = handleDropInternal(view, xPx, yPx);
                 clearDropIndicators();
                 return result;
@@ -1926,6 +1979,14 @@ public class VerticalTabListCoordinator {
                 }
 
                 dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
+                return true;
+            }
+
+            @Override
+            public boolean handleDrop(View view, float xPx, float yPx) {
+                // Always intra-window: this delegate is only installed while a drag that started
+                // from this rail is in flight.
+                recordRailDropRegion(view, xPx, yPx, /* isCrossWindow= */ false);
                 return true;
             }
         };
