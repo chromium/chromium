@@ -14,11 +14,9 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -77,8 +75,6 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
       feature_adapter_(base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
           *config->feature_config
                .As<proto::OnDeviceModelExecutionFeatureConfig>())),
-      safety_config_(*config->text_safety_config
-                          .As<proto::FeatureTextSafetyConfiguration>()),
       model_versions_(
           *config->model_versions.As<proto::OnDeviceModelVersions>()),
       capabilities_(config->model_capabilities),
@@ -95,12 +91,6 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
 }
 ModelClient::~ModelClient() = default;
 
-void ModelClient::StartSession(
-    mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> session) {
-  TRACE_EVENT("optimization_guide", "ModelClient::StartSession");
-  remote_->CreateTextSafetySession(std::move(session));
-}
-
 std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
     const SessionConfigParams& config_params,
     base::WeakPtr<OptimizationGuideLogger> logger) {
@@ -110,8 +100,6 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
       weak_ptr_factory_.GetWeakPtr());
   opts.model_versions = model_versions_;
   opts.adapter = feature_adapter_;
-  opts.safety_checker = std::make_unique<SafetyChecker>(
-      weak_ptr_factory_.GetWeakPtr(), SafetyConfig(safety_config_));
   opts.token_limits = feature_adapter_->GetTokenLimits();
   opts.logger = logger;
   opts.session_params = config_params;

@@ -101,7 +101,6 @@ OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
     : model_client(orig.model_client->Clone()),
       model_versions(orig.model_versions),
       adapter(orig.adapter),
-      safety_checker(std::make_unique<SafetyChecker>(*orig.safety_checker)),
       token_limits(orig.token_limits),
       session_params(orig.session_params),
       logger(orig.logger) {}

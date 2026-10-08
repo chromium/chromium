@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
+#include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
@@ -143,14 +144,6 @@ OnDeviceExecution::MutableLoggedResponse() {
       ->mutable_on_device_model_service_response();
 }
 
-void OnDeviceExecution::AddModelExecutionLogs(
-    google::protobuf::RepeatedPtrField<
-        proto::InternalOnDeviceModelExecutionInfo> logs) {
-  exec_log_.mutable_on_device_model_execution_info()
-      ->mutable_execution_infos()
-      ->MergeFrom(std::move(logs));
-}
-
 void OnDeviceExecution::Cancel() {
   CancelPendingResponse(Result::kCancelled);
 }
@@ -193,38 +186,6 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
                      context_receiver_.BindNewPipeAndPassRemote());
   }
 
-  opts_.safety_checker->RunRequestChecks(
-      last_message_,
-      base::BindOnce(&OnDeviceExecution::OnRequestSafetyResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(options)));
-}
-
-void OnDeviceExecution::OnRequestSafetyResult(
-    on_device_model::mojom::GenerateOptionsPtr options,
-    SafetyChecker::Result safety_result) {
-  TRACE_EVENT("optimization_guide", "OnDeviceExecution::OnRequestSafetyResult",
-              "feature", base::ToString(feature_));
-  if (safety_result.failed_to_run) {
-    CancelPendingResponse(Result::kFailedConstructingMessage,
-                          OnDeviceError::kFailedToRunSafety);
-    return;
-  }
-  // Log the check executions.
-  AddModelExecutionLogs(std::move(safety_result.logs));
-
-  // Handle the result.
-  if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
-    CancelPendingResponse(Result::kRequestUnsafe,
-                          safety_result.is_unsupported_language
-                              ? OnDeviceError::kUnsupportedLanguage
-                              : OnDeviceError::kFiltered);
-    return;
-  }
-  BeginRequestExecution(std::move(options));
-}
-
-void OnDeviceExecution::BeginRequestExecution(
-    on_device_model::mojom::GenerateOptionsPtr options) {
   session_->Generate(std::move(options), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_with_reason_handler(base::BindOnce(
       &OnDeviceExecution::OnResponderDisconnect, base::Unretained(this)));
@@ -249,7 +210,6 @@ void OnDeviceExecution::OnResponse(
     return;
   }
   current_response_ += trimmed_chunk.text;
-  num_unchecked_response_tokens_ += trimmed_chunk.num_tokens;
   num_response_tokens_ += trimmed_chunk.num_tokens;
 
   if (IsRepetitionTrackedFeature(feature_) &&
@@ -271,14 +231,7 @@ void OnDeviceExecution::OnResponse(
     return;
   }
 
-  if (!opts_.safety_checker->safety_cfg().CanCheckPartialOutput(
-          num_response_tokens_, num_unchecked_response_tokens_)) {
-    // Not enough new data to be worth re-evaluating yet.
-    return;
-  }
-
-  num_unchecked_response_tokens_ = 0;
-  RunRawOutputSafetyCheck(ResponseCompleteness::kPartial);
+  MaybeParseResponse(ResponseCompleteness::kPartial);
 }
 
 void OnDeviceExecution::OnComplete(
@@ -298,7 +251,7 @@ void OnDeviceExecution::OnComplete(
 
   opts_.model_client->OnResponseCompleted();
 
-  RunRawOutputSafetyCheck(ResponseCompleteness::kComplete);
+  MaybeParseResponse(ResponseCompleteness::kComplete);
 }
 
 void OnDeviceExecution::OnToolCalls(
@@ -337,60 +290,17 @@ void OnDeviceExecution::OnResponderDisconnect(uint32_t custom_reason,
   }
 }
 
-void OnDeviceExecution::RunRawOutputSafetyCheck(
-    ResponseCompleteness completeness) {
-  opts_.safety_checker->RunRawOutputCheck(
-      current_response_, completeness,
-      base::BindOnce(&OnDeviceExecution::OnRawOutputSafetyResult,
-                     weak_ptr_factory_.GetWeakPtr(), current_response_.size(),
-                     completeness));
-}
-
-void OnDeviceExecution::OnRawOutputSafetyResult(
-    size_t raw_output_size,
-    ResponseCompleteness completeness,
-    SafetyChecker::Result safety_result) {
-  TRACE_EVENT("optimization_guide.debug",
-              "OnDeviceExecution::OnRawOutputSafetyResult", "feature",
-              base::ToString(feature_));
-  if (safety_result.failed_to_run) {
-    CancelPendingResponse(Result::kFailedConstructingMessage,
-                          OnDeviceError::kFailedToRunSafety);
-    return;
-  }
-  if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
-    if (opts_.safety_checker->safety_cfg()
-            .OnlyCancelUnsafeResponseOnComplete() &&
-        completeness != ResponseCompleteness::kComplete) {
-      return;
-    }
-    AddModelExecutionLogs(std::move(safety_result.logs));
-    CancelPendingResponse(Result::kUsedOnDeviceOutputUnsafe,
-                          safety_result.is_unsupported_language
-                              ? OnDeviceError::kUnsupportedLanguage
-                              : OnDeviceError::kFiltered);
-    return;
-  }
-  if (completeness == ResponseCompleteness::kComplete) {
-    AddModelExecutionLogs(std::move(safety_result.logs));
-  }
-  latest_safe_raw_output_.length = raw_output_size;
-  MaybeParseResponse(completeness);
-}
-
 void OnDeviceExecution::MaybeParseResponse(ResponseCompleteness completeness) {
   if (!opts_.adapter->ShouldParseResponse(completeness)) {
     return;
   }
 
-  std::string safe_response =
-      current_response_.substr(0, latest_safe_raw_output_.length);
-  LogRawResponse(opts_.logger.get(), feature_, safe_response);
-  MutableLoggedResponse()->set_output_string(safe_response);
+  LogRawResponse(opts_.logger.get(), feature_, current_response_);
+  MutableLoggedResponse()->set_output_string(current_response_);
   size_t previous_response_pos = latest_response_pos_;
-  latest_response_pos_ = latest_safe_raw_output_.length;
+  latest_response_pos_ = current_response_.size();
   opts_.adapter->ParseResponse(
-      last_message_, safe_response, previous_response_pos,
+      last_message_, current_response_, previous_response_pos,
       base::BindOnce(&OnDeviceExecution::OnParsedResponse,
                      weak_ptr_factory_.GetWeakPtr(), completeness));
 }
@@ -414,46 +324,12 @@ void OnDeviceExecution::OnParsedResponse(
         return;
     }
   }
-  opts_.safety_checker->RunResponseChecks(
-      last_message_, *output, completeness,
-      base::BindOnce(&OnDeviceExecution::OnResponseSafetyResult,
-                     weak_ptr_factory_.GetWeakPtr(), completeness, *output));
-}
-
-void OnDeviceExecution::OnResponseSafetyResult(
-    ResponseCompleteness completeness,
-    proto::Any output,
-    SafetyChecker::Result safety_result) {
-  TRACE_EVENT("optimization_guide.debug",
-              "OnDeviceExecution::OnResponseSafetyResult", "feature",
-              base::ToString(feature_));
-  if (safety_result.failed_to_run) {
-    CancelPendingResponse(Result::kFailedConstructingMessage,
-                          OnDeviceError::kFailedToRunSafety);
-    return;
-  }
-  if (completeness == ResponseCompleteness::kComplete ||
-      safety_result.is_unsafe || safety_result.is_unsupported_language) {
-    AddModelExecutionLogs(std::move(safety_result.logs));
-  }
-  if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
-    if (opts_.safety_checker->safety_cfg()
-            .OnlyCancelUnsafeResponseOnComplete() &&
-        completeness != ResponseCompleteness::kComplete) {
-      return;
-    }
-    CancelPendingResponse(Result::kUsedOnDeviceOutputUnsafe,
-                          safety_result.is_unsupported_language
-                              ? OnDeviceError::kUnsupportedLanguage
-                              : OnDeviceError::kFiltered);
-    return;
-  }
   if (completeness == ResponseCompleteness::kPartial) {
-    SendPartialResponseCallback(output);
+    SendPartialResponseCallback(*output);
     return;
   }
 
-  SendSuccessCompletionCallback(output);
+  SendSuccessCompletionCallback(*output);
 }
 
 void OnDeviceExecution::CancelPendingResponse(Result result,
@@ -520,9 +396,6 @@ void OnDeviceExecution::Cleanup() {
   histogram_logger_.reset();
   std::move(cleanup_callback_).Run();
 }
-
-OnDeviceExecution::SafeRawOutput::SafeRawOutput() = default;
-OnDeviceExecution::SafeRawOutput::~SafeRawOutput() = default;
 
 OnDeviceExecution::ResultLogger::~ResultLogger() {
   base::UmaHistogramEnumeration(

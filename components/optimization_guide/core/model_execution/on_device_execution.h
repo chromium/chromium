@@ -20,10 +20,8 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
-#include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -123,20 +121,6 @@ class OnDeviceExecution final
   // Returns the mutable on-device model service response for logging.
   proto::OnDeviceModelServiceResponse* MutableLoggedResponse();
 
-  // Adds a collection of model execution logs to the request log.
-  void AddModelExecutionLogs(google::protobuf::RepeatedPtrField<
-                             proto::InternalOnDeviceModelExecutionInfo> logs);
-
-  // Callback invoked with RequestSafetyCheck result.
-  // Calls BeginRequestExecution if safety checks pass.
-  void OnRequestSafetyResult(on_device_model::mojom::GenerateOptionsPtr options,
-                             SafetyChecker::Result safety_result);
-
-  // Begins request execution (leads to OnResponse/OnComplete, which will
-  // call RunRawOutputSafetyCheck).
-  void BeginRequestExecution(
-      on_device_model::mojom::GenerateOptionsPtr options);
-
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
@@ -150,34 +134,14 @@ class OnDeviceExecution final
   void OnResponderDisconnect(uint32_t custom_reason,
                              const std::string& description);
 
-  // Evaluates raw output safety (leads to OnRawOutputSafetyResult).
-  void RunRawOutputSafetyCheck(ResponseCompleteness completeness);
-
-  // Called when output safety check completes.
-  // Calls MaybeParseResponse when there is more safe output.
-  void OnRawOutputSafetyResult(size_t raw_output_size,
-                               ResponseCompleteness completeness,
-                               SafetyChecker::Result safety_result);
-
-  // Called to parse the latest safe raw output.
+  // Called to parse the latest raw output.
   // Leads to OnParsedResponse.
   void MaybeParseResponse(ResponseCompleteness completeness);
 
   // Called when a response has finished parsing.
-  // Begins response safety evaluation, leads to OnResponseSafetyResult.
   void OnParsedResponse(
       ResponseCompleteness completeness,
       base::expected<proto::Any, ResponseParsingError> output);
-
-  // Called when response safety check completes.
-  // Either fails, sends the result or calls RunTextSafetyRemoteFallback.
-  void OnResponseSafetyResult(ResponseCompleteness completeness,
-                              proto::Any output,
-                              SafetyChecker::Result safety_result);
-
-  // Terminates on-device processing as unhealthy and falls back to remote
-  // execution to provide the result to the caller.
-  void FallbackToRemote(Result result);
 
   // Sends an error result and terminates on-device processing as healthy.
   void CancelPendingResponse(Result result,
@@ -215,18 +179,6 @@ class OnDeviceExecution final
 
   // How many tokens (response chunks) have been added.
   size_t num_response_tokens_ = 0;
-  // How many tokens (response chunks) have been added since the last safety
-  // evaluation was requested.
-  size_t num_unchecked_response_tokens_ = 0;
-
-  struct SafeRawOutput {
-    SafeRawOutput();
-    ~SafeRawOutput();
-    // How much of 'current_response' was checked.
-    size_t length = 0;
-  };
-  // The longest response that has passed the raw output text safety check.
-  SafeRawOutput latest_safe_raw_output_;
 
   // The last position in the response that has been streamed to the
   // responder.

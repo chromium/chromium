@@ -29,6 +29,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/text_safety_assets.h"
 
 namespace optimization_guide {
 

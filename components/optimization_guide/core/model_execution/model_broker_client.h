@@ -15,8 +15,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
-#include "components/optimization_guide/core/model_execution/safety_checker.h"
-#include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -29,22 +27,17 @@
 
 namespace optimization_guide {
 
-class ModelClient final : public TextSafetyClient {
+class ModelClient final {
  public:
   ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
               mojom::ModelSolutionConfigPtr config,
               on_device_model::Capabilities device_capabilities);
-  ~ModelClient() override;
+  ~ModelClient();
 
   // Construct a session for this capability.
   std::unique_ptr<OnDeviceSession> CreateSession(
       const SessionConfigParams& config_params,
       base::WeakPtr<OptimizationGuideLogger> logger);
-
-  // TextSafetyClient:
-  void StartSession(
-      mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> session)
-      override;
 
   base::WeakPtr<ModelClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -59,10 +52,6 @@ class ModelClient final : public TextSafetyClient {
   // The intersection of model capabilities and device capabilities.
   const on_device_model::Capabilities& capabilities() const {
     return capabilities_;
-  }
-
-  const proto::FeatureTextSafetyConfiguration& safety_config() const {
-    return safety_config_;
   }
 
   const TokenLimits& token_limits() const {
@@ -86,7 +75,6 @@ class ModelClient final : public TextSafetyClient {
 
   mojo::Remote<mojom::ModelSolution> remote_;
   scoped_refptr<const OnDeviceModelFeatureAdapter> feature_adapter_;
-  proto::FeatureTextSafetyConfiguration safety_config_;
   proto::OnDeviceModelVersions model_versions_;
   on_device_model::Capabilities capabilities_;
   mojom::OnDeviceFeature feature_;

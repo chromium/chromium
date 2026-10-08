@@ -130,8 +130,6 @@ TEST(OnDeviceSpeechRecognitionEngine, Reinitialization) {
   feature_config.set_feature(
       optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   config->feature_config = mojo_base::ProtoWrapper(feature_config);
-  config->text_safety_config = mojo_base::ProtoWrapper(
-      optimization_guide::proto::FeatureTextSafetyConfiguration());
   config->model_versions = mojo_base::ProtoWrapper(
       optimization_guide::proto::OnDeviceModelVersions());
 
@@ -223,8 +221,6 @@ TEST(OnDeviceSpeechRecognitionEngine, LanguagePropagation) {
   feature_config.set_feature(
       optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   config->feature_config = mojo_base::ProtoWrapper(feature_config);
-  config->text_safety_config = mojo_base::ProtoWrapper(
-      optimization_guide::proto::FeatureTextSafetyConfiguration());
   config->model_versions = mojo_base::ProtoWrapper(
       optimization_guide::proto::OnDeviceModelVersions());
 
@@ -271,8 +267,6 @@ TEST(OnDeviceSpeechRecognitionEngine, EmptyLanguagePropagation) {
   feature_config.set_feature(
       optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   config->feature_config = mojo_base::ProtoWrapper(feature_config);
-  config->text_safety_config = mojo_base::ProtoWrapper(
-      optimization_guide::proto::FeatureTextSafetyConfiguration());
   config->model_versions = mojo_base::ProtoWrapper(
       optimization_guide::proto::OnDeviceModelVersions());
 
