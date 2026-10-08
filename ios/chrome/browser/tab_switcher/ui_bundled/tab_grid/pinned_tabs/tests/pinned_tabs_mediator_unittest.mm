@@ -115,8 +115,8 @@ class PinnedTabsMediatorTest : public PlatformTest {
     loader_->SetSceneService(scene_loader_.get());
     loader_->SetDelegate(url_loading_delegate_);
 
-    // The Pinned Tabs feature is not available on iPad.
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    // The Pinned Tabs feature is not available on iPad or iPhone Duo.
+    if (IsPinnedTabsEnabled()) {
       consumer_ = [[FakePinnedTabCollectionConsumer alloc] init];
       mediator_ = [[PinnedTabsMediator alloc] initWithConsumer:consumer_];
       mediator_.browser = regular_browser_.get();
