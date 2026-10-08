@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_legacy_impl.h"
 
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -33,7 +32,6 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
-#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
@@ -62,12 +60,6 @@ OtpManagerLegacyImpl::OtpManagerLegacyImpl(
     OneTimeTokenService* one_time_token_service)
     : owner_(owner), one_time_token_service_(one_time_token_service) {
   autofill_manager_observation_.Observe(&owner);
-  if (one_time_token_service_ && owner_->driver().GetParent() == nullptr &&
-      !owner_->driver().IsEmbedded() && one_time_token_service_->log_sink()) {
-    log_subscription_ = one_time_token_service_->log_sink()->AddLogHandler(
-        base::BindRepeating(&OtpManagerLegacyImpl::OnLogMessage,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 OtpManagerLegacyImpl::~OtpManagerLegacyImpl() {
@@ -335,11 +327,6 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
 
 bool OtpManagerLegacyImpl::IsOtpDeliveryBlocked() {
   return owner_->client().DocumentUsedWebOTP();
-}
-
-void OtpManagerLegacyImpl::OnLogMessage(std::string_view message) {
-  LOG_AF(owner_->client().GetCurrentLogManager())
-      << LoggingScope::kOneTimeTokens << message;
 }
 
 }  // namespace autofill

@@ -6,10 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_LEGACY_IMPL_H_
 
 #include <string>
-#include <string_view>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -64,9 +62,6 @@ class OtpManagerLegacyImpl : public OtpManager,
                                 FieldGlobalId field) override;
   void OnBeforeFocusOnNonFormField(AutofillManager& manager) override;
 
-  // Callback handler for `log_subscription_`.
-  void OnLogMessage(std::string_view message);
-
  private:
   friend class OtpManagerLegacyImplTestApi;
 
@@ -106,9 +101,6 @@ class OtpManagerLegacyImpl : public OtpManager,
 
   // Subscription to `OneTimeTokenService` for SMS OTPs.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;
-
-  // Subscription to log events of `one_time_token_service_`.
-  base::CallbackListSubscription log_subscription_;
 
   // Only the last call from the UI to generate suggestions is retained as such
   // a callback corresponds to the desire to show an autofill dropdown. A new

@@ -21,8 +21,6 @@ class OtpManagerLegacyImplTestApi {
   explicit OtpManagerLegacyImplTestApi(OtpManagerLegacyImpl& manager)
       : manager_(manager) {}
 
-  bool has_log_subscription() const { return !!manager_->log_subscription_; }
-
   void OnOneTimeTokenReceived(
       one_time_tokens::OneTimeTokenSource source,
       base::expected<one_time_tokens::OneTimeToken,

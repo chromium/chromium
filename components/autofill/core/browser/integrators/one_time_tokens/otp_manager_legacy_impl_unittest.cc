@@ -933,30 +933,6 @@ TEST_F(OtpManagerLegacyImplTest,
   EXPECT_TRUE(future.Get().empty());
 }
 
-// Tests that only the outermost main frame registers a log handler with the
-// OneTimeTokenService's log sink, avoiding log duplication from subframes.
-TEST_F(OtpManagerLegacyImplTest,
-       LogSubscriptionRestrictedToOutermostMainFrame) {
-  // Main frame:
-  OtpManagerLegacyImpl main_frame_otp_manager(autofill_manager(),
-                                              &one_time_token_service_);
-  EXPECT_TRUE(test_api(main_frame_otp_manager).has_log_subscription());
-
-  // Subframe:
-  CreateAutofillDriver();
-  autofill_driver(1).SetParent(&autofill_driver(0));
-  OtpManagerLegacyImpl subframe_otp_manager(autofill_manager(1),
-                                            &one_time_token_service_);
-  EXPECT_FALSE(test_api(subframe_otp_manager).has_log_subscription());
-
-  // Fenced frame root (GetParent() is nullptr, but IsEmbedded() is true):
-  CreateAutofillDriver();
-  autofill_driver(2).SetIsEmbedded(true);
-  OtpManagerLegacyImpl fenced_frame_otp_manager(autofill_manager(2),
-                                                &one_time_token_service_);
-  EXPECT_FALSE(test_api(fenced_frame_otp_manager).has_log_subscription());
-}
-
 // Tests that GetOtpSuggestions immediately invokes the callback with empty
 // suggestions if OneTimeTokenService is nullptr.
 TEST_F(OtpManagerLegacyImplTest, GetOtpSuggestions_NullServiceInvokesCallback) {
