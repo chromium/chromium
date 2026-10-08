@@ -11,6 +11,7 @@
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/cast_receiver/common/public/status.h"
+#include "media/base/channel_layout.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -85,7 +86,8 @@ TEST_F(CoreStreamingConfigManagerTest, OnSingleValidMessageNoCodecs) {
   ASSERT_EQ(config.audio_limits.size(), size_t{1});
   auto& limit = config.audio_limits.back();
   EXPECT_EQ(limit.codec, std::nullopt);
-  EXPECT_EQ(limit.channel_layout, ::media::CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(limit.channel_layout_config,
+            ::media::ChannelLayoutConfig::Stereo());
 }
 
 TEST_F(CoreStreamingConfigManagerTest, OnSingleValidMessageWithCodecs) {

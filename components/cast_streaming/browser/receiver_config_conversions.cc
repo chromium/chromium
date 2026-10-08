@@ -64,12 +64,11 @@ openscreen::cast::AudioLimits ToOpenscreenAudioLimitsType(
     osp_limits.applies_to_all_codecs = true;
   }
 
-  const int max_channels =
-      media::ChannelLayoutToChannelCount(limits.channel_layout);
   // Layouts with no fixed channel count (e.g. BITSTREAM, DISCRETE) return 0.
   // We default to 1 channel (mono) to ensure we always have a valid
   // configuration.
-  osp_limits.max_channels = std::max(max_channels, 1);
+  osp_limits.max_channels =
+      std::max(limits.channel_layout_config.channels(), 1);
   osp_limits.max_delay =
       std::chrono::milliseconds(limits.max_delay.InMilliseconds());
   if (limits.max_sample_rate) {

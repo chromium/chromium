@@ -47,8 +47,9 @@ class ReceiverConfig {
     // default.
     std::optional<int> max_sample_rate;
 
-    // Maximum audio channels.
-    media::ChannelLayout channel_layout = media::CHANNEL_LAYOUT_STEREO;
+    // Maximum audio channels config.
+    media::ChannelLayoutConfig channel_layout_config =
+        media::ChannelLayoutConfig::Stereo();
 
     // Minimum and maximum bitrates. Generally capture is done at the maximum
     // bit rate, since audio bandwidth is much lower than video for most
