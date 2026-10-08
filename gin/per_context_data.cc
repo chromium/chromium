@@ -27,10 +27,7 @@ PerContextData::PerContextData(ContextHolder* context_holder,
       static_cast<v8::CppHeapPointerTag>(gin::kGinPerContextData));
 }
 
-PerContextData::~PerContextData() = default;
-
 void PerContextData::Detach() {
-  object_templates_.clear();
   ClearAllUserData();
   CHECK(context_holder_ != nullptr);
   context_holder_->context()->SetAlignedPointerInEmbedderData(
@@ -43,34 +40,9 @@ void PerContextData::Trace(cppgc::Visitor* visitor) const {}
 
 // static
 PerContextData* PerContextData::From(v8::Local<v8::Context> context) {
-  if (context->GetNumberOfEmbedderDataFields() <= kGinPerContextDataIndex) {
-    return nullptr;
-  }
   return context->GetAlignedPointerFromEmbedderData<PerContextData>(
       v8::Isolate::GetCurrent(), kGinPerContextDataIndex,
       static_cast<v8::CppHeapPointerTag>(gin::kGinPerContextData));
-}
-
-void PerContextData::SetObjectTemplate(
-    const WrapperInfo* info,
-    v8::Local<v8::ObjectTemplate> object_template) {
-  if (!context_holder_) {
-    return;
-  }
-  object_templates_[info].Reset(context_holder_->isolate(), object_template);
-}
-
-v8::Local<v8::ObjectTemplate> PerContextData::GetObjectTemplate(
-    const WrapperInfo* info) {
-  if (!context_holder_) {
-    return v8::Local<v8::ObjectTemplate>();
-  }
-  auto iter = object_templates_.find(info);
-  if (iter == object_templates_.end()) {
-    return v8::Local<v8::ObjectTemplate>();
-  }
-  return v8::Local<v8::ObjectTemplate>::New(context_holder_->isolate(),
-                                            iter->second);
 }
 
 }  // namespace gin
