@@ -378,10 +378,11 @@ HTMLDocumentParser::HTMLDocumentParser(
                          kForceSynchronousParsing,
                          parser_prefetch_policy) {
   // Allow declarative shadow DOM for the fragment parser only if explicitly
-  // enabled.
+  // enabled, or when streaming HTML directly into a root insertion point.
   bool include_shadow_roots =
+      root_insertion_point ||
       fragment_target->GetDocument().GetDeclarativeShadowRootAllowState() ==
-      Document::DeclarativeShadowRootAllowState::kAllow;
+          Document::DeclarativeShadowRootAllowState::kAllow;
 
   // For now document fragment parsing never reports errors.
   bool report_errors = false;

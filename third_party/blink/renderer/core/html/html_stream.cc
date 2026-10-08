@@ -169,10 +169,6 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  // TODO(crbug.com/544919880): this call doesn't look correct. It should be a
-  // parser flag. See https://github.com/whatwg/html/issues/12652
-  target->GetDocument().setAllowDeclarativeShadowRoots(true);
-
   DocumentParser* parser = MakeGarbageCollected<HTMLDocumentParser>(
       target->GetDocument().createDocumentFragment(), context_element,
       parser_content_policy, ParserPrefetchPolicy::kDisallowPrefetching,
