@@ -205,8 +205,14 @@ public class DeviceInfoUnitTest {
         assertFalse(DeviceInfo.isDesktop());
 
         // Native browser tests add this switch after DeviceInfo may already have been cached.
+        // CommandLineFlags.reset() only undoes flags applied via annotations, so remove the switch
+        // explicitly to avoid leaking it into later tests in the same JVM.
         CommandLine.getInstance().appendSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
-        assertTrue(DeviceInfo.isDesktop());
+        try {
+            assertTrue(DeviceInfo.isDesktop());
+        } finally {
+            CommandLine.getInstance().removeSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
+        }
     }
 
     private static void setHasHingeAngleFeature(boolean hasFeature) {

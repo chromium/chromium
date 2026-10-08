@@ -18,7 +18,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CommandLineFlagsNoClassAnnotationCheckTest {
     @Test
-    @DisabledTest(message = "https://crbug.com/570781966")
     public void testNoAnnotation() throws Throwable {
         var switches = CommandLine.getInstance().getSwitches();
         Assert.assertTrue("CommandLine switches should be empty: " + switches, switches.isEmpty());
