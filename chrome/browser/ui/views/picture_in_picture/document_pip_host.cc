@@ -909,6 +909,11 @@ void DocumentPipHost::RemoveObserver(
 
 void DocumentPipHost::OnWidgetActivationChanged(views::Widget* widget,
                                                 bool active) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (window_controller_) {
+    window_controller_->NotifyWindowFocusChanged(active);
+  }
+#endif
   if (!active || !restore_focus_on_activation_) {
     return;
   }
@@ -923,6 +928,11 @@ void DocumentPipHost::OnWidgetActivationChanged(views::Widget* widget,
 
 void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
                                             const gfx::Rect& new_bounds) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (window_controller_) {
+    window_controller_->NotifyWindowBoundsChanged();
+  }
+#endif
   NotifyPositionRequiresUpdate();
 }
 

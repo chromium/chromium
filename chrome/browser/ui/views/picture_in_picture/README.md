@@ -18,8 +18,9 @@ Its `SessionTabHelper` has no session-service delegate: the script-created
 document must not enter session restore.
 
 The controller describes a single active tab in an always-on-top `"popup"`
-window. Tab metadata uses the normal extension permission-scrubbing rules. Both
-host-initiated and native close paths unregister the controller before
+window. Tab metadata uses the normal extension permission-scrubbing rules.
+Bounds and activation changes notify `WindowControllerList`.
+Both host-initiated and native close paths unregister the controller before
 destroying the Widget or child.
 
 [video picture-in-picture]:

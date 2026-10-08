@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -336,6 +338,18 @@ class PipExtensionWindowObserver
     EXPECT_FALSE(FindExtensionWindow(window_id));
   }
 
+  void OnWindowBoundsChanged(
+      extensions::WindowController* controller) override {
+    EXPECT_EQ(window_id, controller->GetWindowId());
+    ++bounds_changed;
+  }
+
+  void OnWindowFocusChanged(extensions::WindowController* controller,
+                            bool has_focus) override {
+    EXPECT_EQ(window_id, controller->GetWindowId());
+    focus_changes.push_back(has_focus);
+  }
+
   void WebContentsDestroyed() override {
     EXPECT_EQ(added, removed);
     EXPECT_FALSE(FindExtensionWindow(window_id));
@@ -346,6 +360,8 @@ class PipExtensionWindowObserver
   int removed = 0;
   int children_destroyed = 0;
   int window_id = -1;
+  int bounds_changed = 0;
+  std::vector<bool> focus_changes;
 
  private:
   base::ScopedObservation<extensions::WindowControllerList,
@@ -460,6 +476,25 @@ TEST_F(DocumentPipHostTest, ExtensionWindowVisibilityAndOptionsWithoutBrowser) {
   EXPECT_FALSE(
       controller->MatchesFilter(WindowController::GetFilterFromWindowTypes(
           {extensions::api::windows::WindowType::kNormal})));
+}
+
+TEST_F(DocumentPipHostTest,
+       ExtensionWindowForwardsBoundsAndFocusNotifications) {
+  PipExtensionWindowObserver observer;
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* controller = FindExtensionWindow(host->GetSessionId().id());
+  ASSERT_TRUE(controller);
+  observer.bounds_changed = 0;
+  const gfx::Rect bounds(45, 55, 450, 350);
+  controller->window()->SetBounds(bounds);
+  EXPECT_EQ(bounds, controller->window()->GetBounds());
+  EXPECT_GT(observer.bounds_changed, 0);
+
+  // Native activation delivery varies by platform; drive both host callbacks.
+  observer.focus_changes.clear();
+  host->OnWidgetActivationChanged(host->GetWidget(), false);
+  host->OnWidgetActivationChanged(host->GetWidget(), true);
+  EXPECT_EQ((std::vector<bool>{false, true}), observer.focus_changes);
 }
 
 TEST_F(DocumentPipHostTest, ExtensionWindowControllerUsesHostWidget) {
