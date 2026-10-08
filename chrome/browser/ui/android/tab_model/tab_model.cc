@@ -119,7 +119,8 @@ void TabModel::RecordActualSyncedTabsHistogram() {
   }
 
   // This check will early exit if there are no tabs in the local model.
-  if (GetTabCount() == 0) {
+  const int tab_count = GetTabCount();
+  if (tab_count == 0) {
     return;
   }
 
@@ -129,7 +130,7 @@ void TabModel::RecordActualSyncedTabsHistogram() {
   }
 
   int eligible_tabs_count = 0;
-  for (int i = 0; i < GetTabCount(); i++) {
+  for (int i = 0; i < tab_count; ++i) {
     if (SessionSyncServiceFactory::ShouldSyncURL(GetTabAt(i)->GetURL())) {
       eligible_tabs_count++;
     }

@@ -176,19 +176,22 @@ void TabModelObserverJniBridge::OnTabCloseUndone(
 }
 
 void TabModelObserverJniBridge::OnTabsSelectionChanged(JNIEnv* env) {
-  std::set<tabs::TabInterface*> highlighted_tabs;
-  const int count = tab_model_->GetTabCount();
+  if (!interface_observers_.empty()) {
+    std::set<tabs::TabInterface*> highlighted_tabs;
+    const int count = tab_model_->GetTabCount();
 
-  for (int i = 0; i < count; ++i) {
-    TabAndroid* tab = tab_model_->GetTabAt(i);
-    if (tab->IsSelected()) {
-      highlighted_tabs.insert(tab);
+    for (int i = 0; i < count; ++i) {
+      TabAndroid* tab = tab_model_->GetTabAt(i);
+      if (tab->IsSelected()) {
+        highlighted_tabs.insert(tab);
+      }
+    }
+
+    for (auto& observer : interface_observers_) {
+      observer.OnHighlightedTabsChanged(*tab_model_, highlighted_tabs);
     }
   }
 
-  for (auto& observer : interface_observers_) {
-    observer.OnHighlightedTabsChanged(*tab_model_, highlighted_tabs);
-  }
   for (auto& observer : model_observers_) {
     observer.OnTabsSelectionsChanged();
   }
