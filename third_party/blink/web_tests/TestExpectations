@@ -8866,7 +8866,6 @@ crbug.com/566528136 [ Debug Linux ] external/wpt/html/document-isolation-policy/
 crbug.com/546048779 [ Debug Linux ] external/wpt/css/css-align/abspos/justify-self-static-position-001.html [ Failure Pass ]
 crbug.com/546084497 [ Debug Linux ] external/wpt/resize-observer/observer-in-cross-origin-frame.sub.html [ Failure Pass ]
 crbug.com/565447575 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/navigation.py [ Failure Pass Timeout ]
-crbug.com/565513701 [ Win ] external/wpt/css/css-scroll-snap/scroll-snap-type-pair-007.html [ Failure Pass Timeout ]
 
 # Gardener 2026-09-29
 crbug.com/541016039 [ Debug Linux ] external/wpt/webdriver/tests/classic/find_element_from_element/user_prompts.py [ Crash Failure Pass Timeout ]
