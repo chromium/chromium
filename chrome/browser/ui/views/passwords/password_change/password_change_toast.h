@@ -78,13 +78,9 @@ class PasswordChangeToast : public views::View {
   // Calculates interior margins based on currently visible child views.
   gfx::Insets CalculateInteriorMargin();
 
-  // views::View
-  void OnThemeChanged() override;
-
   void OnActionButtonClicked();
   void OnCloseButtonClicked();
 
-  std::optional<raw_ref<const gfx::VectorIcon>> icon_;
   base::OnceClosure action_button_closure_;
   base::OnceClosure close_callback_;
 
