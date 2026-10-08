@@ -62,6 +62,27 @@ void RecordResultAndRunCallback(
 
 }  // namespace
 
+std::string_view TokenFetchErrorToString(TokenFetchError error) {
+  switch (error) {
+    case TokenFetchError::kNoPrimaryAccount:
+      return "no_primary_account";
+    case TokenFetchError::kUnmanagedUser:
+      return "unmanaged_user";
+    case TokenFetchError::kUnsupportedScope:
+      return "unsupported_scope";
+    case TokenFetchError::kInvalidCredentials:
+      return "invalid_credentials";
+    case TokenFetchError::kTransientError:
+      return "transient_error";
+    case TokenFetchError::kAuthError:
+      return "auth_error";
+    case TokenFetchError::kCanceled:
+      return "canceled";
+    case TokenFetchError::kInapplicableServer:
+      return "inapplicable_server";
+  }
+}
+
 EnterpriseNetworkAuthService::PendingManagedStatusCheck::
     PendingManagedStatusCheck() = default;
 EnterpriseNetworkAuthService::PendingManagedStatusCheck::

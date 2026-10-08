@@ -56,6 +56,8 @@ enum class TokenFetchError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseNetworkTokenFetchError)
 
+std::string_view TokenFetchErrorToString(TokenFetchError error);
+
 inline constexpr TokenFetchError kNoErrorForMetrics =
     static_cast<TokenFetchError>(0);
 

@@ -38,6 +38,11 @@ class ProxyProvisioningDomainManager {
         ProxyProvisioningDomainManager* domain_manager) = 0;
   };
 
+  struct FailureDetails {
+    bool invalid_policy = false;
+    std::optional<ProvisioningDomainFetchError> fetch_error;
+  };
+
   using GetURLLoaderFactoryCallback =
       base::RepeatingCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
 
@@ -73,6 +78,9 @@ class ProxyProvisioningDomainManager {
   const ProvisioningDomainProxyConfig& fetched_config() const {
     return fetched_config_;
   }
+  const std::optional<FailureDetails>& last_failure() const {
+    return last_failure_;
+  }
   ProvisioningDomainProxyConfig::State state() const {
     return fetched_config_.state;
   }
@@ -103,6 +111,7 @@ class ProxyProvisioningDomainManager {
 
   const ProvisioningDomainConfig policy_;
   ProvisioningDomainProxyConfig fetched_config_;
+  std::optional<FailureDetails> last_failure_;
 
   const raw_ptr<EnterpriseNetworkAuthService> auth_service_;
   GetURLLoaderFactoryCallback url_loader_factory_callback_;

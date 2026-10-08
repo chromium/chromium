@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_fetcher.h"
@@ -92,6 +93,22 @@ ProvisioningDomainProxyConfig::State ClassifyFetchError(
   }
 }
 
+std::string_view FetchResultStatusToString(
+    ProvisioningDomainFetchResultStatus status) {
+  switch (status) {
+    case ProvisioningDomainFetchResultStatus::kInvalidUrl:
+      return "InvalidUrl";
+    case ProvisioningDomainFetchResultStatus::kTokenFetchError:
+      return "TokenFetchError";
+    case ProvisioningDomainFetchResultStatus::kHttpError:
+      return "HttpError";
+    case ProvisioningDomainFetchResultStatus::kParseError:
+      return "ParseError";
+    case ProvisioningDomainFetchResultStatus::kSuccess:
+      NOTREACHED();
+  }
+}
+
 ProvisioningDomainConfig ParsePolicyFromValue(const base::Value& policy_val) {
   const base::DictValue* dict = policy_val.GetIfDict();
   ProvisioningDomainConfig fallback_policy;
@@ -131,6 +148,9 @@ ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
     fetched_config_.pvd_id = policy_.pvd_id;
     fetched_config_.state =
         ProvisioningDomainProxyConfig::State::kFailedPermanent;
+    last_failure_ = FailureDetails{
+        .invalid_policy = true,
+    };
     return;
   }
 
@@ -191,6 +211,27 @@ base::DictValue ProxyProvisioningDomainManager::ToDict() const {
   dict.Set("policy", ProvisioningDomainConfigToDict(policy_));
   dict.Set("fetched_config",
            ProvisioningDomainProxyConfigToDict(fetched_config_));
+  if (last_failure_.has_value()) {
+    base::DictValue failure_dict;
+    if (last_failure_->invalid_policy) {
+      failure_dict.Set("failure_reason", "InvalidPolicy");
+    } else if (last_failure_->fetch_error.has_value()) {
+      const ProvisioningDomainFetchError& error = *last_failure_->fetch_error;
+      failure_dict.Set("failure_reason",
+                       FetchResultStatusToString(error.status));
+      if (error.token_fetch_error.has_value()) {
+        failure_dict.Set("token_fetch_error",
+                         TokenFetchErrorToString(*error.token_fetch_error));
+      }
+      if (error.net_error != net::OK) {
+        failure_dict.Set("net_error", net::ErrorToShortString(error.net_error));
+      }
+      if (error.response_code.has_value()) {
+        failure_dict.Set("http_response_code", *error.response_code);
+      }
+    }
+    dict.Set("last_failure", std::move(failure_dict));
+  }
   return dict;
 }
 
@@ -250,8 +291,13 @@ void ProxyProvisioningDomainManager::OnRefreshComplete(
     fetched_config_ = std::move(*result);
     TransitionToState(ProvisioningDomainProxyConfig::State::kValid);
   } else {
+    const ProvisioningDomainFetchError& error = result.error();
+    last_failure_ = FailureDetails{
+        .fetch_error = error,
+    };
+
     ProvisioningDomainProxyConfig::State error_state =
-        ClassifyFetchError(result.error());
+        ClassifyFetchError(error);
     if (error_state == ProvisioningDomainProxyConfig::State::kFailedTransient) {
       consecutive_transient_failures_++;
       if (consecutive_transient_failures_ >= kMaxTransientRetries) {
@@ -273,6 +319,7 @@ void ProxyProvisioningDomainManager::TransitionToState(
   switch (new_state) {
     case ProvisioningDomainProxyConfig::State::kValid:
       consecutive_transient_failures_ = 0;
+      last_failure_.reset();
       ScheduleProactiveRefresh();
       break;
 
