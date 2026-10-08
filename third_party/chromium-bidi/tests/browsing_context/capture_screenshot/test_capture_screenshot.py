@@ -306,3 +306,72 @@ async def test_screenshot_viewport_clip_scroll(
         assert_images_similar(
             resp["data"], base64.b64encode(image_file.read()).decode("utf-8")
         )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("origin", ["viewport", "document"])
+async def test_screenshot_element_clip_scroll(
+    websocket, context_id, query_selector, html, origin
+):
+    await goto_url(
+        websocket,
+        context_id,
+        html(
+            '<div id="test_element" style="margin-top: 200px; width: 100px; height: 100px; background: red"></div>'
+        ),
+    )
+
+    # Set a fixed viewport to make the test deterministic.
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    "width": 150,
+                    "height": 150,
+                },
+                "devicePixelRatio": 1.0,
+            },
+        },
+    )
+
+    # Scroll the element into view.
+    await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.getElementById('test_element').scrollIntoView()",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True,
+            },
+        },
+    )
+
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "origin": origin,
+                "clip": {
+                    "type": "element",
+                    "element": await query_selector("#test_element"),
+                },
+            },
+        },
+    )
+
+    assert resp == {"data": ANY_STR}
+
+    with open(
+        Path(__file__).parent.resolve() / "element-document.png", "rb"
+    ) as image_file:
+        assert_images_similar(
+            resp["data"], base64.b64encode(image_file.read()).decode("utf-8")
+        )

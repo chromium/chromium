@@ -1469,12 +1469,15 @@ export class BrowsingContextImpl {
           );
         }
         {
+          // getBoundingClientRect() is viewport-relative; add viewport offset
+          // for document coordinates.
           const result = await hiddenSandboxRealm.callFunction(
             String((element: Element) => {
               const rect = element.getBoundingClientRect();
+              const viewport = window.visualViewport!;
               return {
-                x: rect.x,
-                y: rect.y,
+                x: rect.x + viewport.pageLeft,
+                y: rect.y + viewport.pageTop,
                 height: rect.height,
                 width: rect.width,
               };
