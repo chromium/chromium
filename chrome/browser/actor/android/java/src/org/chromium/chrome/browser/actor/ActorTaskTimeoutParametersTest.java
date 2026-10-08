@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ActorTaskTimeoutParametersTest {
     private static final int THIRTY_MIN_MS = (int) TimeUnit.MINUTES.toMillis(30);
     private static final int FIVE_MIN_MS = (int) TimeUnit.MINUTES.toMillis(5);
+    private static final int TWO_MIN_MS = (int) TimeUnit.MINUTES.toMillis(2);
     private static final int ONE_MIN_MS = (int) TimeUnit.MINUTES.toMillis(1);
 
     @Test
@@ -30,10 +31,12 @@ public class ActorTaskTimeoutParametersTest {
         assertEquals(FIVE_MIN_MS, ActorTaskTimeoutParameters.getPausedTimeoutMs());
         assertEquals(FIVE_MIN_MS, ActorTaskTimeoutParameters.getNeedsUserInputTimeoutMs());
         assertEquals(FIVE_MIN_MS, ActorTaskTimeoutParameters.getWarningTimeoutMs());
+        assertEquals(TWO_MIN_MS, ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs());
     }
 
     @Test
     public void testFinchOverrides() {
+        int thirtySecMs = (int) TimeUnit.SECONDS.toMillis(30);
         FeatureOverrides.newBuilder()
                 .param(
                         ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT,
@@ -51,11 +54,16 @@ public class ActorTaskTimeoutParametersTest {
                         ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT,
                         "warning_timeout_ms",
                         ONE_MIN_MS)
+                .param(
+                        ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT,
+                        "preparing_to_start_task_timeout_ms",
+                        thirtySecMs)
                 .apply();
 
         assertEquals(ONE_MIN_MS, ActorTaskTimeoutParameters.getRunningTimeoutMs());
         assertEquals(ONE_MIN_MS, ActorTaskTimeoutParameters.getPausedTimeoutMs());
         assertEquals(ONE_MIN_MS, ActorTaskTimeoutParameters.getNeedsUserInputTimeoutMs());
         assertEquals(ONE_MIN_MS, ActorTaskTimeoutParameters.getWarningTimeoutMs());
+        assertEquals(thirtySecMs, ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs());
     }
 }

@@ -22,12 +22,16 @@ public class ActorTaskTimeoutParameters {
     private static final String PARAM_PAUSED_TIMEOUT_MS = "paused_timeout_ms";
     private static final String PARAM_NEEDS_USER_INPUT_TIMEOUT_MS = "needs_user_input_timeout_ms";
     private static final String PARAM_WARNING_TIMEOUT_MS = "warning_timeout_ms";
+    private static final String PARAM_PREPARING_TO_START_TASK_TIMEOUT_MS =
+            "preparing_to_start_task_timeout_ms";
 
     private static final int DEFAULT_RUNNING_TIMEOUT_MS = (int) TimeUnit.MINUTES.toMillis(30);
     private static final int DEFAULT_PAUSED_TIMEOUT_MS = (int) TimeUnit.MINUTES.toMillis(5);
     private static final int DEFAULT_NEEDS_USER_INPUT_TIMEOUT_MS =
             (int) TimeUnit.MINUTES.toMillis(5);
     private static final int DEFAULT_WARNING_TIMEOUT_MS = (int) TimeUnit.MINUTES.toMillis(5);
+    private static final int DEFAULT_PREPARING_TO_START_TASK_TIMEOUT_MS =
+            (int) TimeUnit.MINUTES.toMillis(2);
 
     /**
      * Gets the timeout duration for the {@code RUNNING} state.
@@ -87,5 +91,18 @@ public class ActorTaskTimeoutParameters {
                 ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT,
                 PARAM_WARNING_TIMEOUT_MS,
                 DEFAULT_WARNING_TIMEOUT_MS);
+    }
+
+    /**
+     * Gets the timeout duration for the "Preparing to start your task…" snackbar shown after an
+     * external trigger fallback before a task starts actuating.
+     *
+     * @return The preparing-to-start-task timeout in milliseconds.
+     */
+    public static int getPreparingToStartTaskTimeoutMs() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT,
+                PARAM_PREPARING_TO_START_TASK_TIMEOUT_MS,
+                DEFAULT_PREPARING_TO_START_TASK_TIMEOUT_MS);
     }
 }

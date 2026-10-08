@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
@@ -24,7 +26,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
  * when system notifications and therefore background actuation are disabled).
  *
  * <p>The snackbar is persistent and is dismissed as soon as a new task is created ({@link
- * ActorTaskState#CREATED}).
+ * ActorTaskState#CREATED}), or replaced with a "Something went wrong" snackbar if no task is
+ * created within {@link ActorTaskTimeoutParameters#getPreparingToStartTaskTimeoutMs()}.
  */
 @NullMarked
 public class ActorExternalTriggerSnackbarController
@@ -36,10 +39,13 @@ public class ActorExternalTriggerSnackbarController
     private final SnackbarManager mSnackbarManager;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mTimeoutRunnable = this::onPreparingTimeout;
     private final Callback<Profile> mProfileObserver = this::onProfileAdded;
 
     private @Nullable ActorKeyedService mActorKeyedService;
     private boolean mIsPendingTaskStart;
+    private boolean mIsErrorSnackbarShowing;
 
     /**
      * Constructs a new {@link ActorExternalTriggerSnackbarController}.
@@ -79,8 +85,36 @@ public class ActorExternalTriggerSnackbarController
      * indicating that a new actor task is pending creation.
      */
     public void onPendingActorTaskTrigger() {
+        dismissSnackbar();
         mIsPendingTaskStart = true;
+        schedulePreparingTimeout();
         maybeShowSnackbar();
+    }
+
+    private void schedulePreparingTimeout() {
+        mHandler.removeCallbacks(mTimeoutRunnable);
+        mHandler.postDelayed(
+                mTimeoutRunnable, ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs());
+    }
+
+    private void onPreparingTimeout() {
+        if (!mIsPendingTaskStart) {
+            return;
+        }
+        dismissSnackbar();
+        if (!mSnackbarManager.canShowSnackbar()) {
+            return;
+        }
+        String errorMessage =
+                mActivity.getString(R.string.actor_task_list_bubble_row_failed_task_subtitle);
+        Snackbar errorSnackbar =
+                Snackbar.make(
+                        errorMessage,
+                        this,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER);
+        mSnackbarManager.showSnackbar(errorSnackbar);
+        mIsErrorSnackbarShowing = true;
     }
 
     private void maybeShowSnackbar() {
@@ -102,7 +136,9 @@ public class ActorExternalTriggerSnackbarController
     }
 
     private void dismissSnackbar() {
+        mHandler.removeCallbacks(mTimeoutRunnable);
         mIsPendingTaskStart = false;
+        mIsErrorSnackbarShowing = false;
         mSnackbarManager.dismissSnackbars(this);
     }
 
@@ -116,19 +152,24 @@ public class ActorExternalTriggerSnackbarController
 
     @Override
     public void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState) {
-        if (mIsPendingTaskStart && newState == ActorTaskState.CREATED) {
+        if ((mIsPendingTaskStart || mIsErrorSnackbarShowing)
+                && newState == ActorTaskState.CREATED) {
             dismissSnackbar();
         }
     }
 
     @Override
     public void onAction(@Nullable Object actionData) {
+        mHandler.removeCallbacks(mTimeoutRunnable);
         mIsPendingTaskStart = false;
+        mIsErrorSnackbarShowing = false;
     }
 
     @Override
     public void onDismissNoAction(@Nullable Object actionData) {
+        mHandler.removeCallbacks(mTimeoutRunnable);
         mIsPendingTaskStart = false;
+        mIsErrorSnackbarShowing = false;
     }
 
     @Override
@@ -144,5 +185,9 @@ public class ActorExternalTriggerSnackbarController
 
     boolean isPendingTaskStartForTesting() {
         return mIsPendingTaskStart;
+    }
+
+    boolean isErrorSnackbarShowingForTesting() {
+        return mIsErrorSnackbarShowing;
     }
 }
