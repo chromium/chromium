@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/profiles",
-  "+chrome/browser/ash/browser_delegate/browser_type_conversion.h",
   "+chrome/browser/ash/profiles/user_profile_migration.h",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",

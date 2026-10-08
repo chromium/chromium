@@ -21,7 +21,6 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
 #include "chrome/common/extensions/extension_constants.h"

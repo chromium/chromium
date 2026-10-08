@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "base/test/bind.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"

@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/windows.h"
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "ui/views/widget/widget.h"
 

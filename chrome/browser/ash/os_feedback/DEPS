@@ -6,7 +6,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/android",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/feedback",

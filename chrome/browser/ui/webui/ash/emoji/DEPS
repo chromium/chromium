@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ui/views/bubble",
   "+chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h",
   "+chrome/browser/ui/webui/top_chrome",
-  "+chrome/browser/ui/webui/webui_load_timer.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]

@@ -9,7 +9,6 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"

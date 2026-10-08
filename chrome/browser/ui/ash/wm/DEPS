@@ -7,7 +7,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/birch",
   "+chrome/browser/ui/ash/desks",
-  "+chrome/browser/ui/ash/new_window",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_tab_strip_tracker.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",

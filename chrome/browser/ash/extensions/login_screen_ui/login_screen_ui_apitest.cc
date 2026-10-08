@@ -6,7 +6,6 @@
 #include <string>
 
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
-#include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/dialog_delegate.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/window.h"

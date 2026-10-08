@@ -25,7 +25,6 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

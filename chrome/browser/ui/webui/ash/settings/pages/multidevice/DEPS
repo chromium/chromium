@@ -8,7 +8,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/login/quick_unlock",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/phonehub",
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles/profile.h",

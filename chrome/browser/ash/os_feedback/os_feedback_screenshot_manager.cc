@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/android/compose_bitmaps_helper.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/aura/window.h"

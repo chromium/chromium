@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
-#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_impl.h"
 
-#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 
 namespace ash {
