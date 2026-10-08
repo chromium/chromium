@@ -38,7 +38,12 @@ enum class AndroidColorRole {
   kInverseSurface = 24,
   kInverseOnSurface = 25,
   kInversePrimary = 26,
-  kMaxValue = kInversePrimary,
+  kSurfaceContainerLowest = 27,
+  kSurfaceContainerLow = 28,
+  kSurfaceContainer = 29,
+  kSurfaceContainerHigh = 30,
+  kSurfaceContainerHighest = 31,
+  kMaxValue = kSurfaceContainerHighest,
 };
 // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ui/color/ColorProviderBridgeImpl.java:AndroidColorRoleAttrs)
 

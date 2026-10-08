@@ -56,6 +56,12 @@ public class ColorProviderBridgeImpl implements ColorProviderBridge {
         COLOR_ATTRS[AndroidColorRole.INVERSE_SURFACE] = R.attr.colorSurfaceInverse;
         COLOR_ATTRS[AndroidColorRole.INVERSE_ON_SURFACE] = R.attr.colorOnSurfaceInverse;
         COLOR_ATTRS[AndroidColorRole.INVERSE_PRIMARY] = R.attr.colorPrimaryInverse;
+        COLOR_ATTRS[AndroidColorRole.SURFACE_CONTAINER_LOWEST] = R.attr.colorSurfaceContainerLowest;
+        COLOR_ATTRS[AndroidColorRole.SURFACE_CONTAINER_LOW] = R.attr.colorSurfaceContainerLow;
+        COLOR_ATTRS[AndroidColorRole.SURFACE_CONTAINER] = R.attr.colorSurfaceContainer;
+        COLOR_ATTRS[AndroidColorRole.SURFACE_CONTAINER_HIGH] = R.attr.colorSurfaceContainerHigh;
+        COLOR_ATTRS[AndroidColorRole.SURFACE_CONTAINER_HIGHEST] =
+                R.attr.colorSurfaceContainerHighest;
     }
 
     // LINT.ThenChange(//ui/color/android/android_color_roles.h:AndroidColorRole)

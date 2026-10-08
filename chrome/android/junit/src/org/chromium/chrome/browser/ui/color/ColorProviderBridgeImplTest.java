@@ -67,6 +67,20 @@ public class ColorProviderBridgeImplTest {
     }
 
     @Test
+    public void testGetThemeColors_EveryRoleResolves() {
+        ColorProviderBridgeImpl bridge = new ColorProviderBridgeImpl();
+        long[] colors = bridge.getThemeColors(mActivity);
+
+        assertEquals(AndroidColorRole.MAX_VALUE + 1, colors.length);
+        for (int i = 0; i < colors.length; i++) {
+            assertNotEquals(
+                    "AndroidColorRole " + i + " should resolve",
+                    ColorUtils.INVALID_COLOR,
+                    colors[i]);
+        }
+    }
+
+    @Test
     public void testGetThemeColors_NullContext_FallbackToActivity() {
         ColorProviderBridgeImpl bridge = new ColorProviderBridgeImpl();
         long[] result = bridge.getThemeColors(null);

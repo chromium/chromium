@@ -31,49 +31,12 @@ void AddSysColorMixerAndroid(ColorProvider* provider,
     return;
   }
   ColorMixer& mixer = provider->AddMixer();
-  auto assign_if_present = [&](AndroidColorRole role, ColorId id) {
+  for (const auto& [role, id] : internal::kAndroidColorRoleToColorId) {
     size_t index = static_cast<size_t>(role);
     if (index < colors.size() && colors[index].has_value()) {
       mixer[id] = {colors[index].value()};
     }
-  };
-
-  // TODO(crbug.com/537488418, crbug.com/537488598): Add missing color mappings
-  // and move mapping under ui/color.
-  assign_if_present(AndroidColorRole::kPrimary, kColorSysPrimary);
-  assign_if_present(AndroidColorRole::kOnPrimary, kColorSysOnPrimary);
-  assign_if_present(AndroidColorRole::kPrimaryContainer,
-                    kColorSysPrimaryContainer);
-  assign_if_present(AndroidColorRole::kOnPrimaryContainer,
-                    kColorSysOnPrimaryContainer);
-  assign_if_present(AndroidColorRole::kSecondary, kColorSysSecondary);
-  assign_if_present(AndroidColorRole::kOnSecondary, kColorSysOnSecondary);
-  assign_if_present(AndroidColorRole::kSecondaryContainer,
-                    kColorSysSecondaryContainer);
-  assign_if_present(AndroidColorRole::kOnSecondaryContainer,
-                    kColorSysOnSecondaryContainer);
-  assign_if_present(AndroidColorRole::kTertiary, kColorSysTertiary);
-  assign_if_present(AndroidColorRole::kOnTertiary, kColorSysOnTertiary);
-  assign_if_present(AndroidColorRole::kTertiaryContainer,
-                    kColorSysTertiaryContainer);
-  assign_if_present(AndroidColorRole::kOnTertiaryContainer,
-                    kColorSysOnTertiaryContainer);
-  assign_if_present(AndroidColorRole::kBackground, kColorSysBase);
-  assign_if_present(AndroidColorRole::kSurface, kColorSysSurface);
-  assign_if_present(AndroidColorRole::kOnSurface, kColorSysOnSurface);
-  assign_if_present(AndroidColorRole::kSurfaceVariant, kColorSysSurfaceVariant);
-  assign_if_present(AndroidColorRole::kOnSurfaceVariant,
-                    kColorSysOnSurfaceVariant);
-  assign_if_present(AndroidColorRole::kOutline, kColorSysOutline);
-  assign_if_present(AndroidColorRole::kError, kColorSysError);
-  assign_if_present(AndroidColorRole::kOnError, kColorSysOnError);
-  assign_if_present(AndroidColorRole::kErrorContainer, kColorSysErrorContainer);
-  assign_if_present(AndroidColorRole::kOnErrorContainer,
-                    kColorSysOnErrorContainer);
-  assign_if_present(AndroidColorRole::kInverseSurface, kColorSysInverseSurface);
-  assign_if_present(AndroidColorRole::kInverseOnSurface,
-                    kColorSysInverseOnSurface);
-  assign_if_present(AndroidColorRole::kInversePrimary, kColorSysInversePrimary);
+  }
 }
 
 }  // namespace ui

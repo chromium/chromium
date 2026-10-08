@@ -129,6 +129,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/color/dynamic_color",
   ]
+
+  if (is_android) {
+    sources += [ "android/sys_color_mixer_android_unittest.cc" ]
+  }
 }
 
 if (is_win) {
