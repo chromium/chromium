@@ -12,7 +12,7 @@ Description:
 This directory contains build rules and the grpc-java protoc plugin source code.
 
 The gRPC runtime lives in
-//third_party/android_deps/autorolled/cipd/libs/io_grpc_grpc_*.
+//third_party/android_deps/cipd/libs/io_grpc_grpc_*.
 
 Please note that the use of gRPC is not generally allowed within Chromium.
 Before integrating with this library, consult with the security team.

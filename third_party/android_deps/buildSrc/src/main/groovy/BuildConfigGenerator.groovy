@@ -50,7 +50,7 @@ class BuildConfigGenerator extends DefaultTask {
     private static final String LIBS_DIRECTORY = 'libs'
 
     private static final String ANDROIDX_PROJECT_PATH = 'third_party/androidx'
-    private static final String AUTOROLLED_PROJECT_PATH = 'third_party/android_deps/autorolled'
+    private static final String AUTOROLLED_PROJECT_PATH = 'third_party/android_deps'
     private static final String MAIN_PROJECT_PATH = 'third_party/android_deps'
     private static final List<String> ALLOWED_PROJECT_PATHS = [ANDROIDX_PROJECT_PATH, AUTOROLLED_PROJECT_PATH, MAIN_PROJECT_PATH]
 
@@ -775,7 +775,7 @@ No modifications.
                 sb.append('  # This target does not come with most of its dependencies and is\n')
                 sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
                 sb.append('  # this for other purposes, change buildCompileNoDepsLatest in\n')
-                sb.append('  # autorolled/build.gradle.template.\n')
+                sb.append('  # build.gradle.template.\n')
                 sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
                 break
             case 'com_google_android_gms_play_services_basement':

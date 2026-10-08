@@ -7,9 +7,9 @@
 // This needs be be before `apply plugin: ChromiumPlugin` because otherwise we
 // would not have access to it early enough (inside the ResolutionStrategy
 // closure).
-// This map is empty when rolling but is filled by fetch_all_autorolled.py to
-// cache the resolved values of all the '+' versions when we are not trying to
-// roll (e.g. when the main project imports this subproject).
+// This map is empty when rolling but is filled by fetch_all.py in the rolled
+// copy of this file so that non-rolling runs (e.g. --output-subdir) reuse the
+// resolved values of all the '+' versions instead of re-resolving.
 project.ext.versionCache = [:]
 {{version_overrides}}
 
@@ -136,7 +136,7 @@ dependencies {
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
-    pathToBuildGradle = 'third_party/android_deps/autorolled'
+    pathToBuildGradle = 'third_party/android_deps'
     cipdPackagePrefix = 'chromium/third_party/android_deps/autorolled'
     internalTargetVisibility = [ '//third_party/androidx:*', ':*' ]
     writeBoM = true

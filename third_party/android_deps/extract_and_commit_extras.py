@@ -5,11 +5,11 @@
 import pathlib
 import sys
 
-_SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
+_SRC_ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_SRC_ROOT / 'build/autoroll'))
 import extract_and_commit_util as ecu
 
-_AUTOROLLED_PATH = _SRC_ROOT / 'third_party/android_deps/autorolled'
+_AUTOROLLED_PATH = _SRC_ROOT / 'third_party/android_deps'
 _COMMITED_DIR_NAME = 'committed'
 
 ecu.main(committed_dir_path=_AUTOROLLED_PATH / _COMMITED_DIR_NAME)

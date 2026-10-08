@@ -4,7 +4,7 @@
 
 Chromium's way to pull prebuilt .jar / .aar files from Maven.
 
-There are 3 roots for libraries:
+There are 2 roots for libraries:
 
 1. `//third_party/androidx`
    * Contains all androidx libraries listed in `//third_party/androidx/build.gradle.template`
@@ -12,16 +12,11 @@ There are 3 roots for libraries:
    * Libraries are combined into a single CIPD instance by [android-androidx-packager]
    * Auto-rolled by [androidx-chromium]
 
-2. `//third_party/android_deps/autorolled`
-   * Contains deps reachable from `//third_party/android_deps/autorolled/build.gradle.template`
+2. `//third_party/android_deps`
+   * Contains all other libraries, listed in `//third_party/android_deps/build.gradle.template`
+   * Also contains the scripts and gradle plugin used by both roots
    * All libraries are combined into a single CIPD instance by [android-androidx-packager] (out of convenience).
    * Auto-rolled by [android-deps-chromium]
-
-3. `//third_party/android_deps`
-   * This was the original root, and thus contains scripts used by the other two
-   * Contains deps reachable from `//third_party/android_deps/build.gradle`
-   * Each library is packaged into its own CIPD package
-   * Not auto-rolled
 
 This system supports deps between roots, but since they roll separately,
 such deps can require manually rolling multiple roots atomically, and sometimes
@@ -42,10 +37,10 @@ For AndroidX libries, see [`//third_party/androidx/README.md`]
 
 ### Adding an Autorolled Library (Preferred)
 
-1. Add the gradle entry for the desired target to `//third_party/android_deps/autorolled/build.gradle.template`
+1. Add the gradle entry for the desired target to `//third_party/android_deps/build.gradle.template`
 2. Do a trial run (downloads files locally):
    ```
-   third_party/android_deps/autorolled/fetch_all_autorolled.py --local
+   third_party/android_deps/fetch_all.py --local
    ```
 3. Assuming it works fine, upload & submit your change to `build.gradle.template`
 4. Wait for the [android-androidx-packager] and [android-deps-chromium] to run (or [trigger the packager manually] to expedite)
