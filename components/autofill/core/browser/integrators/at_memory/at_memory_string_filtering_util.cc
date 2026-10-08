@@ -11,10 +11,16 @@
 
 #include "base/i18n/break_iterator.h"
 #include "base/strings/levenshtein_distance.h"
+#include "base/strings/string_util.h"
+#include "base/strings/whitespace_constants.h"
 
 namespace autofill {
 
 namespace {
+
+// Minimum number of characters, excluding whitespace, that a query needs to
+// match.
+constexpr size_t kMinQueryLength = 2;
 
 std::vector<std::u16string> TokenizeString(std::u16string_view text) {
   std::vector<std::u16string> tokens;
@@ -28,6 +34,12 @@ std::vector<std::u16string> TokenizeString(std::u16string_view text) {
     }
   }
   return tokens;
+}
+
+std::u16string RemoveWhitespace(std::u16string_view text) {
+  std::u16string result;
+  base::RemoveChars(text, base::kWhitespaceUTF16, &result);
+  return result;
 }
 
 }  // namespace
@@ -99,6 +111,95 @@ bool FuzzyMatchesOrderedTokens(std::u16string_view normalized_target,
   }
 
   return true;
+}
+
+bool MatchesRawValueQuery(MemoryDataType type,
+                          std::u16string_view normalized_target,
+                          std::u16string_view normalized_query) {
+  if (normalized_query.size() < kMinQueryLength) {
+    return false;
+  }
+  switch (type) {
+    // Codes must contain the query.
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehicleVin:
+    case MemoryDataType::kIban:
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kLoyaltyMembershipId:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kOrderId:
+      return RemoveWhitespace(normalized_target)
+          .contains(RemoveWhitespace(normalized_query));
+    // Free text is matched fuzzily.
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+    case MemoryDataType::kLoyaltyMembershipProgram:
+    case MemoryDataType::kLoyaltyMembershipProvider:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+      return FuzzyMatchesOrderedTokens(normalized_target, normalized_query);
+    // Sensitive numbers are obfuscated, so they are never searched.
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kRedressNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kDriversLicenseNumber:
+    // Dates and amounts have no raw-value representation to search.
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kUnknown:
+      return false;
+  }
 }
 
 }  // namespace autofill
