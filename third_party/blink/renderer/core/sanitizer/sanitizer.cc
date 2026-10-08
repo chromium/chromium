@@ -209,17 +209,21 @@ bool Sanitizer::removeAttribute(
   return RemoveAttribute(getFrom(attribute));
 }
 
-void Sanitizer::setComments(bool comments) {
+bool Sanitizer::setComments(bool comments) {
+  const SanitizerBoolWithAbsence old_comments = comments_;
   comments_ = comments ? SanitizerBoolWithAbsence::kTrue
                        : SanitizerBoolWithAbsence::kFalse;
+  return comments_ != old_comments;
 }
 
-void Sanitizer::setDataAttributes(bool data_attributes) {
+bool Sanitizer::setDataAttributes(bool data_attributes) {
+  const SanitizerBoolWithAbsence old_data_attrs = data_attrs_;
   data_attrs_ = data_attributes ? SanitizerBoolWithAbsence::kTrue
                                 : SanitizerBoolWithAbsence::kFalse;
+  return data_attrs_ != old_data_attrs;
 }
 
-void Sanitizer::removeUnsafe() {
+bool Sanitizer::removeUnsafe() {
   DCHECK(isValid());
   const Sanitizer* baseline = SanitizerBuiltins::GetBaseline();
 
@@ -236,13 +240,19 @@ void Sanitizer::removeUnsafe() {
   CHECK(!baseline->allow_processing_instructions_);
   CHECK(baseline->remove_processing_instructions_->empty());
 
+  bool changed = false;
   for (const QualifiedName& name : *(baseline->remove_elements_)) {
-    RemoveElement(name);
+    if (RemoveElement(name)) {
+      changed = true;
+    }
   }
   for (const QualifiedName& name : *(baseline->remove_attrs_)) {
-    RemoveAttribute(name);
+    if (RemoveAttribute(name)) {
+      changed = true;
+    }
   }
   DCHECK(isValid());
+  return changed;
 }
 
 bool SanitizerAtomicStringLessThan(const AtomicString& a,

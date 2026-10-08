@@ -84,9 +84,9 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
       const V8UnionSanitizerProcessingInstructionOrString*);
   bool allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   bool removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
-  void setComments(bool);
-  void setDataAttributes(bool);
-  void removeUnsafe();
+  bool setComments(bool);
+  bool setDataAttributes(bool);
+  bool removeUnsafe();
   SanitizerConfig* get() const;
 
   // Internal versions of API methods that use Blink types (rather than IDL):

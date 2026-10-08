@@ -24,11 +24,11 @@ interface Sanitizer {
   [RuntimeEnabled=HTMLProcessingInstruction] boolean removeProcessingInstruction(SanitizerPI pi);
   boolean allowAttribute(SanitizerAttribute attribute);
   boolean removeAttribute(SanitizerAttribute attribute);
-  undefined setComments(boolean allow);
-  undefined setDataAttributes(boolean allow);
+  boolean setComments(boolean allow);
+  boolean setDataAttributes(boolean allow);
 
   // Remove markup that executes script. May modify multiple lists:
-  undefined removeUnsafe();
+  boolean removeUnsafe();
 };
 
 dictionary SanitizerElementNamespace {
