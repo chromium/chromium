@@ -88,8 +88,9 @@ Router::Router() {
 }
 
 Router::~Router() {
-  // A Router MUST be serialized or closed before it can be destroyed. Both
-  // operations clear `traps_` and imply that no further traps should be added.
+  // A Router MUST be serialized, closed, or merged before it can be destroyed.
+  // These operations clear `traps_` and imply that no further traps should be
+  // added.
   absl::MutexLock lock(&mutex_);
   ABSL_ASSERT(traps_.empty());
   DVLOG(5) << "Deleting Router " << std::hex << this;
@@ -672,6 +673,7 @@ IpczResult Router::Trap(const IpczTrapConditions& conditions,
 }
 
 IpczResult Router::MergeRoute(const Ref<Router>& other) {
+  TrapEventDispatcher dispatcher;
   if (HasLocalPeer(*other) || other == this) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
@@ -692,6 +694,9 @@ IpczResult Router::MergeRoute(const Ref<Router>& other) {
       // parcels to its peer or retrieved inbound parcels from its queue.
       return IPCZ_RESULT_FAILED_PRECONDITION;
     }
+
+    traps_.RemoveAll(dispatcher);
+    other->traps_.RemoveAll(dispatcher);
 
     bridge_ = std::make_unique<RouteEdge>();
     other->bridge_ = std::make_unique<RouteEdge>();
