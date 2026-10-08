@@ -17,7 +17,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -463,70 +462,6 @@ public class FlatTabListDataProviderUnitTest {
     }
 
     // ============================================================================================
-    // TabModelObserver: tabClosureUndone / tabClosureCommitted
-    // ============================================================================================
-
-    @Test
-    public void testTabClosureUndone_ReinsertsAtTabModelPositionAndNotifiesUndo() {
-        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
-        closeTab(mTab2);
-        clearInvocations(mObserver);
-
-        undoCloseTab(mTab2, /* modelIndex= */ 1);
-
-        verify(mObserver).onItemsInserted(List.of(item(TAB2_ID)), item(TAB1_ID));
-        verify(mObserver).onTabClosureUndone(TAB2_ID);
-        assertItems(item(TAB1_ID), item(TAB2_ID), item(TAB3_ID));
-    }
-
-    @Test
-    public void testTabClosureUndone_SelectedTab_ItemIsSelected() {
-        mSelectedTab = mTab2;
-        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
-        selectTab(mTab3, TAB2_ID);
-        closeTab(mTab2);
-        clearInvocations(mObserver);
-
-        // Backend restores the tab and re-selects it.
-        mSelectedTab = mTab2;
-        undoCloseTab(mTab2, /* modelIndex= */ 1);
-        selectTab(mTab2, TAB3_ID);
-
-        verify(mObserver).onItemsInserted(List.of(selected(TAB2_ID)), item(TAB1_ID));
-        verify(mObserver).onTabClosureUndone(TAB2_ID);
-        // Tab 2 was inserted already selected, so only the deselect of tab 3 is emitted.
-        verify(mObserver).onItemUpdated(item(TAB3_ID), PayloadType.SELECTION);
-        assertItems(item(TAB1_ID), selected(TAB2_ID), item(TAB3_ID));
-    }
-
-    @Test
-    public void testTabClosureUndone_FilteredOut_NoInsert() {
-        groupTabs(TAB_GROUP_ID, mTab1);
-        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
-        closeTab(mTab2);
-        clearInvocations(mObserver);
-
-        undoCloseTab(mTab2, /* modelIndex= */ 1);
-
-        verify(mObserver, never()).onItemsInserted(any(), any());
-        verify(mObserver).onTabClosureUndone(TAB2_ID);
-        assertItems(item(TAB1_ID));
-    }
-
-    @Test
-    public void testTabClosureCommitted_ForwardsWithoutItemChanges() {
-        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
-        closeTab(mTab2);
-        clearInvocations(mObserver);
-
-        mTabModelObserver.tabClosureCommitted(mTab2);
-
-        verify(mObserver).onTabClosureCommitted(TAB2_ID);
-        verifyNoMoreInteractions(mObserver);
-        assertItems(item(TAB1_ID), item(TAB3_ID));
-    }
-
-    // ============================================================================================
     // TabModelObserver: didSelectTab
     // ============================================================================================
 
@@ -894,11 +829,6 @@ public class FlatTabListDataProviderUnitTest {
     private void closeTab(Tab tab) {
         mModelTabs.remove(tab);
         mTabModelObserver.didRemoveTabForClosure(tab);
-    }
-
-    private void undoCloseTab(Tab tab, int modelIndex) {
-        mModelTabs.add(modelIndex, tab);
-        mTabModelObserver.tabClosureUndone(tab);
     }
 
     private void selectTab(Tab tab, @TabId int prevSelectedTabId) {

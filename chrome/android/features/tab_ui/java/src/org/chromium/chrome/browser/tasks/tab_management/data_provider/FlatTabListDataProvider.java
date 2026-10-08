@@ -77,20 +77,6 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     }
 
                     @Override
-                    public void tabClosureUndone(Tab tab) {
-                        // Restores the undone tab if it matches the filter, or no-ops otherwise.
-                        syncTabItem(tab);
-                        // For metrics.
-                        notifyObservers(obs -> obs.onTabClosureUndone(tab.getId()));
-                    }
-
-                    @Override
-                    public void tabClosureCommitted(Tab tab) {
-                        // For metrics.
-                        notifyObservers(obs -> obs.onTabClosureCommitted(tab.getId()));
-                    }
-
-                    @Override
                     public void restoreCompleted() {
                         requestDataReset();
                     }
