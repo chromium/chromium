@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"

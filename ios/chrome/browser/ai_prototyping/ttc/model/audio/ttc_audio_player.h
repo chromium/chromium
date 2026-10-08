@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_AUDIO_PLAYER_H_
-#define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_AUDIO_PLAYER_H_
+#ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_AUDIO_TTC_AUDIO_PLAYER_H_
+#define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_AUDIO_TTC_AUDIO_PLAYER_H_
 
 #import <AVFAudio/AVFAudio.h>
 #import <Foundation/Foundation.h>
 
 #import "base/containers/span.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_player_delegate.h"
 
 @class TTCAudioPlayer;
 
@@ -74,4 +74,4 @@ void ConvertInt16ToFloat32(base::span<const int16_t> source,
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_AUDIO_PLAYER_H_
+#endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_AUDIO_TTC_AUDIO_PLAYER_H_

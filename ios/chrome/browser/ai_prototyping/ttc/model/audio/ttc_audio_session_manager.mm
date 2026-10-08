@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager.h"
 
 #import <AVFAudio/AVFAudio.h>
 
@@ -15,7 +15,7 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager_delegate.h"
 
 NSString* const kTTCAudioSessionManagerErrorDomain =
     @"org.chromium.ttc.audio_session";

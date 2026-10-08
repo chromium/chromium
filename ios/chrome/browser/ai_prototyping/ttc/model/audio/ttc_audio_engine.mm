@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
 
 #import <AVFAudio/AVFAudio.h>
 
@@ -19,12 +19,12 @@
 #import "base/sequence_checker.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder_delegate.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_player.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_player_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_recorder.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_recorder_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager_delegate.h"
 
 // Domain for errors originated by TTCAudioEngine.
 NSString* const kTTCAudioEngineErrorDomain = @"org.chromium.ttc.audio";

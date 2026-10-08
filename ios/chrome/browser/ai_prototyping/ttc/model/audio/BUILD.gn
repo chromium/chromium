@@ -1,0 +1,52 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("audio") {
+  sources = [
+    "ttc_audio_controller.h",
+    "ttc_audio_engine.h",
+    "ttc_audio_engine.mm",
+    "ttc_audio_metrics.h",
+    "ttc_audio_metrics.mm",
+    "ttc_audio_player.h",
+    "ttc_audio_player.mm",
+    "ttc_audio_player_delegate.h",
+    "ttc_audio_recorder+testing.h",
+    "ttc_audio_recorder.h",
+    "ttc_audio_recorder.mm",
+    "ttc_audio_recorder_delegate.h",
+    "ttc_audio_session_manager.h",
+    "ttc_audio_session_manager.mm",
+    "ttc_audio_session_manager_delegate.h",
+  ]
+  deps = [ "//base" ]
+  frameworks = [
+    "AVFAudio.framework",
+    "Accelerate.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ttc_audio_engine_unittest.mm",
+    "ttc_audio_metrics_unittest.mm",
+    "ttc_audio_player_unittest.mm",
+    "ttc_audio_recorder_unittest.mm",
+    "ttc_audio_session_manager_unittest.mm",
+  ]
+  deps = [
+    ":audio",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [
+    "AVFAudio.framework",
+    "Foundation.framework",
+  ]
+}

@@ -4,21 +4,6 @@
 
 source_set("model") {
   sources = [
-    "ttc_audio_controller.h",
-    "ttc_audio_engine.h",
-    "ttc_audio_engine.mm",
-    "ttc_audio_metrics.h",
-    "ttc_audio_metrics.mm",
-    "ttc_audio_player.h",
-    "ttc_audio_player.mm",
-    "ttc_audio_player_delegate.h",
-    "ttc_audio_recorder+testing.h",
-    "ttc_audio_recorder.h",
-    "ttc_audio_recorder.mm",
-    "ttc_audio_recorder_delegate.h",
-    "ttc_audio_session_manager.h",
-    "ttc_audio_session_manager.mm",
-    "ttc_audio_session_manager_delegate.h",
     "ttc_backend.h",
     "ttc_conversation.h",
     "ttc_conversation.mm",
@@ -40,6 +25,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
@@ -47,8 +33,6 @@ source_set("model") {
     "//url",
   ]
   frameworks = [
-    "AVFAudio.framework",
-    "Accelerate.framework",
     "Foundation.framework",
     "UIKit.framework",
   ]
@@ -57,11 +41,6 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ttc_audio_engine_unittest.mm",
-    "ttc_audio_metrics_unittest.mm",
-    "ttc_audio_player_unittest.mm",
-    "ttc_audio_recorder_unittest.mm",
-    "ttc_audio_session_manager_unittest.mm",
     "ttc_conversation_unittest.mm",
     "ttc_keyed_service_unittest.mm",
     "ttc_session_controller_unittest.mm",
@@ -72,6 +51,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/keyed_service/core",
+    "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/providers/intelligence",
@@ -81,7 +61,6 @@ source_set("unit_tests") {
     "//third_party/ocmock",
   ]
   frameworks = [
-    "AVFAudio.framework",
     "Foundation.framework",
     "UIKit.framework",
   ]

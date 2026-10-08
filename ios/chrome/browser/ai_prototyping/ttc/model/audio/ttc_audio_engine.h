@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_AUDIO_ENGINE_H_
-#define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_AUDIO_ENGINE_H_
+#ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_AUDIO_TTC_AUDIO_ENGINE_H_
+#define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_AUDIO_TTC_AUDIO_ENGINE_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 
 @class TTCAudioPlayer;
 @class TTCAudioRecorder;
@@ -38,4 +38,4 @@ enum class TTCAudioEngineErrorCode : NSInteger {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_AUDIO_ENGINE_H_
+#endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_AUDIO_TTC_AUDIO_ENGINE_H_

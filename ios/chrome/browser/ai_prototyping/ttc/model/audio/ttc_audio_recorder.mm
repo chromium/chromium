@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_recorder.h"
 
 #import <AVFAudio/AVFAudio.h>
 
@@ -18,8 +18,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_metrics.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder+testing.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_metrics.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_recorder+testing.h"
 
 namespace {
 

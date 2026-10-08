@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
 
 #import <AVFAudio/AVFAudio.h>
 
@@ -12,12 +12,12 @@
 #import "base/compiler_specific.h"
 #import "base/containers/span.h"
 #import "base/test/test_future.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_player.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_player_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_recorder.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -412,7 +412,6 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingEnabled) {
   EXPECT_FALSE(engine.isPlaying);
   [engine disconnect];
 }
-
 
 // Tests that playing test tone while loopback is enabled halts loopback buffer
 // routing during the tone, and stopping the tone cleanly restores loopback.

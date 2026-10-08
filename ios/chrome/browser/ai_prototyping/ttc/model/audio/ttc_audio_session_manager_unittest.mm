@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager.h"
 
 #import <AVFAudio/AVFAudio.h>
 
 #import "base/functional/callback_helpers.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/test_future.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_manager_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
 
 // Test fake conforming to TTCAudioSessionManagerDelegate for verifying
 // lifecycle, route changes, reconfigurations, and interruption notifications.
