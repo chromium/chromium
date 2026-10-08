@@ -27,6 +27,20 @@ static void JNI_DevToolsWindowAndroid_OpenDevTools(
 #endif
 }
 
+static void JNI_DevToolsWindowAndroid_OpenDevToolsConsole(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& java_web_contents) {
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(java_web_contents);
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsToggleAction::ShowConsolePanel(),
+                                     DevToolsOpenedByAction::kConsoleShortcut);
+#else
+  NOTREACHED();
+#endif
+}
+
 static bool JNI_DevToolsWindowAndroid_IsDevToolsAllowedFor(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& java_profile,

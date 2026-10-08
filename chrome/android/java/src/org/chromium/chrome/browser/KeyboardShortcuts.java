@@ -114,7 +114,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_EXIT_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE,
+        KeyboardShortcutsSemanticMeaning.DEV_TOOLS_CONSOLE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_INSPECT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE,
         KeyboardShortcutsSemanticMeaning.VIEW_SOURCE,
@@ -206,7 +206,7 @@ public class KeyboardShortcuts {
 
         // Developer tools.
         int DEV_TOOLS = 38;
-        int NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE = 39;
+        int DEV_TOOLS_CONSOLE = 39;
         int NOT_IMPLEMENTED_DEV_TOOLS_INSPECT = 40;
         int NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE = 41;
         int VIEW_SOURCE = 42;
@@ -706,6 +706,9 @@ public class KeyboardShortcuts {
                 KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
                 new KeyCombo(KeyEvent.KEYCODE_I, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)));
         new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.DEV_TOOLS_CONSOLE,
+                new KeyCombo(KeyEvent.KEYCODE_J, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)));
+        new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.TASK_MANAGER,
                 new KeyCombo(KeyEvent.KEYCODE_ESCAPE, KeyEvent.META_CTRL_ON));
 
@@ -799,9 +802,6 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
                 new KeyCombo(KeyEvent.KEYCODE_F11, NO_MODIFIER));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE,
-                new KeyCombo(KeyEvent.KEYCODE_J, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_INSPECT,
                 new KeyCombo(KeyEvent.KEYCODE_C, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
@@ -1033,6 +1033,13 @@ public class KeyboardShortcuts {
                     R.string.keyboard_shortcut_developer_tools,
                     KeyEvent.KEYCODE_I,
                     (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
+            addShortcut(
+                    context,
+                    shortcutGroupsById,
+                    R.string.keyboard_shortcut_developer_group_header,
+                    R.string.keyboard_shortcut_developer_tools_console,
+                    KeyEvent.KEYCODE_J,
+                    (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
         }
         if (TaskManager.isEnabled()) {
             addShortcut(
@@ -1167,6 +1174,10 @@ public class KeyboardShortcuts {
                 return true;
             case KeyboardShortcutsSemanticMeaning.DEV_TOOLS:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.dev_tools, false);
+                return true;
+            case KeyboardShortcutsSemanticMeaning.DEV_TOOLS_CONSOLE:
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.dev_tools_console, false);
                 return true;
             case KeyboardShortcutsSemanticMeaning.TASK_MANAGER:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.task_manager, false);

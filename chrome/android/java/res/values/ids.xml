@@ -39,6 +39,7 @@ found in the LICENSE file.
     <!-- go/keep-sorted start -->
     <item type="id" name="close_window" />
     <item type="id" name="dev_tools" />
+    <item type="id" name="dev_tools_console" />
     <item type="id" name="esc_key" />
     <item type="id" name="feedback_form" />
     <item type="id" name="focus_and_clear_url_bar" />
