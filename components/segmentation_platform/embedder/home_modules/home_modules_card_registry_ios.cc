@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
+#include "components/segmentation_platform/embedder/home_modules/ntp_customization_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/ntp_theme_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
@@ -41,10 +42,6 @@ void AddCardForTip(TipIdentifier tip,
   switch (tip) {
     case TipIdentifier::kUnknown:
       return;  // Do nothing for unknown tips
-    case TipIdentifier::kNTPCustomization:
-      // TODO(crbug.com/566958720): push back the NTP customization ephemeral
-      // module.
-      return;
     case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensShop:
     case TipIdentifier::kLensTranslate: {
@@ -90,6 +87,13 @@ void AddCardForTip(TipIdentifier tip,
       if (TipsNotificationsEphemeralModule::IsEnabled(prefs)) {
         cards.push_back(
             std::make_unique<TipsNotificationsEphemeralModule>(prefs));
+      }
+      break;
+    }
+    case TipIdentifier::kNTPCustomization: {
+      if (NTPCustomizationEphemeralModule::IsEnabled(prefs)) {
+        cards.push_back(
+            std::make_unique<NTPCustomizationEphemeralModule>(prefs));
       }
       break;
     }
@@ -192,6 +196,7 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   DefaultBrowserPromoEphemeralModule::RegisterProfilePrefs(registry);
   NTPThemeEphemeralModule::RegisterProfilePrefs(registry);
   TipsNotificationsEphemeralModule::RegisterProfilePrefs(registry);
+  NTPCustomizationEphemeralModule::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -203,7 +208,8 @@ bool HomeModulesCardRegistryIOS::IsEphemeralTipsModuleLabel(
          SavePasswordsEphemeralModule::IsModuleLabel(label) ||
          LensEphemeralModule::IsModuleLabel(label) ||
          NTPThemeEphemeralModule::IsModuleLabel(label) ||
-         TipsNotificationsEphemeralModule::IsModuleLabel(label);
+         TipsNotificationsEphemeralModule::IsModuleLabel(label) ||
+         NTPCustomizationEphemeralModule::IsModuleLabel(label);
 }
 
 void HomeModulesCardRegistryIOS::NotifyCardShown(std::string_view card_name) {
