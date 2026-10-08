@@ -2551,6 +2551,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
         p_text.content_attributes().text_data().text_style().has_emphasis());
     EXPECT_EQ(p_text.content_attributes().text_data().text_style().text_size(),
               optimization_guide::proto::TEXT_SIZE_L);
+    EXPECT_FALSE(p_text.content_attributes().has_geometry());
   }
 
   // 1.2 Image
@@ -2599,6 +2600,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
       a_text.content_attributes().text_data().text_style().has_emphasis());
   EXPECT_EQ(a_text.content_attributes().text_data().text_style().text_size(),
             optimization_guide::proto::TEXT_SIZE_M_DEFAULT);
+  EXPECT_FALSE(a_text.content_attributes().has_geometry());
 
   // ---------------------------------------------------------
   // Section 2: Cross-Origin Iframe (Grafted)
@@ -7149,13 +7151,15 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_Geometry_Clipping) {
   // Layout:
   // Div (100x100, overflow:hidden)
   //   -> Div (Content, 200x200)
-  //      -> Target Element (positioned at 150,150 - should be clipped
-  //      out/invisible)
   //      -> Visible Element (positioned at 10,10)
+  //      -> Clipped Element (positioned at 150,150 - should be clipped
+  //         out/invisible)
+  //      -> Partially Clipped Element (positioned at 50,60 - text overflows
+  //         horizontally past the 100px clipper)
   auto page_structure = HtmlPage(
       "Clipping Test",
       RawHtml(
-          "<style>body { margin: 0; }</style>"
+          "<style>body, p { margin: 0; }</style>"
           "<div style='width: 100px; height: 100px; overflow: hidden; "
           "position: "
           "relative;' id='clipper'>"
@@ -7165,6 +7169,9 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_Geometry_Clipping) {
           "10px; width: 50px; height: 50px;'>Visible</p>"
           "     <p id='clipped' style='position: absolute; top: 150px; left: "
           "150px; width: 50px; height: 50px;'>Clipped</p>"
+          "     <p id='partially_clipped' style='position: absolute; top: "
+          "60px; left: 50px; white-space: nowrap; font-size: 20px;'>"
+          "Long overflowing text</p>"
           "  </div>"
           "</div>"));
 
@@ -7196,16 +7203,16 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_Geometry_Clipping) {
   EXPECT_EQ(clipper_div.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
 
-  ASSERT_GE(clipper_div.children_nodes_size(), 2);
+  ASSERT_GE(clipper_div.children_nodes_size(), 3);
 
   const auto& visible_p = clipper_div.children_nodes(0);
   EXPECT_EQ(visible_p.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
   ASSERT_GE(visible_p.children_nodes_size(), 1);
-  EXPECT_EQ(visible_p.children_nodes(0)
-                .content_attributes()
-                .text_data()
-                .text_content(),
+  const auto& visible_text = visible_p.children_nodes(0);
+  EXPECT_EQ(visible_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(visible_text.content_attributes().text_data().text_content(),
             "Visible");
 
   EXPECT_TRUE(VerifyGeometry(visible_p));
@@ -7213,14 +7220,25 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_Geometry_Clipping) {
   EXPECT_GT(vis_geo.visible_bounding_box().width(), 0);
   EXPECT_GT(vis_geo.visible_bounding_box().height(), 0);
 
+  // Verify geometry for the visible text node inside the overflow: hidden
+  // ancestor.
+  ASSERT_TRUE(VerifyGeometry(visible_text));
+  const auto& vis_text_geo = visible_text.content_attributes().geometry();
+  EXPECT_EQ(vis_text_geo.css_position(),
+            optimization_guide::proto::CSS_POSITION_STATIC_DEFAULT);
+  EXPECT_EQ(vis_text_geo.visible_bounding_box().width(),
+            vis_text_geo.outer_bounding_box().width());
+  EXPECT_EQ(vis_text_geo.visible_bounding_box().height(),
+            vis_text_geo.outer_bounding_box().height());
+
   const auto& clipped_p = clipper_div.children_nodes(1);
   EXPECT_EQ(clipped_p.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
   ASSERT_GE(clipped_p.children_nodes_size(), 1);
-  EXPECT_EQ(clipped_p.children_nodes(0)
-                .content_attributes()
-                .text_data()
-                .text_content(),
+  const auto& clipped_text = clipped_p.children_nodes(0);
+  EXPECT_EQ(clipped_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(clipped_text.content_attributes().text_data().text_content(),
             "Clipped");
 
   // The 'clipped' paragraph is fully outside the parent's clip rect.
@@ -7243,6 +7261,37 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_Geometry_Clipping) {
   // boundaries.
   EXPECT_GE(clipped_geo.outer_bounding_box().x(), 100);
   EXPECT_GE(clipped_geo.outer_bounding_box().y(), 100);
+
+  // Verify geometry for the fully clipped text node outside the overflow:
+  // hidden ancestor.
+  ASSERT_TRUE(VerifyGeometry(clipped_text, /*expect_visible=*/false));
+  const auto& clipped_text_geo = clipped_text.content_attributes().geometry();
+  EXPECT_EQ(clipped_text_geo.css_position(),
+            optimization_guide::proto::CSS_POSITION_STATIC_DEFAULT);
+  EXPECT_FALSE(clipped_text_geo.has_visible_bounding_box());
+  EXPECT_GE(clipped_text_geo.outer_bounding_box().x(), 100);
+  EXPECT_GE(clipped_text_geo.outer_bounding_box().y(), 100);
+
+  // Verify geometry for the partially clipped text node overflowing the 100px
+  // overflow: hidden ancestor horizontally from x=50.
+  const auto& partially_clipped_p = clipper_div.children_nodes(2);
+  EXPECT_EQ(partially_clipped_p.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_TRUE(VerifyGeometry(partially_clipped_p));
+  ASSERT_GE(partially_clipped_p.children_nodes_size(), 1);
+  const auto& partially_clipped_text = partially_clipped_p.children_nodes(0);
+  EXPECT_EQ(partially_clipped_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(
+      partially_clipped_text.content_attributes().text_data().text_content(),
+      "Long overflowing text");
+  ASSERT_TRUE(VerifyGeometry(partially_clipped_text));
+  const auto& partially_clipped_text_geo =
+      partially_clipped_text.content_attributes().geometry();
+  EXPECT_EQ(partially_clipped_text_geo.css_position(),
+            optimization_guide::proto::CSS_POSITION_STATIC_DEFAULT);
+  EXPECT_GT(partially_clipped_text_geo.outer_bounding_box().width(), 50);
+  EXPECT_EQ(partially_clipped_text_geo.visible_bounding_box().width(), 50);
 }
 
 // Tests extraction of geometry for an average case with both visible and outer

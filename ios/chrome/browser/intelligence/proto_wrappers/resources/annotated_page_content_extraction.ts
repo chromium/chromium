@@ -61,6 +61,7 @@ const getRootNodeMethod = Node.prototype.getRootNode;
 
 const getBoundingClientRectMethod = Element.prototype.getBoundingClientRect;
 const getClientRectsMethod = Element.prototype.getClientRects;
+const createRangeMethod = Document.prototype.createRange;
 
 const clientHeightGetter =
     Object.getOwnPropertyDescriptor(Element.prototype, 'clientHeight')?.get;
@@ -241,6 +242,15 @@ function safeGetClientRects(element: Element): DOMRectList {
   return getClientRectsMethod.call(element);
 }
 
+// Returns the equivalent of `document.createRange()` but directly calls the
+// `Document` prototype to prevent clobbering.
+function safeCreateRange(document: Document): Range {
+  if (typeof document.createRange === 'function') {
+    return document.createRange();
+  }
+  return createRangeMethod.call(document);
+}
+
 // Returns the equivalent of `element.clientHeight` but directly calls the
 // `Element` prototype to prevent clobbering.
 function safeClientHeight(element: Element): number {
@@ -317,6 +327,9 @@ interface StyleCache {
 
   // The window object.
   window?: Window;
+
+  // Reusable Range for measuring text node bounding boxes in actionable mode.
+  textRange?: Range;
 }
 
 // Tags that we fundamentally do not support or that contain non-content data.
@@ -3569,8 +3582,9 @@ function addNodeGeometry(
       newFixedClip = visibleRectForClip;
     }
   } else {
-    if (position === ATTR_POSITION_ABSOLUTE ||
-        position === ATTR_POSITION_FIXED) {
+    if ((position === ATTR_POSITION_ABSOLUTE ||
+         position === ATTR_POSITION_FIXED) &&
+        clipToUse) {
       newNormalClip = clipToUse;
     }
     if (isAbsoluteContainingBlock) {
@@ -3595,6 +3609,43 @@ function addNodeGeometry(
   };
 }
 
+/**
+ * Calculates and adds geometry information to a text node's content attributes.
+ *
+ * @param textNode The DOM text node to calculate geometry for.
+ * @param attributes The attributes object where geometry will be stored.
+ * @param context The clipping context inherited from parent elements.
+ * @param range A reusable DOM Range used to measure the text node's bounds.
+ */
+function addTextNodeGeometry(
+    textNode: Node, attributes: PageContentAttributes, context: ClippingContext,
+    range: Range): void {
+  range.selectNodeContents(textNode);
+  const domRect = range.getBoundingClientRect();
+
+  const geometry: PageContentGeometry = {
+    outerBoundingBox: toEnclosingRect(domRect),
+    cssPosition: PageContentCssPosition.STATIC,
+  };
+
+  const clipRect = context.normalClip;
+  if (domRect.width > 0 && domRect.height > 0 && clipRect.width > 0 &&
+      clipRect.height > 0) {
+    const left = Math.max(domRect.x, clipRect.x);
+    const top = Math.max(domRect.y, clipRect.y);
+    const right = Math.min(domRect.right, clipRect.right);
+    const bottom = Math.min(domRect.bottom, clipRect.bottom);
+    if (left < right && top < bottom) {
+      const x = Math.floor(left);
+      const y = Math.floor(top);
+      geometry.visibleBoundingBox =
+          createRect(x, y, Math.ceil(right) - x, Math.ceil(bottom) - y);
+    }
+  }
+
+  attributes.geometry = geometry;
+}
+
 // TODO(crbug.com/476341187): Carry status information when the max depth is
 // reached.
 /**
@@ -3611,7 +3662,12 @@ function addNodeGeometry(
  * @param actionableMode Whether to extract actionable interaction info.
  * @param paidContentContext Context regarding paid content.
  * @param hasCanvas Whether there is a canvas element on the page.
- * @param parentClipRect The clipping rectangle of the parent.
+ * @param parentContext The clipping context inherited from parent elements.
+ * @param includeSensitivePaymentsForRedaction Whether sensitive payments
+ *     redaction is enabled.
+ * @param extractAutofillOtpRedactions Whether OTP redaction is enabled.
+ * @param extractPasswordScreenshotRedactions Whether password screenshot
+ *     redaction is enabled.
  * @param styleCache The style cache to use for computing styles.
  * @return A new PageContentNode if valid content was found, null otherwise.
  */
@@ -3634,8 +3690,12 @@ function maybeGenerateContentNode(
       if (domNodeId !== null) {
         contentAttributes.domNodeId = domNodeId;
       }
+      if (actionableMode && styleCache?.textRange) {
+        addTextNodeGeometry(
+            domNode, contentAttributes, parentContext, styleCache.textRange);
+      }
       // Text nodes don't have children, so they don't need a clip rect passed
-      // down. Explicit geometry for text nodes isn't currently extracted.
+      // down.
       return {
         node: {
           childrenNodes: [],
@@ -3732,7 +3792,7 @@ function shouldAcceptNode(node: Node, styleCache?: StyleCache): number {
  */
 interface ClippingContext {
   /** Clipping rectangle applied to static and relative positioned elements. */
-  normalClip: Rect|null;
+  normalClip: Rect;
   /** Clipping rectangle applied to absolute positioned elements. */
   absoluteClip: Rect|null;
   /**
@@ -4311,6 +4371,7 @@ export function extractAnnotatedPageContent(
     lastStyledNode: null,
     lastComputedStyle: undefined,
     window: documentWindow,
+    textRange: actionableMode ? safeCreateRange(document) : undefined,
   };
 
   // Pre-calculate root font size.
@@ -4365,6 +4426,8 @@ export function extractAnnotatedPageContent(
       root, rootNode.contentAttributes, rootInteractionInfo, paidContentContext,
       actionableMode, undefined, styleCache);
 
+  const viewportRect = getViewportRect(document);
+
   // Stack to track the current ancestry chain. At this point it is known that
   // that there is at least a root node that is walkable.
   // We use this to find the correct parent for the current node without
@@ -4376,8 +4439,8 @@ export function extractAnnotatedPageContent(
     isVisible: true,
     clippingContext: addNodeGeometry(
         root, rootNode.contentAttributes, {
-          normalClip: getViewportRect(document),
-          absoluteClip: getViewportRect(document),
+          normalClip: viewportRect,
+          absoluteClip: viewportRect,
           fixedClip: null,
         },
         actionableMode, includeSensitivePaymentsForRedaction,
@@ -4401,7 +4464,7 @@ export function extractAnnotatedPageContent(
   // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
   // to maintain parity with Blink's ConvertViewportGeometry in
   // components/optimization_guide/content/browser/page_content_proto_provider.cc.
-  const viewportGeometry = toEnclosingRect(getViewportRect(document));
+  const viewportGeometry = toEnclosingRect(viewportRect);
 
   if (actionableMode) {
     computeZOrder(rootNode, document);

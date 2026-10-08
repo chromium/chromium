@@ -345,8 +345,6 @@ void ChromeAutofillClientIOS::GetAiPageContent(
           features::kAutofillActionableAIPageContent));
 
   // Populate the PageContext proto and then execute the query.
-  // TODO(crbug.com/519079870): Extract `NodeGeometry` for `TEXT_NODE`s on iOS
-  // so that neighbourhood context can be extracted from APC.
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state()
                   config:config_builder.Build()
