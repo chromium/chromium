@@ -28,8 +28,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -38,7 +41,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -46,6 +51,28 @@
 #include "url/gurl.h"
 
 namespace {
+
+// Returns the first ImageView in `view`'s subtree that has an image set, or
+// nullptr if there is none.
+views::ImageView* FindImageViewWithImage(views::View* view) {
+  if (auto* image_view = views::AsViewClass<views::ImageView>(view);
+      image_view && !image_view->GetImageModel().IsEmpty()) {
+    return image_view;
+  }
+  for (views::View* child : view->children()) {
+    if (views::ImageView* image_view = FindImageViewWithImage(child)) {
+      return image_view;
+    }
+  }
+  return nullptr;
+}
+
+// Returns the width of the bubble's client view, which does not depend on the
+// content of the bubble (320 DIPs).
+int GetBubbleWidth() {
+  return views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+}
 
 class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
  public:
@@ -584,6 +611,209 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   views::test::ButtonTestApi(second_fed_row).NotifyClick(click_event);
   EXPECT_FALSE(selected_cred_index.has_value());
   EXPECT_EQ(selected_fed_index, 1u);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       FederatedCredentialShowsAccountPicture) {
+  const ui::ImageModel picture =
+      ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/40));
+  std::vector<ambient_signin::FederatedCredential> fed_creds = {
+      {u"idp.example.com", u"Carol", u"carol@example.com",
+       GURL("https://idp.example.com"), picture}};
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(fed_creds), base::DoNothing(), base::DoNothing()));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+
+  // The collapsed view shows the account picture, scaled to the icon size.
+  ASSERT_EQ(bubble->children().size(), 4u);
+  auto* icon_view = views::AsViewClass<views::ImageView>(bubble->children()[0]);
+  ASSERT_NE(icon_view, nullptr);
+  EXPECT_EQ(icon_view->GetImageModel(), picture);
+  EXPECT_EQ(icon_view->GetPreferredSize(), gfx::Size(20, 20));
+  // Screen readers skip the picture, since the account name is read out
+  // anyway.
+  EXPECT_TRUE(icon_view->GetViewAccessibility().GetIsIgnored());
+
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+
+  // The expanded row shows the account picture too, and screen readers skip it.
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 1u);
+  HoverButton* row =
+      views::AsViewClass<HoverButton>(scroll_view->contents()->children()[0]);
+  ASSERT_NE(row, nullptr);
+  views::ImageView* row_icon_view = FindImageViewWithImage(row);
+  ASSERT_NE(row_icon_view, nullptr);
+  EXPECT_EQ(row_icon_view->GetImageModel(), picture);
+  EXPECT_EQ(row_icon_view->GetPreferredSize(), gfx::Size(20, 20));
+  EXPECT_TRUE(row_icon_view->GetViewAccessibility().GetIsIgnored());
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       FederatedCredentialWithoutPictureShowsDefaultIcon) {
+  std::vector<ambient_signin::FederatedCredential> fed_creds = {
+      {u"idp.example.com", u"Carol", u"carol@example.com",
+       GURL("https://idp.example.com")}};
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(fed_creds), base::DoNothing(), base::DoNothing()));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+
+  ASSERT_EQ(bubble->children().size(), 4u);
+  auto* icon_view = views::AsViewClass<views::ImageView>(bubble->children()[0]);
+  ASSERT_NE(icon_view, nullptr);
+  EXPECT_TRUE(icon_view->GetImageModel().IsVectorIcon());
+
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 1u);
+  HoverButton* row =
+      views::AsViewClass<HoverButton>(scroll_view->contents()->children()[0]);
+  ASSERT_NE(row, nullptr);
+  views::ImageView* row_icon_view = FindImageViewWithImage(row);
+  ASSERT_NE(row_icon_view, nullptr);
+  EXPECT_TRUE(row_icon_view->GetImageModel().IsVectorIcon());
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, ShortTextIsNotElided) {
+  MockAmbientDelegate delegate(GURL("https://example.com"), u"a@example.com",
+                               u"Provider");
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The bubble does not shrink to fit short text.
+  EXPECT_EQ(bubble->GetDialogClientView()->width(), GetBubbleWidth());
+
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* text_container = bubble->children()[1].get();
+  ASSERT_EQ(text_container->children().size(), 2u);
+  for (views::View* child : text_container->children()) {
+    auto* label = views::AsViewClass<views::Label>(child);
+    ASSERT_NE(label, nullptr);
+    EXPECT_FALSE(label->IsDisplayTextTruncated());
+  }
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, LongTextIsElided) {
+  const std::u16string long_username =
+      std::u16string(200, u'a') + u"@example.com";
+  const std::u16string long_provider(200, u'b');
+  MockAmbientDelegate delegate(GURL("https://example.com"), long_username,
+                               long_provider);
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The bubble does not grow to fit long text.
+  EXPECT_EQ(bubble->GetDialogClientView()->width(), GetBubbleWidth());
+
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* text_container = bubble->children()[1].get();
+  ASSERT_EQ(text_container->children().size(), 2u);
+  for (views::View* child : text_container->children()) {
+    auto* label = views::AsViewClass<views::Label>(child);
+    ASSERT_NE(label, nullptr);
+    EXPECT_TRUE(label->IsDisplayTextTruncated());
+  }
+
+  // The buttons are neither shrunk nor pushed out of the bubble.
+  views::View* sign_in_button = bubble->children()[2].get();
+  views::View* expand_button = bubble->children()[3].get();
+  EXPECT_EQ(sign_in_button->width(),
+            sign_in_button->GetPreferredSize().width());
+  EXPECT_EQ(expand_button->width(), expand_button->GetPreferredSize().width());
+  EXPECT_LE(text_container->bounds().right(), sign_in_button->x());
+  EXPECT_LE(expand_button->bounds().right(), bubble->width());
+
+  // The full text is still available to screen readers.
+  EXPECT_EQ(sign_in_button->GetViewAccessibility().GetCachedDescription(),
+            long_username + u" " + long_provider);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, LongTextIsElidedInExpandedList) {
+  std::vector<ambient_signin::FederatedCredential> fed_creds = {
+      {/*idp_name=*/std::u16string(200, u'a'),
+       /*account_name=*/std::u16string(200, u'b'),
+       /*email=*/std::u16string(200, u'c') + u"@example.com",
+       GURL("https://idp.example.com")}};
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(fed_creds), base::DoNothing(), base::DoNothing()));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // The expanded bubble keeps the same width.
+  EXPECT_EQ(bubble->GetDialogClientView()->width(), GetBubbleWidth());
+
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 1u);
+  HoverButton* row =
+      views::AsViewClass<HoverButton>(scroll_view->contents()->children()[0]);
+  ASSERT_NE(row, nullptr);
+  views::View* row_labels = row->title()->parent();
+  ASSERT_EQ(row_labels->children().size(), 3u);
+  for (views::View* child : row_labels->children()) {
+    auto* label = views::AsViewClass<views::Label>(child);
+    ASSERT_NE(label, nullptr);
+    EXPECT_TRUE(label->IsDisplayTextTruncated());
+  }
 }
 
 }  // namespace

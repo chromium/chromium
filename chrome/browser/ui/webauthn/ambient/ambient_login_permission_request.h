@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "components/permissions/permission_request.h"
+#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
 namespace ambient_signin {
@@ -35,6 +36,15 @@ struct FederatedCredential {
   std::u16string account_name;
   std::u16string email;
   GURL idp_origin;
+  // Optional account picture. If empty, the prompt uses a default icon.
+  //
+  // The picture must come from the identity provider and be fetched by the
+  // browser (as FedCM does with the picture URL from the IdP's accounts
+  // endpoint), never from the requesting site.
+  //
+  // The caller crops the picture so that it is square, e.g. FedCM crops it
+  // into a circle like in its own UI. The prompt scales it to its icon size.
+  ui::ImageModel icon;
 };
 
 // A permission request for displaying ambient login options (e.g. WebAuthn

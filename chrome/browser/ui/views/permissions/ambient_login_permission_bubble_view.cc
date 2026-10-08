@@ -32,6 +32,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -70,6 +71,26 @@ const gfx::VectorIcon& GetCredentialIcon(ambient_signin::CredentialType type) {
   }
 }
 
+// Returns the icon shown when there is no more specific icon, e.g. for a
+// federated credential without an account picture.
+ui::ImageModel GetDefaultCredentialIcon() {
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon, kIconSize);
+}
+
+// Returns the icon for a federated credential: the account picture if
+// available, otherwise a default icon.
+ui::ImageModel GetFederatedCredentialIcon(
+    const ambient_signin::FederatedCredential& credential) {
+  if (!credential.icon.IsEmpty()) {
+    // The caller crops the picture so that it is square and isn't stretched
+    // when scaled to the icon size.
+    DCHECK_EQ(credential.icon.Size().width(), credential.icon.Size().height());
+    return credential.icon;
+  }
+  return GetDefaultCredentialIcon();
+}
+
 }  // namespace
 
 AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
@@ -85,7 +106,7 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
 
   std::u16string username;
   std::u16string provider;
-  const gfx::VectorIcon* credential_icon = &GooglePasswordManagerVectorIcon();
+  ui::ImageModel credential_icon = GetDefaultCredentialIcon();
   CHECK_EQ(delegate->Requests().size(), 1u);
   ambient_signin::AmbientLoginPermissionRequest* ambient_request =
       GetAmbientRequest();
@@ -95,13 +116,15 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
         ambient_request->credentials().front();
     username = cred.username;
     provider = cred.provider_name;
-    credential_icon = &GetCredentialIcon(cred.type);
+    credential_icon = ui::ImageModel::FromVectorIcon(
+        GetCredentialIcon(cred.type), ui::kColorIcon, kIconSize);
   } else if (!ambient_request->federated_credentials().empty()) {
     const ambient_signin::FederatedCredential& fed_cred =
         ambient_request->federated_credentials().front();
     username =
         !fed_cred.account_name.empty() ? fed_cred.account_name : fed_cred.email;
     provider = fed_cred.idp_name;
+    credential_icon = GetFederatedCredentialIcon(fed_cred);
   }
 
   if (username.empty()) {
@@ -112,9 +135,8 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
       views::BoxLayout::Orientation::kHorizontal));
   layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
-  auto icon_view =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          *credential_icon, ui::kColorIcon, kIconSize));
+  auto icon_view = std::make_unique<views::ImageView>(credential_icon);
+  icon_view->SetImageSize(gfx::Size(kIconSize, kIconSize));
   AddChildView(std::move(icon_view));
 
   auto text_container = std::make_unique<views::View>();
@@ -142,6 +164,8 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
     text_container->AddChildView(std::move(provider_label));
   }
 
+  // The bubble has a fixed width (see PermissionPromptBubbleBaseView), so the
+  // text shrinks to leave room for the buttons and long text is elided.
   layout->SetFlexForView(AddChildView(std::move(text_container)), 1);
 
   auto sign_in_button = std::make_unique<views::MdTextButton>(
@@ -376,9 +400,10 @@ AmbientLoginPermissionBubbleView::CreateFederatedCredentialRow(
     const ambient_signin::FederatedCredential& credential,
     size_t index) {
   HoverButton::Params params;
-  params.icon_view =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize));
+  auto icon_view = std::make_unique<views::ImageView>(
+      GetFederatedCredentialIcon(credential));
+  icon_view->SetImageSize(gfx::Size(kIconSize, kIconSize));
+  params.icon_view = std::move(icon_view);
   if (!credential.account_name.empty() && !credential.email.empty()) {
     params.title = credential.account_name;
     params.subtitle = credential.email;
