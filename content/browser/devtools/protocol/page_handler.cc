@@ -631,7 +631,9 @@ void PageHandler::DidRunJavaScriptDialog(const GURL& url,
   if (!enabled_) {
     return;
   }
-  CHECK(pending_dialog_.is_null(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/571032889): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(pending_dialog_.is_null());
   pending_dialog_ = std::move(callback);
   std::string type = Page::DialogTypeEnum::Alert;
   if (dialog_type == JAVASCRIPT_DIALOG_TYPE_CONFIRM) {
