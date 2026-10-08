@@ -36,6 +36,7 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1273,7 +1274,7 @@ class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
   }
 
  protected:
-  const ChromeContentBrowserClient* client() const { return client_; }
+  ChromeContentBrowserClient* client() const { return client_; }
 
  private:
   raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
@@ -1300,6 +1301,19 @@ IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 3);
 
   EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::Seconds(3));
+}
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest,
+                       DoesNotStartTimerAfterShutdownStarts) {
+  Profile* profile = browser()->GetProfile();
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
+  const auto shutdown = browser_shutdown::SetShutdownTypeForTesting(
+      browser_shutdown::ShutdownType::kBrowserExit);
+
+  client()->OnKeepaliveRequestStarted(profile);
+
+  EXPECT_FALSE(client()->IsKeepaliveTimerRunningForTesting());
+  client()->OnKeepaliveRequestFinished();
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

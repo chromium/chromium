@@ -1020,6 +1020,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if !BUILDFLAG(IS_ANDROID)
   static base::TimeDelta GetKeepaliveTimerTimeout(
       content::BrowserContext* context);
+  bool IsKeepaliveTimerRunningForTesting() const {
+    return keepalive_timer_.IsRunning();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   bool SuppressDifferentOriginSubframeJSDialogs(
