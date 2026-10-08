@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 
+#include <cmath>
+
 #include "cc/paint/color_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
@@ -520,10 +522,17 @@ void DecorationLinePainter::PaintWavyTextDecoration(
       SkTileMode::kRepeat, SkTileMode::kDecal, nullptr));
   flags.setColorFilter(cc::ColorFilter::MakeBlend(color, SkBlendMode::kSrcIn));
 
+  float pattern_shift =
+      std::fmod(geometry.wavy_pattern_shift, geometry.wavy_wave.wavelength);
+  if (pattern_shift < 0) {
+    pattern_shift += geometry.wavy_wave.wavelength;
+  }
+
   GraphicsContextStateSaver state_saver(context_);
-  context_.Translate(paint_rect.x(), paint_rect.y());
-  context_.DrawRect(gfx::RectFToSkRect(gfx::RectF(paint_rect.size())), flags,
-                    auto_dark_mode);
+  context_.Translate(paint_rect.x() - pattern_shift, paint_rect.y());
+  context_.DrawRect(gfx::RectFToSkRect(gfx::RectF(
+                        gfx::PointF(pattern_shift, 0.f), paint_rect.size())),
+                    flags, auto_dark_mode);
 }
 
 }  // namespace blink

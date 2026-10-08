@@ -420,6 +420,10 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
       decoration.HasUnderline() && decorating_box
           ? OffsetFromDecoratingBox(*decorating_box)
           : LayoutUnit();
+  if (decorating_box) {
+    decoration.inline_offset_from_decorating_box =
+        InlineOffsetFromDecoratingBox(*decorating_box);
+  }
 
   decoration.resolved_thickness = ComputeThickness(decoration);
   ResolveDecorationInsets(decoration_index, decoration);
@@ -494,6 +498,12 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
       DecorationGeometry::Make(style, decoration_rect, double_offset,
                                wavy_offset, base::OptionalToPtr(spelling_wave));
   geometry.antialias = antialias;
+  if (geometry.style == kWavyStroke &&
+      RuntimeEnabledFeatures::WavyDecorationContinuousPhaseEnabled()) {
+    geometry.wavy_pattern_shift =
+        decoration.inline_offset_from_decorating_box.ToFloat() +
+        decoration.line_left_inset;
+  }
   return geometry;
 }
 
@@ -575,6 +585,18 @@ LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox(
       decorating_box.ContentOffsetInContainer().top +
       inline_context_->PaintOffset().top;
   return decorating_box_paint_offset - local_origin_.line_over;
+}
+
+// The decorating box is only used in horizontal writing modes (see
+// |ResolveDecorationAt|), where line-left equals the physical left.
+LayoutUnit TextDecorationInfo::InlineOffsetFromDecoratingBox(
+    const DecoratingBox& decorating_box) const {
+  DCHECK(use_decorating_box_);
+  DCHECK(inline_context_);
+  const LayoutUnit decorating_box_paint_offset =
+      decorating_box.ContentOffsetInContainer().left +
+      inline_context_->PaintOffset().left;
+  return local_origin_.line_left - decorating_box_paint_offset;
 }
 
 DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
