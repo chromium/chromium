@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -61,8 +62,8 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
 
     coordinator_ = [[GeminiContainerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()
-                      startupState:startup_state_];
+                           browser:browser_.get()];
+    coordinator_.startupState = startup_state_;
   }
 
   ~GeminiContainerCoordinatorTest() override {
@@ -139,8 +140,8 @@ TEST_F(GeminiContainerCoordinatorTest, TestDismissGeminiFromOtherWindows) {
   second_browser_list->RemoveBrowser(second_browser.get());
 }
 
-// Test that `start` waits for `dismissGeminiFromOtherWindowsWithCompletion:` to
-// finish before presenting the assistant container.
+// Tests that `start` waits for `dismissGeminiFromOtherWindowsWithCompletion:`
+// to finish before presenting the assistant container.
 TEST_F(GeminiContainerCoordinatorTest,
        TestStartWaitsForDismissalFromOtherWindowsBeforePresenting) {
   id mock_container_handler =
@@ -205,4 +206,43 @@ TEST_F(GeminiContainerCoordinatorTest,
   [browser_->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
   second_browser_list->RemoveBrowser(second_browser.get());
+}
+
+// Tests that `start` updates the existing container instead of presenting a new
+// one when the container is already invoked.
+TEST_F(GeminiContainerCoordinatorTest, TestStartUpdatesWhenAlreadyInvoked) {
+  id mock_container_handler =
+      OCMProtocolMock(@protocol(AssistantContainerCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_container_handler
+                   forProtocol:@protocol(AssistantContainerCommands)];
+
+  OCMExpect([mock_container_handler
+      showAssistantContainerWithContent:[OCMArg any]
+                               delegate:[OCMArg any]]);
+
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler);
+
+  GeminiBrowserAgent* agent = GeminiBrowserAgent::FromBrowser(browser_.get());
+  ASSERT_TRUE(agent);
+  EXPECT_TRUE(agent->is_floaty_invoked());
+
+  // Second call while already invoked should update the container (animating to
+  // medium detent) without calling
+  // `showAssistantContainerWithContent:delegate:` again.
+  [[mock_container_handler reject]
+      showAssistantContainerWithContent:[OCMArg any]
+                               delegate:[OCMArg any]];
+  OCMExpect([mock_container_handler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+
+  GeminiStartupState* second_startup_state =
+      [[GeminiStartupState alloc] initWithEntryPoint:gemini::EntryPoint::AIHub];
+  coordinator_.startupState = second_startup_state;
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler);
+
+  [browser_->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
 }

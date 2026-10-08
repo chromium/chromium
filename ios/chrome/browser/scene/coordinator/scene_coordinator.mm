@@ -2894,14 +2894,12 @@ inline LayoutStateScenePassKey PassKey() {
                                              ? _viewController
                                              : self.activeViewController;
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
-    if (_geminiContainerCoordinator) {
-      return;
+    if (!_geminiContainerCoordinator) {
+      _geminiContainerCoordinator = [[GeminiContainerCoordinator alloc]
+          initWithBaseViewController:baseViewController
+                             browser:_regularBrowser.get()];
     }
-
-    _geminiContainerCoordinator = [[GeminiContainerCoordinator alloc]
-        initWithBaseViewController:baseViewController
-                           browser:_regularBrowser.get()
-                      startupState:startupState];
+    _geminiContainerCoordinator.startupState = startupState;
     [_geminiContainerCoordinator start];
     return;
   }

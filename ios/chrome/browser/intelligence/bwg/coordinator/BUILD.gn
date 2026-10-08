@@ -159,6 +159,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/coordinator:commands",
+    "//ios/chrome/browser/assistant/ui:detent",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",

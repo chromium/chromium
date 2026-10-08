@@ -867,30 +867,9 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
 
   // Set up the presentation, depending on whether the floaty is already
   // invoked.
-  UIImage* image_attachment = startup_state.imageAttachment;
-  NSString* prepopulated_prompt = startup_state.prepopulatedPrompt;
-
   if (is_floaty_invoked_) {
-    if (image_attachment) {
-      ios::provider::AttachImage(image_attachment);
-    }
-    [gemini_container_mediator_ updateFloatyWithPartialPageContext];
-    if (prepopulated_prompt) {
-      ios::provider::UpdatePromptAction(entry_point_, prepopulated_prompt,
-                                        startup_state.shouldAutoSubmit);
-    }
     CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
-    bool should_show_suggestion_chips = [gemini_container_mediator_
-        shouldShowSuggestionChipsForEntryPoint:entry_point_];
-    ios::provider::SetShouldShowSuggestionChips(should_show_suggestion_chips);
-    bool block_query_submission = [gemini_container_mediator_
-        shouldBlockQuerySubmissionWhileLoadingForEntryPoint:entry_point_];
-    ios::provider::SetBlockQuerySubmissionWhileLoading(block_query_submission);
-    bool show_page_loading_snackbar = [gemini_container_mediator_
-        shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
-            entry_point_];
-    ios::provider::SetShowPageLoadingSnackbarOnOpeningInvocation(
-        show_page_loading_snackbar);
+    [gemini_container_mediator_ updateWithStartupState:startup_state];
     if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
       [HandlerForProtocol(browser_->GetCommandDispatcher(), FullscreenCommands)
           exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
@@ -900,10 +879,6 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
     ForceShowFloatyIfInvoked();
     ios::provider::UpdateGeminiViewState(
         ios::provider::GeminiViewState::kExpanded, /*animated=*/true);
-    if (IsAppSwitcherAISummarizationEnabled() &&
-        startup_state.isMismatchedAccount) {
-      ios::provider::ShowAccountSnackbar();
-    }
   } else {
     SetSessionCommandHandlers();
 

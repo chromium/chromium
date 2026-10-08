@@ -63,6 +63,12 @@ static bool g_mock_feature_mode_disabled_by_quota = false;
 static NSDate* g_mock_refill_date = nil;
 static bool g_force_refresh_quota_info_called = false;
 static int g_update_active_page_context_call_count = 0;
+static UIImage* g_last_attached_image = nil;
+static std::optional<bool> g_last_should_show_suggestion_chips;
+static std::optional<bool> g_last_block_query_submission_while_loading;
+static std::optional<bool>
+    g_last_show_page_loading_snackbar_on_opening_invocation;
+static bool g_show_account_snackbar_called = false;
 
 void ResetGemini() {
   g_current_mode = GeminiViewMode::kUnknown;
@@ -75,6 +81,11 @@ void ResetGemini() {
   g_mock_refill_date = nil;
   g_force_refresh_quota_info_called = false;
   g_update_active_page_context_call_count = 0;
+  g_last_attached_image = nil;
+  g_last_should_show_suggestion_chips.reset();
+  g_last_block_query_submission_while_loading.reset();
+  g_last_show_page_loading_snackbar_on_opening_invocation.reset();
+  g_show_account_snackbar_called = false;
 }
 
 void UpdatePageAttachmentState(
@@ -152,7 +163,13 @@ GeminiViewState GetCurrentGeminiViewState() {
 
 void RequestUIChange(GeminiUIElementType ui_element_type) {}
 
-void AttachImage(UIImage* image) {}
+void AttachImage(UIImage* image) {
+  g_last_attached_image = image;
+}
+
+UIImage* GetLastAttachedImage() {
+  return g_last_attached_image;
+}
 
 GeminiClientMode GetCurrentClientMode() {
   return GeminiClientMode::kUnknown;
@@ -191,13 +208,37 @@ int GetLiveCaptionsNumberOfLines() {
   return 0;
 }
 
-void SetShouldShowSuggestionChips(bool should_show) {}
+void SetShouldShowSuggestionChips(bool should_show) {
+  g_last_should_show_suggestion_chips = should_show;
+}
 
-void SetBlockQuerySubmissionWhileLoading(bool block_submission) {}
+std::optional<bool> GetLastShouldShowSuggestionChips() {
+  return g_last_should_show_suggestion_chips;
+}
 
-void SetShowPageLoadingSnackbarOnOpeningInvocation(bool show_snackbar) {}
+void SetBlockQuerySubmissionWhileLoading(bool block_submission) {
+  g_last_block_query_submission_while_loading = block_submission;
+}
 
-void ShowAccountSnackbar() {}
+std::optional<bool> GetLastBlockQuerySubmissionWhileLoading() {
+  return g_last_block_query_submission_while_loading;
+}
+
+void SetShowPageLoadingSnackbarOnOpeningInvocation(bool show_snackbar) {
+  g_last_show_page_loading_snackbar_on_opening_invocation = show_snackbar;
+}
+
+std::optional<bool> GetLastShowPageLoadingSnackbarOnOpeningInvocation() {
+  return g_last_show_page_loading_snackbar_on_opening_invocation;
+}
+
+void ShowAccountSnackbar() {
+  g_show_account_snackbar_called = true;
+}
+
+bool WasShowAccountSnackbarCalled() {
+  return g_show_account_snackbar_called;
+}
 
 UIViewController* GetFloatyViewControllerWithConfiguration(
     GeminiConfiguration* gemini_configuration) {

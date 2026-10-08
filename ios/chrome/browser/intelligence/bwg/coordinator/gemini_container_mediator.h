@@ -138,6 +138,10 @@ class GeminiContainerMediatorEventHandler;
 // Handles all the cleanup that needs to happen before mediator dealloc.
 - (void)disconnect;
 
+// Updates the mediator and provider state with a new `startupState` when the
+// floaty is already invoked.
+- (void)updateWithStartupState:(GeminiStartupState*)startupState;
+
 // Propagates active page context and shared tabs from `sharedTabsDelegate` to
 // the provider.
 - (void)propagatePageContext:(GeminiPageContext*)pageContext;

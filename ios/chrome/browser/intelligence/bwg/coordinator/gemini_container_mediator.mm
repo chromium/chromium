@@ -329,6 +329,46 @@ class GeminiContainerMediatorTabHelperObserver
   _stateManager.delegate = nil;
 }
 
+- (void)updateWithStartupState:(GeminiStartupState*)startupState {
+  if (!startupState) {
+    return;
+  }
+  _startupState = startupState;
+  gemini::EntryPoint entryPoint = startupState.entryPoint;
+
+  if (startupState.imageAttachment) {
+    ios::provider::AttachImage(startupState.imageAttachment);
+  }
+
+  [self updateFloatyWithPartialPageContext];
+
+  if (startupState.prepopulatedPrompt) {
+    ios::provider::UpdatePromptAction(entryPoint,
+                                      startupState.prepopulatedPrompt,
+                                      startupState.shouldAutoSubmit);
+  }
+
+  ios::provider::SetShouldShowSuggestionChips(
+      [self shouldShowSuggestionChipsForEntryPoint:entryPoint]);
+
+  ios::provider::SetBlockQuerySubmissionWhileLoading(
+      [self shouldBlockQuerySubmissionWhileLoadingForEntryPoint:entryPoint]);
+
+  ios::provider::SetShowPageLoadingSnackbarOnOpeningInvocation(
+      [self shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
+                entryPoint]);
+
+  if (startupState.isMismatchedAccount &&
+      IsAppSwitcherAISummarizationEnabled()) {
+    ios::provider::ShowAccountSnackbar();
+  }
+
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    // Assumes it's minimized.
+    [_containerHandler animateAssistantContainerToDetent:kMedium];
+  }
+}
+
 #pragma mark - ActorTaskLifecycleObserver
 
 - (void)actorServiceDidStartTaskWithID:(actor::ActorTaskId)taskID

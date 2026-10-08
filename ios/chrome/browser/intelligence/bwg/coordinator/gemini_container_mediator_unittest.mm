@@ -229,6 +229,11 @@ std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint();
 NSString* GetLastUpdatePromptActionPrompt();
 BOOL GetLastUpdatePromptActionShouldAutoSubmit();
 int GetUpdateActivePageContextCallCount();
+UIImage* GetLastAttachedImage();
+std::optional<bool> GetLastShouldShowSuggestionChips();
+std::optional<bool> GetLastBlockQuerySubmissionWhileLoading();
+std::optional<bool> GetLastShowPageLoadingSnackbarOnOpeningInvocation();
+bool WasShowAccountSnackbarCalled();
 }  // namespace ios::provider
 
 namespace {
@@ -1584,6 +1589,62 @@ TEST_F(GeminiContainerMediatorTest, TestWillEnterTabGridMinimizesContainer) {
   [[mock_container_handler_ reject]
       animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
   scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+}
+
+// Test that `updateWithStartupState:` updates the provider with the image
+// attachment, partial page context, prompt action, suggestion chips, loading
+// configuration, and account snackbar.
+TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+
+  ios::provider::ResetGemini();
+  AppendActiveWebState();
+
+  UIImage* dummy_image = [[UIImage alloc] init];
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+  startup_state.imageAttachment = dummy_image;
+  startup_state.prepopulatedPrompt = @"Summarize this page";
+  startup_state.shouldAutoSubmit = YES;
+  startup_state.isMismatchedAccount = YES;
+
+  [mediator_ updateWithStartupState:startup_state];
+
+  EXPECT_EQ(startup_state, mediator_.startupState);
+  EXPECT_EQ(dummy_image, ios::provider::GetLastAttachedImage());
+  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+  EXPECT_THAT(
+      ios::provider::GetLastUpdatePromptActionEntryPoint(),
+      testing::Optional(gemini::EntryPoint::AppSwitcherAISummarization));
+  EXPECT_NSEQ(@"Summarize this page",
+              ios::provider::GetLastUpdatePromptActionPrompt());
+  EXPECT_TRUE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
+  EXPECT_THAT(ios::provider::GetLastShouldShowSuggestionChips(),
+              testing::Optional(false));
+  EXPECT_THAT(ios::provider::GetLastBlockQuerySubmissionWhileLoading(),
+              testing::Optional(true));
+  EXPECT_THAT(
+      ios::provider::GetLastShowPageLoadingSnackbarOnOpeningInvocation(),
+      testing::Optional(true));
+  EXPECT_TRUE(ios::provider::WasShowAccountSnackbarCalled());
+}
+
+// Test that `updateWithStartupState:` animates the assistant container to the
+// medium detent when `IsIOSGeminiBottomSheetMigrationEnabled()` is true.
+TEST_F(GeminiContainerMediatorTest,
+       TestUpdateWithStartupStateAnimatesToMediumDetent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+
+  [mediator_ updateWithStartupState:startup_state_];
+
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 }
 

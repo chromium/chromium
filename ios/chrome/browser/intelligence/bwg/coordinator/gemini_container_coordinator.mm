@@ -8,10 +8,12 @@
 #import <vector>
 
 #import "base/barrier_closure.h"
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
+#import "base/not_fatal_until.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_coordinator.h"
@@ -41,8 +43,6 @@
 @end
 
 @implementation GeminiContainerCoordinator {
-  // Startup state used to initialize the Gemini content.
-  GeminiStartupState* _startupState;
   // The view controller displaying the Gemini content.
   GeminiContainerViewController* _viewController;
   // Command dispatcher handler to manage the assistant container.
@@ -55,17 +55,17 @@
   ActuationWorklogCoordinator* _actuationWorklogCoordinator;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              startupState:(GeminiStartupState*)startupState {
-  self = [super initWithBaseViewController:viewController browser:browser];
-  if (self) {
-    _startupState = startupState;
-  }
-  return self;
-}
-
 - (void)start {
+  CHECK(_startupState, base::NotFatalUntil::M160);
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
+  // TODO(crbug.com/571095367): Move source of truth back to coordinator.
+  if (geminiBrowserAgent && geminiBrowserAgent->is_floaty_invoked()) {
+    CHECK(_mediator, base::NotFatalUntil::M160);
+    [_mediator updateWithStartupState:_startupState];
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   [self dismissGeminiFromOtherWindowsWithCompletion:^{
     [weakSelf startContainer];
@@ -100,6 +100,7 @@
   _viewController = nil;
   _containerHandler = nil;
   _geminiZeroStateViewController = nil;
+  _startupState = nil;
 }
 
 #pragma mark - GeminiContainerMediatorDelegate
@@ -126,8 +127,10 @@
 
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(self.browser);
+  CHECK(!_mediator, base::NotFatalUntil::M160);
   // TODO(crbug.com/535579970): After bottom sheet migration, the startup state
   // can be added to the init params.
+  // TODO(crbug.com/571295640): Don't pass the browser instance to mediator.
   _mediator = [[GeminiContainerMediator alloc]
             initWithBrowser:self.browser
                actorService:actorService

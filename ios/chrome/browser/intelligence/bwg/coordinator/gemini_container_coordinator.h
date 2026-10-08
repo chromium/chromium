@@ -12,15 +12,8 @@
 // Container.
 @interface GeminiContainerCoordinator : ChromeCoordinator
 
-// Initializes the coordinator with the given startup state, base view
-// controller, and browser.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              startupState:(GeminiStartupState*)startupState
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+// Startup state used to initialize the Gemini content.
+@property(nonatomic, strong) GeminiStartupState* startupState;
 
 // Dismisses the assistant container.
 - (void)dismissWithCompletion:(void (^)(void))completion;
