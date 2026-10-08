@@ -49,7 +49,6 @@ class DelegatedInkPointRenderer;
 }  // namespace gfx
 
 namespace gpu {
-class SharedImageRepresentationFactory;
 struct SwapBuffersCompleteParams;
 }  // namespace gpu
 
@@ -182,7 +181,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   std::unique_ptr<ExternalUseClient::ImageContext> CreateImageContext(
       const TransferableResource& resource,
       bool maybe_concurrent_reads,
-      bool raw_draw_if_possible,
       uint32_t client_id) override;
 
   void InitDelegatedInkPointRendererReceiver(
@@ -299,7 +297,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   gfx::Size size_;
   SharedImageFormat format_;
-  int sample_count_ = 1;
   SkColorType color_type_ = kUnknown_SkColorType;
   SkAlphaType alpha_type_ = kUnknown_SkAlphaType;
   sk_sp<SkColorSpace> sk_color_space_;
@@ -397,12 +394,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // gpu::SingleTaskSequence is implemented on top of WebView's task queue.
   const raw_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
 
-  // True if raw draw is being used.
-  const bool is_using_raw_draw_;
-
-  // True if raw draw is using MSAA output surface.
-  const bool is_raw_draw_using_msaa_;
-
   // The display transform relative to the hardware natural orientation,
   // applied to the frame content. The transform can be rotations in 90 degree
   // increments or flips.
@@ -440,9 +431,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // Damage area of the current buffer. Differ to the last submit buffer.
   std::optional<gfx::Rect> damage_of_current_buffer_;
 
-  // For accessing tile shared image backings from compositor thread.
-  std::unique_ptr<gpu::SharedImageRepresentationFactory>
-      representation_factory_;
   // The refresh interval from presentation feedback.
   base::TimeDelta refresh_interval_;
   bool skip_draw_for_tests_;

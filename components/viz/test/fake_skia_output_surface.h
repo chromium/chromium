@@ -125,7 +125,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   std::unique_ptr<ImageContext> CreateImageContext(
       const TransferableResource& resource,
       bool concurrent_reads,
-      bool raw_draw_if_possible,
       uint32_t client_id) override;
 
   gpu::SharedImageInterface* GetSharedImageInterface();

@@ -46,7 +46,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
  public:
   ImageContextImpl(const TransferableResource& resource,
                    bool maybe_concurrent_reads,
-                   bool raw_draw_if_possible,
                    uint32_t client_id);
 
   // Used only for creating promise image from RenderPass.
@@ -93,8 +92,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       gpu::SharedImageRepresentationFactory* representation_factory,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
-  bool BeginRasterAccess(
-      gpu::SharedImageRepresentationFactory* representation_factory);
   void EndAccessIfNecessary();
 
  private:
@@ -121,7 +118,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Indicates that this will be used to refer to allocations that originate
   // from the renderer.
   const bool is_for_render_pass_ = false;
-  const bool raw_draw_if_possible_ = false;
 
   // Fallback in case we cannot produce a |representation_|.
   raw_ptr<gpu::SharedContextState> fallback_context_state_ = nullptr;
@@ -133,14 +129,11 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Only one of the follow should be non-null at the same time.
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_passthrough_;
   std::unique_ptr<gpu::SkiaImageRepresentation> representation_;
-  std::unique_ptr<gpu::RasterImageRepresentation> raster_representation_;
 
   // For scoped read accessing |representation|. It is only accessed on GPU
   // thread.
   std::unique_ptr<gpu::SkiaImageRepresentation::ScopedReadAccess>
       representation_scoped_read_access_;
-  std::unique_ptr<gpu::RasterImageRepresentation::ScopedReadAccess>
-      representation_raster_scoped_access_;
 
   // For holding GrPromiseImageTexture create from |fallback_texture| or legacy
   // mailboxes.

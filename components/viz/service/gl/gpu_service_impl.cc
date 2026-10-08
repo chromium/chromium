@@ -1390,9 +1390,8 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
   const bool display_context_on_another_thread =
       features::IsDrDcEnabled(gpu_feature_info_);
 
-  // |display_context_on_another_thread|, features::IsUsingRawDraw(),
-  // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
-  // requires |thread_safe_manager| to be true.
+  // |display_context_on_another_thread|, kAlwaysUseRealBufferTestingOnOzone,
+  // and kSharedBitmapToSharedImage requires |thread_safe_manager| to be true.
   bool thread_safe_manager = true;
   owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
       thread_safe_manager, display_context_on_another_thread,

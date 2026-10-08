@@ -26,10 +26,6 @@
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cc {
-class PaintOpBuffer;
-}
-
 namespace viz {
 
 // DisplayResourceProvider takes ownership
@@ -99,17 +95,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       return texture_infos_;
     }
 
-    const cc::PaintOpBuffer* paint_op_buffer() const {
-      return paint_op_buffer_;
-    }
-    void set_paint_op_buffer(const cc::PaintOpBuffer* buffer) {
-      paint_op_buffer_ = buffer;
-    }
-    const std::optional<SkColor4f>& clear_color() const { return clear_color_; }
-    void set_clear_color(const std::optional<SkColor4f>& color) {
-      clear_color_ = color;
-    }
-
    private:
     gpu::Mailbox mailbox_;
     std::vector<gpu::SyncToken> sync_tokens_;
@@ -132,8 +117,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     sk_sp<SkImage> image_;
     std::vector<GrBackendFormat> backend_formats_;
     std::vector<skgpu::graphite::TextureInfo> texture_infos_;
-    raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
-    std::optional<SkColor4f> clear_color_;
   };
 
   // If |maybe_concurrent_reads| is true then there can be concurrent reads to
@@ -141,7 +124,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
   virtual std::unique_ptr<ImageContext> CreateImageContext(
       const TransferableResource& resource,
       bool maybe_concurrent_reads,
-      bool raw_draw_if_possible,
       uint32_t client_id) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(

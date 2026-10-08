@@ -224,11 +224,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer
                        SkPaint* paint,
                        DrawQuadParams* params);
 
-  void DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
-                         const std::optional<SkColor4f>& clear_color,
-                         const TileDrawQuad* quad,
-                         const DrawQuadParams* params);
-
   // RenderPass draw quads can only be batch when they aren't bypassed and
   // don't have any advanced effects (eg. filter).
   void DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
@@ -549,8 +544,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer
   std::unordered_set<OverlayLock, OverlayLockHash, OverlayLockKeyEqual>
       awaiting_release_overlay_locks_;
 #endif  // BUILDFLAG(IS_APPLE)
-
-  const bool is_using_raw_draw_;
 
   // Returns true if we need to push a color conversion layer to correctly draw
   // |render_pass|'s contents.

@@ -90,7 +90,6 @@
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "third_party/skia/src/core/SkCanvasPriv.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/linear_gradient.h"
@@ -765,7 +764,6 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        bool maybe_concurrent_reads,
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        sk_sp<SkColorSpace> override_color_space = nullptr,
-                       bool raw_draw_if_possible = false,
                        bool force_rgbx = false);
 
   ScopedSkImageBuilder(const ScopedSkImageBuilder&) = delete;
@@ -774,13 +772,9 @@ class SkiaRenderer::ScopedSkImageBuilder {
   ~ScopedSkImageBuilder() = default;
 
   const SkImage* sk_image() const { return sk_image_.get(); }
-  const cc::PaintOpBuffer* paint_op_buffer() const { return paint_op_buffer_; }
-  const std::optional<SkColor4f>& clear_color() const { return clear_color_; }
 
  private:
   sk_sp<SkImage> sk_image_;
-  raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
-  std::optional<SkColor4f> clear_color_;
 };
 
 SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
@@ -789,7 +783,6 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     bool maybe_concurrent_reads,
     SkAlphaType alpha_type,
     sk_sp<SkColorSpace> override_color_space,
-    bool raw_draw_if_possible,
     bool force_rgbx) {
   if (!resource_id)
     return;
@@ -797,7 +790,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
   auto* image_context = skia_renderer->lock_set_for_external_use_.LockResource(
-      resource_id, maybe_concurrent_reads, raw_draw_if_possible);
+      resource_id, maybe_concurrent_reads);
 
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
   // only accessed by GPU thread after |image| is set and (b) the fields of
@@ -809,11 +802,9 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
 
   skia_renderer->skia_output_surface_->MakePromiseSkImage(image_context,
                                                           force_rgbx);
-  paint_op_buffer_ = image_context->paint_op_buffer();
-  clear_color_ = image_context->clear_color();
   sk_image_ = image_context->image();
-  LOG_IF(ERROR, !image_context->has_image() && !paint_op_buffer_)
-      << "Failed to create the promise sk image or get paint ops.";
+  LOG_IF(ERROR, !image_context->has_image())
+      << "Failed to create the promise sk image.";
 
   if (sk_image_ && override_color_space) {
     sk_image_ = sk_image_->reinterpretColorSpace(override_color_space);
@@ -1090,8 +1081,7 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                      resource_provider,
                      overlay_processor),
       skia_output_surface_(skia_output_surface),
-      lock_set_for_external_use_(resource_provider, skia_output_surface_),
-      is_using_raw_draw_(features::IsUsingRawDraw()) {
+      lock_set_for_external_use_(resource_provider, skia_output_surface_) {
   DCHECK(skia_output_surface_);
 
   // There can be different synchronization types requested for different
@@ -2118,11 +2108,6 @@ std::optional<const DrawQuad*> SkiaRenderer::CanPassBeDrawnDirectly(
       quad->material == DrawQuad::Material::kPictureContent)
     return std::nullopt;
 
-  // TODO(penghuang): support composite TileDrawQuad in a sub render pass for
-  // raw draw directly.
-  if (is_using_raw_draw_ && quad->material == DrawQuad::Material::kTiledContent)
-    return std::nullopt;
-
   // If the quad specifies nearest-neighbor scaling then there could be two
   // scaling operations at different quality levels. This requires drawing to an
   // intermediate render pass. See https://crbug.com/1155338.
@@ -2595,53 +2580,6 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
       constraint);
 }
 
-void SkiaRenderer::DrawPaintOpBuffer(
-    const cc::PaintOpBuffer* buffer,
-    const std::optional<SkColor4f>& clear_color,
-    const TileDrawQuad* quad,
-    const DrawQuadParams* params) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
-               "SkiaRenderer::DrawPaintOpBuffer");
-  if (!batched_quads_.empty())
-    FlushBatchedQuads();
-
-  SkAutoCanvasRestore auto_canvas_restore(current_canvas_, true /* do_save */);
-  PrepareCanvas(params->scissor_rect, params->mask_filter_info,
-                &params->content_device_transform);
-
-  auto visible_rect = gfx::RectFToSkRect(params->visible_rect);
-  current_canvas_->clipRect(visible_rect);
-
-  if (params->draw_region) {
-    bool aa = params->aa_flags != SkCanvas::kNone_QuadAAFlags;
-    current_canvas_->clipPath(params->draw_region_in_path(), aa);
-  }
-
-  if (quad->ShouldDrawWithBlending()) {
-    auto paint = params->paint(nullptr);
-    // TODO(penghuang): saveLayer() is expensive, try to avoid it as much as
-    // possible.
-    current_canvas_->saveLayer(&visible_rect, &paint);
-  }
-
-  if (clear_color)
-    current_canvas_->drawColor(*clear_color);
-
-  float scale_x = params->rect.width() / quad->tex_coord_rect.width();
-  float scale_y = params->rect.height() / quad->tex_coord_rect.height();
-
-  float offset_x =
-      params->visible_rect.x() - params->vis_tex_coords.x() * scale_x;
-  float offset_y =
-      params->visible_rect.y() - params->vis_tex_coords.y() * scale_y;
-
-  current_canvas_->translate(offset_x, offset_y);
-  current_canvas_->scale(scale_x, scale_y);
-
-  cc::PlaybackParams playback_params(nullptr, SkM44());
-  buffer->Playback(current_canvas_, playback_params);
-}
-
 void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
                                        DrawQuadParams* params) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
@@ -2785,7 +2723,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/true,
       resource_provider_->GetAlphaType(quad->resource_id), override_color_space,
-      false, quad->force_rgbx);
+      quad->force_rgbx);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
@@ -2896,32 +2834,11 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   // should never produce tile quads in the first place.
   DCHECK(resource_provider());
 
-  // If quad->ShouldDrawWithBlending() is true, we need to raster tile paint ops
-  // to an offscreen texture first, and then blend it with content behind the
-  // tile. Since a tile could be used cross frames, so it would better to not
-  // use raw draw.
-  bool raw_draw_if_possible =
-      is_using_raw_draw_ && !quad->ShouldDrawWithBlending();
-  ScopedSkImageBuilder builder(
-      this, quad->resource_id, /*maybe_concurrent_reads=*/false,
-      kPremul_SkAlphaType,
-      /*override_color_space=*/nullptr, raw_draw_if_possible);
+  ScopedSkImageBuilder builder(this, quad->resource_id,
+                               /*maybe_concurrent_reads=*/false);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
-
-  bool using_raw_draw = builder.paint_op_buffer();
-  if (is_using_raw_draw_) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw",
-        using_raw_draw);
-  }
-  if (using_raw_draw) {
-    DCHECK(!rpdq_params);
-    DrawPaintOpBuffer(builder.paint_op_buffer(), builder.clear_color(), quad,
-                      params);
-    return;
-  }
 
   const SkImage* image = builder.sk_image();
   if (!image)

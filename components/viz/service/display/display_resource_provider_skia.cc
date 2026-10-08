@@ -147,8 +147,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::~LockSetForExternalUse() {
 ExternalUseClient::ImageContext*
 DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     ResourceId id,
-    bool maybe_concurrent_reads,
-    bool raw_draw_is_possible) {
+    bool maybe_concurrent_reads) {
   auto it = resource_provider_->resources_.find(id);
   CHECK(it != resource_provider_->resources_.end());
 
@@ -164,8 +163,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
           resource_provider_->GetSurfaceId(id).frame_sink_id().client_id();
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
-              resource.transferable, maybe_concurrent_reads,
-              raw_draw_is_possible, client_id);
+              resource.transferable, maybe_concurrent_reads, client_id);
     }
     resource.locked_for_external_use = true;
 
