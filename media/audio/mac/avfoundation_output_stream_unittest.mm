@@ -11,12 +11,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_message_loop.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
-#include "media/audio/audio_features.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_unittest_util.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,8 +43,7 @@ class AVFoundationOutputStreamTest : public testing::Test {
         manager_(AudioManager::CreateForTesting(
             std::make_unique<TestAudioThread>())),
         manager_device_info_(manager_.get()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMacAVFoundationPlayback);
+    scoped_feature_list_.InitAndEnableFeature(kMacAVFoundationPlayback);
     // Wait for the AudioManager to finish any initialization on the audio loop.
     base::RunLoop().RunUntilIdle();
   }

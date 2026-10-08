@@ -58,13 +58,6 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-// Enabling this feature will allow AudioManagerMac to generate AVFoundation
-// AudioOutputStreams instead of AUHALStreams in cases of multichannel audio.
-// MacOS will then "Spatialize" the audio for users on compatible Airpods. The
-// end result will give users the option to change modes on their Airpods (Off,
-// Fixed, Head Tracking).
-BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If this feature is enabled, and CATap is capturing the default output device,
 // the CATap implementation will handle default output device changes by
 // restarting the system audio capture. The changes we listen for are if

@@ -1532,6 +1532,13 @@ BASE_FEATURE(kCastMacForceBaselineProfile, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether hardware H264 is default enabled on macOS.
 BASE_FEATURE(kCastStreamingMacHardwareH264, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use AVFoundation instead of AUHAL for PCM playback output on macOS 27+.
+// AudioManagerMac selects this backend only when the feature is enabled, the
+// format is linear or low-latency PCM, and the latency tag is playback. Stereo
+// and multichannel layouts both qualify. macOS can then spatialize playback for
+// compatible AirPods (Off, Fixed, Head Tracking).
+BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables system audio loopback capture using the macOS CoreAudio tap API for
 // Cast.
 BASE_FEATURE(kMacCatapLoopbackAudioForCast, base::FEATURE_ENABLED_BY_DEFAULT);

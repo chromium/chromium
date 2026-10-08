@@ -39,7 +39,6 @@
 #include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/audio_features.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/avfoundation_output_stream.h"
 #include "media/audio/mac/core_audio_util_mac.h"
@@ -870,7 +869,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
   // able to tell the OS to use Spatial Audio. Robust support for Spatial Audio
   // playback via AVFoundation in third-party applications requires macOS 27+.
   if (__builtin_available(macOS 27, *)) {
-    if (base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
+    if (base::FeatureList::IsEnabled(kMacAVFoundationPlayback) &&
         params.latency_tag() == AudioLatency::Type::kPlayback) {
       DVLOG(1) << __func__ << ": Creating AVFoundationOutputStream for "
                << ChannelLayoutToString(params.channel_layout()) << " layout.";
@@ -1003,7 +1002,7 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   bool use_avf_streams = false;
   if (__builtin_available(macOS 27, *)) {
     use_avf_streams =
-        base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
+        base::FeatureList::IsEnabled(kMacAVFoundationPlayback) &&
         input_params.latency_tag() == AudioLatency::Type::kPlayback;
   }
 

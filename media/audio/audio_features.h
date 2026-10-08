@@ -21,7 +21,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioVariableSizedCallbacks);
 #endif
 
 #if BUILDFLAG(IS_MAC)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacAVFoundationPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartOnDeviceChange);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartAudioProcessOnTimeout);
 #endif
