@@ -158,7 +158,9 @@ WebRtcTextLogHandler::~WebRtcTextLogHandler() {
   // in the LogUploader.
   CHECK(logging_state_ == CLOSED || channel_is_closing_,
         base::NotFatalUntil::M161);
-  CHECK(!log_buffer_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/570643471): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!log_buffer_);
 }
 
 WebRtcTextLogHandler::LoggingState WebRtcTextLogHandler::GetState() const {
