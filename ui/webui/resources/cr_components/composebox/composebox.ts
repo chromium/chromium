@@ -765,6 +765,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return;
     }
 
+    this.maybeCarryOverPreviousMatches(result);
     this.result = result;
     /* Indicates when suggestion results have changed so that zero state
      * suggestion results in contextual tasks composebox can update accordingly.
@@ -794,19 +795,25 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.$.matches.unselect();
     }
 
-    // Populate the smart compose suggestion.
-    const nextHint = this.result.smartComposeInlineHint?.trim() ?
-        this.result.smartComposeInlineHint :
-        '';
-    if (this.smartComposeInlineHint !== nextHint) {
-      this.smartComposeInlineHint = nextHint;
-    }
+    // Smart compose hints should only be updated from the async response.
+    // This prevents the hint flicker from an empty smart compose response
+    // in the synchronous pass.
+    if (this.haveReceivedSynchronousAutocompleteResponse) {
+      // Populate the smart compose suggestion.
+      const nextHint = this.result.smartComposeInlineHint?.trim() ?
+          this.result.smartComposeInlineHint :
+          '';
+      if (this.smartComposeInlineHint !== nextHint) {
+        this.smartComposeInlineHint = nextHint;
+      }
 
-    // Smart compose stats are incremented on every response from the
-    // server.
-    if (this.smartComposeInlineHint) {
-      this.smartComposeStats.shownCount++;
-      this.smartComposeStats.shownLength += this.smartComposeInlineHint.length;
+      // Smart compose stats are incremented on every response from the
+      // server.
+      if (this.smartComposeInlineHint) {
+        this.smartComposeStats.shownCount++;
+        this.smartComposeStats.shownLength +=
+            this.smartComposeInlineHint.length;
+      }
     }
 
     this.haveReceivedSynchronousAutocompleteResponse = true;

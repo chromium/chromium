@@ -967,6 +967,7 @@ export const ComposeboxEmbedderMixin =
             return;
           }
 
+          this.maybeCarryOverPreviousMatches(result);
           this.result = result;
 
           const hasMatches = this.result.matches.length > 0;
@@ -998,23 +999,53 @@ export const ComposeboxEmbedderMixin =
             this.getDropdownElement().unselect();
           }
 
-          // Populate the smart compose suggestion.
-          const nextHint = this.result.smartComposeInlineHint?.trim() ?
-              this.result.smartComposeInlineHint :
-              '';
-          if (this.smartComposeInlineHint !== nextHint) {
-            this.smartComposeInlineHint = nextHint;
-          }
+          // Smart compose hints should only be updated from the async response.
+          // This prevents the hint flicker from an empty smart compose response
+          // in the synchronous pass.
+          if (this.haveReceivedSynchronousAutocompleteResponse) {
+            // Populate the smart compose suggestion.
+            const nextHint = this.result.smartComposeInlineHint?.trim() ?
+                this.result.smartComposeInlineHint :
+                '';
+            if (this.smartComposeInlineHint !== nextHint) {
+              this.smartComposeInlineHint = nextHint;
+            }
 
-          // Smart compose stats are incremented on every response from the
-          // server.
-          if (this.smartComposeInlineHint) {
-            this.smartComposeStats.shownCount++;
-            this.smartComposeStats.shownLength +=
-                this.smartComposeInlineHint.length;
+            // Smart compose stats are incremented on every response from the
+            // server.
+            if (this.smartComposeInlineHint) {
+              this.smartComposeStats.shownCount++;
+              this.smartComposeStats.shownLength +=
+                  this.smartComposeInlineHint.length;
+            }
           }
 
           this.haveReceivedSynchronousAutocompleteResponse = true;
+        }
+
+        // TODO(crbug.com/460888279): This is a temporary, merge safe fix.
+        // Ideally, the ACController is not sending multiple responses for a
+        // single query, especially when the matches is empty. Remove this logic
+        // once a long term fix is found.
+        maybeCarryOverPreviousMatches(result: AutocompleteResult) {
+          if (!this.composeboxNoFlickerSuggestionsFix ||
+              !this.showTypedSuggest ||
+              this.haveReceivedSynchronousAutocompleteResponse) {
+            return;
+          }
+          // The first autocomplete response for ZPS contains no matches, since
+          // composebox doesn't support ZPS from local providers (ex. history
+          // suggestion). Similarly, since composebox doesn't support local
+          // providers, typed suggest first response returns a single verbatim
+          // match, which doesn't show in the dropdown. To prevent closing the
+          // dropdown before the actual response from the suggest server is
+          // received, add the previous non-verbatim matches to this first
+          // response.
+          if (this.result && this.result.matches.length > 0 &&
+              result.matches.length <= 1) {
+            result.matches.push(...this.result.matches.filter(
+                match => match.type !== 'search-what-you-typed'));
+          }
         }
 
         onContextualInputStatusChanged(
@@ -1120,7 +1151,23 @@ export const ComposeboxEmbedderMixin =
             }
           }
           this.input = newInput;
-          this.queryAutocomplete(/* clearMatches= */ false);
+
+          // `clearMatches` is true if input is empty stop any in progress
+          // providers before requerying for on-focus (zero-suggest) inputs. The
+          // searchbox doesn't allow zero-suggest requests to be made while the
+          // ACController is not done.
+          if (this.composeboxNoFlickerSuggestionsFix) {
+            // If the composebox no flickering fix is enabled, stop the
+            // ACController from querying for suggestions when the input is
+            // empty, but don't clear the matches so the dropdown doesn't close.
+            if (this.input === '') {
+              this.getSearchboxHandler().stopAutocomplete(
+                  /*clearResult=*/ true);
+            }
+            this.queryAutocomplete(/* clearMatches= */ false);
+          } else {
+            this.queryAutocomplete(/* clearMatches= */ this.input === '');
+          }
         }
 
         onClearSmartCompose() {
@@ -3491,6 +3538,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   onMatchFocusin(e: CustomEvent<{index: number}>): void;
   onInputStateChanged(inputState: InputState): void;
   onAutocompleteResultChanged(_result: AutocompleteResult): void;
+  maybeCarryOverPreviousMatches(result: AutocompleteResult): void;
   onContextualInputStatusChanged(
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|null): void;

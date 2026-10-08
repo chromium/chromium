@@ -1454,11 +1454,8 @@ void SearchboxHandler::QueryAutocomplete(
   cursor_position = std::min(
       cursor_position, static_cast<uint32_t>(input_with_keyword.length()));
 
-  // Early exit for a new on-focus query if the previous on-focus query is
-  // pending. Note that on-focus == zero suggest. This avoids redundant
-  // restarts.
-  if (!autocomplete_controller()->done() &&
-      autocomplete_controller()->input().IsZeroSuggest() && is_on_focus) {
+  // Early exit if a query is already in progress for on focus inputs.
+  if (!autocomplete_controller()->done() && is_on_focus) {
     return;
   }
 
