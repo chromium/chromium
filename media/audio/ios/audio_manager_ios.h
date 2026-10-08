@@ -65,10 +65,10 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   std::string GetDefaultOutputDeviceID() override;
 
   // Used to track destruction of input and output streams.
-  bool MaybeChangeBufferSize(AudioDeviceID device_id,
-                             AudioUnit audio_unit,
-                             AudioUnitElement element,
-                             size_t desired_buffer_size) override;
+  OSStatus MaybeChangeBufferSize(AudioDeviceID device_id,
+                                 AudioUnit audio_unit,
+                                 AudioUnitElement element,
+                                 size_t desired_buffer_size) override;
 
   // Implementation of AudioManagerApple
   // Handle device capability ambient noise reduction. Currently, iOS is not

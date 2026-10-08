@@ -87,11 +87,11 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   // lower than the current device buffer size. The buffer size can also be
   // modified under other conditions. See comments in the corresponding cc-file
   // for more details.
-  // Returns false if an error occurred.
-  bool MaybeChangeBufferSize(AudioDeviceID device_id,
-                             AudioUnit audio_unit,
-                             AudioUnitElement element,
-                             size_t desired_buffer_size) override;
+  // Returns noErr if successful or the OSStatus error code.
+  OSStatus MaybeChangeBufferSize(AudioDeviceID device_id,
+                                 AudioUnit audio_unit,
+                                 AudioUnitElement element,
+                                 size_t desired_buffer_size) override;
   base::TimeDelta GetDeferStreamStartTimeout() const override;
   void StopAmplitudePeakTrace() override;
 

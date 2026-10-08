@@ -150,22 +150,6 @@ static bool HasAudioHardware(AudioObjectPropertySelector selector) {
          output_device_id != kAudioObjectUnknown;
 }
 
-static std::string GetAudioDeviceNameFromDeviceId(AudioDeviceID device_id,
-                                                  bool is_input) {
-  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
-  CFStringRef device_name = nullptr;
-  UInt32 data_size = sizeof(device_name);
-  AudioObjectPropertyAddress property_address = GetAudioObjectPropertyAddress(
-      kAudioDevicePropertyDeviceNameCFString, is_input);
-  OSStatus result = AudioObjectGetPropertyData(
-      device_id, &property_address, 0, nullptr, &data_size, &device_name);
-  std::string device;
-  if (result == noErr) {
-    device = base::SysCFStringRefToUTF8(device_name);
-    CFRelease(device_name);
-  }
-  return device;
-}
 
 // Retrieves information on audio devices, and prepends the default
 // device to the list if the list is non-empty.
@@ -1118,24 +1102,20 @@ size_t AudioManagerMac::GetNumberOfResumeNotifications() const {
   return power_observer_->num_resume_notifications();
 }
 
-bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
-                                            AudioUnit audio_unit,
-                                            AudioUnitElement element,
-                                            size_t desired_buffer_size) {
+OSStatus AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
+                                                AudioUnit audio_unit,
+                                                AudioUnitElement element,
+                                                size_t desired_buffer_size) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (in_shutdown_) {
     DVLOG(1) << __FUNCTION__ << " Disabled since we are shutting down";
-    return false;
+    return kAudioHardwareNotRunningError;
   }
   const bool is_input = (element == 1);
   DVLOG(1) << __FUNCTION__ << " (id=0x" << std::hex << device_id
            << ", is_input=" << is_input << ", desired_buffer_size=" << std::dec
            << desired_buffer_size << ")";
 
-  // Log the device name (and id) for debugging purposes.
-  std::string device_name = GetAudioDeviceNameFromDeviceId(device_id, is_input);
-  DVLOG(1) << __FUNCTION__ << " name: " << device_name << " (ID: 0x" << std::hex
-           << device_id << ")";
 
   // Get the current size of the I/O buffer for the specified device. The
   // property is read on a global scope, hence using element 0. The default IO
@@ -1148,7 +1128,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
   if (result != noErr) {
     OSSTATUS_DLOG(ERROR, result)
         << "AudioUnitGetProperty(kAudioDevicePropertyBufferFrameSize) failed.";
-    return false;
+    return result;
   }
 
   DVLOG(1) << __FUNCTION__ << " current IO buffer size: " << buffer_size;
@@ -1166,7 +1146,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
   // See http://crbug.com/428706 for a reason why.
 
   if (buffer_size == desired_buffer_size) {
-    return true;
+    return noErr;
   }
 
   if (desired_buffer_size > buffer_size) {
@@ -1178,7 +1158,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
     for (auto* stream : output_streams_) {
       if (stream->device_id() == device_id &&
           stream->requested_buffer_size() < desired_buffer_size) {
-        return true;
+        return noErr;
       }
     }
 
@@ -1187,7 +1167,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
     for (auto* stream : low_latency_input_streams_) {
       if (stream->device_id() == device_id &&
           stream->requested_buffer_size() < desired_buffer_size) {
-        return true;
+        return noErr;
       }
     }
   }
@@ -1204,7 +1184,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
   result = GetIOBufferFrameSizeRange(device_id, is_input, &minimum, &maximum);
   if (result != noErr) {
     // OS error is logged in GetIOBufferFrameSizeRange().
-    return false;
+    return result;
   }
   DVLOG(1) << __FUNCTION__ << " valid IO buffer size range: [" << minimum
            << ", " << maximum << "]";
@@ -1227,7 +1207,7 @@ bool AudioManagerMac::MaybeChangeBufferSize(AudioDeviceID device_id,
   DVLOG_IF(1, result == noErr)
       << __FUNCTION__ << " IO buffer size changed to: " << buffer_size;
   // Store the currently used (after a change) I/O buffer frame size.
-  return result == noErr;
+  return result;
 }
 
 bool AudioManagerMac::DeviceSupportsAmbientNoiseReduction(

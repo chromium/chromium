@@ -69,11 +69,11 @@ class AudioManagerApple : public AudioManagerBase {
   // lower than the current device buffer size. The buffer size can also be
   // modified under other conditions. See comments in the corresponding cc-file
   // for more details.
-  // Returns false if an error occurred.
-  virtual bool MaybeChangeBufferSize(AudioDeviceID device_id,
-                                     AudioUnit audio_unit,
-                                     AudioUnitElement element,
-                                     size_t desired_buffer_size) = 0;
+  // Returns noErr if successful or the OSStatus error code.
+  virtual OSStatus MaybeChangeBufferSize(AudioDeviceID device_id,
+                                         AudioUnit audio_unit,
+                                         AudioUnitElement element,
+                                         size_t desired_buffer_size) = 0;
 
 #if BUILDFLAG(IS_MAC)
   virtual base::TimeDelta GetDeferStreamStartTimeout() const = 0;

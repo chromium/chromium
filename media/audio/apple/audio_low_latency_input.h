@@ -128,6 +128,9 @@ class MEDIA_EXPORT AUAudioInputStream
  private:
   bool OpenAUHAL();
   bool OpenVoiceProcessingAU();
+  // Attempts to set the IO buffer size of `audio_unit_` to the requested
+  // frames per buffer. Logs the error and returns false on failure.
+  bool ChangeBufferSize();
   void SetSystemAGC(bool enable);
 
   // Callback functions called on a real-time priority I/O thread from the audio

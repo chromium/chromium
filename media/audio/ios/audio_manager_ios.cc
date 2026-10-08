@@ -128,13 +128,13 @@ std::string AudioManagerIOS::GetDefaultOutputDeviceID() {
   return AudioSessionManagerIOS::GetInstance().GetDefaultOutputDeviceID();
 }
 
-bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
-                                            AudioUnit audio_unit,
-                                            AudioUnitElement element,
-                                            size_t desired_buffer_size) {
+OSStatus AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
+                                                AudioUnit audio_unit,
+                                                AudioUnitElement element,
+                                                size_t desired_buffer_size) {
   // TODO: Add IO buffer size  handling based on `desired_buffer_size`. Refer
   // comments at audio_manager_mac.h for more information.
-  return true;
+  return noErr;
 }
 
 bool AudioManagerIOS::DeviceSupportsAmbientNoiseReduction(
