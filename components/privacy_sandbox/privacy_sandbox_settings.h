@@ -22,7 +22,6 @@ namespace privacy_sandbox {
 enum class PrivacySandboxAttestationsGatedAPI {
   kTopics,
   kProtectedAudience,
-  kPrivateAggregation,
   kSharedStorage,
 
   kMaxValue = kSharedStorage,

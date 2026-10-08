@@ -30,11 +30,6 @@ void InsertAPI(
                               kProtectedAudience);
       return;
     }
-    case privacy_sandbox::PRIVATE_AGGREGATION: {
-      allowed_api_set.Put(privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                              kPrivateAggregation);
-      return;
-    }
     case privacy_sandbox::SHARED_STORAGE: {
       allowed_api_set.Put(
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage);
