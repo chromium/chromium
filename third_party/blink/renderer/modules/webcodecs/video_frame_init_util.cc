@@ -123,10 +123,10 @@ ParsedVideoFrameInit::ParsedVideoFrameInit(
 
     // Override display size with computed size scaled from visible rect.
   } else if (init->hasVisibleRect()) {
-    double widthScale =
-        default_display_size.width() / default_visible_rect.width();
-    double heightScale =
-        default_display_size.height() / default_visible_rect.height();
+    double widthScale = static_cast<double>(default_display_size.width()) /
+                        default_visible_rect.width();
+    double heightScale = static_cast<double>(default_display_size.height()) /
+                         default_visible_rect.height();
     display_size = gfx::Size(std::round(visible_rect.width() * widthScale),
                              std::round(visible_rect.height() * heightScale));
     if (display_size.width() == 0) {
