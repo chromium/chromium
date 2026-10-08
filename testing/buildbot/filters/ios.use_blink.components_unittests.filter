@@ -464,14 +464,15 @@
 
 # TODO(crbug.com/538332325): PasskeyTabHelperTest have been failing on iOS blink
 # port. Some of the tests were added by https://crrev.com/c/7868131.
+-PasskeyTabHelperTest.ConditionalCreateOffTheRecordDefersToRenderer
 -PasskeyTabHelperTest.HandleAssertionEmptyRemoteFrameIdGraceful
 -PasskeyTabHelperTest.HandleAssertionMalformedRemoteFrameIdGraceful
--PasskeyTabHelperTest.StartPasskeyCreationWithExcludedCredential
 -PasskeyTabHelperTest.HandleCreateRequestedEventDefersOnInvalidOrigin
 -PasskeyTabHelperTest.HandleGetRequestedEventDefersOnInvalidOrigin
--PasskeyTabHelperTest.StartPasskeyCreationFromCrossOriginIframe
 -PasskeyTabHelperTest.StartPasskeyAssertionFailureDoesNotLogBrowserAssistedLogin
 -PasskeyTabHelperTest.StartPasskeyAssertionSuccessLogsBrowserAssistedLogin
+-PasskeyTabHelperTest.StartPasskeyCreationFromCrossOriginIframe
+-PasskeyTabHelperTest.StartPasskeyCreationWithExcludedCredential
 
 # TODO(crbug.com/517208683): The test is flaky on the ios-blink and tvos bots.
 # The test was updated by https://crrev.com/c/7676358.

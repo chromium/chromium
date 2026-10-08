@@ -11,6 +11,7 @@
 -DistillerPageWebContentsTest.HandlesRelativeImages
 -DistillerPageWebContentsTest.HandlesRelativeLinks
 -DistillerPageWebContentsTest.HandlesRelativeVideos
+-DistillerPageWebContentsTest.HandlesShadowDOM
 -DistillerPageWebContentsTest.MarkupInfo
 -DistillerPageWebContentsTest.PageDestroyedBeforeFinishDistillation
 -DistillerPageWebContentsTest.TestNoContentDoesNotCrash

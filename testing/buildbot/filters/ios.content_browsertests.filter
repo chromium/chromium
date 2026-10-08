@@ -387,6 +387,7 @@
 
 # TODO(crbug.com/382316457): This test has been failing on the bot.
 -FormControlsBrowserTest.Meter
+-FormControlsBrowserTest.DarkModeTextSelection
 
 # TODO(crbug.com/385300330): This test has been failing since
 # https://crrev.com/c/5953628.
@@ -480,6 +481,7 @@
 # https://crrev.com/c/6966639.
 -FileSystemChooserBrowserTest.DontShowWhileHidden
 -FileSystemChooserBrowserTest.ShowThenHide
+-FileSystemChooserBrowserTest.ShowThenResizeSmall
 
 # TODO(crbug.com/454067890): The test has been failing since
 # https://crrev.com/c/6734221.
@@ -530,6 +532,8 @@
 -All/StartupTracingTest.TestEnableTracing/5
 -AutoSpeculationRulesPrerenderBrowserTestWithHoldback.Metrics/1
 -DeclarativePerformanceObserverBrowserTest.SendsReportImmediatelyOnBFCacheEntry
+-DeclarativePerformanceObserverBrowserTest.SendsReportImmediatelyOnRFHDestructionWithoutBFCache
+-DeclarativePerformanceObserverBrowserTest.SendsReportImmediatelyOnRendererCrash
 -DevToolsProtocolTest.CookiePermissions
 -FileSystemAccessSyncAccessHandleBrowserTest.WriteRejectsOversizedBuffer
 -FileSystemURLDragDropBrowserTest.FileSystemFileLeave

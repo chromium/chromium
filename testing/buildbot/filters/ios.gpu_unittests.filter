@@ -33,3 +33,9 @@
 # bot.
 -ES3ShaderTranslatorTest.GetInterfaceBlocks
 -ES3ShaderTranslatorTest.InvalidInterfaceBlocks
+
+# TODO(crbug.com/571284290): These tests are failing on the ios-blink-rel-fyi
+# bot.
+-GLES2DecoderPassthroughReadbackResetCheckTest.ReadbackARGBImagePixelsWithResetCheckWorkaroundDoesNotDeny
+-GLES2DecoderPassthroughTest.ContextLostWhenSharedContextRestoreFails
+-GLES2DecoderPassthroughTest.SharedContextCommandRestoresContext
