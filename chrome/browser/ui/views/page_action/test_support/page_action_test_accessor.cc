@@ -396,13 +396,13 @@ bool PageActionTestAccessor::HasIconHighlight() const {
            views::InkDropState::ACTIVATED;
   }
 
-  const char kScript[] = R"(
-    (el) => {
-      return el.hasAttribute('is-menu-open');
-    }
-  )";
-
-  return EvaluateWebUI(kScript);
+  return EvaluateWebUI(
+      R"((el) => {
+        const chipBtn = el.shadowRoot
+            ? el.shadowRoot.querySelector('#button')
+            : null;
+        return !!chipBtn && chipBtn.hasAttribute('is-menu-open');
+      })");
 }
 
 std::u16string PageActionTestAccessor::GetText() const {
