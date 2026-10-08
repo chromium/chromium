@@ -14,12 +14,12 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
@@ -71,8 +71,7 @@ class FlexAttesterTest : public testing::Test {
     const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user_manager_->GetPrimaryUser(), profile_);
+    ash::AnnotatedAccountId::Set(profile_, account_id);
   }
 
   content::BrowserTaskEnvironment task_environment_;

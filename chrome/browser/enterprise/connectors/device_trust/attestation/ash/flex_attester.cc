@@ -10,11 +10,11 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -45,7 +45,8 @@ void FlexAttester::DecorateKeyInfo(const std::set<DTCPolicyLevel>& levels,
   } else {
     // Add signals that are available on un-enrolled devices
     // (DEVICE_TRUST_CONNECTOR flow)
-    auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile_);
+    auto* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
     if (user) {
       key_info.set_domain(user->GetAccountId().GetUserEmail());
     }

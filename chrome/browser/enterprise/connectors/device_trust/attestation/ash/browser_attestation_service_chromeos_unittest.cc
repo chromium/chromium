@@ -17,8 +17,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/flex_attester.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
 // #include
 // "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
@@ -119,8 +119,7 @@ class BrowserAttestationServiceChromeOSTest : public testing::Test {
     const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user_manager_->GetPrimaryUser(), profile_);
+    ash::AnnotatedAccountId::Set(profile_, account_id);
   }
 
   void VerifyAttestationResponse(
