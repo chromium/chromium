@@ -91,7 +91,9 @@ std::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
             "AND cdm_type = ? "
             "AND file_name = ? ";
   // clang-format on
-  CHECK(db_.IsSQLValid(kSelectSql), base::NotFatalUntil::M160);
+  // TODO(crbug.com/570775485): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_.IsSQLValid(kSelectSql));
 
   last_operation_ = "ReadFile";
 
