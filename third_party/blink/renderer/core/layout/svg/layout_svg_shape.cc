@@ -73,6 +73,9 @@ bool ComputeStrokeHasRelativeLengths(const ComputedStyle& style) {
       })) {
     return true;
   }
+  if (style.StrokeDashOffset().HasPercent()) {
+    return true;
+  }
   return false;
 }
 
