@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class AVAudioEngine;
 @class AVAudioSessionPortDescription;
 @protocol TTCAudioSessionManagerDelegate;
 
@@ -30,9 +29,20 @@ enum class TTCAudioOutputDestination : NSInteger {
   kExternal,
 };
 
-// Manages the AVAudioSession lifecycle for TTC, encapsulating
-// category activation, option configuration, category restoration upon
-// teardown, route inspection, and port selection.
+// Wraps iOS's process-wide `[AVAudioSession sharedInstance]` singleton for TTC.
+//
+// Responsibilities:
+// - Snapshots the prior `AVAudioSession` category, mode, and options
+//   before activating `AVAudioSessionCategoryPlayAndRecord`, and restores them
+//   upon teardown so other browser audio is not disrupted.
+// - Executes CoreAudio/`mediaserverd` session activation and port overrides on
+//   a background task runner to avoid blocking the main UI thread.
+// - Inspects physical audio routes (`hasHardwareAEC`, `outputDestination`,
+//   connected external ports) and translates `AVAudioSession` notifications
+//   (interruptions, route changes, media services resets) into delegate calls.
+//
+// Does not own or interact with any audio processing graph (`AVAudioEngine`),
+// microphone permission prompts, or PCM audio buffers.
 @interface TTCAudioSessionManager : NSObject
 
 // Delegate receiving session interruption and lifecycle events.
@@ -137,13 +147,6 @@ enum class TTCAudioOutputDestination : NSInteger {
 // accessory if connected or handset earpiece.
 // @param error Populated with any error encountered while updating the session.
 - (BOOL)setOutputOverriddenToSpeaker:(BOOL)forceSpeaker error:(NSError**)error;
-
-// Registers notification observers for session route changes and interruptions.
-// If `engine` is non-nil, also registers for engine configuration changes.
-// Calling this method unregisters any previously registered observers.
-// @param engine Audio engine to observe for configuration changes, or nil if
-//     only session-level notifications are needed.
-- (void)registerNotificationObserversWithAudioEngine:(AVAudioEngine*)engine;
 
 // Tears down the audio session manager, cancelling any in-flight startup tasks
 // and restoring the prior audio session configuration.

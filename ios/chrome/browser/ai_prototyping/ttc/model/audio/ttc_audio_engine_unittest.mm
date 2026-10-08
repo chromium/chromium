@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/compiler_specific.h"
 #import "base/containers/span.h"
+#import "base/functional/callback_helpers.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_player.h"
@@ -32,6 +33,27 @@
                                      TTCAudioSessionManagerDelegate>
 - (void)setIsCapturingForTesting:(BOOL)isCapturing;
 - (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning;
+- (AVAudioEngine*)audioEngineForTesting;
+@end
+
+// Test player subclass that records `resumePlaybackAfterEngineRestart` calls.
+@interface FakeReconfigTTCAudioPlayer : TTCAudioPlayer
+@property(nonatomic, assign) BOOL didResumePlaybackAfterRestart;
+@property(nonatomic, copy) void (^onResumePlayback)(void);
+@end
+
+@implementation FakeReconfigTTCAudioPlayer
+
+- (void)resumePlaybackAfterEngineRestart {
+  [super resumePlaybackAfterEngineRestart];
+  self.didResumePlaybackAfterRestart = YES;
+  if (self.onResumePlayback) {
+    auto block = self.onResumePlayback;
+    self.onResumePlayback = nil;
+    block();
+  }
+}
+
 @end
 
 // Fake delegate to verify TTCAudioEngine forwards events.
@@ -638,6 +660,82 @@ TEST_F(TTCAudioEngineTest, TestOutputRoutedToSpeaker) {
   EXPECT_EQ(
       engine.isOutputRoutedToSpeaker,
       sessionManager.outputDestination == TTCAudioOutputDestination::kSpeaker);
+  [engine disconnect];
+}
+
+// Tests that AVAudioEngineConfigurationChangeNotification for the engine's
+// internal AVAudioEngine resumes active playback.
+TEST_F(TTCAudioEngineTest,
+       TestEngineConfigurationChangeNotificationResumesPlayback) {
+  FakeReconfigTTCAudioPlayer* player =
+      [[FakeReconfigTTCAudioPlayer alloc] init];
+  [player setIsPlayingForTesting:YES];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:nil
+                                                             player:player
+                                                     sessionManager:nil];
+  [engine setIsAudioEngineRunningForTesting:YES];
+
+  base::test::TestFuture<void> resume_future;
+  player.onResumePlayback = base::CallbackToBlock(resume_future.GetCallback());
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioEngineConfigurationChangeNotification
+                    object:[engine audioEngineForTesting]];
+
+  EXPECT_TRUE(resume_future.Wait());
+  EXPECT_TRUE(player.didResumePlaybackAfterRestart);
+  [engine disconnect];
+}
+
+// Tests that AVAudioEngineConfigurationChangeNotification is ignored after
+// the engine has been disconnected.
+TEST_F(TTCAudioEngineTest,
+       TestEngineConfigurationChangeNotificationIgnoredWhenDisconnected) {
+  FakeReconfigTTCAudioPlayer* player =
+      [[FakeReconfigTTCAudioPlayer alloc] init];
+  [player setIsPlayingForTesting:YES];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:nil
+                                                             player:player
+                                                     sessionManager:nil];
+  [engine setIsAudioEngineRunningForTesting:YES];
+  AVAudioEngine* rawEngine = [engine audioEngineForTesting];
+  [engine disconnect];
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioEngineConfigurationChangeNotification
+                    object:rawEngine];
+
+  base::test::TestFuture<void> flush_future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+
+  EXPECT_FALSE(player.didResumePlaybackAfterRestart);
+}
+
+// Tests that AVAudioEngineConfigurationChangeNotification posted by an
+// unrelated AVAudioEngine instance is ignored.
+TEST_F(TTCAudioEngineTest,
+       TestEngineConfigurationChangeNotificationForDifferentEngineIgnored) {
+  FakeReconfigTTCAudioPlayer* player =
+      [[FakeReconfigTTCAudioPlayer alloc] init];
+  [player setIsPlayingForTesting:YES];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:nil
+                                                             player:player
+                                                     sessionManager:nil];
+  [engine setIsAudioEngineRunningForTesting:YES];
+
+  AVAudioEngine* unrelatedEngine = [[AVAudioEngine alloc] init];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioEngineConfigurationChangeNotification
+                    object:unrelatedEngine];
+
+  base::test::TestFuture<void> flush_future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+
+  EXPECT_FALSE(player.didResumePlaybackAfterRestart);
   [engine disconnect];
 }
 

@@ -580,66 +580,6 @@ TEST_F(TTCAudioSessionManagerTest,
                             TTCAudioSessionManagerErrorCode::kCancelled));
 }
 
-// Test that AVAudioEngineConfigurationChangeNotification requests engine
-// reconfiguration on the delegate.
-TEST_F(TTCAudioSessionManagerTest,
-       TestEngineConfigurationChangeNotificationRequestsReconfiguration) {
-  base::test::TestFuture<void> reconfig_future;
-  delegate_.onReconfigurationRequired =
-      base::CallbackToBlock(reconfig_future.GetCallback());
-
-  @autoreleasepool {
-    AVAudioEngine* engine = [[AVAudioEngine alloc] init];
-    [manager_ registerNotificationObserversWithAudioEngine:engine];
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:AVAudioEngineConfigurationChangeNotification
-                      object:engine];
-  }
-
-  EXPECT_TRUE(reconfig_future.Wait());
-  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
-}
-
-// Test that AVAudioEngineConfigurationChangeNotification is ignored after
-// the manager has been disconnected.
-TEST_F(TTCAudioSessionManagerTest,
-       TestEngineConfigurationChangeNotificationIgnoredWhenDisconnected) {
-  AVAudioEngine* engine = [[AVAudioEngine alloc] init];
-  [manager_ registerNotificationObserversWithAudioEngine:engine];
-  [manager_ disconnect];
-
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:AVAudioEngineConfigurationChangeNotification
-                    object:engine];
-
-  base::test::TestFuture<void> flush_future;
-  task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, flush_future.GetCallback());
-  EXPECT_TRUE(flush_future.Wait());
-
-  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
-}
-
-// Test that AVAudioEngineConfigurationChangeNotification is not observed when
-// registering with a nil engine.
-TEST_F(TTCAudioSessionManagerTest,
-       TestEngineConfigurationChangeNotificationWithNilEngine) {
-  [manager_ registerNotificationObserversWithAudioEngine:nil];
-
-  AVAudioEngine* engine = [[AVAudioEngine alloc] init];
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:AVAudioEngineConfigurationChangeNotification
-                    object:engine];
-
-  base::test::TestFuture<void> flush_future;
-  task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, flush_future.GetCallback());
-  EXPECT_TRUE(flush_future.Wait());
-
-  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
-}
-
 // Test that malformed route change notifications (missing userInfo or reason)
 // are safely ignored without dispatching delegate callbacks.
 TEST_F(TTCAudioSessionManagerTest,

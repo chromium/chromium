@@ -61,6 +61,9 @@ constexpr double kTestToneAmplitude = 8000.0;
   // Audio session manager handling routing, port selection, and notifications.
   TTCAudioSessionManager* _sessionManager;
 
+  // Task runner for the sequence this engine is bound to.
+  scoped_refptr<base::SequencedTaskRunner> _taskRunner;
+
   // Flag indicating whether microphone capture is active.
   BOOL _isCapturing;
 
@@ -124,6 +127,9 @@ constexpr double kTestToneAmplitude = 8000.0;
                   sessionManager:(TTCAudioSessionManager*)sessionManager {
   self = [super init];
   if (self) {
+    if (base::SequencedTaskRunner::HasCurrentDefault()) {
+      _taskRunner = base::SequencedTaskRunner::GetCurrentDefault();
+    }
     _audioEngine = [[AVAudioEngine alloc] init];
     _recorder = recorder ?: [[TTCAudioRecorder alloc] init];
     _recorder.delegate = self;
@@ -132,12 +138,12 @@ constexpr double kTestToneAmplitude = 8000.0;
     [_player attachToAudioEngine:_audioEngine error:nil];
     _sessionManager = sessionManager ?: [[TTCAudioSessionManager alloc] init];
     _sessionManager.delegate = self;
-    [_sessionManager registerNotificationObserversWithAudioEngine:_audioEngine];
     _isCapturing = NO;
     _isStarting = NO;
     _loopbackEnabled = NO;
     _isStreamingPlaybackActive = NO;
     _isDisconnected = NO;
+    [self registerConfigurationChangeObserver];
   }
   return self;
 }
@@ -373,6 +379,7 @@ constexpr double kTestToneAmplitude = 8000.0;
   // a deallocating or disconnecting instance.
   self.delegate = nil;
 
+  [self unregisterConfigurationChangeObserver];
   _isStarting = NO;
   _isStreamingPlaybackActive = NO;
   [self stopCapture];
@@ -399,6 +406,11 @@ constexpr double kTestToneAmplitude = 8000.0;
 - (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isAudioEngineRunningForTesting = isRunning;
+}
+
+- (AVAudioEngine*)audioEngineForTesting {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _audioEngine;
 }
 
 #pragma mark - TTCAudioRecorderDelegate
@@ -496,6 +508,97 @@ constexpr double kTestToneAmplitude = 8000.0;
 }
 
 #pragma mark - Private
+
+// Registers `self` as an observer for
+// `AVAudioEngineConfigurationChangeNotification` scoped to `_audioEngine`.
+- (void)registerConfigurationChangeObserver {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected || !_audioEngine) {
+    return;
+  }
+  [self unregisterConfigurationChangeObserver];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(handleEngineConfigurationChange:)
+             name:AVAudioEngineConfigurationChangeNotification
+           object:_audioEngine];
+}
+
+// Unregisters `self` from `AVAudioEngineConfigurationChangeNotification`.
+- (void)unregisterConfigurationChangeObserver {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:AVAudioEngineConfigurationChangeNotification
+              object:_audioEngine];
+}
+
+// Handles `AVAudioEngineConfigurationChangeNotification` when the audio
+// engine's hardware configuration changes. Reinstalls the capture tap if
+// capturing, restarts the engine, and resumes active playback.
+- (void)handleEngineConfigurationChange:(NSNotification*)notification {
+  if (_taskRunner && !_taskRunner->RunsTasksInCurrentSequence()) {
+    __weak __typeof(self) weakSelf = self;
+    _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
+                            [weakSelf
+                                handleEngineConfigurationChange:notification];
+                          }));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected) {
+    return;
+  }
+  if (!_isCapturing && !_player.isPlaying) {
+    return;
+  }
+
+  if (_isCapturing && !_isAudioEngineRunningForTesting) {
+    AVAudioInputNode* inputNode = nil;
+    @try {
+      inputNode = _audioEngine.inputNode;
+    } @catch (NSException* exception) {
+    }
+    if (inputNode) {
+      [_recorder removeTapFromInputNode:inputNode];
+    }
+    NSError* tapError = nil;
+    if (![self startEngineAndInstallTapWithError:&tapError]) {
+      _isCapturing = NO;
+      if ([self.delegate
+              respondsToSelector:@selector(audioControllerDidStopCapture:)]) {
+        [self.delegate audioControllerDidStopCapture:self];
+      }
+      if (tapError &&
+          [self.delegate
+              respondsToSelector:@selector(
+                                     audioController:didEncounterError:)]) {
+        [self.delegate audioController:self didEncounterError:tapError];
+      }
+      if (!_player.isPlaying) {
+        return;
+      }
+    }
+  }
+
+  if (_player.isPlaying) {
+    if (!_audioEngine.isRunning && !_isAudioEngineRunningForTesting) {
+      [_audioEngine prepare];
+      NSError* startError = nil;
+      if (![_audioEngine startAndReturnError:&startError]) {
+        [_player stopPlaybackImmediately];
+        if (startError &&
+            [self.delegate
+                respondsToSelector:@selector(
+                                       audioController:didEncounterError:)]) {
+          [self.delegate audioController:self didEncounterError:startError];
+        }
+        return;
+      }
+    }
+    [_player resumePlaybackAfterEngineRestart];
+  }
+}
 
 // Ensures the audio session is configured and the AVAudioEngine graph is
 // running before scheduling playback buffers.

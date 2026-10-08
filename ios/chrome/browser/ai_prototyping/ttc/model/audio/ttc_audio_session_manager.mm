@@ -207,14 +207,9 @@ TTCAudioOutputDestination DestinationForPort(
           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     }
-    [self registerNotificationObserversWithAudioEngine:nil];
+    [self registerNotificationObservers];
   }
   return self;
-}
-
-- (void)dealloc {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self unregisterNotificationObservers];
 }
 
 - (void)disconnect {
@@ -283,7 +278,7 @@ TTCAudioOutputDestination DestinationForPort(
 
 #pragma mark - Public
 
-- (void)registerNotificationObserversWithAudioEngine:(AVAudioEngine*)engine {
+- (void)registerNotificationObservers {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_isDisconnected) {
     return;
@@ -296,12 +291,6 @@ TTCAudioOutputDestination DestinationForPort(
   [self registerSelector:@selector(handleInterruptionNotification:)
          forNotification:AVAudioSessionInterruptionNotification
                   object:nil];
-  if (engine) {
-    [self
-        registerSelector:@selector(handleEngineConfigurationChangeNotification:)
-         forNotification:AVAudioEngineConfigurationChangeNotification
-                  object:nil];
-  }
 }
 
 - (void)unregisterNotificationObservers {
@@ -316,8 +305,8 @@ TTCAudioOutputDestination DestinationForPort(
 
 // Registers `selector` on `self` to be invoked when notification `name`
 // is posted. This wrapper around the -addObserver:selector:name:object:
-// ensure that the selector is called on the correct sequence (because
-// AVAudioEngine may post the notification on a background thread).
+// ensures that the selector is called on the correct sequence (because
+// AVAudioSession may post the notification on a background thread).
 - (void)registerSelector:(SEL)selector
          forNotification:(NSNotificationName)name
                   object:(id)object {
@@ -858,12 +847,6 @@ TTCAudioOutputDestination DestinationForPort(
 
   if (_audioSessionTaskRunner) {
     _audioSessionTaskRunner->PostTask(FROM_HERE, base::BindOnce(restoreBlock));
-  } else if (base::ThreadPoolInstance::Get()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        base::BindOnce(restoreBlock));
   } else {
     restoreBlock();
   }
@@ -979,27 +962,6 @@ TTCAudioOutputDestination DestinationForPort(
     // engine reconfiguration.
     [self notifyEngineReconfigurationRequested];
   }
-}
-
-// Handles an audio engine configuration change on the UI thread.
-// Notifies the delegate that the engine's audio graph requires reconfiguration.
-- (void)handleEngineConfigurationChange {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_isDisconnected) {
-    return;
-  }
-  [self notifyEngineReconfigurationRequested];
-}
-
-// Handles AVAudioEngineConfigurationChangeNotification received from
-// AVFoundation when the audio engine's hardware configuration changes.
-// Stops the engine's audio graph and requires rebuilding or restarting taps.
-// @param notification The configuration change notification posted by
-// AVAudioEngine.
-- (void)handleEngineConfigurationChangeNotification:
-    (NSNotification*)notification {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self handleEngineConfigurationChange];
 }
 
 // Handles AVAudioSessionInterruptionNotification received from AVFoundation,
