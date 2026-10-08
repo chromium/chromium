@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
@@ -169,6 +170,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
@@ -218,7 +220,6 @@ import java.util.function.Supplier;
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -251,7 +252,6 @@ public class ToolbarManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private BrowserControlsSizer mControlsSizer;
     @Mock private FullscreenManager mFullscreenManager;
-    @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private Callback<Boolean> mUrlFocusChangedCallback;
     @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
     @Mock private ToolbarThemeColorProvider mAdjustedToolbarThemeColorProvider;
@@ -311,6 +311,7 @@ public class ToolbarManagerUnitTest {
 
     private List<ButtonDataProvider> mButtonDataProviders;
     private ActivityController<TestActivity> mActivityController;
+    private CompositorViewHolder mCompositorViewHolder;
     private ToolbarControlContainer mControlContainer;
     private ToolbarManager mToolbarManager;
     private TopToolbarSceneLayer mTopToolbarSceneLayerInstance;
@@ -377,9 +378,6 @@ public class ToolbarManagerUnitTest {
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         ObservableSuppliers.createNonNull(false));
         when(mControlsSizer.getBrowserVisibilityDelegate()).thenReturn(browserVisibilityDelegate);
-        NonNullObservableSupplier<Boolean> compositorInMotionSupplier =
-                ObservableSuppliers.createNonNull(false);
-        when(mCompositorViewHolder.getInMotionSupplier()).thenReturn(compositorInMotionSupplier);
         when(mDisplayAndroid.getDisplayHeight()).thenReturn(1000);
         when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
 
@@ -444,6 +442,7 @@ public class ToolbarManagerUnitTest {
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         AppCompatActivity activity = mActivityController.get();
         activity.setContentView(R.layout.main);
+        mCompositorViewHolder = new CompositorViewHolder(activity, /* attrs= */ null);
         ViewStub controlStub = activity.findViewById(R.id.control_container_stub);
         controlStub.setLayoutResource(R.layout.control_container);
         mControlContainer = (ToolbarControlContainer) controlStub.inflate();
@@ -1119,22 +1118,33 @@ public class ToolbarManagerUnitTest {
         assertTrue(delegate.isIncognitoNewTabPageCurrentlyVisible());
     }
 
-    @Test
-    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab() throws Exception {
-        ToolbarControlContainer controlContainer = mock(ToolbarControlContainer.class);
+    private MarginLayoutParams setUpTabletLayoutForAutoHiddenVerticalTab(int initialRightMargin) {
         View tabletLayout = new View(mActivityController.get());
-        MarginLayoutParams params = new MarginLayoutParams(100, 100);
-        params.rightMargin = 20;
+        tabletLayout.setId(R.id.toolbar_tablet_layout);
+        mControlContainer.addView(tabletLayout, /* width= */ 100, /* height= */ 100);
+        MarginLayoutParams params = (MarginLayoutParams) tabletLayout.getLayoutParams();
+        params.rightMargin = initialRightMargin;
         params.topMargin = 0;
         params.leftMargin = 0;
         tabletLayout.setLayoutParams(params);
 
-        when(controlContainer.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
-        when(controlContainer.getContext()).thenReturn(mActivityController.get());
+        mControlContainer.setIsVerticalTabsActiveSupplier(ObservableSuppliers.createNonNull(true));
+        when(mDesktopWindowStateManager.getAppHeaderState())
+                .thenReturn(
+                        new AppHeaderState(
+                                new Rect(0, 0, 100, 100),
+                                new Rect(10, 0, 80, 100),
+                                /* isInDesktopWindow= */ true));
+        return params;
+    }
 
-        Field controlContainerField = ToolbarManager.class.getDeclaredField("mControlContainer");
-        controlContainerField.setAccessible(true);
-        controlContainerField.set(mToolbarManager, controlContainer);
+    @Test
+    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab() {
+        MarginLayoutParams params =
+                setUpTabletLayoutForAutoHiddenVerticalTab(/* initialRightMargin= */ 20);
+        View toolbarContainer = mControlContainer.findViewById(R.id.toolbar_container);
+        MarginLayoutParams containerParams =
+                (MarginLayoutParams) toolbarContainer.getLayoutParams();
 
         SettableNonNullObservableSupplier<Boolean> isAutoHiddenSupplier =
                 ObservableSuppliers.createNonNull(false);
@@ -1148,35 +1158,30 @@ public class ToolbarManagerUnitTest {
 
         // When Vertical Tabs is hidden due to narrow window width
         isAutoHiddenSupplier.set(true);
-        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(true);
+        assertEquals(tabStripHeight, containerParams.topMargin);
         assertEquals(0, params.rightMargin);
         assertEquals(0, params.leftMargin);
 
         // When Vertical Tabs gets shown again or turned off
         isAutoHiddenSupplier.set(false);
-        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(false);
+        assertEquals(0, containerParams.topMargin);
         assertEquals(20, params.rightMargin);
         assertEquals(0, params.leftMargin);
     }
 
     @Test
-    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab_UpdateRightMarginWhileHidden()
-            throws Exception {
-        ToolbarControlContainer controlContainer = mock(ToolbarControlContainer.class);
-        View tabletLayout = new View(mActivityController.get());
-        MarginLayoutParams params = new MarginLayoutParams(100, 100);
+    public void testSetToolbarTabletMarginsForAutoHiddenVerticalTab_UpdateRightMarginWhileHidden() {
         // Simulate returning from fullscreen where right margin was 0.
-        params.rightMargin = 0;
-        params.topMargin = 0;
-        params.leftMargin = 0;
-        tabletLayout.setLayoutParams(params);
-
-        when(controlContainer.findViewById(R.id.toolbar_tablet_layout)).thenReturn(tabletLayout);
-        when(controlContainer.getContext()).thenReturn(mActivityController.get());
-
-        Field controlContainerField = ToolbarManager.class.getDeclaredField("mControlContainer");
-        controlContainerField.setAccessible(true);
-        controlContainerField.set(mToolbarManager, controlContainer);
+        MarginLayoutParams params =
+                setUpTabletLayoutForAutoHiddenVerticalTab(/* initialRightMargin= */ 0);
+        View toolbarContainer = mControlContainer.findViewById(R.id.toolbar_container);
+        MarginLayoutParams containerParams =
+                (MarginLayoutParams) toolbarContainer.getLayoutParams();
+        int tabStripHeight =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_height);
 
         SettableNonNullObservableSupplier<Boolean> isAutoHiddenSupplier =
                 ObservableSuppliers.createNonNull(false);
@@ -1184,7 +1189,7 @@ public class ToolbarManagerUnitTest {
 
         // Vertical Tabs is auto-hidden in narrow window.
         isAutoHiddenSupplier.set(true);
-        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(true);
+        assertEquals(tabStripHeight, containerParams.topMargin);
         assertEquals(0, params.rightMargin);
 
         // Insets update notifies a new right margin while Vertical Tabs is auto-hidden.
@@ -1194,7 +1199,7 @@ public class ToolbarManagerUnitTest {
 
         // When Vertical Tabs gets shown again on window widening, the updated margin is restored.
         isAutoHiddenSupplier.set(false);
-        verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(false);
+        assertEquals(0, containerParams.topMargin);
         assertEquals(20, params.rightMargin);
     }
 
