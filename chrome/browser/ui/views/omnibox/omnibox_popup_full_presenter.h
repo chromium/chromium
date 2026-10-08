@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -31,6 +32,7 @@ class OmniboxFullPopupWebUIContent;
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
 class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
                                   public views::WidgetObserver,
+                                  public views::FocusChangeListener,
                                   public ui::EventObserver,
                                   public AppMenuButtonObserver {
  public:
@@ -85,6 +87,19 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   OmniboxFullPopupWebUIContent* GetWebUIContent();
 
  private:
+  // Where keyboard focus goes when `DeactivatePopupAndKillFocus()` blurs the
+  // omnibox.
+  enum class FocusAfterBlur {
+    // The web contents, e.g. after the user clicked into the page.
+    kWebContents,
+    // Nowhere. The user moved to another window, so only Views focus is
+    // cleared, as focusing the web contents would reactivate this window.
+    kNone,
+    // Wherever it already is. Another view in the browser window took focus,
+    // so it's left there.
+    kCurrent,
+  };
+
   // views::WidgetObserver:
   // Observes the browser widget's activation (to keep the location bar as its
   // stored focus view while the popup is active) and the popup widget's own
@@ -92,6 +107,15 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // popup widget deactivating schedules `BlurIfBrowserWindowInactive()`.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void StopForwardingEvents();
+
+  // views::FocusChangeListener:
+  // Blurs the omnibox when another view in the browser window takes focus
+  // while the omnibox is focused, e.g. the find bar on Ctrl/Cmd+F. The Views
+  // omnibox is the browser window's focused view, so its `FocusManager` blurs
+  // it when another view takes focus. The WebUI omnibox is focused in the
+  // popup widget instead, so nothing else would blur it.
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
 
   // AppMenuButtonObserver:
   void AppMenuClosed() override;
@@ -102,11 +126,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Focuses the native Views content, underlying WebContents, and DOM input.
   void FocusPopupContent();
-  // Blurs the omnibox and closes the popup unless it holds a draft. If
-  // `window_deactivated` is true, the user moved to another window, so only
-  // Views focus is cleared and the web contents aren't focused, to avoid
-  // reactivating this window.
-  void DeactivatePopupAndKillFocus(bool window_deactivated);
+  // Blurs the omnibox and closes the popup unless it holds a draft. See
+  // `FocusAfterBlur` for what happens to the browser window's focus.
+  void DeactivatePopupAndKillFocus(FocusAfterBlur focus_after_blur);
   // Blurs the omnibox if the user left the browser window, i.e. neither the
   // browser widget nor its child widgets are active.
   void BlurIfBrowserWindowInactive();
@@ -129,6 +151,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       popup_widget_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_widget_observation_{this};
+  // Observes the browser window's focus while the popup is shown. See
+  // `OnDidChangeFocus()`.
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      browser_focus_manager_observation_{this};
   base::ScopedObservation<AppMenuControl, AppMenuButtonObserver>
       app_menu_control_observation_{this};
 

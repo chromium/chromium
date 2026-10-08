@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -28,6 +31,8 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/find_bar_host.h"
+#include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -56,6 +61,7 @@
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
@@ -72,6 +78,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -646,6 +653,60 @@ class FullWebUIOmniboxInteractiveTest
   ~FullWebUIOmniboxInteractiveTest() override = default;
 
   bool IsWebUIToolbarEnabled() const { return GetParam(); }
+
+ protected:
+  FindBar* GetFindBar() {
+    return FindBarController::From(browser())->find_bar();
+  }
+
+  // Presses Ctrl/Cmd+F and waits for the find bar to show with focus. The key
+  // press goes to the popup, which holds activation while the omnibox is
+  // focused, as a real one would. On macOS, the popup only redispatches an
+  // unhandled key event to the browser if the event's window is key, so a key
+  // press sent to the inactive browser window would be dropped. Opening the
+  // find bar closes the popup unless a draft keeps it open.
+  auto OpenFindBarFromKeyboard() {
+    return Steps(
+        InAnyContext(SendKeyPress(OmniboxPopupPresenter::kRoundedResultsFrame,
+                                  ui::VKEY_F, ui::EF_PLATFORM_ACCELERATOR)
+                         .SetMustRemainVisible(false)),
+        PollUntil(
+            [this]() {
+              return GetFindBar()->IsFindBarVisible() &&
+                     GetFindBar()->HasFocus();
+            },
+            "WaitForFindBarFocused"));
+  }
+
+  // Waits for the browser window, rather than the popup, to hold activation,
+  // so that key presses reach its focused view.
+  auto WaitForBrowserWidgetActive() {
+    return PollUntil(
+        [this]() {
+          return BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetWidget()
+              ->IsActive();
+        },
+        "WaitForBrowserWidgetActive");
+  }
+
+  auto CheckFindBarFocused() {
+    return CheckResult([this]() { return GetFindBar()->HasFocus(); }, true,
+                       "CheckFindBarFocused");
+  }
+
+  // Waits until the active tab's find session searches for `text` and has
+  // found at least one match.
+  auto WaitForFindMatch(const std::u16string& text) {
+    return PollUntil(
+        [this, text]() {
+          auto* find_tab_helper = find_in_page::FindTabHelper::FromWebContents(
+              browser()->tab_strip_model()->GetActiveWebContents());
+          return find_tab_helper && find_tab_helper->find_text() == text &&
+                 find_tab_helper->find_result().number_of_matches() > 0;
+        },
+        "WaitForFindMatch");
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2551,6 +2612,155 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       // Verify popup state remains kFull and user input remains in progress.
       WaitForPopupState(OmniboxPopupState::kFull),
       CheckUserInputInProgress(true), WaitForVisibleOmniboxUnfocused());
+}
+
+// Verifies that opening the find bar (Ctrl/Cmd+F) while the omnibox is focused
+// blurs the omnibox, closes the popup, and sends key presses to the find bar,
+// as with the Views omnibox. See b/566211508.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FindBarTakesFocusAndKeyPresses) {
+  base::AutoReset<bool> disable_animations =
+      FindBarHost::SetEnableAnimationsForTesting(false);
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      OpenFindBarFromKeyboard(),
+      // The omnibox is blurred and the popup closes.
+      WaitForPopupDismissed(), WaitForPopupState(OmniboxPopupState::kNone),
+      // The browser window, not the popup, holds activation, so key presses
+      // reach the find bar.
+      WaitForBrowserWidgetActive(), CheckFindBarFocused(),
+      // Type into the find bar. chrome://version/ contains an "a".
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_A, ui::EF_NONE),
+      WaitForFindMatch(u"a"));
+}
+
+// Verifies that the find bar keeps focus when opened right after a new tab
+// focused the omnibox. On Aura, switching tabs while the popup holds activation
+// makes the browser window restore the tab's stored focus when it's next
+// activated, which focusing the find bar does.
+// TODO(b/571201192): Enable on macOS once `BrowserView` no longer restores the
+// tab's focus over the find bar's pending focus request.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FindBarAfterNewTabKeepsFocus DISABLED_FindBarAfterNewTabKeepsFocus
+#else
+#define MAYBE_FindBarAfterNewTabKeepsFocus FindBarAfterNewTabKeepsFocus
+#endif
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       MAYBE_FindBarAfterNewTabKeepsFocus) {
+  base::AutoReset<bool> disable_animations =
+      FindBarHost::SetEnableAnimationsForTesting(false);
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // Open a new tab, which focuses its omnibox, while the popup is active.
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
+      WaitForPopupActive(), OpenFindBarFromKeyboard(), WaitForPopupDismissed(),
+      WaitForBrowserWidgetActive(),
+      // The find bar still has focus once the activation has settled.
+      WaitForPopupTransitionLockout(), CheckFindBarFocused());
+}
+
+// Verifies that a draft keeps the popup open, unfocused, while the find bar has
+// focus, and that the draft is kept.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FindBarWithDraftTakesFocusAndKeepsDraft) {
+  base::AutoReset<bool> disable_animations =
+      FindBarHost::SetEnableAnimationsForTesting(false);
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("draft"), CheckUserInputInProgress(true),
+      OpenFindBarFromKeyboard(),
+      // The omnibox is blurred, but the draft keeps the popup open.
+      WaitForVisibleOmniboxUnfocused(),
+      WaitForPopupState(OmniboxPopupState::kFull), WaitForBrowserWidgetActive(),
+      CheckFindBarFocused(), CheckUserInputInProgress(true),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()->edit_model()->user_text();
+          },
+          std::u16string(u"draft"), "CheckDraftKept"));
+}
+
+// Verifies that choosing Find from the app menu while a draft keeps the popup
+// open leaves focus on the find bar after the menu closes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FindBarFromAppMenuWithDraftKeepsFocus) {
+  base::AutoReset<bool> disable_animations =
+      FindBarHost::SetEnableAnimationsForTesting(false);
+  const ui::ElementContext browser_context =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetElementContext();
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("draft"), CheckUserInputInProgress(true),
+      InContext(browser_context, MoveMouseTo(kToolbarAppMenuButtonElementId)),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
+      InAnyContext(WaitForShow(AppMenuModel::kMoreToolsMenuItem)),
+      // A menu command runs before `AppMenuClosed()`, so show the find bar,
+      // then close the menu.
+      Do([this]() { FindBarController::From(browser())->Show(); }),
+      Check(
+          []() {
+            views::MenuController* menu =
+                views::MenuController::GetActiveInstance();
+            if (!menu) {
+              return false;
+            }
+            menu->Cancel(views::MenuController::ExitType::kAll);
+            return true;
+          },
+          "CloseAppMenu"),
+      InAnyContext(WaitForHide(AppMenuModel::kMoreToolsMenuItem)),
+      // The draft keeps the popup open, but the find bar keeps focus.
+      WaitForVisibleOmniboxUnfocused(),
+      WaitForPopupState(OmniboxPopupState::kFull), WaitForBrowserWidgetActive(),
+      CheckFindBarFocused(), CheckUserInputInProgress(true));
+}
+
+// Verifies that switching tabs gives focus back to the find bar in one tab and
+// to the omnibox in the other, as `FindBarViewsUiTest.FocusRestoreOnTabSwitch`
+// does for the Views omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FindBarFocusRestoreOnTabSwitch) {
+  base::AutoReset<bool> disable_animations =
+      FindBarHost::SetEnableAnimationsForTesting(false);
+  auto show_find_bar_and_search = [this](std::u16string text) {
+    return Steps(Do([this]() { FindBarController::From(browser())->Show(); }),
+                 PollUntil(
+                     [this]() {
+                       return GetFindBar()->IsFindBarVisible() &&
+                              GetFindBar()->HasFocus();
+                     },
+                     "WaitForFindBarFocused"),
+                 EnterText(FindBarView::kTextField, std::move(text)));
+  };
+
+  RunTestSequence(
+      // Open tab A (index 1) and search for "a".
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      show_find_bar_and_search(u"a"),
+      // Open tab B (index 2), search for "b", then focus its omnibox.
+      AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
+      show_find_bar_and_search(u"b"),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupActive(),
+      // Select tab A. Its find bar gets focus back, and keeps it.
+      SwitchTab(kTabStripElementId, 1), WaitForPopupDismissed(),
+      WaitForBrowserWidgetActive(),
+      PollUntil([this]() { return GetFindBar()->HasFocus(); },
+                "WaitForFindBarFocusedInTabA"),
+      WaitForPopupTransitionLockout(), CheckFindBarFocused(),
+      // Select tab B. Its omnibox gets focus back, and keeps it.
+      SwitchTab(kTabStripElementId, 2), WaitForPopupActive(),
+      WaitForPopupTransitionLockout(), WaitForPopupActive());
 }
 
 // TODO(crbug.com/567661957): Re-enable WebUIToolbarEnabled once failures are
