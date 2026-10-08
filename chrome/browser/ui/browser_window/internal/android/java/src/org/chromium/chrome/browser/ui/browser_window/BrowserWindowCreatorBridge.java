@@ -68,9 +68,17 @@ final class BrowserWindowCreatorBridge {
         }
 
         @WindowShowState.EnumType int initialShowState = createParams.getInitialShowState();
-        if (initialShowState == WindowShowState.FULLSCREEN) {
-            Log.e(TAG, String.format(Locale.US, "Unsupported show state: %d", initialShowState));
-            return false;
+        switch (initialShowState) {
+            case WindowShowState.DEFAULT:
+            case WindowShowState.NORMAL:
+            case WindowShowState.MINIMIZED:
+            case WindowShowState.MAXIMIZED:
+                break;
+            default:
+                Log.e(
+                        TAG,
+                        String.format(Locale.US, "Unsupported show state: %d", initialShowState));
+                return false;
         }
 
         var profile = createParams.getProfile();
