@@ -24,87 +24,14 @@ class EcheAppNotificationController;
 class SystemInfo;
 class AppsLaunchInfoProvider;
 
-class LaunchedAppInfo {
- public:
-  class Builder {
-   public:
-    Builder();
-    ~Builder();
-
-    std::unique_ptr<LaunchedAppInfo> Build() {
-      return base::WrapUnique(new LaunchedAppInfo(package_name_, visible_name_,
-                                                  user_id_, icon_, phone_name_,
-                                                  apps_launch_info_provider_));
-    }
-    Builder& SetPackageName(const std::string& package_name) {
-      package_name_ = package_name;
-      return *this;
-    }
-
-    Builder& SetVisibleName(const std::u16string& visible_name) {
-      visible_name_ = visible_name;
-      return *this;
-    }
-
-    Builder& SetUserId(const std::optional<int64_t>& user_id) {
-      user_id_ = user_id;
-      return *this;
-    }
-
-    Builder& SetIcon(const gfx::Image& icon) {
-      icon_ = icon;
-      return *this;
-    }
-
-    Builder& SetPhoneName(const std::u16string& phone_name) {
-      phone_name_ = phone_name;
-      return *this;
-    }
-
-    Builder& SetAppsLaunchInfoProvider(
-        AppsLaunchInfoProvider* apps_launch_info_provider) {
-      apps_launch_info_provider_ = apps_launch_info_provider;
-      return *this;
-    }
-
-   private:
-    std::string package_name_;
-    std::u16string visible_name_;
-    std::optional<int64_t> user_id_;
-    gfx::Image icon_;
-    std::u16string phone_name_;
-    raw_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  };
-
-  LaunchedAppInfo() = delete;
-  LaunchedAppInfo(const LaunchedAppInfo&) = delete;
-  LaunchedAppInfo& operator=(const LaunchedAppInfo&) = delete;
-  ~LaunchedAppInfo();
-
-  std::string package_name() const { return package_name_; }
-  std::u16string visible_name() const { return visible_name_; }
-  std::optional<int64_t> user_id() const { return user_id_; }
-  gfx::Image icon() const { return icon_; }
-  std::u16string phone_name() const { return phone_name_; }
-  AppsLaunchInfoProvider* apps_launch_info_provider() {
-    return apps_launch_info_provider_;
-  }
-
- protected:
-  LaunchedAppInfo(const std::string& package_name,
-                  const std::u16string& visible_name,
-                  const std::optional<int64_t>& user_id,
-                  const gfx::Image& icon,
-                  const std::u16string& phone_name,
-                  AppsLaunchInfoProvider* apps_launch_info_provider);
-
- private:
-  std::string package_name_;
-  std::u16string visible_name_;
-  std::optional<int64_t> user_id_;
-  gfx::Image icon_;
-  std::u16string phone_name_;
-  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged> apps_launch_info_provider_;
+struct LaunchedAppInfo {
+  std::string package_name;
+  std::u16string visible_name;
+  std::optional<int64_t> user_id;
+  gfx::Image icon;
+  std::u16string phone_name;
+  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged> apps_launch_info_provider =
+      nullptr;
 };
 
 // Factory to create a single EcheAppManager.

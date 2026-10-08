@@ -23,7 +23,9 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -59,27 +61,6 @@ namespace eche_app {
 
 namespace {
 
-void EnsureStreamClose(Profile* profile) {
-  EcheAppManager* eche_app_manager =
-      EcheAppManagerFactory::GetForProfile(profile);
-  eche_app_manager->CloseStream();
-}
-
-void StreamGoBack(Profile* profile) {
-  EcheAppManager* eche_app_manager =
-      EcheAppManagerFactory::GetForProfile(profile);
-  eche_app_manager->StreamGoBack();
-}
-
-void BubbleShown(Profile* profile, AshWebView* view) {
-  EcheAppManager* eche_app_manager =
-      EcheAppManagerFactory::GetForProfile(profile);
-  // `eche_app_manager` is null during tests.
-  if (eche_app_manager) {
-    eche_app_manager->BubbleShown(view);
-  }
-}
-
 void LaunchWebApp(const std::string& package_name,
                   const std::optional<int64_t>& notification_id,
                   const std::u16string& visible_name,
@@ -87,80 +68,65 @@ void LaunchWebApp(const std::string& package_name,
                   const gfx::Image& icon,
                   const std::u16string& phone_name,
                   AppsLaunchInfoProvider* apps_launch_info_provider,
-                  Profile* profile) {
+                  EcheAppManager* eche_app_manager) {
   EcheAppManagerFactory::GetInstance()->SetLastLaunchedAppInfo(
-      LaunchedAppInfo::Builder()
-          .SetPackageName(package_name)
-          .SetVisibleName(visible_name)
-          .SetUserId(user_id)
-          .SetIcon(icon)
-          .SetPhoneName(phone_name)
-          .SetAppsLaunchInfoProvider(apps_launch_info_provider)
-          .Build());
-  std::u16string url;
+      std::make_unique<LaunchedAppInfo>(LaunchedAppInfo{
+          .package_name = package_name,
+          .visible_name = visible_name,
+          .user_id = user_id,
+          .icon = icon,
+          .phone_name = phone_name,
+          .apps_launch_info_provider = apps_launch_info_provider,
+      }));
   // Use hash mark(#) to send params to webui so we don't need to reload the
   // whole eche window.
-  if (notification_id.has_value()) {
-    url = u"chrome://eche-app/#notification_id=";
-    url.append(base::NumberToString16(notification_id.value()));
-    url.append(u"&package_name=");
-  } else {
-    url = u"chrome://eche-app/#package_name=";
-  }
-  std::u16string u16_package_name = base::UTF8ToUTF16(package_name);
-  url.append(u16_package_name);
-  url.append(u"&visible_app_name=");
-  url.append(visible_name);
-  url.append(u"&timestamp=");
-
-  int64_t now_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
-  url.append(base::NumberToString16(now_ms));
-
+  std::u16string url =
+      notification_id.has_value()
+          ? base::StrCat({u"chrome://eche-app/#notification_id=",
+                          base::NumberToString16(notification_id.value()),
+                          u"&package_name="})
+          : u"chrome://eche-app/#package_name=";
+  base::StrAppend(&url,
+                  {base::UTF8ToUTF16(package_name), u"&visible_app_name=",
+                   visible_name, u"&timestamp=",
+                   base::NumberToString16(
+                       base::Time::Now().InMillisecondsSinceUnixEpoch())});
   if (user_id.has_value()) {
-    url.append(u"&user_id=");
-    url.append(base::NumberToString16(user_id.value()));
+    base::StrAppend(&url,
+                    {u"&user_id=", base::NumberToString16(user_id.value())});
   }
   const auto gurl = GURL(url);
 
+  // `eche_app_manager` may be null in tests.
   return LaunchBubble(
       gurl, icon, visible_name, phone_name,
       apps_launch_info_provider->GetConnectionStatusFromLastAttempt(),
       apps_launch_info_provider->entry_point(),
-      base::BindOnce(&EnsureStreamClose, profile),
-      base::BindRepeating(&StreamGoBack, profile),
-      base::BindRepeating(&BubbleShown, profile));
+      eche_app_manager ? base::BindOnce(&EcheAppManager::CloseStream,
+                                        base::Unretained(eche_app_manager))
+                       : base::DoNothing(),
+      eche_app_manager ? base::BindRepeating(&EcheAppManager::StreamGoBack,
+                                             base::Unretained(eche_app_manager))
+                       : base::DoNothing(),
+      eche_app_manager ? base::BindRepeating(&EcheAppManager::BubbleShown,
+                                             base::Unretained(eche_app_manager))
+                       : base::DoNothing());
 }
 
-void RelaunchLast(Profile* profile) {
+void RelaunchLast(EcheAppManager* eche_app_manager) {
   std::unique_ptr<LaunchedAppInfo> last_launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
-  EcheAppManagerFactory::LaunchEcheApp(
-      profile, std::nullopt, last_launched_app_info->package_name(),
-      last_launched_app_info->visible_name(), last_launched_app_info->user_id(),
-      last_launched_app_info->icon(), last_launched_app_info->phone_name(),
-      last_launched_app_info->apps_launch_info_provider());
+  LaunchWebApp(
+      last_launched_app_info->package_name,
+      /*notification_id=*/std::nullopt, last_launched_app_info->visible_name,
+      last_launched_app_info->user_id, last_launched_app_info->icon,
+      last_launched_app_info->phone_name,
+      last_launched_app_info->apps_launch_info_provider, eche_app_manager);
+  EcheAppManagerFactory::GetInstance()
+      ->CloseConnectionOrLaunchErrorNotifications();
 }
 
 }  // namespace
-
-LaunchedAppInfo::~LaunchedAppInfo() = default;
-LaunchedAppInfo::LaunchedAppInfo(
-    const std::string& package_name,
-    const std::u16string& visible_name,
-    const std::optional<int64_t>& user_id,
-    const gfx::Image& icon,
-    const std::u16string& phone_name,
-    AppsLaunchInfoProvider* apps_launch_info_provider) {
-  package_name_ = package_name;
-  visible_name_ = visible_name;
-  user_id_ = user_id;
-  icon_ = icon;
-  phone_name_ = phone_name;
-  apps_launch_info_provider_ = apps_launch_info_provider;
-}
-
-LaunchedAppInfo::Builder::Builder() = default;
-LaunchedAppInfo::Builder::~Builder() = default;
 
 // static
 EcheAppManager* EcheAppManagerFactory::GetForProfile(Profile* profile) {
@@ -189,7 +155,9 @@ void EcheAppManagerFactory::ShowNotification(
             .GetAccountId();
     weak_ptr->notification_controller_ =
         std::make_unique<EcheAppNotificationController>(
-            account_id, base::BindRepeating(&RelaunchLast, profile));
+            account_id,
+            base::BindRepeating(&RelaunchLast,
+                                EcheAppManagerFactory::GetForProfile(profile)));
   }
 
   if (info->category() ==
@@ -220,7 +188,9 @@ void EcheAppManagerFactory::CloseNotification(
             .GetAccountId();
     weak_ptr->notification_controller_ =
         std::make_unique<EcheAppNotificationController>(
-            account_id, base::BindRepeating(&RelaunchLast, profile));
+            account_id,
+            base::BindRepeating(&RelaunchLast,
+                                EcheAppManagerFactory::GetForProfile(profile)));
   }
   weak_ptr->notification_controller_->CloseNotification(notification_id);
 }
@@ -236,7 +206,8 @@ void EcheAppManagerFactory::LaunchEcheApp(
     const std::u16string& phone_name,
     AppsLaunchInfoProvider* apps_launch_info_provider) {
   LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
-               phone_name, apps_launch_info_provider, profile);
+               phone_name, apps_launch_info_provider,
+               EcheAppManagerFactory::GetForProfile(profile));
   EcheAppManagerFactory::GetInstance()
       ->CloseConnectionOrLaunchErrorNotifications();
 }

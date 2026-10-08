@@ -212,10 +212,10 @@ TEST_F(EcheAppManagerFactoryTest, LaunchedAppInfo) {
   std::unique_ptr<LaunchedAppInfo> launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
 
-  EXPECT_EQ(launched_app_info->user_id(), user_id);
-  EXPECT_EQ(launched_app_info->visible_name(), visible_name);
-  EXPECT_EQ(launched_app_info->package_name(), package_name);
-  EXPECT_EQ(launched_app_info->icon(), icon);
+  EXPECT_EQ(launched_app_info->user_id, user_id);
+  EXPECT_EQ(launched_app_info->visible_name, visible_name);
+  EXPECT_EQ(launched_app_info->package_name, package_name);
+  EXPECT_EQ(launched_app_info->icon, icon);
 }
 
 TEST_F(EcheAppManagerFactoryTest, CloseConnectionOrLaunchErrorNotifications) {
