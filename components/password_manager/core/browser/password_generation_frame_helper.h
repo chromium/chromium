@@ -74,6 +74,10 @@ class PasswordGenerationFrameHelper {
   virtual void AddManualGenerationEnabledField(
       autofill::FieldRendererId field_renderer_id);
 
+  // Called when a cross-document navigation commits in the frame of the
+  // driver. Resets the state that belongs to the previous document.
+  void DidNavigateFrame();
+
   // Returns password requirements spec based on provided input.
   virtual autofill::PasswordRequirementsSpec GetPasswordRequirementsSpec(
       const GURL& last_committed_url,

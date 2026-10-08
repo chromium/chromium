@@ -96,21 +96,31 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
   if (navigation->IsSameDocument() || !navigation->HasCommitted()) {
     return;
   }
-  GetDriverForFrame(navigation->GetRenderFrameHost())->DidNavigate();
 
-  if (!navigation->IsInPrimaryMainFrame()) {
+  if (navigation->IsInPrimaryMainFrame()) {
+    // Clear page specific data after main frame navigation.
+    NotifyDidNavigateMainFrame(navigation->IsRendererInitiated(),
+                               navigation->GetPageTransition(),
+                               navigation->WasInitiatedByLinkClick(),
+                               password_client_->GetPasswordManager());
+  }
+
+  ContentPasswordManagerDriver* driver =
+      GetDriverForFrame(navigation->GetRenderFrameHost());
+  if (!driver) {
     return;
   }
-  // Clear page specific data after main frame navigation.
-  NotifyDidNavigateMainFrame(navigation->IsRendererInitiated(),
-                             navigation->GetPageTransition(),
-                             navigation->WasInitiatedByLinkClick(),
-                             password_client_->GetPasswordManager());
-  // A committed navigation always has a live RenderFrameHost.
-  CHECK(navigation->GetRenderFrameHost()->IsRenderFrameLive());
-  GetDriverForFrame(navigation->GetRenderFrameHost())
-      ->GetPasswordAutofillManager()
-      ->DidNavigateMainFrame();
+  // A cross-document navigation may commit in the same RenderFrameHost, and
+  // hence with the same driver, as the previous document (e.g. the first
+  // navigation away from the initial empty document). The previous document's
+  // state must not be reused for the new document. BFCache restores and
+  // prerendered page activations don't create a new document but reactivate an
+  // existing one together with its driver, so the driver's state is kept.
+  if (!navigation->IsServedFromBackForwardCache() &&
+      !navigation->IsPrerenderedPageActivation()) {
+    driver->ResetForNewDocument();
+  }
+  driver->DidNavigate();
 }
 
 void ContentPasswordManagerDriverFactory::RenderFrameDeleted(

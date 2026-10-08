@@ -128,8 +128,11 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       base::i18n::TextDirection text_direction,
       bool show_password_suggestions);
 
-  // Called when main frame navigates. Not called for in-page navigations.
-  void DidNavigateMainFrame();
+  // Called when a cross-document navigation commits in the frame of the
+  // driver. Resets the state that belongs to the previous document, including
+  // the suggestions shown by `this` and pending callbacks. Not called for
+  // in-page navigations.
+  void DidNavigateFrame();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PasswordManualFallbackMetricsRecorder&

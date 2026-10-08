@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -66,11 +67,13 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -104,6 +107,7 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -114,6 +118,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
@@ -2246,6 +2251,100 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_EQ("",
             content::EvalJs(RenderFrameHost(), "sendMessage('get_password');",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+// Regression test for crbug.com/561039723.
+// The first navigation of a subframe away from its initial empty document
+// reuses the RenderFrameHost, and therefore the ContentPasswordManagerDriver.
+// Password manager state created for the initial document (whose URL is set to
+// origin A by document.write()) must not be reused for the new document from
+// the same-site, but cross-origin, origin B.
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       NoStaleCredentialsAfterInitialEmptyDocumentNavigation) {
+  // B is served on a different port than A: A and B are still same-site (the
+  // port is ignored when computing the site, which is required for reusing the
+  // RenderFrameHost), but A's credential isn't a PSL match for B.
+  net::EmbeddedTestServer b_server;
+  b_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(b_server.Start());
+  const GURL a_url =
+      embedded_test_server()->GetURL("a.example.test", "/password/other.html");
+  const GURL b_url =
+      b_server.GetURL("b.example.test", "/password/no_form_element.html");
+  ASSERT_NE(a_url.port(), b_url.port());
+
+  // Store a credential for A.
+  PasswordForm a_credential;
+  a_credential.signon_realm = a_url.DeprecatedGetOriginAsURL().spec();
+  a_credential.url = a_url;
+  a_credential.username_value = u"a_user";
+  a_credential.password_value = PasswordString(u"a_pa55w0rd");
+  GetDefaultPasswordStore(browser()->GetProfile())
+      ->AddLogin(FromPasswordForm(a_credential));
+  WaitForPasswordStore();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+
+  // A writes form-less login fields into the initial empty document of a new
+  // iframe. Form-less fields are reported with `FormRendererId()`.
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), R"(
+      const iframe = document.createElement('iframe');
+      iframe.id = 'iframe';
+      document.body.appendChild(iframe);
+      const doc = iframe.contentDocument;
+      doc.open();
+      doc.write('<input type="text" id="username">' +
+                '<input type="password" id="password">');
+      doc.close();
+  )"));
+  content::RenderFrameHost* child = content::ChildFrameAt(RenderFrameHost(), 0);
+  ASSERT_TRUE(child);
+  const content::GlobalRenderFrameHostId child_id = child->GetGlobalId();
+
+  // Returns the form manager of the iframe's current driver that observes a
+  // form from `origin` and has finished fetching credentials.
+  auto get_manager = [&](const GURL& origin) -> PasswordFormManager* {
+    content::RenderFrameHost* rfh = content::ChildFrameAt(RenderFrameHost(), 0);
+    auto* driver =
+        rfh ? ContentPasswordManagerDriver::GetForRenderFrameHost(rfh)
+            : nullptr;
+    if (!driver) {
+      return nullptr;
+    }
+    for (const auto& manager : driver->GetPasswordManager()
+                                   ->GetPasswordFormCache()
+                                   ->GetFormManagers()) {
+      if (manager->GetDriver().get() == driver &&
+          url::IsSameOriginWith(manager->GetURL(), origin) &&
+          manager->IsFetchCompleted()) {
+        return manager.get();
+      }
+    }
+    return nullptr;
+  };
+  auto has_a_credential = [](const PasswordFormManager& manager) {
+    return std::ranges::any_of(manager.GetBestMatches(),
+                               [](const StoredCredential& credential) {
+                                 return credential.username_value == u"a_user";
+                               });
+  };
+
+  // Sanity check: the form in A's initial document gets A's credential.
+  ASSERT_TRUE(base::test::RunUntil([&] { return get_manager(a_url); }));
+  ASSERT_TRUE(has_a_credential(*get_manager(a_url)));
+
+  // A navigates the iframe to B.
+  ASSERT_TRUE(content::NavigateIframeToURL(WebContents(), "iframe", b_url));
+  child = content::ChildFrameAt(RenderFrameHost(), 0);
+  ASSERT_TRUE(child);
+  ASSERT_EQ(b_url, child->GetLastCommittedURL());
+  // Precondition of the scenario: the RenderFrameHost is reused.
+  ASSERT_EQ(child_id, child->GetGlobalId());
+
+  // B's form-less fields must get a fresh form manager that doesn't know about
+  // A's credential.
+  ASSERT_TRUE(base::test::RunUntil([&] { return get_manager(b_url); }));
+  EXPECT_FALSE(has_a_credential(*get_manager(b_url)));
 }
 
 // Check that a password form in an iframe of same origin will not be
