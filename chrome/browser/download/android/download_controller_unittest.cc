@@ -4,15 +4,11 @@
 
 #include "chrome/browser/download/android/download_controller.h"
 
-#include <string>
-
-#include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_item.h"
-#include "components/download/public/common/download_source.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -21,11 +17,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 using ::testing::IsEmpty;
 using ::testing::Return;
-using ::testing::ReturnRefOfCopy;
 
 class DownloadControllerTest : public testing::Test {
  public:
@@ -39,8 +33,6 @@ class DownloadControllerTest : public testing::Test {
 
   download::MockDownloadItem* item() { return &item_; }
   Profile* profile() { return &profile_; }
-
-  DownloadController* controller() { return &controller_; }
 
   bool ShouldShowAppVerificationPrompt(download::DownloadItem* item) {
     return controller_.ShouldShowAppVerificationPrompt(item);
@@ -89,35 +81,4 @@ TEST_F(DownloadControllerTest, CleanupOldTimestamps) {
   EXPECT_THAT(profile()->GetPrefs()->GetList(
                   prefs::kDownloadAppVerificationPromptTimestamps),
               IsEmpty());
-}
-
-TEST_F(DownloadControllerTest,
-       ShowDangerousDownloadDialog_NullWindowAndroid_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(safe_browsing::kMaliciousApkDownloadCheck);
-
-  EXPECT_CALL(*item(), GetDownloadSource())
-      .WillRepeatedly(Return(download::DownloadSource::NAVIGATION));
-
-  EXPECT_FALSE(controller()->ShowDangerousDownloadDialog(item()));
-}
-
-TEST_F(DownloadControllerTest,
-       ShowDangerousDownloadDialog_NullWindowAndroid_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(safe_browsing::kMaliciousApkDownloadCheck);
-
-  EXPECT_CALL(*item(), GetDownloadSource())
-      .WillRepeatedly(Return(download::DownloadSource::NAVIGATION));
-  EXPECT_CALL(*item(), IsDone()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*item(), GetGuid())
-      .WillRepeatedly(ReturnRefOfCopy(std::string("test-guid")));
-  EXPECT_CALL(*item(), GetFileNameToReportUser())
-      .WillRepeatedly(Return(base::FilePath(FILE_PATH_LITERAL("test.apk"))));
-  EXPECT_CALL(*item(), GetTotalBytes()).WillRepeatedly(Return(1024));
-  EXPECT_CALL(*item(), GetTabUrl())
-      .WillRepeatedly(ReturnRefOfCopy(GURL("https://example.com/path")));
-  EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
-
-  EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
 }

@@ -27,9 +27,7 @@ class DangerousDownloadDialogBridge : public download::DownloadItem::Observer {
 
   ~DangerousDownloadDialogBridge() override;
 
-  // Called to create and show a dialog for a download. `window_android` may
-  // be null when `kMaliciousApkDownloadCheck` is enabled, in which case the
-  // dialog is queued until a valid Activity is resumed.
+  // Called to create and show a dialog for a dangerous download.
   void Show(download::DownloadItem* download_item,
             ui::WindowAndroid* window_android);
 

@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -16,9 +15,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ::testing::Return;
 using ::testing::ReturnRef;
-using ::testing::ReturnRefOfCopy;
 
 class DangerousDownloadDialogBridgeTest : public testing::Test {
  public:
@@ -165,23 +162,4 @@ TEST_F(DangerousDownloadDialogBridgeTest,
 
   EXPECT_EQ(u"",
             DangerousDownloadDialogBridge::GetDownloadDomainForTesting(&item_));
-}
-
-TEST_F(DangerousDownloadDialogBridgeTest,
-       Show_NullWindowAndroid_QueuesWhenFeatureEnabled) {
-  std::string guid = "test-guid";
-
-  EXPECT_CALL(item_, IsDone()).WillRepeatedly(Return(false));
-  EXPECT_CALL(item_, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
-  EXPECT_CALL(item_, GetFileNameToReportUser())
-      .WillRepeatedly(Return(base::FilePath(FILE_PATH_LITERAL("test.apk"))));
-  EXPECT_CALL(item_, GetTotalBytes()).WillRepeatedly(Return(1024));
-  EXPECT_CALL(item_, GetTabUrl())
-      .WillRepeatedly(ReturnRefOfCopy(GURL("https://tab.example.com/path")));
-  EXPECT_CALL(item_, IsDangerous()).WillRepeatedly(Return(true));
-  EXPECT_CALL(item_, ValidateDangerousDownload()).Times(1);
-
-  DangerousDownloadDialogBridge bridge;
-  bridge.Show(&item_, /*window_android=*/nullptr);
-  bridge.Accepted(guid);
 }

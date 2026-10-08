@@ -31,7 +31,7 @@ import java.util.Map;
 @NullMarked
 public class DangerousDownloadDialogBridge {
     private static class PendingDialog {
-        final @Nullable WindowAndroid mWindowAndroid;
+        final WindowAndroid mWindowAndroid;
         final String mGuid;
         final String mFileName;
         final long mTotalBytes;
@@ -40,7 +40,7 @@ public class DangerousDownloadDialogBridge {
         final boolean mIsDangerous;
 
         PendingDialog(
-                @Nullable WindowAndroid windowAndroid,
+                WindowAndroid windowAndroid,
                 String guid,
                 String fileName,
                 long totalBytes,
@@ -79,7 +79,7 @@ public class DangerousDownloadDialogBridge {
     /**
      * Called to show a warning dialog for download.
      *
-     * @param windowAndroid Window to show the dialog, or null if no window is currently available.
+     * @param windowAndroid Window to show the dialog.
      * @param guid GUID of the download.
      * @param fileName Name of the download file.
      * @param totalBytes Total bytes of the file.
@@ -89,7 +89,7 @@ public class DangerousDownloadDialogBridge {
      */
     @CalledByNative
     public void showDialog(
-            @Nullable WindowAndroid windowAndroid,
+            WindowAndroid windowAndroid,
             @JniType("std::string") String guid,
             @JniType("std::u16string") String fileName,
             long totalBytes,
@@ -98,9 +98,7 @@ public class DangerousDownloadDialogBridge {
             boolean isDangerous) {
         if (!ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()) {
             Activity activity =
-                    (windowAndroid != null && windowAndroid.getActivity() != null)
-                            ? windowAndroid.getActivity().get()
-                            : null;
+                    windowAndroid.getActivity() != null ? windowAndroid.getActivity().get() : null;
             if (!(activity instanceof ModalDialogManagerHolder)) {
                 onCancel(guid, windowAndroid);
                 return;
