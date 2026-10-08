@@ -65,7 +65,7 @@ dependencies = [
 
 [[package]]
 name = "xxhash-rust"
-version = "0.8.18"
+version = "0.8.19"
 dependencies = [
  "getrandom",
  "xxhash-c-sys",

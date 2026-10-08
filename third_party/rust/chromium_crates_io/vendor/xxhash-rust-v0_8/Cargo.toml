@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "xxhash-rust"
-version = "0.8.18"
+version = "0.8.19"
 authors = ["Douman <douman@gmx.se>"]
 build = false
 include = [

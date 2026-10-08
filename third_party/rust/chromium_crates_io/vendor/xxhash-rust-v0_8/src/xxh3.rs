@@ -249,7 +249,7 @@ fn accumulate_512_wasm(acc: &mut Acc, input: &StripeLanes, secret: &StripeLanes)
     }
 }
 
-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+#[cfg(all(any(target_arch = "aarch64", target_arch = "arm64ec"), target_feature = "neon"))]
 macro_rules! vld1q_u8 {
     ($ptr:expr) => {
         core::arch::aarch64::vld1q_u8($ptr)
@@ -273,7 +273,7 @@ fn accumulate_512_neon(acc: &mut Acc, input: &StripeLanes, secret: &StripeLanes)
     unsafe {
         #[cfg(target_arch = "arm")]
         use core::arch::arm::*;
-        #[cfg(target_arch = "aarch64")]
+        #[cfg(any(target_arch = "aarch64", target_arch = "arm64ec"))]
         use core::arch::aarch64::*;
 
         let mut idx = 0usize;
@@ -304,7 +304,7 @@ fn accumulate_512_neon(acc: &mut Acc, input: &StripeLanes, secret: &StripeLanes)
 
             //xxhash does it with inline assembly, but idk if I want to embed it here
             let sum_1 = vmlal_u32(data_swap_1, vget_low_u32(data_key_lo), vget_low_u32(data_key_hi));
-            #[cfg(target_arch = "aarch64")]
+            #[cfg(any(target_arch = "aarch64", target_arch = "arm64ec"))]
             let sum_2 = vmlal_high_u32(data_swap_2, data_key_lo, data_key_hi);
             #[cfg(target_arch = "arm")]
             let sum_2 = vmlal_u32(data_swap_2, vget_high_u32(data_key_lo), vget_high_u32(data_key_hi));
@@ -441,7 +441,7 @@ fn scramble_acc_neon(acc: &mut Acc, secret: &StripeLanes) {
     unsafe {
         #[cfg(target_arch = "arm")]
         use core::arch::arm::*;
-        #[cfg(target_arch = "aarch64")]
+        #[cfg(any(target_arch = "aarch64", target_arch = "arm64ec"))]
         use core::arch::aarch64::*;
 
         let xacc = acc.0.as_mut_ptr() as *mut uint64x2_t;
