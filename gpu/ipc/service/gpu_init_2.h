@@ -99,6 +99,8 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   void StartWatchdogAndMaybeSandboxEarly(InitState& state);
   bool InitializeGLBindingsAndDisplay(InitState& state);
   void SelectCommandDecoder(InitState& state);
+  bool FinalizeFeaturesWithContextInfo(InitState& state);
+  bool ResolveGrContextType(InitState& state);
 
   raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;
