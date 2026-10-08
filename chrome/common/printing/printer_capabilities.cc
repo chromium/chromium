@@ -82,11 +82,10 @@ void PopulateAndSortAllPaperNames(PrinterSemanticCapsAndDefaults& info) {
 #if BUILDFLAG(IS_CHROMEOS)
 void PopulateMediaTypeLocalization(
     PrinterSemanticCapsAndDefaults::MediaTypes& media_types) {
-  auto& l10n_map = CapabilityLocalizationMap();
   for (auto& value : media_types) {
-    auto value_it =
-        l10n_map.find(base::StrCat({"media-type/", value.vendor_id}));
-    if (value_it != l10n_map.end()) {
+    auto value_it = kCapabilityLocalizationMap.find(
+        base::StrCat({"media-type/", value.vendor_id}));
+    if (value_it != kCapabilityLocalizationMap.end()) {
       value.display_name = l10n_util::GetStringUTF8(value_it->second);
     }
   }
@@ -94,17 +93,18 @@ void PopulateMediaTypeLocalization(
 
 void PopulateAdvancedCapsLocalization(
     std::vector<AdvancedCapability>* advanced_capabilities) {
-  auto& l10n_map = CapabilityLocalizationMap();
   for (AdvancedCapability& capability : *advanced_capabilities) {
-    auto capability_it = l10n_map.find(capability.name);
-    if (capability_it != l10n_map.end())
+    auto capability_it = kCapabilityLocalizationMap.find(capability.name);
+    if (capability_it != kCapabilityLocalizationMap.end()) {
       capability.display_name = l10n_util::GetStringUTF8(capability_it->second);
+    }
 
     for (AdvancedCapabilityValue& value : capability.values) {
-      auto value_it =
-          l10n_map.find(base::StrCat({capability.name, "/", value.name}));
-      if (value_it != l10n_map.end())
+      auto value_it = kCapabilityLocalizationMap.find(
+          base::StrCat({capability.name, "/", value.name}));
+      if (value_it != kCapabilityLocalizationMap.end()) {
         value.display_name = l10n_util::GetStringUTF8(value_it->second);
+      }
     }
   }
 }

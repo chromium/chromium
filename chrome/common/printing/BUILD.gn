@@ -15,7 +15,7 @@ buildflag_header("printing_buildflags") {
 }
 
 if (is_chromeos) {
-  localization_map_path = "$target_gen_dir/ipp_l10n.cc"
+  localization_map_path = "$target_gen_dir/ipp_l10n.h"
 
   ipp_code_generate("ipp_l10n_generate") {
     outputs = [ localization_map_path ]
@@ -51,10 +51,7 @@ source_set("printing") {
   if (is_chromeos) {
     deps += [ ":ipp_l10n_generate" ]
 
-    sources += [
-      "ipp_l10n.h",
-      localization_map_path,
-    ]
+    sources += [ localization_map_path ]
   }
 
   if (enable_print_media_l10n) {
