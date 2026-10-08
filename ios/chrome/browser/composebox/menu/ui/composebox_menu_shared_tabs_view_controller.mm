@@ -40,6 +40,11 @@ const CGFloat kHorizontalMargin = 16.0;
 const CGFloat kFaviconSize = 24.0;
 const CGFloat kTrashSymbolPointSize = 18.0;
 
+// Number of lines for the tab title and domain labels in a cell (0 means
+// unlimited).
+const NSInteger kTitleNumberOfLines = 0;
+const NSInteger kDomainNumberOfLines = 0;
+
 // Insets for the collection view.
 const NSDirectionalEdgeInsets kListSectionInsets = {16, 16.0, 0, 16.0};
 
@@ -280,7 +285,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   content.textProperties.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   content.textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
-  content.textProperties.numberOfLines = 1;
+  content.textProperties.numberOfLines = kTitleNumberOfLines;
   content.textProperties.lineBreakMode = NSLineBreakByTruncatingTail;
 
   NSString* domain = @"";
@@ -296,7 +301,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   content.secondaryTextProperties.color =
       [UIColor colorNamed:kTextSecondaryColor];
-  content.secondaryTextProperties.numberOfLines = 1;
+  content.secondaryTextProperties.numberOfLines = kDomainNumberOfLines;
   content.secondaryTextProperties.lineBreakMode = NSLineBreakByTruncatingTail;
 
   if (tab.favicon) {
