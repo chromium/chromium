@@ -4,9 +4,12 @@
 
 #include "gpu/ipc/service/gpu_init_ozone.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_feature_type.h"

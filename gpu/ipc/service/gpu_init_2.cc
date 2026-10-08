@@ -28,7 +28,6 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -57,14 +56,8 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#if BUILDFLAG(ENABLE_VULKAN)
-#include "gpu/command_buffer/service/drm_modifiers_filter_vulkan.h"
-#endif
 #include "gpu/ipc/service/gpu_init_ozone.h"
-#include "ui/ozone/public/drm_modifiers_filter.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -108,10 +101,6 @@
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
-#include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
 #endif
 
 namespace gpu {
