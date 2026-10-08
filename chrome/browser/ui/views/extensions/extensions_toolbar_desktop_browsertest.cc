@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -886,8 +887,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
 }
 
 // Tests that requests are reset on cross-origin navigations.
-IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
-                       RequestAccessButtonVisibility_NavigationBetweenPages) {
+// TODO(crbug.com/549105384): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RequestAccessButtonVisibility_NavigationBetweenPages \
+  DISABLED_RequestAccessButtonVisibility_NavigationBetweenPages
+#else
+#define MAYBE_RequestAccessButtonVisibility_NavigationBetweenPages \
+  RequestAccessButtonVisibility_NavigationBetweenPages
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsToolbarDesktopBrowserTest,
+    MAYBE_RequestAccessButtonVisibility_NavigationBetweenPages) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
