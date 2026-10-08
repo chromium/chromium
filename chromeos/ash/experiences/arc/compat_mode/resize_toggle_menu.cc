@@ -118,8 +118,7 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   // The border is only used to inset the contents; it is never painted.
   SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, kButtonRadius,
                                            SK_ColorTRANSPARENT));
-  SetBackground(views::CreateRoundedRectBackground(gfx::kPlaceholderColor,
-                                                   kButtonRadius));
+  UpdateColors();
 
   const int focus_ring_radius = 16;
   // With Jellyroll, the ring should have a 4dp gap from the view. Setting a
@@ -142,11 +141,6 @@ void ResizeToggleMenu::MenuButtonView::SetSelected(bool is_selected) {
   is_selected_ = is_selected;
   SetState(is_selected_ ? views::Button::ButtonState::STATE_DISABLED
                         : views::Button::ButtonState::STATE_NORMAL);
-  UpdateColors();
-}
-
-void ResizeToggleMenu::MenuButtonView::OnThemeChanged() {
-  views::Button::OnThemeChanged();
   UpdateColors();
 }
 
