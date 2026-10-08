@@ -179,6 +179,10 @@ if (use_bundled_fontconfig) {
   }
 
   component("fontconfig") {
+    # Prevent private deps (such as :fontconfig_fontations_ffi and its
+    # rust_bindgen generator actions) from propagating order-only .harddeps to
+    # all downstream C++ targets that depend on //third_party/fontconfig.
+    check_includes_strict = true
     public_deps = [ ":fontconfig_sources" ]
     deps = [ ":fontconfig_fontations_ffi" ]
   }
