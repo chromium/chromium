@@ -4,8 +4,13 @@
 
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/browser/actor/tools/translate_page_tool.h"
 #include "chrome/common/actor.mojom.h"
@@ -15,12 +20,35 @@
 
 namespace actor {
 
+namespace {
+
+// Default description for the `translate_page` tool.
+constexpr std::string_view kTranslatePageToolDescription =
+    "Translate the current page.";
+
+// Description for the `target_language` parameter of the `translate_page`
+// tool.
+constexpr std::string_view kTargetLanguageParamDescription =
+    "Target language code (e.g. \"en\", \"es\", \"fr\"). If empty, translates "
+    "to the user's default language.";
+
+}  // namespace
+
 TranslatePageToolRequest::TranslatePageToolRequest(
     tabs::TabHandle tab_handle,
     std::string_view target_language)
     : TabToolRequest(tab_handle), target_language_(target_language) {}
 
 TranslatePageToolRequest::~TranslatePageToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> TranslatePageToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kTranslatePage, kModelFacingName,
+                               kTranslatePageToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kTargetLanguageParam, kTargetLanguageParamDescription))
+      .Build();
+}
 
 ToolRequest::CreateToolResult TranslatePageToolRequest::CreateTool(
     TaskId task_id,

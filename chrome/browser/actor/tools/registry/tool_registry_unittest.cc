@@ -21,6 +21,7 @@
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -125,6 +126,19 @@ TEST(ToolRegistryTest, TypeToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(TypeToolRequest::kFollowByEnterParam));
 }
 
+TEST(ToolRegistryTest, TranslatePageToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      TranslatePageToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kTranslatePage);
+  EXPECT_EQ(definition->name, TranslatePageToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(TranslatePageToolRequest::kTargetLanguageParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(TranslatePageToolRequest::kTargetLanguageParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -181,6 +195,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsTypeTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kType, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsTranslatePageTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kTranslatePage,
+                                    &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

@@ -29,7 +29,9 @@ enum class ToolId {
   kSelectOption = 4,
   // Types text into an editable element on the page.
   kType = 5,
-  kMaxValue = kType,
+  // Translates the current page.
+  kTranslatePage = 6,
+  kMaxValue = kTranslatePage,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

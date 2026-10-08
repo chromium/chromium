@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_TRANSLATE_PAGE_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_TRANSLATE_PAGE_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -16,6 +17,12 @@ namespace actor {
 class TranslatePageToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "TranslatePage";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "translate_page";
+  // JSON argument key for the target language code. An empty value means the
+  // user's preferred language.
+  static constexpr std::string_view kTargetLanguageParam = "target_language";
 
   // `target_language`: The ISO 639 language code (e.g., "en", "es", "fr",
   // "zh-CN") to translate the page to. If empty (default), Chrome translates
@@ -24,6 +31,9 @@ class TranslatePageToolRequest : public TabToolRequest {
   explicit TranslatePageToolRequest(tabs::TabHandle tab_handle,
                                     std::string_view target_language = "");
   ~TranslatePageToolRequest() override;
+
+  // Returns the `ToolId::kTranslatePage` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   std::string_view target_language() const { return target_language_; }
 
