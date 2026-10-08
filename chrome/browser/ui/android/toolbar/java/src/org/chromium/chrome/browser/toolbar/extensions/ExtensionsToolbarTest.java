@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isActivated;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -28,9 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 
 import android.app.Instrumentation;
 import android.os.SystemClock;
@@ -167,10 +164,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.disableExtension(mProfile, extension2Id);
 
         // The extension 2 should disappear.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Action 2"), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withContentDescription("Test Action 2"));
     }
 
     /**
@@ -301,10 +295,7 @@ public class ExtensionsToolbarTest {
         uninstallTestExtension(id);
 
         // The extension should disappear from the toolbar.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withContentDescription("Test Action"));
 
         // The popup should be gone.
         CriteriaHelper.pollInstrumentationThread(
@@ -338,10 +329,7 @@ public class ExtensionsToolbarTest {
         uninstallTestExtension(extensionId);
 
         // The extension should disappear from the toolbar.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withContentDescription("Test Action"));
 
         // The popup should be gone.
         CriteriaHelper.pollInstrumentationThread(
@@ -677,10 +665,7 @@ public class ExtensionsToolbarTest {
                 () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, false));
 
         // Ensure the menu button is not visible anymore.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withId(R.id.extensions_menu_button), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withId(R.id.extensions_menu_button));
     }
 
     @Test
@@ -709,10 +694,7 @@ public class ExtensionsToolbarTest {
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_close_button)).perform(click());
 
         // Verify that the extensions menu button is no longer visible on the toolbar.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withId(R.id.extensions_menu_button), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withId(R.id.extensions_menu_button));
 
         // Open the extensions menu via the app menu.
         ViewUtils.onViewWaiting(withId(R.id.menu_button_wrapper)).perform(click());
@@ -789,10 +771,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
 
         // Verify the extension is not visible on the toolbar initially.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withContentDescription("Test Action"));
 
         // Pin the extension programmatically.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
@@ -805,10 +784,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
 
         // Verify the action disappears from the toolbar.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withContentDescription("Test Action"));
     }
 
     @Test
@@ -827,10 +803,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.disableExtension(mProfile, extensionId);
 
         // Verify the action disappears from the toolbar.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withContentDescription("Test Action"));
 
         // Re-enable the extension.
         ExtensionTestUtils.enableExtension(mProfile, extensionId);
@@ -1152,10 +1125,7 @@ public class ExtensionsToolbarTest {
         ViewUtils.onViewWaiting(withText("Remove from Chromium")).perform(click());
 
         // The dialog should trigger dismiss on the extensions menu.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withId(R.id.extensions_menu_close_button), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withId(R.id.extensions_menu_close_button));
     }
 
     @Test
