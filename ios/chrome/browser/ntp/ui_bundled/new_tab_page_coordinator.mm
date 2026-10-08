@@ -880,6 +880,12 @@
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
+    AimEligibilityService* aimEligibilityService =
+        ntp_tiles::GetAimButtonRefactorArm() ==
+                ntp_tiles::AimButtonRefactorArm::kAimAsMvt
+            ? _aimEligibilityService
+            : nil;
+
     _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(mostVisitedFactory)
                  historyService:historyService
@@ -890,7 +896,8 @@
                                     self.browser)
           accountManagerService:accountManagerService
               engagementTracker:engagementTracker
-              layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
+              layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
+          aimEligibilityService:aimEligibilityService];
     _mostVisitedTilesMediator.contentSuggestionsDelegate =
         self.contentSuggestionsCoordinator.delegate;
     _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
