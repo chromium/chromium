@@ -835,6 +835,9 @@ using segmentation_platform::TipIdentifier;
                              baseViewController:self.magicStackCollectionView];
       break;
     }
+    case TipIdentifier::kNTPCustomization:
+      // TODO(crbug.com/566958720): Open the NTP Customization destination.
+      NOTREACHED();
   }
 
   [self.NTPActionsDelegate tipsOpened];

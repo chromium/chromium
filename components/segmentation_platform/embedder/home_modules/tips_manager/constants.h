@@ -40,7 +40,9 @@ enum class TipIdentifier {
   kNTPTheme = 8,
   // Tip promoting tips notifications.
   kTipsNotifications = 9,
-  kMaxValue = kTipsNotifications,
+  // Tip promoting NTP customization.
+  kNTPCustomization = 10,
+  kMaxValue = kNTPCustomization,
 };
 // LINT.ThenChange(/components/segmentation_platform/embedder/home_modules/tips_manager/constants.cc:NameForTipIdentifier)
 

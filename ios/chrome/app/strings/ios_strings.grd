@@ -5084,6 +5084,9 @@ You can restart anytime.
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_DESCRIPTION" desc="The description of the use Lens for translation tip for the Magic Stack.">
         Translate text in your photos or your surroundings with your camera.
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_CUSTOMIZATION_DESCRIPTION" desc="The description of the NTP customization tip for the Magic Stack.">
+        Hide or show your top sites, Discover feed, and more.
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_DESCRIPTION" desc="The description of the NTP theme tip for the Magic Stack.">
         Choose from themes, colors or upload your own photo.
       </message>
