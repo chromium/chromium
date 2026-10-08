@@ -398,7 +398,9 @@ void ClientStateToProto(ClientState* client_state,
 
 void ClientStateFromProto(proto::ClientState* proto,
                           notifications::ClientState* client_state) {
-  CHECK(proto->has_type(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/571058302): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(proto->has_type());
   CHECK(proto->has_current_max_daily_show(), base::NotFatalUntil::M161);
   client_state->type = FromSchedulerClientType(proto->type());
   client_state->current_max_daily_show = proto->current_max_daily_show();
