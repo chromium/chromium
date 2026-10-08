@@ -108,7 +108,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
     return native_widget_mac_;
   }
   NativeWidgetMacNSWindowHost* parent() const { return parent_; }
-  std::vector<NativeWidgetMacNSWindowHost*> children() const {
+  const std::vector<raw_ptr<NativeWidgetMacNSWindowHost>>& children() const {
     return children_;
   }
 
@@ -508,7 +508,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Parent and child widgets.
   raw_ptr<NativeWidgetMacNSWindowHost> parent_ = nullptr;
-  std::vector<NativeWidgetMacNSWindowHost*> children_;
+  std::vector<raw_ptr<NativeWidgetMacNSWindowHost>> children_;
 
   // The factory that was used to create |remote_ns_window_remote_|. This must
   // be the same as |parent_->application_host_|.
