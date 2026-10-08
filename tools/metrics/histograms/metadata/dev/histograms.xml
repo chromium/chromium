@@ -58,6 +58,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.BlockedByPolicy.Reason" enum="DevToolsBlockReason"
+    expires_after="2027-10-05">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <component>1937512</component>
+  <summary>
+    Recorded together with DevTools.BlockedByPolicy, i.e. each time the
+    &quot;Your organization has blocked the use of DevTools on this page&quot;
+    dialog is shown. The bucket is the specific check that blocked DevTools for
+    the tab: the DeveloperToolsAvailability policy being set to Disallowed, the
+    URL-based DeveloperToolsAvailabilityAllowlist/Blocklist policies, the tab
+    belonging to a restricted extension or web app while the policy has its
+    default value, or the DevTools UI being unavailable for the profile. Blocks
+    reported for a component extension or for the URL lists while the policy has
+    its default value are the ones to investigate when the volume rises. Desktop
+    only.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.BuiltInAiAvailability"
     enum="DevToolsBuiltInAiAvailability" expires_after="2027-02-14">
   <owner>wolfi@google.com</owner>

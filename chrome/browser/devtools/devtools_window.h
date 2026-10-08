@@ -35,6 +35,7 @@ class Profile;
 class DevToolsWindowTesting;
 class DevToolsEventForwarder;
 class DevToolsEyeDropper;
+enum class DevToolsBlockReason;
 
 namespace content {
 class DevToolsAgentHost;
@@ -117,6 +118,13 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                                content::WebContents* web_contents);
   static bool AllowDevToolsFor(Profile* profile,
                                content::DevToolsAgentHost* agent_host);
+
+  // Returns why DevTools are not allowed for the specified |profile| and
+  // |web_contents|, or DevToolsBlockReason::kNotBlocked if AllowDevToolsFor()
+  // returns true.
+  static DevToolsBlockReason GetBlockReasonFor(
+      Profile* profile,
+      content::WebContents* web_contents);
 
   // Return the DevToolsWindow for the given WebContents if one exists,
   // otherwise nullptr.

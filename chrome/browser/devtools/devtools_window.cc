@@ -1335,11 +1335,13 @@ void DevToolsWindow::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 }
 
 namespace {
-bool IsDevToolsAllowedForProfile(Profile* profile) {
+// Returns why the DevTools UI is unavailable for |profile| regardless of what
+// is being inspected, or DevToolsBlockReason::kNotBlocked.
+DevToolsBlockReason GetProfileBlockReason(Profile* profile) {
   // Don't allow DevTools UI in kiosk mode, because the DevTools UI would be
   // broken there. See https://crbug.com/41191065 for context.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
-    return false;
+    return DevToolsBlockReason::kKioskMode;
   }
 
   PolicyBlocklistService* blocklist_service =
@@ -1348,25 +1350,36 @@ bool IsDevToolsAllowedForProfile(Profile* profile) {
       blocklist_service->GetURLBlocklistState(
           GURL(chrome::kChromeUIDevToolsURL)) ==
           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-    return false;
+    return DevToolsBlockReason::kDevToolsUrlBlocklisted;
   }
 
-  return true;
+  return DevToolsBlockReason::kNotBlocked;
 }
 }  // namespace
 
 // static
 bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
                                       content::WebContents* web_contents) {
-  return IsDevToolsAllowedForProfile(profile) &&
-         IsInspectionAllowed(profile, web_contents);
+  return GetBlockReasonFor(profile, web_contents) ==
+         DevToolsBlockReason::kNotBlocked;
 }
 
 // static
 bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
                                       content::DevToolsAgentHost* agent_host) {
-  return IsDevToolsAllowedForProfile(profile) &&
+  return GetProfileBlockReason(profile) == DevToolsBlockReason::kNotBlocked &&
          IsInspectionAllowed(profile, agent_host);
+}
+
+// static
+DevToolsBlockReason DevToolsWindow::GetBlockReasonFor(
+    Profile* profile,
+    content::WebContents* web_contents) {
+  DevToolsBlockReason reason = GetProfileBlockReason(profile);
+  if (reason != DevToolsBlockReason::kNotBlocked) {
+    return reason;
+  }
+  return GetDevToolsBlockReason(profile, web_contents);
 }
 
 // static

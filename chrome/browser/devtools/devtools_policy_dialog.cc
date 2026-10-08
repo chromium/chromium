@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -77,10 +79,14 @@ void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
 
   // Recorded once per dialog shown, i.e. once per time a user actively tried
   // to open DevTools (or view source) and was blocked by enterprise policy.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   base::UmaHistogramEnumeration(
       "DevTools.BlockedByPolicy",
-      policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+      policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile));
+  base::UmaHistogramEnumeration(
+      "DevTools.BlockedByPolicy.Reason",
+      DevToolsWindow::GetBlockReasonFor(profile, web_contents));
 
   auto dialog_manager = base::WrapUnique<DevToolsPolicyDialog>(
       new DevToolsPolicyDialog(web_contents));

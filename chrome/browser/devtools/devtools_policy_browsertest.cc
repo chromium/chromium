@@ -7,7 +7,9 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -20,6 +22,9 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -28,6 +33,8 @@
 namespace {
 
 constexpr char kBlockedByPolicyHistogram[] = "DevTools.BlockedByPolicy";
+constexpr char kBlockedByPolicyReasonHistogram[] =
+    "DevTools.BlockedByPolicy.Reason";
 
 class TestObserverImpl : public DevToolsPolicyDialog::TestObserver {
  public:
@@ -57,6 +64,7 @@ class DevToolsPolicyDialogTest : public PlatformBrowserTest {
   ~DevToolsPolicyDialogTest() override = default;
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
     DevToolsPolicyDialog::SetTestObserver(&observer_);
   }
   void TearDownOnMainThread() override {
@@ -209,6 +217,41 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
   histogram_tester.ExpectUniqueSample(
       kBlockedByPolicyHistogram,
       policy::DeveloperToolsAvailability::kDisallowed, 1);
+  histogram_tester.ExpectUniqueSample(kBlockedByPolicyReasonHistogram,
+                                      DevToolsBlockReason::kPolicyDisallowed,
+                                      1);
+}
+
+// A block while the DeveloperToolsAvailability policy has its default value
+// is attributed to the check that actually blocked, here the URL blocklist.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
+                       RecordedWithUrlReasonWhenPageIsOnBlocklist) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("blocked.example", "/title1.html")));
+
+  base::ListValue blocklist;
+  blocklist.Append("blocked.example");
+  chrome_test_utils::GetProfile(this)->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
+
+  EXPECT_FALSE(
+      DevToolsWindow::GetInstanceForInspectedWebContents(web_contents));
+  EXPECT_EQ(1, observer_.shown_count());
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyHistogram,
+      policy::DeveloperToolsAvailability::
+          kDisallowedForForceInstalledExtensions,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyReasonHistogram,
+      DevToolsBlockReason::kUrlAllowlistOrBlocklist, 1);
 }
 
 // Negative control: with the default policy value DevTools are allowed on
@@ -224,6 +267,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
 
   EXPECT_EQ(0, observer_.shown_count());
   histogram_tester.ExpectTotalCount(kBlockedByPolicyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kBlockedByPolicyReasonHistogram, 0);
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
