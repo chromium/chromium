@@ -521,7 +521,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
   SavedTabGroupTab tab(
-      contents->GetVisibleURL().is_empty() ? GURL(chrome::kChromeUINewTabURL)
+      contents->GetVisibleURL().is_empty() ? chrome::ChromeUINewTabURLAsGURL()
                                            : contents->GetVisibleURL(),
       contents->GetTitle(), saved_tab_group_id, /*position=*/std::nullopt);
   return tab;

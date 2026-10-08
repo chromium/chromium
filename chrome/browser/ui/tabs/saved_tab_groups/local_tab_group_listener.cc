@@ -132,7 +132,7 @@ void LocalTabGroupListener::AddTabFromLocal(
   // Non-empty URLs will be saved into the tab group, and will be converted
   // to an unsupported URL later when sending to sync.
   if (tab.url().is_empty()) {
-    tab.SetURL(GURL(chrome::kChromeUINewTabURL));
+    tab.SetURL(chrome::ChromeUINewTabURLAsGURL());
   }
 
   service_->AddTab(local_id_, local_tab_id, tab.title(), tab.url(),
@@ -364,9 +364,8 @@ void LocalTabGroupListener::OpenWebContentsFromSync(
     BrowserWindowInterface* browser,
     int index_in_tabstrip) {
   GURL url_to_open = tab.url();
-  // Open the NTP if the URL is not valid for local tabs.
   if (!IsURLValidForLocalTab(url_to_open)) {
-    url_to_open = GURL(chrome::kChromeUINewTabURL);
+    url_to_open = chrome::ChromeUINewTabURLAsGURL();
   }
 
   content::NavigationHandle* navigation_handle =

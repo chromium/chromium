@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
 
   // The added tab should open the NTP instead of the unsupported URL.
   EXPECT_EQ(tabstrip->GetWebContentsAt(1)->GetURL(),
-            GURL(chrome::kChromeUINewTabURL));
+            chrome::ChromeUINewTabURLAsGURL());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,

@@ -1049,10 +1049,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   // the group locally. We send the addition first and removal next because this
   // is the order merges are sent from bridge. If removal is sent first, model
   // will delete the group instead for last tab closure.
-  const SavedTabGroupTab added_tab1(GURL(chrome::kChromeUINewTabURL),
+  const SavedTabGroupTab added_tab1(chrome::ChromeUINewTabURLAsGURL(),
                                     u"New Tab 1", saved_group_id,
                                     /*position=*/0);
-  const SavedTabGroupTab added_tab2(GURL(chrome::kChromeUINewTabURL),
+  const SavedTabGroupTab added_tab2(chrome::ChromeUINewTabURLAsGURL(),
                                     u"New Tab 2", saved_group_id,
                                     /*position=*/1);
   model_->AddTabToGroupFromSync(saved_group_id, added_tab1);
