@@ -1942,7 +1942,7 @@ if (!is_chromeos_device) {
       "web_dialog_view_interactive_uitest.cc",
       "webview_interactive_uitest.cc",
     ]
-    deps = []
+    deps = [ "//chrome/browser/ui:accelerator_utils_headers" ]
 
     if (!is_linux) {
       # TODO(port): This times out on desktop Linux.

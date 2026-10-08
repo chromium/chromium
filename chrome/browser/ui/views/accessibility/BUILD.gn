@@ -177,6 +177,7 @@ if (!is_android) {
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui:browser_window_header",
+        "//chrome/browser/ui:tab_modal_confirm_dialog",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/test:test_support_ui",
         "//components/live_caption:constants",

@@ -131,6 +131,7 @@ source_set("browser_tests") {
     ":ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/net",
     "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//components/skills:features",

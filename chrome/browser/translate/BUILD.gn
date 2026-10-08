@@ -141,6 +141,7 @@ if (!is_android) {
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/translate",

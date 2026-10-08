@@ -176,7 +176,7 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
-  deps = []
+  deps = [ "//chrome/browser/ui:accelerator_utils_headers" ]
   if (!is_chromeos) {
     sources += [ "bubble/download_bubble_interactive_uitest.cc" ]
     deps += [

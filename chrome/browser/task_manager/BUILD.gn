@@ -366,6 +366,7 @@ source_set("browser_tests") {
     ":task_manager",
     ":test_support",
     "//base",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/test/base:testing_browser_process",
     "//content/public/browser",
     "//content/test:test_support",

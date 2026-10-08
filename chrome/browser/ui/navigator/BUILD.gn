@@ -54,7 +54,6 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_contents",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:incognito_allowed_url",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/common:chrome_features",
@@ -71,6 +70,7 @@ source_set("impl") {
 
   if (is_chromeos) {
     deps += [
+      "//ash",
       "//chrome/browser/ash/boca/on_task",
       "//chrome/browser/ui/ash/system_web_apps",
     ]

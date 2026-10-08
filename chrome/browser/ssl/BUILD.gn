@@ -209,6 +209,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//chrome/browser/net",
     "//components/security_state/content",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
@@ -321,6 +322,7 @@ if (!is_android) {
       "//chrome/browser/captive_portal",
       "//chrome/browser/interstitials:idn_test_support",
       "//chrome/browser/interstitials:test_support",
+      "//chrome/browser/net",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/ui:browser_commands",

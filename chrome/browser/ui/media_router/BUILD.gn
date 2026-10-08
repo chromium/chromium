@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/global_media_controls:test_support",
+    "//chrome/browser/ui/webui/media_router",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",

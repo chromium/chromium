@@ -15,6 +15,7 @@ source_set("sms") {
   deps = [
     "//chrome/browser/sharing",
     "//content/public/browser",
+    "//ui/strings:ui_strings",
   ]
 
   if (is_android) {
@@ -38,7 +39,6 @@ source_set("sms") {
     deps += [
       "//chrome/app/vector_icons",
       "//chrome/browser:shell_integration",
-      "//chrome/browser/ui",
     ]
   }
 }

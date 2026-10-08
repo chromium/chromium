@@ -406,6 +406,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
     "//content/test:test_support",

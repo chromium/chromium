@@ -301,6 +301,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/waap:manager",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications",
