@@ -11,6 +11,9 @@ component("decoration") {
     "decoration_source.h",
     "decoration_util.cc",
     "decoration_util.h",
+    "highlight_border.cc",
+    "highlight_border.h",
+    "highlight_border_value.h",
     "shadow.cc",
     "shadow.h",
   ]

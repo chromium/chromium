@@ -11,6 +11,7 @@
 #include "base/export_template.h"
 #include "build/build_config.h"
 #include "ui/decoration/decoration_details.h"
+#include "ui/decoration/highlight_border_value.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -46,6 +47,40 @@ using ShadowDetails = DecorationDetails<gfx::ShadowValues, ShadowGenerator>;
 // single shadow details cache in component builds.
 extern template class EXPORT_TEMPLATE_DECLARE(COMPONENT_EXPORT(UI_DECORATION))
     internal::DecorationCache<gfx::ShadowValues, ShadowGenerator>;
+
+// Strokes a highlight border inside `bounds`: an outer `border_color` ring
+// and an inner `highlight_color` ring, each `thickness` physical pixels wide.
+// Paints the same rings as views::HighlightBorder.
+COMPONENT_EXPORT(UI_DECORATION)
+void DrawHighlightBorder(gfx::Canvas* canvas,
+                         const HighlightBorderValue& value,
+                         const gfx::RoundedCornersF& rounded_corners,
+                         const gfx::Rect& bounds);
+
+// Generator for highlight border decoration rendering and insets. The outer
+// ring sits outside the content and the inner ring overlaps its edge.
+struct COMPONENT_EXPORT(UI_DECORATION) HighlightBorderGenerator {
+  static gfx::Insets GetMargins(const HighlightBorderValue& value);
+
+  // Returns the insets for the ninebox aperture given the border and corner
+  // radii.
+  static gfx::Insets GetNineboxApertureInsets(
+      const HighlightBorderValue& value,
+      const gfx::RoundedCornersF& rounded_corners);
+
+  static void Draw(gfx::Canvas* canvas,
+                   const HighlightBorderValue& value,
+                   const gfx::RoundedCornersF& rounded_corners,
+                   const gfx::Rect& content_rect);
+};
+
+using HighlightBorderDetails =
+    DecorationDetails<HighlightBorderValue, HighlightBorderGenerator>;
+
+// Instantiated in the ui/decoration component so that every module shares a
+// single highlight border details cache in component builds.
+extern template class EXPORT_TEMPLATE_DECLARE(COMPONENT_EXPORT(UI_DECORATION))
+    internal::DecorationCache<HighlightBorderValue, HighlightBorderGenerator>;
 
 // Returns the insets required to accommodate the corner radii.
 //

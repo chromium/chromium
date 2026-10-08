@@ -18,6 +18,7 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_not_drawn.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -95,6 +96,15 @@ std::unique_ptr<Decoration> Decoration::CreateShadow(
   // told otherwise.
   decoration->SetRoundedCorners(gfx::RoundedCornersF(2.f));
   return decoration;
+}
+
+// static
+std::unique_ptr<Decoration> Decoration::CreateHighlightBorder(
+    SkColor highlight_color,
+    SkColor border_color) {
+  return Create(std::make_unique<decoration::HighlightBorder>(highlight_color,
+                                                              border_color),
+                /*debug_name=*/"HighlightBorder");
 }
 
 Decoration::Decoration(std::unique_ptr<decoration::DecorationSource> source,

@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
@@ -52,6 +53,14 @@ class COMPONENT_EXPORT(UI_DECORATION) Decoration final
       ui::decoration::Shadow::Style style =
           ui::decoration::Shadow::Style::kMaterialDesign,
       ui::decoration::Shadow::ElevationToColorsMap color_map = {});
+
+  // Creates an initialized decoration that frames its content with a 1px
+  // highlight border: an outer `border_color` ring hugging the content from the
+  // outside and an inner `highlight_color` ring just inside the content edge.
+  // See decoration::HighlightBorder.
+  static std::unique_ptr<Decoration> CreateHighlightBorder(
+      SkColor highlight_color,
+      SkColor border_color);
 
   explicit Decoration(std::unique_ptr<decoration::DecorationSource> source,
                       std::string_view debug_name = {});

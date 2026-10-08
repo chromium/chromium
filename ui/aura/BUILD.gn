@@ -306,6 +306,7 @@ test("aura_unittests") {
   sources = [
     "../decoration/decoration_unittest.cc",
     "../decoration/decoration_util_unittest.cc",
+    "../decoration/highlight_border_unittest.cc",
     "../decoration/shadow_unittest.cc",
     "client/screen_position_client_unittest.cc",
     "gestures/gesture_recognizer_unittest.cc",
