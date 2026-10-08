@@ -450,6 +450,8 @@ TEST_F(NewTabPageMediatorTest, TestAIMNotEligible) {
 
   EXPECT_OCMOCK_VERIFY(header_consumer_);
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  histogram_tester_->ExpectUniqueSample("Omnibox.AimEntrypoint.Shown", false,
+                                        1);
 }
 
 // Tests that the AIM is enabled if the user is eligible.
@@ -477,6 +479,7 @@ TEST_F(NewTabPageMediatorTest, TestAIMEligible) {
 
   EXPECT_OCMOCK_VERIFY(header_consumer_);
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  histogram_tester_->ExpectUniqueSample("Omnibox.AimEntrypoint.Shown", true, 1);
 }
 
 // Tests that NTP modules are not updated if AIM eligibility changes before
@@ -518,6 +521,7 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleBeforeSetUp) {
   callback.Run();
   // Consumer are updated but modules are not.
   EXPECT_OCMOCK_VERIFY(ntp_content_delegate);
+  histogram_tester_->ExpectTotalCount("Omnibox.AimEntrypoint.Shown", 0);
 
   // Consumer are updated during setup.
   OCMExpect([ntp_consumer setAIMAllowed:YES]);
@@ -526,6 +530,7 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleBeforeSetUp) {
 
   EXPECT_OCMOCK_VERIFY(header_consumer_);
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  histogram_tester_->ExpectUniqueSample("Omnibox.AimEntrypoint.Shown", true, 1);
 }
 
 // Tests that NTP modules are updated if AIM eligibility changes after setup.
@@ -559,6 +564,8 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleAfterSetUp) {
       OCMProtocolMock(@protocol(NewTabPageContentDelegate));
   mediator_.NTPContentDelegate = ntp_content_delegate;
   [mediator_ setUp];
+  histogram_tester_->ExpectUniqueSample("Omnibox.AimEntrypoint.Shown", false,
+                                        1);
 
   // Becomes eligible after setup, modules should be updated.
   is_eligible = true;
@@ -570,6 +577,9 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleAfterSetUp) {
   EXPECT_OCMOCK_VERIFY(header_consumer_);
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
   EXPECT_OCMOCK_VERIFY(ntp_content_delegate);
+  histogram_tester_->ExpectBucketCount("Omnibox.AimEntrypoint.Shown", false, 1);
+  histogram_tester_->ExpectBucketCount("Omnibox.AimEntrypoint.Shown", true, 1);
+  histogram_tester_->ExpectTotalCount("Omnibox.AimEntrypoint.Shown", 2);
 }
 
 // Tests that fetchCustomBackground ignores duplicate requests for the same URL.

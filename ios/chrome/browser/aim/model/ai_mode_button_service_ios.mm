@@ -23,6 +23,7 @@
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/search/search.h"
 #import "components/search_engines/ai_mode_button_service.h"
+#import "components/search_engines/search_engine_type.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -41,6 +42,12 @@
 
 namespace {
 
+constexpr std::string_view kEntrypointShownHistogram =
+    "Omnibox.AimEntrypoint.Shown";
+constexpr std::string_view kEntrypointShownGoogleHistogram =
+    "Omnibox.AimEntrypoint.Shown.google";
+constexpr std::string_view kEntrypointShown3pHistogram =
+    "Omnibox.AimEntrypoint.Shown.3p";
 constexpr std::string_view kIconSourceHistogram =
     "Omnibox.AiModePageAction.IconSource";
 
@@ -111,6 +118,22 @@ bool AIModeButtonServiceIOS::IsButtonAvailable() const {
   }
   return OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
       aim_eligibility_service_, ai_mode_button_service_, template_url_service_);
+}
+
+void AIModeButtonServiceIOS::RecordEntrypointShown(bool shown) const {
+  base::UmaHistogramBoolean(kEntrypointShownHistogram, shown);
+  if (!ai_mode_button_service_) {
+    return;
+  }
+  const AiModeButtonUiConfig* config =
+      ai_mode_button_service_->GetCurrentConfig();
+  if (!config) {
+    return;
+  }
+  base::UmaHistogramBoolean(config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE
+                                ? kEntrypointShownGoogleHistogram
+                                : kEntrypointShown3pHistogram,
+                            shown);
 }
 
 base::CallbackListSubscription

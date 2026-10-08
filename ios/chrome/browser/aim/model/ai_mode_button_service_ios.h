@@ -71,6 +71,9 @@ class AIModeButtonServiceIOS : public KeyedService,
   // Whether the AI Mode button is available on the NTP.
   bool IsButtonAvailable() const;
 
+  // Records `Omnibox.AimEntrypoint.Shown` and its `.google` / `.3p` slices.
+  void RecordEntrypointShown(bool shown) const;
+
   // The title for the AI Mode button.
   NSString* GetTitle() const;
 

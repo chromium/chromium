@@ -611,6 +611,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
           _backgroundCustomizationService, self);
   [self updateAIMAvailability];
+  if (_aiModeButtonServiceIOS) {
+    _aiModeButtonServiceIOS->RecordEntrypointShown(_isAIMAllowed);
+  }
   _mediatorSetUp = YES;
 }
 
@@ -871,6 +874,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     return;
   }
   _isAIMAllowed = aimAllowed;
+  if (_mediatorSetUp && _aiModeButtonServiceIOS) {
+    _aiModeButtonServiceIOS->RecordEntrypointShown(aimAllowed);
+  }
   // Only update the modules if the mediator has already been set up.
   if (IsAIMEligibilityRefreshNTPModulesEnabled() && _mediatorSetUp) {
     [self.NTPContentDelegate updateModuleVisibility];

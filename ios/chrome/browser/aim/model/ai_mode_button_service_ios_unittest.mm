@@ -48,6 +48,12 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
+constexpr std::string_view kEntrypointShownHistogram =
+    "Omnibox.AimEntrypoint.Shown";
+constexpr std::string_view kEntrypointShownGoogleHistogram =
+    "Omnibox.AimEntrypoint.Shown.google";
+constexpr std::string_view kEntrypointShown3pHistogram =
+    "Omnibox.AimEntrypoint.Shown.3p";
 constexpr std::string_view kIconSourceHistogram =
     "Omnibox.AiModePageAction.IconSource";
 
@@ -165,6 +171,10 @@ TEST_F(AIModeButtonServiceIOSTest, GoogleDseProperties) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(true));
   EXPECT_TRUE(service_->IsButtonAvailable());
+  service_->RecordEntrypointShown(true);
+  histogram_tester.ExpectBucketCount(kEntrypointShownHistogram, true, 1);
+  histogram_tester.ExpectBucketCount(kEntrypointShownGoogleHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kEntrypointShown3pHistogram, 0);
   EXPECT_NSEQ(service_->GetTitle(),
               l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
   EXPECT_NSEQ(service_->GetAccessibilityLabel(),
@@ -177,6 +187,10 @@ TEST_F(AIModeButtonServiceIOSTest, GoogleDseProperties) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(service_->IsButtonAvailable());
+  service_->RecordEntrypointShown(false);
+  histogram_tester.ExpectBucketCount(kEntrypointShownHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kEntrypointShownGoogleHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kEntrypointShown3pHistogram, 0);
   EXPECT_NE(service_->GetIcon(), nil);
   histogram_tester.ExpectBucketCount(
       kIconSourceHistogram, AIModeButtonServiceIOS::IconSource::kInvisible, 1);
@@ -196,6 +210,7 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseDisabled) {
 
 // Tests 3P DSE button availability and properties when enabled.
 TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseEnabledWithDebugConfig) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kAim3pEntrypoint, {{"Aim3pEntrypointDebug", "true"}});
@@ -205,6 +220,10 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseEnabledWithDebugConfig) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimAllowedByFeatureAndPolicy())
       .WillRepeatedly(Return(true));
   EXPECT_TRUE(service_->IsButtonAvailable());
+  service_->RecordEntrypointShown(true);
+  histogram_tester.ExpectBucketCount(kEntrypointShownHistogram, true, 1);
+  histogram_tester.ExpectBucketCount(kEntrypointShown3pHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kEntrypointShownGoogleHistogram, 0);
   EXPECT_NSEQ(service_->GetTitle(), @"AI Mode for Bing (ĄÜÔ)");
   // `AiModeButtonService` populates `a11y_label` using
   // `IDS_AI_MODE_ENTRYPOINT_ACC_LABEL` formatted with the button text.
@@ -218,10 +237,15 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseEnabledWithDebugConfig) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimAllowedByFeatureAndPolicy())
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(service_->IsButtonAvailable());
+  service_->RecordEntrypointShown(false);
+  histogram_tester.ExpectBucketCount(kEntrypointShownHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kEntrypointShown3pHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kEntrypointShownGoogleHistogram, 0);
 }
 
 // Tests 3P DSE without AIM config.
 TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseWithoutAimConfig) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kAim3pEntrypoint, {{"Aim3pEntrypointDebug", "true"}});
@@ -229,6 +253,10 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseWithoutAimConfig) {
   template_url_service_->SetUserSelectedDefaultSearchProvider(nongoogle_turl_);
 
   EXPECT_FALSE(service_->IsButtonAvailable());
+  service_->RecordEntrypointShown(false);
+  histogram_tester.ExpectUniqueSample(kEntrypointShownHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kEntrypointShownGoogleHistogram, 0);
+  histogram_tester.ExpectTotalCount(kEntrypointShown3pHistogram, 0);
   EXPECT_NSEQ(service_->GetTitle(),
               l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
   EXPECT_NSEQ(service_->GetAccessibilityLabel(),
