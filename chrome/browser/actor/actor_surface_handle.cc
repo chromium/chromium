@@ -6,15 +6,18 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <ostream>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "components/actor/core/actor_features.h"
 
@@ -55,12 +58,28 @@ class ActorSurfaceLookup {
 
   void Unregister(ActorSurfaceHandle handle) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK_EQ(registered_surfaces_.erase(handle), 1u);
+    auto it = registered_surfaces_.find(handle);
+    CHECK(it != registered_surfaces_.end());
+    std::optional<tabs::TabHandle> tab = it->second->GetTabHandle();
+    registered_surfaces_.erase(it);
+
+    // Without a task runner (e.g. very late in shutdown) the entry could never
+    // be cleared, so don't record it.
+    if (!tab || !base::SequencedTaskRunner::HasCurrentDefault()) {
+      return;
+    }
+    recently_destroyed_tabs_[*tab] = handle;
+    // Clear the destroyed handle after a PostTask. Safe to use base::Unretained
+    // since ActorSurfaceLookup is a singleton.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ActorSurfaceLookup::ForgetDestroyedTab,
+                                  base::Unretained(this), *tab));
   }
 
   // Linear in the number of live surfaces (roughly the number of open tabs),
   // which keeps this lookup consistent with each surface's current backing
-  // without a second index to maintain.
+  // without a second index to maintain. Falls back to surfaces destroyed
+  // earlier in the current task; see `recently_destroyed_tabs_`.
   ActorSurfaceHandle GetForTab(tabs::TabHandle tab) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (const auto& [handle, surface] : registered_surfaces_) {
@@ -68,12 +87,30 @@ class ActorSurfaceLookup {
         return handle;
       }
     }
-    return ActorSurfaceHandle::Null();
+    // Maybe the tab was just deleted. Find it from the recent deletions.
+    auto it = recently_destroyed_tabs_.find(tab);
+    return it == recently_destroyed_tabs_.end() ? ActorSurfaceHandle::Null()
+                                                : it->second;
   }
 
  private:
+  void ForgetDestroyedTab(tabs::TabHandle tab) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    recently_destroyed_tabs_.erase(tab);
+  }
+
   // Map of all live surfaces across profiles, keyed by handle.
   base::flat_map<ActorSurfaceHandle, raw_ptr<ActorSurface>> registered_surfaces_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Tab-backed surfaces destroyed during the current task, keyed by their tab.
+  // A tab's surface is destroyed with its TabFeatures, which happens before
+  // TabStripModel notifies observers of the removal while the tab itself is
+  // still alive. Keeping the handle until the current task completes lets
+  // those observers still map the tab to its (now destroyed) surface handle.
+  // The entry is cleaned up shortly with a PostTask, so the map never grows
+  // unbounded.
+  base::flat_map<tabs::TabHandle, ActorSurfaceHandle> recently_destroyed_tabs_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Monotonically increasing positive handle counter (> 0). Used for all

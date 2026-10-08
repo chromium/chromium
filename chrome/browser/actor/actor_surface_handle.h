@@ -67,9 +67,12 @@ class ActorSurfaceHandle {
   tabs::TabHandle GetTabHandle() const;
 
   // Returns the handle of the surface currently backed by `tab`, or Null() if
-  // there is none (e.g. the tab is gone, or belongs to a profile without an
-  // ActorKeyedService). This is the supported way to convert a tab to a
-  // surface: callers must not assume the two share a raw value.
+  // there is none. This is the supported way to convert a tab to a surface:
+  // callers must not assume the two share a raw value.
+  //
+  // Also returns the handle if the tab was just destroyed, even though its
+  // ActorSurface is destroyed right away (Get() returns null, but the handle
+  // lookup still exists), so that cleanups can still happen.
   static ActorSurfaceHandle From(tabs::TabHandle tab);
 
   // Mints the next unique handle (> 0, or < 0 for headless surfaces while

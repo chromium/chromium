@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
@@ -325,10 +326,30 @@ TEST_F(ActorSurfaceRegistryTest, FromTabReturnsNullWithoutSurface) {
   // A tab without a surface (here: never registered) maps to null.
   EXPECT_TRUE(ActorSurfaceHandle::From(mock_tab2_.GetHandle()).is_null());
 
-  // Both directions map to null once the surface is gone.
+  // Once the surface is gone and the current task has completed, both
+  // directions map to null.
   registry_->OnTabWillBeDestroyed(tab_handle());
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ActorSurfaceHandle::From(tab_handle()).is_null());
   EXPECT_EQ(handle.GetTabHandle(), tabs::TabHandle::Null());
+}
+
+TEST_F(ActorSurfaceRegistryTest, FromTabResolvesSurfaceDestroyedInSameTask) {
+  registry_->OnTabCreated(mock_tab1_);
+  const ActorSurfaceHandle handle = ActorSurfaceHandle::From(tab_handle());
+  ASSERT_FALSE(handle.is_null());
+
+  // Mirrors tab closure: the surface is destroyed with the tab's TabFeatures
+  // before TabStripModel observers are notified, within the same task. Those
+  // observers must still be able to map the tab to its surface handle.
+  registry_->OnTabWillBeDestroyed(tab_handle());
+  EXPECT_EQ(ActorSurfaceHandle::From(tab_handle()), handle);
+  EXPECT_FALSE(handle.Get());
+  EXPECT_EQ(handle.GetTabHandle(), tabs::TabHandle::Null());
+
+  // The mapping is dropped once the current task completes.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ActorSurfaceHandle::From(tab_handle()).is_null());
 }
 
 }  // namespace
