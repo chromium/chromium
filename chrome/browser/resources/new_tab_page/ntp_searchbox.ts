@@ -518,6 +518,10 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   setInputText(text: string) {
     this.$.input.setInputText(text);
+    // Setting the text programmatically (e.g. with the voice search transcript)
+    // does not fire `searchbox-input-text-updated`, so update the state here to
+    // keep the dynamic AI Mode button in sync with the input.
+    this.hasUserInput_ = !!text.trim();
   }
 
   focusInput() {

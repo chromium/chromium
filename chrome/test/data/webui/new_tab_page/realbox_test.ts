@@ -1172,6 +1172,40 @@ suite('NewTabPageRealboxNextTest', () => {
       assertTrue(!!composeButton);
       assertFalse(composeButton.hasAttribute('dynamic'));
     });
+
+    test('has-user-input attribute is set when text is set', async () => {
+      loadTimeData.overrideValues({ntpRealboxDynamicAiModeButton: true});
+      realbox = createAndAppendRealbox({
+        composeButtonEnabled: true,
+        composeboxEnabled: true,
+        ntpRealboxNextEnabled: true,
+      });
+      await microtasksFinished();
+      const composeButton =
+          realbox.shadowRoot.querySelector('cr-searchbox-compose-button');
+      assertTrue(!!composeButton);
+      assertFalse(composeButton.hasAttribute('has-user-input'));
+
+      // Simulate the voice search transcript being placed in the input after
+      // the stop button is clicked. This does not fire
+      // `searchbox-input-text-updated`.
+      realbox.setInputText('hello world');
+      await microtasksFinished();
+      assertTrue(composeButton.hasAttribute('has-user-input'));
+
+      // Whitespace-only text does not count as user input.
+      realbox.setInputText('   ');
+      await microtasksFinished();
+      assertFalse(composeButton.hasAttribute('has-user-input'));
+
+      realbox.setInputText('hello world');
+      await microtasksFinished();
+      assertTrue(composeButton.hasAttribute('has-user-input'));
+
+      realbox.setInputText('');
+      await microtasksFinished();
+      assertFalse(composeButton.hasAttribute('has-user-input'));
+    });
   });
 });
 
