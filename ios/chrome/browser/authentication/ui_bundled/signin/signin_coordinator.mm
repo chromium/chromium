@@ -416,11 +416,11 @@ using signin_metrics::PromoAction;
 
 #pragma mark - Protected
 
-- (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                   completionIdentity:(id<SystemIdentity>)completionIdentity {
-  SigninCoordinatorResultOrIdentity result =
-      signin::SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
-          signinResult, completionIdentity);
+- (void)runCompletionWithSigninResult:
+    (const SigninCoordinatorResultOrIdentity&)signinResult {
+  if (signinResult.has_value()) {
+    CHECK(signinResult.value());
+  }
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
   CHECK(self.signinCompletion);
@@ -428,7 +428,15 @@ using signin_metrics::PromoAction;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(self, result);
+  signinCompletion(self, signinResult);
+}
+
+- (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
+                   completionIdentity:(id<SystemIdentity>)completionIdentity {
+  [self
+      runCompletionWithSigninResult:
+          signin::SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
+              signinResult, completionIdentity)];
 }
 
 #pragma mark - BuggyAuthenticationViewOwner

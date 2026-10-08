@@ -95,17 +95,18 @@
           self.profile->GetOriginalProfile());
   id<SystemIdentity> primaryIdentity =
       authenticationService->GetPrimaryIdentity();
-  SigninCoordinatorResult signinResult;
+  SigninCoordinatorResultOrIdentity signinResult =
+      base::unexpected(SigninCoordinatorResultInterrupted);
   switch (result) {
     case HistorySyncResult::kSuccess:
     case HistorySyncResult::kUserCanceled:
     case HistorySyncResult::kSkipped:
-      signinResult = SigninCoordinatorResultSuccess;
       CHECK(primaryIdentity);
+      signinResult = primaryIdentity;
       break;
     case HistorySyncResult::kPrimaryIdentityRemoved:
-      signinResult = SigninCoordinatorResultInterrupted;
       CHECK(!primaryIdentity);
+      signinResult = base::unexpected(SigninCoordinatorResultInterrupted);
       break;
   }
   if (primaryIdentity && _showSnackbar) {
@@ -113,8 +114,7 @@
     // of whether the history sync was displayed and/or accepted.
     TriggerAccountSwitchSnackbarWithIdentity(primaryIdentity, self.browser);
   }
-  [self runCompletionWithSigninResult:signinResult
-                   completionIdentity:primaryIdentity];
+  [self runCompletionWithSigninResult:signinResult];
 }
 
 @end
