@@ -193,7 +193,13 @@ void BrowserCompositorMac::SetRenderWidgetHostIsHidden(bool hidden) {
       // UseParentLayerCompositor which is a no-op, skipping WasHidden(). We
       // must explicitly call it here to ensure the frame is unlocked from the
       // compositor cache.
-      if (base::FeatureList::IsEnabled(features::kHideDelegatedFrameHostMac)) {
+      //
+      // If the view is still visible, the window is only occluded (ex: on
+      // another space). Keep the frame locked in that case so that it isn't
+      // evicted and can be displayed immediately when the window is revealed.
+      const bool only_occluded = root_layer_->visible();
+      if (base::FeatureList::IsEnabled(features::kHideDelegatedFrameHostMac) &&
+          !only_occluded) {
         delegated_frame_host_->WasHidden(
             DelegatedFrameHost::HiddenCause::kOther);
       }
