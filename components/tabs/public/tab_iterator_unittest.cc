@@ -6,32 +6,56 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/tabs/tab_group_desktop.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/mock_tab_group.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/unpinned_tab_collection.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace tabs {
+
+namespace {
+
+class TestTab : public MockTabInterface {
+ public:
+  TestTab() {
+    ON_CALL(*this, OnReparented)
+        .WillByDefault(
+            [this](TabCollection* parent, base::PassKey<TabCollection>) {
+              parent_collection_ = parent;
+            });
+    ON_CALL(*this,
+            GetParentCollection(testing::An<base::PassKey<TabCollection>>()))
+        .WillByDefault([this] { return parent_collection_; });
+    ON_CALL(*this, GetParentCollection()).WillByDefault([this] {
+      return parent_collection_;
+    });
+  }
+  ~TestTab() override = default;
+
+ private:
+  raw_ptr<TabCollection> parent_collection_ = nullptr;
+};
+
+}  // namespace
 
 class TabCollectionIteratorTest : public ::testing::Test {
  public:
   TabCollectionIteratorTest() {
-    testing_profile_ = std::make_unique<TestingProfile>();
-    tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
-    tab_strip_model_ = std::make_unique<TabStripModel>(
-        tab_strip_model_delegate_.get(), testing_profile_.get());
-
-    collection_ = std::make_unique<tabs::UnpinnedTabCollection>();
+    collection_ = std::make_unique<UnpinnedTabCollection>();
+    group_factory_ = std::make_unique<MockTabGroupFactory>(nullptr);
+    ON_CALL(*group_factory_, Create)
+        .WillByDefault([](TabGroupTabCollection* collection,
+                          const tab_groups::TabGroupId& id,
+                          const tab_groups::TabGroupVisualData& visual_data) {
+          return std::make_unique<MockTabGroup>(collection, id, visual_data);
+        });
   }
 
   ~TabCollectionIteratorTest() override { collection_.reset(); }
@@ -40,25 +64,15 @@ class TabCollectionIteratorTest : public ::testing::Test {
   TabCollectionIteratorTest& operator=(const TabCollectionIteratorTest&) =
       delete;
 
-  std::unique_ptr<content::WebContents> MakeWebContents() {
-    return content::WebContents::Create(
-        content::WebContents::CreateParams(testing_profile_.get()));
-  }
+  std::unique_ptr<TestTab> CreateTab() { return std::make_unique<TestTab>(); }
 
-  tabs::UnpinnedTabCollection* collection() { return collection_.get(); }
-  TabStripModel* GetTabStripModel() { return tab_strip_model_.get(); }
-  Profile* profile() { return testing_profile_.get(); }
+  UnpinnedTabCollection* collection() { return collection_.get(); }
+  MockTabGroupFactory& group_factory() { return *group_factory_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  content::RenderViewHostTestEnabler test_enabler_;
-
   // Use unpinned collection as it can have tabs and collection as children.
-  std::unique_ptr<tabs::UnpinnedTabCollection> collection_;
-  std::unique_ptr<Profile> testing_profile_;
-  std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
-  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+  std::unique_ptr<UnpinnedTabCollection> collection_;
+  std::unique_ptr<MockTabGroupFactory> group_factory_;
 };
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithoutChildren) {
@@ -68,15 +82,14 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithoutChildren) {
 }
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithOnlyCollection) {
-  TabGroupDesktop::Factory factory(profile());
   collection()->AddCollection(
-      std::make_unique<tabs::TabGroupTabCollection>(
-          factory, tab_groups::TabGroupId::GenerateNew(),
+      std::make_unique<TabGroupTabCollection>(
+          group_factory(), tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData()),
       0);
   collection()->AddCollection(
-      std::make_unique<tabs::TabGroupTabCollection>(
-          factory, tab_groups::TabGroupId::GenerateNew(),
+      std::make_unique<TabGroupTabCollection>(
+          group_factory(), tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData()),
       0);
 
@@ -87,9 +100,7 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithOnlyCollection) {
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithOnlyTabs) {
   for (int i = 0; i < 5; i++) {
-    collection()->AddTab(
-        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-        0);
+    collection()->AddTab(CreateTab(), 0);
   }
 
   EXPECT_EQ(*collection()->begin(), collection()->GetTabAtIndexRecursive(0));
@@ -99,46 +110,33 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithOnlyTabs) {
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithMixedTabsAndCollections) {
   // Add a group with two tabs.
-  TabGroupDesktop::Factory factory(profile());
-  std::unique_ptr<tabs::TabGroupTabCollection> group_one =
-      std::make_unique<tabs::TabGroupTabCollection>(
-          factory, tab_groups::TabGroupId::GenerateNew(),
+  std::unique_ptr<TabGroupTabCollection> group_one =
+      std::make_unique<TabGroupTabCollection>(
+          group_factory(), tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData());
 
-  group_one->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
-  group_one->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
+  group_one->AddTab(CreateTab(), 0);
+  group_one->AddTab(CreateTab(), 0);
   collection()->AddCollection(std::move(group_one), 0);
 
   // Add five tabs.
   for (int i = 0; i < 5; i++) {
-    collection()->AddTab(
-        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-        collection()->ChildCount());
+    collection()->AddTab(CreateTab(), collection()->ChildCount());
   }
 
   // Add another group containing a tab and a split collection with two tabs.
-  std::unique_ptr<tabs::TabGroupTabCollection> group_two =
-      std::make_unique<tabs::TabGroupTabCollection>(
-          factory, tab_groups::TabGroupId::GenerateNew(),
+  std::unique_ptr<TabGroupTabCollection> group_two =
+      std::make_unique<TabGroupTabCollection>(
+          group_factory(), tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData());
 
-  group_two->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
-  std::unique_ptr<tabs::SplitTabCollection> split_collection =
-      std::make_unique<tabs::SplitTabCollection>(
+  group_two->AddTab(CreateTab(), 0);
+  std::unique_ptr<SplitTabCollection> split_collection =
+      std::make_unique<SplitTabCollection>(
           split_tabs::SplitTabId::GenerateNew(),
           split_tabs::SplitTabVisualData());
-  split_collection->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
-  split_collection->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
+  split_collection->AddTab(CreateTab(), 0);
+  split_collection->AddTab(CreateTab(), 0);
   group_two->AddCollection(std::move(split_collection), 1);
   collection()->AddCollection(std::move(group_two), collection()->ChildCount());
 
@@ -154,9 +152,7 @@ TEST_F(TabCollectionIteratorTest, TabIteratorWithMixedTabsAndCollections) {
 
 TEST_F(TabCollectionIteratorTest, TabIteratorBackwardIterationWithOnlyTabs) {
   for (int i = 0; i < 5; i++) {
-    collection()->AddTab(
-        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-        collection()->ChildCount());
+    collection()->AddTab(CreateTab(), collection()->ChildCount());
   }
 
   // Iterate backwards starting from end().
@@ -175,44 +171,31 @@ TEST_F(TabCollectionIteratorTest, TabIteratorBackwardIterationWithOnlyTabs) {
 
 TEST_F(TabCollectionIteratorTest,
        TabIteratorBackwardIterationWithMixedTabsAndCollections) {
-  TabGroupDesktop::Factory factory(profile());
-  std::unique_ptr<tabs::TabGroupTabCollection> group_one =
-      std::make_unique<tabs::TabGroupTabCollection>(
-          factory, tab_groups::TabGroupId::GenerateNew(),
+  std::unique_ptr<TabGroupTabCollection> group_one =
+      std::make_unique<TabGroupTabCollection>(
+          group_factory(), tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData());
 
-  group_one->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
-  group_one->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
+  group_one->AddTab(CreateTab(), 0);
+  group_one->AddTab(CreateTab(), 0);
   collection()->AddCollection(std::move(group_one), 0);
 
   for (int i = 0; i < 5; i++) {
-    collection()->AddTab(
-        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-        collection()->ChildCount());
+    collection()->AddTab(CreateTab(), collection()->ChildCount());
   }
 
-  std::unique_ptr<tabs::TabGroupTabCollection> group_two =
-      std::make_unique<tabs::TabGroupTabCollection>(
-          factory, tab_groups::TabGroupId::GenerateNew(),
+  std::unique_ptr<TabGroupTabCollection> group_two =
+      std::make_unique<TabGroupTabCollection>(
+          group_factory(), tab_groups::TabGroupId::GenerateNew(),
           tab_groups::TabGroupVisualData());
 
-  group_two->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
-  std::unique_ptr<tabs::SplitTabCollection> split_collection =
-      std::make_unique<tabs::SplitTabCollection>(
+  group_two->AddTab(CreateTab(), 0);
+  std::unique_ptr<SplitTabCollection> split_collection =
+      std::make_unique<SplitTabCollection>(
           split_tabs::SplitTabId::GenerateNew(),
           split_tabs::SplitTabVisualData());
-  split_collection->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
-  split_collection->AddTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      0);
+  split_collection->AddTab(CreateTab(), 0);
+  split_collection->AddTab(CreateTab(), 0);
   group_two->AddCollection(std::move(split_collection), 1);
   collection()->AddCollection(std::move(group_two), collection()->ChildCount());
 
@@ -253,8 +236,8 @@ TEST_F(TabCollectionIteratorTest,
   EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(7));
 
   // Test constructing from tab and stepping backward.
-  tabs::TabInterface* middle_tab = collection()->GetTabAtIndexRecursive(5);
-  tabs::TabCollection::TabIterator mid_it(middle_tab);
+  TabInterface* middle_tab = collection()->GetTabAtIndexRecursive(5);
+  TabCollection::TabIterator mid_it(middle_tab);
   EXPECT_EQ(*mid_it, middle_tab);
   --mid_it;
   EXPECT_EQ(*mid_it, collection()->GetTabAtIndexRecursive(4));
@@ -262,9 +245,7 @@ TEST_F(TabCollectionIteratorTest,
 
 TEST_F(TabCollectionIteratorTest, ReverseIteratorAndBaseReversed) {
   for (int i = 0; i < 5; i++) {
-    collection()->AddTab(
-        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-        collection()->ChildCount());
+    collection()->AddTab(CreateTab(), collection()->ChildCount());
   }
 
   // Verify rbegin() and rend().
@@ -276,8 +257,10 @@ TEST_F(TabCollectionIteratorTest, ReverseIteratorAndBaseReversed) {
 
   // Verify base::Reversed support.
   expected_index = 4;
-  for (tabs::TabInterface* tab : base::Reversed(*collection())) {
+  for (TabInterface* tab : base::Reversed(*collection())) {
     EXPECT_EQ(tab, collection()->GetTabAtIndexRecursive(expected_index--));
   }
   EXPECT_EQ(expected_index, -1);
 }
+
+}  // namespace tabs

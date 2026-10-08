@@ -96,13 +96,13 @@ source_set("unit_tests") {
   # Move unit tests for tab collections here once decoupled from
   # chrome/browser/ui/tabs/. Specifically:
   # TODO(crbug.com/415963447): tab_collection_unittest.cc
-  # TODO(crbug.com/415965106): tab_iterator_unittest.cc
   sources = [
     "public/direct_child_walker_unittest.cc",
     "public/supports_handles_unittest.cc",
     "public/tab_collection_observer_unittest.cc",
     "public/tab_collection_storage_unittest.cc",
     "public/tab_handle_factory_unittest.cc",
+    "public/tab_iterator_unittest.cc",
   ]
 
   public_deps = [ "//base" ]

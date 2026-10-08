@@ -1007,7 +1007,6 @@ if (!is_android) {
       "split_view_iph_controller_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",
-      "tab_iterator_unittest.cc",
       "tab_menu_model_unittest.cc",
       "tab_metrics_provider_unittest.cc",
       "tab_model_unittest.cc",
