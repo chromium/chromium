@@ -132,7 +132,9 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/filename_util.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_change_notifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -382,6 +384,24 @@ class DevToolsTest : public PlatformBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    // On test environments without an active default network (e.g. Android
+    // emulators), NetworkChangeNotifier may report CONNECTION_NONE
+    // (IsOffline() == true, navigator.onLine == false). On Android, this
+    // causes OfflinePageRequestHandler to intercept reloads of tabs hidden
+    // behind an undocked DevTools tab and serve MHTML snapshots instead of
+    // live pages. It also prevents emulating offline conditions in DevTools
+    // from triggering an 'offline' transition event on existing renderer
+    // processes. Mock the connection as online (CONNECTION_WIFI) and notify
+    // BrowserOnlineStateObserver to update existing renderer processes.
+    scoped_mock_network_change_notifier_ =
+        std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+    scoped_mock_network_change_notifier_->mock_network_change_notifier()
+        ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+    net::NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeForTests(
+        net::NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
+            net::NetworkChangeNotifier::SUBTYPE_UNKNOWN),
+        net::NetworkChangeNotifier::CONNECTION_WIFI);
+
     // A number of tests expect favicon requests to succeed - otherwise, they'll
     // generate console errors.
     embedded_test_server()->RegisterRequestHandler(
@@ -397,6 +417,7 @@ class DevToolsTest : public PlatformBrowserTest {
     if (window_) {
       CloseDevToolsWindow();
     }
+    scoped_mock_network_change_notifier_.reset();
   }
 
  protected:
@@ -499,6 +520,8 @@ class DevToolsTest : public PlatformBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>
+      scoped_mock_network_change_notifier_;
 };
 
 class SitePerProcessDevToolsTest : public DevToolsTest {
@@ -2426,21 +2449,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestPauseWhenLoadingDevTools) {
 }
 
 // Tests network timing.
-// TODO(crbug.com/40218872): Enable this flaky test. This is flaky on Android
-// build.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_TestNetworkTiming DISABLED_TestNetworkTiming
-#else
-#define MAYBE_TestNetworkTiming TestNetworkTiming
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkTiming) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkTiming) {
   RunTest("testNetworkTiming", kSlowTestPage);
 }
 
 // Tests network size.
-// TODO(crbug/40218872): Enable this flaky test. This is flaky on Linux debug
-// build and Android build. See also: https://crrev.com/c/2772698
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/40218872): Enable this flaky test. This is flaky on Linux
+// debug build. See also: https://crrev.com/c/2772698
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_TestNetworkSize DISABLED_TestNetworkSize
 #else
 #define MAYBE_TestNetworkSize TestNetworkSize
@@ -2451,8 +2467,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSize) {
 
 // Tests raw headers text.
 // TODO(crbug.com/40218872): Enable this flaky test. This is flaky on Linux
-// debug build and Android build.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
+// debug build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_TestNetworkSyncSize DISABLED_TestNetworkSyncSize
 #else
 #define MAYBE_TestNetworkSyncSize TestNetworkSyncSize
@@ -3442,17 +3458,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
 class DevToolsNetInfoTest : public DevToolsTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kEnableNetworkInformationDownlinkMax);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsNetInfoTest, EmulateNetworkConditions) {
   RunTest("testEmulateNetworkConditions", kEmulateNetworkConditionsPage);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsNetInfoTest, OfflineNetworkConditions) {
   RunTest("testOfflineNetworkConditions", kEmulateNetworkConditionsPage);
