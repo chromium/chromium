@@ -241,7 +241,6 @@ public class PartnerBrowserCustomizations {
                     @Override
                     protected Void doInBackground() {
                         try {
-                            partnerCustomizationsUma.logAsyncInitStarted();
                             boolean systemOrPreStable =
                                     (context.getApplicationInfo().flags
                                                             & ApplicationInfo.FLAG_SYSTEM)
@@ -250,9 +249,14 @@ public class PartnerBrowserCustomizations {
                             if (!systemOrPreStable) {
                                 // Only allow partner customization if this browser is a system
                                 // package, or is in pre-stable channels.
+                                Log.w(
+                                        TAG,
+                                        "Partner customization skipped: not a system package or"
+                                                + " pre-stable build.");
                                 return null;
                             }
 
+                            partnerCustomizationsUma.logAsyncInitStarted();
                             if (isCancelled()) return null;
 
                             CustomizationProviderDelegate delegate =

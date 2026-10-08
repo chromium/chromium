@@ -112,13 +112,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Waived" summary="strongest binding of Waived"/>
 </variants>
 
-<variants name="CustomizationDelegate">
-  <variant name="GService" summary="GService"/>
-  <variant name="None" summary="None-valid"/>
-  <variant name="Phenotype" summary="Phenotype/Heterodyne"/>
-  <variant name="PreloadApk" summary="Preload-APK"/>
-</variants>
-
 <variants name="GridTabSwitcherAnimationType">
   <variant name="Expand" summary="Grid to Tab"/>
   <variant name="Shrink" summary="Tab to Grid"/>
@@ -4991,108 +4984,6 @@ chromium-metrics-reviews@google.com.
     getting the page content proto and populating the virtual structure.
     Recorded when onProvideVirtualStructure is called on ContentView when the
     AnnotatedPageContentsVirtualStructure feature is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Android.PartnerCustomization.TaskCompletion"
-    enum="PartnerTaskCompletion" expires_after="2025-04-06">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the outcome of the async initialization task for the partner browser
-    customization. This tells us how often the delegate is able to provide
-    correct data, is canceled due to timeout, and whether exceptions were
-    thrown, etc. Note that the correct data may actually arrive too late to be
-    used because Chrome waits only 1/2 second before creating an initial tab,
-    but it will be recorded here regardless. This logging of Completed-too-late
-    is only done by the Chrome App, but all other values are logged for CCT as
-    well. Recorded when the async task is completed or canceled during Chrome's
-    start up.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.PartnerCustomization.TaskCompletion.{CustomizationDelegate}"
-    enum="PartnerTaskCompletion" expires_after="2025-04-06">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the outcome of the async initialization task for the partner browser
-    customization. This tells us how often the delegate
-    &quot;{CustomizationDelegate}&quot; is able to provide correct data, is
-    canceled due to timeout, and whether exceptions were thrown, for this
-    delegate. Note that the correct data may actually arrive too late to be used
-    because Chrome waits only 1/2 second before creating an initial tab, but it
-    will be recorded here regardless. This logging of Completed-too-late is only
-    done by the Chrome App, but all other values are logged for CCT as well.
-    Recorded when the async task is completed or canceled during Chrome's start
-    up.
-  </summary>
-  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
-</histogram>
-
-<histogram
-    name="Android.PartnerCustomization.TaskCompletionNotCached.{CustomizationDelegate}"
-    enum="PartnerTaskCompletion" expires_after="2025-02-02">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Warning, this histogram may have a data gap since it was expired on
-    2023-12-12 and reenabled around 2024-03-01. Records the outcome of the async
-    initialization task for the partner browser customization, when there is not
-    yet any cached Homepage (likely Chrome's first launch). This tells us how
-    often the delegate &quot;{CustomizationDelegate}&quot; is able to provide
-    correct data, is canceled due to timeout, and whether exceptions were
-    thrown, for this delegate. Note that the correct data may actually arrive
-    too late to be used because Chrome waits only 1/2 second before creating an
-    initial tab, but it will be recorded here regardless. This logging of
-    Completed-too-late is only done by the Chrome App, but all other values are
-    logged for CCT as well. Recorded when the async task is completed or
-    canceled during Chrome's start up when no homepage is already cached.
-  </summary>
-  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
-</histogram>
-
-<histogram
-    name="Android.PartnerCustomization.TryFailedDuration.{CustomizationDelegate}"
-    units="ms" expires_after="2025-04-06">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the amount of time it took for the delegate
-    &quot;{CustomizationDelegate}&quot; to run in the async task that does
-    partner customization. Recorded when the task completes but was unable to
-    use the delegate for some reason. Trying to use the PreloadApk delegate is
-    only done when actually needed so these numbers should reflect actual usage
-    attempts.
-  </summary>
-  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
-</histogram>
-
-<histogram
-    name="Android.PartnerCustomization.TrySucceededDuration.{CustomizationDelegate}"
-    units="ms" expires_after="2025-04-06">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the amount of time it took for the delegate
-    &quot;{CustomizationDelegate}&quot; to run in the async task that does
-    partner customization. Recorded when the task completes successfully and a
-    delegate providing customizations is found. Trying to use the PreloadApk
-    delegate is only done when actually needed so these numbers should reflect
-    actual usage attempts.
-  </summary>
-  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
-</histogram>
-
-<histogram name="Android.PartnerCustomization.Usage"
-    enum="PartnerCustomizationUsage" expires_after="2025-04-06">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records which customization usage is being invoked, at the time it is
-    requested. The possible usages include a custom Homepage URL, suppressing
-    incognito, etc.
   </summary>
 </histogram>
 

@@ -34,10 +34,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.Supplier;
 
 /**
- * Centralizes UMA data collection for partner customizations and loading. Each of these UMA
- * instances correspond to a {@link PartnerBrowserCustomizations#initializeAsync} execution. If
- * createInitialTab is called, it's associated with whichever UMA started most recently. Then that
- * UMA logs the interaction with customization and won't log again in any future instance.
+ * Centralizes diagnostic logging and UMA data collection for partner customizations and homepage
+ * loading. Each instance corresponds to a {@link PartnerBrowserCustomizations#initializeAsync}
+ * execution. If {@code createInitialTab} is called, it is associated with whichever instance
+ * started most recently, which logs the interaction with customization once.
  */
 @NullMarked
 class PartnerCustomizationsUma {
@@ -83,11 +83,9 @@ class PartnerCustomizationsUma {
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
-     * Logs to UMA for {@link PartnerBrowserCustomizations}.
-     * Tracks - and logs to UMA - significant events that occur on any single run of {@link
-     * PartnerBrowserCustomizations#initializeAsync}. Also logs the outcome of creating an initial
-     * tab at Chrome startup and how that relates to the Homepage, and Partner Customization in
-     * general.
+     * Tracks and logs significant events that occur on any single run of {@link
+     * PartnerBrowserCustomizations#initializeAsync}, as well as the outcome of creating an initial
+     * tab at Chrome startup relative to the partner homepage.
      */
     PartnerCustomizationsUma() {
         sWhichDelegate = CustomizationProviderDelegateType.NONE_VALID;
@@ -127,13 +125,15 @@ class PartnerCustomizationsUma {
             return;
         }
 
+        if (!isInitialized) {
+            Log.w(TAG, "Initial tab created before partner customization finished.");
+        }
+
         mDidCreateInitialTabAfterCustomization = TriStateUtils.from(isInitialized);
         mHomepageUrlCreated = homepageUrlCreated;
         tryLogInitialTabCustomizationOutcome();
     }
 
-    // TODO(crbug.com/565457901): Rename and adapt this @IntDef and
-    // logPartnerCustomizationHomepage() for logger refactoring.
     /**
      * Constants used to categorize what kind of Homepage was initially shown at Chrome's startup.
      */
@@ -143,7 +143,6 @@ class PartnerCustomizationsUma {
         PartnerCustomizationsHomepageEnum.NTP_CORRECTLY,
         PartnerCustomizationsHomepageEnum.PARTNER_CUSTOM_HOMEPAGE,
         PartnerCustomizationsHomepageEnum.OTHER_CUSTOM_HOMEPAGE,
-        PartnerCustomizationsHomepageEnum.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
@@ -170,8 +169,6 @@ class PartnerCustomizationsUma {
 
         /** Initial tab is some custom homepage other than the NTP, or the Partner homepage. */
         int OTHER_CUSTOM_HOMEPAGE = 4;
-
-        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -325,39 +322,31 @@ class PartnerCustomizationsUma {
                 whichDelegate,
                 CustomizationProviderDelegateType.NUM_ENTRIES);
 
-        Log.i(TAG, "Partner Customization delegate: %s.", whichDelegate);
+        Log.i(TAG, "Partner customization delegate: %s.", delegateName(whichDelegate));
         sWhichDelegate = whichDelegate;
     }
 
-    /**
-     * What kind of customization is actually used.
-     * These correspond to PartnerCustomizationUsage in enums.xml.
-     * These values are recorded as histogram values. Entries should not be renumbered and numeric
-     * values should never be reused.
-     */
+    /** Constants used to identify what kind of customization is requested. */
     @IntDef({
         CustomizationUsage.HOMEPAGE,
         CustomizationUsage.BOOKMARKS,
         CustomizationUsage.INCOGNITO,
-        CustomizationUsage.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface CustomizationUsage {
         int HOMEPAGE = 0;
         int BOOKMARKS = 1;
         int INCOGNITO = 2;
-
-        int NUM_ENTRIES = 3;
     }
 
     /**
-     * Records which customization usage is being invoked, at the time it is requested. Called from
+     * Logs which customization usage is being invoked, at the time it is requested. Called from
      * Downstream, or unused.
+     *
      * @param usage The {@link CustomizationUsage} used, e.g. home page vs incognito.
      */
     public static void logPartnerCustomizationUsage(@CustomizationUsage int usage) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.Usage", usage, CustomizationUsage.NUM_ENTRIES);
+        Log.i(TAG, "Partner customization usage: %s.", usageName(usage));
     }
 
     /**
@@ -382,14 +371,19 @@ class PartnerCustomizationsUma {
             long endTime,
             boolean didTryCreateSucceed) {
         long duration = endTime - startTime;
-        String durationHistogramName;
         if (didTryCreateSucceed) {
-            durationHistogramName = "Android.PartnerCustomization.TrySucceededDuration.";
+            Log.i(
+                    TAG,
+                    "Try create customization delegate %s succeeded in %d ms.",
+                    delegateName(delegate),
+                    duration);
         } else {
-            durationHistogramName = "Android.PartnerCustomization.TryFailedDuration.";
+            Log.w(
+                    TAG,
+                    "Try create customization delegate %s failed in %d ms.",
+                    delegateName(delegate),
+                    duration);
         }
-        RecordHistogram.recordTimesHistogram(
-                durationHistogramName + delegateName(delegate), duration);
     }
 
     /** Called when the partner customization Async Init background task is started. */
@@ -402,12 +396,13 @@ class PartnerCustomizationsUma {
         assert mAsyncCustomizationStartTime == 0;
         mAsyncCustomizationStartTime = initializeAsyncStartTime;
         sWhichDelegate = CustomizationProviderDelegateType.NONE_VALID;
+        Log.i(TAG, "Partner customization async init started.");
     }
 
     @VisibleForTesting
     void logAsyncInitCompleted() {
         mDidCustomizationCompleteSuccessfully = true;
-        @TaskCompletion int taskCompletion = TaskCompletion.NONE_VALID;
+        @TaskCompletion int taskCompletion;
         if (mAsyncCustomizationStartTime != 0) {
             // Check if we've already tried to create an initial tab.
             if (mDidCreateInitialTabAfterCustomization == TriState.NOT_SET
@@ -450,8 +445,7 @@ class PartnerCustomizationsUma {
     }
 
     /**
-     * Logs the outcome of Homepage customization. Formerly recorded to UMA, retained temporarily as
-     * a stub for logger refactoring.
+     * Logs the outcome of Homepage customization relative to the initial tab.
      *
      * @param partnerCustomizationHomepageEnum The code for what kind of page was shown.
      * @param whichDelegate Which delegate was doing the customization.
@@ -461,29 +455,65 @@ class PartnerCustomizationsUma {
     void logPartnerCustomizationHomepage(
             @PartnerCustomizationsHomepageEnum int partnerCustomizationHomepageEnum,
             @CustomizationProviderDelegateType int whichDelegate,
-            boolean wasHomepageCached) {}
+            boolean wasHomepageCached) {
+        String outcome;
+        boolean isWarning = false;
+        switch (partnerCustomizationHomepageEnum) {
+            case NTP_UNKNOWN:
+                outcome = "NTP (unknown if correct, customization incomplete)";
+                isWarning = true;
+                break;
+            case NTP_INCORRECTLY:
+                outcome = "NTP incorrectly (should have been partner homepage)";
+                isWarning = true;
+                break;
+            case NTP_CORRECTLY:
+                outcome = "NTP correctly";
+                break;
+            case PARTNER_CUSTOM_HOMEPAGE:
+                outcome = "Partner custom homepage";
+                break;
+            case OTHER_CUSTOM_HOMEPAGE:
+                outcome = "Other custom homepage";
+                break;
+            default:
+                assert false : "Unexpected homepage outcome: " + partnerCustomizationHomepageEnum;
+                return;
+        }
+        String delegate = delegateName(whichDelegate);
+        if (isWarning) {
+            Log.w(
+                    TAG,
+                    "Initial tab homepage outcome: %s. delegate=%s, cached=%b",
+                    outcome,
+                    delegate,
+                    wasHomepageCached);
+        } else {
+            Log.i(
+                    TAG,
+                    "Initial tab homepage outcome: %s. delegate=%s, cached=%b",
+                    outcome,
+                    delegate,
+                    wasHomepageCached);
+        }
+    }
 
     /** The different outcomes for the Async Task completion. */
     @IntDef({
-        TaskCompletion.NONE_VALID,
         TaskCompletion.COMPLETED_IN_TIME,
         TaskCompletion.COMPLETED_TOO_LATE,
         TaskCompletion.CANCELLED,
         TaskCompletion.EXCEPTION,
         TaskCompletion.TASK_SKIPPED,
-        TaskCompletion.NUM_ENTRIES,
     })
     @VisibleForTesting
     @Retention(RetentionPolicy.SOURCE)
     @interface TaskCompletion {
-        int NONE_VALID = 0;
         int COMPLETED_IN_TIME = 1;
         int COMPLETED_TOO_LATE = 2;
         int CANCELLED = 3;
         int EXCEPTION = 4;
         int TASK_SKIPPED = 5;
-
-        int NUM_ENTRIES = 6;
     }
 
     /** Logs how the async task completed. */
@@ -491,24 +521,37 @@ class PartnerCustomizationsUma {
             @TaskCompletion int taskCompletionEnum,
             @CustomizationProviderDelegateType int whichDelegate,
             boolean wasHomepageCached) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.TaskCompletion",
-                taskCompletionEnum,
-                TaskCompletion.NUM_ENTRIES);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.TaskCompletion." + delegateName(whichDelegate),
-                taskCompletionEnum,
-                TaskCompletion.NUM_ENTRIES);
-        if (!wasHomepageCached) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.PartnerCustomization.TaskCompletionNotCached."
-                            + delegateName(whichDelegate),
-                    taskCompletionEnum,
-                    TaskCompletion.NUM_ENTRIES);
+        String delegate = delegateName(whichDelegate);
+        if (taskCompletionEnum == TaskCompletion.COMPLETED_IN_TIME) {
+            Log.i(
+                    TAG,
+                    "Async init completed in time for tab creation. delegate=%s, cached=%b",
+                    delegate,
+                    wasHomepageCached);
+            return;
         }
+        String status;
+        switch (taskCompletionEnum) {
+            case TaskCompletion.COMPLETED_TOO_LATE:
+                status = "completed too late for tab creation";
+                break;
+            case TaskCompletion.CANCELLED:
+                status = "cancelled (timeout)";
+                break;
+            case TaskCompletion.EXCEPTION:
+                status = "failed with exception";
+                break;
+            case TaskCompletion.TASK_SKIPPED:
+                status = "task skipped";
+                break;
+            default:
+                assert false : "Unexpected task completion: " + taskCompletionEnum;
+                return;
+        }
+        Log.w(TAG, "Async init %s. delegate=%s, cached=%b", status, delegate, wasHomepageCached);
     }
 
-    /** @return the variant name for the given delegate for use in variant histograms. */
+    /** Returns the human-readable name for the given {@link CustomizationProviderDelegateType}. */
     @VisibleForTesting
     static String delegateName(@CustomizationProviderDelegateType int delegate) {
         switch (delegate) {
@@ -520,6 +563,20 @@ class PartnerCustomizationsUma {
                 return "PreloadApk";
             default:
                 return "None";
+        }
+    }
+
+    /** Returns the human-readable name for the given {@link CustomizationUsage}. */
+    private static String usageName(@CustomizationUsage int usage) {
+        switch (usage) {
+            case CustomizationUsage.HOMEPAGE:
+                return "Homepage";
+            case CustomizationUsage.BOOKMARKS:
+                return "Bookmarks";
+            case CustomizationUsage.INCOGNITO:
+                return "Incognito";
+            default:
+                return "Unknown";
         }
     }
 

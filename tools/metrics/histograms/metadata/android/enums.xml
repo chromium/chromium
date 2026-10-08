@@ -1824,21 +1824,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Preload APK"/>
 </enum>
 
-<enum name="PartnerCustomizationUsage">
-  <int value="0" label="Homepage"/>
-  <int value="1" label="Bookmarks"/>
-  <int value="2" label="Incognito"/>
-</enum>
-
-<enum name="PartnerTaskCompletion">
-  <int value="0" label="None valid"/>
-  <int value="1" label="Completed in time for tab creation"/>
-  <int value="2" label="Completed too late for tab creation"/>
-  <int value="3" label="Cancelled - timeout"/>
-  <int value="4" label="Exception thrown"/>
-  <int value="5" label="Task skipped"/>
-</enum>
-
 <!-- LINT.IfChange(persistent_state_id_verification) -->
 
 <enum name="PersistentStateIdVerification">

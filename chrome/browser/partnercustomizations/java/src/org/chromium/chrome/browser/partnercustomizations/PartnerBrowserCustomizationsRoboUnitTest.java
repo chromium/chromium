@@ -6,22 +6,28 @@ package org.chromium.chrome.browser.partnercustomizations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLog.LogItem;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.List;
 import java.util.Locale;
 
 /** Unit tests for {@link PartnerBrowserCustomizations}. */
@@ -32,15 +38,55 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
     @Before
     public void setup() {
+        ShadowLog.reset();
         CustomizationProviderDelegateUpstreamImpl.setHomepageForTesting(
                 JUnitTestGURLs.EXAMPLE_URL.getSpec());
     }
 
     @After
     public void tearDown() {
+        ShadowLog.reset();
         Locale.setDefault(DEFAULT_LOCALE);
         PartnerBrowserCustomizations.destroy();
         PartnerCustomizationsUma.resetStaticsForTesting();
+    }
+
+    @Test
+    public void initializeAsyncSkippedOnNonSystemStableBuild() {
+        VersionInfo.setOverridesForTesting(
+                /* official= */ null, /* stable= */ true, /* local= */ null);
+
+        PartnerBrowserCustomizations customizations = PartnerBrowserCustomizations.getInstance();
+        customizations.initializeAsync(ContextUtils.getApplicationContext());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(customizations.isInitialized());
+        assertNull(customizations.getHomePageUrl());
+        assertLogMessage(
+                Log.normalizeTag("PartnerCustomize"),
+                Log.WARN,
+                "Partner customization skipped: not a system package or pre-stable build.");
+        assertLogMessage(
+                Log.normalizeTag("PartnerCustUma"),
+                Log.WARN,
+                "Async init task skipped. delegate=None, cached=false");
+    }
+
+    private static void assertLogMessage(String tag, int expectedLogLevel, String expectedMessage) {
+        List<LogItem> logs = ShadowLog.getLogsForTag(tag);
+        for (LogItem item : logs) {
+            if (item.type == expectedLogLevel && expectedMessage.equals(item.msg)) {
+                return;
+            }
+        }
+        throw new AssertionError(
+                String.format(
+                        Locale.US,
+                        "Expected log [tag=%s, level=%d, msg=%s] not found in %s",
+                        tag,
+                        expectedLogLevel,
+                        expectedMessage,
+                        logs));
     }
 
     @Test
