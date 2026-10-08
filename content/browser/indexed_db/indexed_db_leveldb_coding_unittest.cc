@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <array>
 #include <limits>
 #include <string>
@@ -50,14 +49,6 @@ static std::string WrappedEncodeByte(char value) {
   std::string buffer;
   EncodeByte(value, &buffer);
   return buffer;
-}
-
-// Compares only the common prefix of `a` and `b`, byte-by-byte as unsigned
-// chars (like `memcmp`), mirroring how SQLite orders BLOBs. Unlike SQLite, a
-// length tie-break is not applied.
-int SqliteCompare(std::string_view a, std::string_view b) {
-  const size_t len = std::min(a.size(), b.size());
-  return a.substr(0, len).compare(b.substr(0, len));
 }
 
 }  // namespace
@@ -941,10 +932,12 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
     std::string encoded_b = EncodeSortableIDBKey(key_b);
     EXPECT_TRUE(encoded_b.size());
 
-    EXPECT_LT(SqliteCompare(encoded_a, encoded_b), 0);
-    EXPECT_GT(SqliteCompare(encoded_b, encoded_a), 0);
-    EXPECT_EQ(SqliteCompare(encoded_a, encoded_a), 0);
-    EXPECT_EQ(SqliteCompare(encoded_b, encoded_b), 0);
+    // SQLite orders BLOBs with memcmp() over the common prefix, then by
+    // length, which is exactly what std::string::compare() does.
+    EXPECT_LT(encoded_a.compare(encoded_b), 0);
+    EXPECT_GT(encoded_b.compare(encoded_a), 0);
+    EXPECT_EQ(encoded_a.compare(encoded_a), 0);
+    EXPECT_EQ(encoded_b.compare(encoded_b), 0);
   }
 
   std::vector<IndexedDBKey> keys_vec;
@@ -1022,11 +1015,11 @@ TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
       EXPECT_EQ(encoded_a.size(), encoded_b.size());
 
       if (value_a < value_b) {
-        EXPECT_LT(SqliteCompare(encoded_a, encoded_b), 0);
+        EXPECT_LT(encoded_a.compare(encoded_b), 0);
       } else if (value_a == value_b) {
-        EXPECT_EQ(SqliteCompare(encoded_a, encoded_b), 0);
+        EXPECT_EQ(encoded_a.compare(encoded_b), 0);
       } else {
-        EXPECT_GT(SqliteCompare(encoded_a, encoded_b), 0);
+        EXPECT_GT(encoded_a.compare(encoded_b), 0);
       }
     }
   }
