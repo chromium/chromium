@@ -247,4 +247,80 @@ TEST(BrowsingDataLifetimePolicyHandler,
   ASSERT_TRUE(prefs.GetValue(browsing_data::prefs::kBrowsingDataLifetime,
                              &applied_value));
   EXPECT_EQ(expected_value, *applied_value);
+
+  // Subsequent check/apply with an empty PolicyMap (e.g. when evaluating
+  // recommended policies right after mandatory policies on the same handler
+  // instance) must not crash or apply stale state.
+  policy::PolicyMap empty_policy_map;
+  policy::PolicyErrorMap empty_errors;
+  PrefValueMap empty_prefs;
+  EXPECT_TRUE(browsing_data_lifetime_handler.CheckPolicySettings(
+      empty_policy_map, &empty_errors));
+  EXPECT_TRUE(empty_errors.empty());
+  browsing_data_lifetime_handler.ApplyPolicySettings(empty_policy_map,
+                                                     &empty_prefs);
+  EXPECT_FALSE(empty_prefs.GetValue(browsing_data::prefs::kBrowsingDataLifetime,
+                                    &applied_value));
+}
+
+// Validates that unsupported data_types are still warned about and filtered out
+// when SyncDisabled is true.
+TEST(BrowsingDataLifetimePolicyHandler,
+     BrowsingDataLifetimeUnsupportedDataTypesWithSyncDisabled) {
+  policy::PolicyMap policy_map;
+  policy::PolicyErrorMap errors;
+
+  base::DictValue browsing_data_types_dict =
+      base::DictValue()
+          .Set("data_types", base::ListValue()
+                                 .Append("hosted_app_data")
+                                 .Append("download_history")
+                                 .Append("cached_images_and_files"))
+          .Set("time_to_live_in_hours", 1);
+
+  policy_map.Set(
+      policy::key::kBrowsingDataLifetime, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+      base::Value(
+          base::ListValue().Append(std::move(browsing_data_types_dict))),
+      nullptr);
+  policy_map.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(true), nullptr);
+
+  BrowsingDataLifetimePolicyHandler browsing_data_lifetime_handler(
+      policy::key::kBrowsingDataLifetime,
+      browsing_data::prefs::kBrowsingDataLifetime,
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  EXPECT_TRUE(
+      browsing_data_lifetime_handler.CheckPolicySettings(policy_map, &errors));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(
+      errors.GetErrorMessages(policy::key::kBrowsingDataLifetime,
+                              policy::PolicyMap::MessageType::kWarning),
+      l10n_util::GetStringFUTF16(IDS_POLICY_BROWSING_DATA_PLATFORM_UNSUPPORTED,
+                                 u"download_history, hosted_app_data"));
+#else
+  EXPECT_TRUE(errors.empty());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  PrefValueMap prefs;
+  browsing_data_lifetime_handler.ApplyPolicySettings(policy_map, &prefs);
+
+  base::Value expected_value(base::Value::Type::LIST);
+  expected_value.GetList().Append(
+      base::DictValue()
+          .Set("data_types", base::ListValue()
+#if !BUILDFLAG(IS_ANDROID)
+                                 .Append("hosted_app_data")
+                                 .Append("download_history")
+#endif  // !BUILDFLAG(IS_ANDROID)
+                                 .Append("cached_images_and_files"))
+          .Set("time_to_live_in_hours", 1));
+
+  base::Value* applied_value = nullptr;
+  ASSERT_TRUE(prefs.GetValue(browsing_data::prefs::kBrowsingDataLifetime,
+                             &applied_value));
+  EXPECT_EQ(expected_value, *applied_value);
 }
