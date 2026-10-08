@@ -7,14 +7,13 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "base/notreached.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #import "components/session_proto_db/session_proto_db.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -55,46 +54,25 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS* profile) {
 }  // namespace session_proto_db::internal
 
 template <typename T>
-class SessionProtoDBFactory : public ProfileKeyedServiceFactoryIOS {
+class SessionProtoDBFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<SessionProtoDBFactory<T>,
+                                                SessionProtoDB<T>> {
  public:
-  static SessionProtoDBFactory<T>* GetInstance();
-  static SessionProtoDB<T>* GetForProfile(ProfileIOS* profile);
+  // Simplify writing the default constructor.
+  using SuperClass =
+      TypedProfileKeyedServiceFactoryIOS<SessionProtoDBFactory<T>,
+                                         SessionProtoDB<T>>;
 
-  static TestingFactory GetDefaultFactory();
+  SessionProtoDBFactory(SuperClass::PassKey key)
+      : SuperClass(std::move(key), "SessionProtoDB") {}
 
  private:
-  friend class base::NoDestructor<SessionProtoDBFactory<T>>;
-
-  SessionProtoDBFactory();
-  ~SessionProtoDBFactory() override = default;
-
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final {
+    return session_proto_db::internal::BuildSessionProtoDB<T>(profile);
+  }
 };
-
-// static
-template <typename T>
-SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->template GetServiceForProfileAs<SessionProtoDB<T>>(
-      profile, /*create=*/true);
-}
-
-template <typename T>
-SessionProtoDBFactory<T>::TestingFactory
-SessionProtoDBFactory<T>::GetDefaultFactory() {
-  return base::BindOnce(&session_proto_db::internal::BuildSessionProtoDB<T>);
-}
-
-template <typename T>
-SessionProtoDBFactory<T>::SessionProtoDBFactory()
-    : ProfileKeyedServiceFactoryIOS("SessionProtoDB") {}
-
-template <typename T>
-std::unique_ptr<KeyedService> SessionProtoDBFactory<T>::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return session_proto_db::internal::BuildSessionProtoDB<T>(profile);
-}
 
 // Ensure all SessionProtoDB<T> factories are built for all values of T.
 void EnsureSessionProtoDBFactoriesBuilt();

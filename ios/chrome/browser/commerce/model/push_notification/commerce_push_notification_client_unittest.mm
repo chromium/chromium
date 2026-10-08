@@ -170,13 +170,6 @@ class CommercePushNotificationClientTest : public PlatformTest {
                   testing::NiceMock<commerce::MockShoppingService>>();
             }));
     builder.AddTestingFactory(
-        SessionProtoDBFactory<
-            commerce_subscription_db::CommerceSubscriptionContentProto>::
-            GetInstance(),
-        SessionProtoDBFactory<
-            commerce_subscription_db::CommerceSubscriptionContentProto>::
-            GetDefaultFactory());
-    builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
