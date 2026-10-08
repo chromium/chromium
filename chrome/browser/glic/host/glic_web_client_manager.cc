@@ -9,7 +9,6 @@
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
@@ -88,71 +87,7 @@ GlicWebviewExitReason TerminationStatusToExitReason(
 
 }  // namespace
 
-class GlicWebClientManager::Metrics {
- public:
-  Metrics() = default;
-  ~Metrics() = default;
-
-  void OnWebClientCreated() {
-    base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
-                                  GlicWebClientLifecycleEvent::kCreated);
-  }
-
-  void OnWebClientInitialized() {
-    base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
-                                  GlicWebClientLifecycleEvent::kInitialized);
-  }
-
-  void OnWebClientDisconnected(std::optional<GlicWebClientLifecycleEvent> event,
-                               bool had_web_client) {
-    base::UmaHistogramEnumeration(
-        "Glic.Host.WebClientLifecycleEvent",
-        event.value_or(
-            had_web_client
-                ? GlicWebClientLifecycleEvent::kDisconnectedAfterInitialization
-                : GlicWebClientLifecycleEvent::
-                      kDisconnectedBeforeInitialization));
-  }
-
-  void OnGuestNavigation(mojom::GuestPageType page_type, bool is_api_allowed) {
-    if (page_type != mojom::GuestPageType::kRegular || !is_api_allowed) {
-      has_error_or_crash_ = true;
-    }
-  }
-
-  void OnProcessGone(base::TerminationStatus status) {
-    has_error_or_crash_ = true;
-    base::UmaHistogramEnumeration("Glic.Session.WebClientCrash.ExitReason",
-                                  TerminationStatusToExitReason(status));
-    if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
-      base::RecordAction(base::UserMetricsAction("GlicSessionWebClientCrash"));
-    }
-  }
-
-  void OnWebClientStateChanged(mojom::WebClientState state) {
-    if (state == mojom::WebClientState::kWarmed) {
-      MaybeRecordTimeToWarmed();
-    }
-  }
-
-  void MaybeRecordTimeToWarmed() {
-    if (has_recorded_time_to_warmed_ || has_error_or_crash_) {
-      return;
-    }
-    has_recorded_time_to_warmed_ = true;
-    base::TimeDelta duration = base::TimeTicks::Now() - creation_time_;
-    base::UmaHistogramCustomTimes("Glic.Contents.TimeToWarmed", duration,
-                                  base::Milliseconds(1), base::Seconds(60), 50);
-  }
-
- private:
-  const base::TimeTicks creation_time_ = base::TimeTicks::Now();
-  bool has_recorded_time_to_warmed_ = false;
-  bool has_error_or_crash_ = false;
-};
-
-GlicWebClientManager::GlicWebClientManager()
-    : metrics_(std::make_unique<Metrics>()) {}
+GlicWebClientManager::GlicWebClientManager() = default;
 
 GlicWebClientManager::~GlicWebClientManager() = default;
 
@@ -198,14 +133,14 @@ void GlicWebClientManager::SetPendingWebClientReceiver(
     if (delegate_) {
       delegate_->OnWebClientStateChanged(mojom::WebClientState::kWarmed);
     }
-    metrics_->MaybeRecordTimeToWarmed();
   }
 }
 
 void GlicWebClientManager::CreateWebClient(
     mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver) {
   CHECK(host_);
-  metrics_->OnWebClientCreated();
+  base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
+                                GlicWebClientLifecycleEvent::kCreated);
   if (delegate_) {
     delegate_->OnWebClientCreated();
   }
@@ -224,7 +159,6 @@ void GlicWebClientManager::CreateWebClient(
 
 void GlicWebClientManager::OnWebClientStateChanged(
     mojom::WebClientState state) {
-  metrics_->OnWebClientStateChanged(state);
   if (delegate_) {
     delegate_->OnWebClientStateChanged(state);
   }
@@ -236,7 +170,8 @@ void GlicWebClientManager::OnWebClientStateChanged(
 void GlicWebClientManager::WebClientInitialized() {
   CHECK(web_client_owned_);
   web_client_ = web_client_owned_.get();
-  metrics_->OnWebClientInitialized();
+  base::UmaHistogramEnumeration("Glic.Host.WebClientLifecycleEvent",
+                                GlicWebClientLifecycleEvent::kInitialized);
 }
 
 void GlicWebClientManager::UnsetWebClient(
@@ -247,7 +182,13 @@ void GlicWebClientManager::UnsetWebClient(
   DVLOG(1) << "Glic [WebClientManager] UnsetWebClient, had_access="
            << (web_client_owned_ ? "true" : "false");
   bool had_web_client = (web_client_ != nullptr);
-  metrics_->OnWebClientDisconnected(event, had_web_client);
+  base::UmaHistogramEnumeration(
+      "Glic.Host.WebClientLifecycleEvent",
+      event.value_or(
+          had_web_client
+              ? GlicWebClientLifecycleEvent::kDisconnectedAfterInitialization
+              : GlicWebClientLifecycleEvent::
+                    kDisconnectedBeforeInitialization));
   web_client_ = nullptr;
   web_client_owned_.reset();
   if (host_) {
@@ -288,7 +229,6 @@ void GlicWebClientManager::DidFinishNavigation(
   mojom::GuestPageType page_type =
       is_error_page ? mojom::GuestPageType::kLoadError
                     : GetGuestPageType(guest_main_frame->GetLastCommittedURL());
-  metrics_->OnGuestNavigation(page_type, is_api_allowed);
   bool is_initial_commit = !has_navigation_committed_;
   has_navigation_committed_ = true;
 
@@ -305,15 +245,17 @@ void GlicWebClientManager::DidFinishNavigation(
 
 void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  metrics_->OnProcessGone(status);
   DVLOG(1)
       << "Glic [WebClientManager] PrimaryMainFrameRenderProcessGone, status="
       << std::to_underlying(status);
+  base::UmaHistogramEnumeration("Glic.Session.WebClientCrash.ExitReason",
+                                TerminationStatusToExitReason(status));
   pending_web_client_receiver_.reset();
   if (web_client_owned_) {
     UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnProcessGone);
   }
   if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
+    base::RecordAction(base::UserMetricsAction("GlicSessionWebClientCrash"));
     if (delegate_) {
       delegate_->OnGuestProcessGone(status);
     }

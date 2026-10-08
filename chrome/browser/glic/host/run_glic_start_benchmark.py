@@ -59,7 +59,6 @@ def parse_results(output: str, mode: str) -> Dict:
     "stddev_ms": None,
     "min_ms": None,
     "max_ms": None,
-    "time_to_warmed_ms": None,
     "decompress_ms": None,
     "script_start_ms": None,
     "client_init_ms": None,
@@ -72,7 +71,6 @@ def parse_results(output: str, mode: str) -> Dict:
     r"\["
     + re.escape(mode)
     + r"\] Iteration (\d+)/(\d+): total_init=([\d\.]+) ms"
-    + r"(?:, time_to_warmed=([\d\.]+) ms)?"
     + r"(?:, decompress=([\d\.]+) ms)?"
     + r"(?:, script_start=([\d\.]+) ms)?"
     + r"(?:, bootstrap_received=([\d\.]+) ms)?"
@@ -81,17 +79,15 @@ def parse_results(output: str, mode: str) -> Dict:
   )
   for m in iter_re.finditer(output):
     init_ms = float(m.group(3))
-    time_to_warmed_ms = float(m.group(4)) if m.group(4) else 0.0
-    decompress_ms = float(m.group(5)) if m.group(5) else 0.0
-    script_start = float(m.group(6)) if m.group(6) else 0.0
-    bootstrap_received = float(m.group(7)) if m.group(7) else 0.0
-    client_init = float(m.group(8)) if m.group(8) else 0.0
-    panel_opened = float(m.group(9)) if m.group(9) else 0.0
+    decompress_ms = float(m.group(4)) if m.group(4) else 0.0
+    script_start = float(m.group(5)) if m.group(5) else 0.0
+    bootstrap_received = float(m.group(6)) if m.group(6) else 0.0
+    client_init = float(m.group(7)) if m.group(7) else 0.0
+    panel_opened = float(m.group(8)) if m.group(8) else 0.0
     result["iteration_times"].append(
       {
         "iteration": int(m.group(1)),
         "init_ms": init_ms,
-        "time_to_warmed_ms": time_to_warmed_ms,
         "decompress_ms": decompress_ms,
         "script_start_ms": script_start,
         "bootstrap_received_ms": bootstrap_received,
@@ -124,15 +120,6 @@ def parse_results(output: str, mode: str) -> Dict:
   if minmax_m:
     result["min_ms"] = float(minmax_m.group(1))
     result["max_ms"] = float(minmax_m.group(2))
-
-  warmed_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean time to warmed:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
-  )
-  result["time_to_warmed_ms"] = float(warmed_m.group(1)) if warmed_m else 0.0
 
   decomp_m = re.search(
     r"RESULTS for "
@@ -216,7 +203,7 @@ def main():
       "test",
       TEST_FILE,
       "-f",
-      f"*GlicInitializationBenchmark*{mode}*",
+      f"*{mode}*",
       "--test-launcher-print-test-stdio=always",
       f"--glic-benchmark-iterations={args.iterations}",
     ]
@@ -224,11 +211,6 @@ def main():
     res = parse_results(output, mode)
     results.append(res)
     if res["mean_ms"] is not None:
-      warmed_str = (
-        f", time_to_warmed={res['time_to_warmed_ms']:.1f}ms"
-        if res.get("time_to_warmed_ms")
-        else ""
-      )
       decomp_str = (
         f", decompress={res['decompress_ms']:.1f}ms"
         if res["decompress_ms"]
@@ -238,7 +220,7 @@ def main():
         f"  Done: Mean={res['mean_ms']:.2f}ms"
         f" (stddev={res['stddev_ms']:.2f}ms),"
         f" Min={res['min_ms']:.1f}ms,"
-        f" Max={res['max_ms']:.1f}ms{warmed_str}{decomp_str}"
+        f" Max={res['max_ms']:.1f}ms{decomp_str}"
       )
     else:
       print(f"  Warning: Could not parse results for {mode}")
@@ -251,17 +233,17 @@ def main():
       break
 
   # Print Markdown / ASCII Comparison Table
-  print("\n" + "=" * 116)
-  print(f"{'BENCHMARK RESULTS':^116}")
-  print("=" * 116)
+  print("\n" + "=" * 104)
+  print(f"{'BENCHMARK RESULTS':^104}")
+  print("=" * 104)
   header = (
-    f"| {'Configuration':<20} | {'Total Init (ms)':<15} |"
-    f" {'TimeToWarmed (ms)':<17} | {'StdDev':<8} |"
-    f" {'Min / Max (ms)':<18} | {'Delta vs Baseline':<18} |"
+    f"| {'Configuration':<25} | {'Mean (ms)':<10} | {'StdDev':<8} |"
+    f" {'Min / Max (ms)':<18} | {'Decompress':<11} |"
+    f" {'Delta vs Baseline':<18} |"
   )
   separator = (
-    f"|:{'-' * 20}-|-{'-' * 15}:|-{'-' * 17}:|-{'-' * 8}:"
-    f"|-{'-' * 18}:|-{'-' * 18}:|"
+    f"|:{'-' * 25}-|-{'-' * 10}:|-{'-' * 8}:|-{'-' * 18}:"
+    f"|-{'-' * 11}:|-{'-' * 18}:|"
   )
   print(header)
   print(separator)
@@ -269,9 +251,6 @@ def main():
   for r in results:
     mode = r["mode"]
     mean_str = f"{r['mean_ms']:.2f}" if r["mean_ms"] is not None else "N/A"
-    warmed_str = (
-      f"{r['time_to_warmed_ms']:.2f}" if r.get("time_to_warmed_ms") else "N/A"
-    )
     stddev_str = (
       f"{r['stddev_ms']:.2f}" if r["stddev_ms"] is not None else "N/A"
     )
@@ -279,6 +258,9 @@ def main():
       f"{r['min_ms']:.1f} / {r['max_ms']:.1f}"
       if r["min_ms"] is not None
       else "N/A"
+    )
+    decomp_str = (
+      f"{r['decompress_ms']:.2f} ms" if r.get("decompress_ms") else "N/A"
     )
 
     delta_str = "-"
@@ -293,11 +275,11 @@ def main():
         delta_str = f"+{delta:.1f} ms (+{pct:.1f}%)"
 
     print(
-      f"| {mode:<20} | {mean_str:>15} | {warmed_str:>17} | {stddev_str:>8} |"
-      f" {minmax_str:>18} | {delta_str:>18} |"
+      f"| {mode:<25} | {mean_str:>10} | {stddev_str:>8} |"
+      f" {minmax_str:>18} | {decomp_str:>11} | {delta_str:>18} |"
     )
 
-  print("=" * 116)
+  print("=" * 104)
 
   # Check if any client lifecycle marks exist
   has_client_marks = any(r.get("script_start_ms") for r in results)

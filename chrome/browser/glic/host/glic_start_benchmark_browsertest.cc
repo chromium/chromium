@@ -8,9 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_samples.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,23 +60,12 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
     }
   }
   std::vector<double> init_times_ms;
-  std::vector<double> time_to_warmed_times_ms;
   std::vector<double> script_start_times_ms;
   std::vector<double> bootstrap_received_times_ms;
   std::vector<double> client_init_times_ms;
   std::vector<double> panel_opened_times_ms;
   std::vector<double> script_to_init_times_ms;
   std::vector<double> init_to_open_times_ms;
-
-  int prev_warmed_count = 0;
-  int64_t prev_warmed_sum = 0;
-  if (base::HistogramBase* warmed_hist =
-          base::StatisticsRecorder::FindHistogram(
-              "Glic.Contents.TimeToWarmed")) {
-    auto snapshot = warmed_hist->SnapshotSamples();
-    prev_warmed_count = snapshot->TotalCount();
-    prev_warmed_sum = snapshot->sum();
-  }
 
   std::string mode_str = IsNoWebview() ? "NoWebview" : "Webview";
 
@@ -100,23 +86,6 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
     base::TimeDelta elapsed = timer.Elapsed();
     double elapsed_ms = elapsed.InMillisecondsF();
     init_times_ms.push_back(elapsed_ms);
-
-    double time_to_warmed_ms = 0.0;
-    base::HistogramBase* warmed_hist =
-        base::StatisticsRecorder::FindHistogram("Glic.Contents.TimeToWarmed");
-    if (warmed_hist) {
-      auto snapshot = warmed_hist->SnapshotSamples();
-      int curr_count = snapshot->TotalCount();
-      int64_t curr_sum = snapshot->sum();
-      int delta_count = curr_count - prev_warmed_count;
-      if (delta_count > 0) {
-        time_to_warmed_ms =
-            static_cast<double>(curr_sum - prev_warmed_sum) / delta_count;
-        time_to_warmed_times_ms.push_back(time_to_warmed_ms);
-        prev_warmed_count = curr_count;
-        prev_warmed_sum = curr_sum;
-      }
-    }
 
     double script_start_ms = 0.0;
     double bootstrap_received_ms = 0.0;
@@ -154,7 +123,6 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
 
     LOG(INFO) << "[" << mode_str << "] Iteration " << (i + 1) << "/"
               << iterations << ": total_init=" << elapsed_ms << " ms"
-              << ", time_to_warmed=" << time_to_warmed_ms << " ms"
               << ", script_start=" << script_start_ms << " ms"
               << ", bootstrap_received=" << bootstrap_received_ms << " ms"
               << ", client_init=" << client_init_ms << " ms"
@@ -183,7 +151,6 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
     return v.empty() ? 0.0
                      : std::accumulate(v.begin(), v.end(), 0.0) / v.size();
   };
-  double mean_time_to_warmed = calc_mean(time_to_warmed_times_ms);
   double mean_script_start = calc_mean(script_start_times_ms);
   double mean_bootstrap_received = calc_mean(bootstrap_received_times_ms);
   double mean_client_init = calc_mean(client_init_times_ms);
@@ -197,7 +164,6 @@ IN_PROC_BROWSER_TEST_P(GlicInitializationBenchmark, MeasureInitializationTime) {
             << " ms (stddev: " << stddev_init << " ms)";
   LOG(INFO) << "  Min / Max:               " << min_init << " ms / " << max_init
             << " ms";
-  LOG(INFO) << "  Mean time to warmed:     " << mean_time_to_warmed << " ms";
   LOG(INFO) << "  Mean script start:       " << mean_script_start << " ms";
   LOG(INFO) << "  Mean bootstrap received: " << mean_bootstrap_received
             << " ms";
