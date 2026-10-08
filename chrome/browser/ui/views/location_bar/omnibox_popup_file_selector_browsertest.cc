@@ -33,6 +33,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
@@ -348,7 +349,9 @@ class OmniboxPopupFileSelectorAimBrowserTest : public InProcessBrowserTest {
          omnibox::internal::kWebUIOmniboxPopup,
          omnibox::kOmniboxKeepOpenOnFileSelection},
         {lens::features::kLensSendRawFileMediaTypes,
-         features::kWebUILocationBar});
+         features::kWebUILocationBar,
+         // Drives the AIM popup directly, without an AIM-eligible profile.
+         omnibox::kOmniboxAimPopupRequireEligibility});
   }
 
   void SetUpOnMainThread() override {

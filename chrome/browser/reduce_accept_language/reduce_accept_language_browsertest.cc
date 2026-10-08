@@ -20,6 +20,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -33,6 +34,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1778,6 +1780,19 @@ class ReduceAcceptLanguageCountBrowserTest
                                  network::features::kReduceAcceptLanguageHTTP});
     }
   }
+
+  // Samples recorded for kLargeLanguages: 1 during initial profile setup,
+  // twice more when SetPrefsAcceptLanguage() syncs the preference to the
+  // renderer and network services, and 1 per WebUI omnibox popup WebContents.
+  // The number of popups depends on platform defaults and AIM eligibility.
+  size_t ExpectedAcceptLanguageCountSamples() const {
+    return 3 +
+           std::ranges::count_if(content::GetAllWebContents(),
+                                 [](content::WebContents* contents) {
+                                   return contents->GetVisibleURL().host() ==
+                                          chrome::kChromeUIOmniboxPopupHost;
+                                 });
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(FeatureFlag,
@@ -1814,13 +1829,9 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest,
   }
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect 5 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
-  // is called (1 during initial profile setup, twice more when
-  // SetPrefsAcceptLanguage is called to sync the preference to the renderer and
-  // network services, 1 for WebUI Omnibox WebContents, and 1 for Omnibox Aim
-  // Popup Webcontents).
   histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
-                               kLargeLanguagesCount, 5);
+                               kLargeLanguagesCount,
+                               ExpectedAcceptLanguageCountSamples());
 }
 
 // TODO(crbug.com/542347163): Re-enable test.
@@ -1857,11 +1868,7 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, MAYBE_Iframe) {
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect 5 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
-  // is called (1 during initial profile setup, twice more when
-  // SetPrefsAcceptLanguage is called to sync the preference to the renderer and
-  // network services, 1 for WebUI Omnibox WebContents, and 1 for Omnibox Aim
-  // Popup Webcontents).
   histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
-                               kLargeLanguagesCount, 5);
+                               kLargeLanguagesCount,
+                               ExpectedAcceptLanguageCountSamples());
 }

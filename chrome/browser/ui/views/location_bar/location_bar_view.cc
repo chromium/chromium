@@ -101,6 +101,7 @@
 #include "components/contextual_search/input_state_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -362,10 +363,17 @@ void LocationBarView::Init() {
   omnibox_view_->Init();
 
   if (CanHostWebUIOmnibox(browser_, is_popup_mode_)) {
-    if (omnibox::IsAimPopupFeatureEnabled()) {
-      omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
-          /*location_bar=*/this, omnibox_controller_.get(),
-          /*presenter_delegate=*/*this);
+    if (omnibox::IsAimPopupFeatureEnabled() &&
+        !CreateOmniboxPopupAimPresenterIfEligible() && profile_) {
+      // Eligibility often arrives after window creation (e.g. first run, or
+      // sign-in), so keep listening rather than deciding once.
+      if (auto* service =
+              AimEligibilityServiceFactory::GetForProfile(profile_)) {
+        aim_eligibility_subscription_ =
+            service->RegisterEligibilityChangedCallback(
+                base::BindRepeating(&LocationBarView::OnAimEligibilityChanged,
+                                    base::Unretained(this)));
+      }
     }
 
     const bool web_ui_popup_dropdown_only =
@@ -1780,6 +1788,22 @@ bool LocationBarView::CanStartDragForView(View* sender,
                                           const gfx::Point& press_pt,
                                           const gfx::Point& p) {
   return true;
+}
+
+bool LocationBarView::CreateOmniboxPopupAimPresenterIfEligible() {
+  if (!omnibox_popup_aim_presenter_ &&
+      omnibox::ShouldCreateAimPopupPresenter(profile_)) {
+    omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
+        /*location_bar=*/this, omnibox_controller_.get(),
+        /*presenter_delegate=*/*this);
+  }
+  return !!omnibox_popup_aim_presenter_;
+}
+
+void LocationBarView::OnAimEligibilityChanged() {
+  if (CreateOmniboxPopupAimPresenterIfEligible()) {
+    aim_eligibility_subscription_ = {};
+  }
 }
 
 void LocationBarView::OnFullWebUiOmniboxReady() {

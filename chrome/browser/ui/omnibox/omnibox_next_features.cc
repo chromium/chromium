@@ -342,6 +342,16 @@ bool IsAimPopupEnabled(Profile* profile) {
          aim_service->IsFuseboxEligible();
 }
 
+bool ShouldCreateAimPopupPresenter(Profile* profile) {
+  if (!IsAimPopupFeatureEnabled()) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(kOmniboxAimPopupRequireEligibility)) {
+    return true;
+  }
+  return IsAimPopupEnabled(profile);
+}
+
 bool IsOmniboxEverywhereEligible(Profile* profile) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (!profile || profile->IsOffTheRecord()) {

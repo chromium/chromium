@@ -302,13 +302,17 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
 void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
     gfx::Point point,
     std::unique_ptr<ui::MenuModel> menu_model) {
+  // The menu acts on the AI Mode popup, which isn't created for ineligible
+  // profiles.
+  auto* aim_presenter =
+      popup_presenter_->delegate().GetOmniboxPopupAimPresenter();
+  if (!aim_presenter || !aim_presenter->GetWebUIContent()) {
+    return;
+  }
   ConvertPointToScreen(this, &point);
   context_menu_ = std::make_unique<OmniboxContextMenu>(
       GetWidget(), popup_presenter_->delegate().GetOmniboxPopupFileSelector(),
-      popup_presenter_->delegate()
-          .GetOmniboxPopupAimPresenter()
-          ->GetWebUIContent()
-          ->GetWrappedWebContents(),
+      aim_presenter->GetWebUIContent()->GetWrappedWebContents(),
       base::BindRepeating(&OmniboxPopupWebUIBaseContent::OnMenuClosed,
                           base::Unretained(this)));
   context_menu_->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);

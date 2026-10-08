@@ -187,6 +187,12 @@ bool ShouldAimEvictOnHide();
 bool IsAimPopupEnabled(Profile* profile);
 bool ShouldShowAimContextMenuOption(Profile* profile);
 
+// Returns true if a location bar for `profile` should create its AI Mode popup
+// presenter now. Returns false when the feature is off, or while the profile is
+// not eligible; in the latter case callers should check again when
+// `AimEligibilityService` reports an eligibility change.
+bool ShouldCreateAimPopupPresenter(Profile* profile);
+
 // Returns true if the Omnibox Everywhere feature is eligible for the given
 // `profile`. This checks the base::Feature flag, that the profile is valid and
 // not off-the-record, and that Google is the default search provider.
