@@ -35,8 +35,9 @@ enum class VoiceIsolationCreationResult {
 // `FrameSize() * FramesPerSecond() == 48000`. Inner stages operate on signals
 // derived from it, such as the 48 kHz DFTs consumed by BandSplitVoiceIsolation
 // and the 16 kHz low band that it forwards to the model.
-// VoiceIsolation::Create() CHECKs the sample rate of the external audio and
-// the FrameSize() and FramesPerSecond() of the outermost component.
+// VoiceIsolation::Create() CHECKs the sample rate and buffer size of the
+// external audio and the FrameSize() and FramesPerSecond() of the outermost
+// component.
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolationComponent {
  public:
   VoiceIsolationComponent() = default;

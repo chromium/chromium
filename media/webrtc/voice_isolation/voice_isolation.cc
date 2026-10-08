@@ -4,19 +4,20 @@
 
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 
+#include <cstddef>
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
-#include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/converting_audio_fifo.h"
+#include "media/base/channel_layout.h"
+#include "media/base/channel_mixer.h"
 #include "media/webrtc/voice_isolation/band_split_voice_isolation.h"
 #include "media/webrtc/voice_isolation/buffered_voice_isolation.h"
-#include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
 #include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "media/webrtc/voice_isolation/tflite_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
@@ -35,13 +36,12 @@ constexpr size_t kStftFramesPerSecond =
 // combines two of them into one STFT frame.
 constexpr size_t kExternalFramesPerStftFrame =
     BufferedVoiceIsolation::kNumBufferedFrames;
-constexpr size_t kVoiceIsolationFrameSize =
-    kStftFrameSize / kExternalFramesPerStftFrame;
 constexpr size_t kVoiceIsolationFramesPerSecond =
     kStftFramesPerSecond * kExternalFramesPerStftFrame;
-constexpr int kVoiceIsolationSampleRate = 48000;
-static_assert(kVoiceIsolationFrameSize * kVoiceIsolationFramesPerSecond ==
-              kVoiceIsolationSampleRate);
+static_assert(VoiceIsolation::kFrameSize ==
+              kStftFrameSize / kExternalFramesPerStftFrame);
+static_assert(VoiceIsolation::kFrameSize * kVoiceIsolationFramesPerSecond ==
+              VoiceIsolation::kSampleRate);
 
 base::expected<std::unique_ptr<VoiceIsolationComponent>,
                VoiceIsolationCreationResult>
@@ -78,38 +78,54 @@ class VoiceIsolationImpl : public VoiceIsolation {
   void ClearBuffers() override;
 
  private:
-  std::unique_ptr<VoiceIsolationComponent> voice_isolation_component_;
-  std::unique_ptr<ConvertingAudioFifo> forward_fifo_;
-  std::unique_ptr<ConvertingAudioFifo> backward_fifo_;
+  // Mono component that processes exactly one external buffer per call.
+  const std::unique_ptr<VoiceIsolationComponent> voice_isolation_component_;
+
+  // Channel count of the external buffers.
+  const int channels_;
+
+  // Downmix the external layout to mono and upmix the result back. Built once,
+  // off the audio thread. Null when the external layout is already mono.
+  std::unique_ptr<ChannelMixer> downmixer_;
+  std::unique_ptr<ChannelMixer> upmixer_;
+
+  // Preallocated mono scratch buses, only used when mixing. Keeping them as
+  // members avoids allocations on the real-time audio thread. Null when the
+  // external layout is already mono.
+  std::unique_ptr<AudioBus> mono_input_bus_;
+  std::unique_ptr<AudioBus> mono_output_bus_;
 };
 
 VoiceIsolationImpl::VoiceIsolationImpl(
     std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation,
     const media::AudioParameters& audio_params)
-    : voice_isolation_component_(std::move(internal_voice_isolation)) {
+    : voice_isolation_component_(std::move(internal_voice_isolation)),
+      channels_(audio_params.channels()) {
   CHECK(voice_isolation_component_);
-  CHECK(audio_params.IsValid());
-  CHECK_EQ(audio_params.sample_rate(), kVoiceIsolationSampleRate);
+  CHECK(VoiceIsolation::SupportsAudioParameters(audio_params));
 
-  // The FIFOs below feed the component mono frames of
-  // `kVoiceIsolationFrameSize` samples, `kVoiceIsolationFramesPerSecond` times
-  // per second. Create() accepts any component, so CHECK that it expects this
-  // exact frame layout.
-  CHECK_EQ(voice_isolation_component_->FrameSize(), kVoiceIsolationFrameSize);
+  // There is no FIFO to rebuffer mismatched sizes: every external buffer maps
+  // to one mono component call of `kFrameSize` samples,
+  // `kVoiceIsolationFramesPerSecond` times per second. Create() accepts any
+  // component, so CHECK that it matches this exact frame layout.
+  CHECK_EQ(voice_isolation_component_->FrameSize(), kFrameSize);
   CHECK_EQ(voice_isolation_component_->FramesPerSecond(),
            kVoiceIsolationFramesPerSecond);
 
-  media::AudioParameters mono_internal(
-      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayoutConfig::Mono(), kVoiceIsolationSampleRate,
-      kVoiceIsolationFrameSize);
+  // Mono buffers feed the component directly, so no mixing is needed.
+  if (channels_ == 1) {
+    return;
+  }
 
-  forward_fifo_ =
-      std::make_unique<ConvertingAudioFifo>(audio_params, mono_internal,
-                                            /*use_input_bus_pool=*/true);
-  backward_fifo_ =
-      std::make_unique<ConvertingAudioFifo>(mono_internal, audio_params,
-                                            /*use_input_bus_pool=*/true);
+  // Build the mixing matrices and scratch buses once, off the audio thread.
+  const ChannelLayoutConfig& external_layout =
+      audio_params.channel_layout_config();
+  downmixer_ = std::make_unique<ChannelMixer>(external_layout,
+                                              ChannelLayoutConfig::Mono());
+  upmixer_ = std::make_unique<ChannelMixer>(ChannelLayoutConfig::Mono(),
+                                            external_layout);
+  mono_input_bus_ = AudioBus::Create(1, audio_params.frames_per_buffer());
+  mono_output_bus_ = AudioBus::Create(1, audio_params.frames_per_buffer());
 }
 
 VoiceIsolationImpl::~VoiceIsolationImpl() = default;
@@ -117,49 +133,39 @@ VoiceIsolationImpl::~VoiceIsolationImpl() = default;
 void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
                                       AudioBus& output_bus) {
   TRACE_EVENT("audio", "VoiceIsolationImpl::ProcessAudio");
+
+  // Enforce the documented contract: two different buses, both with the
+  // channel count and the 10 ms buffer size passed to Create().
+  CHECK_NE(&input_bus, &output_bus);
   CHECK_EQ(input_bus.frames(), output_bus.frames());
+  CHECK_EQ(static_cast<size_t>(input_bus.frames()), kFrameSize);
   CHECK_EQ(input_bus.channels(), output_bus.channels());
+  CHECK_EQ(input_bus.channels(), channels_);
 
-  // We cannot pass `input_bus` directly because we only hold a const reference
-  // and ConvertingAudioFifo::Push takes ownership (std::unique_ptr<AudioBus>).
-  // Instead we use a AudioBus from the internal pool of the `forward_fifo_` and
-  // `backward_fifo_`. Calls from `ProcessAudio()` will only require memory
-  // allocation in the first few calls.
-  std::unique_ptr<AudioBus> input_copy = forward_fifo_->GetInputAudioBus();
-  CHECK(input_copy);
-  input_bus.CopyTo(input_copy.get());
-
-  forward_fifo_->Push(std::move(input_copy));
-
-  while (forward_fifo_->HasOutput()) {
-    TRACE_EVENT("audio", "VoiceIsolationImpl::ProcessInternalFrame");
-    const media::AudioBus* internal_in = forward_fifo_->PeekOutput();
-    std::unique_ptr<media::AudioBus> internal_out =
-        backward_fifo_->GetInputAudioBus();
-
-    voice_isolation_component_->ProcessAudio(internal_in->channel(0),
-                                             internal_out->channel(0));
-
-    forward_fifo_->PopOutput();
-    backward_fifo_->Push(std::move(internal_out));
+  if (channels_ == 1) {
+    voice_isolation_component_->ProcessAudio(input_bus.channel(0),
+                                             output_bus.channel(0));
+    return;
   }
 
-  if (backward_fifo_->HasOutput()) {
-    const media::AudioBus* out = backward_fifo_->PeekOutput();
-    out->CopyTo(&output_bus);
-    backward_fifo_->PopOutput();
-  } else {
-    TRACE_EVENT_INSTANT("audio", "VoiceIsolationImpl::OutputZeroed");
-    output_bus.Zero();
-  }
+  downmixer_->Transform(&input_bus, mono_input_bus_.get());
+  voice_isolation_component_->ProcessAudio(mono_input_bus_->channel(0),
+                                           mono_output_bus_->channel(0));
+  upmixer_->Transform(mono_output_bus_.get(), &output_bus);
 }
 
 void VoiceIsolationImpl::ClearBuffers() {
-  forward_fifo_->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
-  backward_fifo_->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+  // The scratch buses are fully overwritten on every call, so only the
+  // component holds state.
   voice_isolation_component_->ClearBuffers();
 }
 }  // namespace
+
+bool VoiceIsolation::SupportsAudioParameters(
+    const media::AudioParameters& audio_params) {
+  return audio_params.IsValid() && audio_params.sample_rate() == kSampleRate &&
+         static_cast<size_t>(audio_params.frames_per_buffer()) == kFrameSize;
+}
 
 base::expected<std::unique_ptr<VoiceIsolationComponent>,
                VoiceIsolationCreationResult>

@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -111,6 +112,8 @@ class AudioProcessorHandlerTest : public ::testing::Test {
   }
 #endif
 };
+
+using AudioProcessorHandlerDeathTest = AudioProcessorHandlerTest;
 
 namespace {
 
@@ -674,6 +677,19 @@ TEST_F(AudioProcessorHandlerTest,
       model_manager, output_params_, deliver_callback_.Get(),
       /*error_callback=*/base::DoNothing());
   EXPECT_FALSE(handler);
+}
+
+TEST_F(AudioProcessorHandlerDeathTest,
+       VoiceIsolationHandlerMaybeCreateDiesOnUnsupportedParams) {
+  MockMlModelManager model_manager;
+
+  // VoiceIsolation only supports the 10 ms buffers that the APM delivers.
+  const media::AudioParameters twenty_ms_params(
+      output_params_.format(), output_params_.channel_layout_config(),
+      kSampleRate, /*frames_per_buffer=*/2 * kFramesPerBuffer);
+  EXPECT_CHECK_DEATH(VoiceIsolationHandler::MaybeCreate(
+      model_manager, twenty_ms_params, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing()));
 }
 
 TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerMaybeCreateSuccess) {

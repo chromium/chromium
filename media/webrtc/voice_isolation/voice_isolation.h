@@ -5,6 +5,7 @@
 #ifndef MEDIA_WEBRTC_VOICE_ISOLATION_VOICE_ISOLATION_H_
 #define MEDIA_WEBRTC_VOICE_ISOLATION_VOICE_ISOLATION_H_
 
+#include <cstddef>
 #include <memory>
 
 #include "base/component_export.h"
@@ -19,11 +20,23 @@ class AudioParameters;
 
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
  public:
+  // Required sample rate and 10 ms buffer size (in frames) of the external
+  // audio, as delivered by the WebRTC Audio Processing Module (APM).
+  static constexpr int kSampleRate = 48000;
+  static constexpr size_t kFrameSize = 480;
+
+  // Returns true if `audio_params` are valid `kSampleRate` (48 kHz) parameters
+  // with 10 ms buffers (`kFrameSize`, 480 frames), which Create() requires and
+  // CHECKs.
+  static bool SupportsAudioParameters(
+      const media::AudioParameters& audio_params);
+
   // Creates a VoiceIsolation object. For that it needs a pointer to the
-  // `model` and valid 48 kHz `audio_params` (`sample_rate() == 48000`, PCM
-  // linear format). `model` needs to remain valid for the lifetime of the
-  // VoiceIsolation object. Returns nullptr if no component can be created from
-  // `model`. Otherwise, invalid or non-48 kHz `audio_params` cause a CHECK
+  // `model` and valid 48 kHz `audio_params` with 10 ms buffers
+  // (`sample_rate() == kSampleRate`, `frames_per_buffer() == kFrameSize`).
+  // `model` needs to remain valid for the lifetime of the VoiceIsolation
+  // object. Returns nullptr if no component can be created from `model`.
+  // Otherwise, invalid, non-48 kHz or non-10 ms `audio_params` cause a CHECK
   // failure.
   static std::unique_ptr<VoiceIsolation> Create(
       const tflite::FlatBufferModel* model,
@@ -39,9 +52,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
   CreateComponent(const tflite::FlatBufferModel* model);
 
   // Creates a VoiceIsolation object wrapping an existing `component`. Requires
-  // valid 48 kHz `audio_params`. `component` must process mono 10 ms frames at
-  // 48 kHz, like the components returned by CreateComponent(). Both values are
-  // CHECKed.
+  // valid 48 kHz `audio_params` with 10 ms buffers (`sample_rate() ==
+  // kSampleRate`, `frames_per_buffer() == kFrameSize`). `component` must
+  // process mono 10 ms frames at 48 kHz, like the components returned by
+  // CreateComponent(). All values are CHECKed.
   static std::unique_ptr<VoiceIsolation> Create(
       std::unique_ptr<VoiceIsolationComponent> component,
       const media::AudioParameters& audio_params);
@@ -52,8 +66,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
   VoiceIsolation& operator=(const VoiceIsolation&) = delete;
 
   // Processes audio from input_bus to output_bus. This method expects that
-  // input_bus and output_bus point to different busses, have the same number of
-  // channels and the same number of frames.
+  // input_bus and output_bus point to different busses and match the
+  // `audio_params` passed to Create(): the same number of channels and exactly
+  // `frames_per_buffer()` (`kFrameSize`, 480) frames. Violations cause a CHECK
+  // failure.
   virtual void ProcessAudio(const AudioBus& input_bus,
                             AudioBus& output_bus) = 0;
 

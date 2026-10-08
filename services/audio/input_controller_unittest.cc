@@ -71,12 +71,12 @@ const media::ChannelLayoutConfig kChannelLayoutConfig =
 const int kSamplesPerPacket = kSampleRate / 100;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-// Stream parameters for the voice isolation tests: VoiceIsolation CHECKs a
-// 48 kHz sample rate, and AudioProcessor requires 10 ms buffers. The other
+// Stream parameters for the voice isolation tests: VoiceIsolationHandler only
+// accepts the 48 kHz, 10 ms buffers that VoiceIsolation supports. The other
 // tests keep `kSampleRate`.
-constexpr int kVoiceIsolationSampleRateHz = 48000;
+constexpr int kVoiceIsolationSampleRateHz = media::VoiceIsolation::kSampleRate;
 constexpr int kVoiceIsolationFramesPerBuffer =
-    kVoiceIsolationSampleRateHz / 100;
+    media::VoiceIsolation::kFrameSize;
 #endif
 
 // InputController will poll once every second, so wait at most a bit
@@ -1225,6 +1225,8 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 TEST_F(
     SystemTimeInputControllerTestWithReferenceSignalProvider,
     VoiceIsolationAsyncStartupFailureReportsStreamErrorAndInvalidatesModel) {
+  params_.Reset(params_.format(), params_.channel_layout_config(),
+                kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
 
@@ -1265,6 +1267,8 @@ TEST_F(
 //    regardless of whether the stream that discovered it is still open.
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
        VoiceIsolationStartupFailureAfterCloseInvalidatesModelWithoutError) {
+  params_.Reset(params_.format(), params_.channel_layout_config(),
+                kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
 

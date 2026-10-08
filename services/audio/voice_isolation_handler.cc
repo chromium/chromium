@@ -418,6 +418,11 @@ std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
     LogCallback log_callback,
     media::AudioDebugRecordingManager* debug_recording_manager) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::MaybeCreate");
+
+  // Enforce the parameter contract up front rather than crashing asynchronously
+  // in OnComponentCreated() after background model loading finishes.
+  CHECK(media::VoiceIsolation::SupportsAudioParameters(output_params));
+
   scoped_refptr<media::MlModelHandle> model_handle =
       ml_model_manager.GetModel(mojom::MlModelType::kVoiceIsolationDenoiser);
 

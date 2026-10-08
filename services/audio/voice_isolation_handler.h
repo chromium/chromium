@@ -58,8 +58,9 @@ class VoiceIsolationHandler {
 
   ~VoiceIsolationHandler();
 
-  // Attempts to create a VoiceIsolationHandler. Returns nullptr if a model is
-  // not available from `ml_model_manager`.
+  // Attempts to create a VoiceIsolationHandler. `output_params` must be
+  // supported by `media::VoiceIsolation` (CHECKed). Returns nullptr if a model
+  // is not available from `ml_model_manager`.
   //
   // `ml_model_manager` must outlive the returned VoiceIsolationHandler: if
   // background component creation fails, the handler calls
