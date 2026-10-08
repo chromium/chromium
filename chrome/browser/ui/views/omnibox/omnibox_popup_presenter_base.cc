@@ -406,6 +406,13 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
       GetUIContainer()->AddChildView(std::move(webui_content));
 
   Observe(omnibox_popup_webui_content_->GetWebContents());
+
+  // A hidden popup needs no native window, and building one per popup slows
+  // down browser window creation. `Show()` creates it on demand.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIPopupCreateWidgetOnShow)) {
+    return;
+  }
   EnsureWidgetCreated();
 
   // Explicitly put the presenter into its resting hidden state upon creation.

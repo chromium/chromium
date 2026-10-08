@@ -53,7 +53,9 @@ namespace {
 
 // Classic (or full) popup plus the AIM popup, created eagerly per window.
 constexpr size_t kPopupWebContentsPerWindow = 2;
-constexpr size_t kPopupWidgetsPerWindow = 2;
+// Widgets are created on first show, so only a popup that is showing (at most
+// the focused window's, e.g. the full popup on startup) has one.
+constexpr size_t kMaxPopupWidgets = 1;
 // AIM-ineligible profiles still get an AIM popup they can never show.
 constexpr size_t kPopupWebContentsPerAimIneligibleWindow = 2;
 // Top-chrome WebUIs of one profile share a renderer process.
@@ -214,7 +216,7 @@ class OmniboxPopupResourceBudgetBrowserTest
     PopupResources resources = CountPopupResources(profile);
     LogPopupResources(label, windows, resources);
     EXPECT_LE(resources.web_contents.size(), windows * web_contents_per_window);
-    EXPECT_LE(resources.widgets, windows * kPopupWidgetsPerWindow);
+    EXPECT_LE(resources.widgets, kMaxPopupWidgets);
     EXPECT_LE(resources.processes.size(), kPopupRenderProcessesPerProfile);
   }
 
