@@ -55,11 +55,15 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "native_media_file_util_unittest.cc" ]
+  sources = [
+    "media_file_system_backend_unittest.cc",
+    "native_media_file_util_unittest.cc",
+  ]
   deps = [
     ":fileapi",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/media_galleries",
     "//chrome/test:test_support",
     "//storage/browser:test_support",
     "//testing/gtest",

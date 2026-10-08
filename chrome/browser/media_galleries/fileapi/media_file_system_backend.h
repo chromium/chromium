@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -34,6 +35,12 @@ class MediaPathFilter;
 
 class MediaFileSystemBackend : public storage::FileSystemBackend {
  public:
+  struct ParsedMountName {
+    std::string profile_base_name;
+    std::string extension_id;
+    MediaGalleryPrefId pref_id = 0;
+  };
+
   explicit MediaFileSystemBackend(const base::FilePath& profile_path);
 
   MediaFileSystemBackend(const MediaFileSystemBackend&) = delete;
@@ -52,6 +59,12 @@ class MediaFileSystemBackend : public storage::FileSystemBackend {
   static std::string ConstructMountName(const base::FilePath& profile_path,
                                         const std::string& extension_id,
                                         MediaGalleryPrefId pref_id);
+
+  // Parses a mount point `mount_name` constructed by `ConstructMountName` into
+  // its component parts. Returns `std::nullopt` if `mount_name` is not a valid
+  // media gallery mount name.
+  static std::optional<ParsedMountName> ParseMountName(
+      const std::string& mount_name);
 
   static bool AttemptAutoMountForURLRequest(
       const storage::FileSystemRequestInfo& request_info,

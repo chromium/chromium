@@ -5,6 +5,7 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -34,6 +35,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_writer.h"
@@ -50,7 +52,7 @@ using storage::FileSystemURL;
 
 namespace {
 
-const char kMediaGalleryMountPrefix[] = "media_galleries-";
+constexpr std::string_view kMediaGalleryMountPrefix = "media_galleries-";
 
 base::LazyThreadPoolSequencedTaskRunner g_media_task_runner =
     LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
@@ -124,6 +126,32 @@ content::WebContents* GetWebContentsFromFrameTreeNodeID(
   return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
 }
 
+bool IsMediaGalleryAccessible(const storage::FileSystemURL& filesystem_url) {
+  const std::string& filesystem_id = filesystem_url.filesystem_id();
+
+  // If it's not a media gallery mount, this security check doesn't apply.
+  // This allows unit tests and other internal components to bypass this check.
+  if (!base::StartsWith(filesystem_id, kMediaGalleryMountPrefix,
+                        base::CompareCase::SENSITIVE)) {
+    return true;
+  }
+
+  // If it is a media gallery mount, it must be accessed by an extension.
+  // Opaque origins (such as sandboxed iframes or data: URLs) and file:// URLs
+  // naturally have empty hosts or non-extension schemes. We gracefully return
+  // false here to deny access rather than treating it as a fatal IPC error, as
+  // this can happen from benign web developer mistakes.
+  if (filesystem_url.origin().scheme() != extensions::kExtensionScheme ||
+      filesystem_url.origin().host().empty()) {
+    return false;
+  }
+
+  std::optional<MediaFileSystemBackend::ParsedMountName> parsed =
+      MediaFileSystemBackend::ParseMountName(filesystem_id);
+  return parsed.has_value() &&
+         parsed->extension_id == filesystem_url.origin().host();
+}
+
 }  // namespace
 
 MediaFileSystemBackend::MediaFileSystemBackend(
@@ -167,6 +195,52 @@ std::string MediaFileSystemBackend::ConstructMountName(
     name.append(base::NumberToString(pref_id));
   base::ReplaceChars(name, " /", "_", &name);
   return name;
+}
+
+// static
+std::optional<MediaFileSystemBackend::ParsedMountName>
+MediaFileSystemBackend::ParseMountName(const std::string& mount_name) {
+  if (!base::StartsWith(mount_name, kMediaGalleryMountPrefix,
+                        base::CompareCase::SENSITIVE)) {
+    return std::nullopt;
+  }
+
+  // Strip the "media_galleries-" prefix. The remainder has the format:
+  // "<profile_base_name>-<extension_id>-<pref_id>". Because `profile_base_name`
+  // may itself contain hyphens, parse from the right.
+  std::string_view remainder =
+      std::string_view(mount_name).substr(kMediaGalleryMountPrefix.size());
+
+  size_t pref_separator = remainder.rfind('-');
+  if (pref_separator == std::string_view::npos) {
+    return std::nullopt;
+  }
+
+  std::string_view pref_id_str = remainder.substr(pref_separator + 1);
+  MediaGalleryPrefId parsed_pref_id = kInvalidMediaGalleryPrefId;
+  if (!base::StringToUint64(pref_id_str, &parsed_pref_id) ||
+      parsed_pref_id == kInvalidMediaGalleryPrefId) {
+    return std::nullopt;
+  }
+
+  std::string_view prefix_and_ext = remainder.substr(0, pref_separator);
+  size_t ext_separator = prefix_and_ext.rfind('-');
+  if (ext_separator == std::string_view::npos) {
+    return std::nullopt;
+  }
+
+  std::string_view parsed_profile = prefix_and_ext.substr(0, ext_separator);
+  std::string_view parsed_extension_id =
+      prefix_and_ext.substr(ext_separator + 1);
+  if (parsed_profile.empty() || parsed_extension_id.empty()) {
+    return std::nullopt;
+  }
+
+  return ParsedMountName{
+      .profile_base_name = std::string(parsed_profile),
+      .extension_id = std::string(parsed_extension_id),
+      .pref_id = parsed_pref_id,
+  };
 }
 
 // static
@@ -270,6 +344,11 @@ MediaFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
+  if (!IsMediaGalleryAccessible(url)) {
+    *error_code = base::File::FILE_ERROR_SECURITY;
+    return nullptr;
+  }
+
   std::unique_ptr<storage::FileSystemOperationContext> operation_context(
       std::make_unique<storage::FileSystemOperationContext>(
           context, MediaTaskRunner().get()));
@@ -302,6 +381,10 @@ MediaFileSystemBackend::CreateFileStreamReader(
     FileSystemContext* context,
     file_access::ScopedFileAccessDelegate::
         RequestFilesAccessIOCallback /*file_access*/) const {
+  if (!IsMediaGalleryAccessible(url)) {
+    return nullptr;
+  }
+
   if (url.type() == storage::kFileSystemTypeDeviceMedia) {
     std::unique_ptr<storage::FileStreamReader> reader =
         device_media_async_file_util_->GetFileStreamReader(
@@ -320,6 +403,10 @@ MediaFileSystemBackend::CreateFileStreamWriter(
     const FileSystemURL& url,
     int64_t offset,
     FileSystemContext* context) const {
+  if (!IsMediaGalleryAccessible(url)) {
+    return nullptr;
+  }
+
   return storage::FileStreamWriter::CreateForLocalFile(
       context->default_file_task_runner(), url.path(), offset,
       storage::FileStreamWriter::OPEN_EXISTING_FILE);

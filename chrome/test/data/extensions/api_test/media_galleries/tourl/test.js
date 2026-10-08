@@ -41,9 +41,15 @@ chrome.test.getConfig(function(config) {
       `external/media_galleries-${profilePath}-${extensionId}-` +
       `${galleryId}/test.jpg`;
 
-  chrome.test.runTests([
-    TestImageLoadFactory(badMountPoint, false),
-    TestImageLoadFactory(badMountName, false),
-    TestImageLoadFactory(goodUrl, true),
-  ]);
+  // We must call getMediaFileSystems first to ensure the browser grants
+  // per-process read access to the external mount via
+  // ChildProcessSecurityPolicy.
+  chrome.mediaGalleries.getMediaFileSystems(
+      {interactive: 'no'}, function(results) {
+        chrome.test.runTests([
+          TestImageLoadFactory(badMountPoint, false),
+          TestImageLoadFactory(badMountName, false),
+          TestImageLoadFactory(goodUrl, true),
+        ]);
+      });
 });

@@ -32,6 +32,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -106,8 +107,11 @@ bool GetMimeType(const FileSystemURL& url, std::string* mime_type) {
 // Common implementation shared between the file and directory URLLoaders.
 class FileSystemEntryURLLoader : public network::mojom::URLLoader {
  public:
-  explicit FileSystemEntryURLLoader(FactoryParams params)
-      : params_(std::move(params)) {}
+  explicit FileSystemEntryURLLoader(
+      FactoryParams params,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle)
+      : params_(std::move(params)),
+        security_policy_handle_(std::move(security_policy_handle)) {}
 
   FileSystemEntryURLLoader(const FileSystemEntryURLLoader&) = delete;
   FileSystemEntryURLLoader& operator=(const FileSystemEntryURLLoader&) = delete;
@@ -193,6 +197,7 @@ class FileSystemEntryURLLoader : public network::mojom::URLLoader {
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   FactoryParams params_;
+  ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
   std::unique_ptr<mojo::DataPipeProducer> data_producer_;
   net::HttpByteRange byte_range_;
   FileSystemURL url_;
@@ -245,7 +250,8 @@ class FileSystemEntryURLLoader : public network::mojom::URLLoader {
                          AsWeakPtr(), request));
       return;
     }
-    FileSystemIsMounted();
+
+    VerifySecurityAndMount();
   }
 
   void DidAttemptAutoMount(const network::ResourceRequest& request,
@@ -260,6 +266,56 @@ class FileSystemEntryURLLoader : public network::mojom::URLLoader {
       OnClientComplete(net::ERR_FILE_NOT_FOUND);
       return;
     }
+
+    VerifySecurityAndMount();
+  }
+
+  bool MountRequiresSecurityCheck() const {
+    // If the process ID is invalid, the request is browser-initiated (e.g., a
+    // navigation or download where there is no originating renderer process to
+    // query in ChildProcessSecurityPolicy), so per-process checks do not apply.
+    if (params_.render_process_host_id == ChildProcessHost::kInvalidUniqueID) {
+      return false;
+    }
+
+    switch (url_.mount_type()) {
+      case storage::kFileSystemTypeIsolated:
+        return true;
+      case storage::kFileSystemTypeExternal:
+        // In ChromeOS, `ash::FileSystemBackend` explicitly manages and
+        // authorizes access for most external mounts (e.g., DriveFS, SmbFs,
+        // Provided, etc.) based on origin, and does NOT rely on
+        // `ChildProcessSecurityPolicy` grants. Only specific types (like media
+        // galleries) strictly require CPSP.
+        switch (url_.type()) {
+          case storage::kFileSystemTypeLocalMedia:
+          case storage::kFileSystemTypeDeviceMedia:
+          case storage::kFileSystemTypeTest:
+            return true;
+          default:
+#if BUILDFLAG(IS_CHROMEOS)
+            return false;
+#else
+            // On non-ChromeOS platforms, all external mounts should be strictly
+            // governed by ChildProcessSecurityPolicy.
+            return true;
+#endif
+        }
+      default:
+        return false;
+    }
+  }
+
+  void VerifySecurityAndMount() {
+    if (MountRequiresSecurityCheck() &&
+        (!security_policy_handle_.is_valid() ||
+         !security_policy_handle_.CanReadFileSystemFile(url_))) {
+      DVLOG(1) << "Denied unauthorized request for "
+               << url_.ToGURL().possibly_invalid_spec();
+      OnClientComplete(net::ERR_ACCESS_DENIED);
+      return;
+    }
+
     FileSystemIsMounted();
   }
 
@@ -276,12 +332,13 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
       FactoryParams params,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
     // Owns itself. Will live as long as its URLLoader and URLLoaderClient
     // bindings are alive - essentially until either the client gives up or all
     // file directory has been sent to it.
-    auto* filesystem_loader =
-        new FileSystemDirectoryURLLoader(std::move(params));
+    auto* filesystem_loader = new FileSystemDirectoryURLLoader(
+        std::move(params), std::move(security_policy_handle));
     filesystem_loader->Start(request, std::move(loader),
                              std::move(client_remote), io_task_runner);
   }
@@ -291,8 +348,11 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
       delete;
 
  private:
-  explicit FileSystemDirectoryURLLoader(FactoryParams params)
-      : FileSystemEntryURLLoader(params) {}
+  explicit FileSystemDirectoryURLLoader(
+      FactoryParams params,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle)
+      : FileSystemEntryURLLoader(std::move(params),
+                                 std::move(security_policy_handle)) {}
 
   void FileSystemIsMounted() override {
     CHECK(url_.is_valid(), base::NotFatalUntil::M159);
@@ -447,12 +507,14 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
       FactoryParams params,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
     // Owns itself. Will live as long as its URLLoader and URLLoaderClient
     // bindings are alive - essentially until either the client gives up or all
     // file data has been sent to it.
-    auto* filesystem_loader =
-        new FileSystemFileURLLoader(std::move(params), request, io_task_runner);
+    auto* filesystem_loader = new FileSystemFileURLLoader(
+        std::move(params), std::move(security_policy_handle), request,
+        io_task_runner);
 
     filesystem_loader->Start(request, std::move(loader),
                              std::move(client_remote), io_task_runner);
@@ -464,9 +526,11 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
  private:
   FileSystemFileURLLoader(
       FactoryParams params,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       const network::ResourceRequest& request,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-      : FileSystemEntryURLLoader(std::move(params)),
+      : FileSystemEntryURLLoader(std::move(params),
+                                 std::move(security_policy_handle)),
         original_request_(request),
         io_task_runner_(io_task_runner) {}
 
@@ -531,6 +595,12 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
     reader_ = params_.file_system_context->CreateFileStreamReader(
         url_, byte_range_.first_byte_position(), remaining_bytes_, base::Time(),
         std::move(file_access_));
+
+    // Fail the request if creating the stream reader was denied or failed.
+    if (!reader_) {
+      OnClientComplete(net::ERR_ACCESS_DENIED);
+      return;
+    }
 
     MojoCreateDataPipeOptions options;
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
@@ -664,11 +734,13 @@ class FileSystemURLLoaderFactory
  public:
   FileSystemURLLoaderFactory(
       FactoryParams params,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
       base::SelfDeletingPassKey key)
       : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver), key),
         params_(std::move(params)),
+        security_policy_handle_(std::move(security_policy_handle)),
         io_task_runner_(io_task_runner) {}
 
   FileSystemURLLoaderFactory(const FileSystemURLLoaderFactory&) = delete;
@@ -693,18 +765,19 @@ class FileSystemURLLoaderFactory
     // to a directory and gets dispatched to FileSystemFileURLLoader, that class
     // will redirect to FileSystemDirectoryURLLoader.
     if (!path.empty() && path.back() == '/') {
-      FileSystemDirectoryURLLoader::CreateAndStart(request, std::move(loader),
-                                                   std::move(client), params_,
-                                                   io_task_runner_);
+      FileSystemDirectoryURLLoader::CreateAndStart(
+          request, std::move(loader), std::move(client), params_,
+          security_policy_handle_.Duplicate(), io_task_runner_);
       return;
     }
 
-    FileSystemFileURLLoader::CreateAndStart(request, std::move(loader),
-                                            std::move(client), params_,
-                                            io_task_runner_);
+    FileSystemFileURLLoader::CreateAndStart(
+        request, std::move(loader), std::move(client), params_,
+        security_policy_handle_.Duplicate(), io_task_runner_);
   }
 
   const FactoryParams params_;
+  ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 };
 
@@ -723,11 +796,19 @@ CreateFileSystemURLLoaderFactory(
   FactoryParams params = {render_process_host_id, frame_tree_node_id,
                           file_system_context, storage_domain, storage_key};
 
+  ChildProcessSecurityPolicyImpl::Handle security_policy_handle;
+  if (render_process_host_id != ChildProcessHost::kInvalidUniqueID) {
+    security_policy_handle =
+        ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
+            render_process_host_id);
+  }
+
   // The FileSystemURLLoaderFactory will delete itself when there are no more
   // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
   // method.
   base::MakeSelfDeleting<FileSystemURLLoaderFactory>(
-      std::move(params), GetIOThreadTaskRunner({}),
+      std::move(params), std::move(security_policy_handle),
+      GetIOThreadTaskRunner({}),
       pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
