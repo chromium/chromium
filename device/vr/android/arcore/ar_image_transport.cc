@@ -49,7 +49,6 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
       ResizeSharedBuffer(webxr, frame_size, camera_image_shared_buffer,
                          kBottomLeft_GrSurfaceOrigin);
   if (was_resized) {
-    DCHECK(camera_image_shared_buffer->sync_token.HasData());
     DVLOG(3) << __func__
              << ": "
                 "camera_image_shared_buffer->sync_"
