@@ -23,6 +23,7 @@ namespace blink {
 class File;
 class Transferables;
 class ScriptState;
+class WritableStream;
 
 // Serializes V8 values according to the HTML structured clone algorithm:
 // https://html.spec.whatwg.org/C/#structured-clone
@@ -60,6 +61,8 @@ class CORE_EXPORT V8ScriptValueSerializer
   // If false is returned and no more specific exception is thrown, a generic
   // DataCloneError message will be used.
   virtual bool WriteDOMObject(ScriptWrappable*, ExceptionState&);
+
+  bool WriteWritableStream(WritableStream*, ExceptionState&);
 
   ScriptState* GetScriptState() const { return script_state_; }
 

@@ -28,6 +28,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -39,6 +41,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_bytestringbytestringrecord_bytestringsequencesequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
+#include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_congestion_control.h"
@@ -2704,6 +2708,39 @@ TEST_F(WebTransportTest, CreateSendStream) {
   auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
                                                  tester.Value().V8Value());
   EXPECT_TRUE(writable);
+}
+
+TEST_F(WebTransportTest, TransferSendStreamFallsBackToWritableStream) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* stream = CreateSendStreamSuccessfully(scope, web_transport);
+  ASSERT_TRUE(DynamicTo<WebTransportSendStream>(stream));
+  auto wrapper =
+      ToV8Traits<WritableStream>::ToV8(scope.GetScriptState(), stream);
+  HeapVector<ScriptObject> transfer_list = {
+      ScriptObject(scope.GetIsolate(), wrapper)};
+  Transferables transferables;
+  ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
+      scope.GetIsolate(), transfer_list, transferables, ASSERT_NO_EXCEPTION));
+  V8ScriptValueSerializer::Options options;
+  options.transferables = &transferables;
+  auto serialized =
+      V8ScriptValueSerializerForModules(scope.GetScriptState(), options)
+          .Serialize(wrapper, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(serialized);
+  EXPECT_TRUE(stream->locked());
+
+  V8TestingScope destination_scope;
+  auto* script_state = destination_scope.GetScriptState();
+  auto result = V8ScriptValueDeserializerForModules(script_state, serialized)
+                    .Deserialize();
+  auto* transferred =
+      V8WritableStream::ToWrappable(destination_scope.GetIsolate(), result);
+  ASSERT_TRUE(transferred);
+  EXPECT_EQ(transferred->GetWrapperTypeInfo(),
+            WritableStream::GetStaticWrapperTypeInfo());
 }
 
 TEST_F(WebTransportTest, CreateStreamsBeforeConnect) {

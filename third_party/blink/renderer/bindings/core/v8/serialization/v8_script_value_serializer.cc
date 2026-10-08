@@ -757,29 +757,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     return true;
   }
   if (auto* stream = dispatcher.ToMostDerived<WritableStream>()) {
-    size_t index = kNotFound;
-    if (transferables_)
-      index = transferables_->writable_streams.Find(stream);
-    if (index == kNotFound) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "A WritableStream could not be cloned "
-                                        "because it was not transferred.");
-      return false;
-    }
-    if (stream->locked()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "A WritableStream could not be cloned because it was locked");
-      return false;
-    }
-    WriteAndRequireInterfaceTag(kWritableStreamTransferTag);
-    DCHECK(transferables_);
-    // The index calculation depends on the order that TransferReadableStreams
-    // and TransferWritableStreams are called in
-    // V8ScriptValueSerializer::FinalizeTransfer.
-    WriteUint32(
-        static_cast<uint32_t>(index + transferables_->readable_streams.size()));
-    return true;
+    return WriteWritableStream(stream, exception_state);
   }
   if (auto* stream = dispatcher.ToMostDerived<TransformStream>()) {
     size_t index = kNotFound;
@@ -873,6 +851,35 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     return true;
   }
   return false;
+}
+
+bool V8ScriptValueSerializer::WriteWritableStream(
+    WritableStream* stream,
+    ExceptionState& exception_state) {
+  size_t index = kNotFound;
+  if (transferables_) {
+    index = transferables_->writable_streams.Find(stream);
+  }
+  if (index == kNotFound) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataCloneError,
+        "A WritableStream could not be cloned because it was not transferred.");
+    return false;
+  }
+  if (stream->locked()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataCloneError,
+        "A WritableStream could not be cloned because it was locked");
+    return false;
+  }
+  WriteAndRequireInterfaceTag(kWritableStreamTransferTag);
+  DCHECK(transferables_);
+  // The index calculation depends on the order that TransferReadableStreams
+  // and TransferWritableStreams are called in
+  // V8ScriptValueSerializer::FinalizeTransfer.
+  WriteUint32(
+      static_cast<uint32_t>(index + transferables_->readable_streams.size()));
+  return true;
 }
 
 bool V8ScriptValueSerializer::WriteFile(File* file,
