@@ -62,8 +62,11 @@ TEST_F(CWVProfileScopedConfigurationTest, MultitonCaching) {
     EXPECT_NSNE(config1, config2);
     EXPECT_NSEQ(config1.storageIdentifier, uuid1);
     EXPECT_NSEQ(config2.storageIdentifier, uuid2);
-    EXPECT_EQ([CWVWebViewConfiguration defaultConfiguration].storageIdentifier,
-              nil);
+    CWVWebViewConfiguration* unscoped_config = [[CWVWebViewConfiguration alloc]
+        initWithBrowserState:std::make_unique<WebViewBrowserState>(
+                                 /*off_the_record=*/false)];
+    EXPECT_EQ(unscoped_config.storageIdentifier, nil);
+    [unscoped_config shutDown];
   }
 }
 
