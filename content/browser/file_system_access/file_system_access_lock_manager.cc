@@ -196,6 +196,37 @@ class Lock {
     size_t count_removed = child_locks_.erase(path);
 
     CHECK_EQ(1u, count_removed);
+
+    // If this lock was kept alive solely as an ancestor of children that are
+    // now gone, destroy it if possible.
+    //
+    // This is not expected to happen: `ReleaseChild()` is only called from a
+    // child's `LockHandleDestroyed()`, while the child's `LockHandle` still
+    // holds a `parent_lock_handle_` to `this`. `this` is instead destroyed when
+    // that parent handle is released.
+    // TODO(crbug.com/553525515): Remove the `DestroySelf()` fallback below if
+    // there are no reports of this CHECK failing.
+    CHECK(!CanDestroySelf(), base::NotFatalUntil::M160);
+    if (CanDestroySelf()) {
+      DestroySelf();
+    }
+  }
+
+  bool CanDestroySelf() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // A lock can only destroy itself through its parent if:
+    // - No active handles or pending callbacks reference it.
+    // - It does not anchor any child locks in the path hierarchy (it will be
+    //   pruned in `ReleaseChild` once its children are gone).
+    // - It is neither waiting on an underlying eviction nor being evicted as
+    //   another lock's `evicting_subroot_lock_`.
+    // - Its parent still owns it at `path_` (an evicted or superseded lock must
+    //   not call `ReleaseChild()`, which would erroneously remove whatever new
+    //   lock replaced it).
+    return frame_id_lock_handles_.empty() && child_locks_.empty() &&
+           pending_callbacks_.empty() && !evicting_subroot_lock_ &&
+           !IsEvictingSubroot() &&
+           (!parent_lock_.has_value() || parent_lock_->GetChild(path_) == this);
   }
 
   bool IsHeldOnlyByInactivePages() {
@@ -241,41 +272,42 @@ class Lock {
 
     // If nothing is holding this lock, release it.
     if (frame_id_lock_handles_.empty()) {
-      // If we're not an Evicting subroot, then our parent owns us, and we can
-      // destroy ourselves through our parent.
-      if (!IsEvictingSubroot()) {
+      if (IsEvictingSubroot()) {
+        // The root cannot be an Evicting subroot.
+        CHECK(parent_lock_.has_value());
+
+        // If we are an Evicting subroot, then we must destroy ourselves through
+        // the `pending_lock` that owns us.
+        Lock* pending_lock = parent_lock_->GetChild(path_);
+        CHECK(pending_lock);
+        bool in_pending_subtree = InPendingSubtree();
+        CHECK(!in_pending_subtree || !IsPendingSubroot());
+
+        // `RemoveEvictingSubrootLock` will destroy `this`.
+        pending_lock->RemoveEvictingSubrootLock();
+
+        if (in_pending_subtree) {
+          return;
+        }
+
+        if (pending_lock->InEvictingSubtree()) {
+          // If the pending lock is in an Evicting subtree, then it should be
+          // evicted.
+          pending_lock->EvictPendingSubtree();
+          return;
+        }
+
+        // This was the last Evicting Lock that needed to be destroyed to
+        // promote the `pending_lock`.
+        pending_lock->PromotePendingToTaken();
+        return;
+      }
+
+      if (CanDestroySelf()) {
         // `DestroySelf` will destroy `this`.
         DestroySelf();
         return;
       }
-
-      // The root cannot be an Evicting subroot.
-      CHECK(parent_lock_.has_value());
-
-      // If we are an Evicting subroot, then we must destroy ourselves through
-      // the `pending_lock` that owns us.
-      Lock* pending_lock = parent_lock_->GetChild(path_);
-      bool in_pending_subtree = InPendingSubtree();
-      CHECK(!in_pending_subtree || !IsPendingSubroot());
-
-      // `RemoveEvictingSubrootLock` will destroy `this`.
-      pending_lock->RemoveEvictingSubrootLock();
-
-      if (in_pending_subtree) {
-        return;
-      }
-
-      if (pending_lock->InEvictingSubtree()) {
-        // If the pending lock is in an Evicting subtree, then it should be
-        // evicted.
-
-        pending_lock->EvictPendingSubtree();
-        return;
-      }
-
-      // This was the last Evicting Lock that needed to be destroyed to promote
-      // the `pending_lock`.
-      pending_lock->PromotePendingToTaken();
     }
   }
 
@@ -315,11 +347,13 @@ class Lock {
       return;
     }
 
-    // This is a leaf of a Pending subtree, so it should have Pending callbacks.
-    CHECK(pending_callbacks_.size() > 0);
-
-    // `this` may be destroyed.
-    callback.Run(std::move(pending_callbacks_));
+    // This is a leaf of a Pending subtree. If it has pending callbacks, run
+    // them. It may not have any yet if it was promoted before callbacks were
+    // attached.
+    if (!pending_callbacks_.empty()) {
+      // `this` may be destroyed.
+      callback.Run(std::move(pending_callbacks_));
+    }
   }
 
   void EvictPendingSubtree() {
@@ -371,8 +405,13 @@ class Lock {
 
   // Returns if we're the subroot of an Evicting subtree. See class comment.
   bool IsEvictingSubroot() {
-    return parent_lock_.has_value() &&
-           parent_lock_->GetChild(path_)->evicting_subroot_lock_.get() == this;
+    if (!parent_lock_.has_value()) {
+      return false;
+    }
+    // `child` can be null if `path_` in the parent has already been released
+    // or if `this` has been detached.
+    Lock* child = parent_lock_->GetChild(path_);
+    return child && child->evicting_subroot_lock_.get() == this;
   }
 
   // Makes `this` a Pending subtree that is waiting on the destruction of the
@@ -380,17 +419,23 @@ class Lock {
   // comment.
   void SetEvictingSubrootLock(std::unique_ptr<Lock> evicting_subroot_lock) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(evicting_subroot_lock);
     is_pending_ = true;
-    evicting_subroot_lock_ = std::move(evicting_subroot_lock);
 
-    // If our `evicting_subroot_lock_` has its own `evicting_subroot_lock_`,
-    // then replace the former with the latter.
+    // If `evicting_subroot_lock` was itself pending on an evicting subroot,
+    // then that underlying evicting subroot is what `this` must wait on.
     auto next_evicting_subroot_lock =
-        evicting_subroot_lock_->TakeEvictingSubrootLock();
+        evicting_subroot_lock->TakeEvictingSubrootLock();
     if (next_evicting_subroot_lock) {
-      // Destroys `evicting_subroot_lock_`.
-      evicting_subroot_lock_->EvictPendingSubtree();
+      // Must adopt `next_evicting_subroot_lock` BEFORE calling
+      // `EvictPendingSubtree()`. Dropping callbacks in `EvictPendingSubtree()`
+      // may release handles to the underlying evicting lock, which relies on
+      // `this->evicting_subroot_lock_` to recognize that it is an evicting
+      // subroot rather than an active lock.
       evicting_subroot_lock_ = std::move(next_evicting_subroot_lock);
+      evicting_subroot_lock->EvictPendingSubtree();
+    } else {
+      evicting_subroot_lock_ = std::move(evicting_subroot_lock);
     }
   }
 

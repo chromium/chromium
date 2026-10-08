@@ -1317,6 +1317,59 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingTree) {
 }
 
 TEST_F(FileSystemAccessLockManagerTest,
+       BFCacheEvictPendingLockReentrantDestroySelf) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+  auto active_context = kBindingContext;
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetGlobalId());
+  rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+
+  base::FilePath parent = dir_.GetPath().AppendASCII("parent");
+  auto parent_url = CreateLocalUrl(parent);
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+
+  // 1. Take Lock A on `parent_url` in BFCache.
+  auto lock_a = TakeLockSync(bf_cache_context, parent_url, exclusive_lock_type);
+  ASSERT_TRUE(lock_a);
+
+  // 2. Take Lock B on `parent_url` in BFCache, holding Lock A in the callback.
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      lock_b_future;
+  auto holding_callback = base::BindOnce(
+      [](scoped_refptr<FileSystemAccessLockManager::LockHandle> held_lock,
+         base::OnceCallback<void(
+             scoped_refptr<FileSystemAccessLockManager::LockHandle>)> cb,
+         scoped_refptr<FileSystemAccessLockManager::LockHandle> lock) {
+        std::move(cb).Run(std::move(lock));
+      },
+      std::move(lock_a), lock_b_future.GetCallback());
+
+  manager_->TakeLock(bf_cache_context, parent_url, exclusive_lock_type,
+                     std::move(holding_callback));
+
+  // 3. Take Lock C on `parent_url` in active_context.
+  //    This triggers eviction of Lock B, which has Lock A parked as its
+  //    evicting subroot. When B's pending subtree is evicted, the holding
+  //    callback is dropped, destroying the last handle to Lock A.
+  auto lock_c_future =
+      TakeLockAsync(active_context, parent_url, exclusive_lock_type);
+
+  // When Lock B was evicted, the holding callback must be dropped.
+  EXPECT_FALSE(lock_b_future.IsReady());
+  // Lock C must be reentrantly promoted and granted.
+  ASSERT_TRUE(lock_c_future->IsReady());
+  auto lock_c = lock_c_future->Take();
+  ASSERT_TRUE(lock_c);
+
+  // Verify the lock is actively held.
+  EXPECT_FALSE(TakeLockSync(active_context, parent_url, exclusive_lock_type));
+  // Verify clean release when Lock C is destroyed.
+  lock_c.reset();
+  EXPECT_TRUE(TakeLockSync(active_context, parent_url, exclusive_lock_type));
+}
+
+TEST_F(FileSystemAccessLockManagerTest,
        LocksCanExistAfterFileSystemAccessManagerIsDestroyed) {
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(path));
