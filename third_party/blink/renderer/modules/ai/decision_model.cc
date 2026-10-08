@@ -343,6 +343,16 @@ class CreateDecisionModelClient
       return;
     }
 
+    LocalDOMWindow* window = LocalDOMWindow::From(GetScriptState());
+    if (window && RequiresUserActivation(availability) &&
+        !MeetsUserActivationRequirements(window)) {
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          kExceptionMessageUserActivationRequired);
+      Cleanup();
+      return;
+    }
+
     HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
         AIInterfaceProxy::GetAIManagerRemote(
             ExecutionContext::From(GetScriptState()));
