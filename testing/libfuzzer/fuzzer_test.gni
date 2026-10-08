@@ -350,6 +350,13 @@ template("fuzzer_test") {
       if (_use_fuzztest_llvm_wrapper) {
         fuzztests = [ "LLVMFuzzer.TestOneInput" ]
 
+        # libFuzzer has no stack limit by default so mirror that when wrapping
+        # the targets to avoid the default limit in FuzzTest.
+        fuzztest_additional_args = [ "--stack_limit_kb=0" ]
+        if (defined(invoker.fuzztest_additional_args)) {
+          fuzztest_additional_args += invoker.fuzztest_additional_args
+        }
+
         # TODO(crbug.com/565437050): Try to consolidate all .options generation
         # into //testing/test.gni.
         # When the FuzzTest wrapper is in use, ClusterFuzz runs the generated
