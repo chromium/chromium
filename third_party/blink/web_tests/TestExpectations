@@ -5730,8 +5730,6 @@ crbug.com/1321293 fast/forms/calendar-picker/week-picker-choose-default-value-af
 crbug.com/384752759 [ Win11 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Failure Skip Timeout ]
 crbug.com/1295890 [ Win11 ] http/tests/eventsource/eventsource-cors-no-server.html [ Skip Timeout ]
 crbug.com/1295890 [ Win11 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Skip Timeout ]
-crbug.com/1295890 [ Win11 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Skip Timeout ]
-crbug.com/1464614 [ Win11-arm64 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Skip Timeout ]
 crbug.com/385026277 [ Win11-arm64 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Pass Timeout ]
 
 crbug.com/1322405 external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Pass Timeout ]

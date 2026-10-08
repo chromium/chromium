@@ -660,7 +660,6 @@ crbug.com/1142023 [ Win10.20h2 ] external/wpt/web-animations/animation-model/ani
 crbug.com/1142023 [ Win10.20h2 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] http/tests/eventsource/eventsource-cors-no-server.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Slow ]
-crbug.com/1142023 [ Win10.20h2 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Slow ]
 
 # crbug.com/1095379: These were all added here in an attempt to reduce flakiness.
 crbug.com/983788 [ Release ] http/tests/cookies/same-site/popup-cross-site.https.html [ Slow ]

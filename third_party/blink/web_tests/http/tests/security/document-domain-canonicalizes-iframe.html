@@ -18,10 +18,16 @@
   // Navigate the iframe to URLs whose host aren't canonical. They need to be
   // percent encoded. Several navigation are made to ensure potential assertions
   // can be reached before the end of the test. See https://crbug.com/901489.
+  //
+  // Note: '*' is used because it is still percent-escaped ("%2A") by the URL
+  // canonicalizer. ',' used to be escaped too, but has been kept as-is since
+  // https://crrev.com/c/4875754, which made the host "canonical" and defeated
+  // the purpose of this test. See also document-domain-canonicalizes.html and
+  // https://crbug.com/1416013.
   promise_test(async function(t) {
-    await navigate_iframe("http://foo,.example.test/resources/dummy.html");
-    await navigate_iframe("http://bar,.example.test/resources/dummy.html");
-    await navigate_iframe("http://baz,.example.test/resources/dummy.html");
+    await navigate_iframe("http://foo*.example.test:8000/resources/dummy.html");
+    await navigate_iframe("http://bar*.example.test:8000/resources/dummy.html");
+    await navigate_iframe("http://baz*.example.test:8000/resources/dummy.html");
   }, "Navigate iframe to URL with non-canonicalized hostname");
 </script>
 </body>
