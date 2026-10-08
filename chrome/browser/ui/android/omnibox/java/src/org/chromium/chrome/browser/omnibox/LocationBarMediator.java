@@ -2876,6 +2876,7 @@ public class LocationBarMediator
         if (mCurrentInput.getDisplayState() == DisplayState.SUGGESTIONS) {
             if (mCurrentInput.hasPreviewText()) {
                 mCurrentInput.commitPreviewText();
+                pushUrlBarDataFromCurrentInput();
             }
             mCurrentInput
                     .setRequestType(AutocompleteRequestType.SEARCH)

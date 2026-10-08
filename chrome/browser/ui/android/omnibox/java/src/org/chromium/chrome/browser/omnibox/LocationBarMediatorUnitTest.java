@@ -4854,6 +4854,7 @@ public class LocationBarMediatorUnitTest {
         mSessionState.getAutocompleteInput().setPreviewText("google.com");
         mMediator.onSuggestionsChanged(mAutocompleteMatch, /* hasSuggestions= */ true);
 
+        clearInvocations(mUrlCoordinator);
         assertEquals("google.com", mSessionState.getAutocompleteInput().getPreviewText());
         assertTrue(mSessionState.getAutocompleteInput().hasPreviewText());
         assertTrue(mMediator.handleEscPress());
@@ -4861,6 +4862,11 @@ public class LocationBarMediatorUnitTest {
         assertEquals("google.com", mSessionState.getAutocompleteInput().getUserText());
         assertEquals(new TextSelection(3, 10), mSessionState.getAutocompleteInput().getSelection());
         assertFalse(mSessionState.getAutocompleteInput().hasPreviewText());
+        verify(mUrlCoordinator)
+                .setUrlBarData(
+                        any(),
+                        eq(ScrollType.NO_SCROLL),
+                        eq(mSessionState.getAutocompleteInput().getSelection()));
     }
 
     @Test
