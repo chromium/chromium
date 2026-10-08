@@ -195,8 +195,16 @@ class VerticalTabRailHoverController
         }
     }
 
-    @Override
-    public void onDragEventDispatched(DragEvent event) {
+    /**
+     * Called for every drag event delivered to the rail container's drag listener, before the drag
+     * handler sees it.
+     *
+     * <p>Fed from the listener rather than from {@code dispatchDragEvent()}: ACTION_DRAG_EXITED is
+     * delivered straight to the listener by {@code ViewRootImpl#setDragFocus} and never dispatched,
+     * so only the listener observes every action. The container is the rail's only drag listener,
+     * so crossing between the rail's margin and one of its lists is not an exit.
+     */
+    void onDragEvent(DragEvent event) {
         if (!isTrackingPointer()) return;
         // Hover events are not sent during a system drag and drop, so the rail cannot tell when the
         // pointer leaves it from hover alone. The position is unconfirmed for the duration of the
@@ -209,12 +217,20 @@ class VerticalTabRailHoverController
                 break;
             case DragEvent.ACTION_DRAG_LOCATION:
             case DragEvent.ACTION_DROP:
-                // These are only dispatched into the rail when the pointer is over it and the rail
+                // These are only delivered to the rail when the pointer is over it and the rail
                 // accepts the drag, so they confirm the pointer position. A drag that then ends
-                // over the rail (a drop, or ESC) leaves it expanded under the pointer. Leaving the
-                // rail is reported separately through onDragExited().
+                // over the rail (a drop, or ESC) leaves it expanded under the pointer.
                 if (mPointerState == PointerState.INSIDE_UNCONFIRMED) {
                     recordPointerState(PointerState.INSIDE);
+                }
+                break;
+            case DragEvent.ACTION_DRAG_EXITED:
+                // The pointer left the rail. Collapses a hover-expanded rail; a rail the user
+                // expanded is left alone by VerticalTabRailCollapseController. ACTION_DRAG_ENDED
+                // does not collapse a confirmed rail: a drag that ends outside the rail has
+                // already exited it.
+                if (mPointerState != PointerState.OUTSIDE) {
+                    applyPointerState(PointerState.OUTSIDE);
                 }
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
@@ -225,20 +241,6 @@ class VerticalTabRailHoverController
             default:
                 break;
         }
-    }
-
-    /**
-     * Called when a drag pointer leaves the rail, i.e. on ACTION_DRAG_EXITED of the rail
-     * container's drag listener.
-     *
-     * <p>ACTION_DRAG_EXITED is delivered straight to the drag listener by {@code
-     * ViewRootImpl#setDragFocus}, never through {@code dispatchDragEvent()}, so {@link
-     * #onDragEventDispatched} cannot observe it. Crossing between the rail's margin and one of its
-     * lists is not an exit, since only the container listens for drags.
-     */
-    void onDragExited() {
-        if (!isTrackingPointer()) return;
-        applyPointerState(PointerState.OUTSIDE);
     }
 
     // WindowAndroid.ActivityStateObserver implementation.

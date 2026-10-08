@@ -536,7 +536,7 @@ public class VerticalTabListCoordinator {
         // tab button and the rail margin, so ACTION_DRAG_EXITED means the pointer left the rail. No
         // descendant may claim drags: a droppable child wins over its parent in
         // ViewGroup#findFrontmostDroppableChildAt and would take LOCATION and DROP away from here.
-        mContainerView.setOnDragListener(mTabSwitcherDragHandler);
+        mContainerView.setOnDragListener(this::onRailDrag);
 
         setupItemTouchHelper(activity, recyclerView, mModelList, tabModelSelector);
 
@@ -1493,20 +1493,12 @@ public class VerticalTabListCoordinator {
     }
 
     /**
-     * Collapses a hover-expanded rail when a drag pointer leaves it.
-     *
-     * <p>Only called on ACTION_DRAG_EXITED of the rail container, never on ACTION_DRAG_ENDED. A
-     * drag that ends outside the rail has already exited it, and one that ends on the rail (a drop,
-     * or ESC) should leave the rail expanded under the pointer rather than collapse and re-expand
-     * on the next hover move. Crossing between the rail's margin and a list is not an exit, so the
-     * drop target never resizes mid-drag.
-     *
-     * <p>Routed through {@link VerticalTabRailHoverController}, which owns the hover state and is
-     * otherwise unable to observe ACTION_DRAG_EXITED. A rail the user actually expanded is left
-     * alone; {@link VerticalTabRailCollapseController} only acts on the hover-expanded state.
+     * The rail container's drag listener. The hover controller observes each event before the drag
+     * handler; see {@link VerticalTabRailHoverController#onDragEvent}.
      */
-    private void collapseRailOnDragLeave() {
-        mRailHoverController.onDragExited();
+    private boolean onRailDrag(View view, DragEvent event) {
+        mRailHoverController.onDragEvent(event);
+        return mTabSwitcherDragHandler.onDrag(view, event);
     }
 
     private void clearDropIndicators() {
@@ -1574,8 +1566,6 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragExit(View view) {
-                // Delivered on the rail container, so this is the pointer leaving the rail.
-                collapseRailOnDragLeave();
                 clearDropIndicators();
                 if (!dragHandler.isDragSourceInstance()) {
                     dragHandler.showDragShadow(view, /* show= */ true);
@@ -1918,8 +1908,6 @@ public class VerticalTabListCoordinator {
                 // ACTION_DRAG_LOCATION: when the pointer leaves the window there is no later
                 // location. It is taken on faith and forces the outside state.
                 mRegionTracker.onExitedContainer();
-                // Delivered on the rail container, so this is the pointer leaving the rail.
-                collapseRailOnDragLeave();
                 return true;
             }
 

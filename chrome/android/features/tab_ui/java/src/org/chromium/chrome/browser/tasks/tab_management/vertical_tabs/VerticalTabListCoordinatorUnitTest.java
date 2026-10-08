@@ -20,6 +20,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -52,6 +53,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
@@ -3031,7 +3033,7 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
 
         View container = mCoordinator.getView();
-        assertSame(mTabSwitcherDragHandler, getOnDragListener(container));
+        assertNotNull(getOnDragListener(container));
 
         // A descendant that claims the drag wins in ViewGroup#findFrontmostDroppableChildAt and
         // takes ACTION_DRAG_LOCATION and ACTION_DROP away from the container.
@@ -5063,9 +5065,26 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         hoverExpandRail();
 
-        captureNonOriginatingDelegate().handleDragExit(mCoordinator.getView());
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_STARTED);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_LOCATION);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_EXITED);
 
         verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
+    }
+
+    /** The hover controller observes each rail drag event before the drag handler does. */
+    @Test
+    public void testRailDragListener_HoverControllerObservesBeforeHandler() {
+        createCoordinator();
+        hoverExpandRail();
+
+        View container = mCoordinator.getView();
+        DragEvent event = mockDragEvent(DragEvent.ACTION_DRAG_EXITED, /* result= */ false);
+        getOnDragListener(container).onDrag(container, event);
+
+        InOrder inOrder = inOrder(mMockRailStateChangeDelegate, mTabSwitcherDragHandler);
+        inOrder.verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
+        inOrder.verify(mTabSwitcherDragHandler).onDrag(container, event);
     }
 
     /** A drop on the rail ends the drag with the pointer still over it, so it stays expanded. */
@@ -5073,14 +5092,10 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testDropOnRail_DoesNotCollapseAHoverExpandedRail() {
         createCoordinator();
         hoverExpandRail();
-        TabSwitcherDragHandler.DragHandlerDelegate delegate = captureNonOriginatingDelegate();
 
-        delegate.handleDrop(mCoordinator.getView(), /* xPx= */ 0f, /* yPx= */ 0f);
-        delegate.handleExternalDragEnd(
-                mCoordinator.getView(),
-                /* xPx= */ 0f,
-                /* yPx= */ 0f,
-                /* isOSNewWindowDrop= */ false);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_STARTED);
+        dispatchToRailDragListener(DragEvent.ACTION_DROP);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_ENDED);
 
         verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
     }
@@ -5091,14 +5106,17 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         hoverExpandRail();
 
-        captureNonOriginatingDelegate()
-                .handleExternalDragEnd(
-                        mCoordinator.getView(),
-                        /* xPx= */ 0f,
-                        /* yPx= */ 0f,
-                        /* isOSNewWindowDrop= */ false);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_STARTED);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_LOCATION);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_ENDED);
 
         verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
+    }
+
+    /** Delivers a drag event to the rail container's drag listener, as the framework does. */
+    private void dispatchToRailDragListener(int action) {
+        View container = mCoordinator.getView();
+        getOnDragListener(container).onDrag(container, mockDragEvent(action, /* result= */ false));
     }
 
     /**

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -21,7 +20,6 @@ import android.content.res.Configuration;
 import android.graphics.Outline;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -401,10 +399,6 @@ public class VerticalTabRailLayoutUnitTest {
         mRailLayout.dispatchTouchEvent(touchEvent);
         verify(mMockRailEventListener).onTouchEventDispatched(touchEvent);
         touchEvent.recycle();
-
-        DragEvent dragEvent = mockDragEvent(DragEvent.ACTION_DRAG_STARTED);
-        mRailLayout.dispatchDragEvent(dragEvent);
-        verify(mMockRailEventListener).onDragEventDispatched(dragEvent);
     }
 
     @Test
@@ -418,7 +412,6 @@ public class VerticalTabRailLayoutUnitTest {
         MotionEvent touchEvent = obtainMouseEvent(MotionEvent.ACTION_UP);
         mRailLayout.dispatchTouchEvent(touchEvent);
         touchEvent.recycle();
-        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
 
         verifyNoInteractions(mMockRailEventListener);
     }
@@ -446,12 +439,6 @@ public class VerticalTabRailLayoutUnitTest {
     private static MotionEvent obtainMouseEvent(int action) {
         MotionEvent event = MotionEvent.obtain(0, 0, action, 100f, 250f, 0);
         event.setSource(InputDevice.SOURCE_MOUSE);
-        return event;
-    }
-
-    private static DragEvent mockDragEvent(int action) {
-        DragEvent event = mock(DragEvent.class);
-        when(event.getAction()).thenReturn(action);
         return event;
     }
 

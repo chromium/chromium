@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Outline;
 import android.util.AttributeSet;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -64,9 +63,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         /** Called for every touch event dispatched to the rail. */
         void onTouchEventDispatched(MotionEvent event);
-
-        /** Called for every drag event dispatched to the rail. */
-        void onDragEventDispatched(DragEvent event);
     }
 
     private @Nullable RailEventListener mRailEventListener;
@@ -329,12 +325,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         }
         // Measure all children while enforcing the params we defined above.
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @Override
-    public boolean dispatchDragEvent(DragEvent event) {
-        if (mRailEventListener != null) mRailEventListener.onDragEventDispatched(event);
-        return super.dispatchDragEvent(event);
     }
 
     @Override
