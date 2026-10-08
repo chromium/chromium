@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
-#include "base/types/optional_util.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
@@ -209,24 +208,6 @@ bool CanAccessPreProvisionedKey(
   return cookie_access_cb &&
          cookie_access_cb.Run({.provider_origin{provider_origin},
                                .relying_party_origin{rp_origin}});
-}
-
-// Returns the RFC 7638 JWK thumbprint of the public key of `key_id`, or
-// `std::nullopt` if it can't be computed.
-std::optional<std::string> GetJwkThumbprint(
-    const unexportable_keys::UnexportableKeyService& key_service,
-    unexportable_keys::UnexportableSigningKeyId key_id) {
-  ASSIGN_OR_RETURN(
-      crypto::sign::SignatureKind algorithm,
-      base::OptionalFromExpected(key_service.GetAlgorithm(key_id)));
-  ASSIGN_OR_RETURN(
-      std::vector<uint8_t> spki,
-      base::OptionalFromExpected(key_service.GetSubjectPublicKeyInfo(key_id)));
-  std::string thumbprint = CreateJwkThumbprint(algorithm, spki);
-  if (thumbprint.empty()) {
-    return std::nullopt;
-  }
-  return thumbprint;
 }
 
 }  // namespace

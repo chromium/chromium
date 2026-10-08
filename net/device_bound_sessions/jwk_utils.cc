@@ -4,9 +4,14 @@
 
 #include "net/device_bound_sessions/jwk_utils.h"
 
+#include <vector>
+
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/evp.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
@@ -143,6 +148,22 @@ std::string CreateJwkThumbprint(crypto::sign::SignatureKind algorithm,
 
   std::string thumbprint_hash = crypto::SHA256HashString(canonical_jwk_string);
   return Base64UrlEncode(base::as_bytes(base::span(thumbprint_hash)));
+}
+
+std::optional<std::string> GetJwkThumbprint(
+    const unexportable_keys::UnexportableKeyService& key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id) {
+  ASSIGN_OR_RETURN(
+      crypto::sign::SignatureKind algorithm,
+      base::OptionalFromExpected(key_service.GetAlgorithm(key_id)));
+  ASSIGN_OR_RETURN(
+      std::vector<uint8_t> spki,
+      base::OptionalFromExpected(key_service.GetSubjectPublicKeyInfo(key_id)));
+  std::string thumbprint = CreateJwkThumbprint(algorithm, spki);
+  if (thumbprint.empty()) {
+    return std::nullopt;
+  }
+  return thumbprint;
 }
 
 }  // namespace net::device_bound_sessions

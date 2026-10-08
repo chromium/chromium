@@ -4,9 +4,25 @@
 
 #include "net/device_bound_sessions/jwk_utils.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/json/json_reader.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
+#include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/sign.h"
+#include "crypto/unexportable_key.h"
 #include "net/device_bound_sessions/test_support.h"
+#include "net/test/test_with_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net::device_bound_sessions {
@@ -143,6 +159,55 @@ TEST(JWKUtilsTest, CreateJwkThumbprintInvalidSpki) {
   static constexpr uint8_t kBadSpki[] = {0x01, 0x02, 0x03, 0x04};
 
   EXPECT_EQ(CreateJwkThumbprint(crypto::sign::ECDSA_SHA256, kBadSpki), "");
+}
+
+class JWKUtilsKeyServiceTest : public TestWithTaskEnvironment {
+ protected:
+  unexportable_keys::UnexportableKeyService& key_service() {
+    return key_service_;
+  }
+
+ private:
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl key_service_{
+      task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials,
+      crypto::UnexportableKeyProvider::Config()};
+};
+
+class JWKUtilsKeyServiceAlgorithmTest
+    : public JWKUtilsKeyServiceTest,
+      public testing::WithParamInterface<crypto::sign::SignatureKind> {};
+
+TEST_P(JWKUtilsKeyServiceAlgorithmTest, GetJwkThumbprintSuccess) {
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service().GenerateSigningKeySlowlyAsync(
+      {GetParam()}, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(unexportable_keys::UnexportableSigningKeyId key_id,
+                       key_future.Take());
+
+  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> spki,
+                       key_service().GetSubjectPublicKeyInfo(key_id));
+  std::string expected_thumbprint = CreateJwkThumbprint(GetParam(), spki);
+  ASSERT_FALSE(expected_thumbprint.empty());
+
+  EXPECT_THAT(GetJwkThumbprint(key_service(), key_id),
+              testing::Optional(expected_thumbprint));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         JWKUtilsKeyServiceAlgorithmTest,
+                         testing::Values(crypto::sign::ECDSA_SHA256,
+                                         crypto::sign::RSA_PKCS1_SHA256));
+
+TEST_F(JWKUtilsKeyServiceTest, GetJwkThumbprintUnknownKeyId) {
+  EXPECT_EQ(GetJwkThumbprint(key_service(),
+                             unexportable_keys::UnexportableSigningKeyId()),
+            std::nullopt);
 }
 
 }  // namespace
