@@ -4874,7 +4874,7 @@
   {
     "name": "enforce-incognito-isolation",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 162
   },
   {
     "name": "enforce-mono-audio-capture",
