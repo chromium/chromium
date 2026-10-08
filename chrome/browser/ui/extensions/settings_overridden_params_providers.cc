@@ -88,15 +88,13 @@ bool GoogleIsDefaultSearchProvider(Profile* profile) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Helper to determine if a search provider is known (prepopulated).
-bool IsPrepopulatedOrStarterPack(const TemplateURL* template_url,
-                                 TemplateURLService* template_url_service) {
-  auto has_prepopulated_ids = [](const TemplateURL* turl) {
-    return turl->prepopulate_id() > 0 ||
-           turl->starter_pack_id() !=
-               template_url_starter_pack_data::StarterPackId::kNone;
+bool IsPrepopulated(const TemplateURL* template_url,
+                    TemplateURLService* template_url_service) {
+  auto is_prepopulated = [](const TemplateURL* turl) {
+    return turl->prepopulate_id() > 0;
   };
 
-  if (has_prepopulated_ids(template_url)) {
+  if (is_prepopulated(template_url)) {
     return true;
   }
 
@@ -108,8 +106,7 @@ bool IsPrepopulatedOrStarterPack(const TemplateURL* template_url,
     return std::any_of(all_urls.begin(), all_urls.end(), [&](const auto& turl) {
       return turl.get() != template_url &&
              turl->keyword() == template_url->keyword() &&
-             turl->url() == template_url->url() &&
-             has_prepopulated_ids(turl.get());
+             turl->url() == template_url->url() && is_prepopulated(turl.get());
     });
   }
 
@@ -229,7 +226,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   SecondarySearchInfo search_info;
   search_info.origin = origin;
   search_info.is_prepopulated =
-      IsPrepopulatedOrStarterPack(secondary_search, template_url_service);
+      IsPrepopulated(secondary_search, template_url_service);
   search_info.name = GetDialogDisplayName(
       secondary_search, search_info.is_prepopulated, search_url);
 
@@ -618,7 +615,7 @@ void GetSearchOverriddenParamsThenRun(
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)) {
     const bool is_prepopulated =
-        IsPrepopulatedOrStarterPack(default_search, template_url_service);
+        IsPrepopulated(default_search, template_url_service);
     std::u16string search_name =
         GetDialogDisplayName(default_search, is_prepopulated, search_url);
 

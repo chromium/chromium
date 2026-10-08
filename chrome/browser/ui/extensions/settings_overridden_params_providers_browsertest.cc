@@ -143,7 +143,8 @@ class SettingsOverriddenParamsProvidersBrowserTest
     auto iter = std::ranges::find_if(
         template_urls, [template_url_service, new_search_shows_in_default_list](
                            const TemplateURL* turl) {
-          return !turl->HasGoogleBaseURLs(
+          return template_url_service->CanMakeDefault(turl) &&
+                 !turl->HasGoogleBaseURLs(
                      template_url_service->search_terms_data()) &&
                  template_url_service->ShowInDefaultList(turl) ==
                      new_search_shows_in_default_list;
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
   ASSERT_TRUE(params);
   if (IsExplicitChoiceDialog()) {
     ASSERT_TRUE(params->content.previous_setting);
-    EXPECT_EQ(u"Bookmarks", params->content.previous_setting->text);
+    EXPECT_EQ(u"testfoo", params->content.previous_setting->text);
   } else {
     EXPECT_EQ("Did you mean to change your search provider?",
               base::UTF16ToUTF8(params->content.dialog_title));
