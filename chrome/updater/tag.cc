@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
