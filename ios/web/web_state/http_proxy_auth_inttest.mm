@@ -148,11 +148,6 @@ class HttpProxyAuthTest : public WebTestWithWebState {
   }
 
   void TearDown() override {
-    // Ensure no proxyConfigurations outlive these tests to avoid flake of
-    // unrelated tests.
-    WKWebsiteDataStore* data_store = [WKWebsiteDataStore defaultDataStore];
-    data_store.proxyConfigurations = @[];
-
     if (web_state()) {
       web_state()->SetDelegate(nullptr);
     }
