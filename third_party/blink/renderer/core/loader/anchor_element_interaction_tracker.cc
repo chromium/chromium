@@ -127,17 +127,17 @@ const ModerateViewportHeuristicConfig& GetViewportHeuristicConfig() {
 
 bool ShouldRunMobileViewportHeuristicImpl(const Document& document,
                                           bool for_devtools_emulation) {
-  if (!IsMobileViewportContext(document)) {
-    return false;
-  }
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  return IsMobileViewportContext(document);
+#elif BUILDFLAG(IS_IOS)
+  // Mobile viewport style is the platform default on iOS, so it does not
+  // imply DevTools mobile emulation.
+  return false;
+#else
   // On desktop, a mobile viewport context implies DevTools mobile emulation;
   // `for_devtools_emulation` acts as a kill-switch for that path.
-  if (!for_devtools_emulation) {
-    return false;
-  }
+  return for_devtools_emulation && IsMobileViewportContext(document);
 #endif
-  return true;
 }
 
 }  // namespace
