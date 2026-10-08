@@ -48,7 +48,8 @@ class BirchCalendarFetcherTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     fetcher_ = std::make_unique<BirchCalendarFetcher>(
-        profile_.get(), IdentityManagerFactory::GetForProfile(profile_.get()));
+        profile_->GetURLLoaderFactory(),
+        IdentityManagerFactory::GetForProfile(profile_.get()));
 
     // Configure the fetcher to use the test server.
     fetcher_->SetSenderForTest(MakeRequestSender());

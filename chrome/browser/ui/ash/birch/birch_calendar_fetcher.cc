@@ -12,7 +12,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/refresh_token_waiter.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -71,12 +70,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 BirchCalendarFetcher::BirchCalendarFetcher(
-    Profile* profile,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : profile_(profile),
+    : url_loader_factory_(std::move(url_loader_factory)),
       refresh_token_waiter_(
           std::make_unique<RefreshTokenWaiter>(identity_manager)) {
-  url_loader_factory_ = profile_->GetURLLoaderFactory();
   sender_ = std::make_unique<google_apis::RequestSender>(
       std::make_unique<google_apis::AuthService>(
           identity_manager,

@@ -32,7 +32,7 @@ base::Time TimeFromString(const char* time_string) {
 class TestCalendarFetcher : public BirchCalendarFetcher {
  public:
   explicit TestCalendarFetcher(Profile* profile)
-      : BirchCalendarFetcher(profile,
+      : BirchCalendarFetcher(profile->GetURLLoaderFactory(),
                              IdentityManagerFactory::GetForProfile(profile)) {}
   ~TestCalendarFetcher() override = default;
 
@@ -52,7 +52,7 @@ class TestCalendarFetcher : public BirchCalendarFetcher {
 class CountingCalendarFetcher : public BirchCalendarFetcher {
  public:
   explicit CountingCalendarFetcher(Profile* profile)
-      : BirchCalendarFetcher(profile,
+      : BirchCalendarFetcher(profile->GetURLLoaderFactory(),
                              IdentityManagerFactory::GetForProfile(profile)) {}
   ~CountingCalendarFetcher() override = default;
 

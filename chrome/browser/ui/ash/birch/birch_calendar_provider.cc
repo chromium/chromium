@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_fetcher.h"
 #include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -55,8 +56,8 @@ BirchCalendarProvider::BirchCalendarProvider(
 BirchCalendarProvider::~BirchCalendarProvider() = default;
 
 void BirchCalendarProvider::Initialize() {
-  fetcher_ =
-      std::make_unique<BirchCalendarFetcher>(profile_, identity_manager_);
+  fetcher_ = std::make_unique<BirchCalendarFetcher>(
+      profile_->GetURLLoaderFactory(), identity_manager_);
 }
 
 void BirchCalendarProvider::Shutdown() {
