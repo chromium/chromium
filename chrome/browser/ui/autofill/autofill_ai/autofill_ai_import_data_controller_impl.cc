@@ -329,7 +329,7 @@ int AutofillAiImportDataControllerImpl::GetNoticeStringId() const {
   if (IsWalletableEntity()) {
     if (IsSavePrompt() && base::FeatureList::IsEnabled(
                               features::kAutofillAiWalletPrivatePasses)) {
-      return GetSaveEntityToWalletNoticeStringId();
+      return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
     }
     return IsSavePrompt()
                ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE

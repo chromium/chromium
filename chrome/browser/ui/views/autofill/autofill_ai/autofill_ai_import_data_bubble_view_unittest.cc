@@ -24,7 +24,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -284,33 +283,6 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
 
   EXPECT_EQ(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);
   histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Save.Funnel", 0);
-}
-
-TEST_F(AutofillAiImportDataBubbleViewTest,
-       WalletSubtitleBrandedWhenNoticeStringIdIsBranded) {
-  EXPECT_CALL(mock_controller(), IsWalletableEntity())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
-      .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
-  EXPECT_CALL(mock_controller(), GetPrimaryAccountEmail())
-      .WillRepeatedly(Return(u"test@example.com"));
-  EXPECT_CALL(mock_controller(), GetNoticeStringId())
-      .WillRepeatedly(
-          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_BRANDED));
-  CreateViewAndShow();
-
-  auto* styled_label = views::AsViewClass<views::StyledLabel>(
-      view()->children()[0]->children()[0]->children()[0]);
-  ASSERT_NE(styled_label, nullptr);
-  EXPECT_EQ(
-      styled_label->GetText(),
-      u"Save your info and get things done faster, like filling forms across "
-      u"Google products. You can manage your Wallet settings for "
-      u"test@example.com.");
-
-  EXPECT_CALL(mock_controller(), OnGoToWalletLinkClicked());
-  styled_label->ClickFirstLinkForTesting();
 }
 
 }  // namespace
