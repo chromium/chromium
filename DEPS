@@ -3275,7 +3275,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '92d011ec2e8fbf27348ca078057f2e75cf77514c',
+    Var('webrtc_git') + '/src.git' + '@' + '852150686748f5cce0c1c96f4fde50e6be43ef73',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
