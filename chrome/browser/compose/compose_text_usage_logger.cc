@@ -44,7 +44,7 @@ int64_t CountWords(const std::u16string& value) {
   return words;
 }
 
-size_t RoundDownToPowerOfTwo(int64_t n) {
+int64_t RoundDownToPowerOfTwo(int64_t n) {
   // We use -1 as a special value indicating unknown.
   if (n < 0) {
     return -1;
