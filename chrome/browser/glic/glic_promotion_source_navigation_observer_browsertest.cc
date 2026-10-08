@@ -56,35 +56,19 @@ class GlicPromotionSourceNavigationObserverBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
-                       PromotionSourceWebstoreAttribution) {
+                       PromotionSourceNonZssAttribution) {
   PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
 
-  GURL webstore_url = marketing_server_.GetURL(
-      "/title1.html?utm_source=owned&utm_medium=chrome-web-store&utm_campaign="
-      "GiC-promo");
-  EXPECT_TRUE(OpenTabWithLink(webstore_url));
+  // Benign query parameters like ?hl=fr should still attribute to NonZss
+  // when source is absent.
+  GURL non_zss_url = marketing_server_.GetURL("/title1.html?hl=fr");
+  EXPECT_TRUE(OpenTabWithLink(non_zss_url));
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceWebstore);
+            kGlicPromotionSourceNonZss);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceWebstore));
-}
-
-IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
-                       PromotionSourceChromeDotComAttribution) {
-  PrefService* prefs = GetProfile()->GetPrefs();
-  EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
-
-  // Benign query parameters like ?hl=fr should still attribute to ChromeDotCom
-  // when utm_medium and source are absent.
-  GURL chrome_dot_com_url = marketing_server_.GetURL("/title1.html?hl=fr");
-  EXPECT_TRUE(OpenTabWithLink(chrome_dot_com_url));
-
-  EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceChromeDotCom);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceChromeDotCom));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
@@ -102,73 +86,43 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
-                       UnrecognizedQueryDoesNotAttributePromotionSource) {
-  PrefService* prefs = GetProfile()->GetPrefs();
-  EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
-
-  // Navigations with unrecognized utm_medium or source values must not
-  // attribute.
-  GURL unrecognized_utm =
-      marketing_server_.GetURL("/title1.html?utm_medium=other");
-  EXPECT_TRUE(OpenTabWithLink(unrecognized_utm));
-  EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
-
-  GURL unrecognized_source =
-      marketing_server_.GetURL("/title1.html?source=other");
-  EXPECT_TRUE(OpenTabWithLink(unrecognized_source));
-  EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
-}
-
-IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
                        PromotionSourceMultipleAttribution) {
   PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
 
   // First touch: visit from chrome.com (link navigation without query params).
-  GURL chrome_dot_com_url = marketing_server_.GetURL("/title1.html");
-  EXPECT_TRUE(OpenTabWithLink(chrome_dot_com_url));
+  GURL non_zss_url = marketing_server_.GetURL("/title1.html");
+  EXPECT_TRUE(OpenTabWithLink(non_zss_url));
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceChromeDotCom);
+            kGlicPromotionSourceNonZss);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceChromeDotCom));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
 
   // Visiting the same source again should not change the tag.
-  EXPECT_TRUE(OpenTabWithLink(chrome_dot_com_url));
+  EXPECT_TRUE(OpenTabWithLink(non_zss_url));
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceChromeDotCom);
+            kGlicPromotionSourceNonZss);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceChromeDotCom));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
 
-  // Visiting an unrecognized campaign should not change the existing tag.
-  GURL unrecognized_url =
-      marketing_server_.GetURL("/title1.html?utm_medium=other");
-  EXPECT_TRUE(OpenTabWithLink(unrecognized_url));
-  EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceChromeDotCom);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceChromeDotCom));
-
-  // Visiting a different recognized source (webstore) tags the user as
-  // "Multiple".
-  GURL webstore_url = marketing_server_.GetURL(
-      "/title1.html?utm_source=owned&utm_medium=chrome-web-store&utm_campaign="
-      "GiC-promo");
-  EXPECT_TRUE(OpenTabWithLink(webstore_url));
+  // Visiting a different recognized source (zss) tags the user as "Multiple".
+  GURL zss_url = marketing_server_.GetURL("/title1.html?source=zss");
+  EXPECT_TRUE(OpenTabWithLink(zss_url));
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceMultiple);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
       kGlicPromotionSourceTrialName, kGlicPromotionSourceMultiple));
   EXPECT_FALSE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceChromeDotCom));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
   EXPECT_FALSE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceWebstore));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceZss));
 
-  // Subsequent visits to any source (including zss) keep the user in
-  // "Multiple".
-  GURL zss_url = marketing_server_.GetURL("/title1.html?source=zss");
-  EXPECT_TRUE(OpenTabWithLink(zss_url));
+  // Subsequent visits to any source keep the user in "Multiple".
+  GURL unrecognized_url =
+      marketing_server_.GetURL("/title1.html?some_other_param=other");
+  EXPECT_TRUE(OpenTabWithLink(unrecognized_url));
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceMultiple);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
@@ -180,15 +134,14 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
   PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
 
-  GURL webstore_url = marketing_server_.GetURL(
-      "/title1.html?utm_source=owned&utm_medium=chrome-web-store&utm_campaign="
-      "GiC-promo");
-  EXPECT_TRUE(OpenTabWithLink(webstore_url));
+  GURL non_zss_url = marketing_server_.GetURL(
+      "/title1.html?some_other_campaign=true");
+  EXPECT_TRUE(OpenTabWithLink(non_zss_url));
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceWebstore);
+            kGlicPromotionSourceNonZss);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceWebstore));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
@@ -198,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
 
   PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
-            kGlicPromotionSourceWebstore);
+            kGlicPromotionSourceNonZss);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceWebstore));
+      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
 }
 
 }  // namespace glic

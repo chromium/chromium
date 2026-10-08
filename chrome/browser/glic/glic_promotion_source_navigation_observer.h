@@ -22,8 +22,7 @@ inline constexpr char kGlicPromotionSourceTrialName[] =
     "GlicPromotionSourceSynthetic";
 
 // Group names for the GlicPromotionSourceSynthetic trial.
-inline constexpr char kGlicPromotionSourceChromeDotCom[] = "ChromeDotCom";
-inline constexpr char kGlicPromotionSourceWebstore[] = "Webstore";
+inline constexpr char kGlicPromotionSourceNonZss[] = "NonZss";
 inline constexpr char kGlicPromotionSourceZss[] = "zss";
 inline constexpr char kGlicPromotionSourceMultiple[] = "Multiple";
 inline constexpr char kGlicPromotionSourceMultiProfileDetected[] =

@@ -25,9 +25,7 @@ namespace {
 
 constexpr char kPromotionPagePathSuffix[] =
     "/chrome/ai-innovations/gemini-in-chrome";
-constexpr char kUtmMediumParam[] = "utm_medium";
 constexpr char kSourceParam[] = "source";
-constexpr char kChromeWebStoreMedium[] = "chrome-web-store";
 constexpr char kZssSource[] = "zss";
 
 const GURL* g_promotion_page_url_for_testing = nullptr;
@@ -92,21 +90,14 @@ void GlicPromotionSourceNavigationObserver::MaybeRegisterPromotionSourceCohort(
   }
 
   const GURL& url = navigation_handle->GetURL();
-  std::string utm_medium;
-  bool has_utm_medium =
-      net::GetValueForKeyInQuery(url, kUtmMediumParam, &utm_medium);
   std::string source;
-  bool has_source = net::GetValueForKeyInQuery(url, kSourceParam, &source);
+  net::GetValueForKeyInQuery(url, kSourceParam, &source);
 
   std::string new_group;
-  if (utm_medium == kChromeWebStoreMedium) {
-    new_group = kGlicPromotionSourceWebstore;
-  } else if (source == kZssSource) {
+  if (source == kZssSource) {
     new_group = kGlicPromotionSourceZss;
-  } else if (!has_utm_medium && !has_source) {
-    new_group = kGlicPromotionSourceChromeDotCom;
   } else {
-    return;
+    new_group = kGlicPromotionSourceNonZss;
   }
 
   const std::string current_cohort =

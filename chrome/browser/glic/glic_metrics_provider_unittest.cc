@@ -167,19 +167,19 @@ TEST_F(GlicMetricsProviderTest, ProvideCurrentSessionData_OnboardingStatus) {
 
 TEST_F(GlicMetricsProviderTest, PromotionSourceSyntheticTrialReconciliation) {
   profile1()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
-                                    kGlicPromotionSourceWebstore);
+                                    kGlicPromotionSourceNonZss);
   GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
   EXPECT_TRUE(variations::ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
-      kGlicPromotionSourceWebstore));
+      kGlicPromotionSourceNonZss));
 
   // Matching cohort in second profile preserves the group.
   profile2()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
-                                    kGlicPromotionSourceWebstore);
+                                    kGlicPromotionSourceNonZss);
   GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
   EXPECT_TRUE(variations::ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
-      kGlicPromotionSourceWebstore));
+      kGlicPromotionSourceNonZss));
 
   // Conflicting cohort in second profile registers MultiProfileDetected.
   profile2()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,

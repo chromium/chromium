@@ -224,8 +224,8 @@ inline constexpr char kGlicPreviouslyNotAllowed[] =
 inline constexpr char kGlicMarketingAutoOpenCount[] =
     "glic.marketing_auto_open_count";
 
-// String pref that records the acquisition cohort for Glic promotion page
-// visits.
+// String pref that records whether a Glic promotion page visit originated from
+// zss or a non-zss source.
 inline constexpr char kGlicPromotionSourceCohort[] =
     "glic.promotion_source_cohort";
 
