@@ -686,6 +686,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                   segmentation_platform::tips_manager::signals::
                       kNTPBackgroundSelected,
                   base::Days(90))));
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kNeverCustomizeNTP,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              !_tipsManager->WasSignalFired(
+                  segmentation_platform::tips_manager::signals::
+                      kNTPCustomized)));
     }
   }
 

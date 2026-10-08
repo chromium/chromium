@@ -55,6 +55,9 @@ inline constexpr char kNTPBackgroundSelected[] = "NTPBackgroundSelected";
 inline constexpr char kTipsNotificationOptInPromptReceived[] =
     "TipsNotificationOptInPromptReceived";
 
+// User customized their NTP.
+inline constexpr char kNTPCustomized[] = "NTPCustomized";
+
 // LINT.ThenChange(//components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h:signal_registrations)
 
 // LINT.IfChange(signal_registrations)
@@ -69,6 +72,7 @@ inline constexpr auto kProfileSignalNames =
         signals::kUsedGoogleTranslation,
         signals::kUsedPasswordAutofill,
         signals::kNTPBackgroundSelected,
+        signals::kNTPCustomized,
     });
 
 // Tips signals related to the device or application itself. These
