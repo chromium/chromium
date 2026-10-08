@@ -55,7 +55,7 @@ class POLICY_EXPORT PolicyServiceImpl
   static constexpr char kWith1to50PoliciesHistogramSuffix[] =
       ".With_1_to_50_Policies";
   static constexpr char kWith51to100PoliciesHistogramSuffix[] =
-      ".With_1_to_50_Policies";
+      ".With_51_to_100_Policies";
   static constexpr char kWith101PlusPoliciesHistogramSuffix[] =
       ".With_101_Plus_Policies";
 

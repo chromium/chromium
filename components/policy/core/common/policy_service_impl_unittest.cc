@@ -32,7 +32,6 @@
 
 using ::testing::_;
 using ::testing::AnyNumber;
-using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::Return;
 
@@ -2610,173 +2609,105 @@ TEST_F(PolicyServiceTest, PolicyMessages) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 
+// Expected histogram names and suffixes are spelled out as literals matching
+// tools/metrics/histograms/metadata/enterprise/histograms.xml. They are
+// intentionally not built from the PolicyServiceImpl constants, so that a
+// wrong constant value is caught.
 struct PolicyServiceInitTimeTestParams {
   PolicyServiceImpl::ScopeForMetrics scope_for_metrics;
   size_t policy_count;
-  std::vector<std::vector<std::string>> expected_histogram_parts;
+  // Per-scope histogram. Empty if nothing should be recorded.
+  std::string expected_histogram;
+  // Suffixes appended to `expected_histogram` for the breakdown histograms.
+  std::vector<std::string> expected_breakdown_suffixes;
 } kInitTimeTestParams[] = {
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUnspecified,
         .policy_count = 0,
-        .expected_histogram_parts = {},
+        .expected_histogram = "",
+        .expected_breakdown_suffixes = {},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kMachine,
         .policy_count = 0,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWithoutPoliciesHistogramSuffix,
-                },
-            },
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.Machine",
+        .expected_breakdown_suffixes = {".WithoutPolicies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kMachine,
-        .policy_count = 3,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWithPoliciesHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWith1to50PoliciesHistogramSuffix,
-                },
-            },
+        .policy_count = 1,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.Machine",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_1_to_50_Policies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kMachine,
-        .policy_count = 60,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWithPoliciesHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWith51to100PoliciesHistogramSuffix,
-                },
-            },
+        .policy_count = 50,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.Machine",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_1_to_50_Policies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kMachine,
-        .policy_count = 200,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWithPoliciesHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kMachineHistogramSuffix,
-                    PolicyServiceImpl::kWith101PlusPoliciesHistogramSuffix,
-                },
-            },
+        .policy_count = 51,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.Machine",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_51_to_100_Policies"},
+    },
+    {
+        .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kMachine,
+        .policy_count = 100,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.Machine",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_51_to_100_Policies"},
+    },
+    {
+        .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kMachine,
+        .policy_count = 101,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.Machine",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_101_Plus_Policies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUser,
         .policy_count = 0,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWithoutPoliciesHistogramSuffix,
-                },
-            },
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.User",
+        .expected_breakdown_suffixes = {".WithoutPolicies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUser,
-        .policy_count = 3,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWithPoliciesHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWith1to50PoliciesHistogramSuffix,
-                },
-            },
+        .policy_count = 1,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.User",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_1_to_50_Policies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUser,
-        .policy_count = 60,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWithPoliciesHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWith51to100PoliciesHistogramSuffix,
-                },
-            },
+        .policy_count = 50,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.User",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_1_to_50_Policies"},
     },
     {
         .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUser,
-        .policy_count = 200,
-        .expected_histogram_parts =
-            {
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWithPoliciesHistogramSuffix,
-                },
-                {
-                    PolicyServiceImpl::kInitTimeHistogramPrefix,
-                    PolicyServiceImpl::kUserHistogramSuffix,
-                    PolicyServiceImpl::kWith101PlusPoliciesHistogramSuffix,
-                },
-            },
+        .policy_count = 51,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.User",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_51_to_100_Policies"},
+    },
+    {
+        .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUser,
+        .policy_count = 100,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.User",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_51_to_100_Policies"},
+    },
+    {
+        .scope_for_metrics = PolicyServiceImpl::ScopeForMetrics::kUser,
+        .policy_count = 101,
+        .expected_histogram = "Enterprise.PolicyServiceInitTime.User",
+        .expected_breakdown_suffixes = {".WithPolicies",
+                                        ".With_101_Plus_Policies"},
     },
 };
 
@@ -2787,29 +2718,30 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PolicyServiceInitTimeTest,
                          ::testing::ValuesIn(kInitTimeTestParams));
 
+// Checks that exactly the expected histograms are recorded, and that no other
+// histogram under the Enterprise.PolicyServiceInitTime prefix receives a
+// sample.
 TEST_P(PolicyServiceInitTimeTest, HistogramsRecorded) {
   constexpr base::TimeDelta kInitTime = base::Seconds(9);
 
   base::HistogramTester histogram_tester;
-  PolicyServiceInitTimeTestParams params = GetParam();
+  const PolicyServiceInitTimeTestParams& params = GetParam();
   PolicyServiceImpl::RecordInitializationTime(params.scope_for_metrics,
                                               params.policy_count, kInitTime);
 
-  if (params.expected_histogram_parts.empty()) {
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    base::StrCat({PolicyServiceImpl::kInitTimeHistogramPrefix,
-                                  PolicyServiceImpl::kUserHistogramSuffix})),
-                IsEmpty());
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    base::StrCat({PolicyServiceImpl::kInitTimeHistogramPrefix,
-                                  PolicyServiceImpl::kMachineHistogramSuffix})),
-                IsEmpty());
+  base::HistogramTester::CountsMap expected_counts;
+  if (!params.expected_histogram.empty()) {
+    expected_counts[params.expected_histogram] = 1;
+    for (const std::string& suffix : params.expected_breakdown_suffixes) {
+      expected_counts[base::StrCat({params.expected_histogram, suffix})] = 1;
+    }
   }
-
-  for (auto hist_name_parts : params.expected_histogram_parts) {
-    histogram_tester.ExpectTimeBucketCount(base::StrCat(hist_name_parts),
-                                           kInitTime, 1);
+  for (const auto& [name, count] : expected_counts) {
+    histogram_tester.ExpectUniqueTimeSample(name, kInitTime, count);
   }
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Enterprise.PolicyServiceInitTime."),
+              ::testing::ContainerEq(expected_counts));
 }
 
 }  // namespace policy
