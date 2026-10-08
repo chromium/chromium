@@ -58,6 +58,7 @@ namespace client_capabilities {
 // //third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc.
 inline constexpr char kConditionalCreate[] = "conditionalCreate";
 inline constexpr char kConditionalGet[] = "conditionalGet";
+inline constexpr char kConditionalPassiveGet[] = "conditionalPassiveGet";
 inline constexpr char kHybridTransport[] = "hybridTransport";
 inline constexpr char kPasskeyPlatformAuthenticator[] =
     "passkeyPlatformAuthenticator";
@@ -65,7 +66,6 @@ inline constexpr char kUserVerifyingPlatformAuthenticator[] =
     "userVerifyingPlatformAuthenticator";
 inline constexpr char kRelatedOrigins[] = "relatedOrigins";
 inline constexpr char kImmediateGet[] = "immediateGet";
-inline constexpr char kAmbientGet[] = "ambientGet";
 inline constexpr char kSignalAllAcceptedCredentials[] =
     "signalAllAcceptedCredentials";
 inline constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";

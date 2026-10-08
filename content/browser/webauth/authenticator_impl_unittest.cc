@@ -453,13 +453,13 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
   ExpectCapability(capabilities, client_capabilities::kConditionalCreate, true);
 }
 
-TEST_F(AuthenticatorImplTest, GetClientCapabilities_AmbientGet) {
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalPassiveGet) {
   for (const bool enabled : {false, true}) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureState(device::kWebAuthnAmbientSignin, enabled);
     NavigateAndCommit(GURL(kTestOrigin1));
     ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
-    ExpectCapability(capabilities, client_capabilities::kAmbientGet,
+    ExpectCapability(capabilities, client_capabilities::kConditionalPassiveGet,
                      enabled ? std::optional<bool>(true) : std::nullopt);
   }
 }

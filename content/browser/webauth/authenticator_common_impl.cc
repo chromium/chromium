@@ -2233,7 +2233,7 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       MakeCapability(client_capabilities::kImmediateGet, true));
   if (ambient_get_enabled) {
     barrier_callback.Run(
-        MakeCapability(client_capabilities::kAmbientGet, true));
+        MakeCapability(client_capabilities::kConditionalPassiveGet, true));
   }
 
   barrier_callback.Run(
