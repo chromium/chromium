@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class Label;
 class Link;
 }
 
@@ -23,7 +24,8 @@ class ExpandableContainerView : public views::View {
   METADATA_HEADER(ExpandableContainerView, views::View)
 
  public:
-  explicit ExpandableContainerView(const std::u16string& details);
+  ExpandableContainerView(const std::u16string& visible_details,
+                          const std::u16string& collapsed_details);
   ExpandableContainerView(const ExpandableContainerView&) = delete;
   ExpandableContainerView& operator=(const ExpandableContainerView&) = delete;
   ~ExpandableContainerView() override;
@@ -34,6 +36,7 @@ class ExpandableContainerView : public views::View {
   // Accessors for testing.
   View* details_view() { return details_view_; }
   void ToggleDetailLevelForTest() { ToggleDetailLevel(); }
+  std::u16string_view GetDetailsTextForTest() const;
 
  private:
   // Helper class representing the list of details, that can hide itself.
@@ -41,7 +44,8 @@ class ExpandableContainerView : public views::View {
     METADATA_HEADER(DetailsView, views::BoxLayoutView)
 
    public:
-    explicit DetailsView(const std::u16string& details);
+    DetailsView(const std::u16string& visible_details,
+                const std::u16string& collapsed_details);
     DetailsView(const DetailsView&) = delete;
     DetailsView& operator=(const DetailsView&) = delete;
     ~DetailsView() override;
@@ -50,9 +54,14 @@ class ExpandableContainerView : public views::View {
     void SetExpanded(bool expanded);
     bool GetExpanded() const;
 
+    std::u16string_view GetText() const;
+
    private:
     // Whether this details section is expanded.
     bool expanded_ = false;
+    raw_ptr<views::Label> label_ = nullptr;
+    std::u16string visible_details_;
+    std::u16string all_details_;
   };
 
   // Expands or collapses |details_view_|.

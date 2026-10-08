@@ -619,7 +619,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   AddPermissionWithDetails("Example header permission",
                            {u"Detailed permission 1", u"Detailed permission 2",
                             u"Very very very very very very long detailed "
-                            u"permission that wraps to a new line"});
+                            u"permission that wraps to a new line",
+                            u"Detailed permission 4"});
   ShowAndVerifyUi();
 }
 

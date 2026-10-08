@@ -19,11 +19,11 @@ found in the LICENSE file.
         app:leading="@dimen/text_size_medium_leading"/>
 
     <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/permission_item_toggle"
-        android:layout_width="wrap_content"
+        android:id="@+id/permission_item_visible_details"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Link"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         app:leading="@dimen/text_size_medium_leading"
         android:visibility="gone" />
 
@@ -31,8 +31,16 @@ found in the LICENSE file.
         android:id="@+id/permission_item_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:leading="@dimen/text_size_medium_leading"
+        android:visibility="gone" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/permission_item_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.TextMedium.Link"
         app:leading="@dimen/text_size_medium_leading"
         android:visibility="gone" />
 </LinearLayout>

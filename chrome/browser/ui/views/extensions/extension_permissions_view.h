@@ -28,10 +28,13 @@ class ExtensionPermissionsView : public views::View {
   ExtensionPermissionsView& operator=(const ExtensionPermissionsView&) = delete;
 
  private:
-  // Adds a single pair of `permission_text` and `permission_details` to
-  // be rendered in the view.
+  // Adds a single permission to be rendered in the view. `visible_details`
+  // (if any) are rendered directly below `permission_text`, and
+  // `collapsed_details` (if any) are rendered within an
+  // ExpandableContainerView.
   void AddItem(const std::u16string& permission_text,
-               const std::u16string& permission_details);
+               const std::u16string& visible_details,
+               const std::u16string& collapsed_details);
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionPermissionsView, views::View)

@@ -55,8 +55,8 @@ public class ExtensionInstallDialogBridgeTest {
     private static final String ACCEPT_BUTTON_LABEL = "Add extension";
     private static final String CANCEL_BUTTON_LABEL = "Cancel";
     private static final String PERMISSIONS_HEADING = "It can:";
-    private static final String PERMISSIONS_SHOW_DETAILS = "Show Details";
-    private static final String PERMISSIONS_HIDE_DETAILS = "Hide Details";
+    private static final String PERMISSIONS_SHOW_DETAILS = "Show all";
+    private static final String PERMISSIONS_HIDE_DETAILS = "Show less";
     private static final String JUSTIFICATION_HEADING =
             "Justification for requesting this extension:";
     private static final String JUSTIFICATION_PLACEHOLDER = "Enter justification...";
@@ -131,12 +131,16 @@ public class ExtensionInstallDialogBridgeTest {
      */
     @Test
     public void testDialogWithPermissions() throws Exception {
-        String[] permissionsText = {"Permission #1", "Permission #2"};
-        String[] permissionsDetails = {"", "Details #1"};
+        // Parallel arrays where each index i across the three arrays defines a separate
+        // permission scenario tested together in this dialog:
+        String[] permissionsText = {"Permission #1", "Permission #2", "Permission #3"};
+        String[] permissionsVisibleDetails = {"", "Visible Details #1", "Visible Details #2"};
+        String[] permissionsDetails = {"", "Details #1", ""};
 
         mExtensionInstallDialogBridge.withPermissions(
                 PERMISSIONS_HEADING,
                 permissionsText,
+                permissionsVisibleDetails,
                 permissionsDetails,
                 PERMISSIONS_SHOW_DETAILS,
                 PERMISSIONS_HIDE_DETAILS);
@@ -158,6 +162,8 @@ public class ExtensionInstallDialogBridgeTest {
         View permissionOne = permissionsContainer.getChildAt(permissionOneIndex + 1);
         TextViewWithLeading permissionOneMainText =
                 permissionOne.findViewById(R.id.permission_item_text);
+        TextViewWithLeading permissionOneVisibleDetails =
+                permissionOne.findViewById(R.id.permission_item_visible_details);
         TextViewWithLeading permissionOneToggle =
                 permissionOne.findViewById(R.id.permission_item_toggle);
         TextViewWithLeading permissionOneDetails =
@@ -167,6 +173,10 @@ public class ExtensionInstallDialogBridgeTest {
                 permissionsText[permissionOneIndex],
                 permissionOneMainText.getText().toString());
         Assert.assertEquals(
+                "Permission one visible details should be hidden.",
+                View.GONE,
+                permissionOneVisibleDetails.getVisibility());
+        Assert.assertEquals(
                 "Permission one toggle should be hidden, since permission has no details",
                 View.GONE,
                 permissionOneToggle.getVisibility());
@@ -175,11 +185,13 @@ public class ExtensionInstallDialogBridgeTest {
                 View.GONE,
                 permissionOneDetails.getVisibility());
 
-        // Verify second permission with no details.
+        // Verify second permission with details.
         int permissionTwoIndex = 1;
         View permissionTwo = permissionsContainer.getChildAt(permissionTwoIndex + 1);
         TextViewWithLeading permissionTwoMainText =
                 permissionTwo.findViewById(R.id.permission_item_text);
+        TextViewWithLeading permissionTwoVisibleDetails =
+                permissionTwo.findViewById(R.id.permission_item_visible_details);
         TextViewWithLeading permissionTwoToggle =
                 permissionTwo.findViewById(R.id.permission_item_toggle);
         TextViewWithLeading permissionTwoDetails =
@@ -188,6 +200,14 @@ public class ExtensionInstallDialogBridgeTest {
                 "Permission two text does not match.",
                 permissionsText[permissionTwoIndex],
                 permissionTwoMainText.getText().toString());
+        Assert.assertEquals(
+                "Permission two visible details should be visible.",
+                View.VISIBLE,
+                permissionTwoVisibleDetails.getVisibility());
+        Assert.assertEquals(
+                "Permission two visible details does not match.",
+                permissionsVisibleDetails[permissionTwoIndex],
+                permissionTwoVisibleDetails.getText().toString());
         Assert.assertEquals(
                 "Permission two toggle should be visible.",
                 View.VISIBLE,
@@ -220,6 +240,40 @@ public class ExtensionInstallDialogBridgeTest {
                 "Permissions two toggle text should revert.",
                 PERMISSIONS_SHOW_DETAILS,
                 permissionTwoToggle.getText().toString());
+
+        // Verify third permission with details.
+        int permissionThreeIndex = 2;
+        View permissionThree = permissionsContainer.getChildAt(permissionThreeIndex + 1);
+        TextViewWithLeading permissionThreeMainText =
+                permissionThree.findViewById(R.id.permission_item_text);
+        TextViewWithLeading permissionThreeVisibleDetails =
+                permissionThree.findViewById(R.id.permission_item_visible_details);
+        TextViewWithLeading permissionThreeToggle =
+                permissionThree.findViewById(R.id.permission_item_toggle);
+        TextViewWithLeading permissionThreeDetails =
+                permissionThree.findViewById(R.id.permission_item_details);
+        Assert.assertEquals(
+                "Permission three text does not match.",
+                permissionsText[permissionThreeIndex],
+                permissionThreeMainText.getText().toString());
+        Assert.assertEquals(
+                "Permission three visible details should be visible.",
+                View.VISIBLE,
+                permissionThreeVisibleDetails.getVisibility());
+        Assert.assertEquals(
+                "Permission three visible details does not match.",
+                permissionsVisibleDetails[permissionThreeIndex],
+                permissionThreeVisibleDetails.getText().toString());
+        Assert.assertEquals(
+                "Permission three toggle should be hidden, since permission has no collapsed"
+                    + " details.",
+                View.GONE,
+                permissionThreeToggle.getVisibility());
+        Assert.assertEquals(
+                "Permission three details should be hidden, since permission has no collapsed"
+                    + " details.",
+                View.GONE,
+                permissionThreeDetails.getVisibility());
     }
 
     /**

@@ -146,22 +146,24 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
   if (has_permissions) {
     std::u16string permissions_heading = prompt_->GetPermissionsHeading();
     std::u16string permissions_show_details =
-        l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_DETAILS);
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_ALL);
     std::u16string permissions_hide_details =
-        l10n_util::GetStringUTF16(IDS_EXTENSIONS_HIDE_DETAILS);
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_LESS);
 
     std::vector<std::u16string> permissions_text;
+    std::vector<std::u16string> permissions_visible_details;
     std::vector<std::u16string> permissions_details;
     auto permissions = prompt_->GetPermissions();
     for (size_t i = 0; i < permissions.permissions.size(); ++i) {
       permissions_text.push_back(permissions.permissions[i]);
-      permissions_details.push_back(permissions.details[i]);
+      permissions_visible_details.push_back(permissions.visible_details[i]);
+      permissions_details.push_back(permissions.collapsed_details[i]);
     }
 
     Java_ExtensionInstallDialogBridge_withPermissions(
         env, java_object_, permissions_heading, permissions_text,
-        permissions_details, permissions_show_details,
-        permissions_hide_details);
+        permissions_visible_details, permissions_details,
+        permissions_show_details, permissions_hide_details);
   }
 
   bool requires_justification =

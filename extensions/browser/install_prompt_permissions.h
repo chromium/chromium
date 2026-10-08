@@ -19,6 +19,8 @@ namespace extensions {
 class PermissionSet;
 
 struct InstallPromptPermissions {
+  static constexpr size_t kMaxVisibleDetails = 3;
+
   InstallPromptPermissions();
   ~InstallPromptPermissions();
   InstallPromptPermissions(const InstallPromptPermissions&);
@@ -30,8 +32,16 @@ struct InstallPromptPermissions {
   void AddPermissionMessages(
       const extensions::PermissionMessages& permissions_messages);
 
+  // The main permission messages.
   std::vector<std::u16string> permissions;
+  // All bulleted detail submessages for each permission.
   std::vector<std::u16string> details;
+  // The first `kMaxVisibleDetails` bulleted details to display visibly
+  // (not collapsed/hidden).
+  std::vector<std::u16string> visible_details;
+  // Any remaining bulleted details beyond `kMaxVisibleDetails` (to be
+  // collapsed/hidden).
+  std::vector<std::u16string> collapsed_details;
   std::vector<bool> is_showing_details;
 };
 

@@ -6222,11 +6222,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSION_WEB_STORE_TITLE_SHORT" desc="Shortened version of text for the Chrome Web Store">
         Web Store
       </message>
-      <message name="IDS_EXTENSIONS_SHOW_DETAILS" desc="Tooltip for the button next to an extension that shows more details">
-        Show Details
+      <message name="IDS_EXTENSIONS_SHOW_ALL" desc="Text for the link next to an extension permission that shows all details">
+        Show all
       </message>
-      <message name="IDS_EXTENSIONS_HIDE_DETAILS" desc="Tooltip for the button next to an extension that hides details">
-        Hide Details
+      <message name="IDS_EXTENSIONS_SHOW_LESS" desc="Text for the link next to an extension permission that hides extra details">
+        Show less
       </message>
 
       <!-- Global error messages for extensions -->

@@ -20,13 +20,15 @@ ExtensionPermissionsView::ExtensionPermissionsView(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   for (size_t i = 0; i < permissions.permissions.size(); ++i) {
-    AddItem(permissions.permissions.at(i), permissions.details.at(i));
+    AddItem(permissions.permissions.at(i), permissions.visible_details.at(i),
+            permissions.collapsed_details.at(i));
   }
 }
 
 void ExtensionPermissionsView::AddItem(
     const std::u16string& permission_text,
-    const std::u16string& permission_details) {
+    const std::u16string& visible_details,
+    const std::u16string& collapsed_details) {
   auto permission_label =
       views::Builder<views::Label>()
           .SetText(permission_text)
@@ -37,9 +39,20 @@ void ExtensionPermissionsView::AddItem(
           .Build();
   AddChildView(std::move(permission_label));
 
-  if (!permission_details.empty()) {
-    // If we have more details to provide, show them in collapsed form.
-    AddChildView(std::make_unique<ExpandableContainerView>(permission_details));
+  if (!collapsed_details.empty()) {
+    // If we have more details to provide, show them in expandable form.
+    AddChildView(std::make_unique<ExpandableContainerView>(visible_details,
+                                                           collapsed_details));
+  } else if (!visible_details.empty()) {
+    auto visible_details_label =
+        views::Builder<views::Label>()
+            .SetText(visible_details)
+            .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+            .SetTextStyle(views::style::STYLE_SECONDARY)
+            .SetMultiLine(true)
+            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+            .Build();
+    AddChildView(std::move(visible_details_label));
   }
 }
 

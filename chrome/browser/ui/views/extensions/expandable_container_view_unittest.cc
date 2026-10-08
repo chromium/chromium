@@ -8,15 +8,25 @@
 
 using ExpandableContainerViewTest = ChromeViewsTestBase;
 
-TEST_F(ExpandableContainerViewTest, DetailLevelVisibility) {
-  std::u16string details = u"- Detail #1 \n - Detail #2 \n - Detail #3";
-  auto container = std::make_unique<ExpandableContainerView>(details);
+TEST_F(ExpandableContainerViewTest, VisibleAndCollapsedDetails) {
+  std::u16string visible_details = u"• Detail #1\n• Detail #2\n• Detail #3";
+  std::u16string collapsed_details = u"• Detail #4";
+  auto container = std::make_unique<ExpandableContainerView>(visible_details,
+                                                             collapsed_details);
 
-  // Initially the details view should not be expanded or visible.
-  EXPECT_FALSE(container->details_view()->GetVisible());
+  // Initially the details view is visible because it displays visible_details.
+  EXPECT_TRUE(container->details_view()->GetVisible());
+  EXPECT_EQ(container->GetDetailsTextForTest(), visible_details);
 
-  // When the link is triggered, the details should get expanded and become
-  // visible.
+  // When the link is triggered, the details remain visible and expand to show
+  // all details in the same label.
   container->ToggleDetailLevelForTest();
   EXPECT_TRUE(container->details_view()->GetVisible());
+  EXPECT_EQ(container->GetDetailsTextForTest(),
+            visible_details + u"\n" + collapsed_details);
+
+  // Triggering the link again collapses it back to visible_details.
+  container->ToggleDetailLevelForTest();
+  EXPECT_TRUE(container->details_view()->GetVisible());
+  EXPECT_EQ(container->GetDetailsTextForTest(), visible_details);
 }

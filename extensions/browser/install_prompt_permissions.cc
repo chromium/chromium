@@ -46,17 +46,33 @@ void InstallPromptPermissions::AddPermissionMessages(
     const PermissionMessages& permissions_messages) {
   for (const PermissionMessage& msg : permissions_messages) {
     permissions.push_back(msg.message());
-    // Add a dash to the front of each permission detail.
     std::u16string details_str;
+    std::u16string visible_details_str;
+    std::u16string collapsed_details_str;
     if (!msg.submessages().empty()) {
       std::vector<std::u16string> detail_lines_with_bullets;
-      for (const auto& detail_line : msg.submessages()) {
-        detail_lines_with_bullets.push_back(u"• " + detail_line);
+      std::vector<std::u16string> visible_lines_with_bullets;
+      std::vector<std::u16string> collapsed_lines_with_bullets;
+      for (size_t i = 0; i < msg.submessages().size(); ++i) {
+        std::u16string bulleted = u"• " + msg.submessages()[i];
+        detail_lines_with_bullets.push_back(bulleted);
+        if (i < kMaxVisibleDetails) {
+          visible_lines_with_bullets.push_back(std::move(bulleted));
+        } else {
+          collapsed_lines_with_bullets.push_back(std::move(bulleted));
+        }
       }
 
       details_str = base::JoinString(detail_lines_with_bullets, u"\n");
+      visible_details_str = base::JoinString(visible_lines_with_bullets, u"\n");
+      if (!collapsed_lines_with_bullets.empty()) {
+        collapsed_details_str =
+            base::JoinString(collapsed_lines_with_bullets, u"\n");
+      }
     }
     details.push_back(details_str);
+    visible_details.push_back(visible_details_str);
+    collapsed_details.push_back(collapsed_details_str);
     is_showing_details.push_back(false);
   }
 }

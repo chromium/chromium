@@ -136,6 +136,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     public void withPermissions(
             @JniType("std::u16string") final String permissionsHeading,
             @JniType("std::vector<std::u16string>") final String[] permissionsText,
+            @JniType("std::vector<std::u16string>") final String[] permissionsVisibleDetails,
             @JniType("std::vector<std::u16string>") final String[] permissionsDetails,
             @JniType("std::u16string") final String permissionsShowDetails,
             @JniType("std::u16string") final String permissionsHideDetails) {
@@ -164,6 +165,16 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
             // Add the permission's main text.
             TextViewWithLeading mainText = permissionRow.findViewById(R.id.permission_item_text);
             mainText.setText(permissionsText[i]);
+
+            // Add visible details, if existent.
+            TextViewWithLeading visibleDetails =
+                    permissionRow.findViewById(R.id.permission_item_visible_details);
+            if (permissionsVisibleDetails[i].isEmpty()) {
+                visibleDetails.setVisibility(View.GONE);
+            } else {
+                visibleDetails.setText(permissionsVisibleDetails[i]);
+                visibleDetails.setVisibility(View.VISIBLE);
+            }
 
             // Add toggle to open the permission's details, if existent.
             TextViewWithLeading toggle = permissionRow.findViewById(R.id.permission_item_toggle);
