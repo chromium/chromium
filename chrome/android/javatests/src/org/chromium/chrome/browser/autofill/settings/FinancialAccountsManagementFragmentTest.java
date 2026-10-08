@@ -28,6 +28,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -56,6 +57,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -285,6 +287,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/571618450
     public void testEwalletAndPixAccountShown() throws Exception {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
@@ -331,6 +334,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/571618450
     public void testEwalletAccountShown() {
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
 
