@@ -36,7 +36,9 @@ public class SafetyPromoCarouselAdapterUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mAdapter = new SafetyPromoCarouselAdapter(TEST_ITEMS);
+        mAdapter =
+                new SafetyPromoCarouselAdapter(
+                        TEST_ITEMS, R.layout.safety_promo_carousel_portrait_illustration);
     }
 
     @Test
@@ -50,8 +52,24 @@ public class SafetyPromoCarouselAdapterUnitTest {
         ViewHolder holder = mAdapter.onCreateViewHolder(parent, 0);
         assertNotNull(holder);
         assertNotNull(holder.mImageView);
+        assertEquals(R.id.carousel_illustration, holder.itemView.getId());
 
         mAdapter.onBindViewHolder(holder, 0);
+        assertNotNull(holder.mImageView.getDrawable());
+    }
+
+    @Test
+    public void testCreateAndBindViewHolder_landscape() {
+        SafetyPromoCarouselAdapter adapter =
+                new SafetyPromoCarouselAdapter(
+                        TEST_ITEMS, R.layout.safety_promo_carousel_landscape_illustration);
+        FrameLayout parent = new FrameLayout(mContext);
+        ViewHolder holder = adapter.onCreateViewHolder(parent, 0);
+        assertNotNull(holder);
+        assertNotNull(holder.mImageView);
+        assertEquals(R.id.carousel_landscape_illustration_container, holder.itemView.getId());
+
+        adapter.onBindViewHolder(holder, 0);
         assertNotNull(holder.mImageView.getDrawable());
     }
 }

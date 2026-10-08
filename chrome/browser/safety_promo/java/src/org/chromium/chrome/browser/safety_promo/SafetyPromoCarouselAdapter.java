@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -21,19 +22,23 @@ public class SafetyPromoCarouselAdapter
         extends RecyclerView.Adapter<SafetyPromoCarouselAdapter.ViewHolder> {
 
     private final List<SafetyPromoItem> mItems;
+    private final @LayoutRes int mItemLayoutId;
 
-    public SafetyPromoCarouselAdapter(List<SafetyPromoItem> items) {
+    /**
+     * @param items The items to display.
+     * @param itemLayoutId The layout of each item. It must contain an {@link ImageView} with the ID
+     *     {@code carousel_illustration}.
+     */
+    public SafetyPromoCarouselAdapter(List<SafetyPromoItem> items, @LayoutRes int itemLayoutId) {
         mItems = items;
+        mItemLayoutId = itemLayoutId;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view =
                 LayoutInflater.from(parent.getContext())
-                        .inflate(
-                                R.layout.safety_promo_carousel_portrait_illustration,
-                                parent,
-                                false);
+                        .inflate(mItemLayoutId, parent, /* attachToRoot= */ false);
         return new ViewHolder(view);
     }
 
