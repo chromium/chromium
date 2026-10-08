@@ -8,14 +8,13 @@
 #import <memory>
 
 #import "base/notreached.h"
+#import "base/task/single_thread_task_runner.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #import "components/session_proto_db/session_proto_db.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 
 namespace session_proto_db::internal {
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
@@ -32,7 +31,7 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS* profile) {
         profile->GetProtoDatabaseProvider(),
         profile->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
-        web::GetUIThreadTaskRunner({}));
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   if constexpr (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
@@ -41,7 +40,7 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS* profile) {
         profile->GetProtoDatabaseProvider(),
         profile->GetStatePath().AppendASCII(kParcelTrackingDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE,
-        web::GetUIThreadTaskRunner({}));
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   // Must add in leveldb_proto::ProtoDbType and database directory folder
