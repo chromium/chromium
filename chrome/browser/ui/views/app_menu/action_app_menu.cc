@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
@@ -51,19 +51,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-// Command-line switch used to inject an initial search query into the app
-// menu's search bar when the menu opens. This is used for development and
-// testing of the search experience (e.g. testing layout, keyboard navigation,
-// and result filtering) before interactive typing or dynamic search is wired
-// up.
-//
-// Usage:
-//   --enable-features=AppMenuGlowUp,ChroMenuSearch
-//   --app-menu-search-query="<query>"
-// Example:
-//   --app-menu-search-query="history"
-constexpr char kAppMenuSearchQuery[] = "app-menu-search-query";
 
 ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon,
                                        int icon_size) {
@@ -209,15 +196,11 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host, int run_types) {
   root_->set_children_use_full_width(true);
 
   root_->CreateSubmenu();
+  PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
 
-  const std::string query =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kAppMenuSearchQuery);
-  if (query.empty() || !MaybePopulateSearchResults(base::UTF8ToUTF16(query))) {
-    PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
-    if (search_bar_ && !query.empty()) {
-      search_bar_->SetText(base::UTF8ToUTF16(query));
-    }
+  if (const std::string query = features::kChroMenuSearchQuery.Get();
+      !query.empty()) {
+    UpdateSearchQuery(base::UTF8ToUTF16(query));
   }
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -621,16 +604,8 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       continue;
     }
 
-    auto display_type =
+    const auto display_type =
         child_base->GetProperty(AppMenuActionItem::kDisplayTypeKey);
-
-    // Individual search result items should always be displayed as normal rows,
-    // even if their underlying action was defined with kBlock or kCustom.
-    if (search_controller_ &&
-        display_type != AppMenuActionItem::DisplayType::kSection &&
-        display_type != AppMenuActionItem::DisplayType::kHeader) {
-      display_type = AppMenuActionItem::DisplayType::kRow;
-    }
 
     if (display_type == AppMenuActionItem::DisplayType::kSearch) {
       PopulateSearchBar(view_parent, child_ptr);
@@ -859,22 +834,21 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 }
 
-bool ActionAppMenu::MaybePopulateSearchResults(const std::u16string& query) {
-  search_controller_ = std::make_unique<AppMenuSearchController>(
-      menu_manager_->GetAppMenuRoot());
-  search_controller_->InitializeSearchIndex();
-  actions::ActionItem* results = search_controller_->Search(query);
-  if (!results) {
-    search_controller_.reset();
-    return false;
+void ActionAppMenu::UpdateSearchQuery(const std::u16string& query) {
+  if (!search_bar_) {
+    return;
   }
-
-  PopulateSearchBar(root_, nullptr);
-  if (search_bar_) {
-    search_bar_->SetText(query);
+  search_bar_->SetText(query);
+  if (!search_controller_) {
+    search_controller_ = std::make_unique<AppMenuSearchController>(
+        menu_manager_->GetAppMenuRoot());
+    search_controller_->InitializeSearchIndex();
   }
-  PopulateMenu(root_, results);
-  return true;
+  if (actions::ActionItem* results = search_controller_->Search(query)) {
+    ClearItemsBelowSearchBar();
+    PopulateMenu(root_, results);
+    root_->ChildrenChanged();
+  }
 }
 
 void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,

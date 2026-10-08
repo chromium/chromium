@@ -54,6 +54,7 @@ BASE_DECLARE_FEATURE(kAppMenuGlowUp);
 BASE_DECLARE_FEATURE(kSettingsRefresh2026);
 // Enables search in the app Chrome menu.
 BASE_DECLARE_FEATURE(kChroMenuSearch);
+BASE_DECLARE_FEATURE_PARAM(std::string, kChroMenuSearchQuery);
 
 bool IsTabStripDeclutterEnabled();
 bool IsToolbarGlowUpEnabled();

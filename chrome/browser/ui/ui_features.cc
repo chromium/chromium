@@ -83,6 +83,11 @@ BASE_FEATURE(kAppMenuGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables search in the app Chrome menu.
 BASE_FEATURE(kChroMenuSearch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kChroMenuSearchQuery,
+                   &kChroMenuSearch,
+                   "query",
+                   "");
 
 bool IsTabStripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(kDesktopGlowUp) ||

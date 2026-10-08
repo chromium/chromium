@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -3376,10 +3375,9 @@ TEST_F(ActionAppMenuTest, BookmarksDynamicMenuDragAndDrop) {
 }
 
 TEST_F(ActionAppMenuTest, AppMenuSearchQueryPopulatesResults) {
-  base::test::ScopedFeatureList feature_list(features::kChroMenuSearch);
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      "app-menu-search-query", "New Tab");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kChroMenuSearch,
+                                                  {{"query", "New Tab"}});
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -3411,10 +3409,9 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryPopulatesResults) {
 }
 
 TEST_F(ActionAppMenuTest, AppMenuSearchQueryNoResults) {
-  base::test::ScopedFeatureList feature_list(features::kChroMenuSearch);
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      "app-menu-search-query", "NonExistentQuery");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kChroMenuSearch, {{"query", "NonExistentQuery"}});
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -3442,10 +3439,9 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryNoResults) {
 }
 
 TEST_F(ActionAppMenuTest, AppMenuSearchQueryShortQueryShowsNormalMenu) {
-  base::test::ScopedFeatureList feature_list(features::kChroMenuSearch);
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      "app-menu-search-query", "N");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kChroMenuSearch,
+                                                  {{"query", "N"}});
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());

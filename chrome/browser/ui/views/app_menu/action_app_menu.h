@@ -103,6 +103,7 @@ class ActionAppMenu : public views::MenuDelegate,
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
   void ClearItemsBelowSearchBar();
+  void UpdateSearchQuery(const std::u16string& query);
 
   // Recursively populates the menu item with the `base_action_item`'s
   // children.
@@ -126,8 +127,6 @@ class ActionAppMenu : public views::MenuDelegate,
                          bool round_bottom_corners,
                          bool add_top_padding,
                          bool add_bottom_padding);
-
-  bool MaybePopulateSearchResults(const std::u16string& query);
 
   void PopulateSearchBar(views::MenuItemView* view_parent,
                          actions::ActionItem* search_action_item);
