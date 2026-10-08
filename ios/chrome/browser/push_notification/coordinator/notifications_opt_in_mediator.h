@@ -14,6 +14,7 @@
 class AuthenticationService;
 @protocol NotificationsOptInPresenter;
 @protocol NotificationsOptInConsumer;
+enum class NotificationOptInAccessPoint;
 
 // Handles model interactions for the notifications opt-in screen.
 @interface NotificationsOptInMediator
@@ -25,6 +26,9 @@ class AuthenticationService;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<NotificationsOptInConsumer> consumer;
+
+// Access point that triggered the notifications opt-in screen.
+@property(nonatomic, assign) NotificationOptInAccessPoint accessPoint;
 
 // Initializes the mediator with the user's pref service to
 // manipulate their push notification permissions.

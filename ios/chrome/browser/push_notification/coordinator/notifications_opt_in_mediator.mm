@@ -13,6 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -44,10 +45,17 @@
 }
 
 - (void)configureConsumer {
-  for (auto [item, selection] : _selected) {
-    selection = push_notification_settings::
-        GetMobileNotificationPermissionStatusForMultipleClients(
-            [self clientIDsForItem:item], [self primaryIdentity].gaiaId);
+  // Pass by reference so `_selected[kTips]` is updated to YES in the map.
+  for (auto& [item, selection] : _selected) {
+    if (item == NotificationsOptInItemIdentifier::kTips &&
+        self.accessPoint == NotificationOptInAccessPoint::kTips) {
+      selection = YES;
+    } else {
+      selection = push_notification_settings::
+          GetMobileNotificationPermissionStatusForMultipleClients(
+              [self clientIDsForItem:item], [self primaryIdentity].gaiaId);
+    }
+
     [self.consumer setOptInItem:item enabled:selection];
   }
 }

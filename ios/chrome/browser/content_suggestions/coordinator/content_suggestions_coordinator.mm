@@ -825,9 +825,16 @@ using segmentation_platform::TipIdentifier;
       [self.delegate openMainCustomizationMenuWithIconBubbleOnDismiss:YES];
       break;
     }
-    case TipIdentifier::kTipsNotifications:
-      // TODO(crbug.com/566958720): Open the tips notifications destination.
-      NOTREACHED();
+    case TipIdentifier::kTipsNotifications: {
+      CHECK(!segmentation_platform::features::
+                IsMagicStackTipsV2IosActionableEnabled());
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          BrowserCoordinatorCommands)
+          showNotificationsOptInFromAccessPoint:NotificationOptInAccessPoint::
+                                                    kTips
+                             baseViewController:self.magicStackCollectionView];
+      break;
+    }
   }
 
   [self.NTPActionsDelegate tipsOpened];

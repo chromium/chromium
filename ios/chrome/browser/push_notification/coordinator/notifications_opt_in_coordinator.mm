@@ -64,6 +64,7 @@
                                         self.profile)];
   mediator.consumer = _viewController;
   mediator.presenter = self;
+  mediator.accessPoint = self.accessPoint;
   _viewController.delegate = mediator;
   _viewController.notificationsDelegate = mediator;
   _viewController.presentationController.delegate = self;
