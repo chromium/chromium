@@ -12,6 +12,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_cell.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_header_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_list_cell.h"
@@ -113,6 +114,7 @@ TEST_F(ComposeboxMenuViewControllerTest, TestSharedTabsCellConfiguration) {
   EXPECT_NSEQ(contentConfig.text,
               l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS));
   EXPECT_NSEQ(contentConfig.secondaryText, @"alltrails.com, nps.gov");
+  EXPECT_EQ(contentConfig.secondaryTextProperties.numberOfLines, 0);
 
   ASSERT_EQ(cell.accessories.count, 2u);
   EXPECT_TRUE([cell.accessories[0]
@@ -128,6 +130,13 @@ TEST_F(ComposeboxMenuViewControllerTest, TestSharedTabsCellConfiguration) {
   ComposeboxFaviconsAccordionView* faviconsView =
       static_cast<ComposeboxFaviconsAccordionView*>(customAccessory.customView);
   EXPECT_EQ(faviconsView.arrangedSubviews.count, 2u);
+}
+
+// Tests that section header views allow multi-line titles.
+TEST_F(ComposeboxMenuViewControllerTest, TestSectionHeaderViewMultiLine) {
+  ComposeboxMenuHeaderView* headerView =
+      [[ComposeboxMenuHeaderView alloc] initWithFrame:CGRectZero];
+  EXPECT_EQ(headerView.label.numberOfLines, 0);
 }
 
 // Tests that when 5 attachment items are present, each button is wider than or

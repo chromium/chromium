@@ -20,6 +20,7 @@ const CGFloat kHeaderLabelVerticalPadding = 10.0f;
     _label.accessibilityTraits |= UIAccessibilityTraitHeader;
     _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     _label.adjustsFontForContentSizeCategory = YES;
+    _label.numberOfLines = 0;
     _label.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _label.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_label];
