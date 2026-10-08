@@ -153,6 +153,17 @@ TEST(ToolRegistryTest, HistoryBackToolDefinition) {
                                              base::Value(base::DictValue())));
 }
 
+TEST(ToolRegistryTest, HistoryForwardToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      HistoryForwardToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kGoForward);
+  EXPECT_EQ(definition->name, HistoryForwardToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -232,6 +243,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsHistoryBackTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kGoBack, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsHistoryForwardTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kGoForward, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

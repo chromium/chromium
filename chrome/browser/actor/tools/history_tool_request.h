@@ -40,9 +40,15 @@ class HistoryBackToolRequest : public TabToolRequest {
 class HistoryForwardToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "HistoryForward";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "go_forward";
 
   explicit HistoryForwardToolRequest(tabs::TabHandle tab_handle);
   ~HistoryForwardToolRequest() override;
+
+  // Returns the `ToolId::kGoForward` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 

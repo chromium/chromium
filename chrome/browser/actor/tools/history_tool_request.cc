@@ -29,6 +29,10 @@ namespace {
 constexpr std::string_view kGoBackToolDescription =
     "Go back to the previous page in history.";
 
+// Default description for the `go_forward` tool.
+constexpr std::string_view kGoForwardToolDescription =
+    "Go forward to the next page in history.";
+
 ToolRequest::CreateToolResult CreateHistoryTool(
     TaskId task_id,
     ToolDelegate& tool_delegate,
@@ -85,6 +89,13 @@ bool HistoryBackToolRequest::RequiresUrlCheckInCurrentTab() const {
 HistoryForwardToolRequest::HistoryForwardToolRequest(TabHandle tab_handle)
     : TabToolRequest(tab_handle) {}
 HistoryForwardToolRequest::~HistoryForwardToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> HistoryForwardToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kGoForward, kModelFacingName,
+                               kGoForwardToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult HistoryForwardToolRequest::CreateTool(
     TaskId task_id,
