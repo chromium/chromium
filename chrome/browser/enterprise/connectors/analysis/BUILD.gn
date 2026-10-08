@@ -144,6 +144,7 @@ if (!is_android && enterprise_cloud_content_analysis) {
       "content_analysis_browsertest.cc",
       "content_analysis_delegate_browsertest.cc",
       "content_analysis_info_browsertest.cc",
+      "network_request_proxying_url_loader_factory_browsertest.cc",
     ]
 
     deps = [

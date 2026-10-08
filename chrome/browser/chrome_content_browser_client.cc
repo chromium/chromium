@@ -665,6 +665,10 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/network_request_proxying_url_loader_factory.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/content/captive_portal_url_loader_throttle.h"
@@ -6925,6 +6929,15 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     glic::GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
         frame, factory_builder);
   }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  // Install the proxying factory scanning network requests for the
+  // "OnNetworkRequestEnterpriseConnector" policy. This is done after proxies
+  // that can block or modify requests (e.g. extensions) so that requests are
+  // scanned the way they are sent to the network.
+  enterprise_connectors::NetworkRequestProxyingURLLoaderFactory::
+      MaybeProxyRequest(frame, type, factory_builder);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   MaybeSetTargetNetwork(GetBoundNetworkFromRenderFrameHost(frame),
                         factory_builder, is_for_network_service);

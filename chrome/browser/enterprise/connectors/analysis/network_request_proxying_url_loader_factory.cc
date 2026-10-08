@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,11 +23,13 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/network_request_handler.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -35,6 +38,8 @@ namespace {
 
 using ScanCompletedCallback =
     NetworkRequestProxyingURLLoaderFactory::ScanCompletedCallback;
+using URLLoaderFactoryType =
+    content::ContentBrowserClient::URLLoaderFactoryType;
 
 // Returns the callback set by `SetScanCompletedCallbackForTesting()`.
 ScanCompletedCallback& GetScanCompletedCallback() {
@@ -131,6 +136,35 @@ NetworkRequestProxyingURLLoaderFactory::NetworkRequestProxyingURLLoaderFactory(
 
 NetworkRequestProxyingURLLoaderFactory::
     ~NetworkRequestProxyingURLLoaderFactory() = default;
+
+// static
+void NetworkRequestProxyingURLLoaderFactory::MaybeProxyRequest(
+    content::RenderFrameHost* frame,
+    URLLoaderFactoryType type,
+    network::URLLoaderFactoryBuilder& factory_builder) {
+  if (!base::FeatureList::IsEnabled(kEnableAuditOnlyNetworkRequestConnector)) {
+    return;
+  }
+
+  // The policy applies based on the URL of the tab making the request, so
+  // only factories used by frames are proxied.
+  if (!frame || (type != URLLoaderFactoryType::kNavigation &&
+                 type != URLLoaderFactoryType::kDocumentSubResource)) {
+    return;
+  }
+
+  // Avoid adding a proxy to every factory when the policy isn't set.
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(
+      frame->GetBrowserContext());
+  if (!service ||
+      !service->IsConnectorEnabled(AnalysisConnector::NETWORK_REQUEST)) {
+    return;
+  }
+
+  auto [receiver, remote] = factory_builder.Append();
+  base::MakeSelfDeleting<NetworkRequestProxyingURLLoaderFactory>(
+      std::move(receiver), std::move(remote), frame->GetGlobalId());
+}
 
 // static
 base::AutoReset<ScanCompletedCallback>

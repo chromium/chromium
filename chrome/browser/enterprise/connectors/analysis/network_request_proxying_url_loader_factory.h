@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,8 +18,13 @@
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace network {
 struct ResourceRequest;
+class URLLoaderFactoryBuilder;
 }  // namespace network
 
 namespace enterprise_connectors {
@@ -35,8 +41,13 @@ namespace enterprise_connectors {
 // Limitations:
 // - Only the initial URL of a request is checked against the policy, so a
 //   request isn't scanned again if it's redirected.
+// - Requests made by workers aren't scanned since they aren't tied to a tab.
 // - Streaming request bodies (e.g. a `ReadableStream` passed to `fetch()`)
 //   aren't scanned since they can only be read once, by the network request.
+// - Because this proxy is created conditionally, existing URLLoaderFactory
+//   instances won't scan requests if the policy is set after they were
+//   created. The factory must be recreated for the change to take effect
+//   (e.g. by reloading the page or navigating to a new URL).
 class NetworkRequestProxyingURLLoaderFactory
     : public network::SelfDeletingURLLoaderFactory {
  public:
@@ -53,6 +64,13 @@ class NetworkRequestProxyingURLLoaderFactory
       const NetworkRequestProxyingURLLoaderFactory&) = delete;
   NetworkRequestProxyingURLLoaderFactory& operator=(
       const NetworkRequestProxyingURLLoaderFactory&) = delete;
+
+  // Adds a proxy to `factory_builder` if the factory it builds for `frame`
+  // might make network requests that need to be scanned.
+  static void MaybeProxyRequest(
+      content::RenderFrameHost* frame,
+      content::ContentBrowserClient::URLLoaderFactoryType type,
+      network::URLLoaderFactoryBuilder& factory_builder);
 
   // Sets a callback that is run with the result of every scan started by this
   // class once it completes.

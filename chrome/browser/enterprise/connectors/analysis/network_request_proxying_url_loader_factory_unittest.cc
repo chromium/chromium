@@ -29,6 +29,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -39,6 +40,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -48,6 +50,9 @@
 namespace enterprise_connectors {
 
 namespace {
+
+using URLLoaderFactoryType =
+    content::ContentBrowserClient::URLLoaderFactoryType;
 
 constexpr char kTabUrl[] = "https://foo.com/page";
 constexpr char kOtherTabUrl[] = "https://other.com/page";
@@ -181,6 +186,59 @@ class NetworkRequestProxyingURLLoaderFactoryFeatureDisabledTest
 };
 
 }  // namespace
+
+TEST_F(NetworkRequestProxyingURLLoaderFactoryTest,
+       MaybeProxyRequest_FrameFactories) {
+  for (auto type : {URLLoaderFactoryType::kNavigation,
+                    URLLoaderFactoryType::kDocumentSubResource}) {
+    network::URLLoaderFactoryBuilder builder;
+    NetworkRequestProxyingURLLoaderFactory::MaybeProxyRequest(main_rfh(), type,
+                                                              builder);
+    EXPECT_EQ(1u, builder.num_interceptors());
+  }
+}
+
+TEST_F(NetworkRequestProxyingURLLoaderFactoryTest,
+       MaybeProxyRequest_OtherFactories) {
+  {
+    network::URLLoaderFactoryBuilder builder;
+    NetworkRequestProxyingURLLoaderFactory::MaybeProxyRequest(
+        /*frame=*/nullptr, URLLoaderFactoryType::kDocumentSubResource, builder);
+    EXPECT_EQ(0u, builder.num_interceptors());
+  }
+
+  for (auto type : {URLLoaderFactoryType::kDownload,
+                    URLLoaderFactoryType::kWorkerMainResource,
+                    URLLoaderFactoryType::kWorkerSubResource,
+                    URLLoaderFactoryType::kServiceWorkerScript}) {
+    network::URLLoaderFactoryBuilder builder;
+    NetworkRequestProxyingURLLoaderFactory::MaybeProxyRequest(main_rfh(), type,
+                                                              builder);
+    EXPECT_EQ(0u, builder.num_interceptors());
+  }
+}
+
+TEST_F(NetworkRequestProxyingURLLoaderFactoryTest,
+       MaybeProxyRequest_FeatureDisabled) {
+  base::test::ScopedFeatureList disable_feature;
+  disable_feature.InitAndDisableFeature(
+      kEnableAuditOnlyNetworkRequestConnector);
+
+  network::URLLoaderFactoryBuilder builder;
+  NetworkRequestProxyingURLLoaderFactory::MaybeProxyRequest(
+      main_rfh(), URLLoaderFactoryType::kDocumentSubResource, builder);
+  EXPECT_EQ(0u, builder.num_interceptors());
+}
+
+TEST_F(NetworkRequestProxyingURLLoaderFactoryTest, MaybeProxyRequest_NoPolicy) {
+  test::ClearAnalysisConnector(profile()->GetPrefs(),
+                               AnalysisConnector::NETWORK_REQUEST);
+
+  network::URLLoaderFactoryBuilder builder;
+  NetworkRequestProxyingURLLoaderFactory::MaybeProxyRequest(
+      main_rfh(), URLLoaderFactoryType::kDocumentSubResource, builder);
+  EXPECT_EQ(0u, builder.num_interceptors());
+}
 
 TEST_F(NetworkRequestProxyingURLLoaderFactoryTest, ScansPostRequest) {
   base::test::TestFuture<RequestHandlerResult> future;
