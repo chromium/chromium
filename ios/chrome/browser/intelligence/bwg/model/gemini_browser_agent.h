@@ -12,6 +12,7 @@
 #import <utility>
 #import <vector>
 
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "base/time/time.h"
@@ -293,6 +294,26 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Invokes the floaty.
   void InvokeFloaty(GeminiConfiguration* config);
 
+  // Invokes a new floaty for `startup_state`, configured with `page_context`
+  // (the partial page context of the active web state is used when nil).
+  // `start_time` is used to record the startup latency.
+  void InvokeNewFloaty(UIViewController* base_view_controller,
+                       GeminiStartupState* startup_state,
+                       base::TimeTicks start_time,
+                       GeminiPageContext* page_context);
+
+  // Runs the presentation deferred by `StartGeminiFlow()`, if any, with
+  // `page_context`. Called when the active page context generation completes.
+  void RunPendingPresentation(GeminiPageContext* page_context);
+
+  // Runs the pending presentation with the partial page context when the
+  // active page context generation did not complete in time.
+  void OnPendingPresentationTimeout();
+
+  // Cancels the presentation deferred by `StartGeminiFlow()`, if any. Page
+  // context generated for it afterwards is ignored.
+  void CancelPendingPresentation();
+
   // Forces the floaty to be shown if it is invoked. Can be used to set the
   // floaty opacity to 1.0 effectively re-showing the floaty. Useful to re-show
   // the floaty if a user is currently in fullscreen mode.
@@ -464,6 +485,19 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the Gemini container is currently invoked.
   bool is_gemini_invoked_ = false;
+  // Presentation deferred until the active page context is generated, so that
+  // an auto-submitted prompt is sent with the full page context. Null when no
+  // presentation is pending.
+  base::OnceCallback<void(GeminiPageContext*)> pending_presentation_;
+
+  // Bounds how long `pending_presentation_` waits for page context generation,
+  // which may never complete (e.g. when cancelled by a navigation).
+  base::OneShotTimer pending_presentation_timer_;
+
+  // Whether to skip the page context generation requested on the next floaty
+  // expansion. Set when the floaty is invoked with an already generated page
+  // context, since the floaty reports its expansion as soon as it appears.
+  bool skip_page_context_generation_on_expansion_ = false;
 
   // Tracks the number of times the active tab was switched while the floaty
   // was invoked.
@@ -548,6 +582,13 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Bridge for GeminiSharedTabsDelegate.
   __strong GeminiSharedTabsDelegateBridge* shared_tabs_delegate_bridge_ = nil;
+
+  // Weak pointer factory for the page context generation callback of the
+  // presentation deferred by `StartGeminiFlow()`. Invalidated when that
+  // presentation is cancelled since the generation may still complete, e.g.
+  // for a tab that is no longer active, and must not run a later presentation.
+  base::WeakPtrFactory<GeminiBrowserAgent> pending_presentation_weak_factory_{
+      this};
 
   // Weak pointer factory.
   base::WeakPtrFactory<GeminiBrowserAgent> weak_factory_{this};

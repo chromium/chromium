@@ -69,6 +69,8 @@
 @interface GeminiContainerMediator (Testing) <ActorTaskLifecycleObserver>
 - (void)cancelPageContextGeneration;
 - (void)setActuationActive:(BOOL)actuationActive;
+- (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
+    (GeminiStartupState*)startupState;
 @end
 
 namespace {
@@ -390,6 +392,26 @@ TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationWithAutoSubmit) {
       [mediator_ createGeminiConfigurationForActiveWebState:startup_state_];
   EXPECT_NE(nil, config);
   EXPECT_TRUE(config.shouldAutoSubmit);
+}
+
+// Tests that createGeminiConfigurationForActiveWebState:pageContext: uses the
+// given page context, with user preferences applied, instead of the partial
+// page context of the active web state.
+TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationWithPageContext) {
+  AppendActiveWebState();
+
+  GeminiPageContext* page_context = [[GeminiPageContext alloc] init];
+  page_context.geminiPageContextComputationState =
+      ios::provider::GeminiPageContextComputationState::kSuccess;
+  GeminiConfiguration* config =
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                                pageContext:page_context];
+  ASSERT_TRUE(config);
+  EXPECT_EQ(page_context, config.pageContext);
+  EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kSuccess,
+            config.pageContext.geminiPageContextComputationState);
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+            config.pageContext.geminiPageContextAttachmentState);
 }
 
 // Tests that suggestion chips are hidden when creating configuration for

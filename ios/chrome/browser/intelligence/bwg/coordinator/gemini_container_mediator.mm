@@ -191,8 +191,9 @@ class GeminiContainerMediatorTabHelperObserver
 
 #pragma mark - Public Methods
 
-- (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
-    (GeminiStartupState*)startupState {
+- (GeminiConfiguration*)
+    createGeminiConfigurationForActiveWebState:(GeminiStartupState*)startupState
+                                   pageContext:(GeminiPageContext*)pageContext {
   if (startupState) {
     _startupState = startupState;
   }
@@ -203,7 +204,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   GeminiPageContext* initialPageContext =
-      geminiTabHelper->GetPartialPageContext();
+      pageContext ? pageContext : geminiTabHelper->GetPartialPageContext();
   [self applyUserPrefsToPageContext:initialPageContext];
 
   return [self createGeminiConfigurationWithTabHelper:geminiTabHelper
@@ -598,6 +599,14 @@ class GeminiContainerMediatorTabHelperObserver
     geminiPageContext.geminiPageContextAttachmentState =
         ios::provider::GeminiPageContextAttachmentState::kAttached;
   }
+}
+
+// Creates and returns the GeminiConfiguration for the active web state, using
+// its partial page context.
+- (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
+    (GeminiStartupState*)startupState {
+  return [self createGeminiConfigurationForActiveWebState:startupState
+                                              pageContext:nil];
 }
 
 - (GeminiConfiguration*)
