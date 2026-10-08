@@ -24,7 +24,6 @@ class SavedTabGroupOverflowButton : public views::MenuButton {
 
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
-  void OnThemeChanged() override;
 };
 
 }  // namespace tab_groups

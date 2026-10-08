@@ -17,7 +17,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -43,6 +42,16 @@ SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   SetProperty(views::kElementIdentifierKey,
               kSavedTabGroupOverflowButtonElementId);
+
+  const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
+                                    ? kGridViewIcon
+                                    : kSavedTabGroupBarEverythingOldIcon;
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, kColorBookmarkButtonIcon,
+                                               kUIUpdateIconSize));
+  SetImageModel(views::Button::STATE_DISABLED,
+                ui::ImageModel::FromVectorIcon(icon, ui::kColorIconDisabled,
+                                               kUIUpdateIconSize));
 }
 
 SavedTabGroupOverflowButton::~SavedTabGroupOverflowButton() = default;
@@ -53,25 +62,6 @@ SavedTabGroupOverflowButton::CreateDefaultBorder() const {
   border->set_insets(ChromeLayoutProvider::Get()->GetInsetsMetric(
       INSETS_BOOKMARKS_BAR_BUTTON));
   return border;
-}
-
-void SavedTabGroupOverflowButton::OnThemeChanged() {
-  views::MenuButton::OnThemeChanged();
-
-  ui::ColorProvider* color_provider = GetColorProvider();
-  const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
-                                    ? kGridViewIcon
-                                    : kSavedTabGroupBarEverythingOldIcon;
-  const int icon_size = kUIUpdateIconSize;
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          icon, color_provider->GetColor(kColorBookmarkButtonIcon), icon_size));
-  SetImageModel(
-      views::Button::STATE_DISABLED,
-      ui::ImageModel::FromVectorIcon(
-          icon, color_provider->GetColor(ui::kColorIconDisabled), icon_size));
-  return;
 }
 
 BEGIN_METADATA(SavedTabGroupOverflowButton)
