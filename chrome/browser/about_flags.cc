@@ -1383,10 +1383,6 @@ const FeatureEntry::FeatureParam
         {"enable_context_menu_tooltips", "true"},
         {"enable_tab_deselection", "true"}};
 
-const FeatureEntry::FeatureParam
-    kContextManagementEnableFaviconSkeletonLoaderParams[] = {
-        {"enable_favicon_skeleton_loader", "true"}};
-
 // Normal 'Enabled' option is just the flag enabled with param 'realbox closes
 // menu on tab select' enabled by default. 'Disabled' option disables the flag,
 // and thus the context menu and 'realbox closes menu on tab select'.
@@ -1398,9 +1394,7 @@ const FeatureEntry::FeatureVariation
          "deselection)",
          kContextManagementKeepMenuOpenAndTabDeselectionParams, nullptr},
         {"Context Management in composebox (with tooltips and tab deselection)",
-         kContextManagementEnableContextMenuTooltipsParams, nullptr},
-        {"Context Management in composebox (with favicon skeleton loader)",
-         kContextManagementEnableFaviconSkeletonLoaderParams, nullptr}};
+         kContextManagementEnableContextMenuTooltipsParams, nullptr}};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

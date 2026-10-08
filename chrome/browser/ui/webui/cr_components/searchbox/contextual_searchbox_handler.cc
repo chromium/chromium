@@ -379,9 +379,7 @@ ContextualSearchboxHandler::GetRecentTabInfos(
             chrome::ChromeUINewTabURLAsGURL() &&
         !show_in_current_tab_chip;
     tab_data->last_active = tab_time.time;
-    tab_data->is_loading =
-        omnibox::IsFaviconSkeletonLoaderInComposeboxEnabled() &&
-        IsTabShowingLoadingIndicator(web_contents);
+    tab_data->is_loading = IsTabShowingLoadingIndicator(web_contents);
     tabs.push_back(std::move(tab_data));
   }
 

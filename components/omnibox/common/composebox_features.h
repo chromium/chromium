@@ -93,16 +93,6 @@ extern const base::FeatureParam<bool> kContextManagementInComposeboxTooltips;
 // Helper to check if context menu tooltips are enabled in the composebox.
 bool IsContextMenuTooltipsInComposeboxEnabled();
 
-// If enabled, favicon coins for tabs that are still loading show a skeleton
-// loader in the composebox.
-extern const base::FeatureParam<bool>
-    kContextManagementInComposeboxFaviconSkeletonLoader;
-
-// Helper to check if the favicon skeleton loader is enabled in the composebox,
-// which requires the parent feature kContextManagementInComposebox to be
-// enabled and the param to be true.
-bool IsFaviconSkeletonLoaderInComposeboxEnabled();
-
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_

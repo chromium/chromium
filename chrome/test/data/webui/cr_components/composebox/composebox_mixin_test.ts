@@ -2727,9 +2727,6 @@ suite('ComposeboxMixinTest', () => {
             'tab-uuid', 1, 'Tab 1', 'https://example.com',
             {delayUpload: true, status: ContextUploadStatus.kUploadStarted});
         element.attachedContext = new Map([[pendingFile.uuid, pendingFile]]);
-        assertFalse(element.getSharedTabs()[0]!.isLoading);
-
-        element.faviconSkeletonLoaderEnabled = true;
         assertTrue(element.getSharedTabs()[0]!.isLoading);
 
         const readyFile = ComposeboxFile.createFromTab(

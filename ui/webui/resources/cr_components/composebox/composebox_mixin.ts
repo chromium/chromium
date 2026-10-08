@@ -401,8 +401,6 @@ export const ComposeboxEmbedderMixin =
         haveReceivedSynchronousAutocompleteResponse: boolean = false;
         lensSendRawFileMediaTypesEnabled: boolean =
             loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
-        faviconSkeletonLoaderEnabled: boolean =
-            getLoadTimeBoolean('composeboxFaviconSkeletonLoaderEnabled', false);
 
         // One sentinel per in-flight request that may attach a delayed tab:
         // an `addTabContext()` call, or `updateState()` awaiting
@@ -3209,8 +3207,7 @@ export const ComposeboxEmbedderMixin =
           const awaitingSnapshot =
               new Set(Array.from(this.attachedContext.values())
                           .filter(
-                              file => this.faviconSkeletonLoaderEnabled &&
-                                  file.delayUpload &&
+                              file => file.delayUpload &&
                                   !isContextUploadStatusTerminal(file.status))
                           .map(file => file.tabId));
           return this.inputModel.getSharedTabs().map(
@@ -3408,7 +3405,6 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   lastQueriedInput: string;
   haveReceivedSynchronousAutocompleteResponse: boolean;
   lensSendRawFileMediaTypesEnabled: boolean;
-  faviconSkeletonLoaderEnabled: boolean;
   hasVoiceSearchError: boolean;
   isListening: boolean;
   voiceSearchCoherenceEnabled: boolean;

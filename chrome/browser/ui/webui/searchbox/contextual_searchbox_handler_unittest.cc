@@ -4087,12 +4087,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
-       GetRecentTabs_SetsIsLoadingWhenSkeletonLoaderEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kContextManagementInComposebox,
-      {{omnibox::kContextManagementInComposeboxFaviconSkeletonLoader.name,
-        "true"}});
+       GetRecentTabs_SetsIsLoadingForLoadingTabs) {
   auto* loading_tab = AddTab(GURL("https://www.google.com"));
   auto* loaded_tab = AddTab(GURL("https://www.youtube.com"));
   // A started, uncommitted navigation leaves the tab loading.
@@ -4113,32 +4108,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
-       GetRecentTabs_IsLoadingFalseWhenSkeletonLoaderDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kContextManagementInComposebox,
-      {{omnibox::kContextManagementInComposeboxFaviconSkeletonLoader.name,
-        "false"}});
-  auto* loading_tab = AddTab(GURL("https://www.google.com"));
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("https://www.google.com/search"), loading_tab->GetContents());
-  navigation->Start();
-
-  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
-  handler().GetRecentTabs(future.GetCallback());
-  auto tabs = future.Take();
-
-  ASSERT_EQ(tabs.size(), 1u);
-  EXPECT_FALSE(tabs[0]->is_loading);
-}
-
-TEST_F(ContextualSearchboxHandlerTestTabsTest,
        GetRecentTabs_NotifiesPageWhenLoadingTabStops) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kContextManagementInComposebox,
-      {{omnibox::kContextManagementInComposeboxFaviconSkeletonLoader.name,
-        "true"}});
   auto* loading_tab = AddTab(GURL("https://www.google.com"));
   // Keep `loading_tab` inactive so the active-tab navigation observer does not
   // also notify the page when the navigation commits.
