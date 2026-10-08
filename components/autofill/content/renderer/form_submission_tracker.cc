@@ -633,8 +633,8 @@ std::optional<FormData> FormSubmissionTracker::GetSubmittedForm(
   std::optional<FormData> extracted_form = form_util::ExtractFormData(
       document,
       submitted_form_element.has_value()
-          ? *submitted_form_element
-          : form_util::GetFormByRendererId(last_interacted_.form_id),
+          ? form_util::GetFormRendererId(*submitted_form_element)
+          : last_interacted_.form_id,
       autofill_agent_->field_data_manager(),
       autofill_agent_->GetCallTimerState(kGetSubmittedForm),
       autofill_agent_->button_titles_cache());
@@ -659,20 +659,18 @@ void FormSubmissionTracker::UpdateLastInteractedElement(
 
   // `document` is the WebDocument of `element`'s element. It is not
   // necessarily the same as the current frame's document.
-  //
-  // `form_element` is null if `element` is a FieldRendererId.
-  auto [document, form_element] = std::visit(
+  WebDocument document = std::visit(
       absl::Overload{
           [this](WebFormElement form) {
             CHECK(form);
             last_interacted_.form_id = form_util::GetFormRendererId(form);
-            return std::pair(form.GetDocument(), form);
+            return form.GetDocument();
           },
           [this](WebFormControlElement form_control) {
             CHECK(form_control);
             last_interacted_.formless_element_id =
                 form_util::GetFieldRendererId(form_control);
-            return std::pair(form_control.GetDocument(), WebFormElement());
+            return form_control.GetDocument();
           },
       },
       element);
@@ -682,7 +680,7 @@ void FormSubmissionTracker::UpdateLastInteractedElement(
   // `element_id` may refer to an element that is not in the current frame's
   // document.
   last_interacted_.saved_state = form_util::ExtractFormData(
-      document, form_element, autofill_agent_->field_data_manager(),
+      document, last_interacted_.form_id, autofill_agent_->field_data_manager(),
       autofill_agent_->GetCallTimerState(
           CallTimerState::CallSite::kUpdateLastInteractedElement),
       autofill_agent_->button_titles_cache());

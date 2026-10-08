@@ -16,7 +16,6 @@
 
 namespace blink {
 class WebDocument;
-class WebFormElement;
 }  // namespace blink
 
 namespace autofill {
@@ -46,12 +45,12 @@ class SynchronousFormCache {
       const std::map<FormRendererId, std::unique_ptr<FormData>>& forms);
   ~SynchronousFormCache();
 
-  // Tries to look for the extracted form corresponding to `form_element` in
+  // Tries to look for the extracted form corresponding to `form_id` in
   // `cache_` and if successful returns it, otherwise extracts the form from
   // scratch.
   std::optional<FormData> GetOrExtractForm(
       const blink::WebDocument& document,
-      const blink::WebFormElement& form_element,
+      FormRendererId form_id,
       const FieldDataManager& field_data_manager,
       const CallTimerState& timer_state,
       form_util::ButtonTitlesCache* button_titles_cache) const;

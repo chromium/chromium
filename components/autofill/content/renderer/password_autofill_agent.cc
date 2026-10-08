@@ -2398,7 +2398,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
   CHECK(cleared_form);
   if (std::optional<FormData> form_data = form_util::ExtractFormData(
-          cleared_form.GetDocument(), cleared_form, field_data_manager(),
+          cleared_form.GetDocument(), GetFormRendererId(cleared_form),
+          field_data_manager(),
           autofill_agent_->GetCallTimerState(
               CallTimerState::CallSite::kNotifyPasswordManagerAboutClearedForm),
           autofill_agent_->button_titles_cache())) {

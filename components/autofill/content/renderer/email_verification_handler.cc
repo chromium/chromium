@@ -138,7 +138,8 @@ void EmailVerificationHandler::WillSendSubmitEvent(
 
       if (auto* driver = agent_->unsafe_autofill_driver()) {
         if (std::optional<FormData> form_data = form_util::ExtractFormData(
-                form.GetDocument(), form, agent_->field_data_manager(),
+                form.GetDocument(), form_util::GetFormRendererId(form),
+                agent_->field_data_manager(),
                 agent_->GetCallTimerState(
                     CallTimerState::CallSite::
                         kFormWithEmailVerificationTokenSubmitted),

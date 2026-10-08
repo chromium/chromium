@@ -1168,9 +1168,8 @@ void AutofillAgent::ApplyFieldsAction(
     // Inform the browser about all forms that were autofilled.
     if (extracted_form_ids.insert(filled_form_id).second) {
       std::optional<FormData> form = form_util::ExtractFormData(
-          document, form_util::GetFormByRendererId(filled_form_id),
-          field_data_manager(), GetCallTimerState(kApplyFieldsAction),
-          button_titles_cache());
+          document, filled_form_id, field_data_manager(),
+          GetCallTimerState(kApplyFieldsAction), button_titles_cache());
       if (!form) {
         continue;
       }
@@ -1827,7 +1826,9 @@ void AutofillAgent::ExtractFormWithField(
   if (WebFormControlElement form_control =
           form_util::GetFormControlByRendererId(field_id)) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, form_control.GetOwningFormForAutofill(),
+            document,
+            form_util::GetFormRendererId(
+                form_control.GetOwningFormForAutofill()),
             field_data_manager(), GetCallTimerState(kExtractForm),
             button_titles_cache())) {
       std::move(callback).Run(std::move(form));

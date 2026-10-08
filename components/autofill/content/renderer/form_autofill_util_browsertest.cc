@@ -295,7 +295,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
 
   std::optional<FormData> ExtractFormData(WebFormElement form) {
-    return form_util::ExtractFormData(GetDocument(), form, field_data_manager(),
+    return form_util::ExtractFormData(GetDocument(), GetFormRendererId(form),
+                                      field_data_manager(),
                                       kCallTimerStateDummy,
                                       /*button_titles_cache=*/nullptr);
   }

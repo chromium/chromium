@@ -126,12 +126,13 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   bool stop_extracting_forms = false;
   for (const blink::WebFormElement& form_element : form_elements) {
-    extracted_forms_[form_util::GetFormRendererId(form_element)] = nullptr;
+    FormRendererId form_id = form_util::GetFormRendererId(form_element);
+    extracted_forms_[form_id] = nullptr;
     if (stop_extracting_forms) {
       continue;
     }
     if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, form_element, field_data_manager,
+            document, form_id, field_data_manager,
             agent_->GetCallTimerState(kUpdateFormCache),
             agent_->button_titles_cache())) {
       if (!ProcessForm(std::move(*form))) {

@@ -99,10 +99,10 @@ std::optional<FormData> AutofillRendererTest::ExtractFormData(
       .last_dom_content_loaded = {},
   };
 
-  return form_util::ExtractFormData(GetDocument(), form_element,
-                                    autofill_agent_->field_data_manager(),
-                                    kCallTimerStateDummy,
-                                    /*button_titles_cache=*/nullptr);
+  return form_util::ExtractFormData(
+      GetDocument(), form_util::GetFormRendererId(form_element),
+      autofill_agent_->field_data_manager(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
 }
 
 std::optional<FormData> AutofillRendererTest::ExtractFormData(

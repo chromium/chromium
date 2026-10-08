@@ -94,6 +94,12 @@ class AutofillAgentTestApi {
     return agent_->weak_ptr_factory_.GetWeakPtr();
   }
 
+  void FlushAutofillDriverForTesting() {
+    if (agent_->autofill_driver_) {
+      agent_->autofill_driver_.FlushForTesting();
+    }
+  }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };

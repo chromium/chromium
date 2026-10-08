@@ -143,8 +143,8 @@ std::optional<FormData> CreateFormDataFromWebForm(
     return std::nullopt;
   }
   std::optional<FormData> form_data = form_cache.GetOrExtractForm(
-      web_form.GetDocument(), web_form, field_data_manager, timer_state,
-      button_titles_cache);
+      web_form.GetDocument(), form_util::GetFormRendererId(web_form),
+      field_data_manager, timer_state, button_titles_cache);
   if (!form_data) {
     return std::nullopt;
   }
@@ -160,7 +160,7 @@ std::optional<FormData> CreateFormDataFromUnownedInputElements(
     form_util::ButtonTitlesCache* button_titles_cache,
     const SynchronousFormCache& form_cache) {
   std::optional<FormData> form_data = form_cache.GetOrExtractForm(
-      frame.GetDocument(), WebFormElement(), field_data_manager, timer_state,
+      frame.GetDocument(), FormRendererId(), field_data_manager, timer_state,
       button_titles_cache);
   if (!form_data) {
     return std::nullopt;
