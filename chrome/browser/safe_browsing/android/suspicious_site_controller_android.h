@@ -171,6 +171,9 @@ class SuspiciousSiteControllerAndroid
   // The suspicious URL currently added to the allowlist for this warning.
   GURL current_suspicious_url_;
 
+  // The referrer URL of the suspicious navigation when the warning was shown.
+  GURL current_referrer_url_;
+
   // View bridge for the Android modal dialog.
   std::unique_ptr<SuspiciousSiteDialogViewAndroid> dialog_view_;
 

@@ -136,6 +136,15 @@ void SuspiciousSiteControllerAndroid::DidFinishNavigation(
   // If this navigation failed or if a different navigation completed, clean up.
   if (navigation_handle->IsErrorPage() || !navigation_id_.has_value() ||
       navigation_handle->GetNavigationId() != navigation_id_.value()) {
+    // The user navigated away while the warning was showing. The Java modal
+    // dialog manager normally reports this as DismissalCause::NAVIGATE when the
+    // navigation starts, but not when the navigation was already in flight
+    // when the dialog appeared or when the activity has no tab-modal lifetime
+    // handler, so record the outcome here if it is still undecided.
+    if (has_shown_ && !is_suspended_ &&
+        warning_outcome_ == WarningOutcome::kUnknown) {
+      CloseDialog(ui::ModalDialogWrapper::DismissalCause::NAVIGATE);
+    }
     web_contents()->RemoveUserData(UserDataKey());
     return;
   }
@@ -257,8 +266,12 @@ void SuspiciousSiteControllerAndroid::ShowDialog() {
     }
   }
 
-  // Populate current_suspicious_url_ for the active warning session.
+  // Populate current_suspicious_url_ and current_referrer_url_ for the active
+  // warning session.
   current_suspicious_url_ = web_contents()->GetLastCommittedURL();
+  if (auto* entry = web_contents()->GetController().GetLastCommittedEntry()) {
+    current_referrer_url_ = entry->GetReferrer().url;
+  }
 
   // Pre-fetch repeat visit count right after populating
   // current_suspicious_url_.
@@ -496,11 +509,6 @@ void SuspiciousSiteControllerAndroid::MaybeTriggerHatsSurvey(
   std::string visible_time_str =
       base::StringPrintf("%.2f", total_visible_time.InSecondsF());
 
-  GURL referrer_gurl;
-  if (auto* entry = web_contents()->GetController().GetLastCommittedEntry()) {
-    referrer_gurl = entry->GetReferrer().url;
-  }
-
   std::string referring_app;
   internal::ReferringAppInfo referring_app_info =
       GetReferringAppInfo(web_contents(), /*get_webapk_info=*/false);
@@ -509,8 +517,8 @@ void SuspiciousSiteControllerAndroid::MaybeTriggerHatsSurvey(
   }
 
   std::string referrer_origin;
-  if (referrer_gurl.is_valid()) {
-    url::Origin origin = url::Origin::Create(referrer_gurl);
+  if (current_referrer_url_.is_valid()) {
+    url::Origin origin = url::Origin::Create(current_referrer_url_);
     if (!origin.opaque()) {
       referrer_origin = origin.Serialize();
     }
