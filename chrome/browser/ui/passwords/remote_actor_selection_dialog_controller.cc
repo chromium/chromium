@@ -18,7 +18,8 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kRemoteActorDataHandlingHelpUrl[] = "https://support.google.com";
+constexpr char kRemoteActorDataHandlingHelpUrl[] =
+    "https://support.google.com/gemini?p=lm_gpm_data";
 
 }  // namespace
 
