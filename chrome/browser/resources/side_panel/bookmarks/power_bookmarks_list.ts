@@ -863,7 +863,10 @@ export class PowerBookmarksListElement extends CrLitElement implements
     return listId === this.activeList_ || listId === this.transitioningList_;
   }
 
-  protected getItemSize_(): number {
+  protected getItemSize_(): number|undefined {
+    if (this.hasSomeActiveFilter) {
+      return undefined;
+    }
     return this.compact_ ? COMPACT_ITEM_HEIGHT : EXPANDED_ITEM_HEIGHT;
   }
 
@@ -873,7 +876,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
     }
     const displayList = this.getDisplayList_(listId);
     const itemsCount = displayList ? displayList.length : 0;
-    return itemsCount * this.getItemSize_();
+    const itemHeight =
+        this.compact_ ? COMPACT_ITEM_HEIGHT : EXPANDED_ITEM_HEIGHT;
+    return itemsCount * itemHeight;
   }
 
   protected isFolderEmptyStateVisible_(listId: string): boolean {

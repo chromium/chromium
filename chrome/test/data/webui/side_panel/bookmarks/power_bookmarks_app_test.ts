@@ -263,6 +263,25 @@ suite('General', () => {
       assertEquals(0, listA.querySelectorAll('power-bookmark-row').length);
     });
 
+    test('SearchFilterClearsItemSizeToPreventClipping', async () => {
+      const listA = powerBookmarksApp.$.bookmarksList.$.listA;
+      assertEquals(36, listA.itemSize);
+
+      await performSearch('bookmark');
+      await microtasksFinished();
+
+      // In search mode, itemSize must be undefined so cr-lazy-list measures
+      // actual rendered heights to accommodate filter headings without
+      // clipping.
+      assertEquals(undefined, listA.itemSize);
+
+      // Clearing search restores itemSize to the default for the current view
+      // type.
+      await performSearch('');
+      await microtasksFinished();
+      assertEquals(36, listA.itemSize);
+    });
+
     test('RebuildsKeyboardNavigationOnBookmarkNodeAdded', async () => {
       assertArrayEquals(
           [
