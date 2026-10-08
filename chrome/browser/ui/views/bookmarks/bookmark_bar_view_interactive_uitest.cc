@@ -34,8 +34,7 @@
 #include "ui/views/view_utils.h"
 
 // TODO(crbug.com/448993919): Re-enable this test on Mac and ChromeOS.
-// TODO(crbug.com/388531778): DND tests fail on Windows.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -76,6 +75,16 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
       auto* const view = AsView<views::View>(el);
       return view->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 5);
     });
+  }
+
+  // On Linux, dropping a bookmark closes the bookmark folder menu, so re-open
+  // it. On other platforms the menu stays open.
+  auto EnsureFolderOpenAfterDrop(ElementSpecifier folder_button) {
+#if BUILDFLAG(IS_LINUX)
+    return Steps(PressButton(folder_button));
+#else
+    return Steps();
+#endif
   }
 
   static views::MenuItemView* FindMenuItemInSubmenu(views::MenuItemView* menu,
@@ -155,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       DragMouseTo(kANodeMenuId, CenterPoint(), /*release=*/false)
           .SetMustRemainVisible(false),
       MoveMouseTo(kANodeMenuId, TopCenter()), ReleaseMouse(),
-      PressButton(kFolderButtonId), NameBarMenuChildByTitle(kANodeMenuId, u"a"),
+      EnsureFolderOpenAfterDrop(kFolderButtonId),
+      NameBarMenuChildByTitle(kANodeMenuId, u"a"),
       NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckMenuItemBefore(kANodeMenuId, u"b"));
 }
@@ -187,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       MoveMouseTo(kANodeMenuId),
       DragMouseTo(kBNodeMenuId, CenterPoint()).SetMustRemainVisible(false),
-      PressButton(kFolderButtonId), NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
+      EnsureFolderOpenAfterDrop(kFolderButtonId),
+      NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       SelectMenuItem(kBNodeMenuId), NameBarMenuChildByTitle("a_in_b", u"a"),
       CheckViewProperty("a_in_b", &views::MenuItemView::title, u"a"));
@@ -223,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       DragMouseTo(kANodeMenuId, CenterPoint(), /*release=*/false)
           .SetMustRemainVisible(false),
       MoveMouseTo(kANodeMenuId, TopCenter()), ReleaseMouse(),
-      PressButton(kFolderButtonId), NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
+      EnsureFolderOpenAfterDrop(kFolderButtonId),
+      NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       NameBarMenuChildByTitle(kANodeMenuId, u"a"),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
@@ -232,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
 
 }  // namespace
 
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace {
 
