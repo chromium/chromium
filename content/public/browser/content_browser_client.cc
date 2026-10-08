@@ -591,6 +591,11 @@ ContentBrowserClient::GetForcedColorsForWebContents(
   return ui::ColorProviderKey::ForcedColors::kNone;
 }
 
+bool ContentBrowserClient::
+    ShouldUpdateFontRendererPreferencesFromSystemSettings() const {
+  return true;
+}
+
 bool ContentBrowserClient::IsDataSaverEnabled(BrowserContext* context) {
   DCHECK(context);
   return false;

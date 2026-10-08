@@ -15,8 +15,8 @@ namespace content {
 
 void UpdateFontRendererPreferencesFromSystemSettings(
     blink::RendererPreferences* prefs) {
-  static const gfx::FontRenderParams params(
-      gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr));
+  const gfx::FontRenderParams params =
+      gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr);
   prefs->should_antialias_text = params.antialiasing;
   prefs->use_subpixel_positioning = params.subpixel_positioning;
   prefs->hinting = params.hinting;

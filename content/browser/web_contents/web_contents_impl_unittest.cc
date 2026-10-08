@@ -47,6 +47,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
@@ -97,6 +98,7 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -4494,6 +4496,58 @@ TEST_F(WebContentsImplTest, DestroyWebContentsWithFrameSinkIdOwnerView) {
   // the main frame widget so that subsequent FrameTree destruction does
   // not dereference a dead delegate in DestroyOrDefer().
   web_contents.reset();
+}
+
+TEST_F(WebContentsImplTest,
+       InitializesFontRendererPreferencesFromSystemSettings) {
+  blink::RendererPreferences expected_prefs;
+  UpdateFontRendererPreferencesFromSystemSettings(&expected_prefs);
+
+  const blink::RendererPreferences* actual_prefs =
+      contents()->GetMutableRendererPrefs();
+  EXPECT_EQ(actual_prefs->should_antialias_text,
+            expected_prefs.should_antialias_text);
+  EXPECT_EQ(actual_prefs->use_subpixel_positioning,
+            expected_prefs.use_subpixel_positioning);
+  EXPECT_EQ(actual_prefs->hinting, expected_prefs.hinting);
+  EXPECT_EQ(actual_prefs->use_autohinter, expected_prefs.use_autohinter);
+  EXPECT_EQ(actual_prefs->use_bitmaps, expected_prefs.use_bitmaps);
+  EXPECT_EQ(actual_prefs->subpixel_rendering,
+            expected_prefs.subpixel_rendering);
+  EXPECT_EQ(actual_prefs->text_contrast, expected_prefs.text_contrast);
+  EXPECT_EQ(actual_prefs->text_gamma, expected_prefs.text_gamma);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  const float original_dsf = gfx::GetFontRenderParamsDeviceScaleFactor();
+  gfx::SetFontRenderParamsDeviceScaleFactor(1.25f);
+
+  blink::RendererPreferences updated_prefs;
+  UpdateFontRendererPreferencesFromSystemSettings(&updated_prefs);
+  EXPECT_TRUE(updated_prefs.use_subpixel_positioning);
+
+  // Check that we don't update the preferences when the content client says we
+  // shouldn't.
+  class SkipFontPrefsBrowserClient : public TestContentBrowserClient {
+   public:
+    bool ShouldUpdateFontRendererPreferencesFromSystemSettings()
+        const override {
+      return false;
+    }
+  };
+  SkipFontPrefsBrowserClient test_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&test_client);
+
+  std::unique_ptr<WebContents> skipped_contents = CreateTestWebContents();
+  const blink::RendererPreferences* skipped_prefs =
+      skipped_contents->GetMutableRendererPrefs();
+  blink::RendererPreferences default_prefs;
+  EXPECT_FALSE(skipped_prefs->use_subpixel_positioning);
+  EXPECT_EQ(skipped_prefs->use_subpixel_positioning,
+            default_prefs.use_subpixel_positioning);
+
+  SetBrowserClientForTesting(old_client);
+  gfx::SetFontRenderParamsDeviceScaleFactor(original_dsf);
+#endif
 }
 
 }  // namespace content

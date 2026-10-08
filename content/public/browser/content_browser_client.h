@@ -1359,6 +1359,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual ui::ColorProviderKey::ForcedColors GetForcedColorsForWebContents(
       WebContents& web_contents) const;
 
+  // Returns whether `WebContents` should initialize font-related
+  // `RendererPreferences` from system settings. Defaults to true.
+  virtual bool ShouldUpdateFontRendererPreferencesFromSystemSettings() const;
+
   // Notifies that BrowserURLHandler has been created, so that the embedder can
   // optionally add their own handlers.
   virtual void BrowserURLHandlerCreated(BrowserURLHandler* handler) {}

@@ -169,6 +169,7 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -1472,6 +1473,11 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   renderer_preferences_.use_overlay_scrollbar =
       native_theme->use_overlay_scrollbar();
 #endif
+  if (GetContentClient()
+          ->browser()
+          ->ShouldUpdateFontRendererPreferencesFromSystemSettings()) {
+    UpdateFontRendererPreferencesFromSystemSettings(&renderer_preferences_);
+  }
 
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(

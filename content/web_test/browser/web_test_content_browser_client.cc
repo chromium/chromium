@@ -440,6 +440,11 @@ void WebTestContentBrowserClient::OverrideWebPreferences(
   }
 }
 
+bool WebTestContentBrowserClient::
+    ShouldUpdateFontRendererPreferencesFromSystemSettings() const {
+  return false;
+}
+
 void WebTestContentBrowserClient::CreateThrottlesForNavigation(
     NavigationThrottleRegistry& registry) {
   ShellContentBrowserClient::CreateThrottlesForNavigation(registry);

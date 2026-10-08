@@ -82,6 +82,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void OverrideWebPreferences(WebContents* web_contents,
                               SiteInstance& main_frame_site,
                               blink::web_pref::WebPreferences* prefs) override;
+  bool ShouldUpdateFontRendererPreferencesFromSystemSettings() const override;
   void CreateThrottlesForNavigation(
       content::NavigationThrottleRegistry& registry) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
