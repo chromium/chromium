@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -361,7 +362,7 @@ void ActionItem::AddSynonyms(std::initializer_list<std::u16string> synonyms) {
 }
 
 // Returns the synonyms for this action. Used for fuzzy search.
-const std::vector<std::u16string>& ActionItem::GetSynonyms() const {
+base::span<const std::u16string> ActionItem::GetSynonyms() const {
   return synonyms_;
 }
 

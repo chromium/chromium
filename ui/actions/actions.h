@@ -15,6 +15,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -487,7 +488,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   void AddSynonyms(std::initializer_list<std::u16string> synonyms);
 
   // Returns the synonyms for this action. Used for fuzzy search.
-  const std::vector<std::u16string>& GetSynonyms() const;
+  base::span<const std::u16string> GetSynonyms() const;
 
   // Do a "batch" update of the ActionItem state without triggering
   // ActionChanged callbacks for each state change.

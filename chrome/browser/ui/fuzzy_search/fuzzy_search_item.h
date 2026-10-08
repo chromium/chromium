@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_FUZZY_SEARCH_FUZZY_SEARCH_ITEM_H_
 
 #include <string>
-#include <vector>
+
+#include "base/containers/span.h"
 
 // The FuzzySearchItem is an interface used to represent the searchable terms
 // through the fuzzy search finder.
@@ -22,7 +23,7 @@ class FuzzySearchItem {
   virtual const std::u16string& GetSecondaryText() const = 0;
 
   // Returns alternative terms/keywords used for fuzzy search matching.
-  virtual const std::vector<std::u16string>& GetSynonyms() const = 0;
+  virtual base::span<const std::u16string> GetSynonyms() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_FUZZY_SEARCH_FUZZY_SEARCH_ITEM_H_

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_search_item.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +43,7 @@ class FakeFuzzySearchItem : public FuzzySearchItem {
   const std::u16string& GetSecondaryText() const override {
     return secondary_text_;
   }
-  const std::vector<std::u16string>& GetSynonyms() const override {
+  base::span<const std::u16string> GetSynonyms() const override {
     return synonyms_;
   }
 

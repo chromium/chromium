@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "ui/actions/actions.h"
 
 AppMenuSearchItem::Builder::Builder() = default;
@@ -72,7 +72,7 @@ const std::u16string& AppMenuSearchItem::GetSecondaryText() const {
   return secondary_text_;
 }
 
-const std::vector<std::u16string>& AppMenuSearchItem::GetSynonyms() const {
-  static const base::NoDestructor<std::vector<std::u16string>> kEmptySynonyms;
-  return action_item_ ? action_item_->GetSynonyms() : *kEmptySynonyms;
+base::span<const std::u16string> AppMenuSearchItem::GetSynonyms() const {
+  return action_item_ ? action_item_->GetSynonyms()
+                      : base::span<const std::u16string>();
 }

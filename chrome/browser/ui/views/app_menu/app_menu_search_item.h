@@ -8,8 +8,8 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_search_item.h"
@@ -61,7 +61,7 @@ class AppMenuSearchItem : public FuzzySearchItem {
   // FuzzySearchItem:
   const std::u16string& GetTitle() const override;
   const std::u16string& GetSecondaryText() const override;
-  const std::vector<std::u16string>& GetSynonyms() const override;
+  base::span<const std::u16string> GetSynonyms() const override;
 
   actions::ActionItem* GetActionItem() const { return action_item_.get(); }
   Type GetType() const { return type_; }
