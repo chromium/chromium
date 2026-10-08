@@ -11,6 +11,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/sequence_checker.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -73,6 +74,8 @@ void ResetFetchBackoff(PrefService* pref_service) {
   // Null before `ProfileInitStage::kFinal` and after shutdown.
   raw_ptr<signin::IdentityManager> _identityManager;
   std::optional<signin::IdentityManagerObserverBridge> _identityObserverBridge;
+
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 #pragma mark - NSObject
@@ -88,6 +91,7 @@ void ResetFetchBackoff(PrefService* pref_service) {
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (nextInitStage != ProfileInitStage::kFinal) {
     return;
   }
@@ -103,6 +107,7 @@ void ResetFetchBackoff(PrefService* pref_service) {
 
 - (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   const signin::PrimaryAccountChangeEvent::Type eventType =
       event.GetEventTypeFor(signin::ConsentLevel::kSignin);
   ProfileIOS* profile = self.profileState.profile;
@@ -120,6 +125,7 @@ void ResetFetchBackoff(PrefService* pref_service) {
 }
 
 - (void)identityManagerDidShutdown:(signin::IdentityManager*)identityManager {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _identityObserverBridge.reset();
   _identityManager = nullptr;
 }
@@ -128,6 +134,7 @@ void ResetFetchBackoff(PrefService* pref_service) {
 
 // Enqueues `fetchKeysIfNeeded` on the deferred runner.
 - (void)scheduleFetchKeysIfNeeded {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak DeviceAuthorizationProfileAgent* weakSelf = self;
   [self.profileState.deferredRunner
       enqueueBlockNamed:kDeviceAuthorizationFetchBlockName
@@ -139,6 +146,7 @@ void ResetFetchBackoff(PrefService* pref_service) {
 // Gets or fetches keys for the primary account, unless backing off after
 // failed fetches. Valid cached keys are returned without a network fetch.
 - (void)fetchKeysIfNeeded {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   ProfileIOS* profile = self.profileState.profile;
   if (!profile || !_identityManager ||
       !_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -167,6 +175,7 @@ void ResetFetchBackoff(PrefService* pref_service) {
 // TODO(crbug.com/405036154): Consider recording metrics.
 - (void)didFetchKeys:(const webauthn::DeviceAuthFetchResult&)result
           forAccount:(const GaiaId&)gaiaID {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   ProfileIOS* profile = self.profileState.profile;
   // A result for a previous primary account must not affect the backoff, which
   // was reset for the current one.
