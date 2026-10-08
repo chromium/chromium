@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -92,6 +93,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCoinsReadyEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTriggerReadyEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCheckedReadyEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSubmitEnabledEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMenuItemsDisabledReadyEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFlyoutTabDisabledReadyEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputClearedEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kUploadsCompleteEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenderedEvent);
@@ -99,6 +102,44 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitEnabledEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimUploadsCompleteEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimCoinsShownEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kZeroStateChangedEvent);
+
+// Holds `GetPageContext()` in flight until `CompletePendingPageContextRequest`
+// is called, reproducing the window between selecting a tab in the UI and
+// `TabContextualizationController::GetPageContext()` finishing its asynchronous
+// page content and screenshot capture.
+class StalledPageContextTabContextualizationController
+    : public TestTabContextualizationController {
+ public:
+  explicit StalledPageContextTabContextualizationController(
+      tabs::TabInterface* tab)
+      : TestTabContextualizationController(tab) {}
+  ~StalledPageContextTabContextualizationController() override = default;
+
+  using TestTabContextualizationController::GetPageContext;
+  void GetPageContext(GetPageContextCallback callback) override {
+    if (stall_page_context_) {
+      pending_callback_ = std::move(callback);
+      return;
+    }
+    TestTabContextualizationController::GetPageContext(std::move(callback));
+  }
+
+  bool HasPendingPageContextRequest() const {
+    return !pending_callback_.is_null();
+  }
+
+  void CompletePendingPageContextRequest() {
+    stall_page_context_ = false;
+    if (pending_callback_) {
+      TestTabContextualizationController::GetPageContext(
+          std::move(pending_callback_));
+    }
+  }
+
+ private:
+  bool stall_page_context_ = true;
+  GetPageContextCallback pending_callback_;
+};
 
 }  // namespace
 
@@ -514,6 +555,67 @@ class ContextualTasksContextManagementInteractiveTestBase
     return WaitForStateChange(contents_id, state);
   }
 
+  // Verifies whether `#imageUpload`, `#fileUpload`, tool buttons, and the
+  // incompatible model (`MODEL_MODE_GEMINI_REGULAR`) in the `+` context menu
+  // match `expected_disabled`.
+  auto VerifyIncompatibleMenuItemsDisabled(
+      const ui::ElementIdentifier& contents_id,
+      bool expected_disabled) {
+    StateChange state;
+    state.type = StateChange::Type::kExistsAndConditionTrue;
+    state.where = kContextMenu;
+    state.test_function = base::StringPrintf(
+        R"(
+        el => {
+          const root = el.shadowRoot || el;
+          const imageUpload = root.querySelector('#imageUpload');
+          const fileUpload = root.querySelector('#fileUpload');
+          const toolBtns = Array.from(
+              root.querySelectorAll('button.dropdown-item[data-mode]'));
+          const regularModelBtn = root.querySelector(
+              'button.dropdown-item[data-model="%d"]');
+          if (!imageUpload || !fileUpload || toolBtns.length === 0 ||
+              !regularModelBtn) {
+            return false;
+          }
+          const expected = %s;
+          return imageUpload.disabled === expected &&
+                 fileUpload.disabled === expected &&
+                 toolBtns.every(btn => btn.disabled === expected) &&
+                 regularModelBtn.disabled === expected;
+        }
+        )",
+        static_cast<int>(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR),
+        expected_disabled ? "true" : "false");
+    state.event = kMenuItemsDisabledReadyEvent;
+    return WaitForStateChange(contents_id, state);
+  }
+
+  // Verifies whether a specific tab button in the Share Tabs flyout is
+  // disabled.
+  auto VerifyFlyoutTabDisabled(const ui::ElementIdentifier& contents_id,
+                               std::string_view matcher,
+                               bool expected_disabled) {
+    StateChange state;
+    state.type = StateChange::Type::kExistsAndConditionTrue;
+    state.where = kShareTabsFlyout;
+    state.test_function = base::StringPrintf(
+        R"(
+        el => {
+          %s
+          const btn = findTabBtn(el, %s);
+          if (!btn) {
+            return false;
+          }
+          return btn.disabled === %s;
+        }
+        )",
+        kFindFlyoutTabButtonJs, base::GetQuotedJSONString(matcher).c_str(),
+        expected_disabled ? "true" : "false");
+    state.event = kFlyoutTabDisabledReadyEvent;
+    return WaitForStateChange(contents_id, state);
+  }
+
   // Types and submits a text query in the side panel composebox.
   auto SubmitSidePanelQuery(const ui::ElementIdentifier& contents_id,
                             const std::string& query) {
@@ -750,6 +852,134 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
       VerifyUnderlinedTabs({1}), OpenShareTabsFlyout(kSidePanelWebContentsId),
       VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true));
+}
+
+// Verifies that selecting a tab immediately disables incompatible "+" context
+// menu items via eager rule evaluation while
+// `TabContextualizationController::GetPageContext()` is still in flight, and
+// that the selected tab itself stays enabled so it can be deselected.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksContextManagementInteractiveUiTest,
+    EagerTabRuleEvaluation_DisablesMenuItemsWhileGetPageContextPending) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  raw_ptr<StalledPageContextTabContextualizationController> stalled_controller =
+      nullptr;
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      AddInstrumentedTab(kBackgroundTab2, kUrl2),
+      SelectTab(kTabStripElementId, 0), Do([this, &stalled_controller]() {
+        // Configure rules so that:
+        // - `MODEL_MODE_GEMINI_PRO` is the default active model (allows all
+        //   tools and inputs).
+        // - `MODEL_MODE_GEMINI_REGULAR`, `TOOL_MODE_DEEP_SEARCH`, and
+        //   `TOOL_MODE_CANVAS` do not allow `INPUT_TYPE_BROWSER_TAB`.
+        // - `max_total_inputs` is 1, so attaching 1 tab also disables
+        //   `#imageUpload`, `#fileUpload`, and unselected tabs in the flyout.
+        auto* config =
+            &GetMockAimEligibilityService(browser()->GetProfile())->config();
+
+        auto* pro_model = config->add_model_configs();
+        pro_model->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+        pro_model->set_menu_label("Thinking");
+        auto* pro_rule = pro_model->mutable_rule();
+        pro_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+        pro_rule->set_allow_all_tools(true);
+        pro_rule->set_allow_all_input_types(true);
+
+        auto* regular_model = config->add_model_configs();
+        regular_model->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+        regular_model->set_menu_label("Fast");
+        auto* regular_rule = regular_model->mutable_rule();
+        regular_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+        regular_rule->set_allow_all_tools(true);
+        regular_rule->add_allowed_input_types(
+            omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+
+        auto* ds_tool = config->add_tool_configs();
+        ds_tool->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+        ds_tool->mutable_rule()->set_tool(
+            omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+        auto* canvas_tool = config->add_tool_configs();
+        canvas_tool->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+        auto* canvas_rule = canvas_tool->mutable_rule();
+        canvas_rule->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+        canvas_rule->add_allowed_input_types(
+            omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+
+        auto* rule_set = config->mutable_rule_set();
+        rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+        rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_CANVAS);
+        rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+        rule_set->add_allowed_models(
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+        rule_set->add_allowed_input_types(
+            omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+        rule_set->add_allowed_input_types(
+            omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+        rule_set->add_allowed_input_types(
+            omnibox::InputType::INPUT_TYPE_LENS_FILE);
+        rule_set->set_max_total_inputs(1);
+
+        // Install the stalled controller on Tab 1 so `GetPageContext()` stays
+        // in flight when Tab 1 is selected.
+        tabs::TabInterface* tab1 = browser()->GetAllTabInterfaces()[1];
+        tab1->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+            nullptr);
+        auto controller =
+            std::make_unique<StalledPageContextTabContextualizationController>(
+                tab1);
+        stalled_controller = controller.get();
+        tab1->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+            std::move(controller));
+      }),
+      OpenSidePanelWithWebContents(),
+
+      // 1. Before selecting a tab: all "+" menu items and tabs are enabled.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyIncompatibleMenuItemsDisabled(kSidePanelWebContentsId, false),
+      VerifyFlyoutTabDisabled(kSidePanelWebContentsId, "title1", false),
+      VerifyFlyoutTabDisabled(kSidePanelWebContentsId, "title2", false),
+
+      // 2. Select Tab 1 while `GetPageContext()` is stalled in flight: all
+      // incompatible "+" menu items and the unselected tab ("title2") must
+      // immediately become disabled via eager rule evaluation, before
+      // `GetPageContext()` completes, while the selected tab ("title1") stays
+      // enabled so it can be deselected.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      Do([this, &stalled_controller]() {
+        EXPECT_TRUE(RunUntilNestable([&]() {
+          return stalled_controller->HasPendingPageContextRequest();
+        }));
+      }),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyIncompatibleMenuItemsDisabled(kSidePanelWebContentsId, true),
+      VerifyFlyoutTabDisabled(kSidePanelWebContentsId, "title2", true),
+      VerifyFlyoutTabDisabled(kSidePanelWebContentsId, "title1", false),
+
+      // 3. Complete `GetPageContext()` and wait for the tab upload to finish:
+      // incompatible "+" menu items remain disabled while Tab 1 is attached.
+      Do([&stalled_controller]() {
+        stalled_controller->CompletePendingPageContextRequest();
+        stalled_controller = nullptr;
+      }),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyIncompatibleMenuItemsDisabled(kSidePanelWebContentsId, true),
+
+      // 4. Deselect Tab 1: incompatible "+" menu items and "title2" re-enable.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 0),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyIncompatibleMenuItemsDisabled(kSidePanelWebContentsId, false),
+      VerifyFlyoutTabDisabled(kSidePanelWebContentsId, "title2", false));
 }
 
 // Starting a new thread clears all tabs submitted in the previous thread while

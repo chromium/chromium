@@ -3078,6 +3078,46 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
       contextual_search::ContextualSearchAttachmentButtonType::kCurrentTab, 1);
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       AddTabContext_EvaluatesInputStateWhileGetPageContextPending) {
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_THAT(
+      handler().input_state_model()->GetInputState().disabled_tools,
+      testing::Not(testing::Contains(omnibox::ToolMode::TOOL_MODE_CANVAS)));
+
+  lens::TabContextualizationController::GetPageContextCallback
+      pending_page_context_callback;
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          lens::TabContextualizationController::From(tab));
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .WillOnce([&pending_page_context_callback](
+                    lens::TabContextualizationController::GetPageContextCallback
+                        callback) {
+        pending_page_context_callback = std::move(callback);
+      });
+
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          future.GetCallback());
+  mock_searchbox_page_.FlushForTesting();
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(pending_page_context_callback);
+  // Incompatible tools (e.g. Canvas, which only allows image input in SetUp)
+  // must already be disabled before GetPageContext finishes.
+  EXPECT_THAT(handler().input_state_model()->GetInputState().disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_CANVAS));
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, ClearFiles_KeepTabs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);

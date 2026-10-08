@@ -234,6 +234,20 @@ std::optional<std::string> GetThreadId(const GURL& url) {
   return std::nullopt;
 }
 
+// Returns the number of uploaded context tokens without a `FileInfo` yet.
+// These are tab context fetches still in flight or delayed tab snapshots, and
+// count as browser tab inputs so rules are evaluated before the fetch
+// completes.
+size_t GetPendingTabContextCount(
+    const ContextualSearchSessionHandle& session_handle,
+    size_t num_uploaded_files) {
+  const size_t num_uploaded_tokens =
+      session_handle.GetUploadedContextTokens().size();
+  return num_uploaded_tokens > num_uploaded_files
+             ? num_uploaded_tokens - num_uploaded_files
+             : 0;
+}
+
 }  // namespace
 
 InputStateModel::InputStateModel(
@@ -453,7 +467,9 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
     return input_types;
   }
   const auto& uploaded_files = session_handle->GetUploadedContextFileInfos();
-  input_types.reserve(uploaded_files.size());
+  const size_t num_pending_tabs =
+      GetPendingTabContextCount(*session_handle, uploaded_files.size());
+  input_types.reserve(uploaded_files.size() + num_pending_tabs);
   for (const auto& file_info : uploaded_files) {
     if (file_info.tab_url) {
       input_types.push_back(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
@@ -475,6 +491,8 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
         break;
     }
   }
+  input_types.insert(input_types.end(), num_pending_tabs,
+                     omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
   return input_types;
 }
 

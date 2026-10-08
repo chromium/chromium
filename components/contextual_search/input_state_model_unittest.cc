@@ -922,6 +922,29 @@ TEST_F(InputStateModelCompatibilityTest, SelectTabInput) {
       UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR));
 }
 
+TEST_F(InputStateModelCompatibilityTest,
+       SelectPendingTabTokenDisablesIncompatibleItems) {
+  // Simulate adding a tab token whose asynchronous `GetPageContext` has not yet
+  // completed (so `GetUploadedContextFileInfos()` is still empty while
+  // `GetUploadedContextTokens()` contains the pending token).
+  session_handle_.GetUploadedContextTokensForTesting().push_back(
+      base::UnguessableToken::Create());
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(std::vector<FileInfo>{}));
+
+  input_state_model_->OnContextChanged();
+  const auto& new_state = input_state_model_->get_state_for_testing();
+
+  // Incompatible models and tools should be disabled immediately.
+  EXPECT_THAT(
+      new_state.disabled_models,
+      UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR));
+  EXPECT_THAT(new_state.disabled_tools,
+              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+}
+
 TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   // Add tool and model configs.
   auto* deep_search_config = config_.add_tool_configs();

@@ -1300,6 +1300,9 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   auto pending_request = pending_tab_context_fetches_.find(context_token);
   if (pending_request != pending_tab_context_fetches_.end() &&
       pending_request->second->add_tab_context_callback) {
+    if (input_state_model_) {
+      input_state_model_->OnContextChanged();
+    }
     std::move(pending_request->second->add_tab_context_callback)
         .Run(base::ok(context_token));
   }
@@ -1791,6 +1794,9 @@ void ContextualSearchboxHandler::DeleteContext(
   // If the context token matches the cached tab context, we clear the snapshot.
   if (tab_context_snapshot_.has_value() &&
       tab_context_snapshot_.value().first == context_token) {
+    if (contextual_session_handle) {
+      contextual_session_handle->RemoveUploadedContextToken(context_token);
+    }
     tab_context_snapshot_.reset();
     context_input_data_ = std::nullopt;
   } else if (num_files == 0 && tab_context_snapshot_.has_value()) {
