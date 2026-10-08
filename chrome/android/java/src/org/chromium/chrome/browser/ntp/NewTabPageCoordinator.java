@@ -652,7 +652,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void onCreateButtonClicked(View view) {
-        // TODO(https://crbug.com/568005713): Handles the create button.
+        mManager.focusSearchBox(
+                /* beginVoiceSearch= */ false,
+                AutocompleteRequestType.IMAGE_GENERATION,
+                /* showFuseboxPopup= */ false,
+                /* pastedText= */ null);
     }
 
     private void onCanvasButtonClicked(View view) {

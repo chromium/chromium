@@ -938,6 +938,29 @@ public class NewTabPageCoordinatorUnitTest {
         testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ false);
     }
 
+    /**
+     * Verifies that clicking the Create image chip focuses the search box in image generation mode.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testCreateImageButtonClicked() {
+        // The composeplate is created in setUp() since the default search engine is Google.
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
+
+        optionalButton.performClick();
+
+        verify(mManager)
+                .focusSearchBox(
+                        /* beginVoiceSearch= */ false,
+                        AutocompleteRequestType.IMAGE_GENERATION,
+                        /* showFuseboxPopup= */ false,
+                        /* pastedText= */ null);
+    }
+
     @Test
     public void testComposeplateDisabledWhenIncognitoDisabled() {
         // Incognito availability is read when the coordinator is created, so recreate it after

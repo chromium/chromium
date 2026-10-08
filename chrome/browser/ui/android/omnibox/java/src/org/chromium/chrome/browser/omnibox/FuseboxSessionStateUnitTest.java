@@ -88,6 +88,32 @@ public class FuseboxSessionStateUnitTest {
     }
 
     @Test
+    public void testSetActiveTool_imageGenerationSetBeforeActivation() {
+        testSetActiveToolBeforeActivationImpl(
+                AutocompleteRequestType.IMAGE_GENERATION, ToolMode.TOOL_MODE_IMAGE_GEN);
+    }
+
+    @Test
+    public void testSetActiveTool_aiModeSetBeforeActivation() {
+        testSetActiveToolBeforeActivationImpl(
+                AutocompleteRequestType.AI_MODE, ToolMode.TOOL_MODE_UNSPECIFIED);
+    }
+
+    private void testSetActiveToolBeforeActivationImpl(
+            @AutocompleteRequestType int requestType, @ToolMode int expectedToolMode) {
+        FuseboxSessionState session = new FuseboxSessionState();
+        AutocompleteInput input = session.getAutocompleteInput();
+        input.setPageClassification(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+        input.setRequestType(requestType);
+        verify(mComposeboxQueryControllerBridge, never()).setActiveTool(anyInt());
+
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, mRunnable);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mComposeboxQueryControllerBridge).setActiveTool(expectedToolMode);
+    }
+
+    @Test
     public void testRequestTypeObserver() {
         FuseboxSessionState session = new FuseboxSessionState();
         assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());

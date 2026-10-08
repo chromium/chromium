@@ -252,6 +252,11 @@ public class FuseboxSessionState implements UserData {
         if (mComposeBoxQueryControllerBridge == null) {
             mComposeBoxQueryControllerBridge =
                     ComposeboxQueryControllerBridge.create(mProfile, mWebContents);
+            if (mComposeBoxQueryControllerBridge != null) {
+                // The request type may have been applied before the bridge existed (e.g. when the
+                // NTP requests a specific tool), so make sure native knows about it.
+                onRequestTypeChanged(mAutocompleteInput.getRequestType());
+            }
         }
 
         if (mComposeBoxQueryControllerBridge != null && mFuseboxAttachmentModelList == null) {
