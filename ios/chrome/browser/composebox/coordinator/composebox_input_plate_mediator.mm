@@ -803,6 +803,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
+  // Once the user submits a contextual query, promote any auto-added tab to a
+  // committed attachment so active-tab or focus updates do not remove it via
+  // `-removeAutoAddedItems`.
+  [self promoteAutoAddedItems];
+
   auto advancedToolsParams = [_stateManager additionalQueryParams];
   additionalParams.insert(advancedToolsParams.begin(),
                           advancedToolsParams.end());

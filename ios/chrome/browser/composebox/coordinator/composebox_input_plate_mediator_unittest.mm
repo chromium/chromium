@@ -1872,4 +1872,52 @@ TEST_F(ComposeboxInputPlateMediatorTest,
             2U);
 }
 
+// Tests that `sendText:` promotes an auto-added tab to a committed user
+// attachment (`isAutoAdded == NO`), so subsequent focus or page-load updates
+// do not remove it via `-removeAutoAddedItems`.
+TEST_F(ComposeboxInputPlateMediatorTest, SendTextPromotesAutoAddedTab) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kCurrentTab];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  item.isAutoAdded = YES;
+  item.serverToken = base::UnguessableToken::Create();
+  item.state = ComposeboxInputItemState::kLoaded;
+
+  EXPECT_CALL(*raw_mock_session, CreateSearchUrl(testing::_, testing::_))
+      .Times(1);
+  [mediator sendText:@"test query"];
+  EXPECT_FALSE(item.isAutoAdded);
+
+  // Unfocusing and completing a page load must not remove the promoted tab.
+  [mediator setOmniboxFocused:NO];
+  active_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_EQ(consumer.items.count, 1U);
+}
+
 }  // namespace
