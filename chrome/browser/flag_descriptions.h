@@ -7800,12 +7800,6 @@ inline constexpr char kEcheSWADisableStunServerDescription[] =
     "Allows disabling the stun servers when establishing a WebRTC connection "
     "to Eche";
 
-inline constexpr char kEcheSWACheckAndroidNetworkInfoName[] =
-    "Check Android network info";
-inline constexpr char kEcheSWACheckAndroidNetworkInfoDescription[] =
-    "Allows CrOS to analyze Android network information to provide more "
-    "context on connection errors";
-
 inline constexpr char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 inline constexpr char kEnableOAuthIppDescription[] =

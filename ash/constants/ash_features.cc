@@ -559,10 +559,6 @@ BASE_FEATURE(kEcheSWAMeasureLatency, base::FEATURE_DISABLED_BY_DEFAULT);
 // Eche.
 BASE_FEATURE(kEcheSWADisableStunServer, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows CrOS to analyze Android
-// network information to provide more context on connection errors.
-BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables external keyboard testers in the diagnostics app.
 BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",

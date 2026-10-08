@@ -4,7 +4,6 @@
 
 #include "ash/webui/eche_app_ui/eche_signaler.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
@@ -119,15 +118,7 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
   } else if (message.has_response()) {
     PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived has response";
     signal = message.response().data();
-
-    if (base::FeatureList::IsEnabled(
-            features::kEcheSWACheckAndroidNetworkInfo)) {
-      ProcessAndroidNetworkInfo(message);
-    } else {
-      probably_connection_failed_reason_ =
-          EcheTray::ConnectionFailReason::kSignalingHasLateResponse;
-    }
-
+    ProcessAndroidNetworkInfo(message);
   } else {
     PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived return";
     return;
