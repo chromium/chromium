@@ -21,9 +21,12 @@ class Origin;
 
 // A dialog that informs the user that they can't give a website access to a
 // specific folder. `callback` is called when the dialog is dismissed.
+// Drag-and-drop only offers dismissal; other triggers also allow retrying the
+// file picker.
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::AccessTrigger access_trigger,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
@@ -33,6 +36,7 @@ std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessRestrictedDirectoryDialogForTesting(
     const url::Origin& origin,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
+    content::FileSystemAccessPermissionContext::AccessTrigger access_trigger,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback);

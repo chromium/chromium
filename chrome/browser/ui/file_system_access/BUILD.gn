@@ -37,6 +37,7 @@ source_set("impl") {
     "//chrome/browser/ui:url_identity",
     "//chrome/browser/ui/dialogs",
     "//ui/base/interaction",
+    "//ui/strings:ui_strings",
   ]
 
   if (safe_browsing_mode != 0) {
@@ -84,6 +85,7 @@ source_set("unit_tests") {
     "//components/permissions",
     "//content/public/browser",
     "//ui/base:test_support",
+    "//ui/strings:ui_strings",
     "//url",
   ]
 

@@ -211,6 +211,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
     HandleType handle_type,
+    AccessTrigger access_trigger,
     base::OnceCallback<
         void(ChromeFileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
@@ -233,7 +234,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
   }
 
   ShowFileSystemAccessRestrictedDirectoryDialog(
-      origin, handle_type, std::move(callback), web_contents);
+      origin, handle_type, access_trigger, std::move(callback), web_contents);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -2579,7 +2580,7 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
-                       frame_id, origin, handle_type,
+                       frame_id, origin, handle_type, access_trigger,
                        std::move(result_callback)));
     return;
   }

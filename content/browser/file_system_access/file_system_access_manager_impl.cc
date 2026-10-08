@@ -1053,9 +1053,7 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
   CHECK(url.type() == storage::FileSystemType::kFileSystemTypeLocal ||
             url.type() == storage::FileSystemType::kFileSystemTypeExternal,
         base::NotFatalUntil::M159);
-  // TODO(crbug.com/40061211): Add a prompt specific to D&D. For now, run
-  // the same security checks and show the same prompt for D&D as for the file
-  // picker.
+  // Run the same sensitive directory checks as for the file picker.
   permission_context_->ConfirmSensitiveEntryAccess(
       binding_context.storage_key.origin(), path_info, file_type,
       AccessTrigger::kDragAndDrop, binding_context.frame_id,

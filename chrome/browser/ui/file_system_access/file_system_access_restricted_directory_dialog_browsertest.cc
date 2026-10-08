@@ -16,6 +16,10 @@ class FileSystemAccessRestrictedDirectoryDialogTest : public DialogBrowserTest {
     ShowFileSystemAccessRestrictedDirectoryDialog(
         url::Origin::Create(GURL("https://example.com")),
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
+        name == "drag_and_drop"
+            ? content::FileSystemAccessPermissionContext::AccessTrigger::
+                  kDragAndDrop
+            : content::FileSystemAccessPermissionContext::AccessTrigger::kOpen,
         base::DoNothing(),
         browser()->tab_strip_model()->GetActiveWebContents());
   }
@@ -23,5 +27,10 @@ class FileSystemAccessRestrictedDirectoryDialogTest : public DialogBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogTest,
                        InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogTest,
+                       InvokeUi_drag_and_drop) {
   ShowAndVerifyUi();
 }
