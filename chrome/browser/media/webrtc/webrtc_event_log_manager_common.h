@@ -203,9 +203,10 @@ struct WebRtcEventLogPeerConnectionKey {
           base::NotFatalUntil::M161);
     // If render_process_id and lid are the same, then render_frame_id is also
     // the same.
-    CHECK(render_process_id != other.render_process_id || lid != other.lid ||
-              render_frame_id == other.render_frame_id,
-          base::NotFatalUntil::M161);
+    // TODO(crbug.com/570610995): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(render_process_id != other.render_process_id || lid != other.lid ||
+           render_frame_id == other.render_frame_id);
 
     const bool equal = std::tie(render_process_id, lid) ==
                        std::tie(other.render_process_id, other.lid);
