@@ -67,14 +67,13 @@ scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::MakeAccelerated(
   // for SCANOUT support correctly on X11 and it's never supported in
   // practice. Therefore, don't include it until this flow is reworked.
   constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 #else
   // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
   // if possible. This is safe because the prerequisite capabilities are checked
   // downstream in CanvasResourceProvider::CreateSharedImageProvider.
   constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #endif  // BUILDFLAG(IS_LINUX)
   return AcceleratedStaticBitmapImage::CreateFromRaster(
       source->Size(), source->GetSharedImageFormat(), source->GetAlphaType(),
