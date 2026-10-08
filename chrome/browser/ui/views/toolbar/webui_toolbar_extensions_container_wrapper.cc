@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_extensions_container_wrapper.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -195,11 +196,16 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionRemoved(
 }
 
 void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
-    base::OnceClosure callback) {
+    base::OnceClosure callback,
+    bool is_iph) {
   if (!extensions_container_) {
     std::move(callback).Run();
     return;
   }
+
+  // The container cancels any pending pop out request before starting another,
+  // so there should be at most one at a time.
+  CHECK(is_iph || !pending_pop_out_callback_);
 
   // Be as conservative as possible and wait for any animations that might be in
   // progress to complete before running `callback`, that way none of the
@@ -225,13 +231,25 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
               base::BindRepeating(
                   &WebUIToolbarExtensionsContainerWrapper::OnElementShown,
                   base::Unretained(this)));
-      pending_anchor_requests_.emplace_back(std::move(callback),
-                                            std::move(subscription));
+      if (is_iph) {
+        pending_anchor_requests_.emplace_back(std::move(callback),
+                                              std::move(subscription));
+      } else {
+        pending_pop_out_callback_ = std::move(callback);
+        pending_pop_out_subscription_ = std::move(subscription);
+      }
       return;
     }
   }
 
   std::move(callback).Run();
+}
+
+void WebUIToolbarExtensionsContainerWrapper::OnPopOutCancelled() {
+  pending_pop_out_subscription_ = {};
+  if (pending_pop_out_callback_) {
+    std::exchange(pending_pop_out_callback_, base::OnceClosure()).Run();
+  }
 }
 
 void WebUIToolbarExtensionsContainerWrapper::OnElementShown(
@@ -242,9 +260,18 @@ void WebUIToolbarExtensionsContainerWrapper::OnElementShown(
   }
   pending_anchor_requests_.clear();
 
+  // Re-dispatch the pending pop out request, if any, before running anything
+  // else, as other callbacks may re-entrantly cancel it or start a new one.
+  pending_pop_out_subscription_ = {};
+  if (pending_pop_out_callback_) {
+    OnActionPoppedOut(
+        std::exchange(pending_pop_out_callback_, base::OnceClosure()),
+        /*is_iph=*/false);
+  }
+
   for (auto& callback : callbacks_to_run) {
     if (callback) {
-      OnActionPoppedOut(std::move(callback));
+      OnActionPoppedOut(std::move(callback), /*is_iph=*/true);
     }
   }
 }

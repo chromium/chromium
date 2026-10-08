@@ -140,8 +140,9 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
       const std::vector<base::test::FeatureRef>& enabled,
       const std::vector<base::test::FeatureRef>& disabled);
 
+  // Loads and pins an extension, and waits for both its button and the
+  // extensions menu button to be shown. Returns nullptr on failure.
   scoped_refptr<const extensions::Extension> LoadAndPinExtension(
-      WebUIToolbarWebView* webui_toolbar_view,
       base::ScopedTempDir& temp_dir,
       bool has_background_script = false,
       bool has_popup = false);

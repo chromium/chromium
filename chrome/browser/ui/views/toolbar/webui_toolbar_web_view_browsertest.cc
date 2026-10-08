@@ -159,6 +159,8 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -175,6 +177,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -4312,8 +4315,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(webui_toolbar_view, temp_dir,
-                          /*has_background_script=*/false);
+      LoadAndPinExtension(temp_dir, /*has_background_script=*/false);
   ASSERT_TRUE(extension);
 
   std::string extension_id = extension->id();
@@ -4408,9 +4410,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(webui_toolbar_view, temp_dir,
-                          /*has_background_script=*/false, /*has_popup=*/true);
+  scoped_refptr<const extensions::Extension> extension = LoadAndPinExtension(
+      temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
   ASSERT_TRUE(extension);
 
   std::string extension_id = extension->id();
@@ -4576,6 +4577,164 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ShowWidgetForExtension) {
   EXPECT_FALSE(container->IsActionVisibleOnToolbar(extension_id));
 }
 
+// Tests that the callback passed to PopOutAction() isn't run until the popped
+// out extension's button is shown, and that showing another extension's button
+// doesn't cause it to run early.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopOutActionWaitsForPoppedOutActionAnchor) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  // Load an extension, but don't pin it, so its button isn't shown.
+  scoped_refptr<const extensions::Extension> extension =
+      LoadExtension(temp_dir);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension_id));
+
+  base::test::TestFuture<void> future;
+  // This results in a message being sent to the WebUI renderer to make the
+  // button visible.
+  container->PopOutAction(
+      extension_id, base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(container->GetExtensionAnchor(extension_id));
+        future.SetValue();
+      }));
+  // The button is shown asynchronously by the renderer, so the callback
+  // shouldn't have been run yet.
+  EXPECT_FALSE(future.IsReady());
+
+  // Showing another extension's button should not run the callback, since the
+  // popped out extension's button still hasn't been shown. All extension
+  // buttons share an ElementIdentifier, so this does wake up the logic waiting
+  // for all buttons to be shown, which should then resume waiting.
+  {
+    ui::test::TestElement other_element(
+        kToolbarActionViewElementId,
+        BrowserElements::From(browser())->GetContext(),
+        WebUIToolbarExtensionsContainer::GetSecondaryElementId("other"));
+    other_element.Show();
+    EXPECT_FALSE(future.IsReady());
+  }
+
+  // The callback should be run once the WebUI renderer has drawn the
+  // extension's button, and the browser has been informed it's being shown.
+  EXPECT_TRUE(future.Wait());
+
+  container->UndoPopOut();
+}
+
+// Tests that the callback passed to PopOutAction() is run synchronously if the
+// extension's button is already shown.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopOutActionAnchorAlreadyShown) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  // Pinning the extension shows its button.
+  scoped_refptr<const extensions::Extension> extension =
+      LoadAndPinExtension(temp_dir);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(container->GetExtensionAnchor(extension_id));
+  // PopOutAction() waits for all extension-related buttons to be shown,
+  // including the extensions menu button, so it must also be shown for the
+  // callback to be run synchronously. LoadAndPinExtension() waits for it.
+  ASSERT_TRUE(container->GetExtensionAnchor(""));
+
+  base::test::TestFuture<void> future;
+  container->PopOutAction(extension_id, future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+
+  container->UndoPopOut();
+}
+
+// Tests that a pending PopOutAction() callback is run if the pop out is undone
+// before the extension's button is shown, and that a subsequent pop out works.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopOutActionCancelledByUndoPopOut) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  scoped_refptr<const extensions::Extension> extension =
+      LoadExtension(temp_dir);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension_id));
+
+  base::test::TestFuture<void> first_future;
+  container->PopOutAction(extension_id, first_future.GetCallback());
+  EXPECT_FALSE(first_future.IsReady());
+  // Undoing the pop out should synchronously run the pending callback.
+  container->UndoPopOut();
+  EXPECT_TRUE(first_future.IsReady());
+
+  // Popping out the extension again should work.
+  base::test::TestFuture<void> second_future;
+  container->PopOutAction(extension_id, second_future.GetCallback());
+  EXPECT_FALSE(second_future.IsReady());
+  EXPECT_TRUE(second_future.Wait());
+
+  container->UndoPopOut();
+}
+
+// Tests that a pending PopOutAction() callback is run if the popped out
+// extension is removed before its button is shown, and that a subsequent pop
+// out of another extension works.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopOutActionCancelledByExtensionRemoval) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir1;
+  base::ScopedTempDir temp_dir2;
+  ASSERT_TRUE(temp_dir1.CreateUniqueTempDir());
+  ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
+  scoped_refptr<const extensions::Extension> extension1 =
+      LoadExtension(temp_dir1);
+  ASSERT_TRUE(extension1);
+  scoped_refptr<const extensions::Extension> extension2 =
+      LoadExtension(temp_dir2);
+  ASSERT_TRUE(extension2);
+  const std::string extension_id1 = extension1->id();
+  const std::string extension_id2 = extension2->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension_id1));
+
+  base::test::TestFuture<void> first_future;
+  container->PopOutAction(extension_id1, first_future.GetCallback());
+  EXPECT_FALSE(first_future.IsReady());
+
+  // Disabling the extension removes its action, which should cancel the pop
+  // out and synchronously run the pending callback.
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
+      ->DisableExtension(extension_id1,
+                         {extensions::disable_reason::DISABLE_USER_ACTION});
+  EXPECT_FALSE(container->GetPoppedOutActionId());
+  EXPECT_TRUE(first_future.IsReady());
+
+  // Popping out another extension should work.
+  base::test::TestFuture<void> second_future;
+  container->PopOutAction(extension_id2, second_future.GetCallback());
+  EXPECT_FALSE(second_future.IsReady());
+  EXPECT_TRUE(second_future.Wait());
+
+  container->UndoPopOut();
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
                        MoveExtensionAction_InvalidInputs) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4597,12 +4756,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
 
   // Load and pin two extensions.
   scoped_refptr<const extensions::Extension> ext1 =
-      LoadAndPinExtension(webui_toolbar_view, temp_dir);
+      LoadAndPinExtension(temp_dir);
   ASSERT_TRUE(ext1);
   base::ScopedTempDir temp_dir2;
   ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
   scoped_refptr<const extensions::Extension> ext2 =
-      LoadAndPinExtension(webui_toolbar_view, temp_dir2);
+      LoadAndPinExtension(temp_dir2);
   ASSERT_TRUE(ext2);
 
   auto* container = static_cast<WebUIToolbarExtensionsContainer*>(

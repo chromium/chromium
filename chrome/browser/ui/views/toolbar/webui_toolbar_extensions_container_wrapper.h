@@ -70,7 +70,8 @@ class WebUIToolbarExtensionsContainerWrapper
       override;
   void OnActionRemoved(std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
                        const std::string& id) override;
-  void OnActionPoppedOut(base::OnceClosure callback) override;
+  void OnActionPoppedOut(base::OnceClosure callback, bool is_iph) override;
+  void OnPopOutCancelled() override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -108,7 +109,21 @@ class WebUIToolbarExtensionsContainerWrapper
 
   std::vector<std::string> last_sent_extension_ids_;
 
+  // Pending IPH OnActionPoppedOut() requests.
+  //
+  // Ordering between IPH and non-IPH pop out requests is not preserved.
+  //
+  // TODO(crbug.com/556290451): Get rid of `pending_anchor_requests_` in favor
+  // of using `pending_pop_out_callback_` for IPH requests as well. Need to
+  // figure out how cancellation of the two should interact to do this.
   std::list<PendingAnchorRequest> pending_anchor_requests_;
+
+  // Callback and subscription for the pending non-IPH OnActionPoppedOut()
+  // request, if any. Unlike IPH requests, these can be cancelled by
+  // OnPopOutCancelled(). There's at most one at a time, since the container
+  // cancels any pending pop out before starting a new one.
+  base::OnceClosure pending_pop_out_callback_;
+  ui::ElementTracker::Subscription pending_pop_out_subscription_;
 
   // Only for use by GetExtensionsButton(). Update by calling
   // UpdateExtensionsButtonState().
