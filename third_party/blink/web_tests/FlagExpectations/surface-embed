@@ -7181,7 +7181,6 @@ external/wpt/webdriver/tests/bidi/script/evaluate/csp_tentative.py [ Failure Pas
 external/wpt/webdriver/tests/bidi/script/get_realms/user_context_tentative.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/script/message/user_context_tentative.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/script/realm_created/user_context_tentative.py [ Failure Pass ]
-external/wpt/webdriver/tests/bidi/script/realm_destroyed/realm_destroyed.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/session/subscribe/contexts.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/storage/get_cookies/filter.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/storage/set_cookie/cookie_same_site.py [ Failure Pass ]
