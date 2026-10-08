@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -182,8 +181,13 @@ void TrustedVaultClientAndroid::StoreKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
-  // Not supported on Android, where keys are fetched outside the browser.
-  NOTREACHED();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  JNIEnv* const env = base::android::AttachCurrentThread();
+  const base::android::ScopedJavaLocalRef<jobjectArray> java_keys =
+      base::android::ToJavaArrayOfByteArray(env, keys);
+  Java_TrustedVaultClient_storeKeys(env, reinterpret_cast<intptr_t>(this),
+                                    static_cast<int32_t>(security_domain_id_),
+                                    gaia_id, java_keys, last_key_version);
 }
 
 void TrustedVaultClientAndroid::MarkLocalKeysAsStale(

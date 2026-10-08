@@ -19,8 +19,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,19 @@ public class TrustedVaultClient {
          * @return a promise with known keys, if any, where the last one is the most recent.
          */
         Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo);
+
+        /**
+         * Stores encryption keys for the given account. Test-only on Android (where keys are
+         * fetched outside the browser in production). Implementations should invoke {@link
+         * TrustedVaultClient#notifyKeysChanged} if appropriate.
+         *
+         * @param gaiaId Gaia ID representing the user.
+         * @param keys List of encryption keys, where the last one is the most recent.
+         * @param lastKeyVersion Version of the last key in {@code keys}.
+         */
+        default void storeKeys(GaiaId gaiaId, List<byte[]> keys, int lastKeyVersion) {
+            throw new UnsupportedOperationException();
+        }
 
         /**
          * Gets a PendingIntent that can be used to display a UI that allows the user to
@@ -353,6 +368,18 @@ public class TrustedVaultClient {
                 .mBackend
                 .fetchKeys(accountInfo)
                 .then(responseCb::accept, exception -> responseCb.accept(new ArrayList<byte[]>()));
+    }
+
+    /** Forwards calls to Backend.storeKeys(). */
+    @CalledByNative
+    private static void storeKeys(
+            long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
+            @JniType("GaiaId") GaiaId gaiaId,
+            byte[][] keys,
+            int lastKeyVersion) {
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
+        get(securityDomainId).mBackend.storeKeys(gaiaId, Arrays.asList(keys), lastKeyVersion);
     }
 
     /**

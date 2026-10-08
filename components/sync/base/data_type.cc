@@ -1066,7 +1066,9 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             // Not encrypted by sync infra because it relies on
             // custom feature-specific encryption logic.
             .encryption_policy = EncryptionPolicy::kNeverEncrypted,
-            .priority = DataTypePriority::kRegular,
+            // Low priority ensures that ENCRYPTED_TAB_CONTEXT_CONTAINER
+            // (regular priority) is downloaded and committed before items.
+            .priority = DataTypePriority::kLow,
             .communication_direction = CommunicationDirection::kCommitOnly,
             .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
             .unsynced_data_check_on_signout_policy =

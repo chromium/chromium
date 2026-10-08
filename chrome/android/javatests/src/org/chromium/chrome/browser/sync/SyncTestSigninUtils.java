@@ -9,15 +9,42 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Promise;
 import org.chromium.chrome.test.util.browser.signin.LiveSigninTestUtil;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.trusted_vault.SecurityDomainId;
+import org.chromium.components.trusted_vault.TrustedVaultClient;
+import org.chromium.google_apis.gaia.GaiaId;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Utility class for sign-in functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
 final class SyncTestSigninUtils {
+    private static class FakeTrustedVaultClientBackend extends TrustedVaultClient.EmptyBackend {
+        private final Map<GaiaId, List<byte[]>> mKeys = new HashMap<>();
+
+        @Override
+        public Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(
+                    mKeys.getOrDefault(accountInfo.getGaiaId(), Collections.emptyList()));
+        }
+
+        @Override
+        public void storeKeys(GaiaId gaiaId, List<byte[]> keys, int lastKeyVersion) {
+            mKeys.put(gaiaId, new ArrayList<>(keys));
+            TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).notifyKeysChanged(null);
+        }
+    }
+
     private static SigninTestRule sSigninTestRule;
 
     /** Sets up the test account and signs in. */
@@ -42,6 +69,8 @@ final class SyncTestSigninUtils {
     /** Sets up the fake authentication environment. */
     @CalledByNative
     private static void setUpFakeAuthForTesting(boolean isNativeTest) {
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                .setBackendForTesting(new FakeTrustedVaultClientBackend());
         sSigninTestRule = new SigninTestRule(isNativeTest);
         sSigninTestRule.setUpRule();
     }

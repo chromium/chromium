@@ -63,6 +63,9 @@ source_set("sync_integration_tests_impl") {
     "//components/sync_device_info:test_support",
     "//components/sync_preferences:common_syncable_prefs_database",
     "//components/sync_preferences:features",
+    "//components/sync_tab_context",
+    "//components/sync_tab_context:test_support",
+    "//components/trusted_vault",
     "//components/undo",
     "//components/version_info",
     "//components/webauthn:features",
@@ -86,6 +89,7 @@ source_set("sync_integration_tests_impl") {
     "single_client_shared_tab_group_data_sync_test.cc",
     "single_client_standalone_transport_sync_test.cc",
     "single_client_sync_invalidations_test.cc",
+    "single_client_tab_context_sync_test.cc",
     "sync_exponential_backoff_test.cc",
 
     # TODO(crbug.com/397767033): After enough of the implementation is ready

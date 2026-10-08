@@ -58,6 +58,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_ephemeral_key_server.cc",
+    "fake_ephemeral_key_server.h",
     "mock_tab_context_sync_service.cc",
     "mock_tab_context_sync_service.h",
   ]
@@ -66,7 +68,16 @@ static_library("test_support") {
     ":sync_tab_context",
     "//base",
     "//components/sync/model",
+    "//components/sync/protocol",
+    "//net",
+    "//net:test_support",
     "//testing/gmock",
+    "//url",
+  ]
+
+  deps = [
+    "//components/sync/model/crypto",
+    "//third_party/zlib/google:compression_utils",
   ]
 }
 
