@@ -84,6 +84,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
@@ -1730,7 +1731,7 @@ public class NtpCustomizationUtils {
         // TODO(https://crbug.com/534357676): sets the height in the layout file after the feature
         // flag is fully launched.
         int searchBoxHeight =
-                showSearchBoxTall || ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
+                showSearchBoxTall || ChromeFeatures.NtpAurora.isEnabled()
                         ? resources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall)
                         : resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
         return searchBoxHeight;

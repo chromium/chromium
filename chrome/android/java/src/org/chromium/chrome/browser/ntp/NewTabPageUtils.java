@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -97,13 +98,12 @@ public class NewTabPageUtils {
 
     /** Returns whether the Aurora layout is enabled. */
     public static boolean isNtpAuroraEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA);
+        return ChromeFeatures.NtpAurora.isEnabled();
     }
 
     /** Returns whether the Aurora layout V2 is enabled. */
     public static boolean isNtpAuroraV2Enabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA_V2);
+        return ChromeFeatures.NtpAurora.isEnabled() && ChromeFeatures.NtpAuroraV2.isEnabled();
     }
 
     /** Returns whether the Aurora layout with updated button colors is enabled. */

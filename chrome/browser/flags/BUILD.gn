@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/android/java_flag_generator/java_flag_generator.gni")
 import("//build/config/android/rules.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
@@ -28,8 +29,17 @@ android_library("java") {
   srcjar_deps = [
     ":chrome_android_java_switches_srcjar",
     ":chrome_browser_flags_enums_srcjar",
+    ":java_flags",
     ":jni_headers",
   ]
+}
+
+java_flag_generator("java_flags") {
+  sources = [ "android/chrome_feature_list.cc" ]
+  class_name = "org.chromium.chrome.browser.flags.ChromeFeatures"
+
+  # Generates a FEATURE_DEFINITION_FILE of chrome_feature_list.cc.
+  deps = [ "//third_party/blink/common:make_generated_features" ]
 }
 
 generate_jni("jni_headers") {

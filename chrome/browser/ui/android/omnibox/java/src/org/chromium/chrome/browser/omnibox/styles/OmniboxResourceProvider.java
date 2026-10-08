@@ -37,7 +37,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
@@ -1187,7 +1187,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      * top of the screen in NTP.
      */
     public static @Px int getToolbarSidePaddingForNtp(Context context) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)) {
+        if (ChromeFeatures.NtpAurora.isEnabled()) {
             return getToolbarSidePadding(context);
         }
         return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);

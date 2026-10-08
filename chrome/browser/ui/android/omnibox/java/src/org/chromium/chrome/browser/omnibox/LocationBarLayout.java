@@ -29,7 +29,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -483,7 +483,7 @@ public class LocationBarLayout extends ConstraintLayout {
             int fakeSearchBoxStartPadding =
                     getResources()
                             .getDimensionPixelSize(
-                                    ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
+                                    ChromeFeatures.NtpAurora.isEnabled()
                                             ? R.dimen.fake_search_box_start_padding
                                             : R.dimen.fake_search_box_start_padding_legacy);
             translationX +=

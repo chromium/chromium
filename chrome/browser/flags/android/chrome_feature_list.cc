@@ -114,6 +114,12 @@ namespace {
 
 // clang-format off
 
+// Files defining features below whose definition isn't in the .cc file of an
+// included header. Read by //base/android/java_flag_generator.
+// FEATURE_DEFINITION_FILE: //base/android/background_thread_pool_field_trial.cc
+// FEATURE_DEFINITION_FILE: //third_party/blink/common/features.cc
+// FEATURE_DEFINITION_FILE: //third_party/blink/common/features_generated.cc
+
 // Alphabetical:
 // LINT.IfChange(FeaturesExposedToJava)
 const base::Feature* const kFeaturesExposedToJava[] = {

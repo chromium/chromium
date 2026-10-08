@@ -15,7 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
@@ -513,7 +513,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     void setUrlBarHintTextColorForNtp() {
         mIsHintTextFixedForNtp = true;
         final @ColorInt int hintTextColor =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
+                ChromeFeatures.NtpAurora.isEnabled()
                         ? SemanticColorUtils.getDefaultTextColorSecondary(mContext)
                         : SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);

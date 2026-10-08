@@ -52,6 +52,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
@@ -810,8 +811,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return new InsetObserver(
                 new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()),
                 new ImmutableWeakReference<>(this),
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS),
+                ChromeFeatures.AccountForSuppressedKeyboardInsets.isEnabled(),
                 ChromeFeatureList.sEdgeToEdgeExtraLogs.isEnabled());
     }
 
