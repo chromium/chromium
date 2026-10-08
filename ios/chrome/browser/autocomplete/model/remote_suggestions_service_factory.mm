@@ -11,10 +11,15 @@
 
 // static
 RemoteSuggestionsService* RemoteSuggestionsServiceFactory::GetForProfile(
-    ProfileIOS* profile,
-    bool create_if_necessary) {
+    ProfileIOS* profile) {
   return GetInstance()->GetServiceForProfileAs<RemoteSuggestionsService>(
-      profile, create_if_necessary);
+      profile, /*create=*/true);
+}
+
+RemoteSuggestionsService*
+RemoteSuggestionsServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<RemoteSuggestionsService>(
+      profile, /*create=*/false);
 }
 
 // static

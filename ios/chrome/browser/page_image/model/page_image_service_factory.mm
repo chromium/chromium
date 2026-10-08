@@ -43,7 +43,7 @@ std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   RemoteSuggestionsService* remote_suggestions_service =
-      RemoteSuggestionsServiceFactory::GetForProfile(profile, true);
+      RemoteSuggestionsServiceFactory::GetForProfile(profile);
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =

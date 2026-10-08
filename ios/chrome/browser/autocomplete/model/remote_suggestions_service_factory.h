@@ -16,8 +16,8 @@ class RemoteSuggestionsService;
 // ProfileIOS.
 class RemoteSuggestionsServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static RemoteSuggestionsService* GetForProfile(ProfileIOS* profile,
-                                                 bool create_if_necessary);
+  static RemoteSuggestionsService* GetForProfile(ProfileIOS* profile);
+  static RemoteSuggestionsService* GetForProfileIfExists(ProfileIOS* profile);
   static RemoteSuggestionsServiceFactory* GetInstance();
 
  private:

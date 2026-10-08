@@ -139,8 +139,11 @@ AutocompleteProviderClientImpl::GetTemplateURLService() const {
 RemoteSuggestionsService*
 AutocompleteProviderClientImpl::GetRemoteSuggestionsService(
     bool create_if_necessary) const {
-  return RemoteSuggestionsServiceFactory::GetForProfile(profile_,
-                                                        create_if_necessary);
+  if (create_if_necessary) {
+    return RemoteSuggestionsServiceFactory::GetForProfile(profile_);
+  }
+
+  return RemoteSuggestionsServiceFactory::GetForProfileIfExists(profile_);
 }
 
 ZeroSuggestCacheService*

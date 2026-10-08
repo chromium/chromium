@@ -244,8 +244,7 @@ const int64_t kMaxFaviconDownloadBytes = 1024 * 1024 * 5;
   DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
 
   RemoteSuggestionsService* remoteSuggestionsService =
-      RemoteSuggestionsServiceFactory::GetForProfile(
-          self.profile, /*create_if_necessary=*/true);
+      RemoteSuggestionsServiceFactory::GetForProfile(self.profile);
 
   _omniboxDebuggerMediator = [[OmniboxDebuggerMediator alloc]
       initWithAutocompleteController:_autocompleteController

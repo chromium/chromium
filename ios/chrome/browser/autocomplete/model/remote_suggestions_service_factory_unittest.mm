@@ -19,8 +19,7 @@ class RemoteSuggestionsServiceFactoryTest : public PlatformTest {
 
 // Ensures that a service instance is created for the expected Profile types.
 TEST_F(RemoteSuggestionsServiceFactoryTest, ServiceInstance) {
+  EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(profile_.get()));
   EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(
-      profile_.get(), /*create_if_necessary=*/true));
-  EXPECT_TRUE(RemoteSuggestionsServiceFactory::GetForProfile(
-      profile_->GetOffTheRecordProfile(), /*create_if_necessary=*/true));
+      profile_->GetOffTheRecordProfile()));
 }
