@@ -115,6 +115,7 @@ BASE_DECLARE_FEATURE(kBottomSheetOnDesktopWindowing);
 BASE_DECLARE_FEATURE(kBrowserControlsDebugging);
 BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kBrowserControlsHidingToken);
+BASE_DECLARE_FEATURE(kBrowserControlsLockoutDuration);
 BASE_DECLARE_FEATURE(kBrowserControlsPersistsOnCvh);
 BASE_DECLARE_FEATURE(kCCTAlwaysOpenInBrowser);
 BASE_DECLARE_FEATURE(kCCTBlockTouchesDuringEnterAnimation);

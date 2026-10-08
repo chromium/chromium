@@ -24,8 +24,10 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
@@ -194,6 +196,149 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         assertEquals(
                 BrowserControlsState.BOTH,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":fullscreen_load_delay_ms/1500")
+    public void testFullscreenLoadDelay_customDuration() {
+        assertEquals(1500, TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs());
+
+        GURL blueGurl = JUnitTestGURLs.BLUE_1;
+        when(mTabImpl.getUrl()).thenReturn(blueGurl);
+        when(mNavigationHandle1.getNavigationId()).thenReturn(1L);
+        when(mNavigationHandle1.getUrl()).thenReturn(blueGurl);
+        when(mNavigationHandle1.isSameDocument()).thenReturn(false);
+
+        TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
+                new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
+        verify(mTabImpl).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+
+        when(mTabImpl.getWebContents()).thenReturn(mWebContents);
+
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(1000, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":fullscreen_load_delay_ms/500")
+    public void testFullscreenLoadDelay_belowSecurityMinClamped() {
+        assertEquals(1000, TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs());
+
+        GURL blueGurl = JUnitTestGURLs.BLUE_1;
+        when(mTabImpl.getUrl()).thenReturn(blueGurl);
+        when(mNavigationHandle1.getNavigationId()).thenReturn(1L);
+        when(mNavigationHandle1.getUrl()).thenReturn(blueGurl);
+        when(mNavigationHandle1.isSameDocument()).thenReturn(false);
+
+        TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
+                new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
+        verify(mTabImpl).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+
+        when(mTabImpl.getWebContents()).thenReturn(mWebContents);
+
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":fullscreen_load_delay_ms/5000")
+    public void testFullscreenLoadDelay_aboveSecurityMaxClamped() {
+        assertEquals(3000, TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs());
+
+        GURL blueGurl = JUnitTestGURLs.BLUE_1;
+        when(mTabImpl.getUrl()).thenReturn(blueGurl);
+        when(mNavigationHandle1.getNavigationId()).thenReturn(1L);
+        when(mNavigationHandle1.getUrl()).thenReturn(blueGurl);
+        when(mNavigationHandle1.isSameDocument()).thenReturn(false);
+
+        TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
+                new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
+        verify(mTabImpl).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+
+        when(mTabImpl.getWebContents()).thenReturn(mWebContents);
+
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
+
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(2500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                BrowserControlsState.SHOWN,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                BrowserControlsState.BOTH,
+                controlsVisibilityDelegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":fullscreen_load_delay_ms/1500")
+    public void testFullscreenLoadDelay_disabledLoadingCheckReturnsZero() {
+        TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests();
+        assertEquals(0, TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs());
     }
 
     @Test

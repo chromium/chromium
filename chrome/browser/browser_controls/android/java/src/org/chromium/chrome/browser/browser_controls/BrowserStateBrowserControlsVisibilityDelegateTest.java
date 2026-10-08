@@ -20,13 +20,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for the BrowserStateBrowserControlsVisibilityDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,6 +67,66 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         assertEquals(BrowserControlsState.SHOWN, constraints());
 
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(BrowserControlsState.BOTH, constraints());
+
+        verify(mCallback, times(2)).onResult(Mockito.anyInt());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":minimum_show_duration_ms/1500")
+    public void testTransientShowWithCustomLockoutDuration() {
+        assertEquals(
+                1500, BrowserStateBrowserControlsVisibilityDelegate.getMinimumShowDurationMs());
+
+        assertEquals(BrowserControlsState.BOTH, constraints());
+        mDelegate.showControlsTransient();
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.idleMainLooper(1000, TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.BOTH, constraints());
+
+        verify(mCallback, times(2)).onResult(Mockito.anyInt());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":minimum_show_duration_ms/500")
+    public void testTransientShowWithLockoutDurationBelowSecurityMinClamped() {
+        assertEquals(
+                1000, BrowserStateBrowserControlsVisibilityDelegate.getMinimumShowDurationMs());
+
+        assertEquals(BrowserControlsState.BOTH, constraints());
+        mDelegate.showControlsTransient();
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.BOTH, constraints());
+
+        verify(mCallback, times(2)).onResult(Mockito.anyInt());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.BROWSER_CONTROLS_LOCKOUT_DURATION + ":minimum_show_duration_ms/5000")
+    public void testTransientShowWithLockoutDurationAboveSecurityMaxClamped() {
+        assertEquals(
+                3000, BrowserStateBrowserControlsVisibilityDelegate.getMinimumShowDurationMs());
+
+        assertEquals(BrowserControlsState.BOTH, constraints());
+        mDelegate.showControlsTransient();
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.idleMainLooper(2500, TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.SHOWN, constraints());
+
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
         assertEquals(BrowserControlsState.BOTH, constraints());
 
         verify(mCallback, times(2)).onResult(Mockito.anyInt());

@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -29,6 +30,8 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
         implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
     @VisibleForTesting public static final long MINIMUM_SHOW_DURATION_MS = 3000;
+
+    private static final long SECURITY_MIN_LOCKOUT_DURATION_MS = 1000;
 
     private static boolean sDisableOverridesForTesting;
 
@@ -56,19 +59,31 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
         updateVisibilityConstraints();
     }
 
+    @VisibleForTesting
+    static long getMinimumShowDurationMs() {
+        if (ChromeFeatureList.sBrowserControlsLockoutDuration.isEnabled()) {
+            return MathUtils.clamp(
+                    ChromeFeatureList.sBrowserControlsLockoutMinimumShowDurationMs.getValue(),
+                    SECURITY_MIN_LOCKOUT_DURATION_MS,
+                    MINIMUM_SHOW_DURATION_MS);
+        }
+        return MINIMUM_SHOW_DURATION_MS;
+    }
+
     private void ensureControlsVisibleForMinDuration() {
         // Do not lock the controls as visible. Such as in testing.
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION)) {
             return;
         }
 
+        long minShowDuration = getMinimumShowDurationMs();
         long currentShowingTime = SystemClock.uptimeMillis() - mCurrentShowingStartTime;
-        if (currentShowingTime >= MINIMUM_SHOW_DURATION_MS) return;
+        if (currentShowingTime >= minShowDuration) return;
 
         final int temporaryToken = mTokenHolder.acquireToken();
         mHandler.postDelayed(
                 () -> mTokenHolder.releaseToken(temporaryToken),
-                MINIMUM_SHOW_DURATION_MS - currentShowingTime);
+                minShowDuration - currentShowingTime);
     }
 
     /** Trigger a temporary showing of the browser controls. */

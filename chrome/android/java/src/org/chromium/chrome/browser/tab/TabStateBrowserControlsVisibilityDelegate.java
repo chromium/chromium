@@ -12,8 +12,10 @@ import android.os.Message;
 import android.util.ArraySet;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -49,6 +51,8 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
     /** The maximum amount of time to wait for a page to load before entering fullscreen. */
     private static final long MAX_FULLSCREEN_LOAD_DELAY_MS = 3000;
+
+    private static final long SECURITY_MIN_LOCKOUT_DURATION_MS = 1000;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -109,10 +113,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                                     }
                                 }
                             };
-
-                    private long getLoadDelayMs() {
-                        return sDisableLoadingCheck ? 0 : MAX_FULLSCREEN_LOAD_DELAY_MS;
-                    }
 
                     private void cancelEnableFullscreenLoadDelay() {
                         mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
@@ -328,6 +328,20 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     /** Updates the browser controls visibility constraints based on the current configuration. */
     protected void updateVisibilityConstraints() {
         set(calculateVisibilityConstraints());
+    }
+
+    @VisibleForTesting
+    static long getLoadDelayMs() {
+        if (sDisableLoadingCheck) {
+            return 0;
+        }
+        if (ChromeFeatureList.sBrowserControlsLockoutDuration.isEnabled()) {
+            return MathUtils.clamp(
+                    ChromeFeatureList.sBrowserControlsLockoutFullscreenLoadDelayMs.getValue(),
+                    SECURITY_MIN_LOCKOUT_DURATION_MS,
+                    MAX_FULLSCREEN_LOAD_DELAY_MS);
+        }
+        return MAX_FULLSCREEN_LOAD_DELAY_MS;
     }
 
     /** Disables the logic that prevents hiding the top controls during page load for testing. */
