@@ -1,0 +1,21 @@
+Tests that RTCPeerConnection.createDTMFSender() reports a deprecation issue.
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 7
+                    lineNumber : 4
+                    scriptId : <string>
+                    url :
+                }
+                type : RTCPeerConnectionCreateDTMFSender
+            }
+        }
+    }
+}
+
