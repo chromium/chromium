@@ -23,7 +23,9 @@ enum class ToolId {
   kClick = 1,
   // Switches to an open tab in the active browser window matching a query.
   kSwitchTab = 2,
-  kMaxValue = kSwitchTab,
+  // Scrolls an element or the main viewport in the active tab.
+  kScroll = 3,
+  kMaxValue = kScroll,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

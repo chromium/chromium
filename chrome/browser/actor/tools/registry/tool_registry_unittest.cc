@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
+#include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -74,6 +75,23 @@ TEST(ToolRegistryTest, SwitchTabToolDefinition) {
 }
 #endif
 
+TEST(ToolRegistryTest, ScrollToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ScrollToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kScroll);
+  EXPECT_EQ(definition->name, ScrollToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(ScrollToolRequest::kDirectionParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(ScrollToolRequest::kDirectionParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(ScrollToolRequest::kDistanceParam, "number"));
+  EXPECT_THAT(*definition, RequiresParam(ScrollToolRequest::kDistanceParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(ScrollToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition, RequiresParam(ScrollToolRequest::kDomNodeIdParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -98,6 +116,16 @@ TEST(ToolRegistryTest, GetAllToolsContainsSwitchTabTool) {
 }
 #endif
 
+TEST(ToolRegistryTest, GetAllToolsContainsScrollTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kScroll, &ToolDefinition::id));
+}
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());
 }

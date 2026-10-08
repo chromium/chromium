@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_SCROLL_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -18,6 +20,15 @@ class ToolRequestVisitorFunctor;
 class ScrollToolRequest : public PageToolRequest {
  public:
   static constexpr char kName[] = "Scroll";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "scroll";
+  // JSON argument key for the scroll direction parameter.
+  static constexpr std::string_view kDirectionParam = "direction";
+  // JSON argument key for the scroll distance parameter in pixels.
+  static constexpr std::string_view kDistanceParam = "distance";
+  // JSON argument key for the target element DOM node ID parameter.
+  static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
 
   enum class Direction { kLeft, kRight, kUp, kDown };
 
@@ -29,6 +40,9 @@ class ScrollToolRequest : public PageToolRequest {
                     Direction direction,
                     float distance);
   ~ScrollToolRequest() override;
+
+  // Returns the `ToolId::kScroll` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
