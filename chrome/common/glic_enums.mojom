@@ -185,7 +185,8 @@ enum InvocationSource {
 // LINT.ThenChange(//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java:GlicInvocationSource,
 //  //tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource,
 // //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
-//  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation
+//  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation,
+//  //depot/google3/assistant/boq/lamda/bard/proto/gemini_in_chrome_metadata.proto:InvocationSource
 // )
 
 // @generate glic_api
