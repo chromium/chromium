@@ -2450,6 +2450,15 @@ VISIT_PROTO_FIELDS(
   VISIT(prompt);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics::CollectionItem& proto) {
+  VISIT(history_entry);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics::Collection& proto) {
+  VISIT(title);
+  VISIT_REP(items);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics& proto) {
   VISIT(journey_id);
   VISIT(title);
@@ -2459,6 +2468,7 @@ VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics& proto) {
   VISIT(creation_time_windows_epoch_micros);
   VISIT_REP(history_entries);
   VISIT_REP(continuation_queries);
+  VISIT_REP(collections);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {

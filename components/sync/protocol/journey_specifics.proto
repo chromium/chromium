@@ -36,6 +36,27 @@ message JourneySpecifics {
     optional string prompt = 2;
   }
   repeated ContinuationQuery continuation_queries = 8;
+
+  // A page card in a collection.
+  message CollectionItem {
+    // Must also be in `history_entries` (matched by visit timestamp); the
+    // client resolves URL and title from local history and ignores items
+    // that aren't.
+    optional HistoryEntry history_entry = 1;
+  }
+
+  // A titled group of similar pages from this journey, shown as one section
+  // of the journey's details page.
+  message Collection {
+    // Complete section heading, shown as-is.
+    optional string title = 1;
+    // Collection items, in display order.
+    repeated CollectionItem items = 2;
+  }
+
+  // Collections in display order, may be empty. Collections only group pages
+  // from `history_entries`; they don't add pages to the journey.
+  repeated Collection collections = 9;
 }
 // LINT.ThenChange(//components/history/core/browser/journeys/journeys_sync_bridge.cc:JourneySpecificsConversions,
 // //components/history/core/browser/journeys/journeys_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics,
