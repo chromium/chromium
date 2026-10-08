@@ -1511,6 +1511,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SessionRestore.ProfileDiffAfterRestart.{Type}"
+    units="profiles delta" expires_after="2027-02-28">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The difference between the number of profiles with {Type} open before a
+    restart and the number of profiles with {Type} restored after a restart. A
+    positive value means profiles were lost; a negative value means profiles
+    were gained. Values are clamped to [-50, 50].
+
+    Normal and App windows are tracked independently, so a profile that had both
+    open is counted in both the Normal and App variants.
+
+    Logged once per browser restart, after startup has launched every profile it
+    intends to launch and all of the session restores it started have finished.
+    Only logged if a pre-restart count was saved for {Type}, so a restart of a
+    session that had no {Type} open reports nothing, even if some are opened
+    afterwards. Not logged if every profile that was open is locked, since
+    startup then shows the profile picker and attempts no session restore.
+
+    Recorded on Windows, Mac, and Linux only; ChromeOS restarts end the user
+    session rather than relaunching into it, and startup ignores WasRestarted()
+    after the next login, so the recorder is never enabled there.
+  </summary>
+  <token key="Type">
+    <variant name="App" summary="app windows"/>
+    <variant name="Normal" summary="normal windows"/>
+  </token>
+</histogram>
+
 <histogram name="SessionRestore.TabCount{TabType}" units="tabs"
     expires_after="2027-02-07">
   <owner>joenotcharles@google.com</owner>

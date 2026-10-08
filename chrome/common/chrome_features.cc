@@ -2137,8 +2137,8 @@ const base::FeatureParam<double> kSmartRestartLockBypassBeforeUnloadThreshold{
 BASE_FEATURE(kRelaunchWaitForParentProcess, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// A feature to record the difference in the number of tabs and windows between
-// the last session and the current session on restart.
+// A feature to record the difference in the number of tabs, windows, and
+// profiles between the last session and the current session on restart.
 BASE_FEATURE(kRecordTabWindowDiffOnRestart, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

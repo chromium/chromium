@@ -1619,6 +1619,11 @@ static_assert(std::string_view(kWasRestarted) ==
 inline constexpr char kPreSmartRestartSessionState[] =
     "session.pre_smart_restart_session_state";
 
+// Dictionary containing the number of profiles with open windows before a
+// restart.
+inline constexpr char kPreSmartRestartProfileCounts[] =
+    "session.pre_smart_restart_profile_counts";
+
 #if BUILDFLAG(IS_MAC)
 // Boolean preference controlling zero window relaunch per enterprise policy.
 inline constexpr char kUpdateOnZeroWindowEnabled[] =

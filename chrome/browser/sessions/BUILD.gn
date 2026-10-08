@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -60,6 +61,10 @@ source_set("sessions") {
       "//ui/base",
       "//ui/base/mojom:ui_base_types",
     ]
+
+    if (!is_chromeos) {
+      public += [ "profile_diff_after_restart_recorder.h" ]
+    }
   }
 }
 
@@ -179,6 +184,8 @@ source_set("impl") {
         "//chrome/browser/ash/profiles",
         "//chromeos/components/kiosk",
       ]
+    } else {
+      sources += [ "profile_diff_after_restart_recorder.cc" ]
     }
   }
 }
@@ -264,6 +271,8 @@ source_set("unit_tests") {
 
     if (is_chromeos) {
       deps += [ "//chromeos/components/kiosk:test_support" ]
+    } else {
+      sources += [ "profile_diff_after_restart_recorder_unittest.cc" ]
     }
   }
 

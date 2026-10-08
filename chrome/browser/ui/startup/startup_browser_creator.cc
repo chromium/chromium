@@ -1007,6 +1007,9 @@ void StartupBrowserCreator::RegisterLocalStatePrefs(
 #endif
   registry->RegisterBooleanPref(prefs::kSuppressUnsupportedOSWarning, false);
   registry->RegisterBooleanPref(prefs::kWasRestarted, false);
+#if !BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterDictionaryPref(prefs::kPreSmartRestartProfileCounts);
+#endif
 
 #if BUILDFLAG(IS_WIN)
   registry->RegisterStringPref(prefs::kShortcutMigrationVersion, std::string());
