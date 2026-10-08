@@ -39,6 +39,7 @@
 
 #include <atomic>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -77,6 +78,7 @@ class MEDIA_EXPORT AUAudioInputStream
   AUAudioInputStream(AudioManagerApple* manager,
                      const AudioParameters& input_params,
                      AudioDeviceID audio_device_id,
+                     const std::string& device_unique_id,
                      const AudioManager::LogCallback& log_callback);
 
   AUAudioInputStream(const AUAudioInputStream&) = delete;
@@ -229,6 +231,9 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // The UID refers to the current input audio device.
   const AudioDeviceID input_device_id_;
+
+  // Unique ID string of the audio input device (e.g. GUID or "default").
+  const std::string device_unique_id_;
 
   // Provides a mechanism for encapsulating one or more buffers of audio data.
   AudioBufferList audio_buffer_list_;

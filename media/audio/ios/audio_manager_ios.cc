@@ -95,8 +95,8 @@ AudioOutputStream* AudioManagerIOS::MakeLowLatencyOutputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  AUHALStream* stream =
-      new AUHALStream(this, params, kAudioObjectUnknown, log_callback);
+  AUHALStream* stream = new AUHALStream(this, params, kAudioObjectUnknown,
+                                        device_id, log_callback);
   return stream;
 }
 
@@ -113,8 +113,8 @@ AudioInputStream* AudioManagerIOS::MakeLowLatencyInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  auto* stream =
-      new AUAudioInputStream(this, params, kAudioObjectUnknown, log_callback);
+  auto* stream = new AUAudioInputStream(this, params, kAudioObjectUnknown,
+                                        device_id, log_callback);
   return stream;
 }
 

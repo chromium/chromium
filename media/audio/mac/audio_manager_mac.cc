@@ -878,7 +878,8 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
     }
   }
 
-  AUHALStream* stream = new AUHALStream(this, params, device, log_callback);
+  AUHALStream* stream =
+      new AUHALStream(this, params, device, device_id, log_callback);
   output_streams_.insert(stream);
   return stream;
 }
@@ -940,8 +941,8 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
     return nullptr;
   }
 
-  auto* stream =
-      new AUAudioInputStream(this, params, audio_device_id, log_callback);
+  auto* stream = new AUAudioInputStream(this, params, audio_device_id,
+                                        device_id, log_callback);
   low_latency_input_streams_.insert(stream);
   return stream;
 }

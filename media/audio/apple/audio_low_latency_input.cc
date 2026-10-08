@@ -167,11 +167,13 @@ AUAudioInputStream::AUAudioInputStream(
     AudioManagerApple* manager,
     const AudioParameters& input_params,
     AudioDeviceID audio_device_id,
+    const std::string& device_unique_id,
     const AudioManager::LogCallback& log_callback)
     : id_(base::UnguessableToken::Create()),
       manager_(manager),
       input_params_(input_params),
       input_device_id_(audio_device_id),
+      device_unique_id_(device_unique_id),
       fifo_(input_params.channels(),
             input_params.frames_per_buffer(),
             kNumberOfBlocksBufferInFifo),
