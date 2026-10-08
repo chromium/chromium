@@ -485,13 +485,37 @@ bool WebUILocationBar::IsMouseHovered() const {
 }
 
 bool WebUILocationBar::IsFocusWithin() const {
-  // If `using_full_popup_` is `true`, focus resides inside the WebUI popup's
-  // `WebContents` / `RenderWidgetHost` rather than a native child View of
-  // `WebUILocationBar`.
-  const bool full_popup_has_focus =
-      using_full_popup_ && omnibox_controller_ &&
-      omnibox_controller_->edit_model()->has_focus();
-  return full_popup_has_focus || focus_within_;
+  if (focus_within_) {
+    return true;
+  }
+
+  const bool omnibox_has_focus =
+      omnibox_controller_ && omnibox_controller_->edit_model()->has_focus();
+
+  // If `using_full_popup_` is `true`, focus is handed over from the toolbar's
+  // `WebContents` to the WebUI popup's `WebContents`. That handover is
+  // asynchronous: until it completes, focus is still in the toolbar and the
+  // `focus_within_` check above covers it. Once it completes, neither
+  // `focus_within_` (reported by the toolbar WebUI) nor the toolbar WebView's
+  // Views focus state reflects where focus actually is, so fall back to the
+  // edit model alone.
+  if (using_full_popup_) {
+    return omnibox_has_focus;
+  }
+
+  // `focus_within_` is reported asynchronously by the toolbar WebUI, so it can
+  // lag behind a focus request: the page may not have observed document focus
+  // yet when the omnibox element is focused, and then reports "not focused"
+  // until it does. The edit model's focus state, by contrast, is updated
+  // synchronously by SetFocusWithTarget() and OnBlur(). Trust it as long as
+  // the toolbar's WebView actually holds Views focus, so that callers running
+  // right after a focus request (e.g. ChromeWebContentsViewFocusHelper::
+  // StoreFocus() on a tab switch) see a consistent answer.
+  if (omnibox_has_focus && toolbar_delegate_) {
+    const views::View* web_view = toolbar_delegate_->GetInternalWebView();
+    return web_view && web_view->HasFocus();
+  }
+  return false;
 }
 
 void WebUILocationBar::InvalidateLayout() {
