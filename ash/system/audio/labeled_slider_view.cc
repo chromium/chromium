@@ -138,9 +138,11 @@ LabeledSliderView::LabeledSliderView(TrayDetailedView* detailed_view,
       device.active);
   ConfigureDeviceNameView(device);
 
-  // Puts `unified_slider_view_` beneath `device_name_view_`.
-  device_name_view_->AddLayerToRegion(unified_slider_view_->layer(),
-                                      views::LayerRegion::kBelow);
+  // Paint `device_name_view_` to its own layer so that it is drawn above
+  // `unified_slider_view_`'s layer. The child order (slider first, device name
+  // second) keeps the layers stacked correctly.
+  device_name_view_->SetPaintToLayer();
+  device_name_view_->layer()->SetFillsBoundsOpaquely(false);
 
   ConfigureFocusBehavior(device.active, slider);
 }
