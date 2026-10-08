@@ -32,10 +32,10 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
@@ -234,8 +234,9 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   }
 
   void RefreshUserPolicyAndWait() {
-    Profile* profile =
-        ash::ProfileHelper::Get()->GetProfileByAccountId(test_account_id_);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            test_account_id_));
     user_policy_test_helper_.RefreshPolicyAndWait(profile);
   }
 
