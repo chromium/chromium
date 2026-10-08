@@ -12,6 +12,7 @@
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -772,25 +773,28 @@ bool AiDataKeyedService::IsExtensionAllowlistedForData(
     return false;
   }
 
-  static const base::NoDestructor<std::vector<std::string>>
-      kHardcodedAllowlistedExtensions({// https://issues.chromium.org/373645534
-                                       "hpkopmikdojpadgmioifjjodbmnjjjca",
-                                       // https://issues.chromium.org/377129777
-                                       "bgbpcgpcobgjpnpiginpidndjpggappi",
-                                       // https://issues.chromium.org/376699519
-                                       "eefninhhiifgcimjkmkongegpoaikmhm",
-                                       // https://issues.chromium.org/393435942
-                                       "fjhpgileahdpnmfmaggobehbipojhlce",
-                                       // https://issues.chromium.org/403366603
-                                       "abdciamfdmknaeggbnmafmbdfdmhfgfa",
-                                       // https://issues.chromium.org/414437025
-                                       "fiamdfnbelfkjlacoaeiclobkdmckaoa",
-                                       // https://issues.chromium.org/427296150
-                                       "mofldjifenhadohlkkngamgbifiofbnd",
-                                       // APC Debugging Extension.
-                                       // https://issues.chromium.org/555303047
-                                       kApcDebuggingExtensionId});
-  if (std::ranges::contains(*kHardcodedAllowlistedExtensions, extension_id)) {
+  static constexpr auto kHardcodedAllowlistedExtensions =
+      base::MakeFixedFlatSet<std::string_view>(
+          {// https://issues.chromium.org/373645534
+           "hpkopmikdojpadgmioifjjodbmnjjjca",
+           // https://issues.chromium.org/377129777
+           "bgbpcgpcobgjpnpiginpidndjpggappi",
+           // https://issues.chromium.org/376699519
+           "eefninhhiifgcimjkmkongegpoaikmhm",
+           // https://issues.chromium.org/393435942
+           "fjhpgileahdpnmfmaggobehbipojhlce",
+           // https://issues.chromium.org/403366603
+           "abdciamfdmknaeggbnmafmbdfdmhfgfa",
+           // https://issues.chromium.org/414437025
+           "fiamdfnbelfkjlacoaeiclobkdmckaoa",
+           // https://issues.chromium.org/427296150
+           "mofldjifenhadohlkkngamgbifiofbnd",
+           // APC Debugging Extension.
+           // https://issues.chromium.org/555303047
+           kApcDebuggingExtensionId,
+           // https://issues.chromium.org/566080608
+           "akhddpkcbapcpnggmmkmgncjndcfjnko"});
+  if (kHardcodedAllowlistedExtensions.contains(extension_id)) {
     return true;
   }
 
