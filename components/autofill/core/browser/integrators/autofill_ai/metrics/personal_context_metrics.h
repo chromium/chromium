@@ -108,6 +108,9 @@ void LogPersonalContextPrefetchEntityValidationResult(
     EntityType type,
     PersonalContextPrefetchEntityValidationResult result);
 
+// Logs the number of entities filtered out due to suppression during prefetch.
+void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_PERSONAL_CONTEXT_METRICS_H_
