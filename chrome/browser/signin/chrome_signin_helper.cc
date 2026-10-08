@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/chrome_signin_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -32,6 +33,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -109,6 +111,20 @@ std::optional<CoreAccountInfo> FindCoreAccountInfoByEmail(
     }
   }
   return std::nullopt;
+}
+
+// Returns whether the primary account is signed in to the Gaia cookies,
+// according to the last known accounts in the cookie jar, which might not be
+// fresh.
+bool IsPrimaryAccountInCookieJar(
+    const signin::IdentityManager* identity_manager) {
+  CHECK(identity_manager);
+  const signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
+      identity_manager->GetAccountsInCookieJar();
+  return std::ranges::contains(
+      accounts_in_cookie_jar.GetValidSignedInAccounts(),
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      &gaia::ListedAccount::id);
 }
 #endif
 
@@ -388,6 +404,22 @@ void ProcessMirrorHeader(
 
   if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION &&
       base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
+    // Gaia may send ADDSESSION without an email, e.g. when the user taps "Add
+    // account" on the web, or when a page requires the user to sign in. If the
+    // primary account is in the Gaia cookies, the user most likely wants to add
+    // another account, so start the add account flow. Otherwise, handle the
+    // header for the primary account (wait for its cookies or reauth it)
+    // instead of asking the user to add an account that is already on the
+    // device.
+    if (manage_accounts_params.email.empty() &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+        !IsPrimaryAccountInCookieJar(identity_manager) &&
+        base::FeatureList::IsEnabled(
+            switches::kAddSessionFallbackToPrimaryAccount)) {
+      target_account_info = identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+    }
+
     if (!target_account_info.has_value()) {
       // Target account is not on the device.
       base::UmaHistogramEnumeration(

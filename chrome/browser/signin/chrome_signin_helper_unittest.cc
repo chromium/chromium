@@ -50,10 +50,18 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "ui/android/window_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -72,6 +80,8 @@ const char kMirrorActionWithPromoAndContinueUrl[] =
     "example.com";
 const char kMirrorActionAddSessionWithContinueUrl[] =
     "action=ADDSESSION,continue_url=http://example.com,email=test@gmail.com";
+const char kMirrorActionAddSessionWithContinueUrlNoEmail[] =
+    "action=ADDSESSION,continue_url=http://example.com";
 const char kMirrorActionDefault[] = "action=DEFAULT";
 #endif
 #endif
@@ -265,28 +275,53 @@ class ChromeSigninHelperTest : public ChromeRenderViewHostTestHarness {
     mock_signin_bridge_ = static_cast<MockSigninBridge*>(
         SigninBridgeFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildMockSigninBridgeForTesting)));
+
+    tab_model_ = std::make_unique<TestTabModel>(profile());
+    TabModelList::AddTabModel(tab_model_.get());
+    tab_model_->SetWebContentsList({web_contents()});
+    // `web_contents()` should be considered foremost for
+    // kChromeManageAccountsHeader to be processed.
+    tab_model_->SetIsActiveModel(true);
+  }
+
+  void TearDown() override {
+    TabModelList::RemoveTabModel(tab_model_.get());
+    tab_model_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MockSigninBridge* signin_bridge() { return mock_signin_bridge_; }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    // Allows tests to set the accounts in the Gaia cookies.
+    factories.emplace_back(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            test_url_loader_factory_.get()));
+    return factories;
   }
 
   void InitializeIdentityTestEnvironment() {
     CHECK(profile());
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    identity_test_env()->SetTestURLLoaderFactory(
+        test_url_loader_factory_.get());
   }
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
  private:
+  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_ =
+      std::make_unique<network::TestURLLoaderFactory>();
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   raw_ptr<MockSigninBridge> mock_signin_bridge_ = nullptr;
+  std::unique_ptr<TestTabModel> tab_model_;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
@@ -724,6 +759,210 @@ TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
   histogram_tester.ExpectUniqueSample(
       "Signin.ProcessMirrorHeaders.Event",
       signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
+}
+
+// Tests that receiving an ADDSESSION action without an email within
+// kChromeManageAccountsHeader waits for the cookies of the primary account if
+// the primary account is not in the Gaia cookies.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionWithoutEmailWaitsForCookiesIfPrimaryAccountNotInCookies) {
+  base::HistogramTester histogram_tester;
+  InitializeIdentityTestEnvironment();
+  CoreAccountId account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable("test@gmail.com",
+                                        signin::ConsentLevel::kSignin)
+          .GetAccountId();
+  identity_test_env()->SetCookieAccounts({});
+
+  // Check that the sign-in bridge is called to wait for cookies with the
+  // correct continue URL and primary account id.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(), WaitForCookiesAndRedirect(
+                                    _, GURL("http://example.com"), account_id))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlNoEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountRecentlyAdded, 1);
+}
+
+// Tests that receiving an ADDSESSION action without an email within
+// kChromeManageAccountsHeader starts the update credentials flow for the
+// primary account if it is not in the Gaia cookies and is in a persistent error
+// state.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionWithoutEmailStartsReauthFlowIfPrimaryAccountInError) {
+  base::HistogramTester histogram_tester;
+  InitializeIdentityTestEnvironment();
+  CoreAccountId account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable("test@gmail.com",
+                                        signin::ConsentLevel::kSignin)
+          .GetAccountId();
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
+  identity_test_env()->SetCookieAccounts({});
+
+  // Check that the sign-in bridge is called to start credentials update
+  // with the correct continue URL and primary account id.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(), StartUpdateCredentialsFlow(
+                                    _, GURL("http://example.com"), account_id))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlNoEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
+}
+
+// Tests that receiving an ADDSESSION action without an email within
+// kChromeManageAccountsHeader starts the add account flow if the primary
+// account is in the Gaia cookies (e.g. when the user taps "Add account" on the
+// web).
+TEST_F(ChromeSigninHelperTest,
+       AddSessionWithoutEmailStartsAddAccountFlowIfPrimaryAccountInCookies) {
+  base::HistogramTester histogram_tester;
+  InitializeIdentityTestEnvironment();
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  // Check that the sign-in bridge is called to open the add account flow
+  // with empty prefilled email.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartAddAccountFlow(_, "", GURL("http://example.com"),
+                                  /*extension_name=*/""))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlNoEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountNotOnDevice, 1);
+}
+
+// Tests that receiving an ADDSESSION action without an email within
+// kChromeManageAccountsHeader starts the add account flow if the primary
+// account is in the Gaia cookies, even if the accounts in the Gaia cookies are
+// not fresh.
+TEST_F(
+    ChromeSigninHelperTest,
+    AddSessionWithoutEmailStartsAddAccountFlowIfPrimaryAccountInStaleCookies) {
+  base::HistogramTester histogram_tester;
+  InitializeIdentityTestEnvironment();
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(false);
+
+  // Check that the sign-in bridge is called to open the add account flow
+  // with empty prefilled email.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartAddAccountFlow(_, "", GURL("http://example.com"),
+                                  /*extension_name=*/""))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlNoEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountNotOnDevice, 1);
+}
+
+// Tests that receiving an ADDSESSION action without an email and without a
+// primary account within kChromeManageAccountsHeader starts the add account
+// flow with an empty email.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionWithoutEmailStartsAddAccountFlowWithoutPrimaryAccount) {
+  base::HistogramTester histogram_tester;
+
+  // Check that the sign-in bridge is called to open the add account flow
+  // with empty prefilled email.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartAddAccountFlow(_, "", GURL("http://example.com"),
+                                  /*extension_name=*/""))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlNoEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountNotOnDevice, 1);
+}
+
+// Tests that receiving an ADDSESSION action without an email within
+// kChromeManageAccountsHeader starts the add account flow even if the primary
+// account is not in the Gaia cookies when kAddSessionFallbackToPrimaryAccount
+// is disabled.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionWithoutEmailStartsAddAccountFlowIfFallbackDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kAddSessionFallbackToPrimaryAccount);
+  base::HistogramTester histogram_tester;
+  InitializeIdentityTestEnvironment();
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetCookieAccounts({});
+
+  // Check that the sign-in bridge is called to open the add account flow
+  // with empty prefilled email.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartAddAccountFlow(_, "", GURL("http://example.com"),
+                                  /*extension_name=*/""))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  // Process the header.
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlNoEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountNotOnDevice, 1);
 }
 
 // Tests that receiving DEFAULT action within kChromeManageAccountsHeader

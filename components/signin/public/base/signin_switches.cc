@@ -58,6 +58,16 @@ BASE_FEATURE(kAccountRetrievalWaitsForRestoration,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, an ADDSESSION Mirror header without an email is handled for the
+// primary account if the primary account is not in the Gaia cookies: Chrome
+// waits for the cookies of the primary account (or starts the reauth flow if
+// the primary account is in a persistent auth error) instead of starting the
+// add account flow.
+BASE_FEATURE(kAddSessionFallbackToPrimaryAccount,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kAvoidAutoTriggerListAccountsOnStale,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
