@@ -103,11 +103,12 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
 // static
 TabGroupSyncServiceFactory::TestingFactory
 TabGroupSyncServiceFactory::GetDefaultFactory() {
-  // KeyedService factories are never destroyed, to base::Unretained(...)
-  // is safe. See the implementation of GetInstance() for details.
+  // GetSyntheticFieldTrialHelper() returns a pointer to a singleton that is
+  // never deallocated, so it is safe to use base::Unretained(...) here.
   return base::BindOnce(
-      &TabGroupSyncServiceFactory::BuildServiceInstanceFor,
-      base::Unretained(TabGroupSyncServiceFactory::GetInstance()));
+      &BuildService,
+      base::Unretained(
+          TabGroupSyncServiceFactory::GetSyntheticFieldTrialHelper()));
 }
 
 TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
