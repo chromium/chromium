@@ -130,7 +130,9 @@ void BackgroundModeManager::BackgroundModeData::OnProfileWillBeDestroyed(
   CHECK_EQ(profile_, profile, base::NotFatalUntil::M161);
   profile_observation_.Reset();
   force_installed_tracker_observation_.Reset();
-  CHECK(!profile_keep_alive_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/571306988): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!profile_keep_alive_);
   profile_ = nullptr;
   // Remove this Profile* from |background_mode_data|.
   bool did_unregister = manager_->UnregisterProfile(profile);
