@@ -10,4 +10,7 @@ namespace webauthn::features {
 
 BASE_FEATURE(kFetchDeviceAuthorizationKeys, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceAuthorizationStartupSilentFetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace webauthn::features

@@ -118,3 +118,12 @@ TEST_F(BrowserPrefsTest, RegisterPersonalContextPrefs) {
                     kPersonalContextInAutofillSettingsToggleStatus),
             nullptr);
 }
+
+TEST_F(BrowserPrefsTest, RegisterDeviceAuthorizationPrefs) {
+  EXPECT_NE(profile_prefs()->FindPreference(
+                prefs::kDeviceAuthorizationStartupFetchNextTime),
+            nullptr);
+  EXPECT_NE(profile_prefs()->FindPreference(
+                prefs::kDeviceAuthorizationStartupFetchBackoff),
+            nullptr);
+}

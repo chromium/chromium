@@ -888,6 +888,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preference associated with the Gemini Settings policy state.
   registry->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings, 0);
 
+  // Preferences used to back off device authorization keys startup fetches.
+  registry->RegisterTimePref(prefs::kDeviceAuthorizationStartupFetchNextTime,
+                             base::Time());
+  registry->RegisterTimeDeltaPref(
+      prefs::kDeviceAuthorizationStartupFetchBackoff, base::TimeDelta());
+
   // Use `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);

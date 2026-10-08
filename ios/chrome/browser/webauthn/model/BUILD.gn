@@ -84,19 +84,48 @@ source_set("ios_chrome_passkey_client") {
   }
 }
 
+source_set("device_authorization_profile_agent") {
+  sources = [
+    "device_authorization_profile_agent.h",
+    "device_authorization_profile_agent.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/webauthn/core/browser/device_authorization",
+    "//components/webauthn/core/browser/device_authorization:features",
+    "//google_apis",
+    "//ios/chrome/app",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "device_authorization_profile_agent_unittest.mm",
     "ios_chrome_passkey_client_unittest.mm",
     "ios_device_authorization_client_unittest.mm",
     "ios_device_authorization_util_unittest.mm",
   ]
   deps = [
+    ":device_authorization_profile_agent",
     ":ios_chrome_passkey_client",
     ":model",
     "//base/test:test_support",
+    "//components/keyed_service/core",
     "//components/password_manager/core/common",
+    "//components/prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
@@ -105,7 +134,13 @@ source_set("unit_tests") {
     "//components/webauthn/core/browser/device_authorization/proto",
     "//components/webauthn/ios",
     "//google_apis",
+    "//ios/chrome/app",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/common/credential_provider",

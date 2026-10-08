@@ -986,6 +986,18 @@ inline constexpr char kLastConnectedSceneIdentifier[] =
 inline constexpr char kIosGeolocationSystemPromptLastShownTime[] =
     "ios.geolocation.system_prompt_last_shown_time";
 
+// Earliest time at which device authorization keys may be silently fetched
+// again (at startup or sign-in) for the primary account, after failed fetches.
+// Cleared once a fetch succeeds and whenever the primary account changes.
+inline constexpr char kDeviceAuthorizationStartupFetchNextTime[] =
+    "ios.device_authorization.startup_fetch_next_time";
+
+// Current backoff after failed silent fetches of device authorization keys for
+// the primary account. Cleared along with
+// `kDeviceAuthorizationStartupFetchNextTime`.
+inline constexpr char kDeviceAuthorizationStartupFetchBackoff[] =
+    "ios.device_authorization.startup_fetch_backoff";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
