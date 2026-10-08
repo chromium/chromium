@@ -201,3 +201,35 @@ TEST_F(GeminiLinkOpeningHandlerTest,
   [mock_gemini_commands_handler_ verify];
   EXPECT_EQ(0, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
 }
+
+// Test that openImmersiveLearningCardURLInWebModal: opens the URL in a new tab
+// instead of the web modal when the `gemini_quizzes_open_in_new_tab` arm is
+// enabled.
+TEST_F(GeminiLinkOpeningHandlerTest,
+       TestOpenImmersiveLearningCardURLInNewTabWhenParamEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiQuizzes, {{kGeminiQuizzesOpenInNewTabParam, "true"}});
+  [[[mock_gemini_commands_handler_ reject] ignoringNonObjectArgs]
+      showGeminiWebModalForURL:GURL()];
+  OCMExpect([mock_gemini_commands_handler_ minimizeGeminiIfInvoked]);
+
+  [link_opening_handler_
+      openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
+
+  [mock_gemini_commands_handler_ verify];
+  EXPECT_EQ(GURL(kTestURL), url_loader_->last_params.web_params.url);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
+}
+
+// Test that openImmersiveLearningCardURLInWebModal: does not open a new tab
+// when the `gemini_quizzes_open_in_new_tab` arm is disabled.
+TEST_F(GeminiLinkOpeningHandlerTest,
+       TestOpenImmersiveLearningCardURLDoesNotOpenNewTabByDefault) {
+  base::test::ScopedFeatureList scoped_feature_list(kGeminiQuizzes);
+
+  [link_opening_handler_
+      openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
+
+  EXPECT_TRUE(url_loader_->last_params.web_params.url.is_empty());
+}

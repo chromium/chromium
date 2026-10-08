@@ -875,6 +875,11 @@ const FeatureEntry::FeatureParam kGeminiActorBackgroundingDisabled[] = {
 const FeatureEntry::FeatureVariation kGeminiActorVariations[] = {
     {"Backgrounding Disabled", kGeminiActorBackgroundingDisabled, nullptr}};
 
+const FeatureEntry::FeatureParam kGeminiQuizzesOpenInNewTab[] = {
+    {kGeminiQuizzesOpenInNewTabParam, "true"}};
+const FeatureEntry::FeatureVariation kGeminiQuizzesVariations[] = {
+    {"Open in new tab", kGeminiQuizzesOpenInNewTab, nullptr}};
+
 const FeatureEntry::FeatureParam kGeminiAureusForegroundQuotaRefreshEnabled[] =
     {{kGeminiAureusForegroundQuotaRefreshParam, "true"}};
 const FeatureEntry::FeatureVariation kGeminiAureusVariations[] = {
@@ -2695,7 +2700,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          switches::kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher)},
     {"gemini-quizzes", flag_descriptions::kGeminiQuizzesName,
      flag_descriptions::kGeminiQuizzesDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiQuizzes)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiQuizzes,
+                                    kGeminiQuizzesVariations,
+                                    "GeminiQuizzes")},
     {"ios-passkey-conditional-login-with-shim",
      flag_descriptions::kIOSPasskeyConditionalLoginWithShimName,
      flag_descriptions::kIOSPasskeyConditionalLoginWithShimDescription,
