@@ -49,7 +49,7 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::WithArgs;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using RequestTokenCallback = Request::RequestTokenCallback;
+using RequestTokenCallback = RequestHandler::RequestTokenCallback;
 
 class InterceptorMockNavigationHandle : public MockNavigationHandle {
  public:

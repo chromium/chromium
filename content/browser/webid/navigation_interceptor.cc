@@ -61,7 +61,7 @@ std::optional<std::string> TakeIfString(
 }  // namespace
 
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using RequestTokenCallback = Request::RequestTokenCallback;
+using RequestTokenCallback = RequestHandler::RequestTokenCallback;
 
 // static
 void NavigationInterceptor::MaybeCreateAndAdd(
@@ -355,8 +355,8 @@ void NavigationInterceptor::OnTokenResponse(
 
   // The token response is not used in the navigation interception flow because
   // the IdP is expected to respond with a "redirect_to" field which is handled
-  // in Request.
-  // We cancel this specific navigation, assuming that the Request
+  // in RequestHandler.
+  // We cancel this specific navigation, assuming that the RequestHandler
   // will have already started a new navigation.
   CancelDeferredNavigation(CANCEL);
 }

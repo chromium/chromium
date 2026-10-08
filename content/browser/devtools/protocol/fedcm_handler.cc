@@ -9,7 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
@@ -19,7 +19,7 @@ namespace content {
 namespace {
 namespace FedCm = protocol::FedCm;
 
-using DialogType = webid::Request::DialogType;
+using DialogType = webid::RequestHandler::DialogType;
 
 FedCm::DialogType ConvertDialogType(DialogType type) {
   switch (type) {
@@ -68,7 +68,7 @@ void FedCmHandler::Wire(UberDispatcher* dispatcher) {
 
 DispatchResponse FedCmHandler::Enable(
     std::optional<bool> in_disableRejectionDelay) {
-  auto* auth_request = GetFederatedAuthRequest();
+  auto* request_handler = GetRequestHandler();
   bool was_enabled = enabled_;
   enabled_ = true;
   disable_delay_ = in_disableRejectionDelay.value_or(false);
@@ -76,8 +76,8 @@ DispatchResponse FedCmHandler::Enable(
   // OnDialogShown should have been called previously if was_enabled is true.
   // This could happen if FedCmHandler::Enable was called to enable/disable the
   // rejection delay.
-  if (!was_enabled && auth_request &&
-      auth_request->GetDialogType() != DialogType::kNone) {
+  if (!was_enabled && request_handler &&
+      request_handler->GetDialogType() != DialogType::kNone) {
     DidShowDialog();
   }
 
@@ -98,8 +98,8 @@ void FedCmHandler::DidShowDialog() {
   static int next_dialog_id_ = 0;
   dialog_id_ = base::NumberToString(next_dialog_id_++);
 
-  auto* auth_request = GetFederatedAuthRequest();
-  const auto* accounts = GetAccounts(auth_request);
+  auto* request_handler = GetRequestHandler();
+  const auto* accounts = GetAccounts(request_handler);
   // `accounts` can be empty if this is an IDP Signin Confirmation dialog.
   auto accounts_array = std::make_unique<Array<FedCm::Account>>();
   if (accounts) {
@@ -144,11 +144,12 @@ void FedCmHandler::DidShowDialog() {
       accounts_array->push_back(std::move(entry));
     }
   }
-  IdentityRequestDialogController* dialog = auth_request->GetDialogController();
+  IdentityRequestDialogController* dialog =
+      request_handler->GetDialogController();
   CHECK(dialog);
 
   FedCm::DialogType dialog_type =
-      ConvertDialogType(auth_request->GetDialogType());
+      ConvertDialogType(request_handler->GetDialogType());
   std::optional<String> maybe_subtitle;
   std::optional<std::string> subtitle = dialog->GetSubtitle();
   if (subtitle) {
@@ -173,19 +174,19 @@ DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
         "Dialog ID does not match current dialog");
   }
 
-  auto* auth_request = GetFederatedAuthRequest();
-  if (!GetIdentityProviderData(auth_request)) {
+  auto* request_handler = GetRequestHandler();
+  if (!GetIdentityProviderData(request_handler)) {
     return DispatchResponse::ServerError(
         "selectAccount called while no FedCm dialog is shown");
   }
-  const auto* accounts = GetAccounts(auth_request);
+  const auto* accounts = GetAccounts(request_handler);
   if (!accounts || in_accountIndex < 0 ||
       static_cast<size_t>(in_accountIndex) >= accounts->size()) {
     return DispatchResponse::InvalidParams("Invalid account index");
   }
 
   const auto& account = accounts->at(in_accountIndex);
-  auth_request->AcceptAccountsDialogForDevtools(
+  request_handler->AcceptAccountsDialogForDevtools(
       account->identity_provider->idp_metadata.config_url, *account);
   return DispatchResponse::Success();
 }
@@ -199,13 +200,13 @@ DispatchResponse FedCmHandler::OpenUrl(
         "Dialog ID does not match current dialog");
   }
 
-  auto* auth_request = GetFederatedAuthRequest();
-  if (!GetIdentityProviderData(auth_request)) {
+  auto* request_handler = GetRequestHandler();
+  if (!GetIdentityProviderData(request_handler)) {
     return DispatchResponse::ServerError(
         "openUrl called while no FedCm dialog is shown");
   }
 
-  const auto* accounts = GetAccounts(auth_request);
+  const auto* accounts = GetAccounts(request_handler);
   if (!accounts || in_accountIndex < 0 ||
       static_cast<size_t>(in_accountIndex) >= accounts->size()) {
     return DispatchResponse::InvalidParams("Invalid account index");
@@ -227,7 +228,7 @@ DispatchResponse FedCmHandler::OpenUrl(
     return DispatchResponse::InvalidParams(
         "Account does not have requested URL");
   }
-  auth_request->GetDialogController()->ShowUrl(type, url);
+  request_handler->GetDialogController()->ShowUrl(type, url);
   return DispatchResponse::Success();
 }
 
@@ -239,20 +240,20 @@ DispatchResponse FedCmHandler::ClickDialogButton(
         "Dialog ID does not match current dialog");
   }
 
-  auto* auth_request = GetFederatedAuthRequest();
-  if (!auth_request) {
+  auto* request_handler = GetRequestHandler();
+  if (!request_handler) {
     return DispatchResponse::ServerError(
         "clickDialogButton called while no FedCm dialog is shown");
   }
 
-  DialogType type = auth_request->GetDialogType();
+  DialogType type = request_handler->GetDialogType();
   if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
     switch (type) {
       case DialogType::kConfirmIdpLogin:
-        auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+        request_handler->AcceptConfirmIdpLoginDialogForDevtools();
         return DispatchResponse::Success();
       case DialogType::kSelectAccount: {
-        const auto* idp_data = GetIdentityProviderData(auth_request);
+        const auto* idp_data = GetIdentityProviderData(request_handler);
         CHECK(idp_data) << "kSelectAccount should always have IDP data";
         CHECK(!idp_data->empty());
         if (idp_data->size() > 1) {
@@ -260,7 +261,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
               "Multi-IDP not supported for ConfirmIdpLogin yet "
               "(crbug.com/328115461)");
         }
-        if (!auth_request->UseAnotherAccountForDevtools(*idp_data->at(0))) {
+        if (!request_handler->UseAnotherAccountForDevtools(*idp_data->at(0))) {
           return DispatchResponse::ServerError(
               "'Use another account' not supported for this IDP");
         }
@@ -277,19 +278,19 @@ DispatchResponse FedCmHandler::ClickDialogButton(
           "clickDialogButton called with ErrorGotIt while no error dialog is "
           "shown");
     }
-    auth_request->ClickErrorDialogGotItForDevtools();
+    request_handler->ClickErrorDialogGotItForDevtools();
     return DispatchResponse::Success();
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorMoreDetails) {
     if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorMoreDetails while no error "
           "dialog is shown");
-    } else if (!auth_request->HasMoreDetailsButtonForDevtools()) {
+    } else if (!request_handler->HasMoreDetailsButtonForDevtools()) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorMoreDetails but more details "
           "button is not shown");
     }
-    auth_request->ClickErrorDialogMoreDetailsForDevtools();
+    request_handler->ClickErrorDialogMoreDetailsForDevtools();
     return DispatchResponse::Success();
   }
   return DispatchResponse::InvalidParams("Invalid dialog button");
@@ -303,28 +304,28 @@ DispatchResponse FedCmHandler::DismissDialog(
         "Dialog ID does not match current dialog");
   }
 
-  auto* auth_request = GetFederatedAuthRequest();
-  if (!auth_request){
+  auto* request_handler = GetRequestHandler();
+  if (!request_handler) {
     return DispatchResponse::ServerError(
         "dismissDialog called while no FedCm dialog is shown");
   }
 
-  DialogType type = auth_request->GetDialogType();
+  DialogType type = request_handler->GetDialogType();
   if (type == DialogType::kConfirmIdpLogin) {
-    auth_request->DismissConfirmIdpLoginDialogForDevtools();
+    request_handler->DismissConfirmIdpLoginDialogForDevtools();
     return DispatchResponse::Success();
   }
   if (type == DialogType::kError) {
-    auth_request->DismissErrorDialogForDevtools();
+    request_handler->DismissErrorDialogForDevtools();
     return DispatchResponse::Success();
   }
-  const auto* idp_data = GetIdentityProviderData(auth_request);
+  const auto* idp_data = GetIdentityProviderData(request_handler);
   if (!idp_data) {
     return DispatchResponse::ServerError(
         "cancelDialog called while no FedCm dialog is shown");
   }
 
-  auth_request->DismissAccountsDialogForDevtools(
+  request_handler->DismissAccountsDialogForDevtools(
       in_triggerCooldown.value_or(false));
   return DispatchResponse::Success();
 }
@@ -352,20 +353,20 @@ webid::RequestPageData* FedCmHandler::GetPageData() {
   return PageUserData<webid::RequestPageData>::GetOrCreateForPage(page);
 }
 
-webid::Request* FedCmHandler::GetFederatedAuthRequest() {
+webid::RequestHandler* FedCmHandler::GetRequestHandler() {
   webid::RequestPageData* page_data = GetPageData();
   if (!page_data) {
     return nullptr;
   }
-  return page_data->PendingWebIdentityRequest();
+  return page_data->PendingRequestHandler();
 }
 
 const std::vector<IdentityProviderDataPtr>*
-FedCmHandler::GetIdentityProviderData(webid::Request* auth_request) {
-  if (!auth_request) {
+FedCmHandler::GetIdentityProviderData(webid::RequestHandler* request_handler) {
+  if (!request_handler) {
     return nullptr;
   }
-  const auto& idp_data = auth_request->GetSortedIdpData();
+  const auto& idp_data = request_handler->GetSortedIdpData();
   // idp_data is empty iff no dialog is shown.
   if (idp_data.empty()) {
     return nullptr;
@@ -374,11 +375,11 @@ FedCmHandler::GetIdentityProviderData(webid::Request* auth_request) {
 }
 
 const std::vector<IdentityRequestAccountPtr>* FedCmHandler::GetAccounts(
-    webid::Request* auth_request) {
-  if (!auth_request) {
+    webid::RequestHandler* request_handler) {
+  if (!request_handler) {
     return nullptr;
   }
-  const auto& accounts = auth_request->GetAccounts();
+  const auto& accounts = request_handler->GetAccounts();
   if (accounts.empty()) {
     return nullptr;
   }

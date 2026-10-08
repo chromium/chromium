@@ -13,12 +13,13 @@ RequestPageData::~RequestPageData() = default;
 
 PAGE_USER_DATA_KEY_IMPL(RequestPageData);
 
-Request* RequestPageData::PendingWebIdentityRequest() {
-  return pending_web_identity_request_;
+RequestHandler* RequestPageData::PendingRequestHandler() {
+  return pending_request_handler_;
 }
 
-void RequestPageData::SetPendingWebIdentityRequest(Request* request) {
-  pending_web_identity_request_ = request;
+void RequestPageData::SetPendingRequestHandler(
+    RequestHandler* request_handler) {
+  pending_request_handler_ = request_handler;
 }
 
 }  // namespace content::webid

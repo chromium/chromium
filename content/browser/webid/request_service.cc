@@ -16,7 +16,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/idp_registration_handler.h"
 #include "content/browser/webid/metrics.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/browser/webid/user_info_request.h"
 #include "content/browser/webid/webid_utils.h"
@@ -40,7 +40,7 @@ using PreventSilentAccessCallback =
     blink::mojom::FederatedRequestService::PreventSilentAccessCallback;
 using RegisterIdPCallback =
     blink::mojom::FederatedRequestService::RegisterIdPCallback;
-using RequestTokenCallback = Request::RequestTokenCallback;
+using RequestTokenCallback = RequestHandler::RequestTokenCallback;
 using RequestUserInfoCallback =
     blink::mojom::FederatedRequestService::RequestUserInfoCallback;
 using ResolveTokenRequestCallback =
@@ -74,7 +74,7 @@ RequestService::~RequestService() {
   // Destroy the active request first, while weak pointers are still valid,
   // so that its destructor can successfully run the pending token request
   // callback via OnTokenRequestComplete.
-  SetActiveRequestAndResetController(nullptr);
+  SetActiveRequestHandlerAndResetController(nullptr);
 
   // Invalidate weak pointers before clearing `user_info_requests_` to prevent
   // the destroying UserInfoRequests from calling back re-entrantly into
@@ -106,20 +106,21 @@ void RequestService::SetDelegatesForTesting(
   mock_identity_registry_ = identity_registry;
 }
 
-Request* RequestService::GetOrCreateActiveRequest() {
-  if (!active_request_) {
+RequestHandler* RequestService::GetOrCreateActiveRequestHandler() {
+  if (!active_request_handler_) {
     RenderFrameHost& rfh = render_frame_host();
-    SetActiveRequestAndResetController(std::make_unique<Request>(&rfh, *this));
+    SetActiveRequestHandlerAndResetController(
+        std::make_unique<RequestHandler>(&rfh, *this));
   }
-  return active_request_.get();
+  return active_request_handler_.get();
 }
 
-Request* RequestService::GetActiveRequestForTesting() const {
-  return active_request_.get();
+RequestHandler* RequestService::GetActiveRequestHandlerForTesting() const {
+  return active_request_handler_.get();
 }
 
-void RequestService::DestroyActiveRequestForTesting() {
-  SetActiveRequestAndResetController(nullptr);
+void RequestService::DestroyActiveRequestHandlerForTesting() {
+  SetActiveRequestHandlerAndResetController(nullptr);
 }
 
 // static
@@ -217,15 +218,15 @@ void RequestService::StartTokenRequest(
   }
 
   RenderFrameHost& rfh = render_frame_host();
-  auto new_request = std::make_unique<Request>(&rfh, *this);
-  new_request->BindReceiver(std::move(request_receiver));
+  auto new_request_handler = std::make_unique<RequestHandler>(&rfh, *this);
+  new_request_handler->BindReceiver(std::move(request_receiver));
 
   auto wrapped_callback = base::BindOnce(
       &RequestService::InvokeTokenRequestCallback, std::move(callback));
 
-  InitiateTokenRequest(std::move(new_request), std::move(idp_get_params),
-                       requirement, /*navigation_handle=*/nullptr, GURL(),
-                       std::move(wrapped_callback));
+  InitiateTokenRequest(
+      std::move(new_request_handler), std::move(idp_get_params), requirement,
+      /*navigation_handle=*/nullptr, GURL(), std::move(wrapped_callback));
 }
 
 bool RequestService::StartTokenRequestFromNavigation(
@@ -235,15 +236,15 @@ bool RequestService::StartTokenRequestFromNavigation(
     const GURL& intercepted_url,
     RequestTokenCallback callback) {
   RenderFrameHost& rfh = render_frame_host();
-  auto new_request = std::make_unique<Request>(&rfh, *this);
+  auto new_request_handler = std::make_unique<RequestHandler>(&rfh, *this);
 
-  return InitiateTokenRequest(std::move(new_request), std::move(idp_get_params),
-                              requirement, navigation_handle, intercepted_url,
-                              std::move(callback));
+  return InitiateTokenRequest(
+      std::move(new_request_handler), std::move(idp_get_params), requirement,
+      navigation_handle, intercepted_url, std::move(callback));
 }
 
 bool RequestService::InitiateTokenRequest(
-    std::unique_ptr<Request> new_request,
+    std::unique_ptr<RequestHandler> new_request_handler,
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params,
     MediationRequirement requirement,
     NavigationHandle* navigation_handle,
@@ -255,7 +256,7 @@ bool RequestService::InitiateTokenRequest(
       requirement, navigation_handle, intercepted_url,
       force_allow_redirect_to_for_testing_);
 
-  if (ShouldCancelNewRequest(new_request.get(), *spec)) {
+  if (ShouldCancelNewRequest(new_request_handler.get(), *spec)) {
     std::move(callback).Run(
         blink::mojom::RequestTokenStatus::kErrorTooManyRequests, std::nullopt,
         std::nullopt, /*error=*/nullptr, /*is_auto_selected=*/false);
@@ -264,41 +265,44 @@ bool RequestService::InitiateTokenRequest(
 
   // Wrap the callback to ensure the request is cleaned up from the active
   // request list and destroyed asynchronously when it completes.
-  auto wrapper_callback = base::BindOnce(
-      &RequestService::OnTokenRequestCompleteInternal,
-      weak_ptr_factory_.GetWeakPtr(), new_request.get(), std::move(callback));
+  auto wrapper_callback =
+      base::BindOnce(&RequestService::OnTokenRequestCompleteInternal,
+                     weak_ptr_factory_.GetWeakPtr(), new_request_handler.get(),
+                     std::move(callback));
 
   // Temporarily hold the old active request and dialog controller on the
   // stack. This keeps it alive and valid during the RequestToken() checks,
   // preventing dangling pointers or Use-After-Free if the new request is
   // rejected or replaces the old one.
-  std::unique_ptr<Request> old_request = std::move(active_request_);
+  std::unique_ptr<RequestHandler> old_request_handler =
+      std::move(active_request_handler_);
   std::unique_ptr<IdentityRequestDialogController> old_dialog_controller =
       std::move(dialog_controller_);
 
   // Pre-assign the new request as active. This ensures that if the request
   // completes synchronously (e.g. in tests or synchronous error cases), the
-  // completion callback will find it in `active_request_` and clean it up.
-  SetActiveRequestAndResetController(std::move(new_request));
+  // completion callback will find it in `active_request_handler_` and clean it
+  // up.
+  SetActiveRequestHandlerAndResetController(std::move(new_request_handler));
 
   // Call RequestToken on the new request.
-  if (active_request_->RequestToken(std::move(spec),
-                                    std::move(wrapper_callback))) {
+  if (active_request_handler_->RequestToken(std::move(spec),
+                                            std::move(wrapper_callback))) {
     // If it started successfully, we keep it as the active request.
-    // The `old_request` on the stack will go out of scope and be destroyed
-    // safely.
+    // The `old_request_handler` on the stack will go out of scope and be
+    // destroyed safely.
     return true;
   } else {
     // If it failed immediately, discard the new request and restore the old
     // one.
-    active_request_ = std::move(old_request);
+    active_request_handler_ = std::move(old_request_handler);
     dialog_controller_ = std::move(old_dialog_controller);
     return false;
   }
 }
 
 void RequestService::OnTokenRequestCompleteInternal(
-    Request* request,
+    RequestHandler* request_handler,
     RequestTokenCallback callback,
     blink::mojom::RequestTokenStatus status,
     const std::optional<GURL>& selected_idp_config_url,
@@ -307,29 +311,32 @@ void RequestService::OnTokenRequestCompleteInternal(
     bool is_auto_selected) {
   std::move(callback).Run(status, selected_idp_config_url, std::move(token),
                           std::move(error), is_auto_selected);
-  CleanUpActiveRequest(request);
+  CleanUpActiveRequestHandler(request_handler);
 }
 
-void RequestService::CleanUpActiveRequest(Request* request) {
-  if (active_request_.get() == request) {
-    std::unique_ptr<Request> completed_request = std::move(active_request_);
+void RequestService::CleanUpActiveRequestHandler(
+    RequestHandler* request_handler) {
+  if (active_request_handler_.get() == request_handler) {
+    std::unique_ptr<RequestHandler> completed_request_handler =
+        std::move(active_request_handler_);
     // Invoke this to also reset the dialog controller.
-    SetActiveRequestAndResetController(nullptr);
+    SetActiveRequestHandlerAndResetController(nullptr);
     // Release ownership synchronously to prevent race conditions with
-    // subsequent requests, but keep it in completed_requests_ to ensure it does
-    // not outlive RequestService.
-    completed_requests_.push_back(std::move(completed_request));
+    // subsequent requests, but keep it in completed_request_handlers_ to ensure
+    // it does not outlive RequestService.
+    completed_request_handlers_.push_back(std::move(completed_request_handler));
 
     // Destroy the request asynchronously to allow the C++ call stack to unwind
     // safely.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&RequestService::CleanUpCompletedRequest,
-                                  weak_ptr_factory_.GetWeakPtr(), request));
+        FROM_HERE,
+        base::BindOnce(&RequestService::CleanUpCompletedRequestHandler,
+                       weak_ptr_factory_.GetWeakPtr(), request_handler));
   }
 }
 
-void RequestService::SetActiveRequestAndResetController(
-    std::unique_ptr<Request> request) {
+void RequestService::SetActiveRequestHandlerAndResetController(
+    std::unique_ptr<RequestHandler> request_handler) {
   // Reset the dialog controller synchronously when changing the active request.
   // While this carries a potential Use-After-Free risk if the completion
   // callback was triggered synchronously from the dialog controller itself,
@@ -338,19 +345,20 @@ void RequestService::SetActiveRequestAndResetController(
   // old one is destroyed, and ensures the dialog controller's data members are
   // kept clean for each new active request.
   dialog_controller_.reset();
-  active_request_ = std::move(request);
+  active_request_handler_ = std::move(request_handler);
 }
 
-void RequestService::CleanUpCompletedRequest(Request* request) {
-  std::erase_if(completed_requests_,
-                [&](const auto& r) { return r.get() == request; });
+void RequestService::CleanUpCompletedRequestHandler(
+    RequestHandler* request_handler) {
+  std::erase_if(completed_request_handlers_,
+                [&](const auto& r) { return r.get() == request_handler; });
 }
 
-bool RequestService::ShouldCancelNewRequest(Request* new_request,
+bool RequestService::ShouldCancelNewRequest(RequestHandler* new_request_handler,
                                             const FedCmRequestSpec& spec) {
-  Request* pending_request =
-      GetPageData(render_frame_host().GetPage())->PendingWebIdentityRequest();
-  if (!pending_request) {
+  RequestHandler* pending_request_handler =
+      GetPageData(render_frame_host().GetPage())->PendingRequestHandler();
+  if (!pending_request_handler) {
     return false;
   }
 
@@ -358,7 +366,8 @@ bool RequestService::ShouldCancelNewRequest(Request* new_request,
   bool had_transient_user_activation = spec.had_transient_user_activation();
 
   std::unique_ptr<Metrics> new_request_metrics = CreateFedCmMetrics();
-  blink::mojom::RpMode pending_request_rp_mode = pending_request->GetRpMode();
+  blink::mojom::RpMode pending_request_rp_mode =
+      pending_request_handler->GetRpMode();
   blink::mojom::RpMode new_request_rp_mode = spec.rp_mode();
   new_request_metrics->RecordMultipleRequestsRpMode(
       pending_request_rp_mode, new_request_rp_mode, new_idp_order);
@@ -397,14 +406,14 @@ bool RequestService::ShouldCancelNewRequest(Request* new_request,
             blink::mojom::FederatedRequestResult::kTooManyRequests));
 
     new_request_metrics->RecordMultipleRequestsFromDifferentIdPs(
-        new_idp_order != pending_request->idp_order());
+        new_idp_order != pending_request_handler->idp_order());
 
     return true;
   }
 
-  new_request->fedcm_metrics_ = std::move(new_request_metrics);
+  new_request_handler->fedcm_metrics_ = std::move(new_request_metrics);
 
-  pending_request->CompleteRequestWithError(
+  pending_request_handler->CompleteRequestWithError(
       blink::mojom::FederatedRequestResult::kReplacedByActiveMode,
       TokenStatus::kReplacedByActiveMode,
       /*should_delay_callback=*/false);
@@ -523,16 +532,16 @@ bool RequestService::SetupIdentityRegistryFromPopup() {
   if (!rp_web_contents) {
     return false;
   }
-  Request* rp_request = GetPageData(rp_web_contents->GetPrimaryPage())
-                            ->PendingWebIdentityRequest();
-  if (!rp_request) {
+  RequestHandler* rp_request_handler =
+      GetPageData(rp_web_contents->GetPrimaryPage())->PendingRequestHandler();
+  if (!rp_request_handler) {
     return false;
   }
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   IdentityRegistry::CreateForWebContents(
-      web_contents, rp_request->weak_ptr_factory_.GetWeakPtr(),
-      rp_request->config_url_);
+      web_contents, rp_request_handler->weak_ptr_factory_.GetWeakPtr(),
+      rp_request_handler->config_url_);
   return true;
 #else
   return false;

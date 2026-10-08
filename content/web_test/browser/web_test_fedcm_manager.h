@@ -11,7 +11,7 @@
 namespace content {
 
 namespace webid {
-class Request;
+class RequestHandler;
 }
 
 class RenderFrameHost;
@@ -41,9 +41,9 @@ class WebTestFedCmManager
                               ClickFedCmDialogButtonCallback) override;
 
  private:
-  // Returns the active Request for the current Page,
+  // Returns the active RequestHandler for the current Page,
   // or nullptr if there isn't one.
-  webid::Request* GetAuthRequest();
+  webid::RequestHandler* GetRequestHandler();
 
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };

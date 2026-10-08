@@ -793,7 +793,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
       return;
     }
 
-    // Request will log the `result` error, so we do not call
+    // RequestHandler will log the `result` error, so we do not call
     // MaybeAddAccountParsingErrorToConsole here.
     Result res;
     res.idp_config_url = idp_info->provider->config->config_url;
@@ -807,7 +807,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     return;
   }
 
-  // Request will not duplicate this log because `result` is an accounts
+  // RequestHandler will not duplicate this log because `result` is an accounts
   // endpoint parse error (e.g., kAccountsInvalidResponse), whereas the
   // subsequent branches return browser policy errors (kRpPageNotVisible,
   // kSilentMediationFailure) or trigger mismatch UI without setting

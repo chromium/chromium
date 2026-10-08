@@ -21,7 +21,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/idp_network_request_manager.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/federated_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -242,10 +242,10 @@ class TestFederatedIdentityModalDialogViewDelegate
 
 }  // namespace
 
-class RequestMultipleFramesTest : public RenderViewHostImplTestHarness {
+class RequestHandlerMultipleFramesTest : public RenderViewHostImplTestHarness {
  protected:
-  RequestMultipleFramesTest() = default;
-  ~RequestMultipleFramesTest() override = default;
+  RequestHandlerMultipleFramesTest() = default;
+  ~RequestHandlerMultipleFramesTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -293,10 +293,10 @@ class RequestMultipleFramesTest : public RenderViewHostImplTestHarness {
     DoRequestToken(service_remote, request_remote, callback_helper.callback());
     request_remote.set_disconnect_handler(callback_helper.quit_closure());
 
-    // Ensure that the request makes its way to Request.
+    // Ensure that the request makes its way to RequestHandler.
     base::RunLoop().RunUntilIdle();
     // Fast forward clock so that the pending
-    // Request::OnRejectRequest() task, if any, gets a
+    // RequestHandler::OnRejectRequest() task, if any, gets a
     // chance to run.
     task_environment()->FastForwardBy(base::Minutes(10));
 
@@ -400,7 +400,7 @@ class RequestMultipleFramesTest : public RenderViewHostImplTestHarness {
 };
 
 // Test that test harness can execute successful FedCM flow for iframe.
-TEST_F(RequestMultipleFramesTest, TestHarness) {
+TEST_F(RequestHandlerMultipleFramesTest, TestHarness) {
   RenderFrameHost* iframe_rfh =
       RenderFrameHostTester::For(main_rfh())->AppendChild(/*frame_name=*/"");
 
@@ -420,7 +420,7 @@ TEST_F(RequestMultipleFramesTest, TestHarness) {
 
 // Test that FedCM request fails on iframe if there is an in-progress FedCM
 // request for a different frame on the page.
-TEST_F(RequestMultipleFramesTest, IframeTooManyRequests) {
+TEST_F(RequestHandlerMultipleFramesTest, IframeTooManyRequests) {
   base::HistogramTester histogram_tester;
 
   mojo::Remote<FederatedRequestService> main_frame_service_remote;
@@ -454,7 +454,7 @@ TEST_F(RequestMultipleFramesTest, IframeTooManyRequests) {
 
 // Test that when requests from different IdPs get rejected, a proper histogram
 // can be recorded.
-TEST_F(RequestMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
+TEST_F(RequestHandlerMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
   base::HistogramTester histogram_tester;
 
   mojo::Remote<FederatedRequestService> main_frame_service_remote;
@@ -486,7 +486,7 @@ TEST_F(RequestMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
 
 // Test that only top frame URL is available for display when FedCM is called
 // within iframes which are same-origin with the top frame.
-TEST_F(RequestMultipleFramesTest, SameOriginIframe) {
+TEST_F(RequestHandlerMultipleFramesTest, SameOriginIframe) {
   base::HistogramTester histogram_tester;
 
   const char kSameOriginIframeUrl[] = "https://top-frame.example/iframe.html";
@@ -529,7 +529,7 @@ TEST_F(RequestMultipleFramesTest, SameOriginIframe) {
 
 // Test that only top frame URL is available for display when FedCM is called
 // within iframes which are same-site with the top frame.
-TEST_F(RequestMultipleFramesTest, SameSiteIframe) {
+TEST_F(RequestHandlerMultipleFramesTest, SameSiteIframe) {
   base::HistogramTester histogram_tester;
 
   // Same-site but cross-origin (subdomain differs), so
@@ -574,7 +574,7 @@ TEST_F(RequestMultipleFramesTest, SameSiteIframe) {
 
 // Test that both top frame and iframe URLs are available for display when FedCM
 // is called within iframes which are cross-site with the top frame.
-TEST_F(RequestMultipleFramesTest, CrossSiteIframe) {
+TEST_F(RequestHandlerMultipleFramesTest, CrossSiteIframe) {
   base::HistogramTester histogram_tester;
 
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
@@ -616,7 +616,7 @@ TEST_F(RequestMultipleFramesTest, CrossSiteIframe) {
 
 // Tests that we send a client metadata request for cross-site iframes even if
 // all accounts are returning.
-TEST_F(RequestMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
+TEST_F(RequestHandlerMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(

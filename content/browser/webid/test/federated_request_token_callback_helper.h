@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/types/expected.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 

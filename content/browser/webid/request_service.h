@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/browser/webid/config_fetcher.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,7 +35,7 @@ class IdentityRequestDialogController;
 namespace webid {
 
 class FedCmRequestSpec;
-class Request;
+class RequestHandler;
 class IdentityRegistry;
 class IdpRegistrationHandler;
 class IdpNetworkRequestManager;
@@ -44,7 +44,7 @@ class DisconnectRequest;
 
 // RequestService is a document-scoped manager class that coordinates
 // Federated Credential Management (FedCM) requests for a given RenderFrameHost.
-// It owns the active Request session.
+// It owns the active RequestHandler session.
 class CONTENT_EXPORT RequestService
     : public DocumentUserData<RequestService>,
       public blink::mojom::FederatedRequestService {
@@ -110,9 +110,11 @@ class CONTENT_EXPORT RequestService
       ::password_manager::CredentialMediationRequirement requirement,
       NavigationHandle* navigation_handle,
       const GURL& intercepted_url,
-      Request::RequestTokenCallback callback);
+      RequestHandler::RequestTokenCallback callback);
 
-  Request* GetActiveRequestForTesting() { return active_request_.get(); }
+  RequestHandler* GetActiveRequestHandlerForTesting() {
+    return active_request_handler_.get();
+  }
 
   base::WeakPtr<RequestService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -127,9 +129,10 @@ class CONTENT_EXPORT RequestService
   void SetDialogControllerForTests(
       std::unique_ptr<IdentityRequestDialogController> controller);
 
-  // Returns the active Request if one exists, or instantiates a new one if not.
-  Request* GetOrCreateActiveRequest();
-  Request* GetActiveRequestForTesting() const;
+  // Returns the active RequestHandler if one exists, or instantiates a new one
+  // if not.
+  RequestHandler* GetOrCreateActiveRequestHandler();
+  RequestHandler* GetActiveRequestHandlerForTesting() const;
 
   void SetDelegatesForTesting(
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
@@ -139,7 +142,7 @@ class CONTENT_EXPORT RequestService
       IdentityRegistry* identity_registry);
 
   // Destroys the active request. Strictly for use in tests.
-  void DestroyActiveRequestForTesting();
+  void DestroyActiveRequestHandlerForTesting();
 
   bool HasDialogControllerForTesting() const {
     return dialog_controller_ != nullptr;
@@ -149,8 +152,8 @@ class CONTENT_EXPORT RequestService
 
  private:
   friend class DocumentUserData<RequestService>;
-  friend class Request;
-  friend class RequestTest;
+  friend class RequestHandler;
+  friend class RequestHandlerTest;
   friend class RequestRegistryTest;
 
   static void InvokeTokenRequestCallback(
@@ -177,32 +180,33 @@ class CONTENT_EXPORT RequestService
       blink::mojom::FederatedRequestService::DisconnectCallback callback,
       blink::mojom::DisconnectStatus status);
   bool InitiateTokenRequest(
-      std::unique_ptr<Request> new_request,
+      std::unique_ptr<RequestHandler> new_request_handler,
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
           idp_get_params,
       ::password_manager::CredentialMediationRequirement requirement,
       NavigationHandle* navigation_handle,
       const GURL& intercepted_url,
-      Request::RequestTokenCallback callback);
+      RequestHandler::RequestTokenCallback callback);
   void OnTokenRequestCompleteInternal(
-      Request* request,
-      Request::RequestTokenCallback callback,
+      RequestHandler* request_handler,
+      RequestHandler::RequestTokenCallback callback,
       blink::mojom::RequestTokenStatus status,
       const std::optional<GURL>& selected_idp_config_url,
       std::optional<base::Value> token,
       blink::mojom::TokenErrorPtr error,
       bool is_auto_selected);
-  void CleanUpCompletedRequest(Request* request);
-  void CleanUpActiveRequest(Request* request);
-  void SetActiveRequestAndResetController(std::unique_ptr<Request> request);
-  bool ShouldCancelNewRequest(Request* new_request,
+  void CleanUpCompletedRequestHandler(RequestHandler* request_handler);
+  void CleanUpActiveRequestHandler(RequestHandler* request_handler);
+  void SetActiveRequestHandlerAndResetController(
+      std::unique_ptr<RequestHandler> request_handler);
+  bool ShouldCancelNewRequest(RequestHandler* new_request_handler,
                               const FedCmRequestSpec& spec);
   std::unique_ptr<Metrics> CreateFedCmMetrics();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
 
-  std::unique_ptr<Request> active_request_;
+  std::unique_ptr<RequestHandler> active_request_handler_;
   // Temporary storage for completed requests pending destruction.
-  std::vector<std::unique_ptr<Request>> completed_requests_;
+  std::vector<std::unique_ptr<RequestHandler>> completed_request_handlers_;
 
   // Number of navigator.credentials.get() requests made for metrics purposes.
   // Requests made when there is a pending FedCM request or for the purpose of

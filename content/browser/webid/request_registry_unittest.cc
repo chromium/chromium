@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -132,7 +132,7 @@ class RequestRegistryTest : public RenderViewHostImplTestHarness {
         mock_permission_delegate_.get(), mock_identity_registry_.get());
     service->BindFederatedRequestService(
         request_service_remote_.BindNewPipeAndPassReceiver());
-    request_ = service->GetOrCreateActiveRequest()->GetWeakPtr();
+    request_handler_ = service->GetOrCreateActiveRequestHandler()->GetWeakPtr();
 
     auto mock_dialog_controller =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
@@ -143,7 +143,7 @@ class RequestRegistryTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
-    request_ = nullptr;
+    request_handler_ = nullptr;
     mock_identity_registry_ = nullptr;
     request_service_remote_.reset();
     RenderViewHostImplTestHarness::TearDown();
@@ -153,7 +153,7 @@ class RequestRegistryTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList feature_list_;
 
   mojo::Remote<blink::mojom::FederatedRequestService> request_service_remote_;
-  base::WeakPtr<Request> request_;
+  base::WeakPtr<RequestHandler> request_handler_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<StrictMock<MockPermissionDelegate>> mock_permission_delegate_;

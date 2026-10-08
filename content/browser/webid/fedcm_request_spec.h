@@ -96,7 +96,7 @@ class CONTENT_EXPORT FedCmRequestSpec
   // information to use it during the entire the active flow.
   bool had_transient_user_activation_{false};
 
-  // Whether this Request can make top level redirections, available
+  // Whether this RequestHandler can make top level redirections, available
   // currently only for interception-initiated requests.
   bool can_accept_redirect_to_{false};
 

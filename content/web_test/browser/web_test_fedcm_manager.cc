@@ -7,13 +7,13 @@
 #include <optional>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/request.h"
+#include "content/browser/webid/request_handler.h"
 #include "content/browser/webid/request_page_data.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace content {
 
-using DialogType = webid::Request::DialogType;
+using DialogType = webid::RequestHandler::DialogType;
 
 WebTestFedCmManager::WebTestFedCmManager(RenderFrameHost* render_frame_host)
     : render_frame_host_(
@@ -24,13 +24,13 @@ WebTestFedCmManager::~WebTestFedCmManager() = default;
 void WebTestFedCmManager::GetDialogType(
     blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback
         callback) {
-  webid::Request* auth_request = GetAuthRequest();
-  if (!auth_request) {
+  webid::RequestHandler* request_handler = GetRequestHandler();
+  if (!request_handler) {
     std::move(callback).Run(std::nullopt);
     return;
   }
   std::string type_string;
-  switch (auth_request->GetDialogType()) {
+  switch (request_handler->GetDialogType()) {
     case DialogType::kNone:
     // We do not expose these three types to browser automation currently.
     case DialogType::kLoginToIdpPopup:
@@ -57,13 +57,13 @@ void WebTestFedCmManager::GetDialogType(
 void WebTestFedCmManager::GetFedCmDialogTitleAndSubtitle(
     blink::test::mojom::FederatedAuthRequestAutomation::
         GetFedCmDialogTitleAndSubtitleCallback callback) {
-  webid::Request* auth_request = GetAuthRequest();
-  if (!auth_request) {
+  webid::RequestHandler* request_handler = GetRequestHandler();
+  if (!request_handler) {
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   IdentityRequestDialogController* controller =
-      auth_request->GetDialogController();
+      request_handler->GetDialogController();
   if (!controller) {
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
@@ -74,13 +74,13 @@ void WebTestFedCmManager::GetFedCmDialogTitleAndSubtitle(
 void WebTestFedCmManager::SelectFedCmAccount(
     uint32_t account_index,
     SelectFedCmAccountCallback callback) {
-  webid::Request* auth_request = GetAuthRequest();
-  if (!auth_request) {
+  webid::RequestHandler* request_handler = GetRequestHandler();
+  if (!request_handler) {
     std::move(callback).Run(false);
     return;
   }
   const std::vector<IdentityRequestAccountPtr>& accounts =
-      auth_request->GetAccounts();
+      request_handler->GetAccounts();
   if (accounts.empty()) {
     std::move(callback).Run(false);
     return;
@@ -90,19 +90,19 @@ void WebTestFedCmManager::SelectFedCmAccount(
     return;
   }
   const IdentityRequestAccount& account = *accounts[account_index];
-  auth_request->AcceptAccountsDialogForDevtools(
+  request_handler->AcceptAccountsDialogForDevtools(
       account.identity_provider->idp_metadata.config_url, account);
   std::move(callback).Run(true);
 }
 
 void WebTestFedCmManager::DismissFedCmDialog(
     DismissFedCmDialogCallback callback) {
-  webid::Request* auth_request = GetAuthRequest();
-  if (!auth_request) {
+  webid::RequestHandler* request_handler = GetRequestHandler();
+  if (!request_handler) {
     std::move(callback).Run(false);
     return;
   }
-  switch (auth_request->GetDialogType()) {
+  switch (request_handler->GetDialogType()) {
     case DialogType::kNone:
     // We do not expose these three types to browser automation currently.
     case DialogType::kLoginToIdpPopup:
@@ -112,15 +112,15 @@ void WebTestFedCmManager::DismissFedCmDialog(
       return;
     case DialogType::kSelectAccount:
     case DialogType::kAutoReauth:
-      auth_request->DismissAccountsDialogForDevtools(false);
+      request_handler->DismissAccountsDialogForDevtools(false);
       std::move(callback).Run(true);
       return;
     case DialogType::kConfirmIdpLogin:
-      auth_request->DismissConfirmIdpLoginDialogForDevtools();
+      request_handler->DismissConfirmIdpLoginDialogForDevtools();
       std::move(callback).Run(true);
       return;
     case DialogType::kError:
-      auth_request->DismissErrorDialogForDevtools();
+      request_handler->DismissErrorDialogForDevtools();
       std::move(callback).Run(true);
       return;
   }
@@ -129,26 +129,26 @@ void WebTestFedCmManager::DismissFedCmDialog(
 void WebTestFedCmManager::ClickFedCmDialogButton(
     blink::test::mojom::DialogButton button,
     ClickFedCmDialogButtonCallback callback) {
-  webid::Request* auth_request = GetAuthRequest();
-  if (!auth_request) {
+  webid::RequestHandler* request_handler = GetRequestHandler();
+  if (!request_handler) {
     std::move(callback).Run(false);
     return;
   }
   switch (button) {
     case blink::test::mojom::DialogButton::kConfirmIdpLoginContinue:
-      switch (auth_request->GetDialogType()) {
+      switch (request_handler->GetDialogType()) {
         case DialogType::kConfirmIdpLogin:
-          auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+          request_handler->AcceptConfirmIdpLoginDialogForDevtools();
           std::move(callback).Run(true);
           return;
         case DialogType::kSelectAccount: {
-          const auto& data = auth_request->GetSortedIdpData();
+          const auto& data = request_handler->GetSortedIdpData();
           if (data.size() != 1) {
             std::move(callback).Run(false);
             return;
           }
           std::move(callback).Run(
-              auth_request->UseAnotherAccountForDevtools(*data[0]));
+              request_handler->UseAnotherAccountForDevtools(*data[0]));
           return;
         }
         default:
@@ -156,26 +156,26 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
           return;
       }
     case blink::test::mojom::DialogButton::kErrorGotIt:
-      if (auth_request->GetDialogType() != DialogType::kError) {
+      if (request_handler->GetDialogType() != DialogType::kError) {
         std::move(callback).Run(false);
         return;
       }
-      auth_request->ClickErrorDialogGotItForDevtools();
+      request_handler->ClickErrorDialogGotItForDevtools();
       std::move(callback).Run(true);
       return;
     case blink::test::mojom::DialogButton::kErrorMoreDetails:
-      if (auth_request->GetDialogType() != DialogType::kError) {
+      if (request_handler->GetDialogType() != DialogType::kError) {
         std::move(callback).Run(false);
         return;
       }
-      auth_request->ClickErrorDialogMoreDetailsForDevtools();
+      request_handler->ClickErrorDialogMoreDetailsForDevtools();
       std::move(callback).Run(true);
       return;
   }
   std::move(callback).Run(false);
 }
 
-webid::Request* WebTestFedCmManager::GetAuthRequest() {
+webid::RequestHandler* WebTestFedCmManager::GetRequestHandler() {
   if (!render_frame_host_) {
     return nullptr;
   }
@@ -185,7 +185,7 @@ webid::Request* WebTestFedCmManager::GetAuthRequest() {
   if (!page_data) {
     return nullptr;
   }
-  return page_data->PendingWebIdentityRequest();
+  return page_data->PendingRequestHandler();
 }
 
 }  // namespace content

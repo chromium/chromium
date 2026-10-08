@@ -25,7 +25,7 @@ namespace webid {
 class ConfigFetcher;
 class DisconnectRequestTest;
 class Metrics;
-class RequestTest;
+class RequestHandlerTest;
 
 // Fetches data for a FedCM disconnect request.
 class CONTENT_EXPORT DisconnectRequest {
@@ -51,7 +51,7 @@ class CONTENT_EXPORT DisconnectRequest {
 
  private:
   friend class DisconnectRequestTest;
-  friend class RequestTest;
+  friend class RequestHandlerTest;
 
   DisconnectRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,

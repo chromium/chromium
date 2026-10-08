@@ -12,7 +12,7 @@
 namespace content {
 
 namespace webid {
-class Request;
+class RequestHandler;
 }
 
 namespace webid {
@@ -23,10 +23,10 @@ class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
 
   // The currently pending web identity request, if any.
   // Used to ensure that we do not allow two separate calls on the same page.
-  Request* PendingWebIdentityRequest();
+  RequestHandler* PendingRequestHandler();
   // Sets the pending web identity request, or nullptr when a pending request
   // has finished.
-  void SetPendingWebIdentityRequest(Request* request);
+  void SetPendingRequestHandler(RequestHandler* request_handler);
 
  private:
   explicit RequestPageData(Page& page);
@@ -37,7 +37,7 @@ class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
   // Non-null when there is some Web Identity API request currently pending.
   // Used to ensure that we do not allow two separate calls on the same page
   // and to access the currently pending request.
-  raw_ptr<Request> pending_web_identity_request_ = nullptr;
+  raw_ptr<RequestHandler> pending_request_handler_ = nullptr;
 };
 
 }  // namespace webid

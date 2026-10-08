@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_REQUEST_H_
-#define CONTENT_BROWSER_WEBID_REQUEST_H_
+#ifndef CONTENT_BROWSER_WEBID_REQUEST_HANDLER_H_
+#define CONTENT_BROWSER_WEBID_REQUEST_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -53,9 +53,9 @@ namespace webid {
 
 class RequestService;
 
-// Request represents a single WebID-related request from the renderer. It is
-// owned and managed by RequestService.
-class CONTENT_EXPORT Request
+// RequestHandler represents a single WebID-related request from the renderer.
+// It is owned and managed by RequestService.
+class CONTENT_EXPORT RequestHandler
     : public blink::mojom::FederatedRequest,
       public FederatedIdentityPermissionContextDelegate::
           IdpSigninStatusObserver,
@@ -69,12 +69,12 @@ class CONTENT_EXPORT Request
                               blink::mojom::TokenErrorPtr,
                               bool)>;
 
-  Request(RenderFrameHost* rfh, RequestService& request_service);
+  RequestHandler(RenderFrameHost* rfh, RequestService& request_service);
 
-  Request(const Request&) = delete;
-  Request& operator=(const Request&) = delete;
+  RequestHandler(const RequestHandler&) = delete;
+  RequestHandler& operator=(const RequestHandler&) = delete;
 
-  ~Request() override;
+  ~RequestHandler() override;
 
   RenderFrameHost& render_frame_host() const { return *render_frame_host_; }
 
@@ -104,7 +104,7 @@ class CONTENT_EXPORT Request
   void OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
                                  bool idp_signin_status) override;
 
-  base::WeakPtr<Request> GetWeakPtr();
+  base::WeakPtr<RequestHandler> GetWeakPtr();
 
   // FederatedIdentityModalDialogViewDelegate:
   void OnClose() override;
@@ -275,7 +275,7 @@ class CONTENT_EXPORT Request
                        bool should_delay_callback);
 
  private:
-  friend class RequestTest;
+  friend class RequestHandlerTest;
   friend class IdentityCredentialSourceImpl;  // for OnAccountSelected
   friend class TestIdentityCredentialSourceImpl;
   friend class RequestService;
@@ -443,9 +443,10 @@ class CONTENT_EXPORT Request
 
   blink::mojom::RpMode GetRpMode() const { return spec_->rp_mode(); }
 
-  // Shows a FedCM UI and returns true if it succeeded and the Request was not
-  // destroyed. Showing a FedCM UI may cause the tab to drop fullscreen or lose
-  // focus, during which the frame may be detached and this Request destroyed.
+  // Shows a FedCM UI and returns true if it succeeded and the RequestHandler
+  // was not destroyed. Showing a FedCM UI may cause the tab to drop fullscreen
+  // or lose focus, during which the frame may be detached and this
+  // RequestHandler destroyed.
   bool ShowDialog(base::FunctionRef<bool()> show_dialog_callback);
 
   // If the client metadata has not been received yet the UI may not be able to
@@ -593,10 +594,10 @@ class CONTENT_EXPORT Request
 
   mojo::ReceiverSet<blink::mojom::FederatedRequest> receivers_;
 
-  base::WeakPtrFactory<Request> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RequestHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_REQUEST_H_
+#endif  // CONTENT_BROWSER_WEBID_REQUEST_HANDLER_H_

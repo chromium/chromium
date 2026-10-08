@@ -53,7 +53,7 @@ class CONTENT_EXPORT NavigationInterceptor
       ::password_manager::CredentialMediationRequirement requirement,
       NavigationHandle* navigation_handle,
       const GURL& intercepted_url,
-      Request::RequestTokenCallback callback)>;
+      RequestHandler::RequestTokenCallback callback)>;
 
   explicit NavigationInterceptor(NavigationThrottleRegistry& registry);
   NavigationInterceptor(NavigationThrottleRegistry& registry,
