@@ -438,6 +438,25 @@ TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationNotColdStart) {
                                     0);
 }
 
+// Tests that +logStartupDuration: sets `coldStartFromMainDuration` on
+// `startupInformation` for foreground cold starts and leaves it zero for
+// background launches.
+TEST_F(MetricsMediatorNoFixtureTest,
+       LogStartupDurationSetsColdStartFromMainDuration) {
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  EXPECT_EQ(startup_information.coldStartFromMainDuration, base::TimeDelta());
+
+  [MetricsMediator logStartupDuration:startup_information];
+  EXPECT_GT(startup_information.coldStartFromMainDuration, base::TimeDelta());
+
+  FakeStartupInformation* background_startup =
+      CreateDefaultStartupInformation();
+  background_startup.launchReason = IOSLaunchReason::kBackgroundRefresh;
+  [MetricsMediator logStartupDuration:background_startup];
+  EXPECT_EQ(background_startup.coldStartFromMainDuration, base::TimeDelta());
+}
+
 // Scoped helper to set or unset the ActivePrewarm environment variable used by
 // base::ios::IsApplicationPreWarmed().
 class ScopedSetProcessPreWarmed {

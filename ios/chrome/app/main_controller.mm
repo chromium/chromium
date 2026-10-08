@@ -513,6 +513,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 @synthesize isTerminating = _isTerminating;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
+@synthesize coldStartFromMainDuration = _coldStartFromMainDuration;
 
 #pragma mark - Application lifecycle
 

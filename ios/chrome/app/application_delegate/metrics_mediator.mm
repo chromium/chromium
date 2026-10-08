@@ -542,6 +542,7 @@ BOOL _credentialExtensionWasUsed = NO;
     const ColdStartType coldStartType = GetColdStartType(startupInformation);
     base::UmaHistogramEnumeration(
         "Startup.IOSColdStartType.ForegroundLaunchesOnly", coldStartType);
+    startupInformation.coldStartFromMainDuration = mainToNowTime;
     LogStartupDurationWithTemperatureAndType(
         "Startup.ColdStartFromMain", mainToNowTime, temperature, coldStartType);
     base::UmaHistogramTimes("Startup.TimeFromMainToDidFinishLaunchingCall",

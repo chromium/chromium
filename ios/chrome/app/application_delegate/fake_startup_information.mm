@@ -13,6 +13,7 @@
 @synthesize preMainDuration = _preMainDuration;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
+@synthesize coldStartFromMainDuration = _coldStartFromMainDuration;
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
 @synthesize launchReason = _launchReason;

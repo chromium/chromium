@@ -38,6 +38,7 @@
 @synthesize preMainDuration = _preMainDuration;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
+@synthesize coldStartFromMainDuration = _coldStartFromMainDuration;
 @synthesize isTerminating = _isTerminating;
 
 - (BOOL)isLaunchedInBackground {

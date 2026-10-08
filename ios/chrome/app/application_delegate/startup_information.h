@@ -78,6 +78,10 @@ inline constexpr bool IsBackgroundLaunchReason(IOSLaunchReason reason) {
 @property(nonatomic, assign) base::TimeTicks didFinishLaunchingTime;
 // Tick of the first scene connection, used for UMA.
 @property(nonatomic, assign) base::TimeTicks firstSceneConnectionTime;
+// Duration from main() entry to initial UI foreground readiness, matching
+// Startup.ColdStartFromMain. Stays zero for background and suspicious launches,
+// which UMA also skips.
+@property(nonatomic, assign) base::TimeDelta coldStartFromMainDuration;
 
 // Disables the FirstUserActionRecorder.
 - (void)resetFirstUserActionRecorder;
