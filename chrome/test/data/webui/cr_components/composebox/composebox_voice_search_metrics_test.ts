@@ -20,6 +20,23 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {disableTransitionsRecursively, installMock, MockSpeechRecognition, mockSpeechRecognition} from './composebox_test_utils.js';
 import type {MockComposeboxVoiceSearch} from './composebox_test_utils.js';
 
+// Makes `recognition` answer abort() like Chrome does: if a session is in
+// progress, it asynchronously dispatches an 'aborted' error and then 'end'.
+// (The shared mock calls `onend` synchronously and never reports an error.)
+function echoAbortLikeChrome(recognition: MockSpeechRecognition) {
+  recognition.abort = () => {
+    if (!recognition.voiceSearchInProgress) {
+      return;
+    }
+    recognition.voiceSearchInProgress = false;
+    queueMicrotask(() => {
+      recognition.onerror!(new SpeechRecognitionErrorEvent(
+          'error', {message: '', error: 'aborted'}));
+      recognition.onend!();
+    });
+  };
+}
+
 suite('ComposeboxVoiceSearchMetrics', () => {
   let voiceSearchElement: ComposeboxVoiceSearchElement;
   let mockVoiceSearch: MockComposeboxVoiceSearch;
@@ -61,6 +78,19 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     await searchboxHandler.whenCalled('getPageClassification');
     await microtasksFinished();
   });
+
+  function assertAbortedCount(expected: number) {
+    assertEquals(
+        expected,
+        metrics.count(
+            'VoiceSearch.Errors.NTP_REALBOX', VoiceSearchError.ABORTED));
+    assertEquals(
+        expected,
+        metrics.count('VoiceSearch.Errors', VoiceSearchError.ABORTED));
+    assertEquals(
+        expected,
+        metrics.count('NewTabPage.VoiceErrors', VoiceSearchError.ABORTED));
+  }
 
   test('Records SUCCESS and SUBMITTED metrics on final result', async () => {
     // Trigger: Simulate receiving the final voice result.
@@ -499,6 +529,98 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     mockVoiceSearch.state_ = -1;
     mockVoiceSearch.voiceRecognition_.abort();
     await microtasksFinished();
+  });
+
+  test('Does not record its own abort on submit', async () => {
+    echoAbortLikeChrome(mockVoiceSearch.voiceRecognition_);
+    voiceSearchElement.start();
+    mockVoiceSearch.onFinalResult_('hello world', /*forceSubmit=*/ true);
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.QUERY_SUBMITTED));
+    assertAbortedCount(0);
+  });
+
+  test('Does not record its own abort on close', async () => {
+    echoAbortLikeChrome(mockVoiceSearch.voiceRecognition_);
+    voiceSearchElement.start();
+    mockVoiceSearch.onCloseClick_();
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.CANCELED_BY_USER));
+    assertAbortedCount(0);
+  });
+
+  test('Records only NO_SPEECH on idle timeout', async () => {
+    echoAbortLikeChrome(mockVoiceSearch.voiceRecognition_);
+    voiceSearchElement.start();
+    mockVoiceSearch.onIdleTimeout_();
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Errors.NTP_REALBOX', VoiceSearchError.NO_SPEECH));
+    assertAbortedCount(0);
+  });
+
+  test('Does not record its own abort on disconnect', async () => {
+    echoAbortLikeChrome(mockVoiceSearch.voiceRecognition_);
+    voiceSearchElement.start();
+    voiceSearchElement.remove();
+    await microtasksFinished();
+
+    assertAbortedCount(0);
+  });
+
+  test('Does not record abort when another instance starts', async () => {
+    echoAbortLikeChrome(mockVoiceSearch.voiceRecognition_);
+    voiceSearchElement.start();
+
+    // A second instance takes the microphone over from the first one.
+    const otherElement = document.createElement('cr-composebox-voice-search');
+    document.body.appendChild(otherElement);
+    const otherVoiceSearch =
+        otherElement as unknown as MockComposeboxVoiceSearch;
+    otherElement.start();
+    await microtasksFinished();
+
+    assertEquals(1, otherVoiceSearch.voiceRecognition_.startCount);
+    assertAbortedCount(0);
+
+    // Clean up internal state to prevent leaking into the next test.
+    otherVoiceSearch.state_ = -1;
+    otherElement.remove();
+    await microtasksFinished();
+  });
+
+  test('Records aborts it did not cause after restart', async () => {
+    echoAbortLikeChrome(mockVoiceSearch.voiceRecognition_);
+    voiceSearchElement.start();
+    mockVoiceSearch.onCloseClick_();
+    await microtasksFinished();
+    assertAbortedCount(0);
+
+    // A new session gets aborted by something else, e.g. another page taking
+    // the microphone.
+    voiceSearchElement.start();
+    mockVoiceSearch.voiceRecognition_.onerror!(new SpeechRecognitionErrorEvent(
+        'error', {message: '', error: 'aborted'}));
+    await microtasksFinished();
+    assertAbortedCount(1);
+
+    // Ending that session ourselves still does not add another one.
+    mockVoiceSearch.onCloseClick_();
+    await microtasksFinished();
+    assertAbortedCount(1);
   });
 
   test('Records legacy NTP metrics only for NTP_REALBOX', async () => {

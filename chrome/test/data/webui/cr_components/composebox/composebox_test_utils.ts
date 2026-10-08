@@ -210,7 +210,7 @@ export type MockComposeboxVoiceSearch = Omit<
     ComposeboxVoiceSearchElement,
     'state_'|'voiceRecognition_'|'onFinalResult_'|'onCloseClick_'|'onEnd_'|
     'onTryAgainClick_'|'onLinkClick_'|'errorMessage_'|'voiceModeEndCleanup_'|
-    'detailedError'|'onStopClick_'|'recordMetric_'>&{
+    'detailedError'|'onStopClick_'|'recordMetric_'|'onIdleTimeout_'>&{
   state_: number,
   metricSource_: string,
   voiceRecognition_: MockSpeechRecognition,
@@ -220,10 +220,13 @@ export type MockComposeboxVoiceSearch = Omit<
   onFinalResult_: (result: string, forceSubmit?: boolean) => void,
   onCloseClick_: () => void,
   onEnd_: () => void,
+  onIdleTimeout_: () => void,
   onTryAgainClick_: (e: Event) => void,
   onLinkClick_: (e: Event) => void,
   onStopClick_: () => void,
-  recordMetric_: (type: VoiceSearchMetricType, metricEnumValue: number, max: number) => void,
+  recordMetric_:
+      (type: VoiceSearchMetricType, metricEnumValue: number, max: number) =>
+          void,
 };
 
 export function disableTransitionsRecursively(

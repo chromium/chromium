@@ -142,6 +142,19 @@ function toError(webkitError: string): VoiceSearchError {
   }
 }
 
+// Recognitions this component aborted itself (to submit, cancel, time out,
+// disconnect, or hand the microphone to another instance). Chrome answers
+// abort() on a live session with an 'aborted' error event, which for these is
+// just an echo of our own call, not an error. Keyed by recognition because the
+// echo goes to the recognition's owner, which is not always the caller (see
+// start()).
+const selfAbortedRecognitions = new WeakSet<SpeechRecognition>();
+
+function abortRecognition(recognition: SpeechRecognition) {
+  selfAbortedRecognitions.add(recognition);
+  recognition.abort();
+}
+
 const ComposeboxVoiceSearchElementBase = I18nMixinLit(CrLitElement);
 
 export class ComposeboxVoiceSearchElement extends
@@ -327,7 +340,7 @@ export class ComposeboxVoiceSearchElement extends
     if (ComposeboxVoiceSearchElement.pendingStartInstance_ === this) {
       ComposeboxVoiceSearchElement.pendingStartInstance_ = null;
     }
-    this.voiceRecognition_.abort();
+    abortRecognition(this.voiceRecognition_);
     super.disconnectedCallback();
   }
 
@@ -372,13 +385,17 @@ export class ComposeboxVoiceSearchElement extends
     }
     if (ComposeboxVoiceSearchElement.activeRecognition_ !== null) {
       ComposeboxVoiceSearchElement.pendingStartInstance_ = this;
-      ComposeboxVoiceSearchElement.activeRecognition_.abort();
+      abortRecognition(ComposeboxVoiceSearchElement.activeRecognition_);
       return;
     }
     this.errorMessage_ = '';
     // If continuous is false, then speech webkit determines when to end, and
     // there is no manual set timeout.
     this.voiceRecognition_.continuous = !this.dynamicTimeoutEnabled;
+    // Any earlier session of this recognition has ended by now (onEnd_ clears
+    // activeRecognition_, and Chrome sends 'end' after the 'aborted' echo), so
+    // aborts from here on are not ours.
+    selfAbortedRecognitions.delete(this.voiceRecognition_);
     this.voiceRecognition_.start();
     ComposeboxVoiceSearchElement.activeRecognition_ = this.voiceRecognition_;
     this.state_ = State.STARTED;
@@ -549,7 +566,7 @@ export class ComposeboxVoiceSearchElement extends
       return;
     }
     this.onError_(VoiceSearchError.NO_SPEECH);
-    this.voiceRecognition_.abort();
+    abortRecognition(this.voiceRecognition_);
   }
 
   private onAudioStart_() {
@@ -755,6 +772,14 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   private onError_(error: VoiceSearchError) {
+    // Not a real abort: this component aborted the recognition itself while
+    // ending the session normally, e.g. after a query submission or a user
+    // cancellation (see `selfAbortedRecognitions`). An idle timeout with no
+    // transcript has already been recorded as NO_SPEECH by onIdleTimeout_().
+    if (error === VoiceSearchError.ABORTED &&
+        selfAbortedRecognitions.has(this.voiceRecognition_)) {
+      return;
+    }
     if (this.state_ === State.ERROR_RECEIVED && this.error_ === error) {
       return;
     }
@@ -850,7 +875,7 @@ export class ComposeboxVoiceSearchElement extends
 
   protected voiceModeEndCleanup_() {
     this.removeOutsideListeners_();
-    this.voiceRecognition_.abort();
+    abortRecognition(this.voiceRecognition_);
     this.resetState_();
   }
 
