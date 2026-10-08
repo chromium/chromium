@@ -146,6 +146,7 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
         return true;
       },
       BrowserCollection::Order::kActivation);
+  UpdateHasMultipleOpenProfiles();
 
   metrics_reporter_ = std::make_unique<GlassFrameMetricsReporter>(
       g_browser_process->local_state());
@@ -162,13 +163,30 @@ GlassFrameService::RegisterGlassFrameEligibilityChangedCallback(
   return window_callbacks_[browser_window_interface].Add(std::move(callback));
 }
 
+base::CallbackListSubscription
+GlassFrameService::RegisterMultipleOpenProfilesChangedCallback(
+    base::RepeatingClosure callback) {
+  return multiple_open_profiles_callbacks_.Add(std::move(callback));
+}
+
 bool GlassFrameService::IsBrowserWindowEligible(
     BrowserWindowInterface* browser) {
   return eligible_browsers_.contains(browser);
 }
 
+bool GlassFrameService::HasMultipleOpenProfiles() const {
+  return has_multiple_open_profiles_;
+}
+
 bool GlassFrameService::IsGlassFrameAllowed() {
   return is_glass_frame_enabled_ && !is_battery_saver_mode_active_;
+}
+
+void GlassFrameService::OnBrowserCreated(BrowserWindowInterface* browser) {
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+  UpdateHasMultipleOpenProfiles();
 }
 
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
@@ -183,6 +201,10 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
   StopTrackingBrowser(browser);
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+  UpdateHasMultipleOpenProfiles();
   if (eligible_browsers_.erase(browser)) {
     OnEligibleStateChanged();
   }
@@ -286,8 +308,7 @@ void GlassFrameService::OnEligibleStateChanged() {
 }
 
 void GlassFrameService::MaybeShowPromo(BrowserWindowInterface* browser) {
-  if (has_attempted_startup_promo_ || is_battery_saver_mode_active_ ||
-      !IsBrowserEligibleForGlass(browser)) {
+  if (has_attempted_startup_promo_ || is_battery_saver_mode_active_) {
     return;
   }
 
@@ -311,6 +332,31 @@ void GlassFrameService::MaybeShowPromo(BrowserWindowInterface* browser) {
           BrowserUserEducationInterface::From(browser)) {
     has_attempted_startup_promo_ = true;
     user_education->MaybeShowStartupFeaturePromo(promo_feature);
+  }
+}
+
+void GlassFrameService::UpdateHasMultipleOpenProfiles() {
+  Profile* first_profile = nullptr;
+  bool has_multiple_open_profiles = false;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&first_profile,
+       &has_multiple_open_profiles](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+          return true;
+        }
+        Profile* const profile = browser->GetProfile();
+        if (!first_profile) {
+          first_profile = profile;
+        } else if (first_profile != profile) {
+          has_multiple_open_profiles = true;
+          return false;
+        }
+        return true;
+      });
+
+  if (has_multiple_open_profiles_ != has_multiple_open_profiles) {
+    has_multiple_open_profiles_ = has_multiple_open_profiles;
+    multiple_open_profiles_callbacks_.Notify();
   }
 }
 
