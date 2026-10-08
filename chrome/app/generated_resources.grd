@@ -1528,6 +1528,12 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_INCOGNITO" desc="Label for the Incognito block button in the main App Menu">
           Incognito
         </message>
+        <message name="IDS_APP_MENU_BLOCK_INCOGNITO" desc="Label with a keyboard mnemonic for the Incognito block button in the main App Menu">
+          &amp;Incognito
+        </message>
+        <message name="IDS_APP_MENU_BLOCK_ISOLATED" desc="Label with a keyboard mnemonic for the Isolated block button in the main App Menu, shown instead of Incognito for enterprise isolated mode">
+          &amp;Isolated
+        </message>
         <message name="IDS_APP_MENU_BLOCK_TOOLTIP" desc="Tooltip for an App Menu button that includes its label and keyboard shortcut.">
           <ph name="TOOLTIP_TEXT">$1<ex>New tab</ex></ph> (<ph name="KEYBOARD_SHORTCUT">$2<ex>Ctrl+T</ex></ph>)
         </message>
