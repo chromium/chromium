@@ -42,16 +42,12 @@ class PrefRegistrySimple;
 
 namespace ios_web_view {
 
-// Preference key for hardening WebViewPasswordManagerClient against WebState
-// destruction.
-extern const char kPasswordManagerSafeLifecycleEnabled[];
-
 // Registers the WebViewPasswordManager preferences for this `pref_registry`.
 void RegisterWebViewPasswordManagerPrefs(PrefRegistrySimple* pref_registry);
 
-void SetPasswordManagerSafeLifecycleEnabled(PrefService* prefs, bool value);
-
-bool IsPasswordManagerSafeLifecycleEnabled(const PrefService* prefs);
+// Clears persisted values of obsolete WebViewPasswordManager preferences from
+// `prefs`.
+void MigrateObsoleteWebViewPasswordManagerPrefs(PrefService* prefs);
 
 // An //ios/web_view implementation of password_manager::PasswordManagerClient.
 class WebViewPasswordManagerClient

@@ -13,7 +13,6 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/cwv_password_affiliation.h"
 #import "ios/web_view/internal/cwv_preferences_internal.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 
 @implementation CWVPreferences {
   PrefService* _prefService;
@@ -97,13 +96,11 @@
 }
 
 - (void)setPasswordManagerSafeLifecycleEnabled:(BOOL)enabled {
-  _prefService->SetBoolean(ios_web_view::kPasswordManagerSafeLifecycleEnabled,
-                           enabled);
+  // No-op: see the deprecation note in the header.
 }
 
 - (BOOL)isPasswordManagerSafeLifecycleEnabled {
-  return _prefService->GetBoolean(
-      ios_web_view::kPasswordManagerSafeLifecycleEnabled);
+  return YES;
 }
 
 - (void)setSafeBrowsingEnabled:(BOOL)enabled {

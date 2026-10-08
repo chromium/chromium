@@ -129,8 +129,6 @@ TEST_F(WebViewPasswordManagerClientTest, PromptIfAllConditionsPass) {
 }
 
 TEST_F(WebViewPasswordManagerClientTest, WebStateDestroyed) {
-  pref_service_.SetBoolean(kPasswordManagerSafeLifecycleEnabled, true);
-
   auto web_state = std::make_unique<web::FakeWebState>();
   auto password_manager_client = std::make_unique<WebViewPasswordManagerClient>(
       web_state.get(), &sync_service_, &pref_service_,
@@ -148,21 +146,18 @@ TEST_F(WebViewPasswordManagerClientTest, WebStateDestroyed) {
   EXPECT_EQ(nullptr, password_manager_client->GetURLLoaderFactory());
 }
 
-TEST_F(WebViewPasswordManagerClientTest, WebStateDestroyed_FlagDisabled) {
-  pref_service_.SetBoolean(kPasswordManagerSafeLifecycleEnabled, false);
+// Tests that `MigrateObsoleteWebViewPasswordManagerPrefs` clears a persisted
+// value of the deprecated `cwv.password_manager.safe_lifecycle_enabled` pref.
+TEST_F(WebViewPasswordManagerClientTest,
+       MigrateObsoleteClearsSafeLifecyclePref) {
+  constexpr char kObsoleteSafeLifecyclePref[] =
+      "cwv.password_manager.safe_lifecycle_enabled";
+  pref_service_.SetBoolean(kObsoleteSafeLifecyclePref, true);
+  ASSERT_TRUE(pref_service_.HasPrefPath(kObsoleteSafeLifecyclePref));
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  auto password_manager_client = std::make_unique<WebViewPasswordManagerClient>(
-      web_state.get(), &sync_service_, &pref_service_,
-      /*identity_manager=*/nullptr, /*log_router=*/nullptr,
-      profile_store_.get(), account_store_.get(), /*reuse_manager=*/nullptr,
-      /*requirements_service=*/nullptr);
+  MigrateObsoleteWebViewPasswordManagerPrefs(&pref_service_);
 
-  // Destroy the web state first.
-  // When the flag is disabled, the client's destructor must not attempt to
-  // access this dangling pointer.
-  web_state.reset();
-  password_manager_client.reset();
+  EXPECT_FALSE(pref_service_.HasPrefPath(kObsoleteSafeLifecyclePref));
 }
 
 }  // namespace ios_web_view

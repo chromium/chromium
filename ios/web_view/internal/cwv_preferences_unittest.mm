@@ -25,7 +25,6 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/cwv_password_affiliation.h"
 #import "ios/web_view/internal/cwv_preferences_internal.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -62,8 +61,6 @@ class CWVPreferencesTest : public PlatformTest {
         ios_web_view::kCWVPasswordAffiliationEnabled, false);
     pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVAutofillScopedFormActivityEnabled, false);
-    pref_registry->RegisterBooleanPref(
-        ios_web_view::kPasswordManagerSafeLifecycleEnabled, false);
     pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVAutofillVCNUsageEnabled, false);
 
@@ -177,13 +174,14 @@ TEST_F(CWVPreferencesTest, AutofillScopedFormActivityEnabled) {
   EXPECT_TRUE(preferences.autofillScopedFormActivityEnabled);
 }
 
-// Tests CWVPreferences `passwordManagerSafeLifecycleEnabled`.
+// Tests that deprecated `passwordManagerSafeLifecycleEnabled` is a no-op and
+// always returns YES.
 TEST_F(CWVPreferencesTest, PasswordManagerSafeLifecycleEnabled) {
   std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
   CWVPreferences* preferences =
       [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
-  EXPECT_FALSE(preferences.passwordManagerSafeLifecycleEnabled);
-  preferences.passwordManagerSafeLifecycleEnabled = YES;
+  EXPECT_TRUE(preferences.passwordManagerSafeLifecycleEnabled);
+  preferences.passwordManagerSafeLifecycleEnabled = NO;
   EXPECT_TRUE(preferences.passwordManagerSafeLifecycleEnabled);
 }
 

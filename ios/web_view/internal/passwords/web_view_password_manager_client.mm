@@ -35,22 +35,26 @@ using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStoreInterface;
 
-namespace ios_web_view {
+namespace {
 
-const char kPasswordManagerSafeLifecycleEnabled[] =
+// Deprecated 10/2026.
+constexpr char kPasswordManagerSafeLifecycleEnabled[] =
     "cwv.password_manager.safe_lifecycle_enabled";
 
+}  // namespace
+
+namespace ios_web_view {
+
 void RegisterWebViewPasswordManagerPrefs(PrefRegistrySimple* pref_registry) {
+  // Deprecated 10/2026. Registered only so that
+  // `MigrateObsoleteWebViewPasswordManagerPrefs` can clear persisted values.
   pref_registry->RegisterBooleanPref(kPasswordManagerSafeLifecycleEnabled,
                                      false);
 }
 
-bool IsPasswordManagerSafeLifecycleEnabled(const PrefService* prefs) {
-  return prefs->GetBoolean(kPasswordManagerSafeLifecycleEnabled);
-}
-
-void SetPasswordManagerSafeLifecycleEnabled(PrefService* prefs, bool value) {
-  prefs->SetBoolean(kPasswordManagerSafeLifecycleEnabled, value);
+void MigrateObsoleteWebViewPasswordManagerPrefs(PrefService* prefs) {
+  // Added 10/2026.
+  prefs->ClearPref(kPasswordManagerSafeLifecycleEnabled);
 }
 
 // static
@@ -108,9 +112,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
-  if (IsPasswordManagerSafeLifecycleEnabled(pref_service_)) {
-    scoped_observation_.Observe(web_state_);
-  }
+  scoped_observation_.Observe(web_state_);
 }
 
 WebViewPasswordManagerClient::~WebViewPasswordManagerClient() = default;
@@ -177,10 +179,7 @@ void WebViewPasswordManagerClient::PromptUserToEnableAutosignin() {
 }
 
 bool WebViewPasswordManagerClient::IsOffTheRecord() const {
-  if (IsPasswordManagerSafeLifecycleEnabled(pref_service_)) {
-    return !web_state_ || web_state_->GetBrowserState()->IsOffTheRecord();
-  }
-  return web_state_->GetBrowserState()->IsOffTheRecord();
+  return !web_state_ || web_state_->GetBrowserState()->IsOffTheRecord();
 }
 
 const password_manager::PasswordManager*
@@ -203,10 +202,8 @@ PrefService* WebViewPasswordManagerClient::GetLocalStatePrefs() const {
 
 metrics::ProfileMetricsService*
 WebViewPasswordManagerClient::GetProfileMetricsService() {
-  if (IsPasswordManagerSafeLifecycleEnabled(pref_service_)) {
-    if (!web_state_) {
-      return nullptr;
-    }
+  if (!web_state_) {
+    return nullptr;
   }
   return WebViewProfileMetricsServiceFactory::GetForBrowserState(
       static_cast<WebViewBrowserState*>(web_state_->GetBrowserState()));
@@ -295,11 +292,8 @@ bool WebViewPasswordManagerClient::IsSavingAndFillingEnabled(
 }
 
 bool WebViewPasswordManagerClient::IsCommittedMainFrameSecure() const {
-  if (IsPasswordManagerSafeLifecycleEnabled(pref_service_)) {
-    return web_state_ &&
-           password_manager::WebStateContentIsSecureHtml(web_state_);
-  }
-  return password_manager::WebStateContentIsSecureHtml(web_state_);
+  return web_state_ &&
+         password_manager::WebStateContentIsSecureHtml(web_state_);
 }
 
 const GURL& WebViewPasswordManagerClient::GetLastCommittedURL() const {
@@ -345,10 +339,8 @@ WebViewPasswordManagerClient::GetIdentityManager() const {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 WebViewPasswordManagerClient::GetURLLoaderFactory() {
-  if (IsPasswordManagerSafeLifecycleEnabled(pref_service_)) {
-    if (!web_state_) {
-      return nullptr;
-    }
+  if (!web_state_) {
+    return nullptr;
   }
   return web_state_->GetBrowserState()->GetSharedURLLoaderFactory();
 }
