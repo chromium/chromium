@@ -5,15 +5,43 @@
 #include "chrome/browser/actor/tools/type_tool_request.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/actor_features.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `type` tool.
+constexpr std::string_view kTypeToolDescription =
+    "Replaces the entire text content of an input field, textarea, search "
+    "box, or editable element on the active webpage. Use this whenever the "
+    "user asks to write, type, fill in, or enter text into a field or form on "
+    "the page.";
+
+// Description for the `dom_node_id` parameter of the `type` tool.
+constexpr std::string_view kDomNodeIdParamDescription =
+    "The numeric DOM node ID of the target input field or editable element "
+    "(e.g. 101).";
+
+// Description for the `text` parameter of the `type` tool.
+constexpr std::string_view kTextParamDescription =
+    "The complete replacement text to set into the element.";
+
+// Description for the `follow_by_enter` parameter of the `type` tool.
+constexpr std::string_view kFollowByEnterParamDescription =
+    "Whether to press Enter after typing the text (e.g. to submit a search).";
+
+}  // namespace
 
 using ::tabs::TabHandle;
 
@@ -28,6 +56,19 @@ TypeToolRequest::TypeToolRequest(TabHandle tab_handle,
       mode(mode) {}
 
 TypeToolRequest::~TypeToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> TypeToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kType, kModelFacingName,
+                               kTypeToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddIntegerProperty(kDomNodeIdParam, kDomNodeIdParamDescription)
+              .AddStringProperty(kTextParam, kTextParamDescription)
+              .AddBooleanProperty(kFollowByEnterParam,
+                                  kFollowByEnterParamDescription))
+      .Build();
+}
 
 void TypeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);

@@ -21,6 +21,7 @@
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -107,6 +108,23 @@ TEST(ToolRegistryTest, SelectOptionToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(SelectToolRequest::kValueParam));
 }
 
+TEST(ToolRegistryTest, TypeToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      TypeToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kType);
+  EXPECT_EQ(definition->name, TypeToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(TypeToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition, RequiresParam(TypeToolRequest::kDomNodeIdParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(TypeToolRequest::kTextParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(TypeToolRequest::kTextParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(TypeToolRequest::kFollowByEnterParam, "boolean"));
+  EXPECT_THAT(*definition, RequiresParam(TypeToolRequest::kFollowByEnterParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -152,6 +170,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsSelectOptionTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kSelectOption,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsTypeTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kType, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

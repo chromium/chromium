@@ -27,7 +27,9 @@ enum class ToolId {
   kScroll = 3,
   // Selects an option in a dropdown (<select>) element on the page.
   kSelectOption = 4,
-  kMaxValue = kSelectOption,
+  // Types text into an editable element on the page.
+  kType = 5,
+  kMaxValue = kType,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
