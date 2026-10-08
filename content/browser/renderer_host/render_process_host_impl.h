@@ -1240,9 +1240,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Returns whether this RenderProcessHost contains at least one
   // RenderFrameHost, but all of its RenderFrameHosts are non-live. In this case
-  // the RenderProcessHost is needed but the renderer process is not. As
-  // exceptions, this returns false if any RenderFrameHost is pending deletion
-  // or belongs to an inner WebContents for a guest.
+  // the RenderProcessHost is needed but the renderer process is not.
   bool HasOnlyNonLiveRenderFrameHosts();
 
   // Get an existing RenderProcessHost associated with the given browser

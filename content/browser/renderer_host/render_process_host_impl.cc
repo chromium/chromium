@@ -4488,15 +4488,8 @@ bool RenderProcessHostImpl::HasOnlyNonLiveRenderFrameHosts() {
     // RenderFrameHosts).
     if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id)) {
       found_rfh_count++;
-      if (rfh->IsRenderFrameLive()) {
+      if (rfh->IsRenderFrameLive())
         return false;
-      }
-
-      // A RenderFrameHost that is pending deletion can still be on the stack.
-      // Do not shut down the process until its deletion is complete.
-      if (rfh->IsPendingDeletion()) {
-        return false;
-      }
 
       // If this process contains a frame from an inner WebContents, skip the
       // process leak cleanup for now. Inner WebContents attachment can break
