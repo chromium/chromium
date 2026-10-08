@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
@@ -32,21 +34,38 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
   // if the associated bug is fixed.
   if (response.is_null())
     return nullptr;
-  return blink::mojom::FetchAPIResponse::New(
-      response->url_list, response->status_code, response->status_text,
-      response->response_type, response->padding, response->response_source,
-      response->headers, response->mime_type, response->request_method,
-      CloneSerializedBlob(response->blob), response->error,
-      response->response_time, response->cache_storage_cache_name,
-      mojo::NullRemote(), response->cors_exposed_header_names,
-      CloneSerializedBlob(response->side_data_blob),
-      response->side_data_for_cache_put
-          ? std::make_optional(response->side_data_for_cache_put->Clone())
-          : std::nullopt,
-      mojo::Clone(response->parsed_headers), response->connection_info,
-      response->alpn_negotiated_protocol, response->was_fetched_via_spdy,
-      response->has_range_requested, response->auth_challenge_info,
-      response->request_include_credentials, response->timing_allow_passed);
+
+  blink::mojom::FetchAPIResponsePtr clone =
+      blink::mojom::FetchAPIResponse::New();
+  // Copy the fields BGF actually uses; CHECK that the others are not used and
+  // don't need copying.
+  clone->url_list = response->url_list;
+  clone->status_code = response->status_code;
+  clone->status_text = response->status_text;
+  clone->response_type = response->response_type;
+  CHECK_EQ(clone->padding, response->padding);
+  CHECK_EQ(clone->response_source, response->response_source);
+  clone->headers = response->headers;
+  CHECK(!response->mime_type);
+  CHECK(!response->request_method);
+  clone->blob = CloneSerializedBlob(response->blob);
+  CHECK_EQ(clone->error, response->error);
+  clone->response_time = response->response_time;
+  CHECK(!response->cache_storage_cache_name);
+  CHECK(!response->cache_storage_side_data_writer);
+  CHECK(response->cors_exposed_header_names.empty());
+  CHECK(!response->side_data_blob);
+  CHECK(!response->side_data_for_cache_put);
+  CHECK(!response->parsed_headers);
+  CHECK_EQ(clone->connection_info, response->connection_info);
+  CHECK_EQ(clone->alpn_negotiated_protocol, response->alpn_negotiated_protocol);
+  CHECK_EQ(clone->was_fetched_via_spdy, response->was_fetched_via_spdy);
+  CHECK_EQ(clone->has_range_requested, response->has_range_requested);
+  CHECK(!response->auth_challenge_info);
+  CHECK_EQ(clone->request_include_credentials,
+           response->request_include_credentials);
+  CHECK_EQ(clone->timing_allow_passed, response->timing_allow_passed);
+  return clone;
 }
 
 // static

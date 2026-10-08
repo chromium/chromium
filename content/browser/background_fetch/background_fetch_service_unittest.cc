@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
@@ -203,20 +204,18 @@ class BackgroundFetchServiceTest
   }
 
   // Synchronous wrapper for BackgroundFetchServiceImpl::MatchRequests.
-  void MatchAllRequests(
+  std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> MatchAllRequests(
       const mojo::Remote<blink::mojom::BackgroundFetchRegistrationService>&
-          registration_service,
-      std::vector<blink::mojom::BackgroundFetchSettledFetchPtr>* out_fetches) {
-    DCHECK(registration_service);
-    DCHECK(out_fetches);
-    base::RunLoop run_loop;
+          registration_service) {
+    CHECK(registration_service);
+    base::test::TestFuture<
+        std::vector<blink::mojom::BackgroundFetchSettledFetchPtr>>
+        future;
     registration_service->MatchRequests(
         /* request_to_match= */ nullptr,
         /* cache_query_options= */ nullptr, /* match_all= */ true,
-        base::BindOnce(&BackgroundFetchServiceTest::DidMatchAllRequests,
-                       base::Unretained(this), run_loop.QuitClosure(),
-                       out_fetches));
-    run_loop.Run();
+        future.GetCallback());
+    return future.Take();
   }
 
   // Synchronous wrapper for BackgroundFetchServiceImpl::UpdateUI().
@@ -434,21 +433,6 @@ class BackgroundFetchServiceTest
     *out_error = error;
     *out_developer_ids = developer_ids;
 
-    std::move(quit_closure).Run();
-  }
-
-  void DidMatchAllRequests(
-      base::OnceClosure quit_closure,
-      std::vector<blink::mojom::BackgroundFetchSettledFetchPtr>* out_fetches,
-      std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> fetches) {
-    for (const auto& in_fetch : fetches) {
-      auto out_fetch = blink::mojom::BackgroundFetchSettledFetch::New();
-      out_fetch->request =
-          BackgroundFetchSettledFetch::CloneRequest(in_fetch->request);
-      out_fetch->response =
-          BackgroundFetchSettledFetch::CloneResponse(in_fetch->response);
-      out_fetches->push_back(std::move(out_fetch));
-    }
     std::move(quit_closure).Run();
   }
 
@@ -717,8 +701,8 @@ TEST_F(BackgroundFetchServiceTest, FetchSuccessEventDispatch) {
   EXPECT_EQ(kExampleDeveloperId, registration->registration_data->developer_id);
 
   // Get all the settled fetches and test properties.
-  std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> fetches;
-  MatchAllRequests(registration_service, &fetches);
+  std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> fetches =
+      MatchAllRequests(registration_service);
   ASSERT_EQ(fetches.size(), requests.size());
   for (size_t i = 0; i < fetches.size(); ++i) {
     ASSERT_EQ(fetches[i]->request->url, requests[i]->url);
@@ -830,8 +814,8 @@ TEST_F(BackgroundFetchServiceTest, FetchFailEventDispatch) {
   EXPECT_EQ(kExampleDeveloperId, registration->registration_data->developer_id);
 
   // Get all the settled fetches and test properties.
-  std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> fetches;
-  MatchAllRequests(registration_service, &fetches);
+  std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> fetches =
+      MatchAllRequests(registration_service);
   ASSERT_EQ(fetches.size(), 2u);
 
   // Make sure the 404 request is first, which has a response.
