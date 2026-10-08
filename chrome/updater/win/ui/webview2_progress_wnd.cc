@@ -23,11 +23,13 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/scoped_co_mem.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/util/path_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/ui/webview2ui.h"
+#include "third_party/webview2/include/WebView2.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace updater::ui {
@@ -45,9 +47,44 @@ void WebView2ProgressWnd::SetEventSink(ProgressWndEvents* events) {
   events_ = events;
 }
 
-void WebView2ProgressWnd::Initialize() {}
+HRESULT WebView2ProgressWnd::Initialize() {
+  // WebView2 requires the calling thread to be a single-threaded apartment
+  // (STA), so a thread already initialized as MTA can't host it.
+  if (!com_initializer_.Succeeded()) {
+    LOG(ERROR) << "Thread apartment failed to initialize as STA.";
+    return CO_E_NOTINITIALIZED;
+  }
+
+  // Fail early if the WebView2 runtime is not installed, instead of finding
+  // out asynchronously after the window has been shown.
+  base::win::ScopedCoMem<wchar_t> version;
+  if (const HRESULT hr =
+          ::GetAvailableCoreWebView2BrowserVersionString(nullptr, &version);
+      FAILED(hr)) {
+    LOG(ERROR) << "WebView2 runtime is not available: " << std::hex << hr;
+    return hr;
+  }
+  if (!version.get() || !*version.get()) {
+    LOG(ERROR) << "WebView2 runtime reported an empty version.";
+    return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+  }
+  VLOG(1) << "WebView2 runtime version: " << base::WideToUTF8(version.get());
+
+  std::optional<base::FilePath> install_dir =
+      GetInstallDirectory(GetUpdaterScope());
+  if (!install_dir) {
+    LOG(ERROR) << "Failed to resolve installation directory.";
+    return E_FAIL;
+  }
+  user_data_dir_ = install_dir->Append(FILE_PATH_LITERAL("UserData"));
+  return S_OK;
+}
 
 void WebView2ProgressWnd::Show() {
+  CHECK(!user_data_dir_.empty()) << "Initialize() must succeed before Show()";
+  CHECK(creation_failed_callback_)
+      << "The creation failed callback must be set before Show()";
+
   RECT rc = {0, 0, 500, 400};
   ::AdjustWindowRect(&rc, window_style(), FALSE);
 
@@ -60,12 +97,8 @@ void WebView2ProgressWnd::Show() {
   const gfx::Rect bounds((screen_w - width) / 2, (screen_h - height) / 2, width,
                          height);
 
+  // `Init` is fatal if the window can't be created, so `hwnd()` is valid.
   Init(nullptr, bounds);
-
-  if (!hwnd()) {
-    // TODO(crbug.com/409590312): Handle UI creation error.
-    return;
-  }
 
   ::SetWindowTextW(hwnd(), L"Google Installer");
 
@@ -133,40 +166,55 @@ void WebView2ProgressWnd::OnWaitingToInstall(const std::string&,
 void WebView2ProgressWnd::OnPause() {}
 
 LRESULT WebView2ProgressWnd::OnCreate(UINT, WPARAM, LPARAM) {
-  // WebView2 requires COM to be initialized on the calling thread.
-  // Initialize COM as single-threaded apartment (STA).
-  if (!com_initializer_.Succeeded()) {
-    LOG(ERROR) << "Thread apartment failed to initialize as STA. "
-               << "WebView2 may fail to display.";
-    return -1;
-  }
-
   RECT client_rect = {0};
   ::GetClientRect(hwnd(), &client_rect);
 
   browser_ = std::make_unique<WebView2UI>();
-
-  std::optional<base::FilePath> install_dir =
-      GetInstallDirectory(GetUpdaterScope());
-  if (!install_dir) {
-    LOG(ERROR) << "Failed to resolve installation directory.";
-    return -1;
+  const HRESULT hr =
+      browser_->Create(hwnd(), client_rect, user_data_dir_,
+                       base::BindOnce(&WebView2ProgressWnd::OnWebViewCreated,
+                                      msg_handler_weak_factory_.GetWeakPtr()));
+  if (FAILED(hr)) {
+    // The window is still being created, so the failure can't be handled
+    // here. Returning -1 is not an option either: `gfx::WindowImpl::Init`
+    // treats a failed window creation as fatal. Instead, handle the failure
+    // once the UI message loop runs, through the same path as an asynchronous
+    // WebView2 creation failure.
+    ::PostMessage(hwnd(), WM_WEBVIEW2_CREATE_FAILED, static_cast<WPARAM>(hr),
+                  0);
   }
-  base::FilePath user_data_dir =
-      install_dir->Append(FILE_PATH_LITERAL("UserData"));
-
-  browser_->Create(hwnd(), client_rect, user_data_dir,
-                   base::BindOnce(&WebView2ProgressWnd::OnWebViewCreated,
-                                  msg_handler_weak_factory_.GetWeakPtr()));
-
   return 0;
+}
+
+LRESULT WebView2ProgressWnd::OnWebViewCreateFailed(UINT,
+                                                   WPARAM wparam,
+                                                   LPARAM) {
+  OnWebViewCreationFailed(static_cast<HRESULT>(wparam));
+  return 0;
+}
+
+void WebView2ProgressWnd::OnWebViewCreationFailed(HRESULT result) {
+  LOG(ERROR) << "Failed to create WebView2: " << std::hex << result;
+  CHECK(creation_failed_callback_);
+
+  // Hand the UI over to the fallback. Once superseded, destroying this window
+  // must not quit the UI message loop, which the fallback UI keeps using.
+  superseded_ = true;
+
+  // Run the callback while this window is still visible: the fallback window
+  // can only take the foreground while this process owns the foreground
+  // window.
+  std::move(creation_failed_callback_).Run();
+
+  // This may be running from within a WebView2 callback, so the window is
+  // hidden now and closed asynchronously.
+  ::ShowWindow(hwnd(), SW_HIDE);
+  ::PostMessage(hwnd(), WM_CLOSE, 0, 0);
 }
 
 void WebView2ProgressWnd::OnWebViewCreated(HRESULT result) {
   if (FAILED(result)) {
-    LOG(ERROR) << "Failed to create WebView2: " << std::hex << result;
-    // TODO(crbug.com/409590312): Handle UI creation error.
-    ::PostMessage(hwnd(), WM_CLOSE, 0, 0);
+    OnWebViewCreationFailed(result);
     return;
   }
   is_webview_ready_ = true;
@@ -327,7 +375,10 @@ LRESULT WebView2ProgressWnd::OnDestroy(UINT, WPARAM, LPARAM) {
   // underlying WebView2 processes.
   browser_.reset();
 
-  ::PostQuitMessage(0);
+  // Closing the window ends the UI, unless another window has taken over.
+  if (!superseded_) {
+    ::PostQuitMessage(0);
+  }
 
   SetMsgHandled(FALSE);
   return 0;

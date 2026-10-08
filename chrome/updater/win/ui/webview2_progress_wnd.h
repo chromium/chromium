@@ -11,6 +11,8 @@
 #include <optional>
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -33,8 +35,29 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
   ~WebView2ProgressWnd() override;
 
   void SetEventSink(ProgressWndEvents* events);
-  void Initialize();
+
+  // Checks that the WebView2 UI can be used on this thread: the thread must be
+  // a COM single-threaded apartment, and the WebView2 runtime must be
+  // installed. Returns a failure `HRESULT` otherwise, in which case the window
+  // must not be shown, and the caller should use a different UI instead.
+  HRESULT Initialize();
+
+  // Creates and shows the window, and starts creating the WebView2 inside it.
+  // `Initialize()` must have succeeded, and the creation failed callback must
+  // have been set.
   void Show();
+
+  // Sets the callback which is run on the UI thread if the WebView2 fails to
+  // be created after the window has been shown, so that a different UI can
+  // take over. The callback runs while this window is still visible, so the
+  // new UI can take the foreground; afterwards, this window hides itself and
+  // posts a request to close itself, and it no longer quits the UI message
+  // loop when it is destroyed. The callback may run from within a WebView2
+  // callback, so it must not destroy this object synchronously.
+  void set_creation_failed_callback(base::OnceClosure callback) {
+    creation_failed_callback_ = std::move(callback);
+  }
+
   void set_bundle_name(const std::u16string& bundle_name) {
     bundle_name_ = bundle_name;
   }
@@ -67,6 +90,7 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
     CR_MESSAGE_HANDLER_EX(WM_DPICHANGED, OnDpiChanged)
     CR_MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
+    CR_MESSAGE_HANDLER_EX(WM_WEBVIEW2_CREATE_FAILED, OnWebViewCreateFailed)
   CR_END_MSG_MAP()
 
  private:
@@ -75,9 +99,14 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
   LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnDpiChanged(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnDestroy(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnWebViewCreateFailed(UINT msg, WPARAM wparam, LPARAM lparam);
 
   // WebView2 asynchronous completion callback.
   void OnWebViewCreated(HRESULT result);
+
+  // Handles a WebView2 creation failure by handing the UI over to
+  // `creation_failed_callback_` and closing this window.
+  void OnWebViewCreationFailed(HRESULT result);
 
   // javascript event handler.
   void OnWebMessageReceived(const std::wstring& message);
@@ -93,6 +122,16 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
 
   bool is_webview_ready_ = false;
   base::win::ScopedCOMInitializer com_initializer_;
+
+  // The WebView2 user data directory. Set by `Initialize()`.
+  base::FilePath user_data_dir_;
+
+  base::OnceClosure creation_failed_callback_;
+
+  // True once `creation_failed_callback_` has been run, and a different UI
+  // has taken over. Destroying the window must not quit the UI message loop
+  // from then on.
+  bool superseded_ = false;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(WebView2ProgressWnd)
 };

@@ -240,8 +240,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
   }
 
   void OnWaitingToDownload(const std::string& app_id,
-                           const std::u16string& app_name) override {
-  }
+                           const std::u16string& app_name) override {}
 
   void OnDownloading(const std::string& app_id,
                      const std::u16string& app_name,
@@ -256,8 +255,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
-                              base::Time next_retry_time) override {
-  }
+                              base::Time next_retry_time) override {}
 
   void OnWaitingToInstall(const std::string& app_id,
                           const std::u16string& app_name) override {
@@ -410,10 +408,40 @@ class AppInstallControllerImpl : public AppInstallController,
   void InitializeUI();
   void RunUI();
 
+  // Sets up `progress_wnd` as the UI of this install and initializes it.
+  // Returns the result of initializing the window.
+  template <typename ProgressWndType>
+  HRESULT InitializeProgressWnd(ProgressWndType& progress_wnd);
+
+  // Shows `progress_wnd` and makes it the target of the progress
+  // notifications. Returns the window handle.
+  template <typename ProgressWndType>
+  HWND ShowProgressWnd(std::unique_ptr<ProgressWndType> progress_wnd);
+
+  // Makes `observer` the UI of this install and the target of the progress
+  // notifications.
+  void SetObserver(std::unique_ptr<AppInstallProgress> observer);
+
+  // Creates and shows the native progress window, and makes it the target of
+  // the progress notifications. Returns the window handle. If the window can't
+  // be created, the install proceeds silently, and null is returned.
+  HWND ShowNativeProgressWnd();
+
+  // Called when the WebView2 UI fails to initialize after it has been shown.
+  // Falls back to the native UI.
+  void OnWebViewUIFailed();
+
   // These functions are called on the main updater sequence.
   void PreInstallApp(const std::string& app_id,
                      const std::string& app_name,
                      base::OnceCallback<void(int)> callback);
+
+  // Loads the app logo, if any, and sets it on `observer_hwnd_`.
+  void PostLoadLogo();
+
+  // Called after the native UI has replaced the WebView2 UI, with the handle
+  // of the native progress window.
+  void OnFallbackUIShown(HWND progress_hwnd);
   void DoInstallAppOffline(
       const OfflineManifestSystemRequirements& requirements,
       const std::string& installer_version,
@@ -449,7 +477,23 @@ class AppInstallControllerImpl : public AppInstallController,
   // The message loop associated with the UI.
   std::unique_ptr<ui::MessageLoop> ui_message_loop_;
 
+  // Receives the progress notifications from `install_progress_observer_ipc_`
+  // on the UI thread and forwards them to `observer_`. Its address is stable
+  // for the lifetime of the UI thread, so the UI can be replaced without
+  // touching the IPC adapter. Owned by the UI thread.
+  std::unique_ptr<AppInstallProgressForwarder> progress_forwarder_;
+
+  // The UI. Owned by the UI thread: created, replaced, and destroyed there.
   std::unique_ptr<AppInstallProgress> observer_;
+
+  // The WebView2 UI which failed to initialize and was replaced by the native
+  // UI. It is replaced from within one of its own callbacks, so it can't be
+  // destroyed at that time. It is kept alive until the UI thread tears down.
+  std::unique_ptr<AppInstallProgress> superseded_observer_;
+
+  // The window handle of the UI, used by the main updater sequence to set the
+  // app logo. Written on the UI thread only before `Initialize()` returns.
+  // Later updates come through `OnFallbackUIShown` on the main sequence.
   HWND observer_hwnd_ = nullptr;
   DWORD ui_thread_id_ = 0u;
 
@@ -498,9 +542,9 @@ void AppInstallControllerImpl::Initialize() {
 
   ui_initialized_event.Wait();
 
-  // The UI thread runs the observer.
-  install_progress_observer_ipc_ =
-      std::make_unique<AppInstallProgressIPC>(observer_.get(), ui_thread_id_);
+  // The UI thread runs the observer, through the forwarder.
+  install_progress_observer_ipc_ = std::make_unique<AppInstallProgressIPC>(
+      progress_forwarder_.get(), ui_thread_id_);
 
   // At this point, the UI has been initialized, which means the UI
   // can be used from now on as an observer of the application
@@ -563,6 +607,12 @@ void AppInstallControllerImpl::PreInstallApp(
   app_name_ = base::UTF8ToUTF16(app_name);
   callback_ = std::move(callback);
 
+  PostLoadLogo();
+}
+
+void AppInstallControllerImpl::PostLoadLogo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // The app logo is expected to be hosted at `{AppLogoURL}{url escaped
   // app_id_}.bmp`. If `{url escaped app_id_}.bmp` exists, a logo is shown in
   // the updater UI for that app install.
@@ -575,6 +625,20 @@ void AppInstallControllerImpl::PreInstallApp(
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
       ->PostTask(FROM_HERE, base::BindOnce(&AppInstallControllerImpl::LoadLogo,
                                            this, app_id_, observer_hwnd_));
+}
+
+void AppInstallControllerImpl::OnFallbackUIShown(HWND progress_hwnd) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  observer_hwnd_ = progress_hwnd;
+
+  // If the install has already started, the logo was loaded for the WebView2
+  // window, which is gone. Load it again for the native window, if there is
+  // one. Otherwise, `PreInstallApp` loads it for the native window when the
+  // install starts.
+  if (!app_id_.empty() && progress_hwnd) {
+    PostLoadLogo();
+  }
 }
 
 void AppInstallControllerImpl::InstallAppOffline(
@@ -995,33 +1059,103 @@ void AppInstallControllerImpl::InitializeUI() {
   ui_message_loop_ = std::make_unique<ui::MessageLoop>();
   ui_message_loop_->AddMessageFilter(this);
   ui_thread_id_ = ::GetCurrentThreadId();
+  progress_forwarder_ = std::make_unique<AppInstallProgressForwarder>();
 
   if (is_silent_install_) {
-    observer_ = std::make_unique<InstallProgressSilentObserver>(this);
-  } else {
-#define VISIT_PROGRESS_WND(progress_wnd)                                     \
-  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;          \
-  if (tag_args) {                                                            \
-    progress_wnd->set_bundle_name(base::UTF8ToUTF16(tag_args->bundle_name)); \
-  }                                                                          \
-  progress_wnd->SetEventSink(this);                                          \
-  progress_wnd->Initialize();                                                \
-  progress_wnd->Show();                                                      \
-                                                                             \
-  observer_hwnd_ = progress_wnd->hwnd();                                     \
-  observer_.reset(progress_wnd.release());
+    SetObserver(std::make_unique<InstallProgressSilentObserver>(this));
+    return;
+  }
 
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(kWebViewUISwitch)) {
-      auto wnd = std::make_unique<ui::WebView2ProgressWnd>();
-      VISIT_PROGRESS_WND(wnd);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kWebViewUISwitch)) {
+    auto wnd = std::make_unique<ui::WebView2ProgressWnd>();
+    const HRESULT hr = InitializeProgressWnd(*wnd);
+    if (SUCCEEDED(hr)) {
+      // The WebView2 is created asynchronously after the window is shown. If
+      // that fails, the native UI takes over.
+      wnd->set_creation_failed_callback(
+          base::BindOnce(&AppInstallControllerImpl::OnWebViewUIFailed, this));
+      observer_hwnd_ = ShowProgressWnd(std::move(wnd));
       return;
     }
-    auto wnd =
-        std::make_unique<ui::ProgressWnd>(ui_message_loop_.get(), nullptr);
-    VISIT_PROGRESS_WND(wnd);
-    return;
-#undef VISIT_PROGRESS_WND
+    LOG(WARNING) << "WebView2 UI is unavailable: " << std::hex << hr
+                 << ". Falling back to the native UI.";
   }
+
+  observer_hwnd_ = ShowNativeProgressWnd();
+}
+
+template <typename ProgressWndType>
+HRESULT AppInstallControllerImpl::InitializeProgressWnd(
+    ProgressWndType& progress_wnd) {
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  if (tag_args) {
+    progress_wnd.set_bundle_name(base::UTF8ToUTF16(tag_args->bundle_name));
+  }
+  progress_wnd.SetEventSink(this);
+  return progress_wnd.Initialize();
+}
+
+template <typename ProgressWndType>
+HWND AppInstallControllerImpl::ShowProgressWnd(
+    std::unique_ptr<ProgressWndType> progress_wnd) {
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+
+  progress_wnd->Show();
+  const HWND hwnd = progress_wnd->hwnd();
+  SetObserver(std::move(progress_wnd));
+  return hwnd;
+}
+
+void AppInstallControllerImpl::SetObserver(
+    std::unique_ptr<AppInstallProgress> observer) {
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+
+  observer_ = std::move(observer);
+
+  // The forwarder replays the most recent progress notification, if any, so
+  // a UI which takes over mid-install shows the current state.
+  progress_forwarder_->SetTarget(observer_.get());
+}
+
+HWND AppInstallControllerImpl::ShowNativeProgressWnd() {
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+
+  auto wnd = std::make_unique<ui::ProgressWnd>(ui_message_loop_.get(), nullptr);
+  if (const HRESULT hr = InitializeProgressWnd(*wnd); FAILED(hr)) {
+    // Proceed as a silent install: the silent observer ends the UI message
+    // loop when the install completes, and runs the launch commands if
+    // requested, which a `ProgressWnd` without a window would not do.
+    LOG(ERROR) << "Failed to initialize the native UI: " << std::hex << hr
+               << ". The install proceeds silently.";
+    SetObserver(std::make_unique<InstallProgressSilentObserver>(this));
+    return nullptr;
+  }
+  return ShowProgressWnd(std::move(wnd));
+}
+
+void AppInstallControllerImpl::OnWebViewUIFailed() {
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK(observer_);
+
+  LOG(WARNING) << "WebView2 UI failed to initialize. "
+               << "Falling back to the native UI.";
+
+  // This runs from within a callback of the WebView2 window, which is still
+  // visible so that the native window can take the foreground, and which
+  // closes itself afterwards. The window can't be destroyed here, so keep it
+  // alive until the UI thread tears down.
+  superseded_observer_ = std::move(observer_);
+
+  // Makes the native window the target of the progress notifications. The
+  // handle is null if the native UI is unavailable too.
+  const HWND hwnd = ShowNativeProgressWnd();
+
+  // `observer_hwnd_` and the app logo are handled on the main sequence.
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AppInstallControllerImpl::OnFallbackUIShown, this, hwnd));
 }
 
 void AppInstallControllerImpl::RunUI() {
@@ -1031,8 +1165,11 @@ void AppInstallControllerImpl::RunUI() {
   ui_message_loop_->Run();
   ui_message_loop_->RemoveMessageFilter(this);
 
-  // This object is owned by the UI thread must be destroyed on this thread.
+  // These objects are owned by the UI thread and must be destroyed on this
+  // thread. The forwarder goes first, since it points to `observer_`.
+  progress_forwarder_ = nullptr;
   observer_ = nullptr;
+  superseded_observer_ = nullptr;
 
   if (!callback_) {
     return;
@@ -1130,6 +1267,121 @@ std::wstring GetTextForStartupError(int error_code, const std::wstring& lang) {
 }
 
 }  // namespace
+
+AppInstallProgressForwarder::AppInstallProgressForwarder() = default;
+
+AppInstallProgressForwarder::~AppInstallProgressForwarder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void AppInstallProgressForwarder::SetTarget(AppInstallProgress* target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  target_ = target;
+  if (target_ && last_call_) {
+    last_call_.Run(target_);
+  }
+}
+
+void AppInstallProgressForwarder::OnCheckingForUpdate() {
+  Forward(base::BindRepeating(
+      [](AppInstallProgress* target) { target->OnCheckingForUpdate(); }));
+}
+
+void AppInstallProgressForwarder::OnUpdateAvailable(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    const base::Version& version) {
+  Forward(base::BindRepeating(
+      [](const std::string& app_id, const std::u16string& app_name,
+         const base::Version& version, AppInstallProgress* target) {
+        target->OnUpdateAvailable(app_id, app_name, version);
+      },
+      app_id, app_name, version));
+}
+
+void AppInstallProgressForwarder::OnWaitingToDownload(
+    const std::string& app_id,
+    const std::u16string& app_name) {
+  Forward(base::BindRepeating(
+      [](const std::string& app_id, const std::u16string& app_name,
+         AppInstallProgress* target) {
+        target->OnWaitingToDownload(app_id, app_name);
+      },
+      app_id, app_name));
+}
+
+void AppInstallProgressForwarder::OnDownloading(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    std::optional<base::TimeDelta> time_remaining,
+    int pos) {
+  Forward(base::BindRepeating(
+      [](const std::string& app_id, const std::u16string& app_name,
+         std::optional<base::TimeDelta> time_remaining, int pos,
+         AppInstallProgress* target) {
+        target->OnDownloading(app_id, app_name, time_remaining, pos);
+      },
+      app_id, app_name, time_remaining, pos));
+}
+
+void AppInstallProgressForwarder::OnWaitingRetryDownload(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    base::Time next_retry_time) {
+  Forward(base::BindRepeating(
+      [](const std::string& app_id, const std::u16string& app_name,
+         base::Time next_retry_time, AppInstallProgress* target) {
+        target->OnWaitingRetryDownload(app_id, app_name, next_retry_time);
+      },
+      app_id, app_name, next_retry_time));
+}
+
+void AppInstallProgressForwarder::OnWaitingToInstall(
+    const std::string& app_id,
+    const std::u16string& app_name) {
+  Forward(base::BindRepeating(
+      [](const std::string& app_id, const std::u16string& app_name,
+         AppInstallProgress* target) {
+        target->OnWaitingToInstall(app_id, app_name);
+      },
+      app_id, app_name));
+}
+
+void AppInstallProgressForwarder::OnInstalling(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    std::optional<base::TimeDelta> time_remaining,
+    int pos) {
+  Forward(base::BindRepeating(
+      [](const std::string& app_id, const std::u16string& app_name,
+         std::optional<base::TimeDelta> time_remaining, int pos,
+         AppInstallProgress* target) {
+        target->OnInstalling(app_id, app_name, time_remaining, pos);
+      },
+      app_id, app_name, time_remaining, pos));
+}
+
+void AppInstallProgressForwarder::OnPause() {
+  Forward(base::BindRepeating(
+      [](AppInstallProgress* target) { target->OnPause(); }));
+}
+
+void AppInstallProgressForwarder::OnComplete(
+    const ObserverCompletionInfo& observer_info) {
+  Forward(base::BindRepeating(
+      [](const ObserverCompletionInfo& observer_info,
+         AppInstallProgress* target) { target->OnComplete(observer_info); },
+      observer_info));
+}
+
+void AppInstallProgressForwarder::Forward(
+    base::RepeatingCallback<void(AppInstallProgress*)> call) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_call_ = std::move(call);
+  if (target_) {
+    last_call_.Run(target_);
+  }
+}
 
 [[nodiscard]] ObserverCompletionInfo HandleInstallResult(
     const UpdateService::UpdateState& update_state,

@@ -20,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_co_mem.h"
 #include "third_party/webview2/include/WebView2.h"
 
@@ -63,16 +62,14 @@ WebView2UI::~WebView2UI() {
   }
 }
 
-void WebView2UI::Create(HWND hwnd_parent,
-                        const RECT& rect,
-                        const base::FilePath& user_data_dir,
-                        base::OnceCallback<void(HRESULT)> on_created) {
+HRESULT WebView2UI::Create(HWND hwnd_parent,
+                           const RECT& rect,
+                           const base::FilePath& user_data_dir,
+                           base::OnceCallback<void(HRESULT)> on_created) {
   CHECK(!user_data_dir.empty());
   CHECK(!on_created_);
   if (!hwnd_parent) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(on_created), E_INVALIDARG));
-    return;
+    return E_INVALIDARG;
   }
   hwnd_parent_ = hwnd_parent;
   on_created_ = std::move(on_created);
@@ -81,7 +78,7 @@ void WebView2UI::Create(HWND hwnd_parent,
   // installer window (destroying this instance) before this asynchronous COM
   // callback completes.
   base::WeakPtr<WebView2UI> weak_this = weak_ptr_factory_.GetWeakPtr();
-  HRESULT hr = ::CreateCoreWebView2EnvironmentWithOptions(
+  const HRESULT hr = ::CreateCoreWebView2EnvironmentWithOptions(
       nullptr, user_data_dir.value().c_str(), nullptr,
       Microsoft::WRL::Callback<
           ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
@@ -95,10 +92,15 @@ void WebView2UI::Create(HWND hwnd_parent,
           .Get());
 
   if (FAILED(hr)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WebView2UI::ReportCreationResult, weak_this, hr));
+    // Creation did not start, so the completion handler is never invoked. The
+    // caller handles the failure synchronously through the return value.
+    // Note that a task runner can't be used to report the result: the UI
+    // thread pumps Win32 messages, not tasks, while the window is shown.
+    on_created_.Reset();
+    hwnd_parent_ = nullptr;
+    return hr;
   }
+  return S_OK;
 }
 
 HRESULT WebView2UI::OnEnvironmentCreated(HRESULT result,

@@ -49,7 +49,14 @@ class ProgressWndEvents : public CompleteWndEvents {
   virtual void DoCancel() = 0;
 };
 
+// Application messages posted to the progress windows. Keep them together so
+// that new messages don't collide.
+//
+// Carries the app logo bitmaps to the progress window. See `LoadLogo`.
 inline constexpr UINT WM_SET_APP_LOGO = WM_APP + 10;
+// Posted by `WebView2ProgressWnd` to itself when the WebView2 creation could
+// not be started. `WPARAM` carries the failure `HRESULT`.
+inline constexpr UINT WM_WEBVIEW2_CREATE_FAILED = WM_APP + 11;
 
 // Implements the UI progress window.
 class ProgressWnd : public CompleteWnd, public AppInstallProgress {

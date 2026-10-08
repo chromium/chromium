@@ -23,11 +23,15 @@ class WebView2UI {
   WebView2UI();
   ~WebView2UI();
 
-  // Asynchronous creation.
-  void Create(HWND hwnd_parent,
-              const RECT& rect,
-              const base::FilePath& user_data_dir,
-              base::OnceCallback<void(HRESULT)> on_created);
+  // Starts creating the WebView2 asynchronously, as a child of `hwnd_parent`.
+  // Returns a failure `HRESULT` if creation could not be started, for
+  // example when the WebView2 runtime is not installed; `on_created` is not
+  // run in that case. Otherwise, `on_created` is run exactly once, on the
+  // calling thread, with the result of the asynchronous creation.
+  HRESULT Create(HWND hwnd_parent,
+                 const RECT& rect,
+                 const base::FilePath& user_data_dir,
+                 base::OnceCallback<void(HRESULT)> on_created);
 
   // Navigates to the specified URL.
   HRESULT Navigate(const std::wstring& url);
