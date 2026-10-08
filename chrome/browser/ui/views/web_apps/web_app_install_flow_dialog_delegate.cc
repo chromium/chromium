@@ -342,11 +342,27 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
 }
 
 void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
-  web_contents()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          GURL(chrome::kInstallDialogFlowLearnMoreURL),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK),
-      base::DoNothing());
+  // "Learn more" dismisses the install prompt. The dialog must be closed before
+  // the help page is opened: opening it in a new foreground tab hides the tab
+  // that triggered the install, which makes the pending install command abort
+  // itself as cancelled before the dialog's own close can decline the install
+  // through `callback_`. The page's BeforeInstallPromptEvent.userChoice would
+  // then never resolve.
+  //
+  // Closing the dialog synchronously runs the dialog's close action (declining
+  // the install command via `callback_`) and destroys `this`. Cache the
+  // WebContents pointer beforehand as accessing `web_contents()` later would
+  // be an use-after-free.
+  base::WeakPtr<content::WebContents> contents = web_contents()->GetWeakPtr();
+  CloseDialogAsIgnored();
+
+  if (contents) {
+    contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                          GURL(chrome::kInstallDialogFlowLearnMoreURL),
+                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                          ui::PAGE_TRANSITION_LINK),
+                      base::DoNothing());
+  }
 }
 
 void WebAppInstallFlowDialogDelegate::OnAccept() {

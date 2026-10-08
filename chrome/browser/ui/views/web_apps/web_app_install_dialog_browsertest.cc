@@ -28,10 +28,12 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,14 +41,22 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -214,10 +224,48 @@ class WebAppInstallDialogBrowserTest
     dialog_accepted_ = accepted;
     dialog_install_info_ = std::move(install_info);
     install_result_callback_ = std::move(result_callback);
+    tab_count_at_dialog_completion_ = browser()->GetTabStripModel()->count();
   }
 
   void CompleteInstall(bool success) {
     std::move(install_result_callback_).Run(success, base::DoNothing());
+  }
+
+  // Presses the "Learn more" button of the currently shown dialog and verifies
+  // that the installation was declined before the help page was opened in a
+  // new foreground tab, and that the dialog was closed.
+  void PressLearnMoreAndExpectDeclineBeforeHelpPage() {
+    ASSERT_TRUE(widget_);
+    ASSERT_EQ(browser()->GetTabStripModel()->count(), 1);
+    views::test::WidgetDestroyedWaiter destruction_waiter(widget_.get());
+
+    views::View* learn_more_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            WebAppInstallFlowDialogDelegate::kLearnMoreButtonId,
+            views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+    ASSERT_TRUE(learn_more_view);
+
+    ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
+    // Key events are not subject to the dialog's input event activation
+    // protection, unlike mouse events dispatched right after the dialog is
+    // shown.
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                           ui::EF_NONE);
+    views::test::ButtonTestApi(
+        views::AsViewClass<views::Button>(learn_more_view))
+        .NotifyClick(key_event);
+
+    // The installation is declined synchronously, while the installing tab
+    // was still the only tab, i.e. before the help page was opened.
+    EXPECT_EQ(dialog_accepted_, false);
+    EXPECT_EQ(tab_count_at_dialog_completion_, 1);
+
+    content::WebContents* help_page = tab_added_waiter.Wait();
+    ASSERT_TRUE(help_page);
+    EXPECT_EQ(help_page->GetVisibleURL(),
+              GURL(chrome::kInstallDialogFlowLearnMoreURL));
+    EXPECT_EQ(help_page, browser()->GetTabStripModel()->GetActiveWebContents());
+    destruction_waiter.Wait();
   }
 
  protected:
@@ -225,6 +273,8 @@ class WebAppInstallDialogBrowserTest
   std::optional<bool> dialog_accepted_;
   std::unique_ptr<WebAppInstallInfo> dialog_install_info_;
   WebAppInstallationAcceptanceResultCallback install_result_callback_;
+  // The number of tabs in `browser()` at the time `OnDialogCompleted()` ran.
+  std::optional<int> tab_count_at_dialog_completion_;
   TestWebAppScreenshotFetcher screenshot_fetcher_;
   base::WeakPtr<views::Widget> widget_ = nullptr;
   base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate_ = nullptr;
@@ -304,11 +354,32 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, Success) {
   EXPECT_TRUE(dialog_install_info_);
 }
 
+// Regression tests for crbug.com/570729142. "Learn more" opens the help page in
+// a new foreground tab, which hides the installing tab and closes this
+// tab-modal dialog. The dialog must decline the installation *before* that tab
+// is opened, otherwise the pending install command aborts itself on the tab
+// switch and the decline never reaches it.
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, LearnMoreInIntro) {
+  ShowUi("Intro");
+  PressLearnMoreAndExpectDeclineBeforeHelpPage();
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest,
+                       LearnMoreInInstallOptions) {
+  if (GetOsType() == InstallOsType::kOther) {
+    GTEST_SKIP() << "InstallOptions step does not exist for kOther";
+  }
+  ShowUi("InstallOptions");
+  PressLearnMoreAndExpectDeclineBeforeHelpPage();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /** prefix */,
     WebAppInstallDialogClosedTest,
     testing::Combine(testing::Values(InstallOsType::kOther,
-                                     InstallOsType::kMac),
+                                     InstallOsType::kMac,
+                                     InstallOsType::kCros,
+                                     InstallOsType::kWin),
                      testing::Values(InstallDialogType::kSimple,
                                      InstallDialogType::kDetailed,
                                      InstallDialogType::kDiy)),

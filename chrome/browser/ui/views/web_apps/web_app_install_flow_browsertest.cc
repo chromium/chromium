@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -34,11 +35,17 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -48,9 +55,11 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -349,6 +358,82 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
       histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
       base::BucketsAre(base::Bucket(InstallDialogStep::kSuccessful, 1)));
   EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogClosed"));
+}
+
+// Regression test for crbug.com/570729142. When a site calls prompt() on its
+// BeforeInstallPromptEvent and the user then clicks "Learn more" in the install
+// dialog, the install must be treated as dismissed: the userChoice promise
+// resolves with "dismissed" and a new beforeinstallprompt event is dispatched
+// so the site can prompt again later.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
+                       LearnMoreResolvesUserChoiceAsDismissed) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* manager =
+      webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+  ASSERT_NE(manager, nullptr);
+
+  // Load a page that stashes the beforeinstallprompt event, and wait for the
+  // renderer to reply to that event.
+  {
+    base::RunLoop run_loop;
+    manager->SetBannerPromptReplyCallback(run_loop.QuitClosure());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_https_test_server().GetURL(
+                       "/banners/manifest_test_page.html?action=stash_event")));
+    run_loop.Run();
+  }
+  ASSERT_EQ(webapps::AppBannerManager::State::PENDING_PROMPT,
+            manager->state_for_testing());
+  ASSERT_TRUE(manager->IsPromptAvailableForTesting());
+
+  // Have the page call prompt() on the stashed event, which shows the dialog.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppInstallFlowDialog");
+  ASSERT_TRUE(content::ExecJs(web_contents, "callStashedPrompt();"));
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  // prompt() consumes the event; the site may not call prompt() again until it
+  // receives a new beforeinstallprompt event.
+  EXPECT_FALSE(manager->IsPromptAvailableForTesting());
+
+  views::View* learn_more_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          WebAppInstallFlowDialogDelegate::kLearnMoreButtonId,
+          views::ElementTrackerViews::GetContextForWidget(widget));
+  ASSERT_NE(learn_more_view, nullptr);
+  views::Button* learn_more_button =
+      views::AsViewClass<views::Button>(learn_more_view);
+  ASSERT_NE(learn_more_button, nullptr);
+
+  base::RunLoop prompt_reply_run_loop;
+  manager->SetBannerPromptReplyCallback(prompt_reply_run_loop.QuitClosure());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
+  // Use a key event, which is not subject to input event activation
+  // protection on a freshly shown dialog.
+  views::test::ButtonTestApi(learn_more_button)
+      .NotifyClick(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                                ui::EF_NONE));
+
+  // The help page opens in a new foreground tab and the dialog closes.
+  content::WebContents* help_contents = tab_added_waiter.Wait();
+  ASSERT_NE(help_contents, nullptr);
+  EXPECT_EQ(GURL(chrome::kInstallDialogFlowLearnMoreURL),
+            help_contents->GetVisibleURL());
+  destroyed_waiter.Wait();
+
+  // The site's userChoice promise resolves as dismissed...
+  const std::u16string expected_title = u"Got userChoice: dismissed";
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  // ...and a new beforeinstallprompt event is dispatched so that the site can
+  // prompt again.
+  prompt_reply_run_loop.Run();
+  EXPECT_EQ(webapps::AppBannerManager::State::PENDING_PROMPT,
+            manager->state_for_testing());
+  EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
 #if BUILDFLAG(IS_WIN)
