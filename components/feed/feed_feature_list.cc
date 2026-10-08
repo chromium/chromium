@@ -65,7 +65,7 @@ BASE_FEATURE(kWideScreenFeedForFoldables, base::FEATURE_DISABLED_BY_DEFAULT);
 // through a stable channel revision.
 // See b/517926260.
 BASE_FEATURE(kFeedNullItemAnimatorOnScrollRestore,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta, kFeedCloseRefreshDelay, &kInterestFeedV2,
                     "feed_close_refresh_delay", base::Minutes(30));
