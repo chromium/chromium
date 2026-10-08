@@ -193,7 +193,6 @@ public class ManualFillingControllerTest {
     @Mock private BackPressManager mMockBackPressManager;
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
     @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
-    @Mock private BrowserControlsManager mMockBrowserControlsManager;
     @Mock private ManualFillingComponentBridge.Natives mManualFillingComponentBridgeJniMock;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
@@ -436,8 +435,7 @@ public class ManualFillingControllerTest {
                 /* isContextualSearchOpened= */ () -> false,
                 mMockBackPressManager,
                 mMockEdgeToEdgeControllerSupplier,
-                mMockSoftKeyboardDelegate,
-                mMockBrowserControlsManager);
+                mMockSoftKeyboardDelegate);
     }
 
     @Test
@@ -2026,7 +2024,7 @@ public class ManualFillingControllerTest {
     }
 
     @Test
-    public void testLargeFormAccessoryWithDynamicPositioningIncludesViewportLeftOffset() {
+    public void testLargeFormAccessoryWithDynamicPositioningIncludesViewportOffsets() {
         DeviceInfo.setIsDesktopForTesting(true);
         final int density = 2;
         final int paddingForNotch = 5;
@@ -2037,6 +2035,7 @@ public class ManualFillingControllerTest {
         final int bottomBound = 40;
         final int horizontalMargin = 20;
         final int viewportLeftOffset = 240;
+        final int viewportTopOffset = 100;
 
         addBrowserTab(mMediator, 1111, null);
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
@@ -2045,7 +2044,7 @@ public class ManualFillingControllerTest {
 
         simulateVisibleViewportBounds(
                 /* left= */ viewportLeftOffset,
-                /* top= */ 0,
+                /* top= */ viewportTopOffset,
                 /* right= */ 1000,
                 /* bottom= */ 1000);
         mController.setFieldBounds(new RectF(leftBound, topBound, rightBound, bottomBound));
@@ -2069,7 +2068,7 @@ public class ManualFillingControllerTest {
         assertFalse(style.isDocked());
         assertEquals(KeyboardAccessoryStyle.NotchPosition.TOP, style.getNotchPosition());
 
-        assertEquals(bottomBound * density, style.getVerticalOffset());
+        assertEquals(viewportTopOffset + bottomBound * density, style.getVerticalOffset());
         assertEquals(
                 viewportLeftOffset + leftBound * density + horizontalMargin,
                 style.getHorizontalOffset());

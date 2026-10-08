@@ -15,8 +15,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -82,8 +80,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                         insetObserver,
                         barStub,
                         this::dismiss);
-        BrowserControlsManager browserControlsManager =
-                BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid);
 
         initialize(
                 windowAndroid,
@@ -93,8 +89,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 isContextualSearchOpened,
                 backPressManager,
                 edgeToEdgeControllerSupplier,
-                keyboardDelegate,
-                browserControlsManager);
+                keyboardDelegate);
     }
 
     @VisibleForTesting
@@ -106,8 +101,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BooleanSupplier isContextualSearchOpened,
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            SoftKeyboardDelegate keyboardDelegate,
-            @Nullable BrowserControlsManager controlsManager) {
+            SoftKeyboardDelegate keyboardDelegate) {
         mMediator.initialize(
                 accessoryBar,
                 accessorySheet,
@@ -116,8 +110,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 isContextualSearchOpened,
                 backPressManager,
                 edgeToEdgeControllerSupplier,
-                keyboardDelegate,
-                controlsManager);
+                keyboardDelegate);
     }
 
     @Override
