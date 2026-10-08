@@ -150,6 +150,7 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />와 충
 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요. * 기호는 이 정책에 허용되는 값이 아닙니다.
 
 정책을 설정하지 않으면 모든 출처에서 이러한 API를 호출하기 위해 이전 사용자 동작을 요구합니다.</translation>
+<translation id="109520268628625781">신뢰도가 낮은 환경에서 기본 검색 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램 사용 설정</translation>
 <translation id="1095209545735032039">이 사이트에서 Serial API 차단</translation>
 <translation id="1096105751829466145">기본 검색 공급자</translation>
 <translation id="1099282607296956954">모든 사이트에 사이트 격리 사용 설정</translation>
@@ -1099,6 +1100,7 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="1708496595873025510">버전 시드 가져오기 제한 설정</translation>
 <translation id="1709154322133526432">시작 시 기본 브라우저 확인 사용 설정</translation>
+<translation id="1710938341108039345">클립보드 기록 사용 중지</translation>
 <translation id="1713829924716792485">정책을 사용 설정하거나 설정하지 않으면 원격 액세스 호스트에 연결된 사용자가 클라이언트와 호스트 사이에 파일을 전송할 수 있습니다. 이 정책은 파일 전송을 지원하지 않는 원격 지원 연결에는 적용되지 않습니다.
 
       정책을 사용 중지하면 파일 전송이 허용되지 않습니다.</translation>
@@ -3810,6 +3812,23 @@ Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrom
       정책이 설정되지 않은 경우 시스템 프록시 서비스를 사용할 수 없습니다.</translation>
 <translation id="3341649870321644698">포커스 사운드만 사용하여 집중 모드 사용 설정</translation>
 <translation id="334231891933432876">계정이 미승인 상태가 되는 즉시 사용자 로그아웃</translation>
+<translation id="3344546660724331957">신뢰도가 낮은 환경에서 기본 검색엔진 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램(강제 설치 또는 권장)이 허용되는지 여부를 제어합니다.
+
+이 정책은 신뢰도가 낮은 환경(예: 도메인 또는 클라우드 관리 없이 로컬에서 정책이 구성되는 기기)에만 적용됩니다. 신뢰도가 높은 환경은 영향을 받지 않습니다.
+
+<ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 인스턴스에서 사용할 수 없습니다.
+
+<ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 인스턴스에서 사용할 수 없습니다.
+
+이러한 신뢰도가 높은 인스턴스에서는 기본 검색엔진 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램이 사용 설정된 상태로 유지됩니다.
+
+사용 설정하면 <ph name="PRODUCT_NAME" />에서 기본 검색엔진 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램을 설치하고 신뢰도가 낮은 환경에서 사용 설정된 상태로 유지할 수 있습니다.
+
+사용 중지하거나 구성하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 검색엔진 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램이 신뢰도가 낮은 환경에 설치되지 않도록 하고, 이미 설치된 경우 삭제합니다.
+
+해당 확장 프로그램이 더 이상 이러한 설정을 재정의하지 않도록 업데이트되면 <ph name="PRODUCT_NAME" />에서 7일 이내에 자동으로 설치합니다.
+
+이 정책은 일시적인 조치이며 향후 버전에서 삭제될 예정입니다.</translation>
 <translation id="3345323903592385588">설치 프로그램에서 VM 구성이 표시되는 순서입니다. 여러 VM 구성이 지정되면 display_order 값이 가장 작은 구성이 목록 상단에 표시됩니다. 기본값은 0입니다.</translation>
 <translation id="3349823333182687926">정책을 설정하면 창과 탭 캡처 사용이 가능한 URL 패턴 목록을 설정할 수 있습니다.
 
@@ -5168,6 +5187,11 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />와 충�
 
 형식이 잘못된 도메인은 무시됩니다.</translation>
 <translation id="4238777612788632629">오래된 경우 빠르게 다시 실행</translation>
+<translation id="4239692047060622956">이 정책은 <ph name="PRODUCT_OS_NAME" /> 클립보드 기록 기능의 사용 설정 여부를 제어합니다.
+
+정책을 사용 설정하거나 설정하지 않으면 클립보드 기록이 사용 설정되며, 사용자는 클립보드 기록 키보드 단축키를 사용하여 이전에 복사한 항목에 액세스할 수 있습니다.
+
+정책을 사용 중지하면 클립보드 기록이 사용 중지되고, 클립보드 기록 메뉴를 열 수 없으며, 저장된 클립보드 기록 항목이 삭제됩니다.</translation>
 <translation id="4239720644496144453">이 캐시는 Android 앱에 사용되지 않습니다. 여러 사용자가 동일한 Android 앱을 설치하는 경우 앱이 각 사용자마다 새로 다운로드됩니다.</translation>
 <translation id="4239949495354048254">Chrome의 Gemini에 파일 업로드를 허용합니다.</translation>
 <translation id="4242583077375244471">정책을 사용 설정하면 <ph name="PRODUCT_NAME" />에서
@@ -5301,6 +5325,7 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 사용자는 관리자 선택을 재정의할 수 없습니다. 정책을 설정하지 않으면 사용자에게 일반 사용자 환경이 제공되므로 사용자가 시스템 위치 설정을 자유롭게 수정할 수 있으며 기본값은 <ph name="GLS_ALLOWED" />입니다.
 
 참고: 이 정책은 <ph name="ARC_GLS_POLICY_NAME" /> 정책을 지원 중단합니다. 또한 이 정책이 설정되면 <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" />은 더 이상 <ph name="PRODUCT_OS_NAME" />의 <ph name="ANDROID_NAME" /> 위치 환경설정에 영향을 주지 않습니다.</translation>
+<translation id="4341191248574927458">ChromeOS 클립보드 기록 사용 설정</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />가 사용 설정되어 있으면 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />을(를) 설정할 경우 검색 공급자에서 지원되는 문자 인코딩을 지정합니다. 인코딩은 UTF-8, GB2312 및 ISO-8859-1과 같은 코드 페이지 이름입니다. 인코딩은 제공된 순서대로 사용됩니다.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />를 설정하지 않으면 UTF-8이 사용됩니다.</translation>
@@ -11947,6 +11972,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
       이 정책 값은 밀리초 단위로 지정되어야 합니다.</translation>
 <translation id="8330437518362176921">키오스크 Chrome 앱을 다운로드 및 업데이트할 때 정책에서 제공한 업데이트 URL만 사용</translation>
 <translation id="8331479227794770304">고정키 사용</translation>
+<translation id="8331940246704699384">기본 검색 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램 사용 설정</translation>
 <translation id="8332822245414537447">RSA 키 사용 검사를 사용 중지합니다.</translation>
 <translation id="8334685561819743286">사용자 입력 시 실제 키보드의 자동 수정 사용 중지</translation>
 <translation id="8336986243404088829">이 정책은 CPU 코어에서 렌더기 프로세스를 격리하고 다른 프로세스가 동일한 코어를 공유하지 못하도록 하여 측면 채널 크로스 프로세스 메모리 공격을 완화합니다. 완화는 <ph name="MS_WIN_NAME" /> 11 24H2 이상에서 지원됩니다. OS에 필요한 일정 지원이 없으면 이 정책은 적용되지 않습니다. 이 정책은 하이퍼스레딩을 사용 중지하는 것과 유사한 일부 까다로운 시나리오에서 성능을 저하시킬 수 있습니다. 자세한 내용은 https://learn.microsoft.com/ko-kr/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy를 참조하세요.
@@ -12096,6 +12122,7 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 <translation id="8437147918598002525">엄격 모드에서 HTTPS 우선 모드 사용 설정</translation>
 <translation id="8441105784056442638">전체 복원 기능 사용</translation>
 <translation id="844322176712318428">Translator API 허용</translation>
+<translation id="8443398105049037546">클립보드 기록 사용 설정</translation>
 <translation id="8444157920689124099">애플리케이션과 결합된 암호화 사용 설정</translation>
 <translation id="8445576299806775661">각 주요 버전 업데이트 이후 Chrome에서는 향후 응급 버전 롤백 시 사용하기 위해 사용자의 인터넷 사용 기록 일부에 대한 스냅샷을 생성합니다. 스냅샷이 생성된 버전에 대해 응급 상황 롤백이 실행될 경우, 스냅샷 내 데이터가 복원됩니다. 그럼 사용자는 북마크 및 자동 완성 데이터와 같은 설정을 유지할 수 있습니다.
 
@@ -13191,6 +13218,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9133526448421932754">키보드 백라이트 색상: 노란색</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" /> 프록시 사용</translation>
 <translation id="9135095804754272364">USB 기기가 감지되면 알림 표시</translation>
+<translation id="9135676404321186528">신뢰도가 낮은 환경에서 기본 검색 또는 새 탭 페이지 설정을 재정의하는 정책 설치 확장 프로그램 삭제</translation>
 <translation id="9136212796239682721">다운로드 도움말 풍선 UI 사용 중지</translation>
 <translation id="9136399279941091445">특정 기기 정책이 공개되었을 때 Off hours 간격</translation>
 <translation id="9139775903828905867">F11을 트리거하는 데 사용되는 단축키를 제어합니다.</translation>

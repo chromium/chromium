@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1004615467759797184">„Neuer Tab“-Seite personalisieren</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} Passkey}other{{count} Passkeys}}</translation>
 <translation id="1005023885865154304">Passworteinstellungen für Autofill öffnen</translation>
 <translation id="1005230401424685968">JJJJ</translation>
@@ -1690,6 +1691,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6307792728709337290">Du kannst deine Karte in deinem Google-Konto speichern, um die Karteninformationen bei diesem und zukünftigen Käufen in Chrome automatisch einzufügen.</translation>
 <translation id="6316141353357700666">Wähle das gewünschte Passwort aus der angezeigten Liste aus.</translation>
 <translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
+<translation id="6324054713176642683">Du kannst Designs und Farben auswählen oder ein eigenes Foto hochladen.</translation>
 <translation id="6327249202318869726">Gemini ist für dein Konto deaktiviert. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="6331836477476466332">Ein sicherer und leistungsstarker Browser für dich</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>

@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1093457606523402488">検出されたネットワーク:</translation>
 <translation id="1093645050124056515">Ctrl+Alt+下矢印</translation>
+<translation id="1094158807129647987">「<ph name="SELECTION" />」について質問</translation>
 <translation id="1095398697303758108">Ctrl キーを 2 回押して高精度の自動入力を行う</translation>
 <translation id="1095879482467973146">ウェブ上の Google パスワード マネージャー</translation>
 <translation id="1097016918605049747">このページを翻訳できませんでした</translation>
@@ -1521,6 +1522,7 @@
 <translation id="2165177462441582039">各項目のハイライト表示の長さを選択します</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
 <translation id="2168036794078614559">報告を送信しました</translation>
+<translation id="2168735174585029637">新しい透明なタブデザイン</translation>
 <translation id="2169062631698640254">このままログインする</translation>
 <translation id="217120844667431680">AI モードでさらに便利に</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
@@ -1666,6 +1668,7 @@
 <translation id="2278562042389100163">ブラウザ ウィンドウを開く</translation>
 <translation id="2280486287150724112">右余白</translation>
 <translation id="228059581448666199">マウスを左クリックする</translation>
+<translation id="2281511031159517364">デバイス間でリンクを送信するには、同じアカウントでログインしてください。</translation>
 <translation id="2282146716419988068">GPU プロセス</translation>
 <translation id="228293613124499805">アクセスするサイトの多くは、エクスペリエンスの向上を目的として、設定内容やあなたがサイトと共有した情報をデバイス上に保存します。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2283599456633275070">旅行</translation>
@@ -2395,6 +2398,7 @@
 <translation id="282230978681804245">あなたのプロファイルは組織によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="2822551631199737692">カメラを使用中</translation>
 <translation id="2822634587701817431">拡大または縮小</translation>
+<translation id="2824892374426974106">質問する</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> は管理者により指定されたプロキシ設定を使用しています</translation>
 <translation id="2825200993288778739">独自のスキルを作成するか、スキル ライブラリから追加できます</translation>
 <translation id="282525059261716597">コマンドライン:</translation>
@@ -2632,6 +2636,7 @@
 <translation id="3001144475369593262">子アカウント</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{カスタマイズされたキーはありません}=1{1 個のカスタマイズされたキー}other{{COUNT} 個のカスタマイズされたキー}}</translation>
 <translation id="3002864108328203174">Gemini のボトムシートが画面の下半分に表示されています。</translation>
+<translation id="300311730636583518">質問する</translation>
 <translation id="3003144360685731741">優先ネットワーク</translation>
 <translation id="3003152206838282768">Chrome で Gemini アプリのタスクを処理しています。Chrome で進捗をご確認ください。</translation>
 <translation id="3003253259757197230">アクセスした URL が Google に送信され、次にアクセスするサイトの予測と、アクセスしているページに関する追加情報の表示が行われます</translation>
@@ -2764,6 +2769,7 @@
 <translation id="3094521107841754472">価格が <ph name="PREVIOUS_PRICE" /> から <ph name="CURRENT_PRICE" /> に変更されました。</translation>
 <translation id="3095871294753148861">ブックマークやパスワードなどの閲覧データはメイン アカウントと同期されます。</translation>
 <translation id="3097674000822532270">Google アカウントでログインしているすべての ChromeOS Flex デバイス間で、アプリと設定が同期されます。Google アカウントに保存するブラウザデータを管理するには、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />に移動してください。</translation>
+<translation id="3099754485438181407">設定で新しいスタイルをお試しください。いつでも従来のデザインに戻すことができます。</translation>
 <translation id="3101126716313987672">ライトを暗くする</translation>
 <translation id="3101709781009526431">日時</translation>
 <translation id="3102309003841389927">ロゴの更新内容を確認</translation>
@@ -5323,6 +5329,7 @@
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5040823038948176460">その他のコンテンツの設定</translation>
+<translation id="5041178465403838363">「<ph name="SELECTION" />」について質問</translation>
 <translation id="5041509233170835229">Chrome アプリ</translation>
 <translation id="504194357571315770">対応が必要</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> はこのデバイスからのみ削除されます。登録に変更を加える場合は、ご利用の登録プロバイダにお問い合わせください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -7942,6 +7949,7 @@
 <translation id="7077751457066325012">キーボード ショートカットの表示とカスタマイズ</translation>
 <translation id="7078120482318506217">すべてのネットワーク</translation>
 <translation id="708060913198414444">オーディオ アドレスをコピー(&amp;C)</translation>
+<translation id="7082399760770275009">Windows の設定を開く</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> は管理者によって管理されています</translation>
 <translation id="7082850163410901674">Mac のシステム設定で通知がオフになっています</translation>
 <translation id="7083729794572207131">サイトは、ユーザーの利便性を向上させるためウェブアプリのインストールを要求することがあります</translation>
@@ -9015,6 +9023,7 @@
 <translation id="7913805372428124107"><ph name="DEVICE" /> のタブにアクセスできるようにするには、ログインして履歴を同期します。同期すると、パスワードなどもすべてのデバイスで使用できるようになります。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
 <translation id="7914399737746719723">アプリをインストールしました</translation>
 <translation id="7915457674565721553">保護者による使用制限を設定するにはインターネットに接続してください</translation>
+<translation id="7915478442339169507">サイトへのアクセスを許可する</translation>
 <translation id="7916364730877325865">お客様の組織では、このアカウントとの同期を有効にすることは許可されていません</translation>
 <translation id="791698251820376781">組織がログインを許可していません</translation>
 <translation id="7918928051723770926">タスク完了</translation>
@@ -10823,6 +10832,7 @@
 <translation id="978146274692397928">初期の句読点幅を全角にする</translation>
 <translation id="978978324795544535">アイテムをダブルタップして 2 回目のタップで長押しし、ドラッグしてアイテムを移動します</translation>
 <translation id="981121421437150478">オフライン</translation>
+<translation id="981383875218593510">この設定を [モダン] にすると、新しい透明なタブデザインを試すことができます。</translation>
 <translation id="982083952953998237">制約を追加</translation>
 <translation id="98235653036850093">こんにちは、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>

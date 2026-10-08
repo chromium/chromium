@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1004615467759797184">Прилагодите страницу нове картице</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} приступни кључ}one{{count} приступни кључ}few{{count} приступна кључа}other{{count} приступних кључева}}</translation>
 <translation id="1005023885865154304">Отворите подешавања за аутоматско попуњавање лозинки</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
@@ -1693,6 +1694,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6307792728709337290">Сачувајте картицу на Google налогу да бисте је аутоматски попуњавали за ову и будуће куповине у Chrome-у.</translation>
 <translation id="6316141353357700666">Са листе која се прикаже одаберите лозинку коју желите да користите.</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
+<translation id="6324054713176642683">Одаберите тему, боју или отпремите своју слику.</translation>
 <translation id="6327249202318869726">Gemini је искључен за налог. Обратите се администратору да бисте добили више информација.</translation>
 <translation id="6331836477476466332">Безбеднији и моћнији прегледач за вас</translation>
 <translation id="6337234675334993532">Шифровање</translation>

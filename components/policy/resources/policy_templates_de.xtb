@@ -149,6 +149,7 @@ Wenn diese Richtlinie konfiguriert ist, können Administratoren Ursprünge festl
 Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. * ist kein akzeptierter Wert für diese Richtlinie.
 
 Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufrufen dieser APIs unabhängig vom Ursprung eine Nutzergeste ausgeführt werden.</translation>
+<translation id="109520268628625781">Per Richtlinie installierte Erweiterungen aktivieren, die die Einstellungen für die standardmäßige Suche oder Seite „Neuer Tab“ in wenig vertrauenswürdigen Umgebungen überschreiben</translation>
 <translation id="1095209545735032039">Serial API auf diesen Websites blockieren</translation>
 <translation id="1096105751829466145">Standardsuchmaschine</translation>
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
@@ -1096,6 +1097,7 @@ Hinweis: Diese Richtlinie gilt nicht für den Inkognitomodus. Informationen zum 
 Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstützen.</translation>
 <translation id="1708496595873025510">Beschränkung für Abruf des Varianten-Seeds festlegen</translation>
 <translation id="1709154322133526432">Prüfung auf Standardbrowser beim Start aktivieren</translation>
+<translation id="1710938341108039345">Zwischenablagenverlauf deaktivieren</translation>
 <translation id="1713829924716792485">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die mit einem Host für den Remote-Zugriff verbunden sind, Dateien zwischen Client und Host übertragen. Verbindungen zur Remote-Unterstützung sind hiervon ausgenommen, da sie keine Dateiübertragung unterstützen.
 
       Ist diese Richtlinie deaktiviert, können keine Dateien übertragen werden</translation>
@@ -3698,6 +3700,23 @@ Wenn diese Richtlinie auf „1“ festgelegt ist, wird die Richtlinie „<ph nam
       Ist diese Richtlinie nicht konfiguriert, ist der System-Proxy-Dienst nicht verfügbar.</translation>
 <translation id="3341649870321644698">Konzentrationsmodus mit „nur Sounds für mehr Konzentration“ aktivieren.</translation>
 <translation id="334231891933432876">Nutzer wird abgemeldet, sobald sein Konto nicht mehr authentifiziert ist</translation>
+<translation id="3344546660724331957">Mit dieser Richtlinie wird festgelegt, ob per Richtlinie installierte Erweiterungen (mit erzwungener Installation oder als Empfehlung), die die Einstellungen für die standardmäßige Suchmaschine oder Seite „Neuer Tab“ überschreiben, in wenig vertrauenswürdigen Umgebungen zulässig sind.
+
+Diese Richtlinie gilt nur für wenig vertrauenswürdige Umgebungen (z. B. Geräte, auf denen Richtlinien lokal ohne Domain- oder Cloudverwaltung konfiguriert sind). Umgebungen mit hoher Vertrauenswürdigkeit sind nicht betroffen:
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nicht bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
+
+Per Richtlinie installierte Erweiterungen, die die Einstellungen für die standardmäßige Suchmaschine oder Seite „Neuer Tab“ überschreiben, bleiben in diesen Umgebungen mit hoher Vertrauenswürdigkeit aktiviert.
+
+Wenn diese Richtlinie aktiviert ist, können in <ph name="PRODUCT_NAME" /> per Richtlinie installierte Erweiterungen, die die Einstellungen für die standardmäßige Suchmaschine oder Seite „Neuer Tab“ überschreiben, in wenig vertrauenswürdigen Umgebungen installiert und aktiviert bleiben.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, verhindert <ph name="PRODUCT_NAME" />, dass per Richtlinie installierte Erweiterungen, die die Einstellungen für die standardmäßige Suchmaschine oder Seite „Neuer Tab“ überschreiben, in wenig vertrauenswürdigen Umgebungen installiert werden. Wenn sie bereits installiert sind, werden sie entfernt.
+
+Wenn eine betroffene Erweiterung dahingehend aktualisiert wird, dass diese Einstellungen nicht mehr überschrieben werden, wird sie von <ph name="PRODUCT_NAME" /> innerhalb von 7 Tagen automatisch installiert.
+
+Diese Richtlinie ist vorübergehend verfügbar und wird in einer zukünftigen Version entfernt.</translation>
 <translation id="3345323903592385588">Die Reihenfolge, in der die VM-Konfigurationen im Installationsprogramm angezeigt werden. Wenn du mehrere VM-Konfigurationen angegeben hast, wird oben in der Liste die mit dem niedrigsten „display_order“-Wert angezeigt. Der Standardwert ist null.</translation>
 <translation id="3349823333182687926">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Fenster- und Tabaufnahme verwenden können.
 
@@ -5032,6 +5051,11 @@ Die Domains sollten in Form eines voll qualifizierten Domainnamens (FQDN) oder a
 
 Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="4238777612788632629">Schnell neu starten, wenn veraltet</translation>
+<translation id="4239692047060622956">Mit dieser Richtlinie wird festgelegt, ob die Funktion „Zwischenablagenverlauf“ von <ph name="PRODUCT_OS_NAME" /> aktiviert ist.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist der Zwischenablagenverlauf aktiviert und Nutzer können über die Tastenkombination für den Zwischenablagenverlauf auf zuvor kopierte Elemente zugreifen.
+
+Ist die Richtlinie deaktiviert, ist der Zwischenablagenverlauf deaktiviert, das Menü „Zwischenablagenverlauf“ kann nicht geöffnet werden und alle gespeicherten Elemente im Zwischenablagenverlauf werden gelöscht.</translation>
 <translation id="4239720644496144453">Der Cache wird nicht für Android-Apps verwendet. Wenn mehrere Nutzer die gleiche Android-App installieren, wird sie für jeden Nutzer neu heruntergeladen.</translation>
 <translation id="4239949495354048254">Datei-Uploads in Gemini in Chrome zulassen.</translation>
 <translation id="4242583077375244471">Wenn diese Richtlinie aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mithilfe der integrierten Zertifikatsprüfung und des Chrome Root Store als vertrauenswürdiger Quelle.
@@ -5153,6 +5177,7 @@ Das ist eine zusätzliche Steuerungsebene, die vor der Berechtigungsebene für A
 Nutzer können die Administratorauswahl nicht überschreiben. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Einstellung für den Systemstandort nach Bedarf ändern und festlegen, wo die Standardeinstellung „<ph name="GLS_ALLOWED" />“ ist.
 
 Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAME" />“. Wenn diese Richtlinie konfiguriert ist, wirkt sich „<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" />“ nicht mehr auf die <ph name="ANDROID_NAME" />-Standorteinstellung unter <ph name="PRODUCT_OS_NAME" /> aus.</translation>
+<translation id="4341191248574927458">ChromeOS-Zwischenablagenverlauf aktivieren</translation>
 <translation id="4341199399451274159">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" die Zeichencodierungen an, die vom Suchanbieter unterstützt werden. Dazu werden Codeseiten-Namen wie "UTF-8", "GB2312" oder "ISO-8859-1" verwendet. Sie werden in der angegebenen Reihenfolge ausprobiert
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" nicht konfiguriert ist, wird "UTF-8" verwendet.</translation>
@@ -11607,6 +11632,7 @@ Ist die Richtlinie nicht konfiguriert, ist die Mimik-Steuerung anfangs deaktivie
       Der Wert für die Richtlinie sollte in Millisekunden angegeben werden.</translation>
 <translation id="8330437518362176921">Nur die durch die Richtlinie bereitgestellte Update-URL beim Herunterladen und Aktualisieren von Kiosk-Chrome-Apps verwenden</translation>
 <translation id="8331479227794770304">Einfingerbedienung aktivieren</translation>
+<translation id="8331940246704699384">Per Richtlinie installierte Erweiterungen aktivieren, die die Einstellungen für die standardmäßige Suche oder Seite „Neuer Tab“ überschreiben</translation>
 <translation id="8332822245414537447">Prüfung der RSA-Schlüsselverwendung deaktivieren</translation>
 <translation id="8334685561819743286">Autokorrektur bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>
 <translation id="8336986243404088829">Diese Richtlinie schwächt prozessübergreifende Seitenkanalangriffe auf den Arbeitsspeicher ab, indem sie den Rendererprozess auf dem CPU-Kern isoliert und verhindert, dass andere Prozesse denselben Kern verwenden. Die Abschwächung wird unter <ph name="MS_WIN_NAME" /> 11 24H2 und höher unterstützt. Wenn das Betriebssystem die erforderliche Planung nicht unterstützt, hat diese Richtlinie keine Auswirkungen. Diese Richtlinie kann in einigen anspruchsvollen Szenarien die Leistung beeinträchtigen, ähnlich wie beim Deaktivieren des Hyper-Threading. Weitere Informationen findest du unter https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy.
@@ -11751,6 +11777,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird für alle Websites der global
 <translation id="8437147918598002525">Nur-HTTPS-Modus im strikten Modus aktivieren</translation>
 <translation id="8441105784056442638">Funktion zur vollständigen Wiederherstellung aktivieren</translation>
 <translation id="844322176712318428">Translator API zulassen</translation>
+<translation id="8443398105049037546">Zwischenablagenverlauf aktivieren</translation>
 <translation id="8444157920689124099">Anwendungsgebundene Verschlüsselung aktivieren</translation>
 <translation id="8445576299806775661">Nach jedem größeren Versionsupdate erstellt Chrome für den Fall eines Notfall-Rollbacks einen Snapshot bestimmter Browserdaten des Nutzers. Falls ein Notfall-Rollback für eine Version durchgeführt wird, für die der Nutzer einen passenden Snapshot hat, werden die darin gespeicherten Daten wiederhergestellt. Hierdurch verliert der Nutzer seine Einstellungen wie beispielsweise Lesezeichen und Autofill-Daten nicht.
 
@@ -12824,6 +12851,7 @@ Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NA
 <translation id="9133526448421932754">Tastaturbeleuchtungsfarbe „Gelb“</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" />-Proxy aktivieren</translation>
 <translation id="9135095804754272364">Benachrichtigen, wenn ein USB-Gerät erkannt wird</translation>
+<translation id="9135676404321186528">Per Richtlinie installierte Erweiterungen entfernen, die die Einstellungen für die standardmäßige Suche oder Seite „Neuer Tab“ in wenig vertrauenswürdigen Umgebungen überschreiben</translation>
 <translation id="9136212796239682721">Benutzeroberfläche für Download-Infofeld deaktivieren</translation>
 <translation id="9136399279941091445">Intervalle für Abwesenheitszeiten, wenn die angegebenen Geräterichtlinien veröffentlicht werden</translation>
 <translation id="9139775903828905867">Tastenkombination zum Auslösen von F11 verwalten</translation>

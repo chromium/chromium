@@ -156,6 +156,7 @@ nilai yang diterima untuk kebijakan ini.
 
 Jika kebijakan ini tidak disetel, semua origin akan memerlukan gestur pengguna sebelumnya untuk memanggil
 API ini.</translation>
+<translation id="109520268628625781">Aktifkan ekstensi yang diinstal melalui kebijakan yang mengganti setelan penelusuran default atau Halaman Tab Baru di lingkungan dengan tingkat kepercayaan rendah</translation>
 <translation id="1095209545735032039">Memblokir Serial API di situs ini</translation>
 <translation id="1096105751829466145">Penyedia penelusuran default</translation>
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
@@ -1124,6 +1125,7 @@ Catatan: Kebijakan ini tidak berlaku untuk mode Samaran. Baca informasi terkait 
 Catatan: Kebijakan ini hanya berlaku untuk platform yang mendukung ekstensi.</translation>
 <translation id="1708496595873025510">Setel batasan pada pengambilan bibit Varietas</translation>
 <translation id="1709154322133526432">Aktifkan pemeriksaan browser default saat browser dimulai</translation>
+<translation id="1710938341108039345">Nonaktifkan Histori Papan Klip</translation>
 <translation id="1713829924716792485">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang terhubung ke host akses jarak jauh akan diizinkan untuk mentransfer file antara klien dan host. Ini tidak berlaku untuk koneksi bantuan jarak jauh, yang tidak mendukung transfer file.
 
       Jika kebijakan disetel ke Nonaktif, transfer file tidak akan diizinkan.</translation>
@@ -3925,6 +3927,23 @@ Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY
       Jika kebijakan tidak ditetapkan, layanan System-proxy tidak akan tersedia.</translation>
 <translation id="3341649870321644698">Aktifkan Mode Fokus dengan Suara Fokus saja.</translation>
 <translation id="334231891933432876">Buat pengguna logout segera setelah akunnya menjadi tidak terautentikasi</translation>
+<translation id="3344546660724331957">Mengontrol apakah ekstensi yang diinstal melalui kebijakan (diinstal otomatis atau direkomendasikan) yang mengganti setelan mesin telusur default atau Halaman Tab Baru diizinkan di lingkungan dengan tingkat kepercayaan rendah.
+
+Kebijakan ini hanya berlaku untuk lingkungan dengan tingkat kepercayaan rendah (seperti perangkat yang kebijakannya dikonfigurasi secara lokal tanpa pengelolaan domain atau cloud). Lingkungan dengan tingkat kepercayaan tinggi tidak terpengaruh:
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini tidak tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini tidak tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Ekstensi yang diinstal melalui kebijakan yang mengganti setelan mesin telusur default atau Halaman Tab Baru akan tetap aktif pada instance dengan tingkat kepercayaan tinggi ini.
+
+Jika disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan mengizinkan penginstalan ekstensi melalui kebijakan yang mengganti setelan mesin telusur default atau Halaman Tab Baru, serta membiarkannya tetap aktif di lingkungan dengan tingkat kepercayaan rendah.
+
+Jika disetel ke Nonaktif atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan mencegah penginstalan ekstensi yang diinstal melalui kebijakan yang mengganti setelan mesin telusur default atau Halaman Tab Baru di lingkungan dengan tingkat kepercayaan rendah, serta akan menghapusnya jika sudah terinstal.
+
+Jika ekstensi yang terpengaruh diperbarui agar tidak lagi mengganti setelan ini, <ph name="PRODUCT_NAME" /> akan otomatis menginstalnya dalam waktu 7 hari.
+
+Kebijakan ini bersifat sementara dan akan dihapus dalam rilis mendatang.</translation>
 <translation id="3345323903592385588">Urutan konfigurasi VM yang akan ditampilkan di penginstal. Jika beberapa konfigurasi VM ditentukan, konfigurasi dengan nilai display_order terkecil ditampilkan di bagian atas daftar. Nilai defaultnya adalah nol.</translation>
 <translation id="3349823333182687926">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang dapat menggunakan Tangkapan Jendela dan Tab.
 
@@ -5291,6 +5310,11 @@ Domain diharapkan dalam bentuk nama domain yang sepenuhnya memenuhi syarat (FQDN
 
 Domain dengan format yang salah akan diabaikan.</translation>
 <translation id="4238777612788632629">Meluncurkan kembali dengan cepat jika sudah usang</translation>
+<translation id="4239692047060622956">Kebijakan ini mengontrol apakah fitur Histori Papan Klip <ph name="PRODUCT_OS_NAME" /> diaktifkan.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, Histori Papan Klip akan diaktifkan dan pengguna dapat mengakses item yang disalin sebelumnya menggunakan pintasan keyboard Histori Papan Klip.
+
+Jika kebijakan ini disetel ke Nonaktif, Histori Papan Klip akan dinonaktifkan, menu Histori Papan Klip tidak dapat dibuka, dan item histori papan klip yang disimpan akan dihapus.</translation>
 <translation id="4239720644496144453">Cache tidak digunakan untuk aplikasi Android. Jika beberapa pengguna menginstal aplikasi Android yang sama, aplikasi akan didownload lagi untuk setiap pengguna.</translation>
 <translation id="4239949495354048254">Mengizinkan upload file ke Gemini di Chrome.</translation>
 <translation id="4242583077375244471">Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" />
@@ -5423,6 +5447,7 @@ Lapisan ini adalah lapisan kontrol tambahan, yang berada di bawah lapisan izin u
 Pengguna tidak dapat mengganti pilihan admin. Jika kebijakan ini tidak disetel, pengguna akan mendapatkan pengalaman konsumen, yaitu mereka dapat dengan bebas mengubah setelan lokasi sistem, dengan setelan default-nya adalah <ph name="GLS_ALLOWED" />.
 
 Catatan: Kebijakan ini menghentikan penggunaan kebijakan <ph name="ARC_GLS_POLICY_NAME" />. Selain itu, jika kebijakan ini disetel, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> tidak akan lagi memengaruhi preferensi lokasi <ph name="ANDROID_NAME" /> di <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4341191248574927458">Aktifkan Histori Papan Klip ChromeOS</translation>
 <translation id="4341199399451274159">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> akan menentukan encoding karakter yang didukung oleh penyedia penelusuran. Encoding adalah nama halaman kode seperti UTF-8, GB2312, dan ISO-8859-1. Encoding dicoba sesuai urutan yang diberikan.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> tidak disetel, UTF-8 akan digunakan.</translation>
@@ -12236,6 +12261,7 @@ Jika kebijakan ini tidak disetel, fitur kontrol dengan wajah mula-mula akan dino
       Nilai kebijakan harus ditentukan dalam milidetik.</translation>
 <translation id="8330437518362176921">Hanya menggunakan URL update yang disediakan oleh kebijakan saat mendownload dan mengupdate aplikasi Kiosk Chrome</translation>
 <translation id="8331479227794770304">Aktifkan tombol lengket</translation>
+<translation id="8331940246704699384">Aktifkan ekstensi yang diinstal melalui kebijakan yang mengganti setelan penelusuran default atau Halaman Tab Baru</translation>
 <translation id="8332822245414537447">Nonaktifkan pemeriksaan penggunaan kunci RSA</translation>
 <translation id="8334685561819743286">Nonaktifkan koreksi otomatis keyboard fisik saat pengguna mengetik</translation>
 <translation id="8336986243404088829">Kebijakan ini mengurangi serangan side channel lintas proses pada memori dengan mengisolasi proses perender di core CPU dan mencegah proses lain berbagi core yang sama. Mitigasi ini didukung di versi <ph name="MS_WIN_NAME" /> 11 24H2 dan yang lebih baru. Jika OS tidak memiliki dukungan penjadwalan yang diperlukan, kebijakan ini tidak akan berpengaruh. Kebijakan ini mungkin memperlambat performa dalam beberapa skenario yang berat, mirip seperti saat menonaktifkan hyperthreading. Untuk mengetahui informasi selengkapnya, lihat https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
@@ -12387,6 +12413,7 @@ mengonfigurasi pintasan.</translation>
 <translation id="8437147918598002525">Aktifkan Mode Khusus HTTPS dalam mode Ketat</translation>
 <translation id="8441105784056442638">Mengaktifkan fitur pemulihan penuh</translation>
 <translation id="844322176712318428">Mengizinkan Translator API</translation>
+<translation id="8443398105049037546">Aktifkan Histori Papan Klip</translation>
 <translation id="8444157920689124099">Aktifkan Enkripsi yang Terikat Aplikasi</translation>
 <translation id="8445576299806775661">Setelah masing-masing update versi utama, Chrome akan membuat rekaman bagian tertentu dari data penjelajahan pengguna untuk digunakan ketika terjadi rollback versi darurat nantinya. Jika rollback darurat dilakukan ke versi yang rekaman terkaitnya dimiliki pengguna, data di rekaman tersebut akan dipulihkan. Ini memungkinkan pengguna mempertahankan setelan seperti bookmark dan data isi otomatis.
 
@@ -13507,6 +13534,7 @@ Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMIN
 <translation id="9133526448421932754">Warna lampu latar keyboard kuning</translation>
 <translation id="9135033364005346124">Mengaktifkan proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Menampilkan notifikasi saat perangkat USB terdeteksi</translation>
+<translation id="9135676404321186528">Hapus ekstensi yang diinstal melalui kebijakan yang mengganti setelan penelusuran default atau Halaman Tab Baru di lingkungan dengan tingkat kepercayaan rendah</translation>
 <translation id="9136212796239682721">Nonaktifkan UI balon download</translation>
 <translation id="9136399279941091445">Interval di luar jam kerja saat kebijakan perangkat yang ditentukan dirilis</translation>
 <translation id="9139775903828905867">Mengontrol pintasan yang digunakan untuk memicu F11</translation>

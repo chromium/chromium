@@ -144,6 +144,7 @@ URL パターンは、<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" /
 有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。このポリシーの値に「*」は使用できません。
 
 このポリシーを未設定のままにした場合、すべてのオリジンで、これらの API の呼び出しに事前のユーザー操作が必要となります。</translation>
+<translation id="109520268628625781">信頼度の低い環境で、デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能を有効にする</translation>
 <translation id="1095209545735032039">シリアル API をブロックするサイトを指定します</translation>
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
 <translation id="1099282607296956954">すべてのサイトに対してサイト分離を有効にする</translation>
@@ -1057,6 +1058,7 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 注: このポリシーは、拡張機能がサポートされているプラットフォームにのみ適用されます。</translation>
 <translation id="1708496595873025510">バリエーション シードの取得に制限を設定する</translation>
 <translation id="1709154322133526432">起動時のデフォルト ブラウザ チェックを有効にする</translation>
+<translation id="1710938341108039345">クリップボードの履歴を無効にする</translation>
 <translation id="1713829924716792485">このポリシーを有効に設定するか未設定のままにした場合、リモート アクセス ホストに接続しているユーザーは、クライアントとホスト間でファイルを転送できます。これは、ファイル転送がサポートされていないリモート サポート接続には適用されません。
 
       このポリシーを無効に設定した場合、ファイル転送は許可されません。</translation>
@@ -3599,6 +3601,23 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
       このポリシーが設定されていない場合、システム プロキシ サービスは利用できません。</translation>
 <translation id="3341649870321644698">フォーカス モード時にフォーカス モード用のサウンドのみ有効にする。</translation>
 <translation id="334231891933432876">アカウントの認証が無効になったら直ちにユーザーをログアウトする</translation>
+<translation id="3344546660724331957">信頼度の低い環境で、デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能（自動インストールまたは推奨）の許可を制御します。
+
+このポリシーは、信頼度の低い環境（ドメインやクラウド管理下にない、ポリシーがローカルに設定されたデバイスなど）にのみ適用されます。信頼度の高い環境は影響を受けません。
+
+<ph name="MS_WIN_NAME" /> の場合、<ph name="MS_AD_NAME" /> ドメインに参加しているインスタンス、<ph name="MS_AAD_NAME" /> に参加しているインスタンス、または <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスには、このポリシーは適用されません。
+
+<ph name="MAC_OS_NAME" /> の場合、MDM によって管理されているインスタンス、MCX によってドメインに参加しているインスタンス、または<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスには、このポリシーは適用されません。
+
+これらの信頼度の高いインスタンスでは、デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能は引き続き有効になります。
+
+有効に設定した場合、<ph name="PRODUCT_NAME" /> では、信頼度の低い環境でも、デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能のインストールと有効化の継続を許可します。
+
+無効に設定するか未設定の場合、<ph name="PRODUCT_NAME" /> は、信頼度の低い環境では、デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能が、インストールされないようにします。すでにインストールされている場合は削除します。
+
+影響を受ける拡張機能が更新され、これらの設定をオーバーライドしなくなった場合、<ph name="PRODUCT_NAME" /> は 7 日以内にその拡張機能を自動的にインストールします。
+
+これは一時的なポリシーであり、今後のリリースで削除されます。</translation>
 <translation id="3345323903592385588">インストーラで VM 構成が表示される順序。複数の VM 構成が指定されている場合は、display_order 値が小さいものから表示されます。デフォルトは 0 です。</translation>
 <translation id="3349823333182687926">このポリシーでは、ウィンドウとタブのキャプチャの使用を許可する URL パターンのリストを設定できます。
 
@@ -4940,6 +4959,11 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
 ドメインの形式が正しくない場合は無視されます。</translation>
 <translation id="4238777612788632629">バージョンが古い場合に再起動を促す</translation>
+<translation id="4239692047060622956">このポリシーは、<ph name="PRODUCT_OS_NAME" /> のクリップボードの履歴機能の有効化を制御します。
+
+このポリシーを有効に設定するか未設定のままにした場合、クリップボードの履歴が有効になり、ユーザーはクリップボードの履歴のキーボード ショートカットを使用して、以前にコピーした項目にアクセスできます。
+
+このポリシーを無効に設定した場合、クリップボードの履歴は無効になり、クリップボードの履歴メニューを開くことはできません。また、保存されているクリップボード履歴の項目はすべて消去されます。</translation>
 <translation id="4239720644496144453">キャッシュは Android アプリには使用されません。複数のユーザーが同じ Android アプリをインストールする場合、アプリはユーザーごとに新しくダウンロードされます。</translation>
 <translation id="4239949495354048254">Gemini in Chrome へのファイルのアップロードを許可する。</translation>
 <translation id="4242583077375244471">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
@@ -5063,6 +5087,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
 注: このポリシーの導入に伴い、<ph name="ARC_GLS_POLICY_NAME" /> ポリシーのサポートは終了しました。
 このポリシーを設定した場合、<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> は <ph name="ANDROID_NAME" /> の <ph name="PRODUCT_OS_NAME" /> の位置情報設定に影響しなくなります。</translation>
+<translation id="4341191248574927458">ChromeOS のクリップボードの履歴を有効にする</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> では、検索プロバイダによってサポートされる文字エンコードを指定できます。エンコードは、UTF-8、GB2312、ISO-8859-1 などのコードページ名であり、指定された順序で適用されます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> を未設定のままにした場合、UTF-8 が使用されます。</translation>
@@ -11268,6 +11293,7 @@ false に設定した場合、管理対象のネットワークに接続され�
       ポリシーの値は、ミリ秒単位で指定する必要があります。</translation>
 <translation id="8330437518362176921">キオスク Chrome アプリのダウンロードと更新に、ポリシーで指定された更新 URL のみを使用する</translation>
 <translation id="8331479227794770304">スティッキー キーを有効にする</translation>
+<translation id="8331940246704699384">デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能を有効にする</translation>
 <translation id="8332822245414537447">RSA 鍵用途の確認を無効にする</translation>
 <translation id="8334685561819743286">ユーザーの入力時に物理キーボードの自動修正を無効にする</translation>
 <translation id="8336986243404088829">このポリシーでは、サイドチャネルのクロスプロセス メモリ攻撃を軽減するため、CPU コアのレンダラ プロセスを分離し、他のプロセスが同じコアを共有できないようにします。この軽減措置は、<ph name="MS_WIN_NAME" /> 11 24H2 以降でサポートされています。必要なスケジュール実行が OS でサポートされていない場合、このポリシーは無視されます。このポリシーによって、ハイパースレッディングを無効にした場合と同じように、負荷の高い状況でパフォーマンスが低下する可能性があります。詳しくは、https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy をご覧ください。
@@ -11408,6 +11434,7 @@ false に設定した場合、管理対象のネットワークに接続され�
 <translation id="8437147918598002525">HTTPS 優先モードを厳格モードで有効にする</translation>
 <translation id="8441105784056442638">完全復元機能を有効にする</translation>
 <translation id="844322176712318428">Translator API を許可する</translation>
+<translation id="8443398105049037546">クリップボードの履歴を有効にする</translation>
 <translation id="8444157920689124099">アプリケーションにバインドされた暗号化を有効にする</translation>
 <translation id="8445576299806775661">Chrome ではバージョンのメジャー アップデートのたびに、後から緊急のバージョン ロールバックが必要となった場合に備えて、ユーザーの閲覧データの特定部分のスナップショットを作成します。緊急のロールバックが実行され、対応するスナップショットが存在するバージョンに戻された場合は、スナップショットのデータが復元されます。これにより、ブックマークや自動入力データなどの設定が失われないように保護できます。
 
@@ -12466,6 +12493,7 @@ M119 よりデフォルトで無効になります）。
 <translation id="9133526448421932754">黄色のキーボード バックライト</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" /> プロキシを有効にする</translation>
 <translation id="9135095804754272364">USB デバイスが検出されたときに通知を表示する</translation>
+<translation id="9135676404321186528">信頼度の低い環境で、デフォルトの検索エンジンまたは新しいタブページの設定をオーバーライドする、ポリシーでインストールされた拡張機能を削除する</translation>
 <translation id="9136212796239682721">ダウンロードのバブル UI を無効にする</translation>
 <translation id="9136399279941091445">指定されたデバイスポリシーが解除されたときの管理外時間の間隔</translation>
 <translation id="9139775903828905867">F11 のトリガーに使用するショートカットを制御する</translation>

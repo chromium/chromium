@@ -143,6 +143,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1090541560108055381">Sebelum menyambungkan, pastikan kode ini sama di kedua perangkat</translation>
 <translation id="1093457606523402488">Jaringan yang Terlihat:</translation>
 <translation id="1093645050124056515">ctrl + alt + panah bawah</translation>
+<translation id="1094158807129647987">Tanyakan Tentang “<ph name="SELECTION" />”</translation>
 <translation id="1095398697303758108">Tekan Ctrl dua kali untuk menggunakan isi otomatis yang ditingkatkan</translation>
 <translation id="1095879482467973146">Pengelola Sandi Google di web</translation>
 <translation id="1097016918605049747">Halaman ini tidak dapat diterjemahkan</translation>
@@ -1531,6 +1532,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2165177462441582039">Pilih seberapa lama sorotan harus tetap berada di setiap item</translation>
 <translation id="2166369534954157698">Lihat gaya font dan contoh ukurannya dengan cara yang menyenangkan</translation>
 <translation id="2168036794078614559">Laporan dikirim</translation>
+<translation id="2168735174585029637">Berikan tampilan transparan baru pada tab Anda</translation>
 <translation id="2169062631698640254">Tetap login</translation>
 <translation id="217120844667431680">Lakukan lebih banyak hal dengan Mode AI</translation>
 <translation id="2173302385160625112">Periksa koneksi internet Anda</translation>
@@ -1679,6 +1681,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2278562042389100163">Buka jendela browser</translation>
 <translation id="2280486287150724112">Batas kanan</translation>
 <translation id="228059581448666199">Klik kiri mouse</translation>
+<translation id="2281511031159517364">Untuk mengirim link antar-perangkat, login dengan akun yang sama.</translation>
 <translation id="2282146716419988068">Proses GPU</translation>
 <translation id="228293613124499805">Sebagian besar situs yang Anda buka mungkin menyimpan data ke perangkat, sering kali untuk meningkatkan pengalaman Anda dengan menyimpan preferensi atau informasi yang Anda bagikan ke situs. Sebaiknya tetap aktifkan setelan ini.</translation>
 <translation id="2283599456633275070">Perjalanan</translation>
@@ -2408,6 +2411,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="282230978681804245">Profil Anda dikelola oleh organisasi Anda, yang dapat melihat beberapa informasi, termasuk</translation>
 <translation id="2822551631199737692">Kamera sedang digunakan</translation>
 <translation id="2822634587701817431">Ciutkan/Luaskan</translation>
+<translation id="2824892374426974106">Tanyakan tentang ini</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> menggunakan setelan proxy dari administrator Anda</translation>
 <translation id="2825200993288778739">Buat sendiri atau tambahkan dari koleksi keahlian</translation>
 <translation id="282525059261716597">Command line:</translation>
@@ -2645,6 +2649,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3001144475369593262">Akun anak</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Tidak ada tombol yang disesuaikan}=1{1 tombol disesuaikan}other{{COUNT} tombol disesuaikan}}</translation>
 <translation id="3002864108328203174">Panel Bawah Gemini terbuka setengah.</translation>
+<translation id="300311730636583518">Tanyakan Tentang Ini</translation>
 <translation id="3003144360685731741">Jaringan pilihan</translation>
 <translation id="3003152206838282768">Sedang mengerjakan tugas Aplikasi Gemini Anda di Chrome. Periksa Chrome untuk melihat update lainnya</translation>
 <translation id="3003253259757197230">URL yang Anda buka akan dikirim ke Google untuk memprediksi situs yang mungkin Anda buka berikutnya dan menampilkan info tambahan tentang halaman yang sedang Anda buka</translation>
@@ -2777,6 +2782,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3094521107841754472">Harga telah berubah dari <ph name="PREVIOUS_PRICE" /> menjadi <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmark, sandi, dan data penjelajahan lainnya disinkronkan dengan akun utama.</translation>
 <translation id="3097674000822532270">Aplikasi dan setelan Anda akan disinkronkan di semua perangkat ChromeOS Flex tempat Anda login dengan Akun Google Anda. Untuk mengelola data browser yang disimpan di Akun Google Anda, buka <ph name="LINK_BEGIN" />setelan Chrome<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">Coba gaya baru di setelan. Anda dapat beralih kembali ke tampilan klasik kapan saja.</translation>
 <translation id="3101126716313987672">Cahaya redup</translation>
 <translation id="3101709781009526431">Tanggal dan waktu</translation>
 <translation id="3102309003841389927">Tinjau pembaruan logo</translation>
@@ -5339,6 +5345,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="5040823038948176460">Setelan konten tambahan</translation>
+<translation id="5041178465403838363">Tanyakan tentang “<ph name="SELECTION" />”</translation>
 <translation id="5041509233170835229">Aplikasi Chrome</translation>
 <translation id="504194357571315770">Tindakan Diperlukan</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> hanya akan dihapus dari perangkat ini. Untuk melakukan perubahan pada langganan Anda, hubungi penyedia langganan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -7961,6 +7968,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7077751457066325012">Lihat dan sesuaikan pintasan keyboard</translation>
 <translation id="7078120482318506217">Semua jaringan</translation>
 <translation id="708060913198414444">S&amp;alin alamat audio</translation>
+<translation id="7082399760770275009">Buka setelan Windows</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> dikelola oleh administrator Anda</translation>
 <translation id="7082850163410901674">Notifikasi dinonaktifkan di Setelan Sistem Mac</translation>
 <translation id="7083729794572207131">Situs biasanya meminta untuk menginstal aplikasi web guna meningkatkan pengalaman Anda di situs</translation>
@@ -9034,6 +9042,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7913805372428124107">Untuk mengakses tab dari <ph name="DEVICE" />, login dan sinkronkan histori. Anda juga akan mendapatkan sandi dan data lainnya di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="7914399737746719723">Aplikasi diinstal</translation>
 <translation id="7915457674565721553">Sambungkan ke internet untuk menyiapkan kontrol orang tua</translation>
+<translation id="7915478442339169507">Izinkan akses situs</translation>
 <translation id="7916364730877325865">Organisasi tidak mengizinkan Anda mengaktifkan sinkronisasi dengan akun ini</translation>
 <translation id="791698251820376781">Organisasi Anda tidak mengizinkan Anda login</translation>
 <translation id="7918928051723770926">Tugas selesai</translation>
@@ -10842,6 +10851,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="978146274692397928">Lebar tanda baca awal Penuh</translation>
 <translation id="978978324795544535">Ketuk dua kali item, tahan pada ketukan kedua, lalu tarik item untuk memindahkannya</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="981383875218593510">Ubah setelan ini ke Modern guna mencoba tampilan transparan baru untuk tab Anda.</translation>
 <translation id="982083952953998237">Tambahkan Batasan</translation>
 <translation id="98235653036850093">Halo <ph name="PROFILE_NAME" />,</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>

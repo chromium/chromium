@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1004615467759797184">आफ्नो "नयाँ ट्याब" पेज कस्टमाइज गर्नुहोस्</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} पासकी}other{{count} वटा पासकी}}</translation>
 <translation id="1005023885865154304">अटोफिल पासवर्डसम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1693,6 +1694,7 @@
 <translation id="6307792728709337290">यो खरिद र भविष्यमा Chrome मार्फत खरिद गर्दा कार्ड नम्बर स्वतः भरियोस् भन्नाका लागि Google खातामा आफ्नो कार्ड सेभ गर्नुहोस्।</translation>
 <translation id="6316141353357700666">तपाईंलाई देखाइने सूचीबाट आफूले प्रयोग गर्न चाहेको पासवर्ड छनौट गर्नुहोस्।</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
+<translation id="6324054713176642683">दिइएका थिम र रङहरू छनौट गर्नुहोस् वा आफ्नै फोटो अपलोड गर्नुहोस्।</translation>
 <translation id="6327249202318869726">तपाईंको खातामा Gemini अफ गरिएको छ। थप जानकारी चाहिएमा आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="6331836477476466332">तपाईंका लागि अझ सुरक्षित एवं शक्तिशाली ब्राउजर</translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>

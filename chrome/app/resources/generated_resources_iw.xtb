@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">לפני ההתאמה צריך לוודא שמשתמשים באותו קוד בשני המכשירים</translation>
 <translation id="1093457606523402488">רשתות גלויות:</translation>
 <translation id="1093645050124056515">‏Ctrl +‏ Alt + חץ למטה</translation>
+<translation id="1094158807129647987">יש לי שאלה לגבי "<ph name="SELECTION" />"</translation>
 <translation id="1095398697303758108">‏כדי להשתמש במילוי האוטומטי המשופר, צריך ללחוץ פעמיים על Ctrl</translation>
 <translation id="1095879482467973146">‏מנהל הסיסמאות של Google באינטרנט</translation>
 <translation id="1097016918605049747">לא ניתן היה לתרגם את הדף הזה</translation>
@@ -1531,6 +1532,7 @@
 <translation id="2165177462441582039">יש לבחור את משך הזמן שבו ההדגשה תוצב על פריט כלשהו</translation>
 <translation id="2166369534954157698">דג סקרן שט בים זך ולפתע מצא חבורה נחמדה</translation>
 <translation id="2168036794078614559">הדוח נשלח</translation>
+<translation id="2168735174585029637">רוצה לתת לכרטיסיות מראה חדש ושקוף?</translation>
 <translation id="2169062631698640254">אני רוצה להיכנס בכל זאת</translation>
 <translation id="217120844667431680">‏עושים יותר עם מצב AI</translation>
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
@@ -1679,6 +1681,7 @@
 <translation id="2278562042389100163">פתיחת חלון דפדפן</translation>
 <translation id="2280486287150724112">שוליים ימניים</translation>
 <translation id="228059581448666199">לחיצה שמאלית בעכבר</translation>
+<translation id="2281511031159517364">כדי לשלוח קישורים בין מכשירים, צריך להתחבר לאותו חשבון.</translation>
 <translation id="2282146716419988068">‏תהליך GPU</translation>
 <translation id="228293613124499805">סביר להניח שרוב האתרים שבהם מבקרים שומרים נתונים במכשיר, לרוב כדי לשפר את החוויה בהם. הנתונים שנשמרים הם ההעדפות או המידע שמשתפים עם האתר. מומלץ להשאיר את ההגדרה הזו פועלת.</translation>
 <translation id="2283599456633275070">נסיעות</translation>
@@ -2408,6 +2411,7 @@
 <translation id="282230978681804245">הפרופיל שלך מנוהל על ידי האדמין של הארגון שלך, שיכול לראות חלק מהמידע, כולל</translation>
 <translation id="2822551631199737692">המצלמה נמצאת בשימוש</translation>
 <translation id="2822634587701817431">כיווץ / הרחבה</translation>
+<translation id="2824892374426974106">יש לי שאלה לגבי התמונה</translation>
 <translation id="2824942875887026017">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> משתמש בהגדרות Proxy שנקבעו על-ידי מנהל המערכת</translation>
 <translation id="2825200993288778739">יוצרים מיומנויות חדשות או מוסיפים מיומנויות מהספרייה</translation>
 <translation id="282525059261716597">שורת פקודה:</translation>
@@ -2645,6 +2649,7 @@
 <translation id="3001144475369593262">חשבונות לילדים</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{אין מקשים שהותאמו אישית}=1{מקש אחד שהותאם אישית}one{{COUNT} מקשים שהותאמו אישית}two{{COUNT} מקשים שהותאמו אישית}other{{COUNT} מקשים שהותאמו אישית}}</translation>
 <translation id="3002864108328203174">‏הגיליון התחתון של Gemini נפתח בחצי מגובה המסך.</translation>
+<translation id="300311730636583518">יש לי שאלה לגבי התמונה</translation>
 <translation id="3003144360685731741">רשתות מועדפות</translation>
 <translation id="3003152206838282768">‏‫Gemini עובד על המשימה שלך ב-Chrome. אפשר לבדוק ב-Chrome אם יש עדכונים.</translation>
 <translation id="3003253259757197230">‏במהלך הגלישה, כתובת ה-URL שמבקרים בהן יישלחו אל Google כדי לחזות את האתרים הבאים שעשויים להיפתח וכדי להציג לך מידע נוסף על הדף הנוכחי</translation>
@@ -2777,6 +2782,7 @@
 <translation id="3094521107841754472">המחיר השתנה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">סימניות, סיסמאות ונתוני דפדפן אחרים מסונכרנים עם החשבון הראשי.</translation>
 <translation id="3097674000822532270">‏האפליקציות וההגדרות שלך יסתנכרנו בין כל מכשירי ChromeOS Flex שבהם התחברת לחשבון שלך ב-Google. כדי לקבוע אילו נתונים מהדפדפן יישמרו בחשבון, צריך לעבור אל <ph name="LINK_BEGIN" />הגדרות Chrome<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">כדאי לנסות את הסגנון החדש בהגדרות. תמיד אפשר לחזור למראה הקלאסי.</translation>
 <translation id="3101126716313987672">עמעום תאורת המסך</translation>
 <translation id="3101709781009526431">תאריך ושעה</translation>
 <translation id="3102309003841389927">בדיקת עדכון הלוגו</translation>
@@ -5340,6 +5346,7 @@
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5040262127954254034">פרטיות</translation>
 <translation id="5040823038948176460">הגדרות תוכן נוספות</translation>
+<translation id="5041178465403838363">יש לי שאלה לגבי "<ph name="SELECTION" />"</translation>
 <translation id="5041509233170835229">‏אפליקציית Chrome</translation>
 <translation id="504194357571315770">נדרשת פעולה</translation>
 <translation id="5043807571255634689">המינוי <ph name="SUBSCRIPTION_NAME" /> יוסר רק מהמכשיר הזה. כדי לערוך שינויים במינוי, צריך לפנות לספק המינוי. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -7966,6 +7973,7 @@
 <translation id="7077751457066325012">הצגה והתאמה אישית של מקשי הקיצור</translation>
 <translation id="7078120482318506217">כל הרשתות</translation>
 <translation id="708060913198414444">העתקת כתובת &amp;אודיו</translation>
+<translation id="7082399760770275009">‏לפתיחת ההגדרות של Windows</translation>
 <translation id="7082568314107259011">הרשת <ph name="NETWORK_NAME" /> מנוהלת על ידי האדמין שלך</translation>
 <translation id="7082850163410901674">‏ההתראות מושבתות בהגדרות המערכת של Mac</translation>
 <translation id="7083729794572207131">בדרך כלל אתרים מבקשים להתקין אפליקציות אינטרנט כדי לשפר את חוויית השימוש שלך באתר</translation>
@@ -9040,6 +9048,7 @@
 <translation id="7913805372428124107">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7914399737746719723">האפליקציה הותקנה</translation>
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
+<translation id="7915478442339169507">הרשאת גישה לאתר</translation>
 <translation id="7916364730877325865">בהתאם למדיניות הארגון שלך, אי אפשר להפעיל סנכרון עם החשבון הזה</translation>
 <translation id="791698251820376781">הארגון שלך לא מאפשר לך להיכנס</translation>
 <translation id="7918928051723770926">המשימה הושלמה</translation>
@@ -10848,6 +10857,7 @@
 <translation id="978146274692397928">רוחב סימן הפיסוק הראשוני הוא מלא</translation>
 <translation id="978978324795544535">לחיצה כפולה על פריט, לחיצה ארוכה בלחיצה השנייה וגרירת הפריט כדי להזיז אותו</translation>
 <translation id="981121421437150478">לא מקוון</translation>
+<translation id="981383875218593510">כדי לנסות את המראה השקוף החדש של הכרטיסיות, צריך להגדיר כאן את האפשרות "מודרני".</translation>
 <translation id="982083952953998237">הוספת מגבלות</translation>
 <translation id="98235653036850093">שלום, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>

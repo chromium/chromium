@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">ਜੋੜਾਬੱਧ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਕੋਡ ਦੋਵਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ ਇੱਕੋ ਜਿਹਾ ਹੈ</translation>
 <translation id="1093457606523402488">ਦ੍ਰਿਸ਼ਮਾਨ ਨੈਟਵਰਕ:</translation>
 <translation id="1093645050124056515">Ctrl + alt + ਹੇਠਾਂ ਤੀਰ</translation>
+<translation id="1094158807129647987">“<ph name="SELECTION" />” ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="1095398697303758108">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਲਈ Ctrl ਨੂੰ ਦੋ ਵਾਰ ਦਬਾਓ</translation>
 <translation id="1095879482467973146">ਵੈੱਬ 'ਤੇ Google Password Manager</translation>
 <translation id="1097016918605049747">ਇਸ ਪੰਨੇ ਦਾ ਅਨੁਆਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -1532,6 +1533,7 @@
 <translation id="2165177462441582039">ਚੁਣੋ ਕਿ ਹਰੇਕ ਆਈਟਮ ਨੂੰ ਕਿੰਨੇ ਸਮੇਂ ਤੱਕ ਉਜਾਗਰ ਰਹਿਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">ਰਿਪੋਰਟ ਭੇਜੀ ਗਈ</translation>
+<translation id="2168735174585029637">ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਨਵੀਂ ਪਾਰਦਰਸ਼ੀ ਦਿੱਖ ਦਿਓ</translation>
 <translation id="2169062631698640254">ਫੇਰ ਵੀ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="217120844667431680">AI ਮੋਡ ਨਾਲ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰੋ</translation>
 <translation id="2173302385160625112">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
@@ -1680,6 +1682,7 @@
 <translation id="2278562042389100163">ਬ੍ਰਾਊਜ਼ਰ window ਖੋਲ੍ਹੋ</translation>
 <translation id="2280486287150724112">ਸੱਜਾ ਹਾਸ਼ੀਆ</translation>
 <translation id="228059581448666199">ਮਾਊਸ 'ਤੇ ਖੱਬਾ-ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="2281511031159517364">ਡੀਵਾਈਸਾਂ ਵਿਚਕਾਰ ਲਿੰਕ ਭੇਜਣ ਲਈ, ਉਸੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2282146716419988068">GPU ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="228293613124499805">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ, ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਜਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਟ 'ਤੇ ਸਾਂਝੀ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਕੇ ਤੁਹਾਡੇ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਅਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਰੱਖਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦੇ ਹਾਂ।</translation>
 <translation id="2283599456633275070">ਯਾਤਰਾ</translation>
@@ -2411,6 +2414,7 @@
 <translation id="282230978681804245">ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵੱਲੋਂ ਅੱਗੇ ਦਿੱਤੀਆਂ ਚੀਜ਼ਾਂ ਸਮੇਤ ਕੁਝ ਖਾਸ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="2822551631199737692">ਕੈਮਰਾ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
 <translation id="2822634587701817431">ਸੁੰਗੜਨ / ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="2824892374426974106">ਇਸ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਤੋਂ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਵਰਤ ਰਿਹਾ ਹੈ</translation>
 <translation id="2825200993288778739">ਆਪਣੇ ਖੁਦ ਦੇ ਹੁਨਰ ਬਣਾਓ ਜਾਂ ਹੁਨਰ ਲਾਇਬ੍ਰੇਰੀ ਤੋਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="282525059261716597">ਕਮਾਂਡ ਲਾਈਨ:</translation>
@@ -2647,6 +2651,7 @@
 <translation id="3001144475369593262">ਬੱਚਿਆਂ ਦੇ ਖਾਤੇ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ਕੋਈ ਵੀ ਕੁੰਜੀ ਵਿਉਂਤਬੱਧ ਨਹੀਂ ਕੀਤੀ ਗਈ}=1{1 ਵਿਉਂਤਬੱਧ ਕੁੰਜੀ}other{{COUNT} ਵਿਉਂਤਬੱਧ ਕੁੰਜੀਆਂ}}</translation>
 <translation id="3002864108328203174">Gemini ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਅੱਧੀ ਉਚਾਈ 'ਤੇ ਹੈ।</translation>
+<translation id="300311730636583518">ਇਸ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="3003144360685731741">ਤਰਜੀਹੀ ਨੈੱਟਵਰਕ</translation>
 <translation id="3003152206838282768">Chrome ਵਿੱਚ ਤੁਹਾਡੇ Gemini ਐਪ ਵਾਲੇ ਕਾਰਜ 'ਤੇ ਕੰਮ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਹੋਰ ਅੱਪਡੇਟਾਂ ਲਈ Chrome ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3003253259757197230">ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL, Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ ਤਾਂ ਕਿ ਇਹ ਅੰਦਾਜ਼ਾ ਲਗਾਇਆ ਜਾ ਸਕੇ ਕਿ ਤੁਸੀਂ ਅੱਗੇ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ ਅਤੇ ਨਾਲ ਹੀ ਤੁਹਾਨੂੰ ਉਸ ਪੰਨੇ ਬਾਰੇ ਵਧੀਕ ਜਾਣਕਾਰੀ ਵੀ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਜਾ ਰਹੇ ਹੋ</translation>
@@ -2779,6 +2784,7 @@
 <translation id="3094521107841754472">ਕੀਮਤ <ph name="PREVIOUS_PRICE" /> ਤੋਂ <ph name="CURRENT_PRICE" /> ਵਿੱਚ ਬਦਲ ਗਈ ਹੈ।</translation>
 <translation id="3095871294753148861">ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬ੍ਰਾਊਜ਼ਰ ਡਾਟੇ ਦਾ ਮੁੱਖ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="3097674000822532270">ਤੁਹਾਡੀਆਂ ਐਪਾਂ ਅਤੇ ਸੈਟਿੰਗਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਰੇ ChromeOS Flex ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਵੇਗਾ, ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਹੋ। ਇਹ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਕਿ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਕਿਹੜਾ ਬ੍ਰਾਊਜ਼ਰ ਡਾਟਾ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, <ph name="LINK_BEGIN" />Chrome ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
+<translation id="3099754485438181407">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਨਵਾਂ ਸਟਾਈਲ ਅਜ਼ਮਾਓ। ਤੁਸੀਂ ਕਦੇ ਵੀ ਕਲਾਸਿਕ ਦਿੱਖ 'ਤੇ ਵਾਪਸ ਸਵਿੱਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3101126716313987672">ਮੱਧਮ ਲਾਈਟ</translation>
 <translation id="3101709781009526431">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ</translation>
 <translation id="3102309003841389927">ਲੋਗੋ ਸੰਬੰਧੀ ਅੱਪਡੇਟ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -5339,6 +5345,7 @@
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5040262127954254034">ਪਰਦੇਦਾਰੀ</translation>
 <translation id="5040823038948176460">ਵਧੀਕ ਸਮੱਗਰੀ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="5041178465403838363">“<ph name="SELECTION" />” ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="5041509233170835229">Chrome ਐਪ</translation>
 <translation id="504194357571315770">ਕਾਰਵਾਈ ਦੀ ਲੋੜ</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾਇਆ ਜਾਵੇਗਾ। ਆਪਣੀ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ ਤਬਦੀਲੀ ਕਰਨ ਲਈ, ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਪ੍ਰਦਾਨਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
@@ -7962,6 +7969,7 @@
 <translation id="7077751457066325012">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਦੇਖੋ ਅਤੇ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7078120482318506217">ਸਾਰੇ ਨੈੱਟਵਰਕ</translation>
 <translation id="708060913198414444">ਆਡੀਓ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
+<translation id="7082399760770275009">Windows ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7082850163410901674">Mac ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ</translation>
 <translation id="7083729794572207131">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਸਾਈਟ ਸੰਬੰਧੀ ਤੁਹਾਡੇ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਾਸਤੇ ਵੈੱਬ ਐਪਾਂ ਸਥਾਪਤ ਕਰਨ ਲਈ ਪੁੱਛਦੀਆਂ ਹਨ</translation>
@@ -9036,6 +9044,7 @@
 <translation id="7913805372428124107"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7914399737746719723">ਐਪ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="7915457674565721553">ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੋ</translation>
+<translation id="7915478442339169507">ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="7916364730877325865">ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਨੂੰ ਇਸ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਚਾਲੂ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦੀ</translation>
 <translation id="791698251820376781">ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦੀ</translation>
 <translation id="7918928051723770926">ਕਾਰਜ ਪੂਰਾ ਹੋਇਆ</translation>
@@ -10844,6 +10853,7 @@
 <translation id="978146274692397928">ਅਰੰਭਿਕ ਵਿਸ਼ਰਾਮ-ਚਿੰਨ੍ਹ ਚੁੜਾਈ ਪੂਰੀ ਹੈ</translation>
 <translation id="978978324795544535">ਕਿਸੇ ਆਈਟਮ 'ਤੇ ਡਬਲ ਟੈਪ ਕਰੋ, ਦੂਜਾ ਟੈਪ ਕਰਨ 'ਤੇ ਦਬਾਈ ਰੱਖੋ ਅਤੇ ਫਿਰ ਆਈਟਮ ਨੂੰ ਲਿਜਾਉਣ ਲਈ ਉਸਨੂੰ ਘਸੀਟੋ</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
+<translation id="981383875218593510">ਆਪਣੀਆਂ ਟੈਬਾਂ ਲਈ ਨਵੀਂ ਪਾਰਦਰਸ਼ੀ ਦਿੱਖ ਨੂੰ ਅਜ਼ਮਾਉਣ ਲਈ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਆਧੁਨਿਕ 'ਤੇ ਸੈੱਟ ਕਰੋ।</translation>
 <translation id="982083952953998237">ਕੌਂਸਟਰੇਂਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="98235653036850093">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ਸਾਰੀਆਂ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>

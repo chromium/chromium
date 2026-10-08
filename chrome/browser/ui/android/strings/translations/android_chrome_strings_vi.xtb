@@ -322,6 +322,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2297822946037605517">Chia sẻ trang này</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
 <translation id="2305798319182970276">Xoá nhật ký bằng một lần nhấn nút</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> cần có quyền truy cập vào các thiết bị có giao diện người dùng (HID) đối với trang web này.</translation>
 <translation id="2316129865977710310">Không, cảm ơn</translation>
 <translation id="232137538351753795">Vuốt từ mép trái sang để quay lại</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>

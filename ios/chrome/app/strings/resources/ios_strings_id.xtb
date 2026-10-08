@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1004615467759797184">Sesuaikan Halaman Tab Baru Anda</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} kunci sandi}other{{count} kunci sandi}}</translation>
 <translation id="1005023885865154304">Buka setelan Isi Otomatis Sandi</translation>
 <translation id="1005230401424685968">TTTT</translation>
@@ -1693,6 +1694,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6307792728709337290">Simpan kartu di Akun Google Anda guna mengisi otomatis kartu tersebut untuk pembelian ini dan pembelian mendatang yang dilakukan di Chrome.</translation>
 <translation id="6316141353357700666">Pilih sandi yang ingin Anda gunakan dari daftar yang muncul.</translation>
 <translation id="6321526113093607004">Tambahkan ke Bookmark</translation>
+<translation id="6324054713176642683">Pilih dari tema, warna, atau upload foto Anda sendiri.</translation>
 <translation id="6327249202318869726">Gemini dinonaktifkan untuk akun Anda. Hubungi admin untuk mengetahui informasi selengkapnya.</translation>
 <translation id="6331836477476466332">Browser yang lebih aman dan canggih untuk Anda</translation>
 <translation id="6337234675334993532">Enkripsi</translation>

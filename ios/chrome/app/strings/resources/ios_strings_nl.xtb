@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1004615467759797184">Pas je pagina 'Nieuw tabblad' aan</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} toegangssleutel}other{{count} toegangssleutels}}</translation>
 <translation id="1005023885865154304">Instellingen voor Wachtwoorden automatisch invullen openen</translation>
 <translation id="1005230401424685968">JJJJ</translation>
@@ -1693,6 +1694,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6307792728709337290">Sla je kaart op in je Google-account om deze automatisch in te vullen voor deze aankoop en toekomstige aankopen die je in Chrome doet.</translation>
 <translation id="6316141353357700666">Kies het wachtwoord dat je wilt gebruiken in de lijst die verschijnt.</translation>
 <translation id="6321526113093607004">Toevoegen aan bookmarks</translation>
+<translation id="6324054713176642683">Kies uit thema's en kleuren of upload je eigen foto.</translation>
 <translation id="6327249202318869726">Gemini staat uit voor je account. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="6331836477476466332">Een veiligere en krachtigere browser voor jou</translation>
 <translation id="6337234675334993532">Versleuteling</translation>

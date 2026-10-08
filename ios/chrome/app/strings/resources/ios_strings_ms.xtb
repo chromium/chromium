@@ -558,6 +558,7 @@
 <translation id="2664621323652615289">Berhenti</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" tidak dibenarkan untuk mengakses kamera anda</translation>
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Bayaran Ansuran</translation>
@@ -1389,6 +1390,7 @@
 <translation id="5351613737248079168">Anda perlu log masuk untuk menggunakan Level Up</translation>
 <translation id="5352128922772839949">Simpan fail</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
+<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" dibenarkan untuk menggunakan mikrofon anda apabila anda melawati laman ini</translation>
 <translation id="5359436665022446585">Pembukaan pautan yang lebih baik</translation>
 <translation id="536067926684072644">Tunjukkan Penanda Halaman</translation>
 <translation id="5364647308446127983">{count,plural, =1{Tidak dapat mengimport {count} kunci laluan}other{Tidak dapat mengimport {count} kunci laluan}}</translation>
@@ -2308,6 +2310,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> akaun</translation>
 <translation id="8161614462829037225">Buka kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Panjang</translation>
+<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" dibenarkan untuk menggunakan kamera anda apabila anda melawati laman ini</translation>
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2} dan 1 lagi}other{Untuk {website_1}, {website_2} dan {more_count} lagi}}</translation>
 <translation id="8184895727539791845">Untuk membolehkan Gemini menggunakan kamera anda, hidupkan Kamera dalam tetapan iOS</translation>
 <translation id="8185076488803799132">Import</translation>
@@ -2480,6 +2483,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8680643216091361291">Tetapan <ph name="BEGIN_LINK" />Simpan Aktiviti<ph name="END_LINK" /> anda dimatikan secara lalai. Apabila Simpan Aktiviti dimatikan, Google menyimpan sembang anda selama 3 hari. Google menggunakan data yang disimpan untuk memastikan Apl Gemini berfungsi dengan betul, membantu untuk memastikan Apl Gemini selamat dan menggunakan maklum balas anda untuk menyelesaikan masalah. Anda boleh menghidupkan Simpan Aktiviti untuk membantu kami meningkatkan Google AI untuk semua orang.</translation>
 <translation id="8680786875305615692">Bantu tingkatkan keselamatan pada Web untuk semua orang</translation>
 <translation id="8680787084697685621">Butiran log masuk akaun sudah lapuk.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" tidak dibenarkan untuk mengakses mikrofon anda</translation>
 <translation id="8690752723634292147">Sahkan pemadaman</translation>
 <translation id="8692107307702113268">Kata laluan melebihi 1000 aksara</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan daripada laman, muat turun dan sambungan yang berbahaya.</translation>

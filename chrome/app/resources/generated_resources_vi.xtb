@@ -143,6 +143,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1090541560108055381">Trước khi ghép nối, hãy đảm bảo mã này giống nhau trên cả hai thiết bị</translation>
 <translation id="1093457606523402488">Mạng hiển thị:</translation>
 <translation id="1093645050124056515">ctrl + alt + mũi tên xuống</translation>
+<translation id="1094158807129647987">Hỏi về "<ph name="SELECTION" />"</translation>
 <translation id="1095398697303758108">Nhấn Ctrl hai lần để dùng tính năng tự động điền nâng cao</translation>
 <translation id="1095879482467973146">Trình quản lý mật khẩu của Google trên web</translation>
 <translation id="1097016918605049747">Không thể dịch trang này</translation>
@@ -1532,6 +1533,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2165177462441582039">Chọn thời lượng đánh dấu cho từng mục</translation>
 <translation id="2166369534954157698">Lươn ngắn lại chê trạch dài</translation>
 <translation id="2168036794078614559">Đã gửi báo cáo</translation>
+<translation id="2168735174585029637">Mang đến cho các thẻ giao diện trong suốt mới</translation>
 <translation id="2169062631698640254">Tiếp tục đăng nhập</translation>
 <translation id="217120844667431680">Làm được nhiều việc hơn cùng Chế độ AI</translation>
 <translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
@@ -1680,6 +1682,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2278562042389100163">Mở cửa sổ trình duyệt</translation>
 <translation id="2280486287150724112">Lề phải</translation>
 <translation id="228059581448666199">Nhấp chuột trái</translation>
+<translation id="2281511031159517364">Để gửi đường liên kết giữa các thiết bị, hãy đăng nhập bằng cùng một tài khoản.</translation>
 <translation id="2282146716419988068">Quá trình GPU</translation>
 <translation id="228293613124499805">Hầu hết trang web bạn truy cập có thể sẽ lưu dữ liệu vào thiết bị, thường là để cải thiện trải nghiệm của bạn bằng cách lưu các lựa chọn ưu tiên hoặc thông tin mà bạn chia sẻ với trang web. Chúng tôi khuyên bạn luôn bật chế độ cài đặt này.</translation>
 <translation id="2283599456633275070">Thông tin đi lại</translation>
@@ -2409,6 +2412,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="282230978681804245">Tổ chức của bạn là bên quản lý hồ sơ. Tổ chức có thể xem một số thông tin, trong đó có:</translation>
 <translation id="2822551631199737692">Máy ảnh đang được sử dụng</translation>
 <translation id="2822634587701817431">Thu gọn / mở rộng</translation>
+<translation id="2824892374426974106">Hỏi về hình ảnh này</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> đang dùng tuỳ chọn cài đặt proxy từ quản trị viên của bạn</translation>
 <translation id="2825200993288778739">Tạo kỹ năng của riêng bạn hoặc thêm kỹ năng từ thư viện kỹ năng</translation>
 <translation id="282525059261716597">Dòng lệnh:</translation>
@@ -2646,6 +2650,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3001144475369593262">Tài khoản con</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Không có phím nào được tuỳ chỉnh}=1{Có 1 phím được tuỳ chỉnh}other{Có {COUNT} phím được tuỳ chỉnh}}</translation>
 <translation id="3002864108328203174">Bảng Gemini ở dưới cùng đã mở trên một nửa màn hình.</translation>
+<translation id="300311730636583518">Hỏi về hình ảnh này</translation>
 <translation id="3003144360685731741">Mạng ưa thích</translation>
 <translation id="3003152206838282768">Tác vụ bạn tạo trên Ứng dụng Gemini đang được thực hiện trong Chrome. Hãy kiểm tra Chrome để biết các thông tin cập nhật khác</translation>
 <translation id="3003253259757197230">Các URL bạn truy cập sẽ được gửi cho Google nhằm dự đoán những trang web có thể sắp tới bạn sẽ truy cập và nhằm hiển thị cho bạn thông tin bổ sung về trang bạn đang truy cập</translation>
@@ -2778,6 +2783,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3094521107841754472">Giá đã thay đổi từ <ph name="PREVIOUS_PRICE" /> thành <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Dấu trang, mật khẩu và dữ liệu khác của trình duyệt sẽ được đồng bộ hóa với tài khoản chính.</translation>
 <translation id="3097674000822532270">Các ứng dụng và chế độ cài đặt của bạn sẽ đồng bộ hoá trên mọi thiết bị ChromeOS Flex mà bạn đã đăng nhập bằng Tài khoản Google. Để quản lý loại dữ liệu trình duyệt được lưu trong Tài khoản Google của bạn, hãy chuyển đến phần <ph name="LINK_BEGIN" />cài đặt Chrome<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">Dùng thử giao diện mới trong phần cài đặt. Bạn có thể chuyển về giao diện cũ bất cứ lúc nào.</translation>
 <translation id="3101126716313987672">Ánh sáng mờ</translation>
 <translation id="3101709781009526431">Ngày và giờ</translation>
 <translation id="3102309003841389927">Xem xét việc cập nhật biểu trưng</translation>
@@ -5340,6 +5346,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5040262127954254034">Quyền riêng tư</translation>
 <translation id="5040823038948176460">Các chế độ cài đặt nội dung khác</translation>
+<translation id="5041178465403838363">Hỏi về "<ph name="SELECTION" />"</translation>
 <translation id="5041509233170835229">Ứng dụng Chrome</translation>
 <translation id="504194357571315770">Yêu cầu hành động</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> sẽ chỉ bị xoá khỏi thiết bị này. Để thay đổi gói thuê bao của bạn, hãy liên hệ với nhà cung cấp gói thuê bao. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -7964,6 +7971,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7077751457066325012">Xem và tuỳ chỉnh các phím tắt</translation>
 <translation id="7078120482318506217">Tất cả các mạng</translation>
 <translation id="708060913198414444">S&amp;ao chép địa chỉ âm thanh</translation>
+<translation id="7082399760770275009">Mở phần cài đặt Windows</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> do quản trị viên của bạn quản lý</translation>
 <translation id="7082850163410901674">Thông báo hiện đang tắt trong phần System Settings (Cài đặt hệ thống) trên máy Mac</translation>
 <translation id="7083729794572207131">Các trang web thường yêu cầu cài đặt ứng dụng web để nâng cao trải nghiệm của bạn trên trang web</translation>
@@ -9038,6 +9046,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7913805372428124107">Để truy cập các thẻ mà bạn mở trên <ph name="DEVICE" />, hãy đăng nhập và đồng bộ hoá nhật ký. Bạn cũng có thể sử dụng mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="7914399737746719723">Đã cài đặt ứng dụng</translation>
 <translation id="7915457674565721553">Hãy kết nối Internet để thiết lập quyền kiểm soát của cha mẹ</translation>
+<translation id="7915478442339169507">Cho phép truy cập trang web</translation>
 <translation id="7916364730877325865">Tổ chức của bạn không cho phép bạn bật tính năng đồng bộ hoá bằng tài khoản này</translation>
 <translation id="791698251820376781">Tổ chức của bạn không cho phép bạn đăng nhập</translation>
 <translation id="7918928051723770926">Đã hoàn thành việc cần làm</translation>
@@ -10846,6 +10855,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="978146274692397928">Độ rộng dấu câu ban đầu là Đầy đủ</translation>
 <translation id="978978324795544535">Nhấn đúp vào một mục, giữ ở lần nhấn thứ hai rồi kéo mục đó để di chuyển</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
+<translation id="981383875218593510">Đặt chế độ cài đặt này thành Hiện đại để trải nghiệm giao diện trong suốt mới trên các thẻ của bạn.</translation>
 <translation id="982083952953998237">Thêm giới hạn</translation>
 <translation id="98235653036850093">Xin chào <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1004615467759797184">自定义“新标签页”页面</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} 个通行密钥}other{{count} 个通行密钥}}</translation>
 <translation id="1005023885865154304">打开“自动填充密码”设置</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1693,6 +1694,7 @@
 <translation id="6307792728709337290">将卡片保存至 Google 账号，以便在本次及日后使用 Chrome 购物时自动填充信息。</translation>
 <translation id="6316141353357700666">从显示的列表中选择要使用的密码。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
+<translation id="6324054713176642683">选择主题、颜色，或上传自己的照片。</translation>
 <translation id="6327249202318869726">您的账号已停用 Gemini。如需了解详情，请与管理员联系。</translation>
 <translation id="6331836477476466332">更安全、更强大的浏览器</translation>
 <translation id="6337234675334993532">加密</translation>

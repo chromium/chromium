@@ -558,6 +558,7 @@
 <translation id="2664621323652615289">बंद करें</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2669454659051515572">इस डिवाइस का इस्तेमाल करने वाले लोग, गुप्त मोड में डाउनलोड की गई फ़ाइलें देख सकते हैं</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" आपके कैमरे को ऐक्सेस नहीं कर सकता है</translation>
 <translation id="2671423594960767771">ग्रुप शेयर करें</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">किश्तों में पैसे चुकाएं</translation>
@@ -1389,6 +1390,7 @@
 <translation id="5351613737248079168">'लेवल अप' इस्तेमाल करने के लिए, आपको साइन इन करना होगा</translation>
 <translation id="5352128922772839949">फ़ाइल सेव करें</translation>
 <translation id="5355191726083956201">बेहतर सुरक्षा की सुविधा चालू है</translation>
+<translation id="5355871759168485600">जब भी इस साइट पर विज़िट किया जाएगा, तब "<ph name="SITE_DOMAIN" />" आपके माइक्रोफ़ोन को ऐक्सेस करेगा</translation>
 <translation id="5359436665022446585">लिंक खोलने की सुविधा को और बेहतर बनाएं</translation>
 <translation id="536067926684072644">बुकमार्क दिखाएं</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} पासकी इंपोर्ट नहीं की जा सकी}one{{count} पासकी इंपोर्ट नहीं की जा सकी}other{{count} पासकी इंपोर्ट नहीं की जा सकीं}}</translation>
@@ -2308,6 +2310,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाते</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> से अनलॉक करें</translation>
 <translation id="8173034266693057059">लंबाई</translation>
+<translation id="8181328232274170248">जब भी इस साइट पर विज़िट किया जाएगा, तब "<ph name="SITE_DOMAIN" />" आपके कैमरे को ऐक्सेस करेगा</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} के लिए}=2{{website_2} और {website_1} के लिए}=3{{website_1}, {website_2}, और 1 वेबसाइट के लिए}one{{website_1}, {website_2}, और {more_count} वेबसाइट के लिए}other{{website_1}, {website_2}, और {more_count} वेबसाइटों के लिए}}</translation>
 <translation id="8184895727539791845">Gemini को कैमरे का ऐक्सेस देने के लिए, iOS की सेटिंग में जाकर कैमरे का विकल्प चालू करें</translation>
 <translation id="8185076488803799132">इंपोर्ट करें</translation>
@@ -2480,6 +2483,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8680643216091361291">आपकी <ph name="BEGIN_LINK" />गतिविधि सेव करके रखने की सेटिंग<ph name="END_LINK" /> डिफ़ॉल्ट रूप से बंद है. इसके बंद होने पर, Google आपकी चैट को तीन दिनों तक सेव करके रखता है. इन चैट का इस्तेमाल, Gemini Apps को सुरक्षित रखने और यह पक्का करने के लिए किया जाता है कि ये सही तरीके से काम करते रहें. साथ ही, चैट के दौरान दिए गए आपके सुझाव, शिकायत या राय से हमें Gemini Apps से जुड़ी समस्याएं हल करने में मदद मिलती है. गतिविधि सेव करके रखने की सेटिंग चालू करें, ताकि Google के एआई को सभी के लिए और बेहतर बनाया जा सके.</translation>
 <translation id="8680786875305615692">वेब को सभी के लिए ज़्यादा सुरक्षित बनाने में मदद करें</translation>
 <translation id="8680787084697685621">खाते में साइन इन से जुड़ी जानकारियां पुरानी हो गई हैं.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" आपके माइक्रोफ़ोन को ऐक्सेस नहीं कर सकता है</translation>
 <translation id="8690752723634292147">मिटाने की पुष्टि करें</translation>
 <translation id="8692107307702113268">पासवर्ड में 1000 से ज़्यादा वर्ण हैं</translation>
 <translation id="8692689525339542358">नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से सुरक्षित रहें.</translation>

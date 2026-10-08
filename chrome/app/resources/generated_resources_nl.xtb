@@ -143,6 +143,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1090541560108055381">Voordat je de apparaten koppelt, check je of deze code gelijk is op beide apparaten</translation>
 <translation id="1093457606523402488">Zichtbare netwerken:</translation>
 <translation id="1093645050124056515">ctrl + alt + pijl-omlaag</translation>
+<translation id="1094158807129647987">Vragen stellen over <ph name="SELECTION" /></translation>
 <translation id="1095398697303758108">Druk 2 keer op Ctrl voor verbeterd automatisch invullen</translation>
 <translation id="1095879482467973146">Google Wachtwoordmanager op internet</translation>
 <translation id="1097016918605049747">Deze pagina kan niet worden vertaald</translation>
@@ -1522,6 +1523,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2165177462441582039">Kiezen hoelang elk item gemarkeerd moet blijven</translation>
 <translation id="2166369534954157698">Pa's wijze lynx bezag vroom het fikse aquaduct</translation>
 <translation id="2168036794078614559">Melding gestuurd</translation>
+<translation id="2168735174585029637">Geef je tabbladen een nieuwe transparante look</translation>
 <translation id="2169062631698640254">Toch inloggen</translation>
 <translation id="217120844667431680">Meer doen met de AI-modus</translation>
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
@@ -1667,6 +1669,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2278562042389100163">Browservenster openen</translation>
 <translation id="2280486287150724112">Marge rechts</translation>
 <translation id="228059581448666199">Klikken met de linkermuisknop</translation>
+<translation id="2281511031159517364">Als je links tussen apparaten wilt sturen, log je in met hetzelfde account.</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
 <translation id="228293613124499805">De meeste sites die je bezoekt, slaan waarschijnlijk gegevens op je apparaat op. Dit gebeurt vaak om de functionaliteit te verbeteren door je voorkeuren of met de site gedeelde informatie op te slaan. We raden je aan deze instelling aan te laten.</translation>
 <translation id="2283599456633275070">Reizen</translation>
@@ -2396,6 +2399,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="282230978681804245">Je profiel wordt beheerd door je organisatie, die bepaalde soorten informatie kan bekijken, waaronder</translation>
 <translation id="2822551631199737692">Camera in gebruik</translation>
 <translation id="2822634587701817431">Verkleinen/vergroten</translation>
+<translation id="2824892374426974106">Vragen stellen over dit</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> gebruikt proxyinstellingen van je beheerder</translation>
 <translation id="2825200993288778739">Maak je eigen vaardigheden of voeg ze toe uit de vaardighedenbibliotheek</translation>
 <translation id="282525059261716597">Opdrachtregel:</translation>
@@ -2633,6 +2637,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3001144475369593262">Kinderaccounts</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Geen toetsen aangepast}=1{1 aangepaste toets}other{{COUNT} aangepaste toetsen}}</translation>
 <translation id="3002864108328203174">Blad onderaan voor Gemini op halve hoogte.</translation>
+<translation id="300311730636583518">Vragen stellen over dit</translation>
 <translation id="3003144360685731741">Voorkeursnetwerken</translation>
 <translation id="3003152206838282768">Werken aan je Gemini-app-taak in Chrome. Check Chrome voor meer updates</translation>
 <translation id="3003253259757197230">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat en extra informatie te tonen over de pagina die je bezoekt</translation>
@@ -2765,6 +2770,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3094521107841754472">De prijs is gewijzigd van <ph name="PREVIOUS_PRICE" /> naar <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmarks, wachtwoorden en andere browsegegevens worden gesynchroniseerd met het primaire account.</translation>
 <translation id="3097674000822532270">Je apps en instellingen worden gesynchroniseerd voor alle ChromeOS Flex-apparaten waarop je bent ingelogd met je Google-account. Als je wilt beheren welke browsergegevens worden opgeslagen in je Google-account, ga je naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">Probeer de nieuwe stijl via de instellingen. Je kunt altijd teruggaan naar de klassieke look.</translation>
 <translation id="3101126716313987672">Licht dimmen</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
 <translation id="3102309003841389927">Update voor logo controleren</translation>
@@ -5323,6 +5329,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5040823038948176460">Aanvullende contentinstellingen</translation>
+<translation id="5041178465403838363">Vragen stellen over <ph name="SELECTION" /></translation>
 <translation id="5041509233170835229">Chrome-app</translation>
 <translation id="504194357571315770">Actie vereist</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> wordt alleen van dit apparaat verwijderd. Neem contact op met de abonnementsprovider om wijzigingen in het abonnement aan te brengen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -7941,6 +7948,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7077751457066325012">Sneltoetsen bekijken en aanpassen</translation>
 <translation id="7078120482318506217">Alle netwerken</translation>
 <translation id="708060913198414444">Adres van audio k&amp;opiëren</translation>
+<translation id="7082399760770275009">Windows-instellingen openen</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wordt beheerd door je beheerder</translation>
 <translation id="7082850163410901674">Meldingen staan uit in de Mac-systeeminstellingen</translation>
 <translation id="7083729794572207131">Sites vragen meestal of ze web-apps mogen installeren om de functionaliteit op de site te verbeteren</translation>
@@ -9014,6 +9022,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7913805372428124107">Log in en synchroniseer je geschiedenis om de tabbladen van <ph name="DEVICE" /> te krijgen. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="7914399737746719723">App geïnstalleerd</translation>
 <translation id="7915457674565721553">Maak verbinding met internet om ouderlijk toezicht in te stellen</translation>
+<translation id="7915478442339169507">Sitetoezicht toestaan</translation>
 <translation id="7916364730877325865">Je organisatie staat niet toe dat je synchronisatie met dit account aanzet</translation>
 <translation id="791698251820376781">Je organisatie staat niet toe dat je inlogt</translation>
 <translation id="7918928051723770926">Taak afgerond</translation>
@@ -10823,6 +10832,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="978146274692397928">Standaard interpunctiebreedte is 'volledig'</translation>
 <translation id="978978324795544535">Dubbeltik op een item, houd je vinger erop bij de tweede tik en sleep het naar de juiste plek</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="981383875218593510">Zet deze instelling op Modern om de nieuwe transparante look voor je tabbladen te proberen.</translation>
 <translation id="982083952953998237">Beperkingen toevoegen</translation>
 <translation id="98235653036850093">Hallo <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>

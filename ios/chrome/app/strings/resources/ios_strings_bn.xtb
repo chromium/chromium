@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1004615467759797184">আপনার নতুন ট্যাব পৃষ্ঠা কাস্টমাইজ করুন</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count}টি পাসকী}one{{count}টি পাসকী}other{{count}টি পাসকী}}</translation>
 <translation id="1005023885865154304">অটোফিল পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1694,6 +1695,7 @@
 <translation id="6307792728709337290">এই কেনাকাটা ও Chrome-এ ভবিষ্যতে কোনও কেনাকাটা করলে অটোফিলের সুবিধা পেতে আপনার Google অ্যাকাউন্টে কার্ড সেভ করে রাখুন।</translation>
 <translation id="6316141353357700666">আপনাকে প্রদর্শিত পাসওয়ার্ডের তালিকা থেকে আপনি যেটি ব্যবহার করতে চান সেটি বেছে নিন।</translation>
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
+<translation id="6324054713176642683">থিম, রঙ বেছে নিন অথবা নিজের ফটো আপলোড করুন।</translation>
 <translation id="6327249202318869726">আপনার অ্যাকাউন্টের জন্য Gemini বন্ধ করা আছে। আরও তথ্যের জন্য আপনার অ্যাডমিনের সাথে যোগাযোগ করুন।</translation>
 <translation id="6331836477476466332">আপনার জন্য আরও নিরাপদ ও শক্তিশালী ব্রাউজার</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>

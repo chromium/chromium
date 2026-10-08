@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1093457606523402488">可见网络：</translation>
 <translation id="1093645050124056515">ctrl + alt + 向下键</translation>
+<translation id="1094158807129647987">就“<ph name="SELECTION" />”提问</translation>
 <translation id="1095398697303758108">按 Ctrl 键两次即可使用增强型自动填充功能</translation>
 <translation id="1095879482467973146">网页版 Google 密码管理工具</translation>
 <translation id="1097016918605049747">无法翻译此网页</translation>
@@ -1522,6 +1523,7 @@
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">举报信息已发送</translation>
+<translation id="2168735174585029637">让标签页呈现全新透明外观</translation>
 <translation id="2169062631698640254">仍然登录</translation>
 <translation id="217120844667431680">开启 AI 模式，事半功倍</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
@@ -1667,6 +1669,7 @@
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
 <translation id="228059581448666199">左键点击鼠标</translation>
+<translation id="2281511031159517364">如需在设备间发送链接，请登录同一账号。</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
 <translation id="2283599456633275070">旅行</translation>
@@ -2396,6 +2399,7 @@
 <translation id="282230978681804245">您的资料由组织管理，管理方可以查看某些信息，包括：</translation>
 <translation id="2822551631199737692">摄像头正在使用中</translation>
 <translation id="2822634587701817431">缩小/放大</translation>
+<translation id="2824892374426974106">就此图片提问</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 使用的是由您的管理员指定的代理设置</translation>
 <translation id="2825200993288778739">您可以自行构建，也可以从技能库中添加</translation>
 <translation id="282525059261716597">命令行：</translation>
@@ -2633,6 +2637,7 @@
 <translation id="3001144475369593262">儿童账号</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{未自定义任何键}=1{1 个自定义键}other{{COUNT} 个自定义键}}</translation>
 <translation id="3002864108328203174">Gemini 底部动作条已以一半高度打开。</translation>
+<translation id="300311730636583518">就此图片提问</translation>
 <translation id="3003144360685731741">首选网络</translation>
 <translation id="3003152206838282768">正在 Chrome 中处理您的 Gemini 应用任务。查看 Chrome 以了解更多更新</translation>
 <translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
@@ -2765,6 +2770,7 @@
 <translation id="3094521107841754472">价格已从 <ph name="PREVIOUS_PRICE" /> 变为 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="3095871294753148861">书签、密码和其他浏览器数据会与主账号同步。</translation>
 <translation id="3097674000822532270">您的应用和设置会在您使用 Google 账号登录的所有 ChromeOS Flex 设备上保持同步。如需管理要在 Google 账号中保存哪些浏览数据，请前往 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
+<translation id="3099754485438181407">在设置中试试新风格。您随时可以切换回经典外观。</translation>
 <translation id="3101126716313987672">暗光</translation>
 <translation id="3101709781009526431">日期和时间</translation>
 <translation id="3102309003841389927">查看徽标更新</translation>
@@ -3595,7 +3601,7 @@
 <translation id="3719310907809321183">已填充<ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">主页</translation>
 <translation id="372062398998492895">CUPS</translation>
-<translation id="3721119614952978349">您与 Google</translation>
+<translation id="3721119614952978349">我与 Google</translation>
 <translation id="3721178866505920080">详细了解如何开启扩展预加载功能</translation>
 <translation id="3722624153992426516">已收到<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />说明</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
@@ -5323,6 +5329,7 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="5040823038948176460">更多内容设置</translation>
+<translation id="5041178465403838363">就“<ph name="SELECTION" />”提问</translation>
 <translation id="5041509233170835229">Chrome 应用</translation>
 <translation id="504194357571315770">请采取行动</translation>
 <translation id="5043807571255634689">系统只会从此设备中移除 <ph name="SUBSCRIPTION_NAME" />。如需更改订阅，请与订阅提供商联系。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -7941,6 +7948,7 @@
 <translation id="7077751457066325012">查看和自定义键盘快捷键</translation>
 <translation id="7078120482318506217">所有网络</translation>
 <translation id="708060913198414444">复制音频地址(&amp;O)</translation>
+<translation id="7082399760770275009">打开 Windows 设置</translation>
 <translation id="7082568314107259011">“<ph name="NETWORK_NAME" />”由您的管理员管理</translation>
 <translation id="7082850163410901674">通知在 Mac 系统设置中已关闭</translation>
 <translation id="7083729794572207131">网站通常会请求安装 Web 应用，以便提升您在该网站上的体验</translation>
@@ -9015,6 +9023,7 @@
 <translation id="7913805372428124107">如需获取<ph name="DEVICE" />上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取密码等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7915457674565721553">请连接到互联网以设置家长控制</translation>
+<translation id="7915478442339169507">允许网站访问</translation>
 <translation id="7916364730877325865">贵组织不允许您使用此账号开启同步功能</translation>
 <translation id="791698251820376781">您所在的组织不允许您登录</translation>
 <translation id="7918928051723770926">任务完成</translation>
@@ -10823,6 +10832,7 @@
 <translation id="978146274692397928">初始标点符号用全角</translation>
 <translation id="978978324795544535">点按两次某内容并在第二次点按时按住它，然后拖动该内容，即可移动它</translation>
 <translation id="981121421437150478">离线</translation>
+<translation id="981383875218593510">将此设置设为“现代”，即可试用标签页的新透明外观。</translation>
 <translation id="982083952953998237">添加约束条件</translation>
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，您好</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>

@@ -322,6 +322,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2297822946037605517">Share this page</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2305798319182970276">Delete your history with the tap of a button</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> needs permission to access human interface devices (HIDs) for this site.</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="232137538351753795">Swipe from the left edge to go back</translation>
 <translation id="2323763861024343754">Site storage</translation>

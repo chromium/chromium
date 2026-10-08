@@ -143,6 +143,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1090541560108055381">Kontrollera att samma kod visas på båda enheterna innan du parkopplar</translation>
 <translation id="1093457606523402488">Synliga nätverk:</translation>
 <translation id="1093645050124056515">ctrl + alt + nedåtpil</translation>
+<translation id="1094158807129647987">Fråga om <ph name="SELECTION" /></translation>
 <translation id="1095398697303758108">Tryck på Ctrl två gånger för förbättrad autofyll</translation>
 <translation id="1095879482467973146">Google Lösenordshantering på webben</translation>
 <translation id="1097016918605049747">Det gick inte att översätta sidan</translation>
@@ -1532,6 +1533,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2165177462441582039">Välj hur länge varje objekt ska markeras</translation>
 <translation id="2166369534954157698">Den snabba röda räven hoppar över den lata hunden</translation>
 <translation id="2168036794078614559">Rapporten har skickats</translation>
+<translation id="2168735174585029637">Ge dina flikar ett nytt genomskinligt utseende</translation>
 <translation id="2169062631698640254">Logga in ändå</translation>
 <translation id="217120844667431680">Gör mer i AI-läget</translation>
 <translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
@@ -1680,6 +1682,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2278562042389100163">Öppna webbläsarfönster</translation>
 <translation id="2280486287150724112">Högermarginal</translation>
 <translation id="228059581448666199">Vänsterklicka med musen</translation>
+<translation id="2281511031159517364">Om du vill skicka länkar mellan enheter måste du logga in med samma konto.</translation>
 <translation id="2282146716419988068">GPU-bearbetning</translation>
 <translation id="228293613124499805">De flesta webbplatser du besöker sparar troligen data på enheten, oftast för att förbättra upplevelsen genom att spara dina inställningar eller information som du delar med webbplatsen. Vi rekommenderar att du låter den här inställningen vara aktiverad.</translation>
 <translation id="2283599456633275070">Resor</translation>
@@ -2409,6 +2412,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="282230978681804245">Din profil hanteras av organisationen, som kan se en del information, inklusive följande:</translation>
 <translation id="2822551631199737692">Kameran används</translation>
 <translation id="2822634587701817431">Förminska/expandera</translation>
+<translation id="2824892374426974106">Fråga om detta</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> använder proxyinställningar från administratören</translation>
 <translation id="2825200993288778739">Lägg till från färdighetsbiblioteket eller skapa en egen</translation>
 <translation id="282525059261716597">Kommandorad:</translation>
@@ -2646,6 +2650,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3001144475369593262">Barnkonton</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Inga anpassade tangenter}=1{1 anpassad tangent}other{{COUNT} anpassade tangenter}}</translation>
 <translation id="3002864108328203174">Gemini-arket på nedre delen av skärmen har öppnats över halva skärmen.</translation>
+<translation id="300311730636583518">Fråga om detta</translation>
 <translation id="3003144360685731741">Prioriterade nätverk</translation>
 <translation id="3003152206838282768">Arbetar med din Gemini-appuppgift i Chrome. Kolla efter fler uppdateringar i Chrome.</translation>
 <translation id="3003253259757197230">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst och för att visa mer information om den sida du besöker</translation>
@@ -2778,6 +2783,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3094521107841754472">Priset har ändrats från <ph name="PREVIOUS_PRICE" /> till <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bokmärken, lösenord och annan webbinformation synkroniseras med det primära kontot.</translation>
 <translation id="3097674000822532270">Appar och inställningar synkroniseras på alla ChromeOS Flex-enheter där du är inloggad på ditt Google-konto. Öppna <ph name="LINK_BEGIN" />Chrome-inställningarna<ph name="LINK_END" /> om du vill hantera vilken webbinformation som sparas i Google-kontot.</translation>
+<translation id="3099754485438181407">Testa den nya stilen i inställningarna. Du kan alltid byta tillbaka till det klassiska utseendet.</translation>
 <translation id="3101126716313987672">Nattljus</translation>
 <translation id="3101709781009526431">Datum och tid</translation>
 <translation id="3102309003841389927">Granska logotypuppdatering</translation>
@@ -5340,6 +5346,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5040262127954254034">Integritet</translation>
 <translation id="5040823038948176460">Ytterligare innehållsinställningar</translation>
+<translation id="5041178465403838363">Fråga om <ph name="SELECTION" /></translation>
 <translation id="5041509233170835229">Chrome-app</translation>
 <translation id="504194357571315770">Åtgärd krävs</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> tas endast bort från den här enheten. Kontakta prenumerationsleverantören om du vill göra ändringar i din prenumeration. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -7962,6 +7969,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7077751457066325012">Visa och anpassa kortkommandon</translation>
 <translation id="7078120482318506217">Alla nätverk</translation>
 <translation id="708060913198414444">K&amp;opiera ljudadress</translation>
+<translation id="7082399760770275009">Öppna Windows-inställningarna</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> hanteras av administratören</translation>
 <translation id="7082850163410901674">Aviseringar har inaktiverats i systeminställningarna för Mac</translation>
 <translation id="7083729794572207131">Webbplatser brukar be om att få installera webbappar för att förbättra upplevelsen på webbplatsen</translation>
@@ -9036,6 +9044,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7913805372428124107">Logga in och synkronisera historik om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du får även dina lösenord med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7914399737746719723">Appen har installerats</translation>
 <translation id="7915457674565721553">Anslut till internet om du vill ställa in föräldrakontroller</translation>
+<translation id="7915478442339169507">Tillåt webbplatsåtkomst</translation>
 <translation id="7916364730877325865">Organisationen tillåter inte att du aktiverar synkronisering med det här kontot</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
 <translation id="7918928051723770926">Uppgiften har slutförts</translation>
@@ -10844,6 +10853,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="978146274692397928">Den ursprungliga punktbredden är full</translation>
 <translation id="978978324795544535">Dubbeltryck på ett objekt, håll kvar fingret på det andra trycket och dra det för att flytta det</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="981383875218593510">Ställ in inställningen på Modern för att testa det nya genomskinliga utseendet för dina flikar.</translation>
 <translation id="982083952953998237">Lägg till begränsningar</translation>
 <translation id="98235653036850093">Hej <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Stäng alla flikar</translation>

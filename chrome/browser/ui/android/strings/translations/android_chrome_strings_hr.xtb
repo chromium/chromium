@@ -322,6 +322,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2297822946037605517">Dijeli ovu stranicu</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilni uređaj</translation>
 <translation id="2305798319182970276">Izbrišite povijest dodirom gumba</translation>
+<translation id="2307420463693979699">Aplikacija <ph name="APP_NAME" /> treba dopuštenje za pristup uređajima s ljudskim sučeljem (HID-ovima) za ovu web-lokaciju.</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="232137538351753795">Prijeđite prstom od lijevog ruba da biste se vratili</translation>
 <translation id="2323763861024343754">Pohrana web-lokacije</translation>

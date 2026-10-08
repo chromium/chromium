@@ -14,6 +14,7 @@
 <translation id="12739128458173458">Para enviar este separador para outro dispositivo, inicie sessão no Chromium em ambos os dispositivos.</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chromium.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1421604911662901100">Inicie sessão neste site e no Chromium para ter acesso às suas informações guardadas e muito mais em todos os seus dispositivos</translation>
 <translation id="1423007117030725713">Inicie uma pesquisa no novo separador do Chromium.</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie os seus separadores de navegação anónima.</translation>
 <translation id="1451665391191990528">Oculte os separadores de navegação anónima abertos quando sai do Chromium</translation>
@@ -55,6 +56,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="2006345422933397527">O Chromium não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2025935492422922097">O Chromium processa os títulos e os URLs das páginas num espaço privado na nuvem</translation>
 <translation id="2027881372245801507">A desativação das sugestões não controla o processamento de títulos de páginas e URLs do Chromium para outras funcionalidades. Pode gerir o acesso a estes dados nas suas <ph name="BEGIN_LINK" />definições de sincronização<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">Inicie sessão neste site e no Chromium para ter acesso às suas palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="2042889939382983733">Veja o histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="2059365270911640413">Conclua a configuração do Chromium</translation>
@@ -99,6 +101,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="2832168932648876507">Pesquise com a voz no Chromium.</translation>
 <translation id="2843571538056574338">Use o Chromium para o preenchimento automático</translation>
 <translation id="2844923129028437362">Evite copiar. Defina o Chromium como o navegador predefinido do iOS.</translation>
+<translation id="2876793692921835457">Inicie sessão neste site e no Chromium para ter acesso aos seus marcadores e muito mais em todos os seus dispositivos</translation>
 <translation id="2918709798697875261">A sua entidade requer que se mantenha sem sessão iniciada no Chromium.</translation>
 <translation id="2942241131342758843">Utilize o Chromium por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
@@ -225,6 +228,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="5671188105328420281">Sugestões do Chromium</translation>
 <translation id="5688047395118852662">Este cartão mostra sugestões sobre como tirar o máximo partido do Chromium.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
+<translation id="5714479833576517588">Inicie sessão neste site e no Chromium para aceder às suas palavras-passe e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="5731004036450828399">Para manter as suas chaves de acesso seguras, primeiro tem de criar um PIN de recuperação.
 
         As chaves de acesso são guardadas no Gestor de Palavras-passe, o que lhe permite usá-las no Chromium em qualquer dispositivo.</translation>
@@ -243,6 +247,7 @@ Aspetos a considerar:
   • Se sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações acerca dos URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">Conclua tarefas rápidas e descubra formas de tirar o máximo partido do Chromium:</translation>
 <translation id="5932787118589620366">Elimine os dados de navegação no Chromium.</translation>
+<translation id="59347837447331606">Inicie sessão neste site e no Chromium para aceder às suas informações guardadas e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="593808800391107017">Receba alertas sobre quaisquer problemas de privacidade ou segurança detetados automaticamente pelo Chromium.</translation>
 <translation id="5951593919357934226">Tire o máximo partido do Chromium.</translation>
 <translation id="5985254578475526217">Para receber notificações do Chromium, ative-as nas definições do iOS.</translation>
@@ -304,6 +309,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="725427773388857052">O Chromium pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="7269362888766543920">Alguns suplementos provocam falhas no sistema do Chromium. Tente desinstalá-los.</translation>
 <translation id="7285031092584344905">Aceda às suas palavras-passe do Chromium e muito mais noutras apps.</translation>
+<translation id="7291896724424825868">Inicie sessão neste site e no Chromium para aceder aos seus marcadores e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">A palavra-passe será guardada no Gestor de palavras-passe para <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Esta chave de acesso vai ser guardada no Gestor de Palavras-passe de <ph name="USER_EMAIL" /></translation>

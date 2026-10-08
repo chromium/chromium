@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1093457606523402488">可偵測到的網路：</translation>
 <translation id="1093645050124056515">ctrl + alt + 向下鍵</translation>
+<translation id="1094158807129647987">詢問「<ph name="SELECTION" />」相關問題</translation>
 <translation id="1095398697303758108">按兩下 Ctrl 鍵來啟用強化版自動填入功能</translation>
 <translation id="1095879482467973146">Google 密碼管理工具網頁版</translation>
 <translation id="1097016918605049747">無法翻譯這個網頁</translation>
@@ -1522,6 +1523,7 @@
 <translation id="2165177462441582039">選擇醒目顯示範圍停留在每個項目上的時間長度</translation>
 <translation id="2166369534954157698">狐狗大戰</translation>
 <translation id="2168036794078614559">已回報</translation>
+<translation id="2168735174585029637">為分頁換上全新透明外觀</translation>
 <translation id="2169062631698640254">繼續登入</translation>
 <translation id="217120844667431680">運用 AI 模式完成更多工作</translation>
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
@@ -1667,6 +1669,7 @@
 <translation id="2278562042389100163">開啟瀏覽器視窗</translation>
 <translation id="2280486287150724112">右邊界</translation>
 <translation id="228059581448666199">按一下滑鼠左鍵</translation>
+<translation id="2281511031159517364">如要在裝置間傳送連結，請登入同一個帳戶。</translation>
 <translation id="2282146716419988068">GPU 處理程序</translation>
 <translation id="228293613124499805">你造訪的大多數網站可能會在裝置上儲存資料 (偏好設定或你與網站分享的資訊)，通常是為了改善使用體驗。建議你將這項設定保持開啟。</translation>
 <translation id="2283599456633275070">旅遊</translation>
@@ -2396,6 +2399,7 @@
 <translation id="282230978681804245">你的設定檔是由貴機構管理，貴機構可查看部分資訊，包括：</translation>
 <translation id="2822551631199737692">相機正在使用中</translation>
 <translation id="2822634587701817431">縮小/展開</translation>
+<translation id="2824892374426974106">詢問相關問題</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用系統管理員的 Proxy 設定</translation>
 <translation id="2825200993288778739">自行建立技能或從技能庫新增</translation>
 <translation id="282525059261716597">指令列：</translation>
@@ -2633,6 +2637,7 @@
 <translation id="3001144475369593262">兒童帳戶</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{沒有自訂按鍵}=1{1 個自訂按鍵}other{{COUNT} 個自訂按鍵}}</translation>
 <translation id="3002864108328203174">Gemini 底部功能表顯示在畫面下半部。</translation>
+<translation id="300311730636583518">詢問相關問題</translation>
 <translation id="3003144360685731741">慣用網路</translation>
 <translation id="3003152206838282768">Chrome 正在處理 Gemini 應用程式的任務，請前往 Chrome 查看最新動態</translation>
 <translation id="3003253259757197230">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站，並顯示所在網頁的其他相關資訊</translation>
@@ -2765,6 +2770,7 @@
 <translation id="3094521107841754472">價格已從 <ph name="PREVIOUS_PRICE" /> 變更為 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="3095871294753148861">書籤、密碼和其他瀏覽器資料已與主要帳戶同步。</translation>
 <translation id="3097674000822532270">在你使用 Google 帳戶登入的 ChromeOS Flex 裝置上，應用程式和設定都會保持同步。如果想管理要將哪些瀏覽器資料儲存到 Google 帳戶，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
+<translation id="3099754485438181407">請前往設定頁面試用新樣式。你隨時可以切換回傳統外觀。</translation>
 <translation id="3101126716313987672">光線昏暗</translation>
 <translation id="3101709781009526431">日期與時間</translation>
 <translation id="3102309003841389927">查看標誌更新</translation>
@@ -5319,6 +5325,7 @@
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5040823038948176460">其他內容設定</translation>
+<translation id="5041178465403838363">詢問「<ph name="SELECTION" />」相關問題</translation>
 <translation id="5041509233170835229">Chrome 應用程式</translation>
 <translation id="504194357571315770">敬請採取行動</translation>
 <translation id="5043807571255634689">「<ph name="SUBSCRIPTION_NAME" />」只會從這部裝置上移除。如要變更訂閱項目，請與訂閱供應商聯絡。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -7937,6 +7944,7 @@
 <translation id="7077751457066325012">查看及自訂鍵盤快速鍵</translation>
 <translation id="7078120482318506217">所有網路</translation>
 <translation id="708060913198414444">複製音訊位址(&amp;O)</translation>
+<translation id="7082399760770275009">開啟 Windows 設定</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 由系統管理員管理</translation>
 <translation id="7082850163410901674">Mac 系統設定已關閉這個應用程式的通知</translation>
 <translation id="7083729794572207131">網站通常會要求安裝網頁應用程式，以提升使用體驗</translation>
@@ -9010,6 +9018,7 @@
 <translation id="7913805372428124107">如要存取「<ph name="DEVICE" />」的分頁，請登入並同步歷史記錄。這樣一來，密碼和其他資料也能同步到所有裝置。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務提供個人化體驗。</translation>
 <translation id="7914399737746719723">應用程式已安裝</translation>
 <translation id="7915457674565721553">如要設定家長監護功能，請連線至網際網路</translation>
+<translation id="7915478442339169507">允許存取網站</translation>
 <translation id="7916364730877325865">貴機構不允許你開啟這個帳戶的同步功能</translation>
 <translation id="791698251820376781">貴機構不允許你登入</translation>
 <translation id="7918928051723770926">工作完成</translation>
@@ -10818,6 +10827,7 @@
 <translation id="978146274692397928">初始標點符號寬度為全形</translation>
 <translation id="978978324795544535">輕觸兩下項目不要放開，接著拖曳項目即可移動</translation>
 <translation id="981121421437150478">離線</translation>
+<translation id="981383875218593510">將這項設定設為「現代」，即可試用新的分頁透明外觀。</translation>
 <translation id="982083952953998237">新增限制</translation>
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，你好</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>

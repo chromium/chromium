@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">Varmista ennen laiteparin muodostamista, että tämä koodi on sama molemmissa laitteissa</translation>
 <translation id="1093457606523402488">Näkyvät verkot:</translation>
 <translation id="1093645050124056515">ctrl + alt + alanuoli</translation>
+<translation id="1094158807129647987">Kysy tästä: "<ph name="SELECTION" />"</translation>
 <translation id="1095398697303758108">Käytä parannettua automaattista täyttöä painamalla Ctrl kahdesti</translation>
 <translation id="1095879482467973146">Google Salasanat verkossa</translation>
 <translation id="1097016918605049747">Sivua ei voitu kääntää</translation>
@@ -1531,6 +1532,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2165177462441582039">Valitse, kuinka kauan kutakin kohdetta pidetään korostettuna</translation>
 <translation id="2166369534954157698">Charles Darwin jammaili Åken hevixylofonilla Qatarin yöpub Zeligissä.</translation>
 <translation id="2168036794078614559">Ilmoitus lähetetty</translation>
+<translation id="2168735174585029637">Valitse välilehdille uusi läpinäkyvä ulkoasu</translation>
 <translation id="2169062631698640254">Kirjaudu silti sisään</translation>
 <translation id="217120844667431680">Tee enemmän tekoälytilassa</translation>
 <translation id="2173302385160625112">Tarkista internetyhteytesi</translation>
@@ -1679,6 +1681,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2278562042389100163">Avaa selainikkuna</translation>
 <translation id="2280486287150724112">Oikea reuna</translation>
 <translation id="228059581448666199">Klikkaa hiiren vasemmalla painikkeella</translation>
+<translation id="2281511031159517364">Jos haluat lähettää linkkejä laitteelta toiselle, kirjaudu sisään samalla tilillä.</translation>
 <translation id="2282146716419988068">GPU-prosessi</translation>
 <translation id="228293613124499805">Useimmat avaamasi sivustot tallentavat todennäköisesti dataa laitteellesi. Tarkoituksena on yleensä parantaa kokemustasi tallentamalla sivustolle jakamiasi asetuksia tai tietoja. Suosittelemme pitämään asetuksen päällä.</translation>
 <translation id="2283599456633275070">Matkailu</translation>
@@ -2408,6 +2411,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="282230978681804245">Organisaatiosi ylläpitää tätä profiilia ja voi nähdä joitakin tietoja, esimerkiksi nämä:</translation>
 <translation id="2822551631199737692">Kamera käytössä</translation>
 <translation id="2822634587701817431">Pienennä tai laajenna</translation>
+<translation id="2824892374426974106">Kysy tästä</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> käyttää järjestelmänvalvojasi välityspalvelinasetuksia</translation>
 <translation id="2825200993288778739">Luo oma tai lisää taitoja taitokirjastosta</translation>
 <translation id="282525059261716597">Komentorivi:</translation>
@@ -2645,6 +2649,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3001144475369593262">Alatason tilit</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Ei muokattuja näppäimiä}=1{1 muokattu näppäin}other{{COUNT} muokattua näppäintä}}</translation>
 <translation id="3002864108328203174">Geminin alapaneeli puoliksi avattuna.</translation>
+<translation id="300311730636583518">Kysy tästä</translation>
 <translation id="3003144360685731741">Ensisijaiset verkot</translation>
 <translation id="3003152206838282768">Gemini-sovellustehtävää suoritetaan Chromessa. Tarkista Chromesta, onko päivityksiä saatavilla.</translation>
 <translation id="3003253259757197230">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida, ja sivusta voidaan näyttää lisätietoa</translation>
@@ -2777,6 +2782,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3094521107841754472">Hinta on muuttunut. Se on nyt <ph name="CURRENT_PRICE" /> (aiemmin <ph name="PREVIOUS_PRICE" />).</translation>
 <translation id="3095871294753148861">Kirjanmerkit, salasanat ja muu selausdata synkronoidaan päätilin kanssa.</translation>
 <translation id="3097674000822532270">Sovelluksesi ja asetuksesi synkronoidaan kaikilla ChromeOS Flex ‑laitteilla, joilla olet kirjautuneena Google-tilillesi. Voit hallita Google-tilillesi tallennettavaa selaindataa <ph name="LINK_BEGIN" />Chromen asetuksissa<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">Kokeile uutta tyyliä asetuksista. Voit milloin tahansa vaihtaa takaisin klassiseen tyyliin.</translation>
 <translation id="3101126716313987672">Himmennä valoa</translation>
 <translation id="3101709781009526431">Aika ja päivämäärä</translation>
 <translation id="3102309003841389927">Päivitetyn logon tarkistaminen</translation>
@@ -5336,6 +5342,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5040262127954254034">Tietosuoja</translation>
 <translation id="5040823038948176460">Muut sisältöasetukset</translation>
+<translation id="5041178465403838363">Kysy tästä: "<ph name="SELECTION" />"</translation>
 <translation id="5041509233170835229">Chrome-sovellus</translation>
 <translation id="504194357571315770">Toimi nyt</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> poistetaan vain tältä laitteelta. Jos haluat tehdä muutoksia tilaukseen, ota yhteyttä tilauspalveluun. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -7958,6 +7965,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7077751457066325012">Pikanäppäimien katsominen ja muokkaaminen</translation>
 <translation id="7078120482318506217">Kaikki verkot</translation>
 <translation id="708060913198414444">K&amp;opioi äänen osoite</translation>
+<translation id="7082399760770275009">Avaa Windows-asetukset</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> on järjestelmänvalvojan hallinnoima</translation>
 <translation id="7082850163410901674">Ilmoitukset on laitettu pois päältä Macin järjestelmäasetuksissa</translation>
 <translation id="7083729794572207131">Sivustot pyytävät yleensä lupaa asentaa verkkosovelluksia, jotta käyttökokemus paranee</translation>
@@ -9032,6 +9040,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7913805372428124107">Jos haluat käyttää välilehtiä (<ph name="DEVICE" />), kirjaudu sisään ja synkronoi historia. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="7914399737746719723">Sovellus asennettu</translation>
 <translation id="7915457674565721553">Muodosta yhteys internetiin, niin voit määrittää lapsilukon</translation>
+<translation id="7915478442339169507">Salli pääsy sivustolle</translation>
 <translation id="7916364730877325865">Organisaatiosi ei salli sinun laittaa synkronointia päälle tällä tilillä</translation>
 <translation id="791698251820376781">Organisaatio ei salli sisäänkirjautumista</translation>
 <translation id="7918928051723770926">Tehtävä valmis</translation>
@@ -10840,6 +10849,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="978146274692397928">Alkuperäinen välimerkkileveys on Full</translation>
 <translation id="978978324795544535">Kaksoisnapauta kohdetta, pidä painettuna toisella napautuksella ja siirrä sitten kohdetta vetämällä</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="981383875218593510">Valitse asetukseksi Moderni, niin voit kokeilla välilehtien uutta läpinäkyvää ulkoasua.</translation>
 <translation id="982083952953998237">Lisää rajoituksia</translation>
 <translation id="98235653036850093">Hei <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>

@@ -150,6 +150,7 @@
 如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。* 不是這項政策許可的值。
 
 如果未設定這項政策，所有來源都必須透過舊使用者手勢呼叫這些 API。</translation>
+<translation id="109520268628625781">在低信任環境中，允許透過政策安裝且會覆寫預設搜尋或新分頁設定的擴充功能</translation>
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
@@ -1067,6 +1068,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="1708496595873025510">設定變異版本種子的擷取限制</translation>
 <translation id="1709154322133526432">啟用啟動時的預設瀏覽器檢查功能</translation>
+<translation id="1710938341108039345">停用剪貼簿記錄</translation>
 <translation id="1713829924716792485">如果將這項政策設為啟用或不設定，使用者可連線至遠端存取主機，以便在用戶端和主機之間傳輸檔案。遠端協助連線不支援檔案傳輸功能，因此不適用這項政策。
 
       如果將這項政策設為停用，使用者就無法傳輸檔案。</translation>
@@ -3663,6 +3665,23 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
       如果不設定這項政策，將無法使用系統 Proxy 服務。</translation>
 <translation id="3341649870321644698">僅允許播放專注模式音效。</translation>
 <translation id="334231891933432876">在使用者帳戶驗證狀態失效時立即將使用者登出</translation>
+<translation id="3344546660724331957">控管在低信任環境中，是否允許透過政策安裝 (強制安裝或建議安裝) 且覆寫預設搜尋引擎或新分頁設定的擴充功能。
+
+這項政策僅適用於低信任環境 (例如在裝置本機設定政策，而非透過網域或雲端管理)。高信任環境不受影響：
+
+如果 <ph name="MS_WIN_NAME" /> 上的執行個體加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />，這項政策就不適用。
+
+如果 <ph name="MAC_OS_NAME" /> 上的執行個體透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />，這項政策就不適用。
+
+在這類高信任執行個體中，透過政策安裝且會覆寫預設搜尋引擎或新分頁設定的擴充功能，仍會保持啟用狀態。
+
+如果設為啟用，<ph name="PRODUCT_NAME" /> 會允許在低信任環境中透過政策安裝擴充功能，並保持啟用狀態；這類擴充功能會覆寫預設搜尋引擎或新分頁設定。
+
+如果設為停用或未設定，<ph name="PRODUCT_NAME" /> 會禁止在低信任環境中透過政策安裝擴充功能，防止其覆寫預設搜尋引擎或新分頁設定，並移除已安裝的這類擴充功能。
+
+如果受影響的擴充功能經更新後不再覆寫這些設定，<ph name="PRODUCT_NAME" /> 會在 7 天內自動完成安裝。
+
+這項政策僅是暫時性措施，將在日後版本中移除。</translation>
 <translation id="3345323903592385588">VM 設定在安裝程式中的顯示順序。如果指定多組 VM 設定，display_order 值最小的設定會顯示在清單頂端。預設值為零。</translation>
 <translation id="3349823333182687926">你可以透過這項政策設定網址模式清單，指定可以使用視窗和分頁擷取功能的網站。
 
@@ -4976,6 +4995,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
 系統會忽略格式不正確的網域。</translation>
 <translation id="4238777612788632629">如果過時就快速重新啟動</translation>
+<translation id="4239692047060622956">這項政策可控管是否啟用 <ph name="PRODUCT_OS_NAME" /> 剪貼簿記錄功能。
+
+如果將這項政策設為啟用或不設定，系統會啟用剪貼簿記錄功能，使用者可以透過剪貼簿記錄鍵盤快速鍵，存取先前複製的項目。
+
+如果將這項政策設為停用，系統會停用剪貼簿記錄功能，使用者將無法開啟剪貼簿記錄選單，且所有儲存的剪貼簿記錄項目都會遭到清除。</translation>
 <translation id="4239720644496144453">這個快取不會供 Android 應用程式使用。如有多位使用者安裝同一個 Android 應用程式，則會針對每位使用者重新下載快取。</translation>
 <translation id="4239949495354048254">允許將檔案上傳至 Chrome 內建 Gemini。</translation>
 <translation id="4242583077375244471">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會在驗證伺服器憑證時使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
@@ -5094,6 +5118,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 使用者無法覆寫管理員選取的項目。如果未設定這項政策，系統會採用預設值 <ph name="GLS_ALLOWED" />，使用者將可享有消費者體驗，也就是可自由修改系統位置資訊設定。
 
 注意：這項政策會淘汰 <ph name="ARC_GLS_POLICY_NAME" /> 政策。此外，設定這項政策後，<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> 將不再影響 <ph name="PRODUCT_OS_NAME" /> 的 <ph name="ANDROID_NAME" /> 位置偏好設定。</translation>
+<translation id="4341191248574927458">啟用 ChromeOS 剪貼簿記錄</translation>
 <translation id="4341199399451274159">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策來指定搜尋引擎支援的字元編碼。編碼就是 UTF-8、GB2312 和 ISO-8859-1 等字碼頁名稱，系統會依提供的順序嘗試使用編碼。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策，系統會使用 UTF-8。</translation>
@@ -11442,6 +11467,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
       應以毫秒數指定政策值。</translation>
 <translation id="8330437518362176921">下載及更新 Kiosk Chrome 應用程式時，只使用政策提供的更新網址</translation>
 <translation id="8331479227794770304">啟用相黏鍵</translation>
+<translation id="8331940246704699384">啟用透過政策安裝且會覆寫預設搜尋或新分頁設定的擴充功能</translation>
 <translation id="8332822245414537447">停用 RSA 金鑰用途檢查功能</translation>
 <translation id="8334685561819743286">使用者在實體鍵盤上輸入內容時不提供自動更正</translation>
 <translation id="8336986243404088829">這項政策會將轉譯器程序隔離在 CPU 核心，並禁止其他程序共用同一個核心，藉此防範旁路跨程序記憶體攻擊。<ph name="MS_WIN_NAME" /> 11 24H2 以上版本支援這項緩解措施。如果 OS 不支援必要的排程功能，這項政策就不會生效。這項政策在某些高需求情境可能會降低效能，類似於停用超執行緒。詳情請參閱 https://learn.microsoft.com/zh-tw/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
@@ -11586,6 +11612,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8437147918598002525">在嚴格模式下強制啟用僅限 HTTPS 模式</translation>
 <translation id="8441105784056442638">啟用完整還原功能</translation>
 <translation id="844322176712318428">允許 Translator API</translation>
+<translation id="8443398105049037546">啟用剪貼簿記錄</translation>
 <translation id="8444157920689124099">啟用應用程式繫結加密</translation>
 <translation id="8445576299806775661">Chrome 會在每次更新主要版本時，為一部分的使用者瀏覽資料建立快照，以便日後需要執行緊急版本復原作業時使用。如果使用者要緊急復原的目標版本有相應快照，系統會復原快照中的資料。這種做法可讓使用者保留書籤和自動填入資料等設定。
 
@@ -12641,6 +12668,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="9133526448421932754">黃色鍵盤背光顏色</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
 <translation id="9135095804754272364">偵測到 USB 裝置時顯示通知</translation>
+<translation id="9135676404321186528">在低信任環境中，移除透過政策安裝且會覆寫預設搜尋或新分頁設定的擴充功能</translation>
 <translation id="9136212796239682721">停用下載對話框 UI</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
 <translation id="9139775903828905867">控制用於觸發 F11 的快速鍵</translation>

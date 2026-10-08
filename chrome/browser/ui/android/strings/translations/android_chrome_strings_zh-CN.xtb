@@ -322,6 +322,7 @@
 <translation id="2297822946037605517">分享此页</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="2305798319182970276">点按一下按钮即可删除历史记录</translation>
+<translation id="2307420463693979699">“<ph name="APP_NAME" />”需要获得相应权限，才能让此网站使用人机接口设备 (HID)。</translation>
 <translation id="2316129865977710310">不用了</translation>
 <translation id="232137538351753795">从左侧边缘滑动即可返回</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
@@ -670,7 +671,7 @@
 <translation id="3710560693796335511">协作</translation>
 <translation id="3714430408451673233">标签页底部动作条已半屏打开。</translation>
 <translation id="3718765429352682176">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。</translation>
-<translation id="3721119614952978349">您与 Google</translation>
+<translation id="3721119614952978349">我与 Google</translation>
 <translation id="3727000368239390918">登录后即可将标签页等信息同步到您的所有设备上</translation>
 <translation id="3731865955999508196">立体</translation>
 <translation id="3737319253362202215">翻译设置</translation>

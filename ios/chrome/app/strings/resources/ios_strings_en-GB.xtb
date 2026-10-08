@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1004615467759797184">Customise your new tab page</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} passkey}other{{count} passkeys}}</translation>
 <translation id="1005023885865154304">Open Autofill passwords settings</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -557,6 +558,7 @@
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" is not allowed to access your camera</translation>
 <translation id="2671423594960767771">Share group</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pay over time</translation>
@@ -1388,6 +1390,7 @@
 <translation id="5351613737248079168">You have to be signed in to use Level Up</translation>
 <translation id="5352128922772839949">Save file</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
+<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" is allowed to use your microphone whenever you visit this site</translation>
 <translation id="5359436665022446585">Better link opening</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5364647308446127983">{count,plural, =1{Couldn't import {count} passkey}other{Couldn't import {count} passkeys}}</translation>
@@ -1693,6 +1696,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6307792728709337290">Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome.</translation>
 <translation id="6316141353357700666">Choose the password that you want to use from the list that appears.</translation>
 <translation id="6321526113093607004">Add to bookmarks</translation>
+<translation id="6324054713176642683">Choose from themes, colours or upload your own photo.</translation>
 <translation id="6327249202318869726">Gemini is turned off for your account. Contact your admin for more information.</translation>
 <translation id="6331836477476466332">A safer, more powerful browser for you</translation>
 <translation id="6337234675334993532">Encryption</translation>
@@ -2306,6 +2310,7 @@ You can restart at any time.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8161614462829037225">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Length</translation>
+<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" is allowed to use your camera whenever you visit this site</translation>
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1}, {website_2}}=3{For {website_1}, {website_2}, and one more}other{For {website_1}, {website_2}, and {more_count} more}}</translation>
 <translation id="8184895727539791845">To let Gemini use your camera, turn on Camera in iOS settings</translation>
 <translation id="8185076488803799132">Import</translation>
@@ -2478,6 +2483,7 @@ You can restart at any time.</translation>
 <translation id="8680643216091361291">Your <ph name="BEGIN_LINK" />Keep activity<ph name="END_LINK" /> setting is off by default. When it’s off, Google saves your chats for 3 days. It uses them to make Gemini Apps work correctly, help keep them safe and use your feedback to fix problems. You can turn on Keep activity to help improve Google AI for everyone.</translation>
 <translation id="8680786875305615692">Help improve security on the web for everyone</translation>
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" is not allowed to access your microphone</translation>
 <translation id="8690752723634292147">Confirm deletion</translation>
 <translation id="8692107307702113268">Password is more than 1,000 characters</translation>
 <translation id="8692689525339542358">Get protection from dangerous sites, downloads and extensions.</translation>

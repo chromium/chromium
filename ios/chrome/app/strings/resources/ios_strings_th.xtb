@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1004615467759797184">ปรับแต่งหน้าแท็บใหม่ของคุณ</translation>
 <translation id="1004825134262590729">{count,plural, =1{พาสคีย์ {count} รายการ}other{พาสคีย์ {count} รายการ}}</translation>
 <translation id="1005023885865154304">เปิดการตั้งค่าการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="1005230401424685968">ปปปป</translation>
@@ -1693,6 +1694,7 @@
 <translation id="6307792728709337290">บันทึกบัตรไว้ในบัญชี Google เพื่อป้อนข้อความอัตโนมัติสำหรับการซื้อใน Chrome ครั้งนี้และในอนาคต</translation>
 <translation id="6316141353357700666">เลือกรหัสผ่านที่ต้องการใช้จากรายการที่ปรากฏ</translation>
 <translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
+<translation id="6324054713176642683">เลือกจากธีม สี หรืออัปโหลดรูปภาพของคุณเอง</translation>
 <translation id="6327249202318869726">Gemini ปิดใช้งานอยู่สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
 <translation id="6331836477476466332">เบราว์เซอร์ที่ปลอดภัยและทรงพลังมากขึ้นสำหรับคุณ</translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>

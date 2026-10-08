@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1004615467759797184">Tilpas siden Ny fane</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} adgangsnøgle}one{{count} adgangsnøgle}other{{count} adgangsnøgler}}</translation>
 <translation id="1005023885865154304">Åbn indstillingerne for Autoudfyld adgangskoder</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
@@ -1693,6 +1694,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6307792728709337290">Gem dit kort på din Google-konto for at udfylde kortoplysninger automatisk ved dette og fremtidige køb i Chrome.</translation>
 <translation id="6316141353357700666">Vælg den adgangskode, du vil bruge, på den liste, der vises.</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
+<translation id="6324054713176642683">Vælg mellem temaer og farver, eller upload dit eget billede.</translation>
 <translation id="6327249202318869726">Gemini er deaktiveret for din konto. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="6331836477476466332">En mere sikker og effektiv browser til dig</translation>
 <translation id="6337234675334993532">Kryptering</translation>

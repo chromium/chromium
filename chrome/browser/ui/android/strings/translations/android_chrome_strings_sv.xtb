@@ -322,6 +322,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2297822946037605517">Dela den här sidan</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
 <translation id="2305798319182970276">Radera historiken med ett knapptryck</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> behöver behörighet att komma åt styrdon för den här webbplatsen.</translation>
 <translation id="2316129865977710310">Nej tack</translation>
 <translation id="232137538351753795">Återgå genom att svepa från vänster kant</translation>
 <translation id="2323763861024343754">Webbplatslagring</translation>

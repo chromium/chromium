@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1004615467759797184">మీ కొత్త ట్యాబ్ పేజీని అనుకూలంగా మార్చండి</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} పాస్-కీ}other{{count} పాస్-కీలు}}</translation>
 <translation id="1005023885865154304">ఆటోఫిల్ పాస్‌వర్డ్‌ల సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1693,6 +1694,7 @@
 <translation id="6307792728709337290">ఈ కొనుగోలు కోసమే కాకుండా, Chromeలో మీరు భవిష్యత్తులో చేసే కొనుగోళ్ల కోసం కూడా కార్డ్ వివరాలను ఆటోఫిల్ చేయడానికి, వాటిని మీ Google ఖాతాలో సేవ్ చేసుకోండి.</translation>
 <translation id="6316141353357700666">కనిపించే లిస్ట్ నుండి మీరు ఉపయోగించాలనుకునే పాస్‌వర్డ్‌ను ఎంచుకోండి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
+<translation id="6324054713176642683">థీమ్‌లు, రంగుల నుండి ఎంచుకోండి లేదా మీ స్వంత ఫోటోను అప్‌లోడ్ చేయండి.</translation>
 <translation id="6327249202318869726">మీ ఖాతాకు Gemini ఆఫ్ చేయబడింది. మరింత సమాచారం కోసం మీ అడ్మిన్‌ను కాంటాక్ట్ చేయండి.</translation>
 <translation id="6331836477476466332">మీ కోసం సురక్షితమైన, మరింత శక్తివంతమైన బ్రౌజర్</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>

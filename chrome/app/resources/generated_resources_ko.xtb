@@ -143,6 +143,7 @@
 <translation id="1090541560108055381">페어링하기 전에 두 기기의 코드가 동일한지 확인하세요.</translation>
 <translation id="1093457606523402488">표시된 네트워크:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + 아래쪽 화살표</translation>
+<translation id="1094158807129647987">"<ph name="SELECTION" />"에 관해 물어보기</translation>
 <translation id="1095398697303758108">Ctrl 키를 두 번 눌러 향상된 자동 완성 사용</translation>
 <translation id="1095879482467973146">웹용 Google 비밀번호 관리자</translation>
 <translation id="1097016918605049747">페이지를 번역할 수 없습니다</translation>
@@ -1533,6 +1534,7 @@
 <translation id="2165177462441582039">강조표시가 각 항목에 유지되는 시간 선택</translation>
 <translation id="2166369534954157698">재빠른 갈색 여우가 게으른 개를 뛰어넘습니다.</translation>
 <translation id="2168036794078614559">신고 완료됨</translation>
+<translation id="2168735174585029637">탭에 새로운 투명 디자인을 적용해 보세요</translation>
 <translation id="2169062631698640254">로그인</translation>
 <translation id="217120844667431680">AI 모드로 더 많은 작업 수행</translation>
 <translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
@@ -1681,6 +1683,7 @@
 <translation id="2278562042389100163">브라우저 창 열기</translation>
 <translation id="2280486287150724112">오른쪽 여백</translation>
 <translation id="228059581448666199">마우스 왼쪽 버튼으로 클릭</translation>
+<translation id="2281511031159517364">기기 간에 링크를 보내려면 동일한 계정으로 로그인하세요</translation>
 <translation id="2282146716419988068">GPU 프로세스</translation>
 <translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
 <translation id="2283599456633275070">여행</translation>
@@ -2410,6 +2413,7 @@
 <translation id="282230978681804245">조직에서 프로필을 관리하며 다음과 같은 일부 정보를 볼 수 있습니다</translation>
 <translation id="2822551631199737692">카메라 사용 중</translation>
 <translation id="2822634587701817431">축소 / 확대</translation>
+<translation id="2824892374426974106">이 이미지에 관해 물어보기</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 관리자의 프록시 설정을 사용 중입니다.</translation>
 <translation id="2825200993288778739">직접 만들거나 스킬 라이브러리에서 추가하세요</translation>
 <translation id="282525059261716597">명령줄:</translation>
@@ -2647,6 +2651,7 @@
 <translation id="3001144475369593262">어린이 계정</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{맞춤설정된 키 없음}=1{맞춤설정된 키 1개}other{맞춤설정된 키 {COUNT}개}}</translation>
 <translation id="3002864108328203174">Gemini 하단 시트가 절반 높이로 열렸습니다.</translation>
+<translation id="300311730636583518">이 이미지에 관해 물어보기</translation>
 <translation id="3003144360685731741">기본 설정된 네트워크</translation>
 <translation id="3003152206838282768">Chrome에서 Gemini 앱 작업을 진행 중입니다. Chrome에서 추가 업데이트를 확인하세요.</translation>
 <translation id="3003253259757197230">다음에 방문할 사이트를 예측하고 현재 방문 중인 페이지에 관한 추가 정보를 표시하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
@@ -2779,6 +2784,7 @@
 <translation id="3094521107841754472">가격이 <ph name="PREVIOUS_PRICE" />에서 <ph name="CURRENT_PRICE" />(으)로 변경되었습니다.</translation>
 <translation id="3095871294753148861">북마크, 비밀번호 등의 브라우저 데이터가 기본 계정과 동기화되어 있습니다.</translation>
 <translation id="3097674000822532270">앱 및 설정은 Google 계정으로 로그인한 모든 ChromeOS Flex 기기에서 동기화됩니다. Google 계정에 저장되는 브라우저 데이터를 관리하려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
+<translation id="3099754485438181407">설정에서 새로운 스타일을 사용해 보세요. 언제든지 클래식 디자인으로 다시 전환할 수 있습니다.</translation>
 <translation id="3101126716313987672">조명 밝기 줄이기</translation>
 <translation id="3101709781009526431">날짜 및 시간</translation>
 <translation id="3102309003841389927">로고 업데이트 검토</translation>
@@ -5339,6 +5345,7 @@
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040262127954254034">개인 정보 보호</translation>
 <translation id="5040823038948176460">추가 콘텐츠 설정</translation>
+<translation id="5041178465403838363">"<ph name="SELECTION" />"에 관해 물어보기</translation>
 <translation id="5041509233170835229">Chrome 앱</translation>
 <translation id="504194357571315770">조치 필요</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> 구독은 이 기기에서만 삭제됩니다. 구독을 변경하려면 구독 제공업체에 문의하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -7961,6 +7968,7 @@
 <translation id="7077751457066325012">키보드 단축키 보기 및 맞춤설정</translation>
 <translation id="7078120482318506217">모든 네트워크</translation>
 <translation id="708060913198414444">오디오 주소 복사(&amp;O)</translation>
+<translation id="7082399760770275009">Windows 설정 열기</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 네트워크는 관리자가 관리함</translation>
 <translation id="7082850163410901674">Mac 시스템 설정에서 알림이 사용 중지되어 있습니다</translation>
 <translation id="7083729794572207131">사이트에서는 일반적으로 사이트 환경을 개선하기 위해 웹 앱 설치를 요청합니다</translation>
@@ -9034,6 +9042,7 @@
 <translation id="7913805372428124107"><ph name="DEVICE" />에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 비밀번호 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="7914399737746719723">앱이 설치됨</translation>
 <translation id="7915457674565721553">자녀 보호 기능을 설정하려면 인터넷에 연결하세요.</translation>
+<translation id="7915478442339169507">사이트 액세스 허용</translation>
 <translation id="7916364730877325865">조직에서 이 계정과의 동기화를 사용 설정하도록 허용하지 않습니다.</translation>
 <translation id="791698251820376781">조직에서 로그인을 허용하지 않음</translation>
 <translation id="7918928051723770926">작업 완료</translation>
@@ -10842,6 +10851,7 @@
 <translation id="978146274692397928">초기 구두점 폭을 최대로 설정</translation>
 <translation id="978978324795544535">항목을 이동하려면 항목을 두 번 탭하는데 두 번째로 탭할 때 길게 터치한 상태에서 드래그합니다.</translation>
 <translation id="981121421437150478">오프라인</translation>
+<translation id="981383875218593510">이 설정을 모던으로 설정하여 탭에 새로운 투명 디자인을 적용해 보세요.</translation>
 <translation id="982083952953998237">제약 조건 추가</translation>
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />님, 안녕하세요.</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>

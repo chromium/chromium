@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1004615467759797184">새 탭 페이지 맞춤설정</translation>
 <translation id="1004825134262590729">{count,plural, =1{패스키 {count}개}other{패스키 {count}개}}</translation>
 <translation id="1005023885865154304">비밀번호 자동 완성 설정 열기</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1693,6 +1694,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6307792728709337290">Google 계정에 카드를 저장하면 이번 구매는 물론, 향후 Chrome에서 구매 시에도 카드 정보가 자동으로 완성됩니다.</translation>
 <translation id="6316141353357700666">표시되는 목록에서 사용할 비밀번호를 선택합니다.</translation>
 <translation id="6321526113093607004">북마크에 추가</translation>
+<translation id="6324054713176642683">테마, 색상 중에서 선택하거나 직접 사진을 업로드하세요.</translation>
 <translation id="6327249202318869726">계정에서 Gemini가 사용 중지되었습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="6331836477476466332">더 안전하고 강력한 브라우저</translation>
 <translation id="6337234675334993532">암호화</translation>

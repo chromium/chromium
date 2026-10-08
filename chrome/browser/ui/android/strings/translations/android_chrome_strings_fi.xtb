@@ -322,6 +322,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2297822946037605517">Jaa tämä sivu</translation>
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
 <translation id="2305798319182970276">Poista historia yhdellä napautuksella</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> tarvitsee pääsyn HID-laitteisiin tällä sivustolla.</translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="232137538351753795">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>

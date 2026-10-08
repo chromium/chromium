@@ -392,6 +392,7 @@
 <translation id="5249261924633168472">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="5276305953263010518">이동 중에도 비밀번호를 저장하려면 Chromium 앱을 다운로드하세요</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>
+<translation id="5278909220224474621">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="5286907366254680517">감지됨</translation>
 <translation id="5289287148052354622">Chromium 앱 다운로드</translation>
 <translation id="5294316920224716406">시크릿 모드로 탐색할 때 Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
@@ -761,6 +762,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing을 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="8676101123715131330">어디서나 Chromium으로 검색하세요</translation>
 <translation id="8697124171261953979">또한 Chromium을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
+<translation id="8702213505203810093">이 탭을 다른 기기로 보내려면 해당 기기에서 Chromium에 로그인하세요.</translation>
 <translation id="8704119203788522458">나만의 Chromium</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8719993436687031146">Chromium에 로그인하시겠습니까?</translation>

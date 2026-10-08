@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1004615467759797184">მოირგეთ თქვენი ჩანართის ახალი გვერდი</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} წვდომის გასაღები}other{{count} წვდომის გასაღები}}</translation>
 <translation id="1005023885865154304">გახსენით პაროლების ავტომატური შევსების პარამეტრები</translation>
 <translation id="1005230401424685968">წწწწ</translation>
@@ -1693,6 +1694,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6307792728709337290">შეინახეთ თქვენი ბარათი Google ანგარიშში, რომ ავტომატურად შეავსოთ ის ამ და მომავალი შესყიდვებისთვის, რომლებიც Chrome-ში განხორციელდება.</translation>
 <translation id="6316141353357700666">ნაჩვენები სიიდან აირჩიეთ სასურველი პაროლი.</translation>
 <translation id="6321526113093607004">სანიშნეებში დამატება</translation>
+<translation id="6324054713176642683">აირჩიეთ თემებიდან, ფერებიდან ან ატვირთეთ საკუთარი ფოტო.</translation>
 <translation id="6327249202318869726">Gemini გამორთულია თქვენი ანგარიშისთვის. მეტი ინფორმაციისთვის დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="6331836477476466332">უსაფრთხო და მძლავრი ბრაუზერი თქვენთვის</translation>
 <translation id="6337234675334993532">დაშიფვრა</translation>

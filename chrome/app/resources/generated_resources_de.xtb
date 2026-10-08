@@ -143,6 +143,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1090541560108055381">Prüfe vor dem Koppeln, ob dieser Code auf beiden Geräten übereinstimmt</translation>
 <translation id="1093457606523402488">Sichtbare Netzwerke:</translation>
 <translation id="1093645050124056515">Strg + Alt + Abwärtspfeil</translation>
+<translation id="1094158807129647987">Nach Informationen zu „<ph name="SELECTION" />“ fragen</translation>
 <translation id="1095398697303758108">Drücke zweimal die Strg-Taste, um die Funktion „Erweitertes Autofill“ zu verwenden</translation>
 <translation id="1095879482467973146">Google Passwortmanager im Web</translation>
 <translation id="1097016918605049747">Diese Seite konnte nicht übersetzt werden</translation>
@@ -1521,6 +1522,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2165177462441582039">Du kannst festlegen, wie lange ein Element markiert bleiben soll</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
 <translation id="2168036794078614559">Meldung gesendet</translation>
+<translation id="2168735174585029637">Tabs einen neuen transparenten Look verleihen</translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
 <translation id="217120844667431680">Mit dem KI-Modus mehr erreichen</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
@@ -1666,6 +1668,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2278562042389100163">Browserfenster öffnen</translation>
 <translation id="2280486287150724112">Rechter Rand</translation>
 <translation id="228059581448666199">Mit der linken Maustaste klicken</translation>
+<translation id="2281511031159517364">Wenn du Links zwischen Geräten senden möchtest, melde dich mit demselben Konto an.</translation>
 <translation id="2282146716419988068">GPU-Verarbeitung</translation>
 <translation id="228293613124499805">Die meisten Websites, die du besuchst, speichern wahrscheinlich Daten auf deinem Gerät. Damit du bequemer im Internet surfen kannst, werden häufig Einstellungen oder Informationen gespeichert, die du an die jeweiligen Websites weitergibst. Wir empfehlen, diese Einstellung aktiviert zu lassen.</translation>
 <translation id="2283599456633275070">Reisen</translation>
@@ -2394,6 +2397,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="282230978681804245">Dein Profil wird von deiner Organisation verwaltet – bestimmte Informationen sind für deine Organisation sichtbar, unter anderem:</translation>
 <translation id="2822551631199737692">Kamera aktiv</translation>
 <translation id="2822634587701817431">Reduzieren bzw. erweitern</translation>
+<translation id="2824892374426974106">Frage dazu stellen</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> verwendet Proxy-Einstellungen von deinem Administrator</translation>
 <translation id="2825200993288778739">Eigene Skills erstellen oder aus der Skills-Bibliothek hinzufügen</translation>
 <translation id="282525059261716597">Befehlszeile:</translation>
@@ -2631,6 +2635,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3001144475369593262">Kinderkonten</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Keine benutzerdefinierten Tasten}=1{1 benutzerdefinierte Taste}other{{COUNT} benutzerdefinierte Tasten}}</translation>
 <translation id="3002864108328203174">Gemini-Ansicht am unteren Rand ist halb geöffnet.</translation>
+<translation id="300311730636583518">Frage dazu stellen</translation>
 <translation id="3003144360685731741">Bevorzugte Netzwerke</translation>
 <translation id="3003152206838282768">Deine Gemini-App-Aufgabe wird in Chrome bearbeitet. Suche in Chrome nach weiteren Updates.</translation>
 <translation id="3003253259757197230">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du möglicherweise als Nächstes besuchen wirst, und um dir zusätzliche Informationen über die Seite anzuzeigen, auf der du gerade bist</translation>
@@ -2763,6 +2768,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3094521107841754472">Der Preis hat sich von <ph name="PREVIOUS_PRICE" /> zu <ph name="CURRENT_PRICE" /> geändert.</translation>
 <translation id="3095871294753148861">Lesezeichen, Passwörter und andere Browserdaten werden mit dem primären Konto synchronisiert.</translation>
 <translation id="3097674000822532270">Deine Apps und Einstellungen werden auf allen ChromeOS Flex-Geräten synchronisiert, auf denen du mit deinem Google-Konto angemeldet bist. Wenn du festlegen möchtest, welche Browserdaten in deinem Google-Konto gespeichert werden, rufe die <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" /> auf.</translation>
+<translation id="3099754485438181407">Du kannst den neuen Stil in den Einstellungen aktivieren. Du kannst jederzeit wieder zum klassischen Design zurückwechseln.</translation>
 <translation id="3101126716313987672">Schwaches Licht</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
 <translation id="3102309003841389927">Aktualisierung des Logos überprüfen</translation>
@@ -5321,6 +5327,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5040262127954254034">Datenschutz</translation>
 <translation id="5040823038948176460">Zusätzliche Inhaltseinstellungen</translation>
+<translation id="5041178465403838363">Nach Informationen zu „<ph name="SELECTION" />“ fragen</translation>
 <translation id="5041509233170835229">Chrome-App</translation>
 <translation id="504194357571315770">Dein Eingreifen ist erforderlich</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> wird nur von diesem Gerät entfernt. Wenn du Änderungen an deinem Abo vornehmen möchtest, wende dich an den Aboanbieter. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -7938,6 +7945,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7077751457066325012">Tastenkombinationen ansehen und anpassen</translation>
 <translation id="7078120482318506217">Alle Netzwerke</translation>
 <translation id="708060913198414444">Audioadresse k&amp;opieren</translation>
+<translation id="7082399760770275009">Windows-Einstellungen öffnen</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wird von deinem Administrator verwaltet</translation>
 <translation id="7082850163410901674">Benachrichtigungen sind in den Mac-Systemeinstellungen deaktiviert</translation>
 <translation id="7083729794572207131">Websites möchten in der Regel, dass du Web-Apps installierst, um die Nutzung der Website zu verbessern</translation>
@@ -9012,6 +9020,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7913805372428124107">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="7914399737746719723">App wurde installiert</translation>
 <translation id="7915457674565721553">Es ist eine Internetverbindung notwendig, um Jugendschutzeinstellungen einzurichten</translation>
+<translation id="7915478442339169507">Websitezugriff zulassen</translation>
 <translation id="7916364730877325865">Deine Organisation lässt die Synchronisierung mit diesem Konto nicht zu</translation>
 <translation id="791698251820376781">Deine Organisation lässt deine Anmeldung nicht zu</translation>
 <translation id="7918928051723770926">Aufgabe abgeschlossen</translation>
@@ -10820,6 +10829,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="978146274692397928">Anfängliche Punktbreite ist "Voll".</translation>
 <translation id="978978324795544535">Auf ein Element doppeltippen, es beim zweiten Tippen gedrückt halten und es dann an die gewünschte Position ziehen</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="981383875218593510">Wenn du diese Einstellung auf „Modern“ setzt, kannst du den neuen transparenten Look für deine Tabs ausprobieren.</translation>
 <translation id="982083952953998237">Einschränkungen hinzufügen</translation>
 <translation id="98235653036850093">Hallo <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>

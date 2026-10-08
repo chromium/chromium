@@ -668,6 +668,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2127747486437921899">Italic</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131006834960167560">Enable payments autofill opened at full height.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">These are shown in random order. You can change your default at any time.</translation>
 <translation id="2134584557120247184">Flight ticket</translation>
@@ -1366,6 +1367,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3289578402369490638">From other stores across the web</translation>
 <translation id="3293642807462928945">Learn more about <ph name="POLICY_NAME" /> policy</translation>
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
+<translation id="3296595523896103792">Enable payments autofill closed.</translation>
 <translation id="3299098170013242198">Windows Hello is on for filling passwords</translation>
 <translation id="3299197721044635447">Content couldn't be pasted outside of the managed Chrome context due to your organisation's policies</translation>
 <translation id="3299720788264079132">Something went wrong while using <ph name="FEATURE_NAME" /></translation>
@@ -4172,6 +4174,7 @@ Additional details:
 <translation id="7955105108888461311">Ask in person</translation>
 <translation id="7956713633345437162">Mobile bookmarks</translation>
 <translation id="7961015016161918242">Never</translation>
+<translation id="7961493403319780137">Learn more about this feature – autofill verification codes from Gmail</translation>
 <translation id="7962467575542381659">Platform machine</translation>
 <translation id="796439090588610411">Chrome will stop automatically confirming this email on supported sites.</translation>
 <translation id="7966803981046576691">Job account type</translation>
