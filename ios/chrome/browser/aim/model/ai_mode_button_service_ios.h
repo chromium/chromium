@@ -39,6 +39,21 @@ struct RequestMetadata;
 class AIModeButtonServiceIOS : public KeyedService,
                                public TemplateURLServiceObserver {
  public:
+  // Source of the icon for the AI Mode button.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // See AiModePageActionIconSource in
+  // tools/metrics/histograms/metadata/omnibox/enums.xml.
+  enum class IconSource {
+    kInvisible = 0,
+    kVectorIcon = 1,
+    kMemoryFaviconCache = 2,
+    kDiskDbFaviconCache = 3,
+    kNetworkFetch = 4,
+    kFailedIcon = 5,
+    kMaxValue = kFailedIcon,
+  };
+
   AIModeButtonServiceIOS(
       TemplateURLService* template_url_service,
       AimEligibilityService* aim_eligibility_service,
@@ -118,6 +133,11 @@ class AIModeButtonServiceIOS : public KeyedService,
   // The currently loaded 3P favicon image and its source URL.
   UIImage* current_favicon_ = nil;
   GURL current_favicon_url_;
+
+  // True when a favicon was just loaded (synchronously or asynchronously) and
+  // observers are being notified, used to avoid double-logging
+  // `IconSource::kMemoryFaviconCache` when observers call `GetIcon()`.
+  bool newly_loaded_favicon_ = false;
 
   // True while `UpdateFavicon()` is executing synchronously, used to suppress
   // redundant `NotifyStateChanged()` calls when the caller already notifies.

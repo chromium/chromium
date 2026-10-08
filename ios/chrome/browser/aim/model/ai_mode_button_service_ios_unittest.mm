@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
 
 #import <memory>
+#import <string_view>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
@@ -45,6 +47,9 @@ namespace {
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+
+constexpr std::string_view kIconSourceHistogram =
+    "Omnibox.AiModePageAction.IconSource";
 
 class MockImageFetcherService : public image_fetcher::ImageFetcherService {
  public:
@@ -156,6 +161,7 @@ class AIModeButtonServiceIOSTest : public PlatformTest {
 
 // Tests Google DSE button availability and properties.
 TEST_F(AIModeButtonServiceIOSTest, GoogleDseProperties) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(true));
   EXPECT_TRUE(service_->IsButtonAvailable());
@@ -164,11 +170,16 @@ TEST_F(AIModeButtonServiceIOSTest, GoogleDseProperties) {
   EXPECT_NSEQ(service_->GetAccessibilityLabel(),
               l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
   EXPECT_NE(service_->GetIcon(), nil);
+  histogram_tester.ExpectUniqueSample(
+      kIconSourceHistogram, AIModeButtonServiceIOS::IconSource::kVectorIcon, 1);
   EXPECT_TRUE(service_->GetUrl().is_valid());
 
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(service_->IsButtonAvailable());
+  EXPECT_NE(service_->GetIcon(), nil);
+  histogram_tester.ExpectBucketCount(
+      kIconSourceHistogram, AIModeButtonServiceIOS::IconSource::kInvisible, 1);
 }
 
 // Tests 3P DSE when the 3P entrypoint feature is disabled.
@@ -234,8 +245,10 @@ TEST_F(AIModeButtonServiceIOSTest, StateChangedNotificationOnDseChange) {
   template_url_service_->SetUserSelectedDefaultSearchProvider(bing_turl_);
 }
 
-// Tests 3P favicon loading from FaviconLoader memory/disk cache.
+// Tests 3P favicon loading from FaviconLoader disk/DB cache and subsequent
+// memory cache hits.
 TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconFromFaviconLoader) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kAim3pEntrypoint, {{"Aim3pEntrypointDebug", "true"}});
@@ -262,14 +275,52 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconFromFaviconLoader) {
       .Times(0);
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(bing_turl_);
+  histogram_tester.ExpectUniqueSample(
+      kIconSourceHistogram,
+      AIModeButtonServiceIOS::IconSource::kDiskDbFaviconCache, 1);
 
   UIImage* icon = service_->GetIcon();
   ASSERT_NE(icon, nil);
   EXPECT_EQ(icon.renderingMode, UIImageRenderingModeAlwaysOriginal);
+  histogram_tester.ExpectBucketCount(
+      kIconSourceHistogram,
+      AIModeButtonServiceIOS::IconSource::kMemoryFaviconCache, 1);
+}
+
+// Tests 3P favicon loading from FaviconLoader synchronous memory cache.
+TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconFromMemoryCache) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAim3pEntrypoint, {{"Aim3pEntrypointDebug", "true"}});
+  EXPECT_CALL(*aim_eligibility_service_, IsAimAllowedByFeatureAndPolicy())
+      .WillRepeatedly(Return(true));
+
+  UIImage* test_image = gfx::test::CreateImage(18, 18).ToUIImage();
+  EXPECT_CALL(*favicon_loader_, FaviconForIconUrl(_, _, _, _))
+      .WillOnce([test_image](
+                    const GURL&, float, float,
+                    FaviconLoader::FaviconAttributesCompletionBlock callback) {
+        callback([FaviconAttributes attributesWithImage:test_image],
+                 /*cached=*/true);
+      });
+
+  template_url_service_->SetUserSelectedDefaultSearchProvider(bing_turl_);
+  histogram_tester.ExpectUniqueSample(
+      kIconSourceHistogram,
+      AIModeButtonServiceIOS::IconSource::kMemoryFaviconCache, 1);
+
+  UIImage* icon = service_->GetIcon();
+  ASSERT_NE(icon, nil);
+  EXPECT_EQ(icon.renderingMode, UIImageRenderingModeAlwaysOriginal);
+  histogram_tester.ExpectUniqueSample(
+      kIconSourceHistogram,
+      AIModeButtonServiceIOS::IconSource::kMemoryFaviconCache, 2);
 }
 
 // Tests 3P favicon network fetch fallback and persistence to FaviconService.
 TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconFromNetworkFallback) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kAim3pEntrypoint, {{"Aim3pEntrypointDebug", "true"}});
@@ -301,14 +352,21 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconFromNetworkFallback) {
       .Times(1);
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(bing_turl_);
+  histogram_tester.ExpectUniqueSample(
+      kIconSourceHistogram, AIModeButtonServiceIOS::IconSource::kNetworkFetch,
+      1);
 
   UIImage* icon = service_->GetIcon();
   ASSERT_NE(icon, nil);
   EXPECT_EQ(icon.renderingMode, UIImageRenderingModeAlwaysOriginal);
+  histogram_tester.ExpectBucketCount(
+      kIconSourceHistogram,
+      AIModeButtonServiceIOS::IconSource::kMemoryFaviconCache, 1);
 }
 
 // Tests 3P favicon network failure falls back to monochrome search symbol.
 TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconNetworkFailureFallback) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kAim3pEntrypoint, {{"Aim3pEntrypointDebug", "true"}});
@@ -335,6 +393,8 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyFaviconNetworkFailureFallback) {
   EXPECT_CALL(*favicon_service_, SetFavicons(_, _, _, _)).Times(0);
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(bing_turl_);
+  histogram_tester.ExpectUniqueSample(
+      kIconSourceHistogram, AIModeButtonServiceIOS::IconSource::kFailedIcon, 1);
 
   UIImage* icon = service_->GetIcon();
   ASSERT_NE(icon, nil);

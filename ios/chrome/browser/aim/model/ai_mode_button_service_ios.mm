@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
 
+#import <string_view>
+
 #import "base/auto_reset.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/favicon/core/favicon_service.h"
@@ -37,6 +40,13 @@
 #import "ui/gfx/image/image.h"
 
 namespace {
+
+constexpr std::string_view kIconSourceHistogram =
+    "Omnibox.AiModePageAction.IconSource";
+
+void RecordIconSource(AIModeButtonServiceIOS::IconSource source) {
+  base::UmaHistogramEnumeration(kIconSourceHistogram, source);
+}
 
 // Returns the point size for the AIM quick action button icon.
 CGFloat GetAimButtonIconPointSize() {
@@ -138,6 +148,9 @@ void AIModeButtonServiceIOS::UpdateFavicon() {
   }
   GURL favicon_url = config ? GURL(config->favicon_url) : GURL();
   if (!favicon_url.is_valid()) {
+    if (config) {
+      RecordIconSource(IconSource::kFailedIcon);
+    }
     favicon_url = GURL();
   }
   if (favicon_url == current_favicon_url_) {
@@ -147,7 +160,12 @@ void AIModeButtonServiceIOS::UpdateFavicon() {
   favicon_fetch_weak_factory_.InvalidateWeakPtrs();
   current_favicon_ = nil;
   current_favicon_url_ = favicon_url;
-  if (!favicon_url.is_valid() || !favicon_loader_) {
+  newly_loaded_favicon_ = false;
+  if (!favicon_url.is_valid()) {
+    return;
+  }
+  if (!favicon_loader_) {
+    RecordIconSource(IconSource::kFailedIcon);
     return;
   }
 
@@ -163,8 +181,11 @@ void AIModeButtonServiceIOS::OnFaviconLoaded(const GURL& favicon_url,
                                              FaviconAttributes* attributes,
                                              bool cached) {
   if (attributes.faviconImage) {
+    RecordIconSource(cached ? IconSource::kMemoryFaviconCache
+                            : IconSource::kDiskDbFaviconCache);
     current_favicon_ = [attributes.faviconImage
         imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    newly_loaded_favicon_ = true;
     if (!updating_favicon_) {
       NotifyStateChanged();
     }
@@ -185,6 +206,7 @@ void AIModeButtonServiceIOS::FetchFaviconFromNetwork(const GURL& favicon_url) {
                 image_fetcher::ImageFetcherConfig::kNetworkOnly)
           : nullptr;
   if (!fetcher) {
+    RecordIconSource(IconSource::kFailedIcon);
     return;
   }
   fetcher->FetchImage(
@@ -199,6 +221,7 @@ void AIModeButtonServiceIOS::OnFaviconFetchedFromNetwork(
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& /*metadata*/) {
   if (image.IsEmpty()) {
+    RecordIconSource(IconSource::kFailedIcon);
     return;
   }
   if (favicon_service_) {
@@ -211,8 +234,10 @@ void AIModeButtonServiceIOS::OnFaviconFetchedFromNetwork(
   if (!CGSizeEqualToSize(ui_image.size, target_size)) {
     ui_image = ResizeImage(ui_image, target_size, ProjectionMode::kAspectFit);
   }
+  RecordIconSource(IconSource::kNetworkFetch);
   current_favicon_ =
       [ui_image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  newly_loaded_favicon_ = true;
   if (!updating_favicon_) {
     NotifyStateChanged();
   }
@@ -220,6 +245,7 @@ void AIModeButtonServiceIOS::OnFaviconFetchedFromNetwork(
 
 void AIModeButtonServiceIOS::NotifyStateChanged() {
   state_changed_callbacks_.Notify();
+  newly_loaded_favicon_ = false;
 }
 
 const AiModeButtonUiConfig* AIModeButtonServiceIOS::GetThirdPartyConfig()
@@ -250,16 +276,20 @@ NSString* AIModeButtonServiceIOS::GetAccessibilityLabel() const {
 }
 
 UIImage* AIModeButtonServiceIOS::GetIcon() const {
-  if (template_url_service_ &&
-      !search::DefaultSearchProviderIsGoogle(template_url_service_) &&
-      current_favicon_) {
+  const bool is_google =
+      !template_url_service_ ||
+      search::DefaultSearchProviderIsGoogle(template_url_service_);
+  if (!IsButtonAvailable()) {
+    RecordIconSource(IconSource::kInvisible);
+  } else if (is_google) {
+    RecordIconSource(IconSource::kVectorIcon);
+  } else if (current_favicon_) {
+    if (!newly_loaded_favicon_) {
+      RecordIconSource(IconSource::kMemoryFaviconCache);
+    }
     return current_favicon_;
   }
-  Symbol symbol = SymbolMagnifyingglassSpark;
-  if (template_url_service_ &&
-      !search::DefaultSearchProviderIsGoogle(template_url_service_)) {
-    symbol = SymbolSearch;
-  }
+  Symbol symbol = is_google ? SymbolMagnifyingglassSpark : SymbolSearch;
   if (IsNewTabPageUICleanupEnabled()) {
     UIImageSymbolConfiguration* symbol_configuration =
         [UIImageSymbolConfiguration
