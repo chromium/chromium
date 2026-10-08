@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -74,6 +75,7 @@ class CredentialManagerPendingRequestTask : public FormFetcher::Consumer {
   void OnFetchCompleted() override;
 
   void ProcessForms(std::vector<std::unique_ptr<PasswordForm>> results);
+  void SendPasswordForm(const PasswordForm* form);
 
   raw_ptr<CredentialManagerPendingRequestTaskDelegate> delegate_;  // Weak;
   SendCredentialCallback send_callback_;
@@ -82,6 +84,9 @@ class CredentialManagerPendingRequestTask : public FormFetcher::Consumer {
   const bool include_passwords_;
   std::set<std::string> federations_;
   std::unique_ptr<FormFetcher> form_fetcher_;
+
+  base::WeakPtrFactory<CredentialManagerPendingRequestTask> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace password_manager

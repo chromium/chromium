@@ -184,10 +184,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       const url::Origin& origin,
       CredentialsCallback callback) override {
     EXPECT_FALSE(local_forms.empty());
-    const PasswordForm* form = local_forms[0].get();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::Owned(new PasswordForm(*form))));
+    if (should_store_callback_) {
+      stored_choose_callback_ = std::move(callback);
+    } else {
+      const PasswordForm* form = local_forms[0].get();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    base::Owned(new PasswordForm(*form))));
+    }
     PromptUserToChooseCredentialsPtr(
         base::ToVector(local_forms, &std::unique_ptr<PasswordForm>::get),
         origin, base::DoNothing());
@@ -198,8 +202,20 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       std::vector<std::unique_ptr<PasswordForm>> local_forms,
       const url::Origin& origin) override {
     EXPECT_FALSE(local_forms.empty());
+    if (stored_choose_callback_) {
+      // Simulate ManagePasswordsUIController::OnAutoSignin calling
+      // DestroyPopups() -> TransitionToState(), which synchronously runs the
+      // stale chooser callback before reading `origin`.
+      std::move(stored_choose_callback_).Run(nullptr);
+      url::Origin origin_copy = origin;
+      EXPECT_FALSE(origin_copy.opaque());
+    }
     NotifyUserAutoSigninPtr();
   }
+
+  // Captures the CredentialsCallback instead of posting it asynchronously to
+  // simulate an open chooser dialog.
+  void capture_callback() { should_store_callback_ = true; }
 
   void set_zero_click_enabled(bool zero_click_enabled) {
     auto_sign_in_enabled_ = zero_click_enabled;
@@ -221,6 +237,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   NiceMock<MockPasswordManager> password_manager_;
   GURL last_committed_url_{kTestWebOrigin};
   bool auto_sign_in_enabled_ = true;
+  bool should_store_callback_ = false;
+  CredentialsCallback stored_choose_callback_;
 };
 
 // Callbacks from CredentialManagerImpl methods
@@ -2136,6 +2154,60 @@ TEST_P(CredentialManagerImplTest, DestructionCancelsOngoingReauth) {
   cm_service_impl_.reset();
 
   EXPECT_FALSE(called);
+}
+
+// Regression test for crbug.com/562242421: When a Get() request with kRequired
+// opens the account chooser, and the Mojo pipe disconnects before the chooser
+// is answered, ResetAfterDisconnecting() drops the pending request while the
+// chooser callback survives in the UI controller. If a subsequent Get() request
+// with kOptional triggers auto sign-in, NotifyUserAutoSignin() closes the old
+// chooser and runs its stale callback. That stale callback must not delete the
+// active `pending_request_` while ProcessForms() is still executing on the
+// stack.
+TEST_P(CredentialManagerImplTest,
+       AutoSigninAfterDisconnectWithPendingChooserDoesNotUAF) {
+  client_->set_zero_click_enabled(true);
+  client_->set_first_run_seen(true);
+  client_->capture_callback();
+  form_.skip_zero_click = false;
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr);
+
+  // 1. First Get() request with kRequired opens the account chooser and stores
+  // the callback in the UI controller.
+  bool called1 = false;
+  CredentialManagerError error1 = CredentialManagerError::UNKNOWN;
+  std::optional<CredentialInfo> credential1;
+  CallGet(
+      CredentialMediationRequirement::kRequired, /*include_passwords=*/true,
+      /*federations=*/{},
+      base::BindOnce(&GetCredentialCallback, &called1, &error1, &credential1));
+  RunAllPendingTasks();
+  EXPECT_FALSE(called1);
+
+  // 2. The renderer disconnects the Mojo pipe.
+  cm_service_impl_->ResetAfterDisconnecting();
+
+  // 3. A new pipe calls Get() with kOptional, which chooses auto sign-in and
+  // calls NotifyUserAutoSignin(), synchronously closing the old chooser and
+  // running its stale callback.
+  bool called2 = false;
+  CredentialManagerError error2 = CredentialManagerError::UNKNOWN;
+  std::optional<CredentialInfo> credential2;
+  CallGet(
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+      /*federations=*/{},
+      base::BindOnce(&GetCredentialCallback, &called2, &error2, &credential2));
+  RunAllPendingTasks();
+
+  EXPECT_FALSE(called1);
+  EXPECT_TRUE(called2);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error2);
+  ASSERT_TRUE(credential2.has_value());
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_PASSWORD, credential2->type);
+  EXPECT_EQ(form_.username_value, credential2->id);
 }
 
 }  // namespace password_manager
