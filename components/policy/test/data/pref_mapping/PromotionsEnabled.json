@@ -5,7 +5,8 @@
       "linux",
       "mac",
       "chromeos",
-      "fuchsia"
+      "fuchsia",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -39,7 +40,18 @@
             "value": true
           }
         }
-      },
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
       {
         "notes": "PromotionsEnabled and deprecated PromotionalTabsEnabled both true",
         "policies": {

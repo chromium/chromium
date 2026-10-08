@@ -1587,6 +1587,11 @@ inline constexpr char kScheduledRestartLastNudgeTime[] =
     "restart.scheduled_restart_last_nudge_time";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// Pref name for controlling presentation of promotions, including full-tab
+// promotional and/or educational content.
+// This preference replaces browser.promotional_tabs_enabled.
+inline constexpr char kPromotionsEnabled[] = "browser.promotions_enabled";
+
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether or not to show security warnings for some
@@ -1601,11 +1606,6 @@ inline constexpr char kCommandLineFlagSecurityWarningsEnabled[] =
 // `NTPFooterExtensionAttributionEnabled` policy.
 inline constexpr char kNTPFooterExtensionAttributionEnabled[] =
     "ntp_footer.settings.extension_attribution";
-
-// Pref name for controlling presentation of promotions, including full-tab
-// promotional and/or educational content.
-// This preference replaces browser.promotional_tabs_enabled.
-inline constexpr char kPromotionsEnabled[] = "browser.promotions_enabled";
 
 // Boolean that specifies whether or not showing the unsupported OS warning is
 // suppressed. False by default. Controlled by the SuppressUnsupportedOSWarning

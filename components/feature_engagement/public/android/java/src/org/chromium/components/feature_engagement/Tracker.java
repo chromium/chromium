@@ -10,6 +10,8 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Tracker is the Java representation of a native Tracker object. It is owned by the native
  * BrowserContext.
@@ -28,6 +30,12 @@ public interface Tracker {
          */
         void release();
     }
+
+    /**
+     * Sets a supplier that provides whether promotions are enabled (e.g. via the PromotionsEnabled
+     * enterprise policy).
+     */
+    default void setPromotionsEnabledSupplier(BooleanSupplier supplier) {}
 
     /** Must be called whenever an event happens. */
     void notifyEvent(String event);

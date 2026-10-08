@@ -2843,9 +2843,16 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<WebHidDevicePolicyHandler>(
       key::kWebHidAllowDevicesWithHidUsagesForUrls,
       prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls, chrome_schema));
+  // TODO(crbug.com/571067805): Move `android` from `future_on` to
+  // `supported_on` in PromotionsEnabled.yaml when ready to launch.
+  auto promotions_enabled_policy_handler =
+      std::make_unique<SimplePolicyHandler>(key::kPromotionsEnabled,
+                                            prefs::kPromotionsEnabled,
+                                            base::Value::Type::BOOLEAN);
 #if BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(
       std::make_unique<ContextualSearchPolicyHandlerAndroid>());
+  handlers->AddHandler(std::move(promotions_enabled_policy_handler));
 #else  // !BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<BrowsingDataLifetimePolicyHandler>(
       key::kClearBrowsingDataOnExitList,
@@ -2860,9 +2867,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<SimplePolicyHandler>(key::kPromotionalTabsEnabled,
                                             prefs::kPromotionsEnabled,
                                             base::Value::Type::BOOLEAN),
-      std::make_unique<SimplePolicyHandler>(key::kPromotionsEnabled,
-                                            prefs::kPromotionsEnabled,
-                                            base::Value::Type::BOOLEAN)));
+      std::move(promotions_enabled_policy_handler)));
 
   handlers->AddHandler(std::make_unique<headless::HeadlessModePolicyHandler>());
   handlers->AddHandler(
