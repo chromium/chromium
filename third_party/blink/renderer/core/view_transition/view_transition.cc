@@ -1078,8 +1078,20 @@ void ViewTransition::SaveRememberedSizeIfNeeded(State old_state,
       }
     }
   } else if (old_needs_containment && !new_needs_containment) {
-    scope_->SetLastRememberedInlineSize(std::nullopt);
-    scope_->SetLastRememberedBlockSize(std::nullopt);
+    // If the author style itself has `contain-intrinsic-size: auto` in an axis,
+    // then the last remembered size in that axis is also maintained by the
+    // intrinsic size resize observer, so we must not clear it: the observer
+    // only reports size changes, so it would not record it again if the size
+    // stays the same. Note that the size we saved is the size the element had
+    // when we started the containment, which is also what the observer would
+    // have recorded.
+    const auto* style = scope_->GetComputedStyle();
+    if (style && !style->ContainIntrinsicInlineSize().HasAuto()) {
+      scope_->SetLastRememberedInlineSize(std::nullopt);
+    }
+    if (style && !style->ContainIntrinsicBlockSize().HasAuto()) {
+      scope_->SetLastRememberedBlockSize(std::nullopt);
+    }
   }
 
   scope_->SetNeedsStyleRecalc(kLocalStyleChange,
