@@ -714,18 +714,21 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that tapping on a history entry from the Last Visited subpage dismisses
 // Page Info (which presents the Last Visited subpage) and opens the
 // corresponding URL.
-// TODO(crbug.com/567149253): Re-enable. The live www.example.com page no longer
-// contains "Example Domain" in its body.
-- (void)DISABLED_testOpeningURLFromLastVisitedDismissesPageInfo {
+- (void)testOpeningURLFromLastVisitedDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL URL1 = self.testServer->GetURL(kURL1);
+  const GURL URL2 = self.testServer->GetURL(kURL2);
 
-  // Create an entry in History which took place one day ago on
-  // `kURLExternalWebsite`.
+  // Create an entry in History which took place one day ago on `URL1`, so that
+  // the Last Visited row is displayed.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
+  AddEntryToHistoryService(URL1, oneDayAgo);
 
-  // Visit `URL` and open Page Info.
-  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  // Visit `URL1` so that its history entries get a title, then visit `URL2` on
+  // the same host, so that the content of `URL1` is not displayed before the
+  // history entry is tapped.
+  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:URL2];
   [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
@@ -733,20 +736,16 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
                                           IDS_PAGE_INFO_HISTORY))]
       performAction:grey_tap()];
 
-  // Tap on the latest history entry from the Last Visited subpage.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          HistoryEntry(
-              base::UTF16ToUTF8(
-                  url_formatter::
-                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                          kURLExternalWebsite)),
-              kTitleAndContentOfExternalWebsite)] atIndex:0]
-      performAction:grey_tap()];
+  // Tap on a history entry of `URL1` from the Last Visited subpage. `atIndex:0`
+  // is required because `URL1` has two entries (today and one day ago).
+  [[[EarlGrey selectElementWithMatcher:HistoryEntry(URL1, kTitleOfURL1)]
+      atIndex:0] performAction:grey_tap()];
 
-  // Assert that the corresponding URL was opened.
+  // Assert that Page Info was dismissed and that `URL1` was opened.
   [ChromeEarlGrey
-      waitForWebStateContainingText:kTitleAndContentOfExternalWebsite];
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kPageInfoViewAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForWebStateContainingText:kContentOfURL1];
 
   // Assert that page_info::PAGE_INFO_HISTORY_ENTRY_CLICKED metric was recorded.
   ExpectPageInfoActionHistograms(page_info::PAGE_INFO_HISTORY_ENTRY_CLICKED);
@@ -754,18 +753,21 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-// TODO(crbug.com/567156614): Re-enable. The live www.example.com page no longer
-// contains "Example Domain" in its body.
-- (void)DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo {
+- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL URL1 = self.testServer->GetURL(kURL1);
+  const GURL URL2 = self.testServer->GetURL(kURL2);
 
-  // Create an entry in History which took place one day ago on
-  // `kURLExternalWebsite`.
+  // Create an entry in History which took place one day ago on `URL1`, so that
+  // the Last Visited row is displayed.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
+  AddEntryToHistoryService(URL1, oneDayAgo);
 
-  // Visit `URL` and open Page Info.
-  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  // Visit `URL1` so that its history entries get a title, then visit `URL2` on
+  // the same host, so that the content of `URL1` is not displayed before the
+  // history entry is tapped.
+  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:URL2];
   [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
@@ -779,22 +781,20 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
           grey_accessibilityID(kHistoryToolbarShowFullHistoryButtonIdentifier)]
       performAction:grey_tap()];
 
-  // Check that tapping on the older URL (from full history) dismisses both full
-  // history and Page Info. `atIndex:1` is required because two entries would be
-  // matched (current visit and the visit from one day ago) and we want to
-  // select the last one (i.e. the older history entry).
-  [[[EarlGrey
-      selectElementWithMatcher:
-          HistoryEntry(
-              base::UTF16ToUTF8(
-                  url_formatter::
-                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                          kURLExternalWebsite)),
-              kTitleAndContentOfExternalWebsite)] atIndex:1]
-      performAction:grey_tap()];
+  // Tap on a history entry of `URL1` from full history. `atIndex:0` is required
+  // because `URL1` has two entries (today and one day ago).
+  [[[EarlGrey selectElementWithMatcher:HistoryEntry(URL1, kTitleOfURL1)]
+      atIndex:0] performAction:grey_tap()];
 
+  // Assert that both full history and Page Info were dismissed, and that `URL1`
+  // was opened.
   [ChromeEarlGrey
-      waitForWebStateContainingText:kTitleAndContentOfExternalWebsite];
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kHistoryTableViewIdentifier)];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kPageInfoViewAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForWebStateContainingText:kContentOfURL1];
 }
 
 // Tests display and selection of 'Open in New Tab' in a context menu on a
