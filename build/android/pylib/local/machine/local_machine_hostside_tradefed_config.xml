@@ -1,4 +1,11 @@
 <configuration description="Configuration with basic CTS reporters" >
     <!-- Custom Json result reporter -->
     <result_reporter class="com.android.tradefed.result.LUCIResultReporter" />
+
+    <!-- Skip preconditions, device info collection, and connectivity checks
+         that require external network access or unavailable device files. -->
+    <option name="skip-preconditions" value="true" />
+    <option name="skip-device-info" value="true" />
+    <option name="compatibility:skip-all-system-status-check" value="true" />
+    <option name="dynamic-config-pusher:has-server-side-config" value="false" />
 </configuration>
