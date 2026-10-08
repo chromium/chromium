@@ -156,9 +156,11 @@ ActivityStorage::GetActivityPeriods(base::Time end_time) const {
 void ActivityStorage::AddActivityPeriod(base::Time start,
                                         base::Time end,
                                         const std::string& activity_id) {
-  CHECK(start <= end, base::NotFatalUntil::M160);
-  CHECK(!start.is_max(), base::NotFatalUntil::M160);
-  CHECK(!end.is_max(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/570656895): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(start <= end);
+  DCHECK(!start.is_max());
+  DCHECK(!end.is_max());
 
   ScopedDictPrefUpdate update(pref_service_, pref_name_);
   base::DictValue& activity_times = update.Get();
