@@ -376,8 +376,13 @@ struct ScanTextResult {
     return TextToString();
   }
 
-  base::raw_span<const Char, UnprotectedInRelease | DanglingUntriaged> text;
-  raw_ptr<UCharLiteralBufferType, UnprotectedInRelease | DanglingUntriaged>
+  // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3
+  // (Editor-TipTap).
+  base::raw_span<const Char,
+                 UnprotectedInReleaseForPerformance | DanglingUntriaged>
+      text;
+  raw_ptr<UCharLiteralBufferType,
+          UnprotectedInReleaseForPerformance | DanglingUntriaged>
       escaped_text = nullptr;
   bool is_newline_then_whitespace_string = false;
   bool is_8bit = true;

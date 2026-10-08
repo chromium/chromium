@@ -144,6 +144,16 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use UnprotectedInRelease instead.
   kIsUnprotectedInRelease = (1 << 7),
 
+  // Marks the pointer as unprotected-in-release for performance reasons:
+  // it identifies fields that are verified performance hotspots on
+  // competitive benchmarks (e.g. Speedometer 3) and must remain unprotected
+  // in release builds even when REMOVE_UNPROTECTED_IN_RELEASE_TRAIT is enabled.
+  // In debug/dcheck builds, it remains protected when
+  // ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR is enabled.
+  //
+  // Don't use directly, use UnprotectedInReleaseForPerformance instead.
+  kIsUnprotectedInReleaseForPerformance = (1 << 8),
+
   // *** ForTest traits below ***
 
   // Adds accounting, on top of the NoOp implementation, for test purposes.
@@ -161,7 +171,8 @@ enum class RawPtrTraits : unsigned {
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
              kAllowUninitialized | kNoOpImpl | kIsUnprotectedInRelease |
-             kUseCountingImplForTest | kDummyForTest,
+             kIsUnprotectedInReleaseForPerformance | kUseCountingImplForTest |
+             kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -270,7 +281,11 @@ using UnderlyingImplForTraits = internal::RawPtrHookableImpl<
         RawPtrTraits::kDisableHooks),
     /*IsUnprotectedInRelease=*/partition_alloc::internal::ContainsFlags(
         Traits,
-        RawPtrTraits::kIsUnprotectedInRelease)>;
+        RawPtrTraits::kIsUnprotectedInReleaseForPerformance) ||
+        (partition_alloc::internal::ContainsFlags(
+             Traits,
+             RawPtrTraits::kIsUnprotectedInRelease) &&
+         !PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT))>;
 
 #else
 template <RawPtrTraits Traits>
@@ -291,13 +306,21 @@ constexpr bool IsPtrArithmeticAllowed([[maybe_unused]] RawPtrTraits Traits) {
 // may be different from UnderlyingImplForTraits, because it may select a
 // test impl instead.
 // A pointer marked kIsUnprotectedInRelease falls back to RawPtrNoOpImpl unless
-// this build opted into instrumenting such pointers. This mirrors what release
-// builds ship, while leaving the pointer instrumented (and the trait visible to
-// the instrumentation) in debug/dcheck and BRP-ASan builds.
+// this build opted into instrumenting such pointers (debug/dcheck and
+// BRP-ASan), or the trait has been removed via
+// REMOVE_UNPROTECTED_IN_RELEASE_TRAIT. A pointer marked
+// kIsUnprotectedInReleaseForPerformance always falls back to RawPtrNoOpImpl in
+// release builds, but stays instrumented in debug/dcheck builds (via
+// ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR) for bug detection.
 constexpr bool UnprotectedInReleaseResolvesToNoOp(RawPtrTraits Traits) {
+  if (partition_alloc::internal::ContainsFlags(
+          Traits, RawPtrTraits::kIsUnprotectedInReleaseForPerformance)) {
+    return !PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR);
+  }
   return partition_alloc::internal::ContainsFlags(
              Traits, RawPtrTraits::kIsUnprotectedInRelease) &&
-         !PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR);
+         !PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR) &&
+         !PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT);
 }
 
 template <RawPtrTraits Traits>
@@ -1166,6 +1189,15 @@ constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
 //     that the field is unprotected in a release build.
 constexpr inline auto UnprotectedInRelease =
     base::RawPtrTraits::kIsUnprotectedInRelease;
+
+// Marks the pointer as unprotected-in-release for performance reasons:
+// it identifies fields that are verified performance hotspots on
+// competitive benchmarks (e.g. Speedometer 3) and must remain unprotected
+// in release builds even when REMOVE_UNPROTECTED_IN_RELEASE_TRAIT is enabled.
+// In debug/dcheck builds, it remains protected when
+// ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR is enabled.
+constexpr inline auto UnprotectedInReleaseForPerformance =
+    base::RawPtrTraits::kIsUnprotectedInReleaseForPerformance;
 
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please

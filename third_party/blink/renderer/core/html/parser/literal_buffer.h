@@ -215,13 +215,21 @@ class LiteralBufferBase {
   // faster when `AddChar` is inlined, since `end_` is readily available in a
   // register.
   std::array<T, BUFFER_INLINE_CAPACITY> inline_storage{};
-  raw_ptr<T, AllowPtrArithmetic | UnprotectedInRelease | DanglingUntriaged>
+  // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3
+  // (Editor-TipTap).
+  raw_ptr<T,
+          AllowPtrArithmetic | UnprotectedInReleaseForPerformance |
+              DanglingUntriaged>
       begin_ = inline_storage.data();
-  raw_ptr<T, AllowPtrArithmetic | UnprotectedInRelease | DanglingUntriaged>
+  raw_ptr<T,
+          AllowPtrArithmetic | UnprotectedInReleaseForPerformance |
+              DanglingUntriaged>
       end_ = begin_;
   // SAFETY: `begin_` points to the start of `inline_storage` and
   // `BUFFER_INLINE_CAPACITY` is the size of that array.
-  raw_ptr<T, AllowPtrArithmetic | UnprotectedInRelease | DanglingUntriaged>
+  raw_ptr<T,
+          AllowPtrArithmetic | UnprotectedInReleaseForPerformance |
+              DanglingUntriaged>
       end_of_storage_ = UNSAFE_BUFFERS(begin_ + BUFFER_INLINE_CAPACITY);
 };
 

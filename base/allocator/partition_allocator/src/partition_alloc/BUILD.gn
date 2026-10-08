@@ -199,6 +199,7 @@ pa_buildflag_header("buildflags") {
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
     "REALLOC_GROWTH_FACTOR_MITIGATION=$partition_alloc_realloc_growth_factor_mitigation",
+    "REMOVE_UNPROTECTED_IN_RELEASE_TRAIT=$remove_unprotected_in_release_trait",
     "RECORD_ALLOC_INFO=$record_alloc_info",
     "SHIM_SUPPORTS_ALLOC_TOKEN=$shim_supports_alloc_token",
     "SHIM_SUPPORTS_SIZED_DEALLOC=$shim_supports_sized_dealloc",

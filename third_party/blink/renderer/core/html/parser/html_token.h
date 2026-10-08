@@ -424,7 +424,9 @@ class HTMLToken {
   AttributeList attributes_;
 
   // A pointer into attributes_ used during lexing.
-  raw_ptr<Attribute, UnprotectedInRelease | DanglingUntriaged>
+  // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3
+  // (Editor-TipTap).
+  raw_ptr<Attribute, UnprotectedInReleaseForPerformance | DanglingUntriaged>
       current_attribute_ = nullptr;
 
   // For DOCTYPE

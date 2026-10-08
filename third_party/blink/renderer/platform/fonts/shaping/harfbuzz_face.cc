@@ -581,10 +581,14 @@ class HarfBuzzSkiaFontFuncs final {
     return funcs;
   }
 
-  const raw_ptr<hb_font_funcs_t, UnprotectedInRelease | DanglingUntriaged>
+  // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3
+  // (font shaping).
+  const raw_ptr<hb_font_funcs_t,
+                UnprotectedInReleaseForPerformance | DanglingUntriaged>
       hb_font_funcs_skia_advances_;
 #if BUILDFLAG(IS_APPLE)
-  const raw_ptr<hb_font_funcs_t, UnprotectedInRelease | DanglingUntriaged>
+  const raw_ptr<hb_font_funcs_t,
+                UnprotectedInReleaseForPerformance | DanglingUntriaged>
       hb_font_funcs_harfbuzz_advances_;
 #endif
 };

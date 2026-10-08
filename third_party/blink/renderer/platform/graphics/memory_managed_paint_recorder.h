@@ -138,10 +138,9 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   // Points to the current canvas we are recording into, either `main_canvas_`
   // or `side_canvas_`.
-  // Uses UnprotectedInRelease: Performance reasons (based on analysis of
-  // MotionMark).
-  raw_ptr<MemoryManagedPaintCanvas, UnprotectedInRelease> current_canvas_ =
-      &main_canvas_;
+  // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3.
+  raw_ptr<MemoryManagedPaintCanvas, UnprotectedInReleaseForPerformance>
+      current_canvas_ = &main_canvas_;
 };
 
 }  // namespace blink

@@ -290,6 +290,12 @@ declare_args() {
   enable_brp_for_unprotected_in_release_raw_ptr =
       partition_alloc_is_debug || partition_alloc_dcheck_always_on
 
+  # Flag for preparing for the removal of the UnprotectedInRelease trait. When
+  # true, the UnprotectedInRelease trait is ignored, giving those pointers
+  # BackupRefPtr protection. Pointers marked UnprotectedInReleaseForPerformance
+  # remain unprotected in release builds.
+  remove_unprotected_in_release_trait = false
+
   # Make explicit calls to ASAN at runtime, e.g. to mark quarrantined memory
   # as poisoned. Allows ASAN to tell if a particular memory error is protected
   # by BRP in its reports.
@@ -622,8 +628,8 @@ declare_args() {
 # lose us coverage of that particular span in that exact moment. This is
 # not a big deal, and is probably preferable to sticking
 # `base::unchecked` on all those spans (shutting them out entirely).
-use_checked_span = !(is_asan || is_ubsan || is_tsan || is_msan) && use_partition_alloc &&
-                   has_64_bit_pointers
+use_checked_span = !(is_asan || is_ubsan || is_tsan || is_msan) &&
+                   use_partition_alloc && has_64_bit_pointers
 
 # Enables additional features, e.g. slack space zapping.
 #

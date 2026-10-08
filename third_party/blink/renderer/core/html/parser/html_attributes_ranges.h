@@ -96,7 +96,9 @@ class HTMLAttributesRanges {
 
  private:
   AttributeList attributes_;
-  raw_ptr<Attribute, UnprotectedInRelease | DanglingUntriaged>
+  // UnprotectedInReleaseForPerformance: Based on analysis of Speedometer 3
+  // (Editor-TipTap).
+  raw_ptr<Attribute, UnprotectedInReleaseForPerformance | DanglingUntriaged>
       current_attribute_ = nullptr;
 };
 
