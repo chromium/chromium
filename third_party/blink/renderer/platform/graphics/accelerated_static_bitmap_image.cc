@@ -211,13 +211,10 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
 
   // These SharedImages are both read and written by the raster interface
   // (both occur, for example, when copying canvas resources between
-  // canvases). Additionally, these SharedImages can be put into
-  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-  // GL textures by WebGL (via
-  // AcceleratedStaticBitmapImage::CopyToTexture()).
-  shared_image_usage_flags =
-      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  // canvases).
+  shared_image_usage_flags = shared_image_usage_flags |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
   if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
