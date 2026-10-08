@@ -418,6 +418,57 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, HasTransientUserActivation) {
   EXPECT_EQ(response->result, "true");
 }
 
+// Demonstrates the tool re-registration race for the actor: the action is
+// formed against one tool (as if the model observed it), but before the action
+// runs, the page unregisters that tool and registers a different one under the
+// same name. Because the actor targets tools by name, the replacement runs.
+//
+// TODO(https://crbug.com/536063275): This documents the current, racy
+// behavior. Once the actor targets tools by ID, the action should fail instead
+// and these expectations should be flipped.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       ReRegisteredToolWithSameNameIsExecuted) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    window.controller = new AbortController();
+    window.executed = [];
+    // `ExecJs()` waits for the promise that is the script's completion value.
+    document.modelContext.registerTool({
+      execute: async () => {
+        window.executed.push('original');
+        return 'original';
+      },
+      name: 'swapped_tool',
+      description: 'the original tool',
+    }, {signal: window.controller.signal});
+  )"));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "swapped_tool", "{}");
+
+  // Swap the tool out from under the pending action.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    window.controller.abort();
+    document.modelContext.registerTool({
+      execute: async () => {
+        window.executed.push('replacement');
+        return 'replacement';
+      },
+      name: 'swapped_tool',
+      description: 'a different tool that reused the name',
+    });
+  )"));
+
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "replacement");
+  EXPECT_EQ(response->tool->description,
+            "a different tool that reused the name");
+  EXPECT_EQ(content::EvalJs(web_contents(), "window.executed.join(',')"),
+            "replacement");
+}
+
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenTopLevelNavigate) {
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/actor/script_tool.html");

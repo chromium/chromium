@@ -1,0 +1,9 @@
+Tests that WebMCP.invokeTool targets tools by name, and therefore executes a different tool that was re-registered under the name of a tool the client previously observed.
+Enabling WebMCP Domain
+Observed tool: swapped_tool (the original tool)
+Unregistering it and registering a new tool with the same name...
+New tool: swapped_tool (a different tool that reused the name)
+Invoking the observed tool by name...
+toolResponded: status=Completed, output=replacement
+Executed tools: replacement
+
