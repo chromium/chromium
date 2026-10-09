@@ -269,10 +269,12 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   const auto source_orientation = GetSourceOrientation(source, options);
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
+    gpu::SharedImageUsageSet usage = source->GetSharedImage()->usage();
+    usage.RemoveAll(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
     if (auto image = AcceleratedStaticBitmapImage::CreateFromRaster(
             gfx::Size(dest_size.width(), dest_size.height()), dest_format,
             dest_alpha_type, dest_color_space, dest_hdr_metadata,
-            source->ContextProviderWrapper(), source->GetSharedImage()->usage(),
+            source->ContextProviderWrapper(), usage,
             [&](cc::PaintCanvas& canvas) {
               BlitToCanvas(canvas, source_paint_image, source_orientation,
                            SkRect::Make(source_rect), dest_size, options);
