@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -40,6 +41,7 @@
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -559,6 +561,7 @@ TEST_F(BlobURLTest, TestExtraHeaders) {
 }
 
 TEST_F(BlobURLTest, TestSideData) {
+  base::HistogramTester histogram_tester;
   blob_data_->AppendReadableDataHandle(
       base::MakeRefCounted<storage::FakeBlobDataHandle>(
           kTestDataHandleData2, kTestDiskCacheSideData));
@@ -569,9 +572,13 @@ TEST_F(BlobURLTest, TestSideData) {
             response_headers_->GetContentLength()->InBytes());
 
   EXPECT_EQ(std::string(kTestDiskCacheSideData), *response_metadata_);
+  histogram_tester.ExpectUniqueSample(
+      "Storage.Blob.SideDataAccessType",
+      storage::BlobSideDataAccessType::kBlobURLWithSideData, 1);
 }
 
 TEST_F(BlobURLTest, TestZeroSizeSideData) {
+  base::HistogramTester histogram_tester;
   blob_data_->AppendReadableDataHandle(
       base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData2,
                                                         ""));
@@ -582,6 +589,9 @@ TEST_F(BlobURLTest, TestZeroSizeSideData) {
             response_headers_->GetContentLength()->InBytes());
 
   EXPECT_FALSE(response_metadata_.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Storage.Blob.SideDataAccessType",
+      storage::BlobSideDataAccessType::kBlobURLWithoutSideData, 1);
 }
 
 TEST_F(BlobURLTest, BrokenBlob) {

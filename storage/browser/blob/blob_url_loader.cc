@@ -33,6 +33,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/blob/features.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -228,6 +229,11 @@ void BlobURLLoader::HeadersCompleted(
     net::HttpStatusCode status_code,
     uint64_t content_size,
     std::optional<mojo_base::BigBuffer> metadata) {
+  RecordBlobSideDataAccess(
+      metadata && metadata->size()
+          ? BlobSideDataAccessType::kBlobURLWithSideData
+          : BlobSideDataAccessType::kBlobURLWithoutSideData);
+
   auto response = network::mojom::URLResponseHead::New();
   response->content_length = 0;
   if (status_code == net::HTTP_OK || status_code == net::HTTP_PARTIAL_CONTENT)

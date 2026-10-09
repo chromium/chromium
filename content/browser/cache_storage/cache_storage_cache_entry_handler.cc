@@ -21,6 +21,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
@@ -140,6 +141,9 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
 
   void ReadSideData(ReadSideDataCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    storage::RecordBlobSideDataAccess(
+        storage::BlobSideDataAccessType::kCacheStorageSideDataRead);
+
     // Use a WrappedIOBuffer so that the DiskCacheBlobEntry writes directly
     // to the BigBuffer without a copy.
     int length = blob_entry_->GetSize(side_data_disk_cache_index_);

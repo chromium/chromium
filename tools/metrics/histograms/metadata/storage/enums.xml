@@ -45,6 +45,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
 
+<!-- LINT.IfChange(BlobSideDataAccessType) -->
+
+<enum name="BlobSideDataAccessType">
+  <int value="0" label="Blob URL loaded without side data"/>
+  <int value="1" label="Blob URL loaded with side data"/>
+  <int value="2" label="CacheStorage side data read"/>
+</enum>
+
+<!-- LINT.ThenChange(//storage/browser/blob/blob_side_data_access_type.h:BlobSideDataAccessType) -->
+
 <!-- LINT.IfChange(BlobUuidAccess) -->
 
 <enum name="BlobUuidAccess">

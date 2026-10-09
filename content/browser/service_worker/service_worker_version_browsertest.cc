@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -57,6 +58,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/test/blob_test_utils.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -1692,8 +1694,12 @@ class CacheStorageEagerReadingTest : public ServiceWorkerVersionBrowserTest {
 
     // Since this js response was stored in the install event it should have
     // code cache stored in the blob side data.
+    base::HistogramTester histogram_tester;
     EXPECT_GT(BlobSideDataLength(blob.get()),
               static_cast<size_t>(kV8CacheTimeStampDataSize));
+    histogram_tester.ExpectUniqueSample(
+        "Storage.Blob.SideDataAccessType",
+        storage::BlobSideDataAccessType::kCacheStorageSideDataRead, 1);
   }
 
   void ExpectEagerlyReadCacheResponse(

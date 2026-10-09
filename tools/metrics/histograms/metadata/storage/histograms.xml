@@ -1200,6 +1200,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.Blob.SideDataAccessType" enum="BlobSideDataAccessType"
+    expires_after="2027-04-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records metrics related to Blob side data (Cache API code cache).
+
+    Records when
+
+    (0) a Blob URL is served for a Blob that does not have side data.
+
+    (1) a Blob URL is served for a Blob that has side data.
+
+    (2) a service worker uses Cache API to serve a script resource request
+    (script src=&quot;/app.js&quot;) and accesses side data.
+  </summary>
+</histogram>
+
 <histogram name="Storage.Buckets.BucketCount" units="buckets"
     expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>

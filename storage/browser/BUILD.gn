@@ -29,6 +29,8 @@ component("browser") {
     "blob/blob_reader.h",
     "blob/blob_registry_impl.cc",
     "blob/blob_registry_impl.h",
+    "blob/blob_side_data_access_type.cc",
+    "blob/blob_side_data_access_type.h",
     "blob/blob_storage_constants.cc",
     "blob/blob_storage_constants.h",
     "blob/blob_storage_context.cc",
