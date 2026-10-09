@@ -227,7 +227,9 @@ public class OffscreenRenderingManager {
             if (mNativePtr != 0) {
                 OffscreenRenderingManagerJni.get().stopOffscreenRendering(mNativePtr, webContents);
             }
-            webContents.setTopLevelNativeWindow(null);
+            if (webContents.getTopLevelNativeWindow() == mOffscreenWindow) {
+                webContents.setTopLevelNativeWindow(null);
+            }
         }
         mOffscreenWebContents.remove(webContents);
 

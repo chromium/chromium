@@ -254,6 +254,12 @@ class GlicInstanceImpl : public GlicInstance,
   void UpdateSkillPreviews(
       std::optional<tabs::TabInterface*> updated_tab) override;
 
+  // Marks whether a hidden invoke is actively warming up / initializing the
+  // client. When running hidden, drives offscreen rendering on Android.
+  // TODO(b/572001459): Extract Android offscreen rendering management out of
+  // GlicInstanceImpl into a dedicated helper class owned by this instance.
+  void SetHiddenInitializing(bool initializing);
+
   // Called exactly once, right before the instance is destroyed.
   using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;
   base::CallbackListSubscription RegisterWillBeDestroyed(
@@ -324,6 +330,11 @@ class GlicInstanceImpl : public GlicInstance,
 #endif
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();
+#if BUILDFLAG(IS_ANDROID)
+  bool is_offscreen_rendering_active_for_testing() const {
+    return is_offscreen_rendering_active_;
+  }
+#endif
 
   base::WeakPtr<GlicInstanceImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -506,6 +517,15 @@ class GlicInstanceImpl : public GlicInstance,
   bool suppress_show_on_tab_added_to_task_ = false;
 
   std::optional<TabGroupBinding> tab_group_binding_;
+
+  void OnActuatingChanged(bool actuating);
+  void UpdateOffscreenRenderingState();
+  void StopOffscreenRendering();
+
+  bool is_hidden_initializing_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  bool is_offscreen_rendering_active_ = false;
+#endif
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

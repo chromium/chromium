@@ -807,7 +807,13 @@ class ExperimentalTriggeringUpdatesHandler
 
     GlicInvokeWithAutoSubmitOptions auto_submit_options;
 #if BUILDFLAG(IS_ANDROID)
-    if (prepared_tab) {
+    // TODO(b/568925496): Follow up to remove platform ifdefs across
+    // experimental triggering.
+    // The background check runs only once when Glic is invoked. Handling Chrome
+    // moving from foreground to background mid-task would require observing
+    // ApplicationStatusListener and dynamically updating offscreen rendering.
+    const bool is_chrome_in_background = coordinator_->IsChromeInBackground();
+    if (prepared_tab && is_chrome_in_background) {
       auto_submit_options.show_panel = false;
     }
 #endif
@@ -1515,6 +1521,14 @@ tabs::TabInterface* GlicExperimentalTriggeringCoordinator::GetActiveTab()
     const {
   BrowserWindowInterface* browser = GetBrowserWindow();
   return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
+}
+
+bool GlicExperimentalTriggeringCoordinator::IsChromeInBackground() const {
+#if BUILDFLAG(IS_ANDROID)
+  return !base::android::ApplicationStatusListener::HasVisibleActivities();
+#else
+  return false;
+#endif
 }
 
 std::optional<ExperimentalTriggeringResponse>

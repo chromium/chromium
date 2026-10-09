@@ -37,7 +37,7 @@ void StopOffscreenRenderingForWebContents(content::WebContents* web_contents);
 // background state (like Picture-in-Picture).
 class OffscreenRenderingManagerAndroid : public content::CompositorClient {
  public:
-  OffscreenRenderingManagerAndroid(ui::WindowAndroid* window,
+  OffscreenRenderingManagerAndroid(::ui::WindowAndroid* window,
                                    int width,
                                    int height);
 

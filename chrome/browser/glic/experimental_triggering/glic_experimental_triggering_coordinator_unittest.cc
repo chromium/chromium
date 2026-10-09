@@ -136,10 +136,17 @@ class TestGlicExperimentalTriggeringCoordinator
     browser_window_ = window;
   }
   void set_active_tab(tabs::TabInterface* tab) { active_tab_ = tab; }
+  bool IsChromeInBackground() const override {
+    return is_chrome_in_background_;
+  }
+  void set_is_chrome_in_background(bool in_background) {
+    is_chrome_in_background_ = in_background;
+  }
 
  private:
   raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
   raw_ptr<tabs::TabInterface> active_tab_ = nullptr;
+  bool is_chrome_in_background_ = false;
 };
 
 class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
@@ -2182,6 +2189,63 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
             static_cast<int32_t>(actor::mojom::ActionResultCode::kToolTimeout));
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       PreparedTabShowsPanelOnlyWhenChromeInForeground) {
+  auto* glic_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false));
+  ASSERT_TRUE(glic_service);
+
+  std::optional<bool> captured_show_panel;
+  EXPECT_CALL(*glic_service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillRepeatedly([this, &captured_show_panel](
+                          InvokeWithAutoSubmitPasskey passkey,
+                          GlicInvokeOptions options,
+                          GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        captured_show_panel = auto_submit_options.show_panel;
+        if (options.on_panel_opened) {
+          std::move(options.on_panel_opened).Run();
+        }
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  // Background: show_panel should be false for prepared tab.
+  coordinator_->set_is_chrome_in_background(true);
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_1"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "test"};
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  auto response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), &mock_tab_);
+  ASSERT_TRUE(response.has_value());
+  EXPECT_EQ(captured_show_panel, false);
+
+  // Foreground: show_panel should be true for prepared tab.
+  coordinator_->set_is_chrome_in_background(false);
+  request.context_id = "context_2";
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_2"};
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future2;
+  auto response2 = coordinator_->OnRequest(
+      "context_2", request,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future2.GetRepeatingCallback(), &mock_tab_);
+  ASSERT_TRUE(response2.has_value());
+  EXPECT_EQ(captured_show_panel, true);
+}
+#endif
 
 }  // namespace
 }  // namespace glic

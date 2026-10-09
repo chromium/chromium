@@ -74,12 +74,6 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 
   web_contents_->SetSupportsDraggableRegions(true);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kGlicAndroidOffscreenRendering)) {
-    actor::StartOffscreenRenderingForWebContents(web_contents_.get());
-  }
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializePrintingForWebContents(web_contents_.get());
 #endif
