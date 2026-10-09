@@ -3233,4 +3233,38 @@ TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
   }
 }
 
+// Tests that restoring a session does not unwrap a `view-source:` URL when the
+// inner URL is an app-specific URL.
+TEST_F(NavigationManagerSerialisationTest,
+       RestoreDoesNotRewriteViewSourceAppSpecificURL) {
+  const GURL view_source_app_specific_url(
+      base::StrCat({"view-source:", kTestWebUIScheme, "://test/"}));
+  ASSERT_FALSE(
+      web::GetWebClient()->IsAppSpecificURL(view_source_app_specific_url));
+
+  proto::NavigationStorage storage;
+  storage.add_items()->set_url(view_source_app_specific_url.spec());
+  storage.add_items()->set_url("http://www.1.com/");
+  storage.set_last_committed_item_index(1);
+
+  std::unique_ptr<web::WebStateImpl> web_state =
+      CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
+  std::ignore = web_state->GetView();
+
+  NavigationManagerImpl& navigation_manager =
+      web_state->GetNavigationManagerImpl();
+
+  navigation_manager.RestoreFromProto(storage);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return navigation_manager.GetItemCount() == 2;
+  }));
+
+  NavigationItem* restored_item_0 = navigation_manager.GetItemAtIndex(0);
+  ASSERT_TRUE(restored_item_0);
+  EXPECT_FALSE(
+      web::GetWebClient()->IsAppSpecificURL(restored_item_0->GetURL()));
+  EXPECT_EQ(view_source_app_specific_url, restored_item_0->GetURL());
+}
+
 }  // namespace web

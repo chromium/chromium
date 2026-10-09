@@ -50,3 +50,11 @@ TEST_F(BrowserAboutRewriterTest, SyncTest) {
   EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, /*profile=*/nullptr));
   EXPECT_EQ(url, GURL("chrome://sync-internals/"));
 }
+
+// Test that view-source:about: URLs are not rewritten to view-source:chrome://
+// URLs.
+TEST_F(BrowserAboutRewriterTest, ViewSourceAboutTest) {
+  GURL url = GURL("view-source:about:flags");
+  EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, /*profile=*/nullptr));
+  EXPECT_EQ(url, GURL("view-source:about:flags"));
+}

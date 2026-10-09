@@ -36,6 +36,14 @@ constexpr std::array<HostReplacement, 2> kHostReplacements = {
 }  // namespace
 
 bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
+  // Only process `about:` and `chrome:` URLs. `FixupURL()` mutates `url`
+  // in-place (e.g. rewriting `view-source:about:flags` to
+  // `view-source:chrome://flags/`), and `BrowserURLRewriter` keeps in-place
+  // mutations even when a rewriter returns `false`.
+  if (!url->SchemeIs(url::kAboutScheme) && !url->SchemeIs(kChromeUIScheme)) {
+    return false;
+  }
+
   GURL original_url = *url;
 
   // Ensure that any cleanup done by FixupURL happens before the rewriting

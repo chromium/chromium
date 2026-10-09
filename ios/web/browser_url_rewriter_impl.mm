@@ -25,8 +25,14 @@ const char kViewSourceScheme[] = "view-source";
 static bool HandleViewSource(GURL* url, BrowserState* browser_state) {
   DCHECK(url);
   if (url->SchemeIs(kViewSourceScheme)) {
+    GURL inner_url(url->GetContent());
+    // Do not unwrap `view-source:` for app-specific URLs, as that would turn a
+    // non-app-specific `view-source:` URL into a privileged app-specific URL.
+    if (GetWebClient()->IsAppSpecificURL(inner_url)) {
+      return false;
+    }
     // Load the inner URL instead.
-    *url = GURL(url->GetContent());
+    *url = inner_url;
     return true;
   }
   return false;
