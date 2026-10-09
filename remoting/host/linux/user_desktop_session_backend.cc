@@ -5,7 +5,6 @@
 #include "remoting/host/linux/user_desktop_session_backend.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -13,13 +12,18 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/json/string_escape.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/logging.h"
@@ -29,12 +33,26 @@
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/linux/desktop_session_linux.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
+#include "remoting/host/linux/gdm_remote_user_desktop_session_creator.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "remoting/host/linux/session_routing_config.h"
+#include "remoting/host/linux/user_session_eligibility.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/pam_utils.h"
 
 namespace remoting {
+
+namespace {
+
+// How long to wait for a requested session to show up in logind. Session
+// creators may report success before the user is authenticated, and don't
+// report later failures (e.g. PAM rejecting the login), so a timeout is the
+// only way to detect them. The D-Bus call timeout in
+// GdmRemoteUserDesktopSessionCreator is longer than this.
+constexpr base::TimeDelta kSessionCreationTimeout = base::Seconds(30);
+
+}  // namespace
 
 // static
 const LoginSessionManager::SessionInfo*
@@ -75,6 +93,55 @@ UserDesktopSessionBackend::SelectBestGraphicalSession(
   }
 
   return best_session;
+}
+
+// static
+base::expected<void, Loggable>
+UserDesktopSessionBackend::CheckCreateRemoteSessionUserInfo(
+    std::string_view requested_username,
+    const PasswdUserInfo& user_info,
+    base::span<const base::FilePath> valid_shells) {
+  // Require the canonical name, so that the session creator and logind refer to
+  // the same user that the routing config resolved to.
+  if (user_info.username != requested_username) {
+    return base::unexpected(Loggable(
+        FROM_HERE, "Username " + base::GetQuotedJSONString(requested_username) +
+                       " does not match the canonical passwd name " +
+                       base::GetQuotedJSONString(user_info.username) + "."));
+  }
+  if (!IsUidAllowedForDesktopSession(user_info.uid, /*is_greeter=*/false)) {
+    return base::unexpected(
+        Loggable(FROM_HERE, "UID " + base::NumberToString(user_info.uid) +
+                                " is not allowed to have a desktop session."));
+  }
+  if (!IsValidLoginShell(user_info.shell, valid_shells)) {
+    return base::unexpected(Loggable(
+        FROM_HERE,
+        "Login shell " + base::GetQuotedJSONString(user_info.shell.value()) +
+            " is not listed in /etc/shells or doesn't allow logins."));
+  }
+  return base::ok();
+}
+
+// static
+base::expected<void, Loggable>
+UserDesktopSessionBackend::CheckCreateRemoteSessionEligibility(
+    const std::string& username) {
+  auto user_info = GetPasswdUserInfo(username);
+  if (!user_info.has_value()) {
+    return std::move(user_info.error())
+        .UnexpectedWithContext(FROM_HERE, "While looking up the passwd entry");
+  }
+  auto result = CheckCreateRemoteSessionUserInfo(username, *user_info,
+                                                 GetValidLoginShells());
+  if (!result.has_value()) {
+    return result;
+  }
+  if (!IsLocalLoginAllowed(username)) {
+    return base::unexpected(
+        Loggable(FROM_HERE, "PAM does not allow the user to log in."));
+  }
+  return base::ok();
 }
 
 UserDesktopSessionBackend::UserDesktopSessionBackend(
@@ -122,10 +189,7 @@ std::unique_ptr<DesktopSession> UserDesktopSessionBackend::CreateDesktopSession(
       ActiveSessionEntry{*resolved_user, desktop_session->GetWeakPtr()};
 
   if (login_session_manager_) {
-    login_session_manager_->ListUserSessions(
-        *resolved_user,
-        base::BindOnce(&UserDesktopSessionBackend::OnListUserSessionsResult,
-                       weak_ptr_factory_.GetWeakPtr(), id, *resolved_user));
+    ListUserSessions(id);
   }
 
   return desktop_session;
@@ -210,24 +274,44 @@ void UserDesktopSessionBackend::OnCreateDbusConnectionResult(
       login_session_manager_->SubscribeSessionRemoved(
           base::BindRepeating(&UserDesktopSessionBackend::OnSessionRemoved,
                               weak_ptr_factory_.GetWeakPtr()));
+  if (routing_config_.create_remote_user_sessions()) {
+    // GDM is currently the only supported way to create remote user sessions.
+    // If others are added (e.g. a future XDG API), select one here and fall
+    // back to GDM.
+    session_creator_ =
+        std::make_unique<GdmRemoteUserDesktopSessionCreator>(connection_);
+    session_new_subscription_ = login_session_manager_->SubscribeSessionNew(
+        base::BindRepeating(&UserDesktopSessionBackend::OnSessionNew,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // Start session discovery for any desktop sessions created while the system
   // D-Bus connection was still being initialized.
   for (const auto& [id, entry] : desktop_sessions_) {
     if (entry.desktop_session) {
-      login_session_manager_->ListUserSessions(
-          entry.username,
-          base::BindOnce(&UserDesktopSessionBackend::OnListUserSessionsResult,
-                         weak_ptr_factory_.GetWeakPtr(), id, entry.username));
+      ListUserSessions(id);
     }
   }
 
   std::move(callback).Run(base::ok());
 }
 
+void UserDesktopSessionBackend::ListUserSessions(int terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = desktop_sessions_.find(terminal_id);
+  if (it == desktop_sessions_.end()) {
+    return;
+  }
+  DCHECK(login_session_manager_);
+  login_session_manager_->ListUserSessions(
+      it->second.username,
+      base::BindOnce(&UserDesktopSessionBackend::OnListUserSessionsResult,
+                     weak_ptr_factory_.GetWeakPtr(), terminal_id));
+}
+
 void UserDesktopSessionBackend::OnListUserSessionsResult(
     int terminal_id,
-    std::string username,
     base::expected<std::vector<LoginSessionManager::SessionInfo>, Loggable>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -236,11 +320,19 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
   if (it == desktop_sessions_.end() || !it->second.desktop_session) {
     return;
   }
-  auto desktop_session = it->second.desktop_session;
+  ActiveSessionEntry& entry = it->second;
+  auto desktop_session = entry.desktop_session;
+  if (!desktop_session->current_session_id().empty()) {
+    // Already attached to a session, e.g. because a lookup triggered by an
+    // earlier `SessionNew` signal attached first.
+    // Calling SetSessionInfo() again would relaunch the desktop process.
+    return;
+  }
 
   if (!result.has_value()) {
-    LOG(ERROR) << "Failed to list sessions for user " << username << ": "
+    LOG(ERROR) << "Failed to list sessions for user " << entry.username << ": "
                << result.error();
+    // This erases `entry` synchronously, which also stops `creation_timeout`.
     desktop_session->TerminateSession(
         ErrorCode::INVALID_STATE, "Failed to query systemd-logind sessions.",
         FROM_HERE);
@@ -249,16 +341,21 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
 
   const auto* best_session = SelectBestGraphicalSession(*result);
   if (!best_session) {
-    if (routing_config_.create_remote_user_sessions()) {
-      LOG(WARNING) << "No graphical user session found for " << username
-                   << "; createRemoteUserSessions is not yet implemented.";
+    if (entry.creation_timeout) {
+      // Still waiting for the requested session to show up.
+      return;
     }
-    LOG(ERROR) << "No graphical user session found for " << username;
+    if (routing_config_.create_remote_user_sessions()) {
+      CreateRemoteUserSession(terminal_id);
+      return;
+    }
+    LOG(ERROR) << "No graphical user session found for " << entry.username;
     desktop_session->TerminateSession(
         ErrorCode::SESSION_REJECTED,
         "No graphical user session found for user.", FROM_HERE);
     return;
   }
+  entry.creation_timeout.reset();
 
   auto user_info = GetPasswdUserInfo(best_session->username);
   if (!user_info.has_value()) {
@@ -284,8 +381,111 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
            << " (type=" << best_session->session_type
            << ", state=" << best_session->state
            << ", service=" << best_session->service << ") for user "
-           << username;
+           << entry.username;
   desktop_session->SetSessionInfo(*best_session, *user_info);
+}
+
+void UserDesktopSessionBackend::CreateRemoteUserSession(int terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = desktop_sessions_.find(terminal_id);
+  if (it == desktop_sessions_.end() || !it->second.desktop_session) {
+    return;
+  }
+  ActiveSessionEntry& entry = it->second;
+  HOST_LOG << "No graphical session found for user " << entry.username << ".";
+
+  // The session is created without interactive authentication, so make sure
+  // that the user is allowed to log in first.
+  // DesktopSessionLinux::SetSessionInfo() checks the UID and PAM account again
+  // after the session is created.
+  auto eligibility = CheckCreateRemoteSessionEligibility(entry.username);
+  if (!eligibility.has_value()) {
+    LOG(ERROR) << "Not creating a remote session for user " << entry.username
+               << ": " << eligibility.error();
+    entry.desktop_session->TerminateSession(
+        ErrorCode::SESSION_REJECTED,
+        "User is not allowed to have a remote session created.", FROM_HERE);
+    return;
+  }
+
+  entry.creation_timeout = std::make_unique<base::OneShotTimer>();
+  entry.creation_timeout->Start(
+      FROM_HERE, kSessionCreationTimeout,
+      base::BindOnce(&UserDesktopSessionBackend::OnSessionCreationTimeout,
+                     weak_ptr_factory_.GetWeakPtr(), terminal_id));
+  DCHECK(session_creator_);
+  session_creator_->CreateSession(
+      entry.username,
+      base::BindOnce(&UserDesktopSessionBackend::OnCreateSessionResult,
+                     weak_ptr_factory_.GetWeakPtr(), terminal_id));
+}
+
+void UserDesktopSessionBackend::OnCreateSessionResult(
+    int terminal_id,
+    base::expected<void, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ActiveSessionEntry* entry = GetEntryPendingCreation(terminal_id);
+  if (!entry) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to create a remote session for user "
+               << entry->username << ": " << result.error();
+    // This erases `entry` synchronously, which also stops `creation_timeout`.
+    entry->desktop_session->TerminateSession(
+        ErrorCode::SESSION_REJECTED, "Failed to create remote user session.",
+        FROM_HERE);
+    return;
+  }
+
+  // Nothing to do on success. The requested session is attached when its
+  // `SessionNew` signal arrives, or the connection times out.
+}
+
+void UserDesktopSessionBackend::OnSessionCreationTimeout(int terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ActiveSessionEntry* entry = GetEntryPendingCreation(terminal_id);
+  if (!entry) {
+    return;
+  }
+
+  LOG(ERROR) << "Timed out waiting for the remote session for user "
+             << entry->username << " to start.";
+  // This erases `entry` synchronously, including `creation_timeout`.
+  entry->desktop_session->TerminateSession(
+      ErrorCode::INVALID_STATE,
+      "Timed out waiting for the remote user session to start.", FROM_HERE);
+}
+
+void UserDesktopSessionBackend::OnSessionNew(
+    std::string /*session_id*/,
+    gvariant::ObjectPath /*object_path*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The signal doesn't say which user the session belongs to, so look up the
+  // sessions of every connection waiting for a requested session. There are
+  // rarely more than a few.
+  for (const auto& [id, entry] : desktop_sessions_) {
+    if (entry.desktop_session && entry.creation_timeout) {
+      ListUserSessions(id);
+    }
+  }
+}
+
+UserDesktopSessionBackend::ActiveSessionEntry*
+UserDesktopSessionBackend::GetEntryPendingCreation(int terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = desktop_sessions_.find(terminal_id);
+  if (it == desktop_sessions_.end() || !it->second.desktop_session ||
+      !it->second.creation_timeout) {
+    return nullptr;
+  }
+  return &it->second;
 }
 
 void UserDesktopSessionBackend::OnSessionRemoved(

@@ -4,11 +4,20 @@
 
 #include "remoting/host/linux/user_desktop_session_backend.h"
 
+#include <sys/types.h>
+
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/types/expected.h"
+#include "remoting/base/loggable.h"
+#include "remoting/base/passwd_utils.h"
 #include "remoting/host/linux/login_session_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -33,6 +42,23 @@ LoginSessionManager::SessionInfo CreateSession(const std::string& session_id,
   return info;
 }
 
+PasswdUserInfo CreateUserInfo(const std::string& username,
+                              uid_t uid,
+                              const std::string& shell) {
+  PasswdUserInfo info;
+  info.username = username;
+  info.uid = uid;
+  info.gid = uid;
+  info.home_dir = base::FilePath("/home").Append(username);
+  info.shell = base::FilePath(shell);
+  return info;
+}
+
+std::vector<base::FilePath> GetTestValidShells() {
+  return {base::FilePath("/bin/bash"), base::FilePath("/usr/bin/zsh"),
+          base::FilePath("/usr/sbin/nologin")};
+}
+
 }  // namespace
 
 class UserDesktopSessionBackendTest : public testing::Test {
@@ -40,6 +66,15 @@ class UserDesktopSessionBackendTest : public testing::Test {
   const LoginSessionManager::SessionInfo* SelectBestGraphicalSession(
       base::span<const LoginSessionManager::SessionInfo> sessions) {
     return UserDesktopSessionBackend::SelectBestGraphicalSession(sessions);
+  }
+
+  base::expected<void, std::string> CheckCreateRemoteSessionUserInfo(
+      std::string_view requested_username,
+      const PasswdUserInfo& user_info) {
+    return UserDesktopSessionBackend::CheckCreateRemoteSessionUserInfo(
+               requested_username, user_info, GetTestValidShells())
+        .transform_error(
+            [](const Loggable& error) { return error.ToString(); });
   }
 };
 
@@ -134,6 +169,56 @@ TEST_F(UserDesktopSessionBackendTest, PicksFirstMatchInSamePriorityTier) {
   const auto* best = SelectBestGraphicalSession(sessions);
   ASSERT_NE(best, nullptr);
   EXPECT_EQ(best->session_id, "first_active");
+}
+
+TEST_F(UserDesktopSessionBackendTest, CreateRemoteSessionAllowsRegularUser) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "alice", CreateUserInfo("alice", 1000, "/bin/bash")),
+              base::test::HasValue());
+}
+
+TEST_F(UserDesktopSessionBackendTest,
+       CreateRemoteSessionRejectsNonCanonicalUsername) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "Alice", CreateUserInfo("alice", 1000, "/bin/bash")),
+              base::test::ErrorIs(testing::HasSubstr("canonical passwd name")));
+}
+
+TEST_F(UserDesktopSessionBackendTest, CreateRemoteSessionRejectsRoot) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "root", CreateUserInfo("root", 0, "/bin/bash")),
+              base::test::ErrorIs(testing::HasSubstr("UID 0")));
+}
+
+TEST_F(UserDesktopSessionBackendTest, CreateRemoteSessionRejectsSystemUser) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "daemon", CreateUserInfo("daemon", 999, "/bin/bash")),
+              base::test::ErrorIs(testing::HasSubstr("UID 999")));
+}
+
+TEST_F(UserDesktopSessionBackendTest, CreateRemoteSessionRejectsNobody) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "nobody", CreateUserInfo("nobody", 65534, "/bin/bash")),
+              base::test::ErrorIs(testing::HasSubstr("UID 65534")));
+}
+
+TEST_F(UserDesktopSessionBackendTest, CreateRemoteSessionRejectsUnlistedShell) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "alice", CreateUserInfo("alice", 1000, "/bin/fish")),
+              base::test::ErrorIs(testing::HasSubstr("Login shell")));
+}
+
+TEST_F(UserDesktopSessionBackendTest, CreateRemoteSessionRejectsEmptyShell) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "alice", CreateUserInfo("alice", 1000, "")),
+              base::test::ErrorIs(testing::HasSubstr("Login shell")));
+}
+
+TEST_F(UserDesktopSessionBackendTest,
+       CreateRemoteSessionRejectsListedNologinShell) {
+  EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
+                  "alice", CreateUserInfo("alice", 1000, "/usr/sbin/nologin")),
+              base::test::ErrorIs(testing::HasSubstr("Login shell")));
 }
 
 }  // namespace remoting
