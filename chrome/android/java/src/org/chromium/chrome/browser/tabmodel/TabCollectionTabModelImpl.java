@@ -1610,7 +1610,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         mTabIdToTabs.put(tab.getId(), tab);
         mTabCountSupplier.set(getCount());
 
-        if (tabGroupId != null && getTabsInGroup(tabGroupId).size() == 1) {
+        if (tabGroupId != null && getTabCountForGroup(tabGroupId) == 1) {
             setLastShownTabForGroup(tabGroupId, tab);
         }
 

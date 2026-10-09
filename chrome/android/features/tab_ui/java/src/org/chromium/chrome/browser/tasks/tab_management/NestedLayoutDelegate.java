@@ -387,7 +387,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
         if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        int childCount = tabModel.getTabsInGroup(tabGroupId).size();
+        int childCount = tabModel.getTabCountForGroup(tabGroupId);
 
         for (int i = 0; i < childCount; i++) {
             if (headerIndex + 1 < mModelList.size()) {

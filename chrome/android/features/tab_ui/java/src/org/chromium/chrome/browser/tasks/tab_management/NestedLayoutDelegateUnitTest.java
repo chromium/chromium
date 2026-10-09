@@ -501,7 +501,7 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(3, mModelList.size());
 
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
 
         mDelegate.didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
 
@@ -519,7 +519,7 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(3, mModelList.size());
 
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
 
         mDelegate.didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
         assertEquals(1, mModelList.size());

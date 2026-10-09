@@ -179,6 +179,21 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return result;
                         });
 
+        when(mTabCollectionTabModelImplJni.getTabCountForGroup(
+                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any()))
+                .thenAnswer(
+                        invocation -> {
+                            Token groupId = invocation.getArgument(1);
+                            if (groupId == null) return 0;
+                            int count = 0;
+                            for (Tab t : mTabs) {
+                                if (groupId.equals(t.getTabGroupId())) {
+                                    count++;
+                                }
+                            }
+                            return count;
+                        });
+
         when(mTabCollectionTabModelImplJni.moveTabGroupTo(
                         eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any(), anyInt()))
                 .thenAnswer(

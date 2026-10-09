@@ -528,7 +528,7 @@ public class TabGridDialogMediator
                                 && !Objects.equals(
                                         mModel.get(TabGridDialogProperties.HEADER_TITLE),
                                         newTitle)) {
-                            int tabsCount = getTabsInGroup(mCurrentTabGroupId).size();
+                            int tabsCount = getTabCountForGroup(mCurrentTabGroupId);
                             updateTitle(tabsCount);
                         }
                     }
@@ -821,7 +821,7 @@ public class TabGridDialogMediator
     }
 
     private void updateDialog() {
-        final int tabCount = getTabsInGroup(mCurrentTabGroupId).size();
+        final int tabCount = getTabCountForGroup(mCurrentTabGroupId);
         if (tabCount == 0) {
             hideDialog(true);
             return;
@@ -1221,7 +1221,7 @@ public class TabGridDialogMediator
         } else {
             removeCollaborationActivityMessageCard();
         }
-        int tabCount = getTabsInGroup(mCurrentTabGroupId).size();
+        int tabCount = getTabCountForGroup(mCurrentTabGroupId);
         updateUngroupBarText(tabCount);
     }
 
@@ -1269,6 +1269,10 @@ public class TabGridDialogMediator
         return assumeNonNull(mCurrentTabModelSupplier.get()).getTabsInGroup(tabGroupId);
     }
 
+    private int getTabCountForGroup(@Nullable Token tabGroupId) {
+        return assumeNonNull(mCurrentTabModelSupplier.get()).getTabCountForGroup(tabGroupId);
+    }
+
     private void saveCurrentGroupModifiedTitle() {
         if (mCurrentGroupModifiedTitle == null) return;
 
@@ -1277,7 +1281,7 @@ public class TabGridDialogMediator
         if (!tabModel.containsTabGroup(mCurrentTabGroupId)) return;
         assumeNonNull(mCurrentTabGroupId);
 
-        int tabsCount = getTabsInGroup(mCurrentTabGroupId).size();
+        int tabsCount = getTabCountForGroup(mCurrentTabGroupId);
         if (isTitleUnset(mCurrentGroupModifiedTitle)
                 || TabGroupTitleUtils.isDefaultTitle(
                         mActivity, mCurrentGroupModifiedTitle, tabsCount)) {

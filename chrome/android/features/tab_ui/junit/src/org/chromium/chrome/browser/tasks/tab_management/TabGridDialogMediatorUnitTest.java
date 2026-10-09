@@ -285,16 +285,13 @@ public class TabGridDialogMediatorUnitTest {
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
-        List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
-        List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
 
         mCurrentTabModelSupplier.set(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs2);
+        mockTabsInGroup(TAB_GROUP_ID, new ArrayList<>(Arrays.asList(mTab2)));
         when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
         when(mTabModel.index()).thenReturn(POSITION1);
         when(mTabModel.getCount()).thenReturn(2);
@@ -739,10 +736,7 @@ public class TabGridDialogMediatorUnitTest {
     public void tabClosure_NotLast_NotCurrent() {
         createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB_GROUP_ID);
         // Mock that tab1 and tab2 are in the same group, but tab2 just gets closed.
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID))
-                .thenReturn(new ArrayList<>(Arrays.asList(mTab1)));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID))
-                .thenReturn(new ArrayList<>(Arrays.asList(mTab1)));
+        mockTabsInGroup(TAB_GROUP_ID, new ArrayList<>(Arrays.asList(mTab1)));
         // Mock tab1 is the current tab for the dialog.
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
         // Mock dialog title is null and the dialog is showing.
@@ -759,8 +753,7 @@ public class TabGridDialogMediatorUnitTest {
     public void tabClosure_NotLast_Current() {
         // Mock that tab1 and tab2 are in the same group, but tab2 just gets closed.
         createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID))
-                .thenReturn(new ArrayList<>(Arrays.asList(mTab1)));
+        mockTabsInGroup(TAB_GROUP_ID, new ArrayList<>(Arrays.asList(mTab1)));
 
         // Mock tab2 is the current tab for the dialog.
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
@@ -777,7 +770,7 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void tabClosure_Last_Current() {
         // Mock that tab1 is the last tab in the group and it just gets closed.
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(new ArrayList<>());
+        mockTabsInGroup(TAB_GROUP_ID, new ArrayList<>());
         // As last tab in the group, tab1 is definitely the current tab for the dialog.
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
@@ -808,8 +801,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Mock that newTab just get closed.
         List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterClosure);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterClosure);
+        mockTabsInGroup(TAB_GROUP_ID, tabGroupAfterClosure);
 
         // Mock that newTab is the current tab for the dialog.
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
@@ -834,8 +826,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Mock that newTab just get closed.
         List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterClosure);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterClosure);
+        mockTabsInGroup(TAB_GROUP_ID, tabGroupAfterClosure);
 
         // Mock that newTab is the current tab for the dialog.
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
@@ -859,7 +850,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Mock that tab2 just get closed.
         List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterClosure);
+        mockTabsInGroup(TAB_GROUP_ID, tabGroupAfterClosure);
 
         // Mock that tab2 is the current tab for the dialog.
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
@@ -1240,7 +1231,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
 
         // Mock that the last tab in the group is closed.
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(new ArrayList<>());
+        mockTabsInGroup(TAB_GROUP_ID, new ArrayList<>());
 
         // Mock that we have a modified group title before dialog is hidden.
         TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
@@ -1783,7 +1774,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Mock that mTab2 is the current tab for the dialog.
         mCurrentTabSupplier.set(mTab2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroup);
+        mockTabsInGroup(TAB_GROUP_ID, tabGroup);
 
         // Reset and confirm scroll index.
         assertTrue(mMediator.onReset(tabGroup));
@@ -1805,7 +1796,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Mock that tab1 is the only tab that remains in the group.
         List<Tab> tabGroupAfterUngroup = new ArrayList<>(Arrays.asList(mTab1));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterUngroup);
+        mockTabsInGroup(TAB_GROUP_ID, tabGroupAfterUngroup);
 
         assertTrue(mMediator.onReset(tabGroupAfterUngroup));
         // Check that the text indicates that this is the last tab in the group.
@@ -1829,7 +1820,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Mock that tab1 is the only tab that remains in the group.
         List<Tab> tabGroupAfterUngroup = new ArrayList<>(Arrays.asList(mTab1));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroupAfterUngroup);
+        mockTabsInGroup(TAB_GROUP_ID, tabGroupAfterUngroup);
 
         assertTrue(mMediator.onReset(tabGroupAfterUngroup));
         // Check that the text indicates that this is the last tab in the group.
@@ -1877,7 +1868,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Simulate moving mTab2 out of group so group now only has mTab1.
         List<Tab> remainingTabs = new ArrayList<>(Arrays.asList(mTab1));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(remainingTabs);
+        mockTabsInGroup(TAB_GROUP_ID, remainingTabs);
 
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
@@ -1894,7 +1885,7 @@ public class TabGridDialogMediatorUnitTest {
         assertTrue(mMediator.onReset(tabGroup));
 
         // Simulate moving the last tab out of the group.
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+        mockTabsInGroup(TAB_GROUP_ID, List.of());
 
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
@@ -1926,7 +1917,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Merge mTab2 into the current group.
         List<Tab> mergedTabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mergedTabs);
+        mockTabsInGroup(TAB_GROUP_ID, mergedTabs);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
@@ -2298,9 +2289,14 @@ public class TabGridDialogMediatorUnitTest {
         return tab;
     }
 
+    private void mockTabsInGroup(Token tabGroupId, List<Tab> tabs) {
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+        when(mTabModel.getTabCountForGroup(tabGroupId)).thenAnswer(inv -> tabs.size());
+    }
+
     private void createTabGroup(List<Tab> tabs, Token tabGroupId) {
         when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+        mockTabsInGroup(tabGroupId, tabs);
         for (Tab tab : tabs) {
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
