@@ -107,7 +107,6 @@ class Generator(generator.Generator):
       "format_unique_name": self._FormatUniqueName,
       "fully_qualified_name": self._FullyQualifiedName,
       "is_array_kind": mojom.IsArrayKind,
-      "is_passed_as_pending": self._IsPassedAsPending,
       "is_synchronous_method": self._IsSynchronousMethod,
       "namespace_as_array": self._NamespaceAsArray,
       "to_camel": generator.ToCamel,
@@ -210,6 +209,10 @@ class Generator(generator.Generator):
       interface = kind
     name = self._FormatUniqueName(interface)
 
+    # TODO(crbug.com/570073119): Separately track which interfaces are only
+    # ever sent from the browser to avoid emitting unnecessary types (e.g.,
+    # currently emits unused *PendingReceiver when getting a pending_remote
+    # from the browser).
     if self._IsPendingAssociatedKind(kind):
       self.associated_interfaces.add(name)
     elif is_pending_remote or is_pending_receiver:
@@ -334,11 +337,23 @@ class Generator(generator.Generator):
     if mojom.IsInterfaceKind(kind):
       return f"js{self._FormatUniqueName(kind)}Remote"
 
+    # When JS implements the interface (i.e., it is a receiver), JS only passes
+    # remotes to the browser, so they are typed after their Mojom kind
+    # (`PendingRemote` / `PendingAssociatedRemote`). Remotes that JS calls into
+    # keep the `Remote` type, which carries the interface's methods.
     if self._IsAnyPendingRemoteKind(kind):
-      return f"js{self._FormatUniqueName(kind.kind)}Remote"
+      name = self._FormatUniqueName(kind.kind)
+      if name not in self.interface_receivers:
+        return f"js{name}Remote"
+      if mojom.IsPendingAssociatedRemoteKind(kind):
+        return f"js{name}PendingAssociatedRemote"
+      return f"js{name}PendingRemote"
 
-    if self._IsAnyPendingReceiverKind(kind):
+    if mojom.IsPendingReceiverKind(kind):
       return f"js{self._FormatUniqueName(kind.kind)}PendingReceiver"
+
+    if mojom.IsPendingAssociatedReceiverKind(kind):
+      return f"js{self._FormatUniqueName(kind.kind)}PendingAssociatedReceiver"
 
     assert False, f"Unsupported type: {kind}."
 
@@ -381,12 +396,6 @@ class Generator(generator.Generator):
     return mojom.IsPendingAssociatedRemoteKind(
       kind
     ) or mojom.IsPendingAssociatedReceiverKind(kind)
-
-  # Whether `interface` is ever passed as a pending kind.
-  def _IsPassedAsPending(self, interface):
-    return self._UsesAssociatedEndpoints(
-      interface
-    ) or self._UsesNonAssociatedEndpoints(interface)
 
   def _UsesAssociatedEndpoints(self, interface):
     return self._FormatUniqueName(interface) in self.associated_interfaces

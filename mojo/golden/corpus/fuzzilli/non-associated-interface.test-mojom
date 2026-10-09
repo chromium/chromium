@@ -12,6 +12,11 @@ interface Primary {
   // `Mixed` is passed both as a non-associated and as an associated remote.
   SendMixed(pending_remote<Mixed> remote,
             pending_associated_remote<Mixed> associated_remote);
+
+  // TODO(crbug.com/522372048): Update to use Mixed interface once an
+  // interface can be both a remote and a receiver.
+  GetOtherMixed() => (pending_remote<OtherMixed> remote,
+                      pending_associated_remote<OtherMixed> associated_remote);
 };
 
 interface Observer {
@@ -30,4 +35,7 @@ interface Client {
 };
 
 interface Mixed {
+};
+
+interface OtherMixed {
 };

@@ -46,8 +46,8 @@ extension ILType {
           "closeBindings",
           "associateAndPassRemote",
         ])
-    fileprivate static let jsGoldenObserverRemote: ILType = .object(
-        ofGroup: "golden.ObserverRemote",
+    fileprivate static let jsGoldenObserverPendingAssociatedRemote: ILType = .object(
+        ofGroup: "golden.ObserverPendingAssociatedRemote",
         withProperties: ["$"])
     fileprivate static let jsGoldenObserverRemoteWrapper: ILType = .object(
         ofGroup: "golden.ObserverRemoteWrapper",
@@ -56,8 +56,8 @@ extension ILType {
           "isBound",
           "associateAndPassReceiver",
         ])
-    fileprivate static let jsGoldenObserverPendingReceiver: ILType = .object(
-        ofGroup: "golden.ObserverPendingReceiver")
+    fileprivate static let jsGoldenObserverPendingAssociatedReceiver: ILType = .object(
+        ofGroup: "golden.ObserverPendingAssociatedReceiver")
     fileprivate static let jsGoldenObserverSendDelegateCallbackReceiver: ILType = .object(
         ofGroup: "GoldenObserverSendDelegateCallbackReceiver",
         withMethods: ["addListener"])
@@ -82,7 +82,7 @@ extension ObjectGroup {
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMapValue_ResponseParams),
             "sendObserver": [
-                .either(.jsGoldenObserverRemote, .undefined),
+                .either(.jsGoldenObserverPendingAssociatedRemote, .undefined),
             ] => .undefined,
             "syncGetArrayValue": [
                 .plain(.jsFloatMojoArray),
@@ -121,7 +121,7 @@ extension ObjectGroup {
         properties: [:],
         methods: [
             "closeBindings": [] => .undefined,
-            "associateAndPassRemote": [] => .jsGoldenObserverRemote,
+            "associateAndPassRemote": [] => .jsGoldenObserverPendingAssociatedRemote,
         ])
 
     fileprivate static let goldenObserverSendDelegateCallbackReceiver = ObjectGroup(
@@ -139,9 +139,9 @@ extension ObjectGroup {
             ] => .integer,
         ])
 
-    fileprivate static let goldenObserverRemote = ObjectGroup(
-        name: "golden.ObserverRemote",
-        instanceType: .jsGoldenObserverRemote,
+    fileprivate static let goldenObserverPendingAssociatedRemote = ObjectGroup(
+        name: "golden.ObserverPendingAssociatedRemote",
+        instanceType: .jsGoldenObserverPendingAssociatedRemote,
         properties: ["$": .jsGoldenObserverRemoteWrapper],
         methods: [:]
     )
@@ -153,12 +153,12 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsGoldenObserverPendingReceiver,
+            "associateAndPassReceiver": [] => .jsGoldenObserverPendingAssociatedReceiver,
         ])
 
-    fileprivate static let goldenObserverPendingReceiver = ObjectGroup(
-        name: "golden.ObserverPendingReceiver",
-        instanceType: .jsGoldenObserverPendingReceiver,
+    fileprivate static let goldenObserverPendingAssociatedReceiver = ObjectGroup(
+        name: "golden.ObserverPendingAssociatedReceiver",
+        instanceType: .jsGoldenObserverPendingAssociatedReceiver,
         properties: [:],
         methods: [:]
     )

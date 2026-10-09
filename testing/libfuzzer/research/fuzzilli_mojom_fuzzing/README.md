@@ -105,7 +105,7 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
 | Primary interface methods | ✅ | |
 | `pending_associated_remote<T>` / `pending_associated_receiver<T>` | ✅ | Emitted helpers use `associateAndPassRemote` / `associateAndPassReceiver`. |
 | `pending_remote<T>` / `pending_receiver<T>` (non-associated) | ✅ | Emitted helpers use `bindNewPipeAndPassRemote` / `bindNewPipeAndPassReceiver`. |
-| Interfaces used both as associated and non-associated | ✅ | Both sets of helpers return the same type, so Fuzzilli may pass them in incorrectly. |
+| Interfaces used both as associated and non-associated | ✅ | Associated and non-associated endpoints have distinct types. |
 | An interface used both as a remote and as a receiver | ❌ | Only the first role seen is emitted. |
 | Async methods | ✅ | |
 | `[Sync]` methods | ✅ | |
