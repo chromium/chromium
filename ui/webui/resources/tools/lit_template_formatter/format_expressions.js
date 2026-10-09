@@ -40,21 +40,21 @@ const ExpressionConfig = {
     columnLimitAdjustment: -3,
   },
   [ExpressionType.TERNARY]: {
-    unwrap: (code) => code.substring(2),
+    unwrap: (code) => code.substring(2).replace(/html\s*`$/, 'html`'),
     wrap: (code) => code + '` : \'\'',
     restore: (formatted) => formatted.replace(/\s*`\s*:\s*['"]['"]\s*$/, ''),
     prependToFinal: '${',
     columnLimitAdjustment: -2,
   },
   [ExpressionType.ARROW]: {
-    unwrap: (code) => code.substring(2),
+    unwrap: (code) => code.substring(2).replace(/html\s*`$/, 'html`'),
     wrap: (code) => code + '`)',
     restore: (formatted) => formatted.replace(/\s*`\s*\)\s*$/, ''),
     prependToFinal: '${',
     columnLimitAdjustment: -2,
   },
   [ExpressionType.TERNARY_FALSE]: {
-    unwrap: (code) => code,
+    unwrap: (code) => code.replace(/html\s*`$/, 'html`'),
     wrap: (code) => 'true ? null' + code + '`',
     restore: (formatted) => {
       let res = formatted.replace(/^\s*true\s*\?\s*null/, '');
@@ -90,7 +90,7 @@ function computeColumnLimit(value, type) {
  * @param {string} filePath Path to the file being formatted.
  */
 export async function formatTsExpressions(
-    placeholderMap, clangFormatPath, _filePath) {
+    placeholderMap, clangFormatPath, filePath) {
   for (const [key, value] of placeholderMap.entries()) {
     if (key.startsWith('/') || key.startsWith(PROP_PREFIX) ||
         key.startsWith(FORMAT_OFF_PREFIX) || value.nested || value.formatOff ||
@@ -109,10 +109,16 @@ export async function formatTsExpressions(
     } else if (code.startsWith('${') && code.endsWith('}')) {
       type = ExpressionType.EXPRESSION;
     } else if (code.startsWith('${')) {
-      if (/\?\s*html`$/.test(code)) {
+      if (/\?\s*html\s*`$/.test(code)) {
         type = ExpressionType.TERNARY;
       } else {
-        assert.ok(/=>\s*html`$/.test(code));
+        assert.ok(
+            /=>\s*html\s*`$/.test(code),
+            `Error formatting ${filePath}: Unsupported nested html\`...\` ` +
+                `expression:\n  ${code.trim()}\n` +
+                'Nested html`...` templates are only supported in ternary ' +
+                'branches (`cond ? html`...` : html`...``) and concise ' +
+                'arrow functions (`(...) => html`...``).');
         type = ExpressionType.ARROW;
       }
     }

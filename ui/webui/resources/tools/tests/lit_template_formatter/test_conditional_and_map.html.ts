@@ -8,10 +8,10 @@ export function getHtml(this: DummyTestElement) {
   // clang-format off
   return html`
 <div class="value">
-  ${this.isTypeSelect_() ? html`
-    <div>
+  ${this.isTypeSelect_() ? html
+    `<div>
         <select class="md-select" @change="${this.onSelectChange_}">
-        ${this.items.map(item => html`
+        ${this.items.map(item => html `
           <option class="searchable" value="${item.value}"
             ?selected="${this.isSelected_(item)}">
              ${this.getName_(item)}

@@ -183,6 +183,21 @@ suite('lit_template_formatter', () => {
     assert.ok(
         !p2.code.includes(': \'\''),
         'Ternary expression should not contain the temporary else branch');
+
+    const invalidMap = new Map([
+      [
+        `${TEMPLATE_PREFIX}-1`,
+        {
+          code: '${this.items.map(item => {\n  return html`',
+          indent: 4,
+          isTemplate: true,
+        },
+      ],
+    ]);
+    await assert.rejects(
+        formatTsExpressions(
+            invalidMap, clangFormatPath, join(__dirname, 'dummy.ts')),
+        /Unsupported nested html`\.\.\.` expression:[\s\S]*return html`/);
   });
 
   test('serializeHtmlAst', () => {
