@@ -77,7 +77,7 @@ class InputStateModel {
       const contextual_search::ContextualSearchSessionHandle* session_handle);
 
   // Add a subscriber to this model.
-  base::CallbackListSubscription subscribe(Subscriber callback);
+  base::CallbackListSubscription Subscribe(Subscriber callback);
 
   // Initializes the model and notifies subscribers of the initial state.
   void Initialize();
@@ -93,10 +93,10 @@ class InputStateModel {
                         bool browser_identity_matches_aim_identity);
 
   // Set a new tool.
-  void setActiveTool(ToolMode tool);
+  void SetActiveTool(ToolMode tool);
 
   // Set a new model.
-  void setActiveModel(ModelMode model);
+  void SetActiveModel(ModelMode model);
   void UpdateStateFromUrl(const GURL& url);
 
   // Called when an input of type `InputType` is added or deleted.
@@ -158,13 +158,13 @@ class InputStateModel {
 
  private:
   // Notify all subscribers of the current `state_`.
-  void notifySubscribers();
+  void NotifySubscribers();
 
   // Update the current value of `state_` based on new tool or model.
-  void updateSelectedState(ToolMode tool, ModelMode model);
+  void UpdateSelectedState(ToolMode tool, ModelMode model);
 
   // Update the currently disabled tools, models, and inputs.
-  void updateDisabledState();
+  void UpdateDisabledState();
 
   //  Helper method to update `disabled_tools` based on `rule_set_`.
   void UpdateDisabledTools();

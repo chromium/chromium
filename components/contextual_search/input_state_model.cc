@@ -290,7 +290,7 @@ InputStateModel::InputStateModel(
 
   state_.image_gen_upload_active = false;
 
-  updateDisabledState();
+  UpdateDisabledState();
 }
 
 void InputStateModel::PopulateConfig(const SearchboxConfig& config) {
@@ -388,8 +388,8 @@ void InputStateModel::SetIdentityState(
       browser_identity_matches_aim_identity;
 
   RebuildAllowedInputTypes();
-  updateDisabledState();
-  notifySubscribers();
+  UpdateDisabledState();
+  NotifySubscribers();
 }
 
 bool InputStateModel::UpdateConfig(const SearchboxConfig& config) {
@@ -411,7 +411,7 @@ bool InputStateModel::UpdateConfig(const SearchboxConfig& config) {
     state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   }
 
-  updateDisabledState();
+  UpdateDisabledState();
   RebuildAllowedInputTypes();
 
   subscribers_.Notify(state_);
@@ -497,7 +497,7 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
 }
 
 void InputStateModel::Initialize() {
-  notifySubscribers();
+  NotifySubscribers();
 }
 
 void InputStateModel::SetSmartTabSharingActive(bool active) {
@@ -505,8 +505,8 @@ void InputStateModel::SetSmartTabSharingActive(bool active) {
     return;
   }
   is_smart_tab_sharing_active_ = active;
-  updateDisabledState();
-  notifySubscribers();
+  UpdateDisabledState();
+  NotifySubscribers();
 }
 
 std::vector<omnibox::InputType> InputStateModel::GetEffectiveInputTypes()
@@ -553,7 +553,7 @@ void InputStateModel::SetPrefService(PrefService* pref_service) {
                             base::Unretained(this)));
     OnPrefChanged();
   } else {
-    updateDisabledState();
+    UpdateDisabledState();
   }
 }
 
@@ -562,30 +562,30 @@ void InputStateModel::OnPrefChanged() {
     return;
   }
 
-  updateDisabledState();
-  notifySubscribers();
+  UpdateDisabledState();
+  NotifySubscribers();
 }
 
-base::CallbackListSubscription InputStateModel::subscribe(Subscriber callback) {
+base::CallbackListSubscription InputStateModel::Subscribe(Subscriber callback) {
   return subscribers_.Add(std::move(callback));
 }
 
-void InputStateModel::notifySubscribers() {
+void InputStateModel::NotifySubscribers() {
   subscribers_.Notify(state_);
 }
 
-void InputStateModel::setActiveTool(ToolMode tool) {
+void InputStateModel::SetActiveTool(ToolMode tool) {
   if (tool != state_.active_tool) {
     user_modified_tool_in_thread_ = true;
   }
   if (tool == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
     state_.is_canvas_query_submitted = false;
   }
-  updateSelectedState(tool, state_.active_model);
+  UpdateSelectedState(tool, state_.active_model);
 }
 
-void InputStateModel::setActiveModel(ModelMode model) {
-  updateSelectedState(state_.active_tool, model);
+void InputStateModel::SetActiveModel(ModelMode model) {
+  UpdateSelectedState(state_.active_tool, model);
 }
 
 void InputStateModel::UpdateStateFromUrl(const GURL& url) {
@@ -627,13 +627,13 @@ void InputStateModel::UpdateStateFromUrl(const GURL& url) {
 
   if (thread_changed || new_model != state_.active_model ||
       new_tool != state_.active_tool) {
-    updateSelectedState(new_tool, new_model);
+    UpdateSelectedState(new_tool, new_model);
   }
 }
 
 void InputStateModel::OnContextChanged() {
   // Update the disabled state based on the new inputs uploaded.
-  updateDisabledState();
+  UpdateDisabledState();
 
   if (state_.active_tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
     const auto current_inputs = GetCurrentInputTypes(session_handle_.get());
@@ -647,21 +647,21 @@ void InputStateModel::OnContextChanged() {
   }
 
   // Notify subscribers once `state_` is updated.
-  notifySubscribers();
+  NotifySubscribers();
 }
 
 void InputStateModel::SetPermanentlyDisabledTools(
     const std::vector<ToolMode>& tools) {
   permanently_disabled_tools_ = tools;
-  updateDisabledState();
-  notifySubscribers();
+  UpdateDisabledState();
+  NotifySubscribers();
 }
 
 void InputStateModel::SetPermanentlyDisabledInputTypes(
     const std::vector<InputType>& input_types) {
   permanently_disabled_input_types_ = input_types;
-  updateDisabledState();
-  notifySubscribers();
+  UpdateDisabledState();
+  NotifySubscribers();
 }
 
 void InputStateModel::TogglePermanentlyDisabledInputType(InputType input_type,
@@ -676,12 +676,12 @@ void InputStateModel::TogglePermanentlyDisabledInputType(InputType input_type,
     changed = std::erase(permanently_disabled_input_types_, input_type) > 0;
   }
   if (changed) {
-    updateDisabledState();
-    notifySubscribers();
+    UpdateDisabledState();
+    NotifySubscribers();
   }
 }
 
-void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
+void InputStateModel::UpdateSelectedState(ToolMode tool, ModelMode model) {
   state_.active_model = model;
   state_.image_gen_upload_active = false;
 
@@ -699,10 +699,10 @@ void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
 
   // Update the disabled state based on the active model, tool, and current
   // input types.
-  updateDisabledState();
+  UpdateDisabledState();
 
   // Notify subscribers once `state_` is updated.
-  notifySubscribers();
+  NotifySubscribers();
 }
 
 bool InputStateModel::IsDriveSupported() const {
@@ -906,7 +906,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
   }
 }
 
-void InputStateModel::updateDisabledState() {
+void InputStateModel::UpdateDisabledState() {
   RebuildAllowedInputTypes();
   UpdateDisabledTools();
   UpdateDisabledModels();
@@ -994,7 +994,7 @@ void InputStateModel::SetLensCrop(const std::string& data_uri) {
   // There is only ever one region crop; setting a crop replaces any existing
   // crop.
   lens_crop_ = LensCrop{data_uri};
-  notifySubscribers();
+  NotifySubscribers();
 }
 
 std::optional<std::string> InputStateModel::GetLensCrop() const {
@@ -1007,7 +1007,7 @@ std::optional<std::string> InputStateModel::GetLensCrop() const {
 void InputStateModel::RemoveLensCrop() {
   if (lens_crop_.has_value()) {
     lens_crop_.reset();
-    notifySubscribers();
+    NotifySubscribers();
   }
 }
 

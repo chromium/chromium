@@ -342,7 +342,7 @@ void ContextualTasksWebContentsUserData::SubscribeToInputStateModel(
     // Safe to use base::Unretained(this) because `input_state_subscription_` is
     // owned by `this` and unsubscribes on destruction.
     input_state_subscription_ =
-        subscribed_model_->subscribe(base::BindRepeating(
+        subscribed_model_->Subscribe(base::BindRepeating(
             &ContextualTasksWebContentsUserData::OnInputStateChanged,
             base::Unretained(this)));
   } else {

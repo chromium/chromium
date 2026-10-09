@@ -734,7 +734,7 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
     input_state_model_ = model;
     if (model) {
       input_state_subscription_ =
-          input_state_model_->subscribe(base::BindRepeating(
+          input_state_model_->Subscribe(base::BindRepeating(
               &ContextualTasksExtensionHandler::OnInputStateChanged,
               base::Unretained(this)));
     } else {

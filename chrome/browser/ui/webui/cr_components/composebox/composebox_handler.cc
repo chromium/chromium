@@ -265,7 +265,7 @@ void ComposeboxHandler::ClearFiles(bool should_block_auto_suggested_tabs) {
   if (GetInputState().active_tool ==
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
     if (auto* model = input_state_model()) {
-      model->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+      model->SetActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     }
   }
 }

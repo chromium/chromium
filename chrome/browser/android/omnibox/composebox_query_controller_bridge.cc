@@ -463,14 +463,14 @@ bool ComposeboxQueryControllerBridge::IsPdfUploadEligible() {
 void ComposeboxQueryControllerBridge::SetActiveTool(
     omnibox::ToolMode tool_mode) {
   if (input_state_model_) {
-    input_state_model_->setActiveTool(tool_mode);
+    input_state_model_->SetActiveTool(tool_mode);
   }
 }
 
 void ComposeboxQueryControllerBridge::SetActiveModel(
     omnibox::ModelMode model_mode) {
   if (input_state_model_) {
-    input_state_model_->setActiveModel(model_mode);
+    input_state_model_->SetActiveModel(model_mode);
   }
 }
 
@@ -713,7 +713,7 @@ void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
       *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
       GURL(), profile_ ? profile_->IsOffTheRecord() : false, is_signed_in,
       browser_identity_matches_aim_identity);
-  input_state_subscription_ = input_state_model_->subscribe(
+  input_state_subscription_ = input_state_model_->Subscribe(
       base::BindRepeating(&ComposeboxQueryControllerBridge::OnInputStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   input_state_model_->Initialize();

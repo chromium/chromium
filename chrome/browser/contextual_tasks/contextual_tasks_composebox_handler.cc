@@ -616,7 +616,7 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
       }
 
       input_state_subscription_ =
-          input_state_model_->subscribe(base::BindRepeating(
+          input_state_model_->Subscribe(base::BindRepeating(
               &ContextualTasksComposeboxHandler::OnInputStateChanged,
               weak_ptr_factory_.GetWeakPtr()));
 

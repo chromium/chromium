@@ -900,7 +900,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     return;
   }
   __weak __typeof(self) weakSelf = self;
-  _inputStateSubscription = _inputStateModel->subscribe(
+  _inputStateSubscription = _inputStateModel->Subscribe(
       base::BindRepeating(^(const contextual_search::InputState& inputState) {
         [weakSelf didUpdateInputState:inputState];
       }));
@@ -1160,7 +1160,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     return;
   }
 
-  _inputStateModel->setActiveModel(requestedModelMode);
+  _inputStateModel->SetActiveModel(requestedModelMode);
 
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
@@ -1185,7 +1185,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     recorder->RecordToolMode(activeTool);
   }
 
-  _inputStateModel->setActiveTool(activeTool);
+  _inputStateModel->SetActiveTool(activeTool);
 }
 
 #pragma mark - Eligibility & Availability

@@ -1042,7 +1042,7 @@ TEST_F(ContextualSearchboxHandlerTest,
           contextual_search::SearchContentSharingSettingsValue::kEnabled));
 
   // Set the active tool to Deep Search.
-  handler().input_state_model()->setActiveTool(omnibox::TOOL_MODE_DEEP_SEARCH);
+  handler().input_state_model()->SetActiveTool(omnibox::TOOL_MODE_DEEP_SEARCH);
 
   std::string file_name = "test.pdf";
   std::string mime_type = "application/pdf";
@@ -2072,7 +2072,7 @@ TEST_F(SmartTabSharingTest, ResetSmartTabSharing_UpdatesInputState) {
   // Subscribers must be told about the reset so dependent UI can update.
   int notifications = 0;
   base::CallbackListSubscription subscription =
-      handler().input_state_model()->subscribe(base::BindRepeating(
+      handler().input_state_model()->Subscribe(base::BindRepeating(
           [](int* count, const omnibox::InputState&) { ++(*count); },
           &notifications));
 

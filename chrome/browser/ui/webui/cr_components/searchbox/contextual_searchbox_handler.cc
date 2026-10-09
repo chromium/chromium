@@ -1633,7 +1633,7 @@ void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool,
   if (!input_state_model_) {
     return;
   }
-  input_state_model_->setActiveTool(tool);
+  input_state_model_->SetActiveTool(tool);
 }
 
 void ContextualSearchboxHandler::RecordToolSelectionAction(
@@ -1660,7 +1660,7 @@ void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model,
   if (!input_state_model_) {
     return;
   }
-  input_state_model_->setActiveModel(model);
+  input_state_model_->SetActiveModel(model);
 }
 
 void ContextualSearchboxHandler::ActivateMetricsFunnel(
@@ -1747,7 +1747,7 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
     input_state_model_->SetPrefService(profile_->GetPrefs());
   }
 
-  input_state_subscription_ = input_state_model_->subscribe(
+  input_state_subscription_ = input_state_model_->Subscribe(
       base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   input_state_model_->Initialize();

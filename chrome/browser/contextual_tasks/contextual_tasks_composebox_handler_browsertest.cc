@@ -345,7 +345,7 @@ class ContextualTasksComposeboxHandlerTest
         *session_handle_, config, GURL(), /*is_off_the_record=*/false,
         /*is_signed_in=*/false,
         /*browser_identity_matches_aim_identity=*/false);
-    model->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+    model->SetActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
     return model;
   }
 

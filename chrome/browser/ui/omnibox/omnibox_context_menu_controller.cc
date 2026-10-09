@@ -281,7 +281,7 @@ OmniboxContextMenuController::OmniboxContextMenuController(
       input_state_ = contextual_searchbox_handler_ptr->input_state_model()
                          ->GetInputState();
       input_state_subscription_ =
-          contextual_searchbox_handler_ptr->input_state_model()->subscribe(
+          contextual_searchbox_handler_ptr->input_state_model()->Subscribe(
               base::BindRepeating(
                   &OmniboxContextMenuController::OnInputStateChanged,
                   weak_ptr_factory_.GetWeakPtr()));
@@ -896,7 +896,7 @@ void OmniboxContextMenuController::OnGetInputState(
     if (contextual_searchbox_handler &&
         contextual_searchbox_handler->input_state_model()) {
       input_state_subscription_ =
-          contextual_searchbox_handler->input_state_model()->subscribe(
+          contextual_searchbox_handler->input_state_model()->Subscribe(
               base::BindRepeating(
                   &OmniboxContextMenuController::OnInputStateChanged,
                   weak_ptr_factory_.GetWeakPtr()));
