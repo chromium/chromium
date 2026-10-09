@@ -207,7 +207,6 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   bool is_lens_crop_mounted = false;
   std::string last_lens_crop_data_uri;
   bool context_library_is_active = false;
-  ContextState last_sent_context_state = ContextState::kNone;
 
   PAGE_USER_DATA_KEY_DECL();
 };
@@ -219,11 +218,8 @@ ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
     : content::WebContentsUserData<ContextualTasksWebContentsUserData>(
           *contents) {}
 
-ContextualTasksWebContentsUserData::~ContextualTasksWebContentsUserData() {
-  if (observed_controller_) {
-    observed_controller_->RemoveObserver(this);
-  }
-}
+ContextualTasksWebContentsUserData::~ContextualTasksWebContentsUserData() =
+    default;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualTasksWebContentsUserData);
 
@@ -390,7 +386,6 @@ void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
         auto& page_state = GetPrimaryPageSearchState();
         page_state.is_lens_crop_mounted = false;
         page_state.last_lens_crop_data_uri.clear();
-        page_state.last_sent_context_state = ContextState::kNone;
       }
       return;
     }
@@ -432,7 +427,6 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
     }
     page_state.is_lens_crop_mounted = false;
     page_state.context_library_is_active = false;
-    page_state.last_sent_context_state = ContextState::kNone;
   }
   page_state.connected_document_id = doc_id;
   page_state.is_handshake_complete = false;
@@ -517,16 +511,10 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete() {
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_handshake_complete = true;
 
-  const bool had_queued_messages = !page_state.pending_search_messages.empty();
   std::vector<std::vector<uint8_t>> queued =
       std::exchange(page_state.pending_search_messages, {});
   for (const auto& msg_bytes : queued) {
     DispatchSerializedSearchMessage(msg_bytes);
-  }
-
-  if (!had_queued_messages && !IsServiceWorkerPortConnected()) {
-    page_state.context_library_is_active = false;
-    page_state.last_sent_context_state = ContextState::kNone;
   }
 
   if (!GetSelectedTabs().empty() && !page_state.context_library_is_active) {
@@ -538,7 +526,6 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete() {
       SendInjectChromeInput(InjectedInputType::kLensChip, /*is_active=*/true);
     }
   }
-  UpdateContextState();
 }
 
 void ContextualTasksWebContentsUserData::PostSearchMessage(
@@ -611,50 +598,13 @@ void ContextualTasksWebContentsUserData::SendMountContextLibrary() {
 
 void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
   bool has_tabs = !GetSelectedTabs().empty();
-  if (!has_tabs) {
-    pending_context_uploads_.clear();
-    failed_context_uploads_.clear();
-  }
   auto& page_state = GetPrimaryPageSearchState();
-  if (has_tabs != page_state.context_library_is_active) {
-    page_state.context_library_is_active = has_tabs;
-    SendInjectChromeInput(InjectedInputType::kContextLibrary,
-                          /*is_active=*/has_tabs);
+  if (has_tabs == page_state.context_library_is_active) {
+    return;
   }
-  UpdateContextState();
-}
-
-void ContextualTasksWebContentsUserData::OnTabContextUploadStarted(
-    const base::UnguessableToken& context_token) {
-  pending_context_uploads_.insert(context_token);
-  failed_context_uploads_.erase(context_token);
-}
-
-void ContextualTasksWebContentsUserData::OnTabContextRemoved(
-    const base::UnguessableToken& context_token) {
-  pending_context_uploads_.erase(context_token);
-  failed_context_uploads_.erase(context_token);
-}
-
-void ContextualTasksWebContentsUserData::OnContextUploadStatusChanged(
-    const base::UnguessableToken& context_token,
-    lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus context_upload_status,
-    const std::optional<contextual_search::ContextUploadErrorType>&
-        error_type) {
-  if (contextual_search::IsTerminalContextStatus(context_upload_status)) {
-    pending_context_uploads_.erase(context_token);
-    if (context_upload_status ==
-        contextual_search::ContextUploadStatus::kUploadSuccessful) {
-      failed_context_uploads_.erase(context_token);
-    } else {
-      failed_context_uploads_.insert(context_token);
-    }
-  } else {
-    pending_context_uploads_.insert(context_token);
-    failed_context_uploads_.erase(context_token);
-  }
-  UpdateContextState();
+  page_state.context_library_is_active = has_tabs;
+  SendInjectChromeInput(InjectedInputType::kContextLibrary,
+                        /*is_active=*/has_tabs);
 }
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
@@ -852,75 +802,7 @@ void ContextualTasksWebContentsUserData::OnInputStateChanged(
     page_state.is_lens_crop_mounted = has_crop;
     SendInjectChromeInput(InjectedInputType::kLensChip,
                           /*is_active=*/has_crop);
-    UpdateContextState();
   }
-}
-
-void ContextualTasksWebContentsUserData::ObserveContextController(
-    contextual_search::ContextualSearchContextController* controller) {
-  if (observed_controller_.get() == controller) {
-    return;
-  }
-  if (observed_controller_) {
-    observed_controller_->RemoveObserver(this);
-    observed_controller_ = nullptr;
-  }
-  if (controller) {
-    if (auto weak_controller = controller->AsWeakPtr()) {
-      controller->AddObserver(this);
-      observed_controller_ = std::move(weak_controller);
-    }
-  }
-}
-
-ContextualTasksWebContentsUserData::ContextState
-ContextualTasksWebContentsUserData::ComputeContextState() {
-  bool any_uploading = false;
-  bool any_ready = GetPrimaryPageSearchState().is_lens_crop_mounted;
-  for (const auto& tab : GetSelectedTabs()) {
-    if (pending_context_uploads_.contains(tab.context_token)) {
-      any_uploading = true;
-    } else if (!failed_context_uploads_.contains(tab.context_token)) {
-      any_ready = true;
-    }
-  }
-  if (any_uploading) {
-    return ContextState::kUploading;
-  }
-  if (any_ready) {
-    return ContextState::kReady;
-  }
-  return ContextState::kNone;
-}
-
-void ContextualTasksWebContentsUserData::UpdateContextState() {
-  ContextState current_state = ComputeContextState();
-  auto& page_state = GetPrimaryPageSearchState();
-  if (current_state == page_state.last_sent_context_state) {
-    return;
-  }
-  page_state.last_sent_context_state = current_state;
-
-  lens::ClientToSearchMessage message;
-  auto* state_changed = message.mutable_on_context_state_changed();
-  switch (current_state) {
-    case ContextState::kNone:
-      state_changed->set_context_state(
-          lens::ClientToSearchMessage::OnContextStateChanged::
-              CONTEXT_STATE_NONE);
-      break;
-    case ContextState::kUploading:
-      state_changed->set_context_state(
-          lens::ClientToSearchMessage::OnContextStateChanged::
-              CONTEXT_STATE_UPLOADING);
-      break;
-    case ContextState::kReady:
-      state_changed->set_context_state(
-          lens::ClientToSearchMessage::OnContextStateChanged::
-              CONTEXT_STATE_READY);
-      break;
-  }
-  PostSearchMessage(message);
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -933,7 +815,6 @@ ContextualTasksWebContentsUserData::GetOrCreateContextualSessionHandle() {
       task_id_.has_value() ? helper->GetSessionForTask(task_id_.value())
                            : helper->session_handle();
   if (existing_session) {
-    ObserveContextController(existing_session->GetController());
     return existing_session;
   }
 
@@ -950,11 +831,7 @@ ContextualTasksWebContentsUserData::GetOrCreateContextualSessionHandle() {
       session_handle->CheckSearchContentSharingSettings(profile->GetPrefs());
       helper->SetTaskSession(std::nullopt, std::move(session_handle),
                              /*input_state_model=*/nullptr);
-      auto* created_session = helper->session_handle();
-      if (created_session) {
-        ObserveContextController(created_session->GetController());
-      }
-      return created_session;
+      return helper->session_handle();
     }
   }
 
@@ -996,14 +873,10 @@ void ContextualTasksWebContentsUserData::SetTabContextSnapshot(
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
   if (tab_context_snapshot_.has_value() &&
       tab_context_snapshot_->first != context_token) {
-    OnTabContextRemoved(tab_context_snapshot_->first);
     DeleteTabToken(GetOrCreateContextualSessionHandle(),
                    tab_context_snapshot_->first);
   }
   tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
-  pending_context_uploads_.erase(context_token);
-  failed_context_uploads_.erase(context_token);
-  UpdateContextState();
 }
 
 void ContextualTasksWebContentsUserData::ClearTabContextSnapshotIfMatching(
@@ -1033,15 +906,12 @@ void ContextualTasksWebContentsUserData::UploadSnapshotTabContextIfPresent() {
 }
 
 void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
-  pending_context_uploads_.clear();
-  failed_context_uploads_.clear();
   if (auto model = GetOrCreateInputStateModel()) {
     model->RemoveLensCrop();
   }
 
   CloseLensAsync(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
-  UpdateContextState();
 }
 
 void ContextualTasksWebContentsUserData::CloseLensAsync(
@@ -1082,7 +952,6 @@ void ContextualTasksWebContentsUserData::DeleteContext(
     }
   }
 #endif
-  OnTabContextRemoved(file_token);
   DeleteTabToken(GetOrCreateContextualSessionHandle(), file_token);
   if (auto model = GetOrCreateInputStateModel()) {
     model->OnContextChanged();
@@ -1120,7 +989,6 @@ void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
   ClearTabContextSnapshotIfMatching(token);
   contextual_tasks::RemoveTabUnderline(tab_id, GetBrowserWindowInterface());
 #endif
-  OnTabContextRemoved(token);
   DeleteTabToken(GetOrCreateContextualSessionHandle(), token);
   if (auto model = GetOrCreateInputStateModel()) {
     model->OnContextChanged();
@@ -1138,8 +1006,6 @@ void ContextualTasksWebContentsUserData::ClearFiles() {
                                browser_window_interface);
   }
 #endif
-  pending_context_uploads_.clear();
-  failed_context_uploads_.clear();
   if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
     session_handle->ClearFiles();
   }
