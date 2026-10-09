@@ -1709,7 +1709,6 @@ crbug.com/554992299 [ tvOS26-simulator ] external/wpt/speculation-rules/prerende
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/speculation-rules/prerender/workers.https.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/speech-api/SpeechSynthesis-pause-resume.tentative.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/speech-api/SpeechSynthesis-speak-without-activation-fails.tentative.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] external/wpt/svg/animations/conditional-processing-02.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/svg/animations/media-fragment-override-animation.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/svg/linking/reftests/href-filter-element.html [ Failure ]
