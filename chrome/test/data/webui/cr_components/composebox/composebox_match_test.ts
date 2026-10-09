@@ -6,6 +6,7 @@ import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/composebox_match.js';
 
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {BaseLayout} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -160,9 +161,24 @@ suite('ComposeboxMatch', () => {
 
         assertTrue(matchElement.isRichImage);
         assertEquals('rich-image', matchElement.getAttribute('suggest-style'));
+        assertEquals('image', matchElement.getAttribute('base-layout'));
+        assertEquals(BaseLayout.IMAGE, matchElement.baseLayout);
         assertTrue(!!matchElement.$.image);
         assertTrue(
             matchElement.$.image.style.backgroundImage.includes('image.png'));
+
+        // Updating to a kRichImage match without an imageUrl transitions back
+        // to the default text base-layout.
+        matchElement.match = createAutocompleteMatch({
+          suggestStyle: SuggestStyle.kRichImage,
+        });
+        await microtasksFinished();
+
+        assertFalse(matchElement.isRichImage);
+        assertEquals('default', matchElement.getAttribute('suggest-style'));
+        assertEquals('text', matchElement.getAttribute('base-layout'));
+        assertEquals(BaseLayout.TEXT, matchElement.baseLayout);
+        assertEquals('', matchElement.$.image.style.backgroundImage);
       });
 
   test(
@@ -179,6 +195,8 @@ suite('ComposeboxMatch', () => {
 
         assertFalse(matchElement.isRichImage);
         assertEquals('default', matchElement.getAttribute('suggest-style'));
+        assertEquals('text', matchElement.getAttribute('base-layout'));
+        assertEquals(BaseLayout.TEXT, matchElement.baseLayout);
         assertTrue(!!matchElement.$.image);
         assertEquals('', matchElement.$.image.style.backgroundImage);
       });
@@ -195,6 +213,8 @@ suite('ComposeboxMatch', () => {
 
     assertFalse(matchElement.isRichImage);
     assertEquals('default', matchElement.getAttribute('suggest-style'));
+    assertEquals('text', matchElement.getAttribute('base-layout'));
+    assertEquals(BaseLayout.TEXT, matchElement.baseLayout);
     assertTrue(!!matchElement.$.image);
     assertEquals('', matchElement.$.image.style.backgroundImage);
   });

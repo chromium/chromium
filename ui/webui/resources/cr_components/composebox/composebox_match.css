@@ -23,15 +23,15 @@
  * Default vertical text suggestions
  * ========================================================================== */
 
-:host([suggest-style='default']) {
+:host([base-layout='text']) {
   display: block;
 }
 
-:host([suggest-style='default']:not([is-last])) {
+:host([base-layout='text']:not([is-last])) {
   padding-bottom: var(--cr-composebox-match-match-padding-bottom, 2px);
 }
 
-:host([suggest-style='default']) .container {
+:host([base-layout='text']) .container {
   border-end-end-radius: 24px;
   border-start-end-radius: 24px;
   color: var(--color-composebox-font);
@@ -43,11 +43,11 @@
   position: relative;
 }
 
-:host([suggest-style='default']) .container:hover {
+:host([base-layout='text']) .container:hover {
   background-color: var(--color-searchbox-results-background-hovered);
 }
 
-:host([suggest-style='default']:is(:focus-visible, [selected])) .container {
+:host([base-layout='text']:is(:focus-visible, [selected])) .container {
   background-color: var(--color-searchbox-results-background-selected,
       var(--color-searchbox-results-background-hovered));
 
@@ -58,17 +58,17 @@
 }
 
 @media (forced-colors: active) {
-  :host([suggest-style='default']) .container:hover,
-  :host([suggest-style='default']:is(:focus-visible, [selected])) .container {
+  :host([base-layout='text']) .container:hover,
+  :host([base-layout='text']:is(:focus-visible, [selected])) .container {
     --color-searchbox-results-background-hovered: Highlight;
   }
 }
 
-:host([suggest-style='default']) #image {
+:host([base-layout='text']) #image {
   display: none;
 }
 
-:host([suggest-style='default']) #focusIndicator {
+:host([base-layout='text']) #focusIndicator {
   background-color: var(--color-searchbox-results-focus-indicator);
   border-radius: 4px;
   display: none;
@@ -78,12 +78,12 @@
   width: 8px;
 }
 
-:host([suggest-style='default']:is(:focus-visible, [selected]))
+:host([base-layout='text']:is(:focus-visible, [selected]))
     #focusIndicator {
   display: block;
 }
 
-:host([suggest-style='default']) #iconContainer {
+:host([base-layout='text']) #iconContainer {
   align-items: center;
   display: flex;
   flex-shrink: 0;
@@ -92,7 +92,7 @@
       var(--cr-composebox-match-icon-container-padding-inline-start, 18px);
 }
 
-:host([suggest-style='default']) #icon {
+:host([base-layout='text']) #icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
@@ -101,7 +101,7 @@
   width: var(--cr-composebox-match-icon-size, 20px);
 }
 
-:host([suggest-style='default']) #textContainer {
+:host([base-layout='text']) #textContainer {
   align-content: center;
   color: var(--color-composebox-font-light);
   flex-grow: 1;
@@ -112,18 +112,18 @@
   white-space: nowrap;
 }
 
-:host([suggest-style='default']:is(:focus-visible, [selected]))
+:host([base-layout='text']:is(:focus-visible, [selected]))
     #textContainer {
   color: var(--color-searchbox-results-foreground-selected,
       var(--color-composebox-font-light));
 }
 
-:host([suggest-style='default'])
+:host([base-layout='text'])
     .container:hover:has(#remove:not([hidden])) #textContainer {
   padding-inline-end: var(--cr-composebox-match-text-padding-inline-end, 4px);
 }
 
-:host([suggest-style='default']) #remove {
+:host([base-layout='text']) #remove {
   --cr-icon-button-fill-color:
       var(--color-searchbox-results-icon-selected);
   --cr-icon-button-icon-size:
@@ -138,8 +138,8 @@
   top: var(--cr-composebox-match-remove-button-top, 6px);
 }
 
-:host([suggest-style='default']) .container:hover #remove:not([hidden]),
-:host([suggest-style='default']:is(:focus-within, [selected]))
+:host([base-layout='text']) .container:hover #remove:not([hidden]),
+:host([base-layout='text']:is(:focus-within, [selected]))
     #remove:not([hidden]) {
   display: inline-flex;
 }
@@ -149,15 +149,15 @@
  * (SuggestTemplateInfo.BELOW_PRIMARY_TEXT).
  * ========================================================================== */
 
-:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+:host([base-layout='text'][secondary-text-placement='below-primary-text'])
     .container {
   height: auto;
   padding-block: 10px;
 }
 
-:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+:host([base-layout='text'][secondary-text-placement='below-primary-text'])
     #primaryText,
-:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+:host([base-layout='text'][secondary-text-placement='below-primary-text'])
     #secondaryText {
   display: block;
   overflow: hidden;
@@ -165,7 +165,7 @@
   white-space: nowrap;
 }
 
-:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+:host([base-layout='text'][secondary-text-placement='below-primary-text'])
     #secondaryText {
   color: var(--color-searchbox-results-foreground-dimmed,
       var(--color-sys-on-surface-subtle));
@@ -173,7 +173,7 @@
   line-height: 20px;
 }
 
-:host([suggest-style='default']:not([override-clamp-line-num='-1']))
+:host([base-layout='text']:not([override-clamp-line-num='-1']))
     #primaryText {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--clamp-line-num);
@@ -200,12 +200,12 @@
  * Rich image suggestions (grid)
  * ========================================================================== */
 
-:host([suggest-style='rich-image']) {
+:host([base-layout='image']) {
   cursor: default;
   display: block;
 }
 
-:host([suggest-style='rich-image']) .container {
+:host([base-layout='image']) .container {
   border-radius: 2px;
   box-sizing: border-box;
   cursor: default;
@@ -214,21 +214,21 @@
   width: 100%;
 }
 
-:host([suggest-style='rich-image']:is(:focus-visible, [selected]))
+:host([base-layout='image']:is(:focus-visible, [selected]))
     .container {
   box-shadow: none;
   outline: 2px solid var(--cr-focus-outline-color);
 }
 
-:host([suggest-style='rich-image']) #secondaryText,
-:host([suggest-style='rich-image']) #focusIndicator,
-:host([suggest-style='rich-image']) #iconContainer,
-:host([suggest-style='rich-image']) #remove {
+:host([base-layout='image']) #secondaryText,
+:host([base-layout='image']) #focusIndicator,
+:host([base-layout='image']) #iconContainer,
+:host([base-layout='image']) #remove {
   display: none;
 }
 
 /* Image card styles. */
-:host([suggest-style='rich-image']) #image {
+:host([base-layout='image']) #image {
   aspect-ratio: var(--cr-composebox-image-card-aspect-ratio, 5 / 3);
   background-position: center;
   background-repeat: no-repeat;
@@ -241,7 +241,7 @@
   width: 100%;
 }
 
-:host([suggest-style='rich-image']) #textContainer {
+:host([base-layout='image']) #textContainer {
   color: var(--cr-composebox-image-card-text-color, #1f1f1f);
   font-size: 11px;
   font-weight: 400;
@@ -254,21 +254,21 @@
 }
 
 /* Ghost loader styles while image batch is loading. */
-:host([suggest-style='rich-image'][loading]) {
+:host([base-layout='image'][loading]) {
   pointer-events: none;
 }
 
-:host([suggest-style='rich-image'][loading]) #image {
+:host([base-layout='image'][loading]) #image {
   background-color: var(
       --color-composebox-ghost-card-background, rgba(31, 31, 31, 0.08));
   cursor: default;
 }
 
-:host([suggest-style='rich-image'][loading]) #textContainer {
+:host([base-layout='image'][loading]) #textContainer {
   padding-inline: 0;
 }
 
-:host([suggest-style='rich-image'][loading]) #primaryText {
+:host([base-layout='image'][loading]) #primaryText {
   background-color: var(
       --color-composebox-ghost-card-background, rgba(31, 31, 31, 0.08));
   border-radius: 8px;
@@ -278,7 +278,7 @@
   width: 100%;
 }
 
-:host([suggest-style='rich-image'][loading]:is(:focus-visible, [selected]))
+:host([base-layout='image'][loading]:is(:focus-visible, [selected]))
     .container {
   outline: none;
 }
