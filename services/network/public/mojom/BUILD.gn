@@ -869,8 +869,6 @@ mojom("url_loader_base") {
       traits_headers = [
         "//services/network/public/cpp/network_ipc_param_traits.h",
         "//services/network/public/cpp/url_request_mojom_traits.h",
-        "//services/network/public/cpp/network_isolation_key_mojom_traits.h",
-        "//services/network/public/cpp/network_anonymization_key_mojom_traits.h",
       ]
       traits_private_headers = [
         "//services/network/public/mojom/devtools_observer.mojom.h",
@@ -879,7 +877,6 @@ mojom("url_loader_base") {
         "//services/network/public/mojom/device_bound_sessions.mojom.h",
       ]
       traits_public_deps = [
-        ":mojom_network_isolation_key",
         "//base",
         "//url/mojom:url_mojom_gurl",
       ]

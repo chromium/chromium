@@ -24,7 +24,6 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/data_element.h"
-#include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
