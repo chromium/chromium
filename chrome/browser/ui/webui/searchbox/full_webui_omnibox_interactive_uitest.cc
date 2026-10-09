@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
@@ -310,21 +312,41 @@ class FullWebUIOmniboxInteractiveTestBase
 
   // Checks that the native Views omnibox does not have focus, since in Full
   // WebUI mode text input lives in the popup. With the WebUI toolbar there is
-  // no Views omnibox (and `kOmniboxElementId` identifies a
-  // `ui::TrackedElementWebUI`), so there is nothing to check.
+  // no `LocationBarView` or Views omnibox (and `kOmniboxElementId` identifies a
+  // `ui::TrackedElementWebUI`), so there is nothing to check. This checks for
+  // the view rather than the feature, since some platforms (e.g. ChromeOS)
+  // keep the Views toolbar even when `features::kWebUIToolbar` is enabled.
   auto CheckNativeOmniboxViewUnfocused() {
     return CheckResult(
         [this]() {
-          if (features::IsWebUILocationBarEnabled()) {
-            return false;
-          }
           auto* location_bar_view =
               BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetLocationBarView();
-          CHECK(location_bar_view && location_bar_view->omnibox_view());
+          if (!location_bar_view) {
+            return false;
+          }
+          CHECK(location_bar_view->omnibox_view());
           return location_bar_view->omnibox_view()->HasFocus();
         },
         false, "CheckNativeOmniboxViewUnfocused");
+  }
+
+  // Returns the Views-side view that hosts the location bar. With the WebUI
+  // toolbar there is no `LocationBarView`; the location bar lives inside the
+  // toolbar's WebView, so that WebView is the closest Views equivalent. This
+  // checks for the view rather than the feature, since some platforms (e.g.
+  // ChromeOS) keep the Views toolbar even when `features::kWebUIToolbar` is
+  // enabled.
+  views::View* GetLocationBarHostView() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (!browser_view) {
+      return nullptr;
+    }
+    if (auto* webui_toolbar = browser_view->toolbar_button_provider()
+                                  ->GetWebUIToolbarViewForTesting()) {
+      return webui_toolbar;
+    }
+    return browser_view->GetLocationBarView();
   }
 
   // Asserts coherent omnibox focus across backend edit model, native views,
@@ -982,6 +1004,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
 // Verifies that clicking outside on the webpage body while an active user draft
 // exists keeps the popup open while shifting focus to the webpage.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378976): With the WebUI toolbar, a "
+                    "delayed focus request reopens the full popup after a "
+                    "tab switch.";
+  }
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1011,6 +1038,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
 // the most recently typed text. All within a single tab.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        RetypeAfterUnfocusedDraftNavigatesToLatestQuery) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/571988849): With the WebUI toolbar, "
+                    "MoveMouseTo's WaitForWebContentsPainted on the popup "
+                    "times out.";
+  }
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1270,6 +1302,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClearAndSwitchTab) {
 // have lingering focus.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        OmniboxFocusDoesNotLingerAcrossTabs) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378976): With the WebUI toolbar, a "
+                    "delayed focus request reopens the full popup after a "
+                    "tab switch.";
+  }
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab4);
 
@@ -1315,10 +1352,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // hides the popup cleanly without crashing or triggering DCHECK failures.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ReloadPageWhileOmniboxIsOpen) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/567193961): Ensure this test works properly when "
-                    "WebUI toolbar is enabled.";
-  }
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1330,10 +1363,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that clicking a match navigates to the suggestion.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClickMatch) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/567193967): Ensure this test works properly when "
-                    "WebUI toolbar is enabled.";
-  }
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1343,8 +1372,13 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClickMatch) {
                    "suggestion-1"),
       InAnyContext(
           WaitForElementToRender(kPopupWebView, kFirstSuggestionMatch)),
-      // Click the first suggestion.
-      InSameContext(ClickElement(kPopupWebView, kFirstSuggestionMatch)),
+      // Click the first suggestion. This uses a JS click because
+      // `ClickElement()` first waits for the popup's first paint event, and
+      // that wait flakily times out (b/567193967). The click navigates and
+      // hides the popup, so don't wait for the script to finish.
+      InAnyContext(ExecuteJsAt(kPopupWebView, kFirstSuggestionMatch,
+                               "el => el.click()",
+                               ExecuteJsMode::kFireAndForget)),
       // Verify navigation occurs.
       WaitForGoogleSearch(kTab1, {{"q", "suggestion-1"}}));
 }
@@ -1355,6 +1389,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClickMatch) {
 // Stage 3: Clear user input / revert to active page URL (kClearUserInput)
 // Stage 4: Clear focus / blur Omnibox (kBlur)
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
+                    "omnibox keeps focus after the full popup closes.";
+  }
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
@@ -1416,6 +1454,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
 // the permanent URL is empty (on NTP) and input is empty.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        EscapeStagedUnwinding_EmptyPermanentUrl) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
+                    "omnibox keeps focus after the full popup closes.";
+  }
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
@@ -1595,6 +1637,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, NewTabKeepsPopup) {
 // and focused dismisses the popup and navigates to the bookmarked URL.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ClickBookmarksBarWhenOmniboxFocused) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
+                    "omnibox keeps focus after the full popup closes.";
+  }
   // Disable slide animations and ensure the bookmarks bar is always visible.
   BookmarkBarView::DisableAnimationsForTesting(true);
   browser()->GetProfile()->GetPrefs()->SetBoolean(
@@ -1690,7 +1736,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that clicking on top chrome when the omnibox has draft text keeps
 // omnibox focus and preserves the cursor / selection position rather than
-// selecting all text.
+// selecting all text, and that typing afterwards still goes into the omnibox
+// at that position.
 // TODO(b/567944511): Enable on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ClickTopChromeWithDraftPreservesCursorPosition \
@@ -1702,12 +1749,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        MAYBE_ClickTopChromeWithDraftPreservesCursorPosition) {
   if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP()
-        << "TODO(crbug.com/567926983): With the WebUI toolbar, the location "
-           "bar's focus restore view is the toolbar WebView. Restoring focus "
-           "to it on window reactivation gives the edit model focus but "
-           "doesn't reactivate the popup widget, so the popup's input never "
-           "gets document focus.";
+    GTEST_SKIP() << "TODO(crbug.com/564919981): Clicking top chrome doesn't "
+                    "restore selection.";
   }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1719,7 +1762,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           "document.dispatchEvent(new Event('selectionchange')); }")),
       CheckWebUIInputSelection(7, 7), ClickTabStrip(),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      CheckWebUIInputSelection(7, 7), WaitForOmniboxFocus(true));
+      CheckWebUIInputSelection(7, 7), WaitForOmniboxFocus(true),
+      // Send a real key press to the browser window, which is where the OS
+      // sends it after a click on the window.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_X, ui::EF_NONE),
+      WaitForWebUIInputValue("examplex text"));
 }
 
 // Verifies that switching to another browser window dismisses the popup and
@@ -1896,6 +1943,11 @@ IN_PROC_BROWSER_TEST_P(
 // windows on focus changes.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        WindowSwitchDuringTabSwitchDoesNotStealActivation) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/571988349): With the WebUI toolbar, "
+                    "reactivating the browser window does not reopen the "
+                    "popup.";
+  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForOmniboxFocus(true), OpenAndActivateSecondBrowserWindow(),
@@ -2050,22 +2102,21 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // selection bounds when synchronizing state to the WebUI popup.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ViewsSelectionPreservedOnInitialHandoff) {
-  if (features::IsWebUILocationBarEnabled()) {
-    GTEST_SKIP() << "TODO(b/567196573): Ensure this test works properly when "
-                    "WebUI toolbar is enabled.";
-  }
   RunTestSequence(
       WaitForBrowserActive(),
       AddInstrumentedTab(kTab1, GURL("chrome://version/")),
       WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
       Do([this]() {
-        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-        auto* omnibox_view = browser_view->GetLocationBarView()->omnibox_view();
+        // Go through `LocationBar` rather than `LocationBarView`: with the
+        // WebUI toolbar there is no `LocationBarView`, and
+        // `BrowserView::GetLocationBarView()` returns null.
+        auto* location_bar =
+            BrowserWindow::FromBrowser(browser())->GetLocationBar();
+        auto* omnibox_view = location_bar->GetOmniboxView();
         ASSERT_TRUE(omnibox_view);
         // Set word selection range [0, 6] ("chrome").
-        omnibox_view->SetSelectedRange(gfx::Range(0, 6));
-        if (auto* popup_view =
-                browser_view->GetLocationBar()->GetOmniboxPopupView()) {
+        omnibox_view->SetSelectionBounds(gfx::Range(0, 6));
+        if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
           popup_view->OnFocus(/*query_zps=*/false);
         }
       }),
@@ -2279,6 +2330,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // window and resets the original window's omnibox popup state to steady state.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ShiftEnterOpensNewWindowAndResetsOmnibox) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
+                    "omnibox keeps focus after the full popup closes.";
+  }
   RunTestSequence(
       // 1. Open Tab 1 at chrome://version/ and focus Omnibox.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -2313,6 +2368,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, OnCopy) {
 // submits the verbatim URL (reloads/navigates) and closes the popup.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        EnterSubmitsVerbatimUrlOnOpenPage) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
+                    "omnibox keeps focus after the full popup closes.";
+  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForWebUIInputValue("chrome://version"),
@@ -2504,47 +2563,16 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Verifies that tabbing past the Omnibox closes the full WebUI popup.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        TabPastOmniboxClosesWebUIPopup) {
-  if (features::IsWebUILocationBarEnabled()) {
-    GTEST_SKIP() << "TODO(b/567214231): Ensure this test works properly when "
-                    "WebUI toolbar is enabled.";
-  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForWebUIInputValue("chrome://version"),
 
-      // Blur and close the Omnibox popup by clicking the webpage body.
-      ClickWebPageBody(kTab1),
-      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
-      WaitForPopupTransitionLockout(),
-
-      // Advance focus forward into the LocationBarView using focus traversal.
-      Do([this]() {
-        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-        auto* location_bar_view = browser_view->GetLocationBarView();
-        auto* focus_manager = browser_view->GetFocusManager();
-        auto* prev_view = focus_manager->GetNextFocusableView(
-            location_bar_view, nullptr, /*reverse=*/true,
-            /*dont_loop=*/false);
-        CHECK(prev_view);
-        prev_view->RequestFocus();
-        focus_manager->AdvanceFocus(/*reverse=*/false);
-        CHECK_EQ(focus_manager->GetFocusedView(), location_bar_view);
-      }),
-
-      // Verify the WebUI popup opens and gains focus.
-      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      InAnyContext(
-          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
-      InSameContext(WaitForWebContentsReady(
-          kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))),
-      WaitForOmniboxFocus(true),
-
       // Traverse focus past the Omnibox popup.
       Do([this]() {
-        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
         auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-            browser_view->GetLocationBar()->GetOmniboxPopupView());
+            BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxPopupView());
         CHECK(popup_view && popup_view->presenter());
         auto* base_content = popup_view->presenter()->GetWebUIContent();
         CHECK(base_content);
@@ -2555,7 +2583,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
 
-      // Verify that focus moved outside LocationBarView.
+      // Verify that focus moved outside the view hosting the location bar.
       PollUntil(
           [this]() {
             auto* browser_view =
@@ -2565,8 +2593,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
             }
             auto* focused_view =
                 browser_view->GetFocusManager()->GetFocusedView();
-            return focused_view &&
-                   !browser_view->GetLocationBarView()->Contains(focused_view);
+            auto* location_bar_host = GetLocationBarHostView();
+            return focused_view && location_bar_host &&
+                   !location_bar_host->Contains(focused_view);
           },
           "WaitForFocusOutsideLocationBar"));
 }
@@ -2576,8 +2605,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        LocationBarFocusRingHiddenInFullWebUIMode) {
   if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/567215581): Ensure this test works properly when "
-                    "WebUI toolbar is enabled.";
+    // This test covers the focus ring on the Views `LocationBarView`. The
+    // WebUI toolbar has no `LocationBarView`, so there is nothing to check.
+    GTEST_SKIP() << "Not applicable: the WebUI toolbar has no LocationBarView.";
   }
   auto check_focus_ring = [this](bool should_paint) {
     return Do([this, should_paint]() {
@@ -2983,11 +3013,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForPopupTransitionLockout(), WaitForPopupActive());
 }
 
-// TODO(crbug.com/567661957): Re-enable WebUIToolbarEnabled once failures are
-// resolved.
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxInteractiveTest,
-                         testing::Values(false),
+                         testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WebUIToolbarEnabled"
                                              : "WebUIToolbarDisabled";
