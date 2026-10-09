@@ -298,9 +298,14 @@ void WebUIReadOnlyOmnibox::ApplyFocusRingToAimButton(bool focus_aim) {
 }
 
 bool WebUIReadOnlyOmnibox::AimButtonVisible() const {
-  return location_bar_ &&
-         omnibox::AiModePageActionController::From(location_bar_->GetBrowser())
-             ->IsVisible();
+  if (!location_bar_) {
+    return false;
+  }
+  // The controller may be absent if it was torn down before the browser
+  // widget is destroyed, or if it was never created for this profile.
+  auto* controller =
+      omnibox::AiModePageActionController::From(location_bar_->GetBrowser());
+  return controller && controller->IsVisible();
 }
 
 void WebUIReadOnlyOmnibox::ApplyCaretVisibility() {
