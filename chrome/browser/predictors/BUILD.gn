@@ -87,7 +87,6 @@ source_set("impl") {
     "resource_prefetch_predictor.cc",
     "resource_prefetch_predictor_tables.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":config",
     ":predictors",

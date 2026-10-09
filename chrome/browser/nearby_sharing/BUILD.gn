@@ -177,10 +177,7 @@ source_set("impl") {
     "wifi_network_configuration/wifi_network_configuration_handler.cc",
   ]
 
-  public_deps = [
-    ":nearby_sharing",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":nearby_sharing" ]
 
   deps = [
     "//ash/constants",

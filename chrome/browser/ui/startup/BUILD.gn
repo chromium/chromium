@@ -189,10 +189,7 @@ source_set("impl") {
     "//ui/gfx:native_ui_types",
     "//url",
   ]
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//ui/base/unowned_user_data",
-  ]
+  public_deps = [ "//ui/base/unowned_user_data" ]
 
   if (!is_android) {
     sources += [

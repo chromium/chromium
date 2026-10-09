@@ -55,11 +55,12 @@ source_set("impl") {
   sources = [ "profile_error_dialog.cc" ]
   deps = [
     ":profiles",
+    "//chrome/app:generated_resources",
     "//chrome/browser/feedback",
     "//chrome/browser/ui:incognito_allowed_url",
     "//chrome/browser/ui:simple_message_box_headers",
+    "//ui/base",
   ]
-  public_deps = []
 
   if (!is_android) {
     sources += [ "profile_view_utils.cc" ]
@@ -122,8 +123,6 @@ source_set("impl") {
   if (enable_dice_support || is_chromeos) {
     sources += [ "batch_upload_ui_delegate.cc" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (!is_android) {
@@ -135,7 +134,6 @@ if (!is_android) {
       ":profiles",
       "//base",
       "//chrome/browser:browser_process",
-      "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/themes",

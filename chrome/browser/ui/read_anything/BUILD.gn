@@ -47,7 +47,6 @@ source_set("read_anything") {
   public_deps = [
     ":prefs",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/profiles:profile",
