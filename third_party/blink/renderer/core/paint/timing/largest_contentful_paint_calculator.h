@@ -205,7 +205,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   void ReportMetricsCandidateToTrace(const ImageRecord&, base::TimeTicks);
   void ReportMetricsCandidateToTrace(const TextRecord&);
-  void ReportNoMetricsImageCandidateToTrace();
 
   // Processes a list of LCP candidates, updating the `LcpCandidates` with the
   // largest candidate. Also handles recording use counters for the largest

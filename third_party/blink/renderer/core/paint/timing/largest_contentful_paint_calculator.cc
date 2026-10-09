@@ -364,8 +364,6 @@ bool LargestContentfulPaintCalculator::
     if (!image_paint_time.is_null() &&
         image_record.IsSufficientlyLoadedForReporting()) {
       ReportMetricsCandidateToTrace(image_record, image_paint_time);
-    } else {
-      ReportNoMetricsImageCandidateToTrace();
     }
   }
 
@@ -495,18 +493,6 @@ void LargestContentfulPaintCalculator::ReportMetricsCandidateToTrace(
   TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestTextPaint::Candidate",
                                    record.PaintTime(), "data", std::move(value),
                                    "frame", GetFrameIdForTracing(frame));
-}
-
-void LargestContentfulPaintCalculator::ReportNoMetricsImageCandidateToTrace() {
-  auto value = std::make_unique<TracedValue>();
-  value->SetInteger("candidateIndex", ++ukm_largest_image_candidate_count_);
-
-  LocalFrame* frame = window_performance_->DomWindow()->GetFrame();
-  CHECK(frame);
-  PopulateFrameTraceData(*value, *frame);
-
-  TRACE_EVENT2("loading", "LargestImagePaint::NoCandidate", "data",
-               std::move(value), "frame", GetFrameIdForTracing(frame));
 }
 
 void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {

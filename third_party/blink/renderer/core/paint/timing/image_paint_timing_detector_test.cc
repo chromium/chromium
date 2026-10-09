@@ -1321,9 +1321,6 @@ TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
   Query q = Query::EventNameIs("LargestImagePaint::Candidate");
   analyzer->FindEvents(q, &events);
   EXPECT_EQ(0u, events.size());
-  q = Query::EventNameIs("LargestImagePaint::NoCandidate");
-  analyzer->FindEvents(q, &events);
-  EXPECT_EQ(0u, events.size());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestPaintedImageSetForFirstVideoFrame) {
