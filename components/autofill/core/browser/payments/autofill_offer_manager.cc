@@ -25,12 +25,11 @@ void AutofillOfferManager::UpdateOfferNotificationVisibility(
 
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
-  const GURL origin =
-      last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL();
-  return std::ranges::any_of(payments_data_manager_->GetAutofillOffers(),
-                             [&](const AutofillOfferData* offer) {
-                               return offer->IsEligibleForOrigin(origin);
-                             });
+  return !payments_data_manager_
+              ->GetActiveAutofillPromoCodeOffersForOrigin(
+                  last_committed_primary_main_frame_url
+                      .DeprecatedGetOriginAsURL())
+              .empty();
 }
 
 const AutofillOfferData* AutofillOfferManager::GetOfferForUrl(

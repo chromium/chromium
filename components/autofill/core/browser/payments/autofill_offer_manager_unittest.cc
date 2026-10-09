@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
@@ -153,15 +154,14 @@ class AutofillOfferManagerTest : public testing::Test {
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 };
 
-// Verify that URLs with card linked offers available are marked as eligible.
+// Verify that URLs with promo code offers available are marked as eligible.
 TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
-  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
-  payments_data_manager().AddAutofillOfferData(CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
-  payments_data_manager().AddAutofillOfferData(CreateCreditCardOfferForCard(
-      card2, "10%", /*expired=*/false, {GURL("http://maps.google.com")}));
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL("http://www.google.com"),
+                                  /*is_expired=*/false, /*offer_id=*/"google"));
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL("http://www.youtube.com"), /*is_expired=*/false,
+      /*offer_id=*/"youtube"));
 
   EXPECT_TRUE(
       autofill_offer_manager_->IsUrlEligible(GURL("http://www.google.com")));
@@ -169,6 +169,24 @@ TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
       autofill_offer_manager_->IsUrlEligible(GURL("http://www.example.com")));
   EXPECT_TRUE(
       autofill_offer_manager_->IsUrlEligible(GURL("http://maps.google.com")));
+}
+
+// Verify that URLs whose only offers are expired or have no promo code are not
+// marked as eligible.
+TEST_F(AutofillOfferManagerTest, IsUrlEligible_ExpiredOrNoPromoCode) {
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL("http://www.google.com"),
+                                  /*is_expired=*/true, /*offer_id=*/"expired"));
+  AutofillOfferData no_promo_code_offer = test::GetPromoCodeOfferData(
+      GURL("http://www.youtube.com"), /*is_expired=*/false,
+      /*offer_id=*/"no_promo_code");
+  no_promo_code_offer.SetPromoCode("");
+  payments_data_manager().AddAutofillOfferData(no_promo_code_offer);
+
+  EXPECT_FALSE(
+      autofill_offer_manager_->IsUrlEligible(GURL("http://www.google.com")));
+  EXPECT_FALSE(
+      autofill_offer_manager_->IsUrlEligible(GURL("http://www.youtube.com")));
 }
 
 // Verify no offer is returned given a mismatch URL.
@@ -302,6 +320,42 @@ TEST_F(AutofillOfferManagerTest,
   }
   EXPECT_FALSE(
       autofill_offer_manager_->IsUrlEligible(GURL("https://notexample.com/")));
+}
+
+// Verify that no URL is eligible, and the offer notification is dismissed
+// rather than shown, when the user's locale is not eligible for Wallet direct
+// offers. This matches the eligibility used for promo code suggestions.
+TEST_F(AutofillOfferManagerTest, IneligibleLocale_DoesNotShowNotification) {
+  TestPaymentsDataManager ineligible_payments_data_manager(
+      /*app_locale=*/"de-DE");
+  ineligible_payments_data_manager.SetAutofillPaymentMethodsEnabled(true);
+  ineligible_payments_data_manager.SetAutofillWalletImportEnabled(true);
+  ineligible_payments_data_manager.AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL(kTestUrl)));
+  ASSERT_TRUE(ineligible_payments_data_manager
+                  .GetActiveAutofillPromoCodeOffersForOrigin(GURL(kTestUrl))
+                  .empty());
+
+  AutofillOfferManager offer_manager(&ineligible_payments_data_manager);
+  EXPECT_FALSE(offer_manager.IsUrlEligible(GURL(kTestUrl)));
+
+  EXPECT_CALL(payments_autofill_client(), UpdateOfferNotification).Times(0);
+  EXPECT_CALL(payments_autofill_client(), DismissOfferNotification);
+  autofill_client_.set_last_committed_primary_main_frame_url(GURL(kTestUrl));
+  offer_manager.UpdateOfferNotificationVisibility(autofill_client_);
+}
+
+// Verify that the offer notification is not shown when Wallet import is
+// disabled, matching the eligibility used for promo code suggestions.
+TEST_F(AutofillOfferManagerTest, WalletImportDisabled_DoesNotShowNotification) {
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL(kTestUrl)));
+  payments_data_manager().SetAutofillWalletImportEnabled(false);
+
+  EXPECT_FALSE(autofill_offer_manager_->IsUrlEligible(GURL(kTestUrl)));
+  EXPECT_CALL(payments_autofill_client(), UpdateOfferNotification).Times(0);
+  EXPECT_CALL(payments_autofill_client(), DismissOfferNotification);
+  NavigateTo(GURL(kTestUrl));
 }
 
 }  // namespace autofill

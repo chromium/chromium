@@ -43,8 +43,8 @@ class AutofillOfferManager : public KeyedService {
   // committed.
   void UpdateOfferNotificationVisibility(AutofillClient& client);
 
-  // Returns true only if the domain of `last_committed_primary_main_frame_url`
-  // has an offer.
+  // Returns true only if there is an active promo code offer for the domain of
+  // `last_committed_primary_main_frame_url`.
   bool IsUrlEligible(const GURL& last_committed_primary_main_frame_url);
 
   // Returns the most recently issued offer that contains the domain of

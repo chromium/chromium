@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -948,6 +949,8 @@ class ChromePaymentsAutofillClientOfferNotificationTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  // Wallet direct offers are only shown for supported locales.
+  ScopedBrowserLocale scoped_browser_locale_{"en-US"};
 };
 
 // Tests that offers arriving after the navigation update the offer
