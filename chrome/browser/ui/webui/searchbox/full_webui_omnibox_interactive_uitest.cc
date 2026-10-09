@@ -100,9 +100,9 @@ const DeepQuery kWebUIInput = {"omnibox-full-app", "omnibox-popup-searchbox",
 const DeepQuery kFirstSuggestionMatch = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index='1']"};
-const DeepQuery kFirstSuggestionMatchContents = {
+const DeepQuery kFirstSuggestionMatchPrimaryText = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
-    "cr-searchbox-match[match-index='1']", "#contents"};
+    "cr-searchbox-match[match-index='1']", "#primaryText"};
 const DeepQuery kComposeButton = {"omnibox-full-app", "omnibox-popup-searchbox",
                                   "cr-searchbox-compose-button",
                                   "#composeButton"};
@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InputWebUIText("a"),
       // Wait for the first suggestion to appear.
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       // Send ArrowDown key to highlight a match.
       InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       // Type a draft and verify the results dropdown shows.
       InputWebUIText("ffffff"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForOmniboxFocus(true),
       // Type a new query and verify the results dropdown shows again.
       InputWebUIText("hello"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -1173,7 +1173,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClickMatch) {
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InputWebUIText("a"),
       // Wait for the first suggestion to appear.
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       InAnyContext(
           WaitForElementToRender(kPopupWebView, kFirstSuggestionMatch)),
@@ -1196,7 +1196,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       // Replace the permanent URL with "a" and select the first suggestion.
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
       WaitForWebUIInputValue("suggestion-1"), CheckWebUIInputFocus(true),
@@ -1258,7 +1258,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       // Type "a" into the WebUI input field.
       InputWebUIText("a"),
       // Wait for suggestion-1 match to appear.
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
 
       // Stage 2: Send ESC to close open suggestion popup while retaining typed
@@ -1300,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       // 2. Type "a" into the WebUI input to open suggestions.
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -1892,7 +1892,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       // --- Part 2: Active Draft & Suggestions (verifies dropdown hiding &
       // typing restoration) ---
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -1981,7 +1981,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       InstrumentNextTab(kTab2),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_ALT_DOWN),
@@ -1998,7 +1998,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       InstrumentNextTab(kTab2),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN,
@@ -2075,7 +2075,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       // 2. Type "a" into the WebUI input to open suggestions.
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -2152,7 +2152,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
       // Type "a" and wait for suggestions dropdown.
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -3173,7 +3173,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
@@ -3204,7 +3204,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
       InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),

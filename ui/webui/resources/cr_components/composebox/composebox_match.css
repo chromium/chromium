@@ -156,9 +156,9 @@
 }
 
 :host([suggest-style='default'][secondary-text-placement='below-primary-text'])
-    #contents,
+    #primaryText,
 :host([suggest-style='default'][secondary-text-placement='below-primary-text'])
-    #description {
+    #secondaryText {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -166,7 +166,7 @@
 }
 
 :host([suggest-style='default'][secondary-text-placement='below-primary-text'])
-    #description {
+    #secondaryText {
   color: var(--color-searchbox-results-foreground-dimmed,
       var(--color-sys-on-surface-subtle));
   font-size: 13px;
@@ -174,7 +174,7 @@
 }
 
 :host([suggest-style='default']:not([override-clamp-line-num='-1']))
-    #contents {
+    #primaryText {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--clamp-line-num);
   display: -webkit-box;
@@ -220,7 +220,7 @@
   outline: 2px solid var(--cr-focus-outline-color);
 }
 
-:host([suggest-style='rich-image']) #description,
+:host([suggest-style='rich-image']) #secondaryText,
 :host([suggest-style='rich-image']) #focusIndicator,
 :host([suggest-style='rich-image']) #iconContainer,
 :host([suggest-style='rich-image']) #remove {
@@ -268,7 +268,7 @@
   padding-inline: 0;
 }
 
-:host([suggest-style='rich-image'][loading]) #contents {
+:host([suggest-style='rich-image'][loading]) #primaryText {
   background-color: var(
       --color-composebox-ghost-card-background, rgba(31, 31, 31, 0.08));
   border-radius: 8px;

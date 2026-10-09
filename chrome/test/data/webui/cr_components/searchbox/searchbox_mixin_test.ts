@@ -165,10 +165,8 @@ function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   const {primaryText, secondaryText} = match.suggestTemplate;
   const separatorText =
       secondaryText ? loadTimeData.getString('searchboxSeparator') : '';
-  const contents = matchEl.$.contents.textContent;
-  const separator = matchEl.$.separator.textContent;
-  const description = matchEl.$.description.textContent;
-  const text = contents + separator + description;
+  const text = matchEl.$.primaryText.textContent +
+      matchEl.$.separator.textContent + matchEl.$.secondaryText.textContent;
   assertEquals(primaryText + separatorText + secondaryText, text);
 }
 

@@ -123,8 +123,8 @@
   padding-inline-start: 8px;
 }
 
-#contents,
-#description {
+#primaryText,
+#secondaryText {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -228,24 +228,24 @@
   display: none;
 }
 
-:host([secondary-text-placement='below-primary-text']) #contents,
-:host([secondary-text-placement='below-primary-text']) #description {
+:host([secondary-text-placement='below-primary-text']) #primaryText,
+:host([secondary-text-placement='below-primary-text']) #secondaryText {
   width: 100%;
 }
 
-/* Deemphasizes description placed below the contents. */
-:host([secondary-text-placement='below-primary-text']) #description {
+/* Deemphasizes secondary text placed below the primary text. */
+:host([secondary-text-placement='below-primary-text']) #secondaryText {
   font-size: .875em;
 }
 
-:host([is-contextual-suggestion_]:not([show-contextual-description])) #description,
+:host([is-contextual-suggestion_]:not([show-contextual-description])) #secondaryText,
 :host([is-contextual-suggestion_]:not([show-contextual-description])) #separator {
   display: none;
 }
 
-:host([is-contextual-suggestion_]) .container:not(.actions):hover #description,
+:host([is-contextual-suggestion_]) .container:not(.actions):hover #secondaryText,
 :host([is-contextual-suggestion_]) .container:not(.actions):hover #separator,
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #description,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #secondaryText,
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #separator {
   display: inline;
 }
@@ -256,31 +256,31 @@
 
 /* In the lens side panel searchbox, the typed prefix of the match should
  * have a different color than the rest of the autocomplete suggestion. */
-:host(:not([is-top-chrome-searchbox_])) #contents span:not(.match),
+:host(:not([is-top-chrome-searchbox_])) #primaryText span:not(.match),
 #ellipsis {
   color: var(--color-searchbox-results-typed-prefix, --color-searchbox-results-foreground);
 }
 
-/* Used to override contents color in zero prefix matches */
-:host-context([has-empty-input]) #contents span,
+/* Used to override primary text color in zero prefix matches */
+:host-context([has-empty-input]) #primaryText span,
 :host-context([has-empty-input]) #ellipsis {
   color: var(--color-searchbox-results-foreground);
 }
 
-/* Use dimmed color for descriptions. */
-#description,
+/* Use dimmed color for secondary text. */
+#secondaryText,
 .dim {
   color: var(--color-searchbox-results-foreground-dimmed);
 }
 
-/* Uses a dimmed color for description for entities. */
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #description,
+/* Uses a dimmed color for secondary text for entities. */
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #secondaryText,
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .dim {
   color: var(--color-searchbox-results-dim-selected);
 }
 
 /* URL ellipsis color to match the URL text color */
-#description:has(.url),
+#secondaryText:has(.url),
 .url {
   color: var(--color-searchbox-results-url);
 }
@@ -291,13 +291,13 @@
 
 /* For URL suggestions, allow customizing the text-to-URL distribution ratio via
  * custom properties (e.g. for narrow displays like small Loomnibox). */
-#suggestion:has(.url) #contents {
-  flex-shrink: var(--cr-searchbox-url-contents-flex-shrink, 1);
-  max-width: var(--cr-searchbox-url-contents-max-width, 100%);
+#suggestion:has(.url) #primaryText {
+  flex-shrink: var(--cr-searchbox-url-primary-text-flex-shrink, 1);
+  max-width: var(--cr-searchbox-url-primary-text-max-width, 100%);
 }
 
-#description:has(.url) {
-  flex-shrink: var(--cr-searchbox-url-description-flex-shrink, 1);
+#secondaryText:has(.url) {
+  flex-shrink: var(--cr-searchbox-url-secondary-text-flex-shrink, 1);
 }
 
 #remove {
@@ -367,9 +367,9 @@
 }
 
 :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
-    #contents,
+    #primaryText,
 :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
-    #description {
+    #secondaryText {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   display: -webkit-box;
@@ -378,14 +378,14 @@
 }
 
 :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
-    #contents {
+    #primaryText {
   font-size: 13px;
   line-height: 20px;
   margin-block-end: 4px;
 }
 
 :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
-    #description {
+    #secondaryText {
   font-size: 12px;
   line-height: 16px;
 }

@@ -264,7 +264,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertTrue(!!matchEl.shadowRoot.querySelector('#remove.selected'));
   });
 
-  test('ContentsAndDescriptionWithClassifications', async () => {
+  test('PrimaryAndSecondaryTextWithClassifications', async () => {
     const match = createAutocompleteMatch();
     match.suggestTemplate.primaryText = 'test content';
     match.suggestTemplate.primaryTextClass =
@@ -275,18 +275,18 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const contentsEl = matchEl.shadowRoot.querySelector('#contents');
-    assertTrue(!!contentsEl);
+    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
+    assertTrue(!!primaryTextEl);
     // 'test ' is rendered unstyled. 'content' is rendered as a "match".
     assertEquals(
         '<span>test </span><span class="match">content</span>',
-        contentsEl.innerHTML);
-    const descriptionEl = matchEl.shadowRoot.querySelector('#description');
-    assertTrue(!!descriptionEl);
+        primaryTextEl.innerHTML);
+    const secondaryTextEl = matchEl.shadowRoot.querySelector('#secondaryText');
+    assertTrue(!!secondaryTextEl);
     // 'test ' is rendered unstyled. 'description' is rendered as a "match".
     assertEquals(
         '<span>test </span><span class="match">description</span>',
-        descriptionEl.innerHTML);
+        secondaryTextEl.innerHTML);
   });
 
   test('ClassificationsNotStartingAtZeroIndex', async () => {
@@ -296,16 +296,16 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const contentsEl = matchEl.shadowRoot.querySelector('#contents');
-    assertTrue(!!contentsEl);
+    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
+    assertTrue(!!primaryTextEl);
     // 'prefix' is rendered unstyled.
     assertEquals(
         '<span>prefix </span><span class="match">content</span>',
-        contentsEl.innerHTML);
+        primaryTextEl.innerHTML);
   });
 
 
-  test('EscapesContentsAndDescription', async () => {
+  test('EscapesPrimaryAndSecondaryText', async () => {
     const match = createAutocompleteMatch();
     match.suggestTemplate.primaryText =
         '<script>alert("xss")</script>Safe Content';
@@ -316,21 +316,21 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const contentsEl = matchEl.shadowRoot.querySelector('#contents');
-    assertTrue(!!contentsEl);
-    // `<script>` HTML tag is escaped. Contents is rendered unstyled.
+    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
+    assertTrue(!!primaryTextEl);
+    // `<script>` HTML tag is escaped. Primary text is rendered unstyled.
     assertEquals(
         '<span>&lt;script&gt;alert("xss")&lt;/script&gt;Safe Content</span>',
-        contentsEl.innerHTML);
-    assertEquals(0, contentsEl.querySelectorAll('script').length);
+        primaryTextEl.innerHTML);
+    assertEquals(0, primaryTextEl.querySelectorAll('script').length);
 
-    const descriptionEl = matchEl.shadowRoot.querySelector('#description');
-    assertTrue(!!descriptionEl);
-    // `<img>` HTML tag is escaped. Description is rendered unstyled.
+    const secondaryTextEl = matchEl.shadowRoot.querySelector('#secondaryText');
+    assertTrue(!!secondaryTextEl);
+    // `<img>` HTML tag is escaped. Secondary text is rendered unstyled.
     assertEquals(
         '<span>&lt;img src=x onerror=alert(1)&gt;Safe Description</span>',
-        descriptionEl.innerHTML);
-    assertEquals(0, descriptionEl.querySelectorAll('img').length);
+        secondaryTextEl.innerHTML);
+    assertEquals(0, secondaryTextEl.querySelectorAll('img').length);
   });
 
   test('AriaLabelUpdatingWithVirtualFocus', async () => {
@@ -461,7 +461,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
-  test('DescriptionWithClassifications', async () => {
+  test('SecondaryTextWithClassifications', async () => {
     matchEl.match = createAutocompleteMatch({
       suggestTemplate: createSuggestTemplateInfo({
         secondaryText: 'MIA Basketball',
@@ -473,7 +473,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     });
     await microtasksFinished();
 
-    const spans = matchEl.$.description.querySelectorAll('span');
+    const spans = matchEl.$.secondaryText.querySelectorAll('span');
     assertEquals(2, spans.length);
     assertEquals('MIA ', spans[0]!.textContent);
     assertTrue(spans[0]!.classList.contains('match'));

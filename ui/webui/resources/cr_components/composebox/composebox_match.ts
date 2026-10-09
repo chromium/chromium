@@ -74,10 +74,7 @@ export class ComposeboxMatchElement extends CrLitElement {
         attribute: 'suggest-style',
       },
 
-      /**
-       * Where the description (secondary text) is rendered relative to the
-       * contents (primary text).
-       */
+      /** Where the secondary text is rendered relative to the primary text. */
       secondaryTextPlacement: {
         type: String,
         reflect: true,

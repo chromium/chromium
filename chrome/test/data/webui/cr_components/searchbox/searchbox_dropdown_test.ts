@@ -40,9 +40,9 @@ suite('SearchboxDropdown', () => {
     // Assert.
     const matchEls = dropdown.shadowRoot.querySelectorAll('cr-searchbox-match');
     assertEquals(1, matchEls.length);
-    const contentsEl = $$(matchEls[0]!, '#contents');
-    assertTrue(!!contentsEl);
-    assertEquals('foo', contentsEl.textContent.trim());
+    const primaryTextEl = $$(matchEls[0]!, '#primaryText');
+    assertTrue(!!primaryTextEl);
+    assertEquals('foo', primaryTextEl.textContent.trim());
     // The visible element's matchIndex must retain its original index (1),
     // even though it is the first (and only) visible element.
     assertEquals(1, matchEls[0]!.matchIndex);

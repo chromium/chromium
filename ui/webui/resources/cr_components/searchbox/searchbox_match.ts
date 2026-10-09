@@ -55,8 +55,8 @@ type ActionEvent = CustomEvent<{
 export interface SearchboxMatchElement {
   $: {
     icon: SearchboxIconElement,
-    contents: HTMLElement,
-    description: HTMLElement,
+    primaryText: HTMLElement,
+    secondaryText: HTMLElement,
     remove: HTMLElement,
     separator: HTMLElement,
     focusIndicator: HTMLElement,
@@ -122,10 +122,7 @@ export class SearchboxMatchElement extends CrLitElement {
 
       match: {type: Object},
 
-      /**
-       * Where the description (secondary text) is rendered relative to the
-       * contents (primary text).
-       */
+      /** Where the secondary text is rendered relative to the primary text. */
       secondaryTextPlacement: {
         type: String,
         reflect: true,
@@ -172,11 +169,11 @@ export class SearchboxMatchElement extends CrLitElement {
 
       forceHideEllipsis_: {type: Boolean},
 
-      /** Rendered match contents based on autocomplete provided styling. */
-      contentsHtml_: {type: String},
+      /** Rendered primary text based on autocomplete provided styling. */
+      primaryTextHtml_: {type: String},
 
-      /** Rendered match description based on autocomplete provided styling. */
-      descriptionHtml_: {type: String},
+      /** Rendered secondary text based on autocomplete provided styling. */
+      secondaryTextHtml_: {type: String},
 
       enableCsbMotionTweaks_: {
         type: Boolean,
@@ -188,7 +185,7 @@ export class SearchboxMatchElement extends CrLitElement {
 
       removeButtonTitle_: {type: String},
 
-      /** Used to separate the contents from the description. */
+      /** Used to separate the primary text from the secondary text. */
       separatorText_: {type: String},
 
       /** Rendered tail suggest common prefix. */
@@ -218,9 +215,9 @@ export class SearchboxMatchElement extends CrLitElement {
       loadTimeData.getBoolean('isLensSearchbox');
   private accessor forceHideEllipsis_: boolean =
       loadTimeData.getBoolean('forceHideEllipsis');
-  protected accessor contentsHtml_: TrustedHTML =
+  protected accessor primaryTextHtml_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
-  protected accessor descriptionHtml_: TrustedHTML =
+  protected accessor secondaryTextHtml_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
   protected accessor enableCsbMotionTweaks_: boolean =
       loadTimeData.getBoolean('enableCsbMotionTweaks');
@@ -242,8 +239,8 @@ export class SearchboxMatchElement extends CrLitElement {
 
     if (changedProperties.has('match')) {
       this.ariaLabel = this.computeAriaLabel_();
-      this.contentsHtml_ = this.computeContentsHtml_();
-      this.descriptionHtml_ = this.computeDescriptionHtml_();
+      this.primaryTextHtml_ = this.computePrimaryTextHtml_();
+      this.secondaryTextHtml_ = this.computeSecondaryTextHtml_();
       this.hasAction = this.computeHasAction_();
       this.hasKeywordChip = this.computeHasKeywordChip_();
       this.hasImage = this.computeHasImage_();
@@ -433,29 +430,26 @@ export class SearchboxMatchElement extends CrLitElement {
     }
   }
 
-  // TODO(crbug.com/571054281): Rename "contents" and "description" in this
-  // element (methods, properties, CSS) to primary and secondary text, to
-  // match SuggestTemplateInfo. Also do this in cr-composebox-match.
-  private computeContentsHtml_(): TrustedHTML {
+  private computePrimaryTextHtml_(): TrustedHTML {
     if (!this.match) {
       return window.trustedTypes!.emptyHTML;
     }
     // See //components/omnibox/browser/suggest_template_info_mojo_utils.cc
     return this.sanitizeInnerHtml_(
         this.renderTextWithClassifications_(
-                this.getMatchContents_(),
-                this.getMatchContentsClassifications_())
+                this.getMatchPrimaryText_(),
+                this.getMatchPrimaryTextClassifications_())
             .innerHTML);
   }
 
-  private computeDescriptionHtml_(): TrustedHTML {
+  private computeSecondaryTextHtml_(): TrustedHTML {
     if (!this.match) {
       return window.trustedTypes!.emptyHTML;
     }
     return this.sanitizeInnerHtml_(
         this.renderTextWithClassifications_(
-                this.getMatchDescription_(),
-                this.getMatchDescriptionClassifications_())
+                this.getMatchSecondaryText_(),
+                this.getMatchSecondaryTextClassifications_())
             .innerHTML);
   }
 
@@ -501,7 +495,7 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   private computeSeparatorText_(): string {
-    return this.getMatchDescription_() ?
+    return this.getMatchSecondaryText_() ?
         loadTimeData.getString('searchboxSeparator') :
         '';
   }
@@ -594,19 +588,19 @@ export class SearchboxMatchElement extends CrLitElement {
     return container;
   }
 
-  private getMatchContents_(): string {
+  private getMatchPrimaryText_(): string {
     return this.match ? this.match.suggestTemplate.primaryText : '';
   }
 
-  private getMatchDescription_(): string {
+  private getMatchSecondaryText_(): string {
     return this.match ? this.match.suggestTemplate.secondaryText : '';
   }
 
-  private getMatchContentsClassifications_(): ACMatchClassification[] {
+  private getMatchPrimaryTextClassifications_(): ACMatchClassification[] {
     return this.match ? this.match.suggestTemplate.primaryTextClass : [];
   }
 
-  private getMatchDescriptionClassifications_(): ACMatchClassification[] {
+  private getMatchSecondaryTextClassifications_(): ACMatchClassification[] {
     return this.match ? this.match.suggestTemplate.secondaryTextClass : [];
   }
 

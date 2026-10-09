@@ -71,9 +71,9 @@ suite('ComposeboxMatch', () => {
     assertEquals(
         'below-primary-text',
         matchElement.getAttribute('secondary-text-placement'));
-    assertEquals('test contents', getTextContent(matchElement, '#contents'));
+    assertEquals('test contents', getTextContent(matchElement, '#primaryText'));
     assertEquals(
-        'test description', getTextContent(matchElement, '#description'));
+        'test description', getTextContent(matchElement, '#secondaryText'));
 
     // The two-row height is not fixed; it falls out of the 24px primary line
     // and 20px secondary line inside the 10px of block padding.
@@ -108,16 +108,17 @@ suite('ComposeboxMatch', () => {
     assertTrue(!!container);
     assertStyle(container, 'padding-block-start', '0px');
     assertStyle(container, 'padding-block-end', '0px');
-    const description = matchElement.shadowRoot.querySelector('#description');
-    assertTrue(!!description);
-    assertStyle(description, 'display', 'none');
+    const secondaryText =
+        matchElement.shadowRoot.querySelector('#secondaryText');
+    assertTrue(!!secondaryText);
+    assertStyle(secondaryText, 'display', 'none');
   });
 
   test('clamps the primary text of two-row matches', async () => {
     // #textContainer holds both rows for two-row matches, so a line clamp on it
-    // would cut the secondary text and has to be applied to #contents instead.
-    // `overrideClampLineNum` is read in connectedCallback, so it has to be set
-    // before the element is attached.
+    // would cut the secondary text and has to be applied to #primaryText
+    // instead. `overrideClampLineNum` is read in connectedCallback, so it has
+    // to be set before the element is attached.
     const el: ComposeboxMatchElement =
         document.createElement('cr-composebox-match');
     el.overrideClampLineNum = 3;
@@ -131,15 +132,15 @@ suite('ComposeboxMatch', () => {
     });
     await microtasksFinished();
 
-    const contents = el.shadowRoot.querySelector('#contents');
-    const description = el.shadowRoot.querySelector('#description');
-    assertTrue(!!contents);
-    assertTrue(!!description);
+    const primaryText = el.shadowRoot.querySelector('#primaryText');
+    const secondaryText = el.shadowRoot.querySelector('#secondaryText');
+    assertTrue(!!primaryText);
+    assertTrue(!!secondaryText);
     assertStyle(el.$.textContainer, '-webkit-line-clamp', 'none');
-    assertStyle(contents, '-webkit-line-clamp', '3');
+    assertStyle(primaryText, '-webkit-line-clamp', '3');
     // The secondary text always stays on a single line.
-    assertStyle(description, '-webkit-line-clamp', 'none');
-    assertStyle(description, 'white-space', 'nowrap');
+    assertStyle(secondaryText, '-webkit-line-clamp', 'none');
+    assertStyle(secondaryText, 'white-space', 'nowrap');
 
     // Clean up.
     el.remove();
@@ -265,9 +266,9 @@ suite('ComposeboxMatch', () => {
         await microtasksFinished();
 
         assertEquals('3', el.style.getPropertyValue('--clamp-line-num'));
-        const contents = el.shadowRoot.querySelector('#contents');
-        assertTrue(!!contents);
-        assertStyle(contents, '-webkit-line-clamp', '3');
+        const primaryText = el.shadowRoot.querySelector('#primaryText');
+        assertTrue(!!primaryText);
+        assertStyle(primaryText, '-webkit-line-clamp', '3');
 
         // Clean up.
         el.remove();

@@ -244,8 +244,8 @@ cr-most-visited {
   /* In small Loomnibox, prioritize displaying page title/contents over the
    * URL in autocomplete suggestions while preserving at least ~35% width
    * for the URL. */
-  --cr-searchbox-url-contents-flex-shrink: 0;
-  --cr-searchbox-url-contents-max-width: 65%;
+  --cr-searchbox-url-primary-text-flex-shrink: 0;
+  --cr-searchbox-url-primary-text-max-width: 65%;
 }
 
 cr-most-visited[hide-title] {

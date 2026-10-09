@@ -25,9 +25,9 @@ export function getHtml(this: SearchboxMatchElement) {
           ellipsis prepended to the suggestion. -->
       <span id="ellipsis" ?hidden="${!this.showEllipsis}">...&nbsp;</span>
       <span id="suggestion">
-        <span id="contents" .innerHTML="${this.contentsHtml_}"></span>
+        <span id="primaryText" .innerHTML="${this.primaryTextHtml_}"></span>
         <span id="separator" class="dim">${this.separatorText_}</span>
-        <span id="description" .innerHTML="${this.descriptionHtml_}"></span>
+        <span id="secondaryText" .innerHTML="${this.secondaryTextHtml_}"></span>
       </span>
     </div>
   </div>
