@@ -27,6 +27,23 @@ namespace {
 // Minimal zero side effects script executed to generate IPC activity.
 constexpr char16_t kHeartbeatScript[] = u";";
 
+// Returns whether `task_state` should keep a background task alive.
+bool ShouldKeepBackgroundTaskAlive(ActorTaskState task_state) {
+  switch (task_state) {
+    case ActorTaskState::kInit:
+    case ActorTaskState::kActing:
+    case ActorTaskState::kReflecting:
+      return true;
+    case ActorTaskState::kWaitingOnUser:
+    case ActorTaskState::kPausedByActor:
+    case ActorTaskState::kPausedByUser:
+    case ActorTaskState::kCancelled:
+    case ActorTaskState::kFinished:
+    case ActorTaskState::kFailed:
+      return false;
+  }
+}
+
 }  // namespace
 
 ActorTaskBackgroundWorker::ActorTaskBackgroundWorker(
@@ -70,6 +87,10 @@ void ActorTaskBackgroundWorker::OnStateChanged(ActorTaskState new_state) {
   if (new_state == ActorTaskState::kActing) {
     UpdateBackgroundTaskSubtitle(delegate_->GetLastTaskUpdate());
     StartHeartbeatTimer();
+  } else if (!ShouldKeepBackgroundTaskAlive(new_state)) {
+    // End the background task before long waits (e.g., paused) to avoid
+    // stalling system progress.
+    FinalizeBackgroundTask(/*success=*/true);
   }
 }
 

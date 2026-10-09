@@ -133,6 +133,11 @@ class ActorTaskBackgroundWorkerTest : public PlatformTest {
     return worker_->heartbeat_timer_.IsRunning();
   }
 
+  // Returns the worker's current background task context.
+  BackgroundContinuedProcessingTaskContext* BackgroundTaskContext() const {
+    return worker_->background_task_context_;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -210,6 +215,71 @@ TEST_F(ActorTaskBackgroundWorkerTest, DestructorFailsLiveContext) {
 
   EXPECT_TRUE(context.completed);
   EXPECT_DOUBLE_EQ(0.0, context.fractionCompleted);
+}
+
+#pragma mark - State policy
+
+// Tests that entering a state that waits on the user or pauses completes the
+// context with success and clears it.
+TEST_F(ActorTaskBackgroundWorkerTest, LongWaitStatesCompleteContext) {
+  for (ActorTaskState long_wait_state :
+       {ActorTaskState::kWaitingOnUser, ActorTaskState::kPausedByActor,
+        ActorTaskState::kPausedByUser}) {
+    BackgroundContinuedProcessingTaskContext* context = CreateContext();
+    worker_->SetContext(context);
+
+    worker_->OnStateChanged(long_wait_state);
+
+    EXPECT_TRUE(context.completed);
+    EXPECT_DOUBLE_EQ(1.0, context.fractionCompleted);
+    EXPECT_EQ(nil, BackgroundTaskContext());
+  }
+}
+
+// Tests that the init, acting and reflecting states keep the context.
+TEST_F(ActorTaskBackgroundWorkerTest, ActiveStatesKeepContext) {
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  worker_->SetContext(context);
+
+  for (ActorTaskState active_state :
+       {ActorTaskState::kInit, ActorTaskState::kActing,
+        ActorTaskState::kReflecting}) {
+    worker_->OnStateChanged(active_state);
+
+    EXPECT_FALSE(context.completed);
+    EXPECT_NSEQ(context, BackgroundTaskContext());
+  }
+}
+
+// Tests that terminal states don't finalize the context in `OnStateChanged()`,
+// so that `OnStopped()` can report the actual outcome.
+TEST_F(ActorTaskBackgroundWorkerTest, TerminalStatesLeaveContextToStop) {
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  worker_->SetContext(context);
+
+  worker_->OnStateChanged(ActorTaskState::kCancelled);
+  EXPECT_FALSE(context.completed);
+  EXPECT_NSEQ(context, BackgroundTaskContext());
+
+  worker_->OnStopped(/*success=*/false);
+  EXPECT_TRUE(context.completed);
+  EXPECT_DOUBLE_EQ(0.0, context.fractionCompleted);
+  EXPECT_EQ(nil, BackgroundTaskContext());
+}
+
+// Tests that an already completed (e.g. expired) context is only cleared when
+// entering a long-wait state, without being completed again.
+TEST_F(ActorTaskBackgroundWorkerTest, CompletedContextIsClearedOnLongWait) {
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  worker_->SetContext(context);
+  [context setTaskCompletedWithSuccess:NO];
+
+  worker_->OnStateChanged(ActorTaskState::kPausedByActor);
+
+  // Progress isn't filled, so the context wasn't completed again.
+  EXPECT_TRUE(context.completed);
+  EXPECT_DOUBLE_EQ(0.0, context.fractionCompleted);
+  EXPECT_EQ(nil, BackgroundTaskContext());
 }
 
 // Tests that the worker is inert when backgrounding is disabled at

@@ -133,7 +133,6 @@
 
 @end
 
-
 @interface BarebonesActorTaskUpdatesObserver
     : NSObject <ActorTaskUpdatesObserver>
 @end
@@ -1331,6 +1330,25 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
   task.reset();
 
   EXPECT_TRUE(context.completed);
+}
+
+// Tests that waiting on user confirmation completes the background task with
+// success, through the task's state change.
+TEST_F(ActorTaskBackgroundingTest, WaitingOnUserCompletesBackgroundTask) {
+  task_->Act({}, "Act", base::DoNothing());
+  TestBackgroundContinuedProcessingTaskContext* context =
+      CreateBackgroundTaskContext();
+  task_->SetBackgroundTaskContext(context);
+
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
+                   "Please confirm");
+  ASSERT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+
+  EXPECT_TRUE(context.completed);
+  EXPECT_DOUBLE_EQ(context.fractionCompleted, 1.0);
 }
 
 // Test that the task forwards actuation to the background worker, which

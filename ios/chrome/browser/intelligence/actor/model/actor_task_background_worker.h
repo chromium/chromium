@@ -72,9 +72,9 @@ class ActorTaskBackgroundWorker {
   // Called when a controlled WebState is destroyed.
   void OnWebStateDestroyed();
 
-  // Called when the task's state changes to `new_state`. Starting to act
-  // refreshes the subtitle from the delegate's last task update and starts the
-  // heartbeat; terminal states stop it.
+  // Called when the task's state changes to `new_state`. Acting refreshes the
+  // subtitle and starts the heartbeat; terminal states stop it; non-terminal
+  // wait or pause states complete the background task with success.
   void OnStateChanged(ActorTaskState new_state);
 
   // Called when the task is about to execute a tool.
