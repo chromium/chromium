@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -48,6 +49,29 @@ class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
     return false;
   }
 
+  bool IsCloseGroupItemEnabled(STGTabsMenuModel* model) {
+    std::u16string target_label =
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
+
+    size_t item_count = model->GetItemCount();
+    for (size_t i = 0; i < item_count; ++i) {
+      if (model->GetLabelAt(i) == target_label) {
+        return model->IsEnabledAt(i);
+      }
+    }
+    return false;
+  }
+
+  bool HasItemWithLabel(STGTabsMenuModel* model, const std::u16string& label) {
+    size_t item_count = model->GetItemCount();
+    for (size_t i = 0; i < item_count; ++i) {
+      if (model->GetLabelAt(i) == label) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool IsPinItemPresent(STGTabsMenuModel* model) {
     std::u16string pin_label =
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP);
@@ -73,7 +97,8 @@ class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
   int next_command_id_ = 1;
 };
 
-// TEST 1: Verify "Open group" is ENABLED when the group is closed.
+// TEST 1: Verify "Open group" is ENABLED (and "Close group" not present) when
+// the group is closed.
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                        OpenGroupEnabledWhenClosed) {
   SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
@@ -88,15 +113,22 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                   base::Unretained(this)));
 
   EXPECT_TRUE(IsOpenGroupItemEnabled(&model));
+  EXPECT_FALSE(HasItemWithLabel(
+      &model,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)));
+  EXPECT_EQ(model.GetElementIdentifierAt(0), STGTabsMenuModel::kOpenGroup);
 }
 
-// TEST 2: Verify "Open group" is DISABLED when the group is open and expanded.
+// TEST 2: Verify "Close group" is ENABLED (and "Open group" not present) when
+// the group is open and expanded, and executing it closes the group.
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
-                       OpenGroupDisabledWhenOpenAndExpanded) {
+                       CloseGroupEnabledWhenOpenAndExpanded) {
+  base::UserActionTester user_action_tester;
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
-  TabGroupId local_id = browser()->GetTabStripModel()->AddToNewGroup({0});
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  TabGroupId local_id = tsm->AddToNewGroup({0});
 
-  browser()->GetTabStripModel()->ActivateTabAt(0);
+  tsm->ActivateTabAt(0);
   SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
                       std::nullopt);
   group.SetLocalGroupId(local_id);
@@ -109,7 +141,50 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                   &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
                   base::Unretained(this)));
 
-  EXPECT_FALSE(IsOpenGroupItemEnabled(&model));
+  EXPECT_FALSE(HasItemWithLabel(
+      &model, l10n_util::GetStringUTF16(IDS_OPEN_GROUP_IN_BROWSER_MENU)));
+  EXPECT_TRUE(IsCloseGroupItemEnabled(&model));
+  EXPECT_EQ(model.GetElementIdentifierAt(0), STGTabsMenuModel::kCloseGroup);
+
+  EXPECT_TRUE(tsm->group_model()->ContainsTabGroup(local_id));
+  model.ActivatedAt(0);
+  EXPECT_FALSE(tsm->group_model()->ContainsTabGroup(local_id));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "TabGroups_SavedTabGroups_TabGroupSubmenu_Closed"),
+            1);
+}
+
+// TEST 3: Verify "Close group" works from the App Menu context.
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
+                       CloseGroupFromAppMenu) {
+  base::UserActionTester user_action_tester;
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  TabGroupId local_id = tsm->AddToNewGroup({0});
+
+  tsm->ActivateTabAt(0);
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
+                      std::nullopt);
+  group.SetLocalGroupId(local_id);
+  GetSyncService()->AddGroup(group);
+
+  STGTabsMenuModel model(browser(), TabGroupMenuContext::APP_MENU);
+  model.Build(group,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  EXPECT_FALSE(HasItemWithLabel(
+      &model, l10n_util::GetStringUTF16(IDS_OPEN_GROUP_IN_BROWSER_MENU)));
+  EXPECT_TRUE(IsCloseGroupItemEnabled(&model));
+  EXPECT_EQ(model.GetElementIdentifierAt(0), STGTabsMenuModel::kCloseGroup);
+
+  EXPECT_TRUE(tsm->group_model()->ContainsTabGroup(local_id));
+  model.ActivatedAt(0);
+  EXPECT_FALSE(tsm->group_model()->ContainsTabGroup(local_id));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "TabGroups_SavedTabGroups_TabGroupSubmenu_Closed"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
