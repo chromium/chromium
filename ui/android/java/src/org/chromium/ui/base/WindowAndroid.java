@@ -450,12 +450,12 @@ public class WindowAndroid
 
     private boolean shouldTrackOcclusionWithTrustedPresentationApi() {
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        String mode = UiAndroidFeatureList.sAndroidWindowOcclusionTrackingMode.getValue();
         return mOcclusionTrackingAllowed
-                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
-                && "trusted_presentation_strict_mode"
-                        .equals(UiAndroidFeatureList.sAndroidWindowOcclusionTrackingMode.getValue())
                 && delegate != null
-                && delegate.isStrictOcclusionAvailable();
+                && delegate.isStrictOcclusionAvailable()
+                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
+                && ("trusted_presentation_strict_mode".equals(mode) || "auto".equals(mode));
     }
 
     private void maybeTrackOcclusionWithTrustedPresentationApi() {

@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
@@ -647,13 +648,23 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @EnsuresNonNullIf("mWindowAndroid")
     private boolean isSelfOcclusionTrackingEnabled() {
-        return mWindowAndroid != null
-                && mWindowAndroid.isOcclusionTrackingAllowed()
-                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
-                && "self_occlusion"
-                        .equals(
-                                UiAndroidFeatureList.sAndroidWindowOcclusionTrackingMode
-                                        .getValue());
+        if (mWindowAndroid == null
+                || !mWindowAndroid.isOcclusionTrackingAllowed()
+                || !UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()) {
+            return false;
+        }
+
+        String mode = UiAndroidFeatureList.sAndroidWindowOcclusionTrackingMode.getValue();
+        if ("self_occlusion".equals(mode)) {
+            return true;
+        }
+
+        if ("auto".equals(mode)) {
+            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            return delegate == null || !delegate.isStrictOcclusionAvailable();
+        }
+
+        return false;
     }
 
     @CallSuper
