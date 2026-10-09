@@ -17,8 +17,9 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.actions.button.DelegateButtonData;
-import org.chromium.chrome.browser.ui.actions.button.DisplayButtonData;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.actions.button.ResourceButtonData;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -330,11 +330,19 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 enabled ? mEnabledNewTabButtonData : mDisabledNewTabButtonData);
     }
 
+    private void clearReferenceButtonAndFocusTabSwitcher() {
+        mReferenceButtonDataSupplier.set(null);
+        if (isFocused()) {
+            PaneHubController controller = getPaneHubController();
+            assert controller != null : "isFocused requires a non-null PaneHubController.";
+            controller.focusPane(PaneId.TAB_SWITCHER);
+        }
+    }
+
     private void runIncognitoTabSwitcherPaneCleanup() {
         TabSwitcherPaneCoordinator paneCoordinator = getTabSwitcherPaneCoordinator();
         if (paneCoordinator == null) {
-            IncognitoTabSwitcherPaneCleaner.cleanUp(
-                    mReferenceButtonDataSupplier, isFocused(), getPaneHubController(), null);
+            clearReferenceButtonAndFocusTabSwitcher();
             return;
         }
 
@@ -349,19 +357,25 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         NonNullObservableSupplier<Boolean> isAnimatingSupplier =
                 paneCoordinator.getIsRecyclerViewAnimatorRunning();
 
-        Runnable cleanUpRunnable =
+        Runnable doCleanUp =
                 () -> {
+                    clearReferenceButtonAndFocusTabSwitcher();
                     destroyTabSwitcherPaneCoordinator();
                     mLastClosedTabId = Tab.INVALID_TAB_ID;
                 };
 
+        Runnable postedCleanUp =
+                () -> {
+                    // The cleanup is canceled if the coordinator changed or a new incognito tab was
+                    // opened before the posted task ran.
+                    if (getTabSwitcherPaneCoordinator() != paneCoordinator) return;
+                    IncognitoTabModel incognitoTabModel = getIncognitoTabModel();
+                    if (incognitoTabModel != null && incognitoTabModel.getCount() > 0) return;
+                    doCleanUp.run();
+                };
+
         return new IncognitoTabSwitcherPaneCleaner(
-                isAnimatingSupplier,
-                mReferenceButtonDataSupplier,
-                cleanUpRunnable,
-                getPaneHubController(),
-                isFocused(),
-                finalTabCloseMethod);
+                isAnimatingSupplier, postedCleanUp, doCleanUp, finalTabCloseMethod, isFocused());
     }
 
     private @TabCloseMethod int getFinalTabCloseMethod(TabSwitcherPaneCoordinator paneCoordinator) {
@@ -404,36 +418,31 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private static class IncognitoTabSwitcherPaneCleaner {
         private final @Nullable NonNullObservableSupplier<Boolean> mIsAnimatingSupplier;
         private final Callback<Boolean> mOnAnimationStatusChange = this::onAnimationStatusChange;
-        private final SettableNullableObservableSupplier<DisplayButtonData>
-                mReferenceButtonDataSupplier;
-        private final Runnable mCleanUpRunnable;
-        private final @Nullable PaneHubController mController;
-        private final boolean mIsFocused;
+        private final Runnable mPostedCleanUp;
+        private final Runnable mDoCleanUp;
         private final @TabCloseMethod int mFinalTabCloseMethod;
+        private final boolean mIsFocused;
         private boolean mStartedAnimating;
         private boolean mForceCleanup;
 
         /**
          * @param isAnimatingSupplier Provides the animation status.
-         * @param referenceButtonDataSupplier Provides the reference button data.
-         * @param cleanUpRunnable Runnable to run when cleanup should occur.
-         * @param controller The controller to focus hub panes.
-         * @param isFocused Whether the pane is focused.
+         * @param postedCleanUp Runnable to run when cleanup should occur asynchronously.
+         * @param doCleanUp Runnable to run when cleanup should occur synchronously.
          * @param finalTabCloseMethod How the final tab was closed.
+         * @param isFocused Whether the pane is currently focused.
          */
         public IncognitoTabSwitcherPaneCleaner(
                 @Nullable NonNullObservableSupplier<Boolean> isAnimatingSupplier,
-                SettableNullableObservableSupplier<DisplayButtonData> referenceButtonDataSupplier,
-                Runnable cleanUpRunnable,
-                @Nullable PaneHubController controller,
-                boolean isFocused,
-                @TabCloseMethod int finalTabCloseMethod) {
+                Runnable postedCleanUp,
+                Runnable doCleanUp,
+                @TabCloseMethod int finalTabCloseMethod,
+                boolean isFocused) {
             mIsAnimatingSupplier = isAnimatingSupplier;
-            mReferenceButtonDataSupplier = referenceButtonDataSupplier;
-            mCleanUpRunnable = cleanUpRunnable;
-            mController = controller;
-            mIsFocused = isFocused;
+            mPostedCleanUp = postedCleanUp;
+            mDoCleanUp = doCleanUp;
             mFinalTabCloseMethod = finalTabCloseMethod;
+            mIsFocused = isFocused;
         }
 
         /**
@@ -457,9 +466,17 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 mStartedAnimating = isAnimating;
                 return;
             }
-            cleanUp(mReferenceButtonDataSupplier, mIsFocused, mController, mCleanUpRunnable);
             if (mIsAnimatingSupplier != null) {
                 mIsAnimatingSupplier.removeObserver(mOnAnimationStatusChange);
+            }
+
+            if (mForceCleanup) {
+                mDoCleanUp.run();
+            } else {
+                // Post cleanup: this observer can fire from RecyclerView#onDetachedFromWindow
+                // during a view-tree detach traversal, and cleanup adds/removes hub views,
+                // which is unsafe mid-traversal.
+                PostTask.postTask(TaskTraits.UI_DEFAULT, mPostedCleanUp);
             }
         }
 
@@ -496,29 +513,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
          */
         private boolean shouldNotCleanup(Boolean isAnimating) {
             return !mForceCleanup && (isAnimating || !mStartedAnimating);
-        }
-
-        /**
-         * Performs the cleanup of the Incognito Tab Switcher pane.
-         *
-         * @param referenceButtonDataSupplier Provides the reference button data.
-         * @param isFocused Whether the pane is focused.
-         * @param controller The controller to focus hub panes.
-         * @param cleanUpRunnable Runnable to run when cleanup should occur.
-         */
-        public static void cleanUp(
-                SettableNullableObservableSupplier<DisplayButtonData> referenceButtonDataSupplier,
-                boolean isFocused,
-                @Nullable PaneHubController controller,
-                @Nullable Runnable cleanUpRunnable) {
-            referenceButtonDataSupplier.set(null);
-            if (isFocused) {
-                assert controller != null : "isFocused requires a non-null PaneHubController.";
-                controller.focusPane(PaneId.TAB_SWITCHER);
-            }
-            if (cleanUpRunnable != null) {
-                cleanUpRunnable.run();
-            }
         }
     }
 

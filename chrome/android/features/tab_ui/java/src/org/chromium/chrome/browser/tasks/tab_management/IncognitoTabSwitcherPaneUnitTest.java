@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -89,6 +90,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private IncognitoReauthController mIncognitoReauthController;
     @Mock private TabSwitcherPaneCoordinatorFactory mTabSwitcherPaneCoordinatorFactory;
     @Mock private TabSwitcherPaneCoordinator mTabSwitcherPaneCoordinator;
+    @Mock private TabSwitcherPaneCoordinator mNewTabSwitcherPaneCoordinator;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private IncognitoTabModel mIncognitoTabModel;
     @Mock private PaneHubController mPaneHubController;
@@ -169,7 +171,9 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
     @After
     public void tearDown() {
-        mIncognitoTabSwitcherPane.destroy();
+        if (mIncognitoTabSwitcherPane != null) {
+            mIncognitoTabSwitcherPane.destroy();
+        }
         verify(mTabSwitcherPaneCoordinator, times(mTimesCreated)).destroy();
 
         var incognitoTabModelObservers = mIncognitoTabModelObserverCaptor.getAllValues();
@@ -430,6 +434,118 @@ public class IncognitoTabSwitcherPaneUnitTest {
         assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
     }
 
+    private void setupAndTriggerCleanUpIsPosted() {
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        assertNotNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        mIncognitoTabSwitcherPane.setPaneHubController(mPaneHubController);
+
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        mIncognitoTabSwitcherPane.initWithNative();
+        verify(mIncognitoTabModel).addIncognitoObserver(mIncognitoTabModelObserverCaptor.capture());
+        IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
+
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        observer.didBecomeEmpty();
+
+        mIsRecyclerViewAnimatorRunningSupplier.set(true);
+        mIsRecyclerViewAnimatorRunningSupplier.set(false);
+
+        // Cleanup should not have happened yet, as it's posted.
+        verify(mTabSwitcherPaneCoordinator, never()).destroy();
+        assertNotNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+        verify(mPaneHubController, never()).focusPane(PaneId.TAB_SWITCHER);
+    }
+
+    @Test
+    public void testCleanUpIsPosted() {
+        setupAndTriggerCleanUpIsPosted();
+        assertNotNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
+        // Now idle the looper so the posted task runs.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mPaneHubController).focusPane(PaneId.TAB_SWITCHER);
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+    }
+
+    @Test
+    public void testCleanUpIsPosted_CanceledOnNotEmpty() {
+        setupAndTriggerCleanUpIsPosted();
+
+        // The model is no longer empty before the posted task runs.
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+
+        // Now idle the looper so the posted task runs.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // focusPane should NOT be called because the cleanup was canceled.
+        verify(mPaneHubController, never()).focusPane(PaneId.TAB_SWITCHER);
+        assertNotNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+    }
+
+    @Test
+    public void testCleanUpIsPosted_CanceledOnNewCoordinator() {
+        setupAndTriggerCleanUpIsPosted();
+
+        // Recreate the coordinator (e.g. user opens incognito again quickly).
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+
+        mIncognitoTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
+
+        doReturn(mNewTabSwitcherPaneCoordinator)
+                .when(mTabSwitcherPaneCoordinatorFactory)
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyBoolean(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
+
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        // Now idle the looper so the posted task runs.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // focusPane should NOT be called because the coordinator changed.
+        verify(mPaneHubController, never()).focusPane(PaneId.TAB_SWITCHER);
+    }
+
+    @Test
+    public void testCleanUpIsPosted_NoFocusPaneWhenControllerUnset() {
+        setupAndTriggerCleanUpIsPosted();
+
+        // Pane controller is unset.
+        mIncognitoTabSwitcherPane.setPaneHubController(null);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // focusPane should NOT be called.
+        verify(mPaneHubController, never()).focusPane(PaneId.TAB_SWITCHER);
+        // But the cleanup still ran.
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+    }
+
+    @Test
+    public void testCleanUpIsPosted_CanceledOnDestroy() {
+        setupAndTriggerCleanUpIsPosted();
+
+        // Destroy the pane before the posted task runs.
+        mIncognitoTabSwitcherPane.destroy();
+        mIncognitoTabSwitcherPane = null;
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // focusPane should NOT be called.
+        verify(mPaneHubController, never()).focusPane(PaneId.TAB_SWITCHER);
+    }
+
     @Test
     public void testFinalIncognitoTabWasSwiped() {
         mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
@@ -532,6 +648,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
         IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
 
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
         observer.didBecomeEmpty();
         mIsRecyclerViewAnimatorRunningSupplier.set(true);
         mIsRecyclerViewAnimatorRunningSupplier.set(false);
@@ -542,6 +659,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
 
         // TODO(crbug.com/40946413): These resources need to be updated.
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
         observer.wasFirstTabCreated();
         DisplayButtonData buttonData =
                 mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get();
@@ -554,6 +672,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         assertNotNull(buttonData.resolveIcon(mContext));
 
         mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
         observer.didBecomeEmpty();
         mIsRecyclerViewAnimatorRunningSupplier.set(true);
         mIsRecyclerViewAnimatorRunningSupplier.set(false);
