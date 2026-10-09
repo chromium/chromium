@@ -607,6 +607,12 @@ bool CSSStyleSheet::IsLoading() const {
 }
 
 MediaList* CSSStyleSheet::media() {
+  // https://drafts.csswg.org/cssom/#dom-cssimportrule-media
+  // CSSImportRule.media must return the media attribute of the associated
+  // style sheet, so an imported sheet shares the import rule's MediaList.
+  if (auto* import_rule = DynamicTo<CSSImportRule>(owner_rule_.Get())) {
+    return import_rule->media();
+  }
   if (!media_queries_) {
     media_queries_ = MediaQuerySet::Create();
   }

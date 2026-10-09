@@ -3753,6 +3753,12 @@ void InspectorCSSAgent::CollectMediaQueriesFromStyleSheet(
     CSSStyleSheet* style_sheet,
     protocol::Array<protocol::CSS::CSSMedia>* media_array,
     protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
+  // A sheet loaded via @import shares its MediaList with the CSSImportRule.
+  // That media is reported from the import rule itself, with the import
+  // rule's source range, by CollectMediaQueriesFromRule().
+  if (style_sheet->ownerRule()) {
+    return;
+  }
   MediaList* media_list = style_sheet->media();
   String source_url;
   if (media_list && media_list->length()) {
