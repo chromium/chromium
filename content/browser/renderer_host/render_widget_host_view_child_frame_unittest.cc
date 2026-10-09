@@ -532,6 +532,16 @@ TEST_F(RenderWidgetHostViewChildFrameTest, UsesInitialSizeBeforeAttachment) {
   EXPECT_EQ(gfx::Size(400, 300), view_->GetViewBounds().size());
 }
 
+TEST_F(RenderWidgetHostViewChildFrameTest,
+       TouchscreenPinchTargetDelegatesToParent) {
+  auto* parent_view = static_cast<RenderWidgetHostViewBase*>(
+      contents()->GetRenderWidgetHostView());
+  ASSERT_TRUE(parent_view);
+  test_frame_connector_->SetParentRenderWidgetHostView(parent_view);
+
+  EXPECT_EQ(parent_view->GetPinchZoomTarget(), view_->GetPinchZoomTarget());
+}
+
 // Tests that SynchronizeVisualProperties is called only once and all the
 // parameters change atomically.
 TEST_F(RenderWidgetHostViewChildFrameTest,

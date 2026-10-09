@@ -506,6 +506,11 @@ RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetRootView() {
                           : nullptr;
 }
 
+input::RenderWidgetHostViewInput*
+RenderWidgetHostViewChildFrame::GetPinchZoomTarget() {
+  return frame_connector_ ? frame_connector_->GetPinchZoomTarget() : nullptr;
+}
+
 #if BUILDFLAG(IS_WIN)
 bool RenderWidgetHostViewChildFrame::ShouldInitiateStylusWriting() {
   auto* root = GetRootView();

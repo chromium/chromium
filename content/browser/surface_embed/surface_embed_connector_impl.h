@@ -86,6 +86,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   bool IsThrottledForTesting() override;
   bool IsSubtreeThrottledForTesting() override;
   bool IsDisplayLockedForTesting() override;
+  PinchGestureMode GetPinchGestureModeForTesting() const override;
+  void SetPinchGestureMode(PinchGestureMode mode) override;
   void SetParentAccessibilityInfo(ui::AXNodeID ax_node_id,
                                   const ui::AXTreeID& ax_tree_id) override;
   ui::AXTreeID GetParentAXTreeID() const override;
@@ -97,6 +99,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
                bool allow_paint_holding) override;
   RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override;
+  input::RenderWidgetHostViewInput* GetPinchZoomTarget() override;
   void RenderProcessGone() override;
   void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void SendIntrinsicSizingInfoToParent(
@@ -192,7 +195,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   SurfaceEmbedConnectorImpl(WebContents* child_web_contents,
                             WebContents* parent_web_contents,
                             RenderFrameHost* embedder_rfh,
-                            SurfaceEmbedConnector::Delegate* delegate);
+                            SurfaceEmbedConnector::Delegate* delegate,
+                            PinchGestureMode pinch_gesture_mode);
 
   static WebContentsImpl* GetParentWebContents(WebContentsImpl* web_contents);
   static WebContentsImpl* GetRootWebContents(WebContentsImpl* web_contents);
@@ -225,6 +229,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // The RenderFrameHost in the parent that hosts the embed element.
   base::WeakPtr<RenderFrameHostImpl> embedder_rfh_;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
+  PinchGestureMode pinch_gesture_mode_;
 
   // The last received FrameSinkId from the guest WebContents's view.
   viz::FrameSinkId frame_sink_id_;

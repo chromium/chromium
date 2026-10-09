@@ -90,6 +90,10 @@ class FrameConnector : public input::ChildFrameInputHelper::Delegate {
   // Returns the view for the top-level frame under the same WebContents.
   virtual RenderWidgetHostViewBase* GetRootRenderWidgetHostView() = 0;
 
+  // Returns the view whose page scale should be changed by pinch zoom
+  // originating in this connector's view.
+  virtual input::RenderWidgetHostViewInput* GetPinchZoomTarget() = 0;
+
   // Notify the frame connector that the renderer process has terminated.
   virtual void RenderProcessGone() = 0;
 

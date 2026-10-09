@@ -104,7 +104,8 @@ class SurfaceEmbedConnectorImpl::ParentWCObserver : public WebContentsObserver {
 // static
 void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
                                    RenderFrameHost* outer_document_rfh,
-                                   SurfaceEmbedConnector::Delegate* delegate) {
+                                   SurfaceEmbedConnector::Delegate* delegate,
+                                   PinchGestureMode pinch_gesture_mode) {
   CHECK(child_web_contents);
   CHECK(outer_document_rfh);
   WebContents* parent_web_contents =
@@ -113,7 +114,8 @@ void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
   // Must Detach the child before re-Attaching.
   CHECK(!child_web_contents->GetSurfaceEmbedConnector());
   auto connector = base::WrapUnique(new SurfaceEmbedConnectorImpl(
-      child_web_contents, parent_web_contents, outer_document_rfh, delegate));
+      child_web_contents, parent_web_contents, outer_document_rfh, delegate,
+      pinch_gesture_mode));
   static_cast<WebContentsImpl*>(child_web_contents)
       ->SetSurfaceEmbedConnector(std::move(connector));
 }
@@ -142,14 +144,16 @@ SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     WebContents* child_web_contents,
     WebContents* parent_web_contents,
     RenderFrameHost* embedder_rfh,
-    SurfaceEmbedConnector::Delegate* delegate)
+    SurfaceEmbedConnector::Delegate* delegate,
+    PinchGestureMode pinch_gesture_mode)
     : delegate_(delegate),
       child_web_contents_(static_cast<WebContentsImpl*>(child_web_contents)),
       // Rely on Chromium's WeakPtrFactory to automatically invalidate this
       // pointer safely at the start of parent_web_contents's destructor.
       parent_web_contents_(parent_web_contents->GetWeakPtr()),
       embedder_rfh_(
-          static_cast<RenderFrameHostImpl*>(embedder_rfh)->GetWeakPtr()) {
+          static_cast<RenderFrameHostImpl*>(embedder_rfh)->GetWeakPtr()),
+      pinch_gesture_mode_(pinch_gesture_mode) {
   CHECK_EQ(WebContents::FromRenderFrameHost(embedder_rfh), parent_web_contents);
   wc_observer_ = std::make_unique<WCObserver>(this, child_web_contents);
   parent_wc_observer_ =
@@ -443,6 +447,15 @@ SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
       GetRootWebContents(parent_web_contents())->GetRenderWidgetHostView());
 }
 
+input::RenderWidgetHostViewInput*
+SurfaceEmbedConnectorImpl::GetPinchZoomTarget() {
+  if (pinch_gesture_mode_ == PinchGestureMode::kScaleChildWebContents) {
+    return view_;
+  }
+  input::RenderWidgetHostViewInput* parent = GetParentViewInput();
+  return parent ? parent->GetPinchZoomTarget() : nullptr;
+}
+
 void SurfaceEmbedConnectorImpl::RenderProcessGone() {
   delegate_->ChildProcessGone();
 
@@ -600,6 +613,15 @@ bool SurfaceEmbedConnectorImpl::IsSubtreeThrottledForTesting() {
 
 bool SurfaceEmbedConnectorImpl::IsDisplayLockedForTesting() {
   return IsDisplayLocked();
+}
+
+SurfaceEmbedConnector::PinchGestureMode
+SurfaceEmbedConnectorImpl::GetPinchGestureModeForTesting() const {
+  return pinch_gesture_mode_;
+}
+
+void SurfaceEmbedConnectorImpl::SetPinchGestureMode(PinchGestureMode mode) {
+  pinch_gesture_mode_ = mode;
 }
 
 void SurfaceEmbedConnectorImpl::EnableAutoResize(const gfx::Size& min_size,

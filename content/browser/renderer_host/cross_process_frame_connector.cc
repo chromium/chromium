@@ -470,6 +470,12 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
   return view;
 }
 
+input::RenderWidgetHostViewInput*
+CrossProcessFrameConnector::GetPinchZoomTarget() {
+  input::RenderWidgetHostViewInput* parent = GetParentViewInput();
+  return parent ? parent->GetPinchZoomTarget() : nullptr;
+}
+
 RenderWidgetHostViewBase*
 CrossProcessFrameConnector::GetParentRenderWidgetHostView() {
   // Input always hits the parent view if there is one so we should

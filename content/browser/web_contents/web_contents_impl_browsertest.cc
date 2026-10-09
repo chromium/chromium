@@ -6394,7 +6394,8 @@ class SurfaceEmbedConnectorWebContentsBrowserTest
     return base::WrapUnique(new SurfaceEmbedConnectorImpl(
         child_web_contents, parent_web_contents,
         parent_web_contents->GetPrimaryMainFrame(),
-        &surface_embed_connector_delegate_));
+        &surface_embed_connector_delegate_,
+        SurfaceEmbedConnector::PinchGestureMode::kDelegateToParentWebContents));
   }
 
   void ExpectRegisteredViews(

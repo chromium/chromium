@@ -108,6 +108,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector : public FrameConnector {
   RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
 
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override;
+  input::RenderWidgetHostViewInput* GetPinchZoomTarget() override;
 
   void RenderProcessGone() override;
 

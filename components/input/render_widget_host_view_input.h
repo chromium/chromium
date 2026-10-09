@@ -93,6 +93,10 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // instance.
   virtual RenderWidgetHostViewInput* GetRootView() = 0;
 
+  // Returns the view whose page scale should be changed by pinch zoom
+  // originating in this view. Defaults to the root view.
+  virtual RenderWidgetHostViewInput* GetPinchZoomTarget();
+
   // Obtains the root window FrameSinkId.
   virtual viz::FrameSinkId GetRootFrameSinkId();
 

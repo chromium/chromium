@@ -127,6 +127,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
                              uint32_t janky_frames) override;
 #endif
   RenderWidgetHostViewBase* GetRootView() override;
+  input::RenderWidgetHostViewInput* GetPinchZoomTarget() override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldInitiateStylusWriting() override;
   std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override;

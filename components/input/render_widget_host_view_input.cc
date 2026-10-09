@@ -33,6 +33,10 @@ viz::FrameSinkId RenderWidgetHostViewInput::GetRootFrameSinkId() {
   return viz::FrameSinkId();
 }
 
+RenderWidgetHostViewInput* RenderWidgetHostViewInput::GetPinchZoomTarget() {
+  return GetRootView();
+}
+
 bool RenderWidgetHostViewInput::ScreenRectIsUnstableFor(
     const blink::WebInputEvent& event) {
   return false;
