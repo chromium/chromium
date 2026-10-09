@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -34,17 +35,12 @@ bool AutofillOfferManager::IsUrlEligible(
 
 const AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     const GURL& last_committed_primary_main_frame_url) const {
-  // `GetAutofillOffers()` returns the most recently issued offers first, so the
-  // first matching offer is the most recently issued one.
-  for (const AutofillOfferData* offer :
-       payments_data_manager_->GetAutofillOffers()) {
-    if (offer->IsActiveAndEligibleForOrigin(
-            last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL())) {
-      return offer;
-    }
-  }
-
-  return nullptr;
+  // `GetActiveAutofillPromoCodeOffersForOrigin()` returns the most recently
+  // issued offers first, so the first offer is the most recently issued one.
+  std::vector<const AutofillOfferData*> offers =
+      payments_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
+          last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
+  return offers.empty() ? nullptr : offers.front();
 }
 
 bool AutofillOfferManager::HasShownNotification(

@@ -39,11 +39,7 @@ using testing::Pointee;
 namespace autofill {
 namespace {
 
-const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
-const char kTestGuid2[] = "00000000-0000-0000-0000-000000000002";
-const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestUrl[] = "http://www.example.com/";
-const char kOfferDetailsUrl[] = "http://pay.google.com";
 
 class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
  public:
@@ -85,43 +81,6 @@ class AutofillOfferManagerTest : public testing::Test {
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
     autofill_offer_manager_ =
         std::make_unique<AutofillOfferManager>(&payments_data_manager());
-  }
-
-  CreditCard CreateCreditCard(std::string guid,
-                              std::string number = kTestNumber,
-                              int64_t instrument_id = 0) {
-    CreditCard card = CreditCard();
-    test::SetCreditCardInfo(&card, "Jane Doe", number.c_str(),
-                            test::NextMonth().c_str(), test::NextYear().c_str(),
-                            "1");
-    card.set_guid(guid);
-    card.set_instrument_id(instrument_id);
-    card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-
-    payments_data_manager().AddServerCreditCard(card);
-    return card;
-  }
-
-  AutofillOfferData CreateCreditCardOfferForCard(
-      const CreditCard& card,
-      std::string offer_reward_amount,
-      bool expired = false,
-      std::vector<GURL> merchant_origins = {GURL(kTestUrl)}) {
-    std::string offer_id = "4444";
-    base::Time expiry = expired ? AutofillClock::Now() - base::Days(2)
-                                : AutofillClock::Now() + base::Days(2);
-    std::vector<int64_t> eligible_instrument_id = {card.instrument_id()};
-    GURL offer_details_url = GURL(kOfferDetailsUrl);
-    DisplayStrings display_strings;
-    display_strings.value_prop_text = "5% cash back when you use this card.";
-    display_strings.see_details_text = "Terms apply.";
-    display_strings.usage_instructions_text =
-        "Check out with this card to activate.";
-
-    AutofillOfferData offer_data = AutofillOfferData::GPayCardLinkedOffer(
-        offer_id, expiry, merchant_origins, offer_details_url, display_strings,
-        eligible_instrument_id, offer_reward_amount);
-    return offer_data;
   }
 
   // Simulates a navigation to `url` in the primary main frame.
@@ -191,36 +150,47 @@ TEST_F(AutofillOfferManagerTest, IsUrlEligible_ExpiredOrNoPromoCode) {
 
 // Verify no offer is returned given a mismatch URL.
 TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnNothingWhenFindNoMatch) {
-  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  payments_data_manager().AddAutofillOfferData(CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL("http://www.google.com"),
+                                  /*is_expired=*/false, /*offer_id=*/"google"));
 
   const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
   EXPECT_EQ(nullptr, result);
 }
 
-// Verify the correct card linked offer is returned given an eligible URL.
+// Verify the correct promo code offer is returned given an eligible URL.
 TEST_F(AutofillOfferManagerTest,
        GetOfferForUrl_ReturnCorrectOfferWhenFindMatch) {
-  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
-
-  AutofillOfferData offer1 = CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      /*merchant_origins=*/
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
-  AutofillOfferData offer2 = CreateCreditCardOfferForCard(
-      card2, "10%", /*expired=*/false,
-      /*merchant_origins=*/
-      {GURL("http://www.example.com"), GURL("http://www.example2.com")});
-  payments_data_manager().AddAutofillOfferData(offer1);
-  payments_data_manager().AddAutofillOfferData(offer2);
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL("http://www.google.com"),
+                                  /*is_expired=*/false, /*offer_id=*/"google"));
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL("http://www.example.com"), /*is_expired=*/false,
+      /*offer_id=*/"example"));
 
   const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
-  EXPECT_EQ(offer2, *result);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->GetOfferId(), "example");
+}
+
+// Verify that offers which are expired or have no promo code are skipped, even
+// if they come before an eligible offer.
+TEST_F(AutofillOfferManagerTest, GetOfferForUrl_SkipsExpiredOrNoPromoCode) {
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL(kTestUrl), /*is_expired=*/true, /*offer_id=*/"expired"));
+  AutofillOfferData no_promo_code_offer = test::GetPromoCodeOfferData(
+      GURL(kTestUrl), /*is_expired=*/false, /*offer_id=*/"no_promo_code");
+  no_promo_code_offer.SetPromoCode("");
+  payments_data_manager().AddAutofillOfferData(no_promo_code_offer);
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL(kTestUrl), /*is_expired=*/false, /*offer_id=*/"eligible"));
+
+  const AutofillOfferData* result =
+      autofill_offer_manager_->GetOfferForUrl(GURL(kTestUrl));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->GetOfferId(), "eligible");
 }
 
 // Verify that shown notifications are remembered per offer.

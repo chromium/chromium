@@ -47,7 +47,7 @@ class AutofillOfferManager : public KeyedService {
   // `last_committed_primary_main_frame_url`.
   bool IsUrlEligible(const GURL& last_committed_primary_main_frame_url);
 
-  // Returns the most recently issued offer that contains the domain of
+  // Returns the most recently issued active promo code offer for the domain of
   // `last_committed_primary_main_frame_url`, or nullptr if there is none.
   const AutofillOfferData* GetOfferForUrl(
       const GURL& last_committed_primary_main_frame_url) const;
