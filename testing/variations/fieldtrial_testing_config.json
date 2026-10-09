@@ -8019,7 +8019,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GlassFrame"
+                        "GlassFrame",
+                        "IPH_GlassFrameOptOut"
                     ]
                 }
             ]
