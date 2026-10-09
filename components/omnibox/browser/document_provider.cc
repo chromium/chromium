@@ -235,7 +235,7 @@ bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
 
 // Derived from google3/apps/share/util/docs_url_extractor.cc.
 std::string ExtractDocIdFromUrl(const std::string& url) {
-  static const base::NoDestructor<RE2> docs_url_pattern(
+  static constexpr re2::LazyRE2 docs_url_pattern = {
       "\\b("  // The first groups matches the whole URL.
       // Domain.
       "(?:https?://)?(?:"
@@ -270,7 +270,7 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
       // Other valid chars.
       "(?:[0-9a-zA-Z$\\-\\_\\.\\+\\!\\*\'\\,;:@&=/\\?]*)"
       "(?:(#[0-9a-zA-Z$\\-\\_\\.\\+\\!\\*\'\\,;:@&=/\\?]+)?)"  // Fragment
-      ")");
+      ")"};
 
   std::vector<std::string_view> matched_doc_ids(
       docs_url_pattern->NumberOfCapturingGroups() + 1);
