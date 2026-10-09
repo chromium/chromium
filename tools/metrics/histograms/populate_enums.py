@@ -7,7 +7,7 @@
 import collections
 import xml.etree.ElementTree as ET
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.common.codegen_shared as codegen_shared

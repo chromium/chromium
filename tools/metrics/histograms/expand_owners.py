@@ -9,7 +9,7 @@ import re
 import subprocess
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 from chromium_src.tools.metrics.common import path_util

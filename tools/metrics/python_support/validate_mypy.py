@@ -6,7 +6,7 @@
 import os
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.python_support.mypy_helpers as mypy_helpers
 from chromium_src.tools.metrics.common.path_util import METRICS_TOOLS_PATH

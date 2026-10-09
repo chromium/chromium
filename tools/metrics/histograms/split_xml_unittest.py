@@ -6,7 +6,7 @@ import unittest
 import xml.etree.ElementTree as ET
 
 from parameterized import parameterized  # type: ignore
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.histograms.split_xml as split_xml

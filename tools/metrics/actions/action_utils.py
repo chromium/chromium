@@ -17,7 +17,7 @@ import re
 from typing import cast, Dict, List, Tuple, Optional
 from xml.dom import minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.common.xml_utils as xml_utils

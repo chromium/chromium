@@ -8,7 +8,7 @@ import xml.dom.minidom
 
 from parameterized import parameterized  # type: ignore
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms

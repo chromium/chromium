@@ -35,7 +35,7 @@ import sys
 from typing import Callable, Dict, List, Optional
 from xml.dom import minidom
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils

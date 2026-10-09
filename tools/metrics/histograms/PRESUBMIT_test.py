@@ -10,7 +10,7 @@ from unittest import mock
 from typing import Tuple
 import xml.etree.ElementTree as ET
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.PRESUBMIT_test_mocks as PRESUBMIT_test_mocks

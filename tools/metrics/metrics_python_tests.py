@@ -7,7 +7,7 @@ import contextlib
 import os
 import sys
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import typ

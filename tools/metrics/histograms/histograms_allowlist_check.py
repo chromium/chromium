@@ -5,7 +5,7 @@
 import enum
 import os
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils

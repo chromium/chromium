@@ -16,7 +16,7 @@ import shutil
 import sys
 from typing import Any, Callable, Dict, List, Optional
 
-import setup_modules
+import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.common.diff_util as diff_util
