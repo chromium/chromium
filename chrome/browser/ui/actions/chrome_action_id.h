@@ -313,6 +313,8 @@
     IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP) \
   E(kActionContentContextLensRegionSearch, \
     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH) \
+  E(kActionContentContextAskGoogleAboutThisPage, \
+    IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE) \
   E(kActionAiMode) \
   E(kActionLensOverlayHomework) \
   E(kActionContentContextWebRegionSearch, \

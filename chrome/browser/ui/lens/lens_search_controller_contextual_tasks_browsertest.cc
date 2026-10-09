@@ -28,6 +28,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -36,6 +38,9 @@
 #include "chrome/browser/ui/lens/lens_overlay_wait_for_paint_utils.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -1266,4 +1271,72 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
   EXPECT_FALSE(controller->IsOff());
+}
+
+IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
+                       ExecAskGoogleAboutThisPageOpensSidePanel) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  chrome::ExecAskGoogleAboutThisPage(
+      browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  auto* session_handle =
+      panel_controller->GetContextualSearchSessionHandleForPanel();
+  ASSERT_TRUE(session_handle);
+  EXPECT_EQ(session_handle->invocation_source(),
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
+}
+
+IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
+                       IssueContextualSearchRequestPermittedSources) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+
+  // Verifies that calling IssueContextualSearchRequest with contextual /
+  // omnibox entry points succeeds.
+  controller->IssueContextualSearchRequest(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+      GURL("https://www.google.com/search?q=test"),
+      omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
+      /*is_zero_prefix_suggestion=*/false);
+
+  controller->IssueContextualSearchRequest(
+      lens::LensOverlayInvocationSource::kOmniboxPageAction,
+      GURL("https://www.google.com/search?q=test2"),
+      omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
+      /*is_zero_prefix_suggestion=*/false);
+}
+
+class LensSearchControllerAskGoogleOmniboxRoutingTest
+    : public LensSearchControllerStartZeroStateSessionTest {
+ public:
+  LensSearchControllerAskGoogleOmniboxRoutingTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        contextual_tasks::kContextualTasksUpdatedEntryPoints,
+        {{"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(LensSearchControllerAskGoogleOmniboxRoutingTest,
+                       ExecAskGoogleAboutThisPageOpensOmniboxComposebox) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  chrome::ExecAskGoogleAboutThisPage(
+      browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
+
+  LocationBar* location_bar =
+      BrowserWindow::FromBrowser(browser())->GetLocationBar();
+  ASSERT_TRUE(location_bar);
+  OmniboxController* omnibox_controller = location_bar->GetOmniboxController();
+  ASSERT_TRUE(omnibox_controller);
+  EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
 }

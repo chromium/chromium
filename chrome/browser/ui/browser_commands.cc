@@ -94,6 +94,8 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -205,6 +207,7 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -3078,6 +3081,38 @@ void ExecLensRegionSearch(BrowserWindowInterface* browser) {
         /*use_fullscreen_capture=*/false, is_google_dsp, entry_point);
   }
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+}
+
+void ExecAskGoogleAboutThisPage(BrowserWindowInterface* browser) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!browser) {
+    return;
+  }
+  if (contextual_tasks::kContextualTasksContextMenuRouteAskGoogleToOmnibox
+          .Get()) {
+    BrowserWindow* window = BrowserWindow::FromBrowser(browser);
+    LocationBar* location_bar = window ? window->GetLocationBar() : nullptr;
+    OmniboxController* omnibox_controller =
+        location_bar ? location_bar->GetOmniboxController() : nullptr;
+    if (omnibox_controller && omnibox_controller->edit_model()) {
+      window->SetFocusToLocationBar(/*is_user_initiated=*/true);
+      omnibox_controller->edit_model()->OpenComposeboxForAskG();
+    }
+    return;
+  }
+  tabs::TabInterface* const active_tab = browser->GetActiveTabInterface();
+  if (!active_tab || !active_tab->GetContents()) {
+    return;
+  }
+  LensSearchController* const controller =
+      LensSearchController::From(active_tab);
+  if (controller) {
+    controller->StartZeroStateSessionInSidePanel(
+        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION,
+        lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+        /*open_lens_overlay=*/false);
+  }
+#endif
 }
 
 }  // namespace chrome

@@ -348,13 +348,17 @@ void LensSearchController::IssueContextualSearchRequest(
     omnibox::AutocompleteMatchType match_type,
     bool is_zero_prefix_suggestion,
     bool grant_session_permission) {
-  // This method should only be used by the omnibox flows.
+  // This method should only be used by the contextual and omnibox flows.
   // There is no dependency on the omnibox, so this check is solely to ensure a
   // new flow is not accidentally added.
   CHECK(invocation_source ==
             lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion ||
         invocation_source ==
-            lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+            lens::LensOverlayInvocationSource::kOmniboxContextualQuery ||
+        invocation_source ==
+            lens::LensOverlayInvocationSource::kOmniboxPageAction ||
+        invocation_source ==
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
 
   std::string query_text =
       lens::ExtractTextQueryParameterValue(destination_url);
