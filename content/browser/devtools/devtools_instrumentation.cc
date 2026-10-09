@@ -2731,7 +2731,8 @@ void OnServiceWorkerMainScriptFetchingFailed(
           worker_token,
           status.completion_time.ToInternalValue() /
               static_cast<double>(base::Time::kMicrosecondsPerSecond),
-          status.encoded_data_length.InBytes());
+          status.encoded_data_length.InBytes(),
+          status.encoded_body_length.InBytesF());
     }
   } else if (agent_host) {
     for (auto* network_handler :

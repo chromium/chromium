@@ -1300,6 +1300,9 @@ domain Network
       MonotonicTime timestamp
       # Total number of bytes received for this request.
       number encodedDataLength
+      # Size of the response body before removing content encodings.
+      # Includes cached bodies, but excludes headers and transfer framing.
+      experimental optional number encodedBodyLength
 
   # Fired if request ended up loading from cache.
   event requestServedFromCache

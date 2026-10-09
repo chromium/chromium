@@ -963,6 +963,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     }
     resource_load_observer_->DidFinishLoading(
         request.InspectorId(), base::TimeTicks(), 0,
+        resource->GetResponse().EncodedBodyLength(),
         resource->GetResponse().DecodedBodyLength());
   }
 
@@ -2706,6 +2707,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     DCHECK(!IsDetached());
     resource_load_observer_->DidFinishLoading(
         resource->InspectorId(), response_end, encoded_data_length,
+        resource->GetResponse().EncodedBodyLength(),
         resource->GetResponse().DecodedBodyLength());
   }
   MaybeSaveResourceToStrongReference(resource);

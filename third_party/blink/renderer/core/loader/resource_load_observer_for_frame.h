@@ -54,6 +54,7 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
   void DidFinishLoading(uint64_t identifier,
                         base::TimeTicks finish_time,
                         int64_t encoded_data_length,
+                        uint64_t encoded_body_length,
                         int64_t decoded_body_length) override;
   void DidFailLoading(const KURL&,
                       uint64_t identifier,

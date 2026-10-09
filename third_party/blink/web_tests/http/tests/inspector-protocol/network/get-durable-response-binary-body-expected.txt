@@ -1,5 +1,6 @@
 Tests that binary response bodies are correctly base64 encoded when fetched via DurableMessages.
 {
+    encodedBodyLength : 256
     encodedDataLength : 437
     requestId : <string>
     timestamp : <number>

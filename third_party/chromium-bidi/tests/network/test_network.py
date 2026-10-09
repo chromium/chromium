@@ -13,6 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import gzip
 import json
 
 import pytest
@@ -378,6 +379,187 @@ async def test_network_response_completed_event_emitted(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("body_size", [1024, 1025])
+async def test_network_response_collector_checks_completed_body_size(
+    websocket, context_id, local_server_http, read_messages, body_size
+):
+    max_encoded_data_size = 1024
+    body = b"x" * body_size
+    url = local_server_http.url_200(
+        iter([body[:512], body[512:]]), content_type="text/plain"
+    )
+    await goto_url(websocket, context_id, local_server_http.url_base())
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": max_encoded_data_size,
+            },
+        },
+    )
+    await subscribe(
+        websocket,
+        ["network.responseStarted", "network.responseCompleted"],
+        [context_id],
+    )
+
+    command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"fetch({json.dumps(url)}).then(response => response.text())",
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
+    command_response, completed, started = await read_messages(
+        3,
+        filter_lambda=lambda message: (
+            message.get("id") == command_id
+            or (
+                message.get("method")
+                in ["network.responseStarted", "network.responseCompleted"]
+                and message["params"]["response"]["url"] == url
+            )
+        ),
+    )
+
+    assert command_response["type"] == "success"
+    assert started["params"]["response"]["bytesReceived"] < max_encoded_data_size
+    headers = {
+        header["name"].lower(): header["value"]["value"]
+        for header in started["params"]["response"]["headers"]
+    }
+    assert headers["transfer-encoding"] == "chunked"
+    assert "content-length" not in headers
+    assert completed["params"]["response"]["bodySize"] == body_size
+    assert completed["params"]["response"]["bytesReceived"] > max_encoded_data_size
+
+    command = {
+        "method": "network.getData",
+        "params": {
+            "dataType": "response",
+            "request": completed["params"]["request"]["request"],
+        },
+    }
+    if body_size > max_encoded_data_size:
+        with pytest.raises(Exception, match="no such network data"):
+            await execute_command(websocket, command)
+    else:
+        result = await execute_command(websocket, command)
+        assert result == {"bytes": {"type": "string", "value": body.decode()}}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("request_type", ["navigation", "fetch"])
+@pytest.mark.parametrize("encoding", ["identity", "gzip"])
+@pytest.mark.parametrize("body_size", [0, 2000])
+async def test_network_response_encoded_body_size(
+    websocket,
+    context_id,
+    local_server_http,
+    read_messages,
+    request_type,
+    encoding,
+    body_size,
+):
+    body = b"x" * body_size
+    encoded_body = gzip.compress(body, mtime=0) if encoding == "gzip" else body
+    headers = {"Content-Encoding": "gzip"} if encoding == "gzip" else {}
+    url = local_server_http.url_200(
+        encoded_body, content_type="text/plain", headers=headers
+    )
+    await goto_url(websocket, context_id, local_server_http.url_base())
+    await subscribe(websocket, ["network.responseCompleted"], [context_id])
+
+    if request_type == "navigation":
+        command = {
+            "method": "browsingContext.navigate",
+            "params": {"url": url, "wait": "complete", "context": context_id},
+        }
+    else:
+        command = {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"fetch({json.dumps(url)}).then(response => response.text())",
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        }
+    command_id = await send_JSON_command(websocket, command)
+    command_response, event = await read_messages(
+        2,
+        filter_lambda=lambda message: (
+            message.get("id") == command_id
+            or (
+                message.get("method") == "network.responseCompleted"
+                and message["params"]["response"]["url"] == url
+            )
+        ),
+    )
+
+    assert command_response["type"] == "success"
+    response = event["params"]["response"]
+    assert response["bodySize"] == len(encoded_body)
+    assert response["content"]["size"] == len(body)
+    assert response["bytesReceived"] > response["bodySize"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("encoding", ["identity", "gzip"])
+async def test_network_cached_response_encoded_body_size(
+    websocket, context_id, local_server_http, read_messages, encoding
+):
+    body = b"x" * 2000
+    encoded_body = gzip.compress(body, mtime=0) if encoding == "gzip" else body
+    headers = {"Cache-Control": "public, max-age=3600"}
+    if encoding == "gzip":
+        headers["Content-Encoding"] = "gzip"
+    url = local_server_http.url_200(
+        encoded_body, content_type="text/plain", headers=headers
+    )
+    await goto_url(websocket, context_id, local_server_http.url_base())
+    await subscribe(websocket, ["network.responseCompleted"], [context_id])
+
+    for from_cache in [False, True]:
+        command_id = await send_JSON_command(
+            websocket,
+            {
+                "method": "script.evaluate",
+                "params": {
+                    "expression": f"fetch({json.dumps(url)}).then(response => response.text())",
+                    "target": {"context": context_id},
+                    "awaitPromise": True,
+                },
+            },
+        )
+        command_response, event = await read_messages(
+            2,
+            filter_lambda=lambda message: (
+                message.get("id") == command_id
+                or (
+                    message.get("method") == "network.responseCompleted"
+                    and message["params"]["response"]["url"] == url
+                )
+            ),
+        )
+
+        assert command_response["type"] == "success"
+        response = event["params"]["response"]
+        assert response["bodySize"] == len(encoded_body)
+        assert response["content"]["size"] == len(body)
+        assert response["fromCache"] == from_cache
+        if from_cache:
+            assert response["bytesReceived"] == 0
+        else:
+            assert response["bytesReceived"] > response["bodySize"]
+
+
+@pytest.mark.asyncio
 async def test_network_response_started_event_emitted(websocket, context_id, url_base):
     await subscribe(websocket, ["network.responseStarted"], [context_id])
 
@@ -422,7 +604,7 @@ async def test_network_response_started_event_emitted(websocket, context_id, url
                     "mimeType": AnyOr("", "text/html"),
                     "bytesReceived": ANY_NUMBER,
                     "headersSize": headers_size,
-                    "bodySize": ANY_NUMBER,
+                    "bodySize": AnyOr(None, 0),
                     "content": {"size": 0},
                 },
             },

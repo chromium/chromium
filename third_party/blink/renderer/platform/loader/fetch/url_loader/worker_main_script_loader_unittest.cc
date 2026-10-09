@@ -128,10 +128,11 @@ class WorkerMainScriptLoaderTest : public testing::Test {
     MOCK_METHOD2(DidReceiveTransferSizeUpdate,
                  void(uint64_t identifier, int transfer_size_diff));
     MOCK_METHOD2(DidDownloadToBlob, void(uint64_t identifier, BlobDataHandle*));
-    MOCK_METHOD4(DidFinishLoading,
+    MOCK_METHOD5(DidFinishLoading,
                  void(uint64_t identifier,
                       base::TimeTicks finish_time,
                       int64_t encoded_data_length,
+                      uint64_t encoded_body_length,
                       int64_t decoded_body_length));
     MOCK_METHOD5(DidFailLoading,
                  void(const KURL&,
@@ -228,7 +229,7 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithSucessThenOnComplete) {
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveData(_, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _)).Times(0);
   Persistent<WorkerMainScriptLoader> worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
@@ -257,7 +258,7 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithFailureThenOnComplete) {
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
   Persistent<WorkerMainScriptLoader> worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
@@ -280,7 +281,7 @@ TEST_F(WorkerMainScriptLoaderTest, DisconnectBeforeOnComplete) {
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
   Persistent<WorkerMainScriptLoader> worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
@@ -304,7 +305,7 @@ TEST_F(WorkerMainScriptLoaderTest, OnCompleteWithError) {
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveData(_, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
   Persistent<WorkerMainScriptLoader> worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
@@ -327,7 +328,7 @@ TEST_F(WorkerMainScriptLoaderTest, CreateCachedMetadataHandlerNormal) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
   WorkerMainScriptLoader* worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
           std::move(worker_main_script_load_params), mock_observer,
@@ -352,7 +353,7 @@ TEST_F(WorkerMainScriptLoaderTest, CreateCachedMetadataHandlerServiceWorker) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
   WorkerMainScriptLoader* worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
           std::move(worker_main_script_load_params), mock_observer,
@@ -379,7 +380,7 @@ TEST_F(WorkerMainScriptLoaderTest,
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
   WorkerMainScriptLoader* worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
           std::move(worker_main_script_load_params), mock_observer,
@@ -426,7 +427,7 @@ TEST_F(WorkerMainScriptLoaderTest,
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
-  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
   WorkerMainScriptLoader* worker_main_script_loader =
       CreateWorkerMainScriptLoaderAndStartLoading(
           std::move(worker_main_script_load_params), mock_observer,

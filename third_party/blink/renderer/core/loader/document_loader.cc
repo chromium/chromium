@@ -1435,9 +1435,6 @@ void DocumentLoader::BodyLoadingFinished(
   DCHECK(frame_);
   if (!error) {
     GetFrameLoader().Progress().CompleteProgress(main_resource_identifier_);
-    probe::DidFinishLoading(
-        probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
-        completion_time, total_encoded_data_length, total_decoded_body_length);
 
     if (response_.WasFetchedViaServiceWorker()) {
       // See https://w3c.github.io/ServiceWorker/#dom-fetchevent-respondwith
@@ -1446,6 +1443,11 @@ void DocumentLoader::BodyLoadingFinished(
       total_encoded_body_length = total_body_size_from_service_worker_;
       total_decoded_body_length = total_body_size_from_service_worker_;
     }
+
+    probe::DidFinishLoading(
+        probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
+        completion_time, total_encoded_data_length, total_encoded_body_length,
+        total_decoded_body_length);
 
     DOMWindowPerformance::performance(*frame_->DomWindow())
         ->OnBodyLoadFinished(total_encoded_body_length,

@@ -6,4 +6,6 @@ Tests that Network.requestServedFromCache are reported
     }
     sessionId : <string>
 }
+Cached response transfer size is zero: true
+Cached response encoded body size is positive: true
 

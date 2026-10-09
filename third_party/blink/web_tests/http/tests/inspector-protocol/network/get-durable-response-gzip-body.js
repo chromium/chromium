@@ -9,7 +9,13 @@
   session.evaluate(`fetch("${resourceUrl}").then(r => r.text());`);
   const requestWillBeSent = (await dp.Network.onceRequestWillBeSent()).params;
   testRunner.log(`Request for ${requestWillBeSent.request.url}`);
-  await dp.Network.onceLoadingFinished();
+  const {encodedBodyLength} =
+      (await dp.Network.onceLoadingFinished(event => event.params.requestId ===
+                                                requestWillBeSent.requestId))
+          .params;
+  testRunner.log(
+      `Encoded body size is positive and smaller than decoded size: ${
+          encodedBodyLength > 0 && encodedBodyLength < 2000}`);
   const resourceRequestId = requestWillBeSent.requestId;
 
   testRunner.log('-- Test Page.navigate() to a cross origin URL --');

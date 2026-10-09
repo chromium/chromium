@@ -85,6 +85,7 @@ class PLATFORM_EXPORT ResourceLoadObserver
   virtual void DidFinishLoading(uint64_t identifier,
                                 base::TimeTicks finish_time,
                                 int64_t encoded_data_length,
+                                uint64_t encoded_body_length,
                                 int64_t decoded_body_length) = 0;
 
   using IsInternalRequest = base::StrongAlias<class IsInternalRequestTag, bool>;

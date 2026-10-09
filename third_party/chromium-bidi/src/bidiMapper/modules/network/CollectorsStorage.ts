@@ -175,7 +175,8 @@ export class CollectorsStorage {
 
     if (
       dataType === Network.DataType.Response &&
-      request.encodedResponseBodySize > collector.maxEncodedDataSize
+      (request.encodedResponseBodySize ?? request.responseBytesReceived) >
+        collector.maxEncodedDataSize
     ) {
       this.#logger?.(LogType.debug)?.(
         `Request's ${request.id} response is too big for the collector ${collectorId}`,
@@ -209,6 +210,8 @@ export class CollectorsStorage {
         request.id,
         new Set(collectorIds),
       );
+    } else {
+      this.#getRequestToCollectorMap(dataType).delete(request.id);
     }
   }
 

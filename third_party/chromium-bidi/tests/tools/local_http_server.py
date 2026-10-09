@@ -20,7 +20,7 @@ import socket
 import ssl
 import time
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
@@ -151,10 +151,8 @@ class LocalHttpServer:
             data = self.__dynamic_responses.get(response_id)
             if data:
                 raw_content = data["content"]
-                content = (
-                    raw_content() if callable(raw_content) else raw_content
-                )
-                if data["content_type"] == "text/html":
+                content = raw_content() if callable(raw_content) else raw_content
+                if data["content_type"] == "text/html" and isinstance(content, str):
                     # Wrap in basic HTML structure if serving HTML.
                     content = self.__html_doc(content)
                 return FlaskResponse(
@@ -351,15 +349,17 @@ class LocalHttpServer:
 
     def url_200(
         self,
-        content: str | Callable[[], str] | None = None,
+        content: str | bytes | Iterable[bytes] | Callable[[], str] | None = None,
         content_type: str = "text/html",
         headers: dict[str, str] | None = None,
     ) -> str:
         """
         Returns a URL that serves a 200 response.
-        If 'content' is provided (as a string or a callable returning a string
-        on each request), a unique URL is generated for that specific content.
-        Otherwise, returns the URL for the default 200 page.
+        Content can be a string, bytes, an iterable of bytes, or a callable
+        returning a string on each request. Provided content gets a unique URL.
+        An iterator is consumed by the first request, so later requests to its
+        URL receive an empty body.
+        If content is not provided, returns the URL for the default 200 page.
         """
         if headers is None:
             headers = {}

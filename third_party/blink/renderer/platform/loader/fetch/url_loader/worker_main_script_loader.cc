@@ -307,6 +307,7 @@ void WorkerMainScriptLoader::NotifyCompletionIfAppropriate() {
     resource_load_observer_->DidFinishLoading(
         initial_request_.InspectorId(), base::TimeTicks::Now(),
         resource_response_.EncodedDataLength(),
+        resource_response_.EncodedBodyLength(),
         resource_response_.DecodedBodyLength());
   } else {
     client->OnFailedLoadingWorkerMainScript();

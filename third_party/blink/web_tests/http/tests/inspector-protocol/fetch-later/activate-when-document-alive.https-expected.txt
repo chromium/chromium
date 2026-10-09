@@ -92,6 +92,7 @@ Network.responseReceived {
     type : Fetch
 }
 Network.loadingFinished {
+    encodedBodyLength : <number>
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>

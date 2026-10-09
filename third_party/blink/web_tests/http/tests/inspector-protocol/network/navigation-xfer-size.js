@@ -14,13 +14,18 @@
     dp.Network.onceResponseReceivedExtraInfo()]);
   response = response.params.response;
 
-  const encodedLength = (await dp.Network.onceLoadingFinished()).params.encodedDataLength;
+  const {encodedDataLength: encodedLength, encodedBodyLength} =
+      (await dp.Network.onceLoadingFinished()).params;
   if (encodedLength > 2000)
     testRunner.log(`FAIL: encoded data length is suspiciously large (${encodedLength})`);
 
   const headersLength = responseExtraInfo.params.headersText.length;
   const contentLength = +response.headers['Content-Length'];
+  if (encodedBodyLength !== contentLength)
+    testRunner.log(`FAIL: encodedBodyLength (${
+        encodedBodyLength}) !== contentLength (${contentLength})`);
   if (headersLength + contentLength !== encodedLength)
-    testRunner.log(`FAIL: headersLength (${headersLength}) + contentLength (${contentLength}) !== encodedLength (${encodedLength})`)
+    testRunner.log(`FAIL: headersLength (${headersLength}) + contentLength (${
+        contentLength}) !== encodedLength (${encodedLength})`);
   testRunner.completeTest();
 })

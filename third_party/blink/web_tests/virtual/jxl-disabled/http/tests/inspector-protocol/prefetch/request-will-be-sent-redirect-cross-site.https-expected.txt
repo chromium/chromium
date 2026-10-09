@@ -119,6 +119,7 @@ Network.responseReceivedExtraInfo {
     statusCode : 200
 }
 Network.loadingFinished {
+    encodedBodyLength : <number>
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
@@ -355,6 +356,7 @@ Network.responseReceivedExtraInfo {
     statusCode : 200
 }
 Network.loadingFinished {
+    encodedBodyLength : <number>
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
