@@ -17,4 +17,13 @@ const char kDefaultBrowserPromoSegmentationLatencySuccessHistogram[] =
 const char kDefaultBrowserPromoSegmentationLatencyFailureHistogram[] =
     "IOS.FirstRun.DefaultBrowserPromo.SegmentationLatency.Failure";
 
+const char kDefaultBrowserPromoSwitcherInfoResultHistogram[] =
+    "IOS.FirstRun.DefaultBrowserPromo.SwitcherInfoResult";
+
+const char kDefaultBrowserPromoSwitcherInfoLatencySuccessHistogram[] =
+    "IOS.FirstRun.DefaultBrowserPromo.SwitcherInfoLatency.Success";
+
+const char kDefaultBrowserPromoSwitcherInfoLatencyFailureHistogram[] =
+    "IOS.FirstRun.DefaultBrowserPromo.SwitcherInfoLatency.Failure";
+
 }  // namespace first_run

@@ -22,6 +22,12 @@ extern const char kDefaultBrowserPromoSegmentationResultHistogram[];
 extern const char kDefaultBrowserPromoSegmentationLatencySuccessHistogram[];
 extern const char kDefaultBrowserPromoSegmentationLatencyFailureHistogram[];
 
+// Histograms for the Default Browser promo switcher info result and latency
+// during First Run.
+extern const char kDefaultBrowserPromoSwitcherInfoResultHistogram[];
+extern const char kDefaultBrowserPromoSwitcherInfoLatencySuccessHistogram[];
+extern const char kDefaultBrowserPromoSwitcherInfoLatencyFailureHistogram[];
+
 // Result of the device switcher segmentation classification when evaluating the
 // Default Browser promo during the First Run Experience.
 // These values are persisted to logs. Entries should not be renumbered and

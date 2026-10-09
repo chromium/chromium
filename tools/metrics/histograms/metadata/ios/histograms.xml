@@ -2594,6 +2594,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FirstRun.DefaultBrowserPromo.SwitcherInfoLatency.{Status}"
+    units="ms" expires_after="2027-02-14">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the latency between requesting the switcher info API result when
+    constructing the First Run screen sequence and {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Failure"
+        summary="the request failing or returning unknown status"/>
+    <variant name="Success" summary="receiving a valid switcher info result"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.FirstRun.DefaultBrowserPromo.SwitcherInfoResult"
+    enum="IOSFirstRunDefaultBrowserPromoSegmentationResult"
+    expires_after="2027-02-14">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the switcher info API classification result (whether the user's
+    switcher status is unknown, not an Android switcher, an Android switcher, or
+    fetching the switcher info failed) when evaluating the Default Browser promo
+    during the First Run Experience.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
     expires_after="2027-02-14">
   <owner>danieltwhite@chromium.org</owner>

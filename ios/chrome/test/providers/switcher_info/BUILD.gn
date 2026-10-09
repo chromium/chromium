@@ -4,7 +4,10 @@
 
 source_set("switcher_info") {
   testonly = true
-  sources = [ "test_switcher_info.mm" ]
+  sources = [
+    "test_switcher_info.h",
+    "test_switcher_info.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/switcher_info:switcher_info_api",

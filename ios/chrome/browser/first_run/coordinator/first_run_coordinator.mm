@@ -8,9 +8,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -40,7 +42,70 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
+#import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
+
+namespace {
+
+// Callback invoked when the switcher info API result is received. Records the
+// latency and the Android switcher classification result.
+void OnSwitcherInfoDeviceSwitcherResult(
+    base::ElapsedTimer timer,
+    std::optional<ios::provider::SwitcherInfoResult> result) {
+  const base::TimeDelta elapsed = timer.Elapsed();
+
+  first_run::DefaultBrowserPromoSegmentationResult switcher_info_result =
+      first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+  bool is_success = false;
+  if (result.has_value()) {
+    switch (result->switcher_status) {
+      case ios::provider::SwitcherStatus::kUnknown:
+        switcher_info_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+        break;
+      case ios::provider::SwitcherStatus::kNotSwitcher:
+        switcher_info_result = first_run::
+            DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher;
+        is_success = true;
+        break;
+      case ios::provider::SwitcherStatus::kSwitcher:
+        switcher_info_result =
+            first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
+        is_success = true;
+        break;
+    }
+  }
+
+  base::UmaHistogramMediumTimes(
+      is_success
+          ? first_run::kDefaultBrowserPromoSwitcherInfoLatencySuccessHistogram
+          : first_run::kDefaultBrowserPromoSwitcherInfoLatencyFailureHistogram,
+      elapsed);
+  base::UmaHistogramEnumeration(
+      first_run::kDefaultBrowserPromoSwitcherInfoResultHistogram,
+      switcher_info_result);
+}
+
+// Queries the switcher info API signal for the signed-in user and records the
+// result and latency metrics.
+void RecordSwitcherInfoDeviceSwitcherSignal(ProfileIOS* profile) {
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  if (!authentication_service) {
+    return;
+  }
+  id<SystemIdentity> identity = authentication_service->GetPrimaryIdentity();
+  if (!identity || !first_run::IsQuerySwitcherInfoSignalInFirstRunEnabled()) {
+    return;
+  }
+  ios::provider::GetSwitcherInfo(
+      identity, base::BindOnce(&OnSwitcherInfoDeviceSwitcherResult,
+                               base::ElapsedTimer()));
+}
+
+}  // namespace
 
 namespace first_run {
 
@@ -55,12 +120,14 @@ class FirstRunCoordinatorMetricsHelper final {
 
   // Triggers an UMA metrics log upload.
   void StartOutOfBandUploadIfPossible() {
-    metrics_service_->StartOutOfBandUploadIfPossible(
-        metrics::MetricsService::OutOfBandUploadPasskey());
+    if (metrics_service_) {
+      metrics_service_->StartOutOfBandUploadIfPossible(
+          metrics::MetricsService::OutOfBandUploadPasskey());
+    }
   }
 
  private:
-  raw_ptr<metrics::MetricsService> metrics_service_;
+  raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
 };
 
 }  // namespace first_run
@@ -157,6 +224,8 @@ class FirstRunCoordinatorMetricsHelper final {
     // The user went through all screens of the FRE.
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kComplete);
+
+    RecordSwitcherInfoDeviceSwitcherSignal(self.profile);
 
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(self.profile);
