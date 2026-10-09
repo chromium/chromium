@@ -28,13 +28,16 @@
   --search-animated-glif-rotation-duration: 2000ms;
 }
 
-/* Paints the popup's surface. The composebox fills its own box to within the
- * transparent border 'search-animated-glow' reserves for its glow, so without
- * this the page behind the popup shows through that edge.
- * https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/resources/cr_components/search/animated_glow.css;l=244 */
+/* Paints the popup's surface and drop shadow. The composebox fills its own box
+ * to within the transparent border 'search-animated-glow' reserves for its
+ * glow, so without this the page behind the popup shows through that edge.
+ * https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/resources/cr_components/search/animated_glow.css;l=244
+ * Keep #content free of ::before/::after pseudo-elements; see the note on
+ * '--omnibox-webui-shadow' in omnibox_popup_shared_style.css. */
 :host([webui-shadow-enabled_]) #content {
   background-color: var(--color-omnibox-results-background);
   border-radius: var(--cr-composebox-expanded-border-radius);
+  box-shadow: var(--omnibox-webui-shadow);
 }
 
 #composebox {
