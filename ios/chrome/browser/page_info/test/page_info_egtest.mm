@@ -610,15 +610,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Go back to Page Info and wait for the Last Visited row to disappear.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_PAGE_INFO_SITE_INFORMATION)),
-                                   grey_kindOfClassName(
-                                       @"UIAccessibilityBackButtonElement"),
-                                   grey_ancestor(grey_kindOfClass(
-                                       [UINavigationBar class])),
-                                   grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
                       grey_text(l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY))];

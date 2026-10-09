@@ -398,20 +398,14 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
         performAction:grey_tap()];
   } else {
     [self openToolsMenu];
-    id<GREYMatcher> newTabButtonMatcher =
-        grey_accessibilityID(kToolsMenuNewTabId);
-    [[EarlGrey selectElementWithMatcher:newTabButtonMatcher]
-        performAction:grey_tap()];
+    [self tapToolsMenuAction:grey_accessibilityID(kToolsMenuNewTabId)];
   }
   [self waitForAppToIdle];
 }
 
 - (void)openNewIncognitoTab {
   [self openToolsMenu];
-  id<GREYMatcher> newIncognitoTabMatcher =
-      grey_accessibilityID(kToolsMenuNewIncognitoTabId);
-  [[EarlGrey selectElementWithMatcher:newIncognitoTabMatcher]
-      performAction:grey_tap()];
+  [self tapToolsMenuAction:grey_accessibilityID(kToolsMenuNewIncognitoTabId)];
   [self waitForAppToIdle];
 }
 
