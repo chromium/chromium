@@ -1204,7 +1204,11 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
     {
       "policy_user" : "tast-user@managedchrome.com",
       "machine": {
-        "AllowDinosaurEasterEgg": true
+        "AllowDinosaurEasterEgg": true,
+        "ExtensionInstallForcelist": [
+          "extension_id_1;https://example.com/update1",
+          "extension_id_2"
+        ]
       },
       "user": {
         "HomepageLocation": "http://example.com"
@@ -1263,12 +1267,18 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
     ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
     EXPECT_TRUE(settings.has_allowdinosaureasteregg());
     EXPECT_TRUE(settings.allowdinosaureasteregg().value());
+    EXPECT_TRUE(settings.has_extensioninstallforcelist());
+    EXPECT_THAT(
+        settings.extensioninstallforcelist().value().entries(),
+        testing::ElementsAre("extension_id_1;https://example.com/update1",
+                             "extension_id_2"));
   }
 
   {
     em::PolicyData policy_data;
     ASSERT_TRUE(policy_data.ParseFromString(
-        responses[policy::dm_protocol::GetChromeUserPolicyType()].policy_data()));
+        responses[policy::dm_protocol::GetChromeUserPolicyType()]
+            .policy_data()));
     em::CloudPolicySettings settings;
     ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
     EXPECT_TRUE(settings.has_homepagelocation());

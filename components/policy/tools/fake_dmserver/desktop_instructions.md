@@ -12,15 +12,18 @@ Create a simple JSON file with the policies you want to test (e.g.,
 Here is a minimal example, where you log into Chromium as alice@acme.com and
 want both machine-level and user-level policies.
 
-```
+```json
 {
   "policy_user": "alice@acme.com",
   "machine": {
     "AllowDinosaurEasterEgg": true,
+    "ExtensionInstallForcelist": [
+      "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx"
+    ]
   },
   "user": {
-    "HomepageLocation": "http://example.com/",
-  },
+    "HomepageLocation": "http://example.com/"
+  }
 }
 ```
 

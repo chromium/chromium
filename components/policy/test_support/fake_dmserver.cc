@@ -112,9 +112,9 @@ const PolicyTypeEntry kPolicyTypeMapping[] = {
 
 const PolicyTypeEntry kExtensionInstallPolicyTypeMapping[] = {
     {policy::dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-      "user-extension-install"},
+     "user-extension-install"},
     {policy::dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
-      "machine-extension-install"},
+     "machine-extension-install"},
 };
 
 static remote_commands::WaitRemoteCommandResultResponse
@@ -318,7 +318,8 @@ bool ParseCurrentKeyIndex(const base::DictValue* dict,
   return true;
 }
 
-// Used to print a human-readable type name in warnings in TrySetCloudPolicySettings.
+// Used to print a human-readable type name in warnings in
+// TrySetCloudPolicySettings.
 template <typename T>
 const char* GetExpectedTypeName() {
   if constexpr (std::is_same_v<T, bool>) {
@@ -409,6 +410,35 @@ bool ValidateAndSetPolicyValue(std::string_view policy_name,
                    << "'";
         return false;
     }
+  }
+
+  for (const auto& access : policy::test::kStringListPolicyAccess) {
+    if (policy_name != access.policy_key) {
+      continue;
+    }
+    if (!value.is_list()) {
+      LOG(WARNING) << "Wrong policy type for '" << access.policy_key
+                   << "'. Expected list, got " << value.type();
+      return false;
+    }
+    auto* proto = access.get_proto_mutable(policy_settings);
+    CHECK(proto);
+    proto->mutable_policy_options()->set_mode(em::PolicyOptions::MANDATORY);
+    std::vector<std::string> string_list;
+    for (const auto& entry : value.GetList()) {
+      if (!entry.is_string()) {
+        LOG(WARNING) << "Wrong list entry type for '" << access.policy_key
+                     << "'. Expected string, got " << entry.type();
+        return false;
+      }
+      string_list.push_back(entry.GetString());
+    }
+    auto* proto_string_list = proto->mutable_value();
+    proto_string_list->clear_entries();
+    for (const std::string& s : string_list) {
+      proto_string_list->add_entries(s);
+    }
+    return true;
   }
 
   LOG(WARNING) << "Unknown policy name: '" << policy_name << "', skipping.";
