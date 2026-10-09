@@ -157,11 +157,8 @@ class AX_EXPORT AXNode final {
   AXNode* GetLastUnignoredChildCrossingTreeBoundary() const;
 
   AXNode* GetDeepestFirstDescendant() const;
-  AXNode* GetDeepestFirstDescendantCrossingTreeBoundary() const;
   AXNode* GetDeepestFirstUnignoredDescendant() const;
-  AXNode* GetDeepestFirstUnignoredDescendantCrossingTreeBoundary() const;
   AXNode* GetDeepestLastDescendant() const;
-  AXNode* GetDeepestLastDescendantCrossingTreeBoundary() const;
   AXNode* GetDeepestLastUnignoredDescendant() const;
   AXNode* GetDeepestLastUnignoredDescendantCrossingTreeBoundary() const;
 

@@ -240,9 +240,6 @@ TEST(AXNodeTest, TreeWalking) {
   EXPECT_EQ(button_3_1.id, root_node->GetDeepestLastDescendant()->id());
   EXPECT_EQ(button_3_1.id,
             root_node->GetDeepestLastUnignoredDescendant()->id());
-  EXPECT_EQ(button_3_1.id, tree.GetFromId(paragraph_3_ignored.id)
-                               ->GetDeepestLastDescendantCrossingTreeBoundary()
-                               ->id());
 
   {
     std::vector<AXNode*> siblings;
@@ -402,9 +399,10 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   EXPECT_EQ(nullptr, root_node_2->GetUnignoredParent());
   EXPECT_EQ(root_node_1, root_node_2->GetUnignoredParentCrossingTreeBoundary());
 
-  EXPECT_EQ(nullptr, root_node_1->GetDeepestLastDescendant());
-  EXPECT_EQ(root_node_2,
-            root_node_1->GetDeepestLastDescendantCrossingTreeBoundary());
+  EXPECT_EQ(nullptr, root_node_1->GetDeepestLastUnignoredDescendant());
+  EXPECT_EQ(
+      root_node_2,
+      root_node_1->GetDeepestLastUnignoredDescendantCrossingTreeBoundary());
 }
 
 // Builds a parent tree whose middle child is an ignored host of a child tree.
