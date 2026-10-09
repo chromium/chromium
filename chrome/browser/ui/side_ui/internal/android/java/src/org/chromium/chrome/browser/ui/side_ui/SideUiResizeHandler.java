@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -31,9 +32,11 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
+import org.chromium.ui.util.MotionEventUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 /**
  * Owns the resize handle for one {@link AnchorSide}, and translates drag gestures on it into {@link
@@ -46,6 +49,12 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>The handle {@link View} is created lazily the first time the bound container is resizable, and
  * is removed when the container's {@link View} is detached from the anchor container.
+ *
+ * <p>A drag on the handle starts on {@link MotionEvent#ACTION_DOWN} and ends on {@link
+ * MotionEvent#ACTION_UP} or {@link MotionEvent#ACTION_CANCEL}. It only starts resizing the
+ * container once it moves past the touch slop with a touch or the primary mouse button, see {@link
+ * #canStartResize}. A drag that never does, e.g. a tap or a right-click drag, resizes and commits
+ * nothing.
  */
 // The handle is a drag affordance with no click action; accessibility is provided through the
 // handle's content description and dedicated accessibility actions.
@@ -58,6 +67,9 @@ import java.lang.annotation.RetentionPolicy;
      * frame, so they are throttled to {@link #MOVE_THROTTLE_MS} and can be compared against each
      * other. The other states are recorded once per touch event, so that the unexpected ones can be
      * read as a rate over the expected ones.
+     *
+     * <p>The expected states describe a resize, so a drag that never starts resizing, e.g. a tap,
+     * records nothing.
      */
     // LINT.IfChange(AndroidSideUiResizeHandleTouchState)
     @IntDef({
@@ -122,18 +134,14 @@ import java.lang.annotation.RetentionPolicy;
     private @Nullable @Px Integer mDragStartWidthPx;
 
     /**
-     * The {@link SystemClock#elapsedRealtime()} of the last {@link TouchState#MOVE_WITH_DRAG}
-     * record, or {@link #NO_MOVE_RECORDED} if none was recorded since the last {@link
-     * MotionEvent#ACTION_DOWN}.
+     * The {@link SystemClock#elapsedRealtime()} of each state's last throttled record, or {@link
+     * #NO_MOVE_RECORDED} if none was recorded since the last {@link MotionEvent#ACTION_DOWN}.
+     * Indexed by {@link TouchState}; only the move states are throttled.
      */
-    private long mLastMoveWithDragRecordTimeMs = NO_MOVE_RECORDED;
+    private final long[] mLastRecordTimeMs = new long[TouchState.COUNT];
 
-    /**
-     * The {@link SystemClock#elapsedRealtime()} of the last {@link TouchState#MOVE_WITHOUT_DRAG}
-     * record, or {@link #NO_MOVE_RECORDED} if none was recorded since the last {@link
-     * MotionEvent#ACTION_DOWN}.
-     */
-    private long mLastMoveWithoutDragRecordTimeMs = NO_MOVE_RECORDED;
+    /** Whether the in-progress drag has started resizing, see {@link #canStartResize}. */
+    private boolean mIsResizing;
 
     /**
      * @param context The {@link Context} used to create the handle {@link View}.
@@ -155,6 +163,7 @@ import java.lang.annotation.RetentionPolicy;
         mContainer = container;
         mAnchorSide = container.getAnchorSide();
         mSideUiCoordinator = sideUiCoordinator;
+        Arrays.fill(mLastRecordTimeMs, NO_MOVE_RECORDED);
     }
 
     /** Syncs the handle with the bound container's state after a UI update. */
@@ -227,38 +236,30 @@ import java.lang.annotation.RetentionPolicy;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 // A stale drag means the previous gesture never delivered its ACTION_UP or
-                // ACTION_CANCEL. The state below replaces it, so the new drag is unaffected.
-                recordTouchState(
-                        isDragging()
-                                ? TouchState.DRAG_STARTED_WITH_STALE_DRAG
-                                : TouchState.DRAG_STARTED);
-                // Let the next gesture record its first move of either state right away.
-                mLastMoveWithDragRecordTimeMs = NO_MOVE_RECORDED;
-                mLastMoveWithoutDragRecordTimeMs = NO_MOVE_RECORDED;
-                mDragStartRawX = event.getRawX();
-                mDragStartWidthPx = mContainer.getView().getWidth();
-                // Pointer icons are resolved from the view under the pointer. The anchor container
-                // parent covers the web contents and falls back to its own icon when no child
-                // provides one, so it keeps the resize icon while the drag moves off the handle.
-                mAnchorContainerParent.setPointerIcon(getResizePointerIcon(mContext));
+                // ACTION_CANCEL. startDrag() replaces it, so the new drag is unaffected.
+                if (isDragging()) {
+                    recordTouchState(TouchState.DRAG_STARTED_WITH_STALE_DRAG);
+                }
+                startDrag(event);
                 // Make sure no ancestor steals the gesture halfway through the drag.
                 if (view.getParent() != null) {
                     view.getParent().requestDisallowInterceptTouchEvent(true);
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
-                long nowMs = SystemClock.elapsedRealtime();
                 if (!isDragging()) {
-                    if (nowMs - mLastMoveWithoutDragRecordTimeMs >= MOVE_THROTTLE_MS) {
-                        recordTouchState(TouchState.MOVE_WITHOUT_DRAG);
-                        mLastMoveWithoutDragRecordTimeMs = nowMs;
-                    }
+                    recordThrottledTouchState(TouchState.MOVE_WITHOUT_DRAG);
                     return false;
                 }
-                if (nowMs - mLastMoveWithDragRecordTimeMs >= MOVE_THROTTLE_MS) {
-                    recordTouchState(TouchState.MOVE_WITH_DRAG);
-                    mLastMoveWithDragRecordTimeMs = nowMs;
+                if (!mIsResizing) {
+                    if (!canStartResize(event)) return true;
+                    mIsResizing = true;
+                    // Recorded when the resize starts rather than in startDrag(), so a tap records
+                    // nothing.
+                    recordTouchState(TouchState.DRAG_STARTED);
                 }
+                recordThrottledTouchState(TouchState.MOVE_WITH_DRAG);
+
                 mContainer.onResizeLive(computeProposedWidthPx(event));
                 mSideUiCoordinator.updateUi(
                         new UiUpdateRequest(
@@ -267,29 +268,26 @@ import java.lang.annotation.RetentionPolicy;
                                 UpdateReason.RESIZE_LIVE));
                 return true;
             case MotionEvent.ACTION_UP:
-                if (!isDragging()) {
-                    recordTouchState(TouchState.UP_WITHOUT_DRAG);
-                    return false;
-                }
-                recordTouchState(TouchState.COMMITTED_ON_UP);
-                @Px int proposedWidthPx = computeProposedWidthPx(event);
-                mContainer.onResizeCommitted(proposedWidthPx);
-                mSideUiCoordinator.updateUi(
-                        new UiUpdateRequest(
-                                mContainer.getSideUiId(),
-                                /* suppressAnimations= */ true,
-                                UpdateReason.RESIZE_COMMITTED));
-                clearDragState();
-                return true;
             case MotionEvent.ACTION_CANCEL:
+                boolean isUp = event.getActionMasked() == MotionEvent.ACTION_UP;
                 if (!isDragging()) {
-                    recordTouchState(TouchState.CANCEL_WITHOUT_DRAG);
+                    recordTouchState(
+                            isUp ? TouchState.UP_WITHOUT_DRAG : TouchState.CANCEL_WITHOUT_DRAG);
                     return false;
                 }
-                recordTouchState(TouchState.COMMITTED_ON_CANCEL);
-                // Commit the width the drag started from, so the container drops the transient
-                // width recorded during the drag.
-                mContainer.onResizeCommitted(assumeNonNull(mDragStartWidthPx));
+                if (!mIsResizing) {
+                    // A drag that never started resizing has nothing to commit.
+                    clearDragState();
+                    return true;
+                }
+                recordTouchState(
+                        isUp ? TouchState.COMMITTED_ON_UP : TouchState.COMMITTED_ON_CANCEL);
+                // On cancel, commit the width the drag started from, so the container drops the
+                // transient width recorded during the drag.
+                @Px
+                int widthPx =
+                        isUp ? computeProposedWidthPx(event) : assumeNonNull(mDragStartWidthPx);
+                mContainer.onResizeCommitted(widthPx);
                 mSideUiCoordinator.updateUi(
                         new UiUpdateRequest(
                                 mContainer.getSideUiId(),
@@ -302,21 +300,48 @@ import java.lang.annotation.RetentionPolicy;
         }
     }
 
+    /**
+     * Returns whether the drag can start resizing at {@code event}. It can't until the pointer
+     * moves past the touch slop, so a tap's small movement doesn't resize the container. A drag
+     * with a non-primary mouse button, e.g. a right-click drag, never can.
+     */
+    private boolean canStartResize(MotionEvent event) {
+        if (!MotionEventUtils.isTouchOrPrimaryButton(event.getButtonState())) return false;
+        // Read on demand, as the slop scales with density, which can change without recreating
+        // the activity.
+        int touchSlopPx = ViewConfiguration.get(mContext).getScaledTouchSlop();
+        return Math.abs(event.getRawX() - assumeNonNull(mDragStartRawX)) >= touchSlopPx;
+    }
+
     /** Returns whether the anchor container is currently taking up space. */
     private boolean isAnchorContainerShown() {
         return mAnchorContainer.getVisibility() != View.GONE && mAnchorContainer.getWidth() > 0;
     }
 
-    /** Returns whether a drag is in progress. */
+    /** Returns whether a drag is in progress, whether or not it is resizing yet. */
     private boolean isDragging() {
         assert (mDragStartRawX == null) == (mDragStartWidthPx == null)
                 : "The drag start states should always be set and cleared together.";
         return mDragStartRawX != null;
     }
 
+    /** Starts a drag. Reverted by {@link #clearDragState()}. */
+    private void startDrag(MotionEvent event) {
+        // Let the drag record its first move of either state right away.
+        Arrays.fill(mLastRecordTimeMs, NO_MOVE_RECORDED);
+        mDragStartRawX = event.getRawX();
+        mDragStartWidthPx = mContainer.getView().getWidth();
+        mIsResizing = false;
+        // Pointer icons are resolved from the view under the pointer. The anchor container parent
+        // covers the web contents and falls back to its own icon when no child provides one, so it
+        // keeps the resize icon while the drag moves off the handle.
+        mAnchorContainerParent.setPointerIcon(getResizePointerIcon(mContext));
+    }
+
     private void clearDragState() {
         mDragStartRawX = null;
         mDragStartWidthPx = null;
+        mIsResizing = false;
         mAnchorContainerParent.setPointerIcon(null);
     }
 
@@ -328,6 +353,17 @@ import java.lang.annotation.RetentionPolicy;
                 + MathUtils.flipSignIf(deltaX, mAnchorSide == AnchorSide.RIGHT);
     }
 
+    /** Records {@code state} unless it was recorded less than {@link #MOVE_THROTTLE_MS} ago. */
+    private void recordThrottledTouchState(@TouchState int state) {
+        long nowMs = SystemClock.elapsedRealtime();
+        if (nowMs - mLastRecordTimeMs[state] < MOVE_THROTTLE_MS) return;
+        recordTouchState(state);
+        mLastRecordTimeMs[state] = nowMs;
+    }
+
+    // TODO(crbug.com/559262619): Remove the histogram once the unexpected states are confirmed to
+    // never happen, and instead assert isDragging() on ACTION_MOVE, ACTION_UP and ACTION_CANCEL,
+    // and assert !isDragging() on ACTION_DOWN.
     private static void recordTouchState(@TouchState int state) {
         RecordHistogram.recordEnumeratedHistogram(TOUCH_STATE_HISTOGRAM, state, TouchState.COUNT);
     }
@@ -372,6 +408,10 @@ import java.lang.annotation.RetentionPolicy;
         }
         handleView.setPointerIcon(getResizePointerIcon(context));
         handleView.setOnTouchListener(onTouchListener);
+        // The handle consumes ACTION_DOWN, but a right-click also sends a separate
+        // ACTION_BUTTON_PRESS generic motion event. Without a context click listener, it falls
+        // through to the container below and opens its context menu.
+        handleView.setOnContextClickListener(v -> true);
         return handleView;
     }
 

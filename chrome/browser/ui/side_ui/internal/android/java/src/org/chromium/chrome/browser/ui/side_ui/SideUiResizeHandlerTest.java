@@ -20,8 +20,10 @@ import android.content.Context;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.view.Gravity;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -467,5 +469,104 @@ public class SideUiResizeHandlerTest {
         dispatch(handler, MotionEvent.ACTION_MOVE, 280f);
         verify(mSideUiContainer).onResizeLive(CONTAINER_WIDTH_PX + 80);
         verify(mSideUiContainer, never()).onResizeLive(CONTAINER_WIDTH_PX + 180);
+    }
+
+    @Test
+    public void testTapWithinTouchSlop_DoesNotResize() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        int touchSlopPx = ViewConfiguration.get(mContext).getScaledTouchSlop();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(TOUCH_STATE_HISTOGRAM).build();
+
+        dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 100f + touchSlopPx - 1);
+        dispatch(handler, MotionEvent.ACTION_UP, 100f + touchSlopPx - 1);
+
+        verify(mSideUiContainer, never()).onResizeLive(anyInt());
+        verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
+        verifyNoMoreInteractions(mSideUiCoordinator);
+        assertNull(mAnchorContainerParent.getPointerIcon());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDrag_StartsOnlyAfterTouchSlop() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        int touchSlopPx = ViewConfiguration.get(mContext).getScaledTouchSlop();
+
+        dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 100f + touchSlopPx - 1);
+        verify(mSideUiContainer, never()).onResizeLive(anyInt());
+
+        dispatch(handler, MotionEvent.ACTION_MOVE, 100f + touchSlopPx);
+        verify(mSideUiContainer).onResizeLive(CONTAINER_WIDTH_PX + touchSlopPx);
+
+        dispatch(handler, MotionEvent.ACTION_UP, 100f + touchSlopPx);
+        verify(mSideUiContainer).onResizeCommitted(CONTAINER_WIDTH_PX + touchSlopPx);
+    }
+
+    @Test
+    public void testHandleConsumesContextClick() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
+        handler.onUiUpdateCompleted();
+        View handleView = handler.getHandleViewForTesting();
+        assertNotNull(handleView);
+
+        assertTrue(handleView.performContextClick());
+    }
+
+    @Test
+    public void testLeftClickDrag_Resizes() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+
+        dispatchWithButtons(handler, MotionEvent.ACTION_DOWN, 100f, MotionEvent.BUTTON_PRIMARY);
+        dispatchWithButtons(handler, MotionEvent.ACTION_MOVE, 150f, MotionEvent.BUTTON_PRIMARY);
+        verify(mSideUiContainer).onResizeLive(CONTAINER_WIDTH_PX + 50);
+
+        dispatchWithButtons(handler, MotionEvent.ACTION_UP, 150f, /* buttonState= */ 0);
+        verify(mSideUiContainer).onResizeCommitted(CONTAINER_WIDTH_PX + 50);
+    }
+
+    @Test
+    public void testRightClickDrag_DoesNotResize() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(TOUCH_STATE_HISTOGRAM).build();
+
+        dispatchWithButtons(handler, MotionEvent.ACTION_DOWN, 100f, MotionEvent.BUTTON_SECONDARY);
+        dispatchWithButtons(handler, MotionEvent.ACTION_MOVE, 150f, MotionEvent.BUTTON_SECONDARY);
+        dispatchWithButtons(handler, MotionEvent.ACTION_UP, 150f, /* buttonState= */ 0);
+
+        verify(mSideUiContainer, never()).onResizeLive(anyInt());
+        verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
+        verifyNoMoreInteractions(mSideUiCoordinator);
+        histogramWatcher.assertExpected();
+    }
+
+    private void dispatchWithButtons(
+            SideUiResizeHandler handler, int action, float x, int buttonState) {
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+        coords.x = x;
+        MotionEvent event =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        action,
+                        /* pointerCount= */ 1,
+                        new MotionEvent.PointerProperties[] {properties},
+                        new MotionEvent.PointerCoords[] {coords},
+                        /* metaState= */ 0,
+                        buttonState,
+                        /* xPrecision= */ 1f,
+                        /* yPrecision= */ 1f,
+                        /* deviceId= */ 0,
+                        /* edgeFlags= */ 0,
+                        InputDevice.SOURCE_MOUSE,
+                        /* flags= */ 0);
+        handler.onTouch(mSideUiContainerView, event);
+        event.recycle();
     }
 }

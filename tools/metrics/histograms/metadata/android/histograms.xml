@@ -5819,12 +5819,13 @@ chromium-metrics-reviews@google.com.
   <owner>linyuh@google.com</owner>
   <summary>
     Records each gesture transition of the Side UI resize handle. The expected
-    transitions are a drag starting on ACTION_DOWN, and a drag being committed
-    on ACTION_UP or ACTION_CANCEL. The unexpected ones are an ACTION_UP or
-    ACTION_CANCEL arriving with no drag in progress, an ACTION_MOVE arriving
-    with no drag in progress, and an ACTION_DOWN arriving while a previous drag
-    is still in progress because that drag never received its ACTION_UP or
-    ACTION_CANCEL.
+    transitions are a drag starting once the pointer moves past the touch slop,
+    and a drag being committed on ACTION_UP or ACTION_CANCEL. A tap that never
+    moves past the touch slop is not recorded. The unexpected ones are an
+    ACTION_UP or ACTION_CANCEL arriving with no drag in progress, an ACTION_MOVE
+    arriving with no drag in progress, and an ACTION_DOWN arriving while a
+    previous gesture is still in progress because it never received its
+    ACTION_UP or ACTION_CANCEL.
 
     Recorded once per touch event on the handle, except for an ACTION_MOVE.
     Moves fire once per frame, so each of the two move states is recorded at
