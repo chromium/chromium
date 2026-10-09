@@ -35,6 +35,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -122,9 +123,9 @@ gfx::ImageSkia LabelButton::GetImage(ButtonState state) const {
         image_model.IsVectorIcon()) {
       const auto& vector_icon = image_model.GetVectorIcon();
       if (const gfx::VectorIcon* icon = vector_icon.vector_icon()) {
-        return ui::ImageModel::FromVectorIcon(*icon, ui::kColorIconHovered,
-                                              vector_icon.icon_size(),
-                                              vector_icon.badge_icon())
+        return ui::ImageModel::FromVectorIcon(
+                   *icon, GetHighContrastHoverColor(), vector_icon.icon_size(),
+                   vector_icon.badge_icon())
             .Rasterize(GetColorProvider());
       }
     }
@@ -188,7 +189,7 @@ void LabelButton::SetTextColor(ButtonState for_state, ui::ColorVariant color) {
   if (for_state == STATE_DISABLED) {
     label_->SetDisabledColor(color);
   } else if (for_state == GetState()) {
-    label_->SetEnabledColor(color);
+    ResetLabelEnabledColor();
   }
   explicitly_set_colors_[for_state] = true;
 }
@@ -635,6 +636,28 @@ void LabelButton::OnBlur() {
 void LabelButton::OnThemeChanged() {
   Button::OnThemeChanged();
   ResetColorsFromNativeTheme();
+
+  if (UsingPlatformHighContrastInkDrop(this)) {
+    if (!subpixel_before_hc_.has_value()) {
+      subpixel_before_hc_ = label_->GetSubpixelRenderingEnabled();
+    }
+    label_->SetSubpixelRenderingEnabled(false);
+    if (!label_->layer()) {
+      label_->SetPaintToLayer();
+      label_->layer()->SetFillsBoundsOpaquely(false);
+      painting_label_to_layer_for_hc_ = true;
+    }
+  } else {
+    if (painting_label_to_layer_for_hc_) {
+      label_->DestroyLayer();
+      painting_label_to_layer_for_hc_ = false;
+    }
+    if (subpixel_before_hc_.has_value()) {
+      label_->SetSubpixelRenderingEnabled(*subpixel_before_hc_);
+      subpixel_before_hc_.reset();
+    }
+  }
+
   UpdateImage();
   if (!explicitly_set_border_) {
     View::SetBorder(CreateDefaultBorder());
@@ -644,12 +667,12 @@ void LabelButton::OnThemeChanged() {
   // define the tint for the entire background/border/focus ring.
   SchedulePaint();
 
-  // Update the icon when ink drop highlight visibility changes so that
-  // forced-colors mode keeps the icon contrasting with the opaque ink drop.
+  // Update the icon and label color when ink drop highlight visibility changes
+  // so that forced-colors mode keeps them contrasting with the opaque ink drop.
   if (auto* ink_drop_host = InkDrop::Get(this)) {
     ink_drop_highlighted_subscription_ =
         ink_drop_host->AddHighlightedChangedCallback(base::BindRepeating(
-            &LabelButton::UpdateImage, base::Unretained(this)));
+            &LabelButton::OnInkDropHighlightedChanged, base::Unretained(this)));
   }
 }
 
@@ -750,8 +773,17 @@ void LabelButton::ResetLabelEnabledColor() {
     return;
   }
 
+  if (UsingPlatformHighContrastInkDrop(this)) {
+    const auto* ink_drop_host = InkDrop::Get(this);
+    if (ink_drop_host && ink_drop_host->GetHighlighted() &&
+        SkColorGetA(ink_drop_host->GetBaseColor()) == SK_AlphaOPAQUE) {
+      label_->SetEnabledColor(GetHighContrastHoverColor());
+      return;
+    }
+  }
+
   const auto& color = button_state_colors_[GetState()];
-  if (color && color != label_->GetEnabledColor()) {
+  if (color && color != label_->GetRequestedEnabledColor()) {
     label_->SetEnabledColor(*color);
   }
 }
@@ -765,6 +797,30 @@ Button::ButtonState LabelButton::ImageStateForState(
 void LabelButton::FlipCanvasOnPaintForRTLUIChanged() {
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(
       GetFlipCanvasOnPaintForRTLUI());
+}
+
+void LabelButton::OnInkDropHighlightedChanged() {
+  UpdateImage();
+  ResetLabelEnabledColor();
+}
+
+SkColor LabelButton::GetHighContrastHoverColor() const {
+  // Use `kColorIconHovered` (`kColorNativeHighlightText` in Windows High
+  // Contrast) for both the icon and label so they share the same contrasting
+  // foreground color against the opaque ink-drop highlight pill.
+  SkColor hover_color = GetColorProvider()->GetColor(ui::kColorIconHovered);
+  const auto* ink_drop_host = InkDrop::Get(this);
+  if (ink_drop_host &&
+      ink_drop_host->GetMode() != InkDropHost::InkDropMode::OFF) {
+    const SkColor base_color = ink_drop_host->GetBaseColor();
+    if (base_color != gfx::kPlaceholderColor &&
+        SkColorGetA(base_color) == SK_AlphaOPAQUE &&
+        color_utils::GetContrastRatio(hover_color, base_color) <
+            color_utils::kMinimumVisibleContrastRatio) {
+      hover_color = color_utils::GetColorWithMaxContrast(base_color);
+    }
+  }
+  return hover_color;
 }
 
 LabelButtonActionViewInterface::LabelButtonActionViewInterface(

@@ -22,6 +22,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -847,6 +848,96 @@ TEST_F(LabelButtonTest, AccessibiltyDefaultState) {
   button()->SetIsDefault(false);
   button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kDefault));
+}
+
+namespace {
+
+class HighlightableTestInkDrop : public test::TestInkDrop {
+ public:
+  void SetHighlighted(bool highlighted) { highlighted_ = highlighted; }
+  bool IsHighlightFadingInOrVisible() const override { return highlighted_; }
+
+ private:
+  bool highlighted_ = false;
+};
+
+}  // namespace
+
+TEST_F(LabelButtonTest, HighContrastInkDropLabelLayerAndColor) {
+  // In normal mode, the label does not paint to a layer and subpixel rendering
+  // is enabled.
+  EXPECT_FALSE(button()->label()->layer());
+  EXPECT_TRUE(button()->label()->GetSubpixelRenderingEnabled());
+
+  // Enable forced colors and high contrast.
+  os_settings_provider().SetForcedColorsActive(true);
+  os_settings_provider().SetPreferredContrast(
+      ui::NativeTheme::PreferredContrast::kMore);
+
+  ASSERT_TRUE(button()->label()->layer());
+  EXPECT_FALSE(button()->label()->layer()->fills_bounds_opaquely());
+  EXPECT_FALSE(button()->label()->GetSubpixelRenderingEnabled());
+
+  auto test_ink_drop = std::make_unique<HighlightableTestInkDrop>();
+  auto* test_ink_drop_ptr = test_ink_drop.get();
+  auto* ink_drop_host = InkDrop::Get(button());
+  test::InkDropHostTestApi(ink_drop_host).SetInkDrop(std::move(test_ink_drop));
+  const SkColor normal_color = button()->label()->GetEnabledColor();
+  const SkColor hover_color =
+      button()->GetColorProvider()->GetColor(ui::kColorIconHovered);
+  const SkColor contrasting_base_color =
+      color_utils::GetColorWithMaxContrast(hover_color);
+  ink_drop_host->SetBaseColor(contrasting_base_color);
+
+  // Highlighting an opaque ink drop in forced-colors mode updates the label
+  // color to kColorIconHovered.
+  test_ink_drop_ptr->SetHighlighted(true);
+  ink_drop_host->OnInkDropHighlightedChanged();
+  EXPECT_EQ(button()->label()->GetEnabledColor(), hover_color);
+
+  // Calling SetTextColor while highlighted preserves the high-contrast hover
+  // color until the highlight is cleared.
+  button()->SetTextColor(Button::STATE_NORMAL, SK_ColorRED);
+  EXPECT_EQ(button()->label()->GetEnabledColor(), hover_color);
+
+  // If the ink drop base color has the same luminance as kColorIconHovered
+  // (e.g. TabCloseButton on an active highlight tab), the hover color falls
+  // back to the max-contrast color against the ink drop base color.
+  ink_drop_host->SetBaseColor(hover_color);
+  ink_drop_host->OnInkDropHighlightedChanged();
+  EXPECT_EQ(button()->label()->GetEnabledColor(), contrasting_base_color);
+  ink_drop_host->SetBaseColor(contrasting_base_color);
+
+  // Clearing the ink drop highlight restores the normal foreground color.
+  test_ink_drop_ptr->SetHighlighted(false);
+  ink_drop_host->OnInkDropHighlightedChanged();
+  EXPECT_EQ(button()->label()->GetEnabledColor(), SK_ColorRED);
+  button()->SetTextColor(Button::STATE_NORMAL, normal_color);
+
+  // Translucent ink drop base colors do not override the label color.
+  ink_drop_host->SetBaseColor(SkColorSetA(SK_ColorBLACK, 0x20));
+  test_ink_drop_ptr->SetHighlighted(true);
+  ink_drop_host->OnInkDropHighlightedChanged();
+  EXPECT_EQ(button()->label()->GetEnabledColor(), normal_color);
+  test_ink_drop_ptr->SetHighlighted(false);
+  ink_drop_host->OnInkDropHighlightedChanged();
+
+  // Disabling forced colors destroys the label layer created by LabelButton and
+  // re-enables subpixel rendering.
+  os_settings_provider().SetForcedColorsActive(false);
+  EXPECT_FALSE(button()->label()->layer());
+  EXPECT_TRUE(button()->label()->GetSubpixelRenderingEnabled());
+
+  // Pre-existing label layers and disabled subpixel rendering set by subclasses
+  // are preserved when leaving forced-colors mode.
+  button()->label()->SetPaintToLayer();
+  button()->label()->SetSubpixelRenderingEnabled(false);
+  os_settings_provider().SetForcedColorsActive(true);
+  EXPECT_TRUE(button()->label()->layer());
+  EXPECT_FALSE(button()->label()->GetSubpixelRenderingEnabled());
+  os_settings_provider().SetForcedColorsActive(false);
+  EXPECT_TRUE(button()->label()->layer());
+  EXPECT_FALSE(button()->label()->GetSubpixelRenderingEnabled());
 }
 
 // Test fixture for a LabelButton that has an ink drop configured.

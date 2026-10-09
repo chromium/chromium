@@ -267,6 +267,14 @@ class VIEWS_EXPORT LabelButton : public Button,
 
   void FlipCanvasOnPaintForRTLUIChanged();
 
+  // Updates the image and label enabled color when the ink drop highlight
+  // state changes.
+  void OnInkDropHighlightedChanged();
+
+  // Returns the contrasting foreground color for the icon and label when an
+  // ink drop is highlighted in forced-colors mode.
+  SkColor GetHighContrastHoverColor() const;
+
   // The image container and label shown in the button.
   std::unique_ptr<LabelButtonImageContainer> image_container_;
   raw_ptr<internal::LabelButtonLabel> label_;
@@ -329,7 +337,17 @@ class VIEWS_EXPORT LabelButton : public Button,
 
   bool appear_disabled_in_inactive_widget_ = false;
 
-  // Updates the icon when ink drop highlight changes (forced-colors mode).
+  // True if `label_` was given a layer by LabelButton in OnThemeChanged() for
+  // platform high-contrast ink drops, so pre-existing layers created by
+  // subclasses are not destroyed when leaving high-contrast mode.
+  bool painting_label_to_layer_for_hc_ = false;
+
+  // Stores `label_`'s subpixel rendering state before disabling it for
+  // platform high-contrast ink drops so client-configured state is restored.
+  std::optional<bool> subpixel_before_hc_;
+
+  // Updates the icon and label when ink drop highlight changes (forced-colors
+  // mode).
   base::CallbackListSubscription ink_drop_highlighted_subscription_;
 
   base::CallbackListSubscription flip_canvas_on_paint_subscription_ =
