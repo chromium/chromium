@@ -203,6 +203,15 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     }
   }
 
+  // From here we can end up parsing arbitrary CSS properties via
+  // if(supports(<property>:<value>)). CSS parsing can in some cases be unsafe
+  // cross threads where we rely on static Persistent objects which are not
+  // thread local.
+  //
+  // Some CSSParser APIS are invoked off main thread for canvas APIs, but should
+  // never end up here.
+  CHECK(IsMainThread());
+
   // We did not parse properly without variable substitution,
   // so rewind the stream, and see if parsing it as something
   // containing variables will help.
