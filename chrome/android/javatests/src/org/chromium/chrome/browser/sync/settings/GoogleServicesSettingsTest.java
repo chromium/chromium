@@ -29,9 +29,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -61,12 +61,12 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 /** Tests for GoogleServicesSettings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "A subset of tests requires adding a new account that could fail if batched.")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GoogleServicesSettingsTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -75,10 +75,13 @@ public class GoogleServicesSettingsTest {
             new SettingsTestRule<>(GoogleServicesSettings.class);
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
-    // CTA won't work.
+    // CTA won't work. SigninTestRule is the outer rule so accounts and sign-in state are torn down
+    // after all activities finish.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mSettingsTestRule);
+            RuleChain.outerRule(mSigninTestRule)
+                    .around(mActivityTestRule)
+                    .around(mSettingsTestRule);
 
     @Mock private PasswordManagerUtilBridge.Natives mMockPasswordManagerUtilBridgeJni;
     @Mock private PrivacyPreferencesManagerImpl mMockPrivacyPreferencesManager;
@@ -108,6 +111,7 @@ public class GoogleServicesSettingsTest {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.SIGNIN_ALLOWED);
+                    prefService.clearPref(Pref.USAGE_STATS_ENABLED);
                 });
     }
 
