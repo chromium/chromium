@@ -192,4 +192,21 @@ promise_test(async t => {
     await writer.write("/script>");
     assert_false(window.did_eval_script);
 }, "streamHTMLUnsafe should not execute scripts when disconnected");
+
+promise_test(async t => {
+    const element = document.createElement("div");
+    document.body.append(element);
+    t.add_cleanup(() => element.remove());
+    const writer = element.streamHTMLUnsafe().getWriter();
+    await writer.write("<div id='styled-target-unsafe'>text</div><style>#styled-target-unsafe { color: rgb(0, 128, 0); }");
+    await writer.abort();
+    const style = element.querySelector("style");
+    assert_not_equals(style, null);
+    assert_not_equals(style.sheet, null, "Aborted open <style> element must have a parsed stylesheet");
+    assert_equals(
+        getComputedStyle(element.querySelector("#styled-target-unsafe")).color,
+        "rgb(0, 128, 0)",
+        "Aborted open <style> rules must apply",
+    );
+}, "Aborting streamHTMLUnsafe with an open <style> element pops open elements and applies styles");
 </script>

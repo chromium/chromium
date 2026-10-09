@@ -156,7 +156,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   ~HTMLTreeBuilder();
   void Trace(Visitor*) const;
 
-  const HTMLElementStack* OpenElements() const { return tree_.OpenElements(); }
+  HTMLElementStack* OpenElements() const { return tree_.OpenElements(); }
 
   bool IsParsingFragment() const {
     return !!fragment_context_.FragmentTarget();
