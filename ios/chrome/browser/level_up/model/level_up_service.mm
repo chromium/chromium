@@ -6,6 +6,7 @@
 
 #import <algorithm>
 #import <numeric>
+#import <optional>
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
@@ -48,6 +49,31 @@ const char* GetPrefNameForStatType(LevelUpTaskStatType stat_type) {
       return prefs::kLevelUpPasswordsVerifiedStat;
     case LevelUpTaskStatType::kPhotoSearchesPerformed:
       return prefs::kLevelUpPhotoSearchesPerformedStat;
+  }
+}
+
+// Returns the `LevelUpTaskStatType` associated with `task_type`, or
+// `std::nullopt` if the task does not have an associated stat.
+std::optional<LevelUpTaskStatType> GetStatTypeForTaskType(TaskType task_type) {
+  switch (task_type) {
+    case TaskType::kTabGroups:
+      return LevelUpTaskStatType::kTabsDecluttered;
+    case TaskType::kAutofill:
+      return LevelUpTaskStatType::kPasswordsAutofilled;
+    case TaskType::kPasswordCheckup:
+      return LevelUpTaskStatType::kPasswordsVerified;
+    case TaskType::kLensCameraSearch:
+      return LevelUpTaskStatType::kPhotoSearchesPerformed;
+    case TaskType::kUnknown:
+    case TaskType::kPinTabs:
+    case TaskType::kGemini:
+    case TaskType::kPaymentMethods:
+    case TaskType::kClearBrowsingData:
+    case TaskType::kSafeBrowsing:
+    case TaskType::kIncognito:
+    case TaskType::kLensWebsiteSearch:
+    case TaskType::kAISearch:
+      return std::nullopt;
   }
 }
 
@@ -462,6 +488,31 @@ const TaskInfo* LevelUpService::GetTaskInfo(TaskType task_type) const {
 int LevelUpService::GetStatValue(LevelUpTaskStatType stat_type) const {
   const char* pref_name = GetPrefNameForStatType(stat_type);
   return pref_service_->GetInteger(pref_name);
+}
+
+std::vector<LevelUpTaskStatType> LevelUpService::GetOrderedStatTypes() const {
+  std::vector<LevelUpTaskStatType> ordered_stats;
+  std::vector<LevelUpTaskStatType> default_stats = {
+      LevelUpTaskStatType::kTabsDecluttered,
+      LevelUpTaskStatType::kPasswordsAutofilled,
+      LevelUpTaskStatType::kPasswordsVerified,
+      LevelUpTaskStatType::kPhotoSearchesPerformed,
+  };
+
+  for (auto it = completed_tasks_.rbegin(); it != completed_tasks_.rend();
+       ++it) {
+    TaskType task_type = StringToTaskType(*it);
+    std::optional<LevelUpTaskStatType> stat_type =
+        GetStatTypeForTaskType(task_type);
+    if (stat_type && !std::ranges::contains(ordered_stats, *stat_type)) {
+      ordered_stats.push_back(*stat_type);
+      std::erase(default_stats, *stat_type);
+    }
+  }
+
+  ordered_stats.insert(ordered_stats.end(), default_stats.begin(),
+                       default_stats.end());
+  return ordered_stats;
 }
 
 void LevelUpService::IncrementStatValue(LevelUpTaskStatType stat_type,

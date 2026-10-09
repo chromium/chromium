@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -64,6 +65,10 @@ class LevelUpService : public KeyedService {
 
   // Returns the current count/value for the given stat type.
   int GetStatValue(LevelUpTaskStatType stat_type) const;
+
+  // Returns all stat types ordered by the completion recency of their
+  // associated task (most recent first).
+  std::vector<LevelUpTaskStatType> GetOrderedStatTypes() const;
 
   // Increments the stat type by `delta`.
   void IncrementStatValue(LevelUpTaskStatType stat_type, int delta = 1);

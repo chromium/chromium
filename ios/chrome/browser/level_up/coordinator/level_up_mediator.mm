@@ -129,14 +129,12 @@
       [[NSMutableArray alloc] init];
   NSMutableArray<LevelUpTask*>* safetyTasks = [[NSMutableArray alloc] init];
   NSMutableArray<LevelUpTask*>* searchTasks = [[NSMutableArray alloc] init];
-  NSMutableArray<LevelUpTask*>* allTasks = [[NSMutableArray alloc] init];
 
   const auto& tasks = _levelUpService->GetTasks();
   for (const auto& [type, info] : tasks) {
     BOOL completed = _levelUpService->IsTaskCompleted(type);
     LevelUpTask* task = [[LevelUpTask alloc] initWithTaskInfo:info.get()
                                                     completed:completed];
-    [allTasks addObject:task];
 
     switch (task.category) {
       case LevelUpTaskCategory::kProductivity:
@@ -183,7 +181,7 @@
       [self.consumer addCategoryCard:category];
     }
   }
-  [self configureTaskStat:allTasks];
+  [self configureTaskStat];
 }
 
 - (void)configureAllTasksConsumer:(id<LevelUpConsumer>)allTasksConsumer {
@@ -222,28 +220,30 @@
 
 #pragma mark - Private
 
-// Configures the task stat.
-- (void)configureTaskStat:(NSArray<LevelUpTask*>*)allTasks {
+// Configures the task stats sorted in reverse order of their associated task's
+// completion recency (most recent first).
+- (void)configureTaskStat {
   if (![self.consumer respondsToSelector:@selector(setStats:)]) {
     return;
   }
 
   NSMutableArray<LevelUpStat*>* stats = [[NSMutableArray alloc] init];
 
-  if (LevelUpStat* stat = [self tabsDeclutteredStat]) {
-    [stats addObject:stat];
-  }
-
-  if (LevelUpStat* stat = [self passwordsAutofilledStat]) {
-    [stats addObject:stat];
-  }
-
-  if (LevelUpStat* stat = [self passwordsVerifiedStat]) {
-    [stats addObject:stat];
-  }
-
-  if (LevelUpStat* stat = [self photoSearchesPerformedStat]) {
-    [stats addObject:stat];
+  for (LevelUpTaskStatType statType : _levelUpService->GetOrderedStatTypes()) {
+    switch (statType) {
+      case LevelUpTaskStatType::kTabsDecluttered:
+        [stats addObject:[self tabsDeclutteredStat]];
+        break;
+      case LevelUpTaskStatType::kPasswordsAutofilled:
+        [stats addObject:[self passwordsAutofilledStat]];
+        break;
+      case LevelUpTaskStatType::kPasswordsVerified:
+        [stats addObject:[self passwordsVerifiedStat]];
+        break;
+      case LevelUpTaskStatType::kPhotoSearchesPerformed:
+        [stats addObject:[self photoSearchesPerformedStat]];
+        break;
+    }
   }
 
   [self.consumer setStats:stats];

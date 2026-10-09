@@ -371,4 +371,28 @@ TEST_F(LevelUpServiceTest, TestTaskTypeStringRoundTrip) {
   }
 }
 
+// Tests that GetOrderedStatTypes returns stat types ordered by the completion
+// recency of their associated task (most recent first).
+TEST_F(LevelUpServiceTest, TestGetOrderedStatTypes) {
+  std::vector<LevelUpTaskStatType> default_order = {
+      LevelUpTaskStatType::kTabsDecluttered,
+      LevelUpTaskStatType::kPasswordsAutofilled,
+      LevelUpTaskStatType::kPasswordsVerified,
+      LevelUpTaskStatType::kPhotoSearchesPerformed,
+  };
+  EXPECT_EQ(default_order, service_->GetOrderedStatTypes());
+
+  service_->MarkTaskCompleted(TaskType::kLensCameraSearch);
+  service_->MarkTaskCompleted(TaskType::kPinTabs);
+  service_->MarkTaskCompleted(TaskType::kAutofill);
+
+  std::vector<LevelUpTaskStatType> expected = {
+      LevelUpTaskStatType::kPasswordsAutofilled,
+      LevelUpTaskStatType::kPhotoSearchesPerformed,
+      LevelUpTaskStatType::kTabsDecluttered,
+      LevelUpTaskStatType::kPasswordsVerified,
+  };
+  EXPECT_EQ(expected, service_->GetOrderedStatTypes());
+}
+
 }  // namespace
