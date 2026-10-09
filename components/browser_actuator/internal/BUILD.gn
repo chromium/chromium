@@ -103,11 +103,13 @@ source_set("internal") {
     ":metrics_utils",
     "//base",
     "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/internal/transport/oauth",
     "//components/browser_actuator/internal/transport/proto_stream_client",
     "//components/browser_actuator/internal/transport/proto_stream_client:rust_stream_framer",
     "//components/browser_actuator/internal/transport/upstream_message_client",
     "//components/browser_actuator/public:feature_list",
     "//components/keyed_service/core",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
   ]

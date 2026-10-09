@@ -14,6 +14,7 @@
 #include "components/browser_actuator/internal/features.h"
 #include "components/browser_actuator/internal/session_stream_recorder.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
+#include "components/browser_actuator/internal/transport/oauth/oauth_stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/proto_stream_client/proto_stream_client.h"
 #include "components/browser_actuator/internal/transport/proto_stream_client/rust_stream_framer.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
@@ -24,6 +25,8 @@
 #include "components/browser_actuator/public/transport_handler_factory.h"
 #include "components/browser_actuator/public/transport_handler_factory_registry.h"
 #include "components/browser_actuator/public/transport_session_registry.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -87,12 +90,15 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
 
 std::unique_ptr<MessageStreamClient> CreateStreamClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager,
     std::unique_ptr<StreamConnectionDelegate> resume_delegate) {
   GURL endpoint = GetWatchSessionsEndPoint();
   return std::make_unique<ProtoStreamClient>(
       std::move(url_loader_factory), std::move(endpoint),
-      std::move(resume_delegate), RustStreamFramer::MakeFactory(),
-      GetTrafficAnnotation());
+      std::make_unique<OAuthStreamConnectionDelegate>(
+          std::move(resume_delegate), identity_manager,
+          signin::OAuthConsumerId::kBrowserActuator),
+      RustStreamFramer::MakeFactory(), GetTrafficAnnotation());
 }
 
 }  // namespace
@@ -107,7 +113,10 @@ BrowserActuatorServiceImpl::BrowserActuatorServiceImpl(
         std::make_unique<UpstreamMessageClient>(
             url_loader_factory, identity_manager,
             GetSendSessionMessageEndpoint(), GetTrafficAnnotation()),
-        base::BindOnce(&CreateStreamClient, url_loader_factory));
+        // Safe because BrowserActuatorServiceFactory depends on
+        // IdentityManagerFactory, so `identity_manager` outlives `channel_`.
+        base::BindOnce(&CreateStreamClient, url_loader_factory,
+                       base::Unretained(identity_manager)));
   }
 
   // The internals page is the only consumer of the recorded session history,
