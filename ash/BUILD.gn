@@ -3686,6 +3686,7 @@ test("ash_unittests") {
     "accessibility/magnifier/magnifier_utils_unittest.cc",
     "accessibility/magnifier/partial_magnifier_controller_unittest.cc",
     "accessibility/mouse_keys/mouse_keys_unittest.cc",
+    "accessibility/mouse_locator/mouse_shake_detector_unittest.cc",
     "accessibility/sticky_keys/sticky_keys_overlay_unittest.cc",
     "accessibility/sticky_keys/sticky_keys_unittest.cc",
     "accessibility/switch_access/point_scan_controller_unittest.cc",

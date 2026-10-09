@@ -5,6 +5,8 @@
 #ifndef ASH_ACCESSIBILITY_MOUSE_LOCATOR_MOUSE_SHAKE_DETECTOR_H_
 #define ASH_ACCESSIBILITY_MOUSE_LOCATOR_MOUSE_SHAKE_DETECTOR_H_
 
+#include <deque>
+
 #include "ash/ash_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -25,7 +27,7 @@ class ASH_EXPORT MouseShakeDetector {
     // Called when a shake is detected.
     virtual void OnMouseShakeStarted(const gfx::PointF& location_in_screen) {}
 
-    // Called when the shake stops, or when Reset() is called during a shake.
+    // Called when the shake stops.
     virtual void OnMouseShakeEnded() {}
 
    protected:
@@ -41,11 +43,10 @@ class ASH_EXPORT MouseShakeDetector {
   void ProcessPosition(const gfx::PointF& location_in_screen,
                        base::TimeTicks event_time);
 
-  // Clears all tracking state, ending the shake if one is in progress.
-  void Reset();
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  bool is_shaking() const { return is_shaking_; }
 
  private:
   // Begins a new stroke anchored at `location_in_screen`.
@@ -55,11 +56,39 @@ class ASH_EXPORT MouseShakeDetector {
   // Drops reversals that have aged out of the detection window.
   void PruneOldReversals(base::TimeTicks event_time);
 
+  // Records a confirmed reversal; starts the shake or postpones its end.
+  void OnReversal(const gfx::PointF& location_in_screen,
+                  base::TimeTicks event_time);
+
   // Ends the shake when no new reversal arrived within the timeout.
   void OnShakeEndTimerFired();
 
-  // TODO(b/414450865): Add the stroke and reversal tracking state.
+  // Clears all tracking state, ending the shake if one is in progress.
+  void Reset();
 
+  void NotifyMouseShakeStarted(const gfx::PointF& location_in_screen);
+  void NotifyMouseShakeEnded();
+
+  // Reversal times collected while not shaking, used to start a shake.
+  std::deque<base::TimeTicks> recent_reversal_times_;
+
+  // A stroke runs from `stroke_start_` (S) to `stroke_extreme_` (E), the
+  // farthest point it has advanced to. A reversal is confirmed when the
+  // pointer turns back from E to a point P:
+  //
+  //   S ----------------------------> E
+  //                       P <----------
+  //
+  //   |SE|^2 >= kMinimumStrokeDistanceSquared
+  //   |EP|^2 >= kReversalConfirmationDistanceSquared
+  //   cos(angle between SE and EP) <= kMaximumReversalCosine
+  gfx::PointF stroke_start_;
+  gfx::PointF stroke_extreme_;
+
+  base::TimeTicks last_event_time_;
+  bool stroke_initialized_ = false;
+
+  bool is_shaking_ = false;
   base::OneShotTimer shake_end_timer_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
