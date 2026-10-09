@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -22,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -368,8 +372,10 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 // FedCmAccountSelectionViewPopupTest.
 class FedCmMixin {
  public:
-  // In a bubble view.
-  void ShowAccounts(BrowserWindowInterface* browser) {
+  // In a bubble view. If `requires_disclosure` is true, the account requires
+  // disclosure text, e.g. because it is a new account.
+  void ShowAccounts(BrowserWindowInterface* browser,
+                    bool requires_disclosure = false) {
     delegate_ = std::make_unique<FakeDelegate>(
         browser->GetActiveTabInterface()->GetContents());
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
@@ -389,6 +395,9 @@ class FedCmMixin {
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
+    if (requires_disclosure) {
+      accounts_[0]->fields = idps_[0]->disclosure_fields;
+    }
     account_selection_view_->Show(
         content::RelyingPartyData(u"rp-example.com",
                                   /*iframe_for_display=*/u""),
@@ -653,6 +662,55 @@ IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputEnabledForBubbleDialog) {
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
+}
+
+class FedCmAmbientBubbleBrowserTest : public FedCmBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    FedCmBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    Reset();
+    FedCmBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kFedCmAmbientBubble};
+};
+
+// Tests that accepting the ambient bubble for an account that requires
+// disclosure text shows the disclosure text in the modal dialog.
+IN_PROC_BROWSER_TEST_F(FedCmAmbientBubbleBrowserTest,
+                       AcceptingBubbleForNewAccountShowsModalDialog) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("rp.example", "/title1.html")));
+  content::WebContents* web_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  // Accept the ambient bubble as soon as it is shown.
+  permissions::PermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ShowAccounts(browser(), /*requires_disclosure=*/true);
+  EXPECT_FALSE(account_selection_view_->GetDialogWidget());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return account_selection_view_->IsDialogWidgetVisible(); }));
+  // Unlike the bubble dialog, the modal dialog disables input to the page.
+  EXPECT_TRUE(web_contents->ShouldIgnoreInputEventsForTesting());
+
+  // Run the tasks posted while the modal dialog was shown, e.g. the one that
+  // announces the disclosure text to screen readers.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(account_selection_view_->IsDialogWidgetVisible());
 }
 
 class FedCmAccountSelectionViewPopupTest : public PopupTestBase,

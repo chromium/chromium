@@ -466,6 +466,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // decision. `accepted` is true if the user clicked the "Sign in" button.
   void HandleAmbientBubbleDecision(bool accepted);
 
+  // Shows the request permission dialog with the disclosure text for `account`
+  // in the modal dialog, after the user accepted the ambient bubble. Used for
+  // accounts that require disclosure text, e.g. new accounts. The rest of the
+  // flow is handled by the regular modal dialog logic.
+  void ShowAmbientRequestPermissionModal(
+      const IdentityRequestAccountPtr& account);
+
   // Cancels the outstanding ambient bubble request, if any, e.g. because the
   // FedCM UI is closed or replaced. A decision on the bubble that has not been
   // handled yet is dropped as well. The delegate is not notified.

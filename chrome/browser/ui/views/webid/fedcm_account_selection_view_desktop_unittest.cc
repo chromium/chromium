@@ -2903,8 +2903,8 @@ class FedCmAccountSelectionViewAmbientBubbleTest
         ->NavigateAndCommit(GURL("https://rp.example"));
 
     idp_data_->idp_for_display = "idp.example";
-    // Only accounts that do not require disclosure text, e.g. returning
-    // accounts, are shown in the ambient bubble.
+    // A returning account, which does not require disclosure text and is
+    // selected right away when the ambient bubble is accepted.
     accounts_ = {
         CreateAccount(idp_data_, LoginState::kSignIn, LoginState::kSignIn)};
   }
@@ -3179,16 +3179,89 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
-       NewAccountDoesNotUseAmbientBubble) {
+       AcceptingAmbientBubbleForNewAccountShowsRequestPermissionDialog) {
   // A new account requires disclosure text, which the ambient bubble does not
   // show.
   accounts_ = {CreateAccount(idp_data_)};
   ASSERT_FALSE(accounts_[0]->fields.empty());
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
+  EXPECT_FALSE(controller->GetDialogWidget());
+  ASSERT_TRUE(WaitForAmbientBubble());
 
-  EXPECT_TRUE(controller->GetDialogWidget());
+  permission_request_manager()->Accept(std::monostate());
+
+  // The disclosure text is shown in the modal dialog.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetDialogWidget() != nullptr; }));
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  TestAccountSelectionView* view = controller->GetTestView();
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            view->sheet_type_);
+  EXPECT_THAT(view->account_ids_, testing::ElementsAre(kAccountId1));
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason());
   EXPECT_FALSE(HasAmbientRequest());
+
+  // Continuing in the modal dialog selects the account.
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId1);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying, view->sheet_type_);
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       BackFromAmbientRequestPermissionDialogShowsSingleAccount) {
+  accounts_ = {CreateAccount(idp_data_)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetDialogWidget() != nullptr; }));
+
+  // The regular modal dialog logic handles the rest of the flow, e.g. going
+  // back shows the account in the modal dialog.
+  controller->OnBackButtonClicked();
+  TestAccountSelectionView* view = controller->GetTestView();
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            view->sheet_type_);
+  EXPECT_THAT(view->account_ids_, testing::ElementsAre(kAccountId1));
+  EXPECT_FALSE(view->show_back_button_);
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+
+  // Continuing from there shows the disclosure text again instead of selecting
+  // the account right away.
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            view->sheet_type_);
+  EXPECT_THAT(view->account_ids_, testing::ElementsAre(kAccountId1));
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       FailureDialogReplacesAmbientRequestPermissionModal) {
+  accounts_ = {CreateAccount(idp_data_)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetDialogWidget() != nullptr; }));
+  ASSERT_EQ(1u, controller->num_dialogs_);
+
+  // E.g. the user went back, used another account and the IdP login status
+  // mismatched afterwards. The modal dialog does not support the failure
+  // dialog, so a bubble dialog is created for it instead.
+  controller->ShowFailureDialog(
+      GetRpData(), kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata());
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(delegate_->GetDismissReason());
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,

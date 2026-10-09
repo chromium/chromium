@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -952,8 +953,31 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
 void AccountSelectionModalView::VisibilityChanged(View* starting_from,
                                                   bool is_visible) {
   if (is_visible && !queued_announcement_.empty()) {
-    GetViewAccessibility().AnnounceAlert(queued_announcement_);
-    queued_announcement_ = u"";
+    // This is called while the widget propagates visibility notifications
+    // through the view hierarchy, during which views must not be added.
+    // Announcing may add a view to the RootView, so defer it.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<AccountSelectionModalView> view,
+               const std::u16string& announcement) {
+              if (!view) {
+                return;
+              }
+              // The dialog may have been hidden again in the meantime, e.g.
+              // because the user switched tabs. If so, queue the announcement
+              // again so that it is made when the dialog is shown, unless a
+              // newer one was queued in the meantime.
+              if (!view->GetWidget() || !view->GetWidget()->IsVisible()) {
+                if (view->queued_announcement_.empty()) {
+                  view->queued_announcement_ = announcement;
+                }
+                return;
+              }
+              view->GetViewAccessibility().AnnounceAlert(announcement);
+            },
+            weak_ptr_factory_.GetWeakPtr(),
+            std::exchange(queued_announcement_, std::u16string())));
   }
 }
 
