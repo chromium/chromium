@@ -11,6 +11,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "glic_provider_spec_impl\\.cc": [
+    "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  ],
   "glic_enabling\\.cc": [
     "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
   ],

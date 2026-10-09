@@ -57,6 +57,7 @@ class GlicActorPolicyChecker;
 class GlicEnabling;
 class GlicMetrics;
 class GlicProfileManager;
+class GlicProviderSpec;
 class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
@@ -87,6 +88,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
+
+  // Returns this profile's provider spec. Its values don't change for the
+  // lifetime of the profile.
+  const GlicProviderSpec& provider_spec();
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type GlicKeyedService for the given
@@ -304,6 +309,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicActorPolicyChecker> actor_policy_checker_;
 
   std::unique_ptr<GlicEnabling> enabling_;
+  std::unique_ptr<GlicProviderSpec> provider_spec_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicExperimentalOptInController> opt_in_controller_;
   // Is a GlicInstanceCoordinatorImpl.

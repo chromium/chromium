@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -112,6 +114,14 @@ bool NormalIconIsResource(views::LabelButton* button, int resource_id) {
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, NormalIconIsGlicIcon) {
   ASSERT_TRUE(glic_button());
   EXPECT_TRUE(NormalIconIsResource(glic_button(), IDR_GLIC_BUTTON_ALT_ICON));
+  auto* service = glic::GlicKeyedService::Get(browser()->GetProfile());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(service->provider_spec().GetSettingsSection(),
+            glic::GlicSettingsSection::kGemini);
+  EXPECT_EQ(service->provider_spec().GetSettingsSubpage(),
+            chrome::kGlicSettingsSubpage);
+  EXPECT_EQ(service->provider_spec().GetEntryPointIconId(),
+            IDR_GLIC_BUTTON_ALT_ICON);
 }
 
 // With Gemini Enterprise enabled for the profile, the button shows the GEiC
@@ -131,6 +141,14 @@ class GlicButtonGeicIconTest : public GlicButtonTest {
 IN_PROC_BROWSER_TEST_F(GlicButtonGeicIconTest, NormalIconIsGeicIcon) {
   ASSERT_TRUE(glic_button());
   EXPECT_TRUE(NormalIconIsResource(glic_button(), IDR_GEIC_BUTTON_ICON));
+  auto* service = glic::GlicKeyedService::Get(browser()->GetProfile());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(service->provider_spec().GetSettingsSection(),
+            glic::GlicSettingsSection::kGeminiEnterprise);
+  EXPECT_EQ(service->provider_spec().GetSettingsSubpage(),
+            chrome::kGlicEnterpriseSettingsSubpage);
+  EXPECT_EQ(service->provider_spec().GetEntryPointIconId(),
+            IDR_GEIC_BUTTON_ICON);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuPinned) {
