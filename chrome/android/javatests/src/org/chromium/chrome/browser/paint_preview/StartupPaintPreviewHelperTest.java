@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.paint_preview;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -28,6 +26,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 
 import java.util.concurrent.ExecutionException;
 
@@ -70,7 +69,7 @@ public class StartupPaintPreviewHelperTest {
         Assert.assertFalse("No preview should be attached.", tabbedPaintPreview.isAttached());
 
         // Send Chrome to background to trigger capture.
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).pressHome();
+        ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
 
         assertHasCaptureForTab(tab, true);
         Assert.assertFalse("No preview should be showing.", tabbedPaintPreview.isShowing());
@@ -121,7 +120,7 @@ public class StartupPaintPreviewHelperTest {
         Assert.assertFalse("No preview should be attached.", tabbedPaintPreview.isAttached());
 
         // Send Chrome to background to trigger capture.
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).pressHome();
+        ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
         assertHasCaptureForTab(mActivityTestRule.getActivity().getActivityTab(), true);
 
         // Emulate browser cold start. Paint preview should be shown on startup.
