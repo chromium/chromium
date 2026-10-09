@@ -35,6 +35,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
   bool AllowUnsafeOperations() override;
+  bool IsTrusted() override;
 
   // WebContentsObserver overrides
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
@@ -59,6 +60,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   bool log_enabled_ = false;
   // Whether CDP has access to unsafe operations.
   bool allow_unsafe_operations_ = true;
+  bool is_trusted_ = true;
 };
 
 }  // namespace content

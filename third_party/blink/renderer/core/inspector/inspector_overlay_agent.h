@@ -307,7 +307,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   void Init(CoreProbeSink*,
             protocol::UberDispatcher*,
             InspectorSessionState*,
-            V8SessionHolder) override;
+            V8SessionHolder,
+            ClientIsTrusted) override;
   void Restore() override;
   void Dispose() override;
 

@@ -266,7 +266,8 @@ bool DevToolsSession::IsDetached() {
 void DevToolsSession::Append(InspectorAgent* agent) {
   agents_.push_back(agent);
   agent->Init(agent_->probe_sink_.Get(), inspector_backend_dispatcher_.get(),
-              &session_state_, v8_session_);
+              &session_state_, v8_session_,
+              ClientIsTrusted(client_is_trusted_));
 }
 
 void DevToolsSession::Detach() {

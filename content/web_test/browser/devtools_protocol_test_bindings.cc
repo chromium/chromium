@@ -178,6 +178,10 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(
   if (*method == "setAllowUnsafeOperations" && params && params->size() == 1) {
     allow_unsafe_operations_ = (*params)[0].GetIfBool().value_or(false);
   }
+
+  if (*method == "setIsTrusted" && params && params->size() == 1) {
+    is_trusted_ = (*params)[0].GetIfBool().value_or(false);
+  }
 }
 
 void DevToolsProtocolTestBindings::DispatchProtocolMessage(
@@ -222,6 +226,10 @@ void DevToolsProtocolTestBindings::AgentHostClosed(
 
 bool DevToolsProtocolTestBindings::AllowUnsafeOperations() {
   return allow_unsafe_operations_;
+}
+
+bool DevToolsProtocolTestBindings::IsTrusted() {
+  return is_trusted_;
 }
 
 }  // namespace content

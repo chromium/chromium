@@ -1052,6 +1052,10 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
 
 protocol::Response InspectorEmulationAgent::setLocaleOverride(
     std::optional<String> maybe_locale) {
+  if (!IsTrustedClient()) {
+    return protocol::Response::ServerError(
+        "Locale override is only available to trusted clients");
+  }
   String locale = maybe_locale.value_or(String());
   String error = LocaleController::instance().SetLocaleOverride(
       locale, locale_override_.Get().empty());
@@ -1063,6 +1067,10 @@ protocol::Response InspectorEmulationAgent::setLocaleOverride(
 
 protocol::Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
+  if (!IsTrustedClient()) {
+    return protocol::Response::ServerError(
+        "Timezone override is only available to trusted clients");
+  }
   if (timezone_id.empty()) {
     timezone_override_.reset();
   } else {

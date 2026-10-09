@@ -102,6 +102,10 @@ class TestRunner {
     DevToolsAPI.setAllowUnsafeOperations(enabled);
   }
 
+  setIsTrusted(enabled) {
+    DevToolsAPI.setIsTrusted(enabled);
+  }
+
   startDumpingProtocolMessages() {
     this._dumpInspectorProtocolMessages = true;
   };
@@ -763,6 +767,17 @@ class DevToolsAPI {
   static setAllowUnsafeOperations(enabled) {
     const embedderMessage = {
       method: 'setAllowUnsafeOperations',
+      params: [enabled],
+    };
+    DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
+  }
+
+  /**
+   * @param {boolean} enabled
+   */
+  static setIsTrusted(enabled) {
+    const embedderMessage = {
+      method: 'setIsTrusted',
       params: [enabled],
     };
     DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));

@@ -556,8 +556,10 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
 void InspectorOverlayAgent::Init(CoreProbeSink* instrumenting_agents,
                                  protocol::UberDispatcher* dispatcher,
                                  InspectorSessionState* state,
-                                 V8SessionHolder v8_session) {
-  InspectorBaseAgent::Init(instrumenting_agents, dispatcher, state, v8_session);
+                                 V8SessionHolder v8_session,
+                                 ClientIsTrusted client_is_trusted) {
+  InspectorBaseAgent::Init(instrumenting_agents, dispatcher, state, v8_session,
+                           client_is_trusted);
   const auto* reattach_state = state->ReattachState();
   if (reattach_state && reattach_state->browser_originating_session_state) {
     const auto& browser_state =

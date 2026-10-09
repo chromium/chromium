@@ -98,7 +98,8 @@ class CORE_EXPORT InspectorNetworkAgent final
   void Init(CoreProbeSink*,
             protocol::UberDispatcher*,
             InspectorSessionState*,
-            V8SessionHolder) override;
+            V8SessionHolder,
+            ClientIsTrusted) override;
 
   void Restore() override;
 

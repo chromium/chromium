@@ -822,9 +822,10 @@ InspectorNetworkAgent::URLPatternMatcher::Create(const String& pattern,
 void InspectorNetworkAgent::Init(CoreProbeSink* instrumenting_agents,
                                  protocol::UberDispatcher* dispatcher,
                                  InspectorSessionState* session_state,
-                                 V8SessionHolder v8_session) {
+                                 V8SessionHolder v8_session,
+                                 ClientIsTrusted client_is_trusted) {
   InspectorBaseAgent::Init(instrumenting_agents, dispatcher, session_state,
-                           v8_session);
+                           v8_session, client_is_trusted);
   extra_request_headers_.clear();
   const auto* reattach_state = session_state->ReattachState();
   if (reattach_state && reattach_state->browser_originating_session_state) {
