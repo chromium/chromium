@@ -820,11 +820,8 @@ if (!is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      deps += [
-        "//components/safe_browsing/content/browser",
-        "//components/safe_browsing/content/browser:client_side_detection",
-        "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-      ]
+      deps +=
+          [ "//components/safe_browsing/content/browser:client_side_detection" ]
     }
     if (enable_printing) {
       deps += [ "//chrome/browser/printing" ]
