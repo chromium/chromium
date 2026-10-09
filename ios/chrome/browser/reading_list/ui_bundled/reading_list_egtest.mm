@@ -102,11 +102,22 @@ std::string operator*(const std::string& s, unsigned int n) {
   return out.str();
 }
 
+// Returns a matcher for an element whose ancestor is either UINavigationBar or
+// _UIFloatingBarContainerView (on iOS 27+).
+id<GREYMatcher> NavigationBarOrFloatingBar() {
+  NSMutableArray<id<GREYMatcher>>* ancestors = [NSMutableArray
+      arrayWithObject:grey_ancestor(grey_kindOfClass([UINavigationBar class]))];
+  Class floatingBarClass = NSClassFromString(@"_UIFloatingBarContainerView");
+  if (floatingBarClass) {
+    [ancestors addObject:grey_ancestor(grey_kindOfClass(floatingBarClass))];
+  }
+  return grey_anyOfMatchers(ancestors);
+}
+
 // Scroll to the top of the Reading List.
 void ScrollToTop() {
-  XCUIApplication* springboardApplication = [[XCUIApplication alloc]
-      initWithBundleIdentifier:@"com.apple.springboard"];
-  [springboardApplication.statusBars.firstMatch tap];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      performAction:chrome_test_util::ScrollToTop()];
 }
 
 // Asserts that the "mark" toolbar button is visible and has the a11y label of
@@ -120,29 +131,21 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
 
 // Asserts the `button_id` navigation bar button is not visible.
 void AssertNavigationBarButtonNotVisibleWithID(NSString* button_id) {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
-                                          grey_ancestor(grey_kindOfClassName(
-                                              @"UINavigationBar")),
-                                          nil)]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      grey_allOf(grey_accessibilityID(button_id),
+                                 NavigationBarOrFloatingBar(), nil)];
 }
 
 // Asserts the `button_id` toolbar button is not visible.
 void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
-                                          grey_ancestor(grey_kindOfClassName(
-                                              @"UIToolbar")),
-                                          nil)]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::ToolbarButtonWithID(button_id)];
 }
 
 // Assert the `button_id` button is visible.
 void AssertNavigationBarButtonVisibleWithID(NSString* button_id) {
-  id<GREYMatcher> buttonMatcher =
-      grey_allOf(grey_accessibilityID(button_id),
-                 grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  id<GREYMatcher> buttonMatcher = grey_allOf(grey_accessibilityID(button_id),
+                                             NavigationBarOrFloatingBar(), nil);
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:buttonMatcher];
 }
 
@@ -1445,6 +1448,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 - (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Opening in new window from context menu is only supported on iPad.");
   }
 
   // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking

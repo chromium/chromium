@@ -179,7 +179,7 @@ NSString* const kChromeActionsErrorDomain = @"ChromeActionsError";
                      NSLocalizedDescriptionKey : @"View is not a UIScrollView"
                    }];
       }
-      view.contentOffset = CGPointZero;
+      view.contentOffset = CGPointMake(0, -view.adjustedContentInset.top);
     });
     return YES;
   };
