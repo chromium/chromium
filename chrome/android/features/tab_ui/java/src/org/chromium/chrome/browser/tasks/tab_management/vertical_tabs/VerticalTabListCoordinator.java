@@ -1521,7 +1521,8 @@ public class VerticalTabListCoordinator {
      * handler; see {@link VerticalTabRailHoverController#onDragEvent}.
      */
     private boolean onRailDrag(View view, DragEvent event) {
-        mRailHoverController.onDragEvent(event);
+        mRailHoverController.onDragEvent(
+                event, /* isExternalDrag= */ !mTabSwitcherDragHandler.isDragSourceInstance());
         return mTabSwitcherDragHandler.onDrag(view, event);
     }
 

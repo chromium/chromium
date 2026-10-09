@@ -260,12 +260,16 @@ class VerticalTabRailHoverController
      * delivered straight to the listener by {@code ViewRootImpl#setDragFocus} and never dispatched,
      * so only the listener observes every action. The container is the rail's only drag listener,
      * so crossing between the rail's margin and one of its lists is not an exit.
+     *
+     * @param event The drag event.
+     * @param isExternalDrag Whether the drag started in another window. Such a drag over the rail
+     *     expands it like a hover, so the user can see where the tab lands.
      */
-    void onDragEvent(DragEvent event) {
+    void onDragEvent(DragEvent event, boolean isExternalDrag) {
         if (!isTrackingPointer()) return;
-        // Hover events are not sent during a system drag and drop, so the rail cannot tell when the
-        // pointer leaves it from hover alone. The position is unconfirmed for the duration of the
-        // drag, unless the rail receives coordinate-bearing drag events (see below).
+        // Hover events are not sent during a system drag and drop. Drag events only record where
+        // the pointer is, so the rail never collapses mid-drag: ACTION_DRAG_ENDED collapses it
+        // unless the drag is released over the rail.
         switch (event.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
                 cancelConfirmPointerState();
@@ -274,24 +278,34 @@ class VerticalTabRailHoverController
                 }
                 break;
             case DragEvent.ACTION_DRAG_LOCATION:
+                // Only delivered while the pointer is over the rail and the rail accepts the drag.
+                // Leaves a pending expansion alone, as recording a state cancels it.
+                if (mPointerState == PointerState.INSIDE) break;
+                recordPointerState(PointerState.INSIDE);
+                // A drag from another window moves over the rail: expand it like a hover. This
+                // skips the top resumed check, as drag events only reach the window under the
+                // pointer, which is not in front while the drag runs. Reuses the hover debounce,
+                // so dragging across the rail does not expand it.
+                if (isExternalDrag) scheduleConfirmPointerState(HOVER_DEBOUNCE_MS);
+                break;
             case DragEvent.ACTION_DROP:
-                // These are only delivered to the rail when the pointer is over it and the rail
-                // accepts the drag, so they confirm the pointer position. A drag that then ends
-                // over the rail (a drop, or ESC) leaves it expanded under the pointer.
+                // Released over the rail, so ACTION_DRAG_ENDED leaves it expanded.
                 if (mPointerState == PointerState.INSIDE_UNCONFIRMED) {
                     recordPointerState(PointerState.INSIDE);
                 }
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
-                // The pointer left the rail. Collapses a hover-expanded rail; a rail the user
-                // expanded is left alone by VerticalTabRailCollapseController. ACTION_DRAG_ENDED
-                // does not collapse a confirmed rail: a drag that ends outside the rail has
-                // already exited it.
-                if (mPointerState != PointerState.OUTSIDE) {
-                    applyPointerState(PointerState.OUTSIDE);
+                // The pointer left the rail or the window. Only recorded, as the tab may come
+                // back. Also cancels a pending expansion.
+                if (mPointerState == PointerState.INSIDE) {
+                    recordPointerState(PointerState.INSIDE_UNCONFIRMED);
                 }
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
+                // Drop any expansion still waiting: the drag is over, and hover events take over.
+                cancelConfirmPointerState();
+                // Released away from the rail: collapse it. Released over it (a drop, or ESC):
+                // leave it.
                 if (mPointerState == PointerState.INSIDE_UNCONFIRMED) {
                     applyPointerState(PointerState.OUTSIDE);
                 }

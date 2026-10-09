@@ -4632,6 +4632,49 @@ public class VerticalTabListCoordinatorUnitTest {
         return tab;
     }
 
+    /** Enables expand-on-hover and collapses the rail as the user would. */
+    private void collapseRailByUser() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        mCoordinator.getCollapseController().toggleCollapseState();
+        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
+    }
+
+    /**
+     * Puts the rail in the only state {@link VerticalTabRailCollapseController} will collapse out
+     * of on hover: a rail the user collapsed, currently expanded because the pointer is over it.
+     *
+     * <p>The expansion is driven through a real mouse hover, so {@link
+     * VerticalTabRailHoverController} tracks the pointer as inside the rail.
+     */
+    private void hoverExpandRail() {
+        collapseRailByUser();
+
+        View containerView = mCoordinator.getView();
+        containerView.layout(0, 0, 200, 500);
+        containerView.findViewById(R.id.collapse_button).layout(0, 0, 200, 60);
+        MotionEvent hoverEnter =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 50f, 300f, 0);
+        hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
+        containerView.dispatchGenericMotionEvent(hoverEnter);
+        hoverEnter.recycle();
+        ShadowLooper.idleMainLooper(
+                VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+
+        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        clearInvocations(mMockRailStateChangeDelegate);
+    }
+
+    /** Delivers a drag event to the rail container's drag listener, as the framework does. */
+    private void dispatchToRailDragListener(int action) {
+        View container = mCoordinator.getView();
+        getOnDragListener(container).onDrag(container, mockDragEvent(action, /* result= */ false));
+    }
+
     @Test
     public void testMediatorOnLongPressTabItemEventListener_ShowsItemContextMenu() {
         TabListRecyclerView recyclerView = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
@@ -5061,16 +5104,25 @@ public class VerticalTabListCoordinatorUnitTest {
         mainRecyclerView.layout(0, pinnedHeight, width, pinnedHeight + mainHeight);
     }
 
-    /** ACTION_DRAG_EXITED on the rail container means the pointer left the rail. */
+    // =============================================================================================
+    // Expand-on-Hover Drag Tests
+    // =============================================================================================
+
+    /**
+     * ACTION_DRAG_EXITED on the rail container means the pointer left the rail mid-drag. The rail
+     * stays expanded until the drag is released away from it.
+     */
     @Test
-    public void testDragLeavesTheRail_CollapsesAHoverExpandedRail() {
+    public void testDragLeavesTheRail_KeepsAHoverExpandedRailUntilDragEnds() {
         createCoordinator();
         hoverExpandRail();
 
         dispatchToRailDragListener(DragEvent.ACTION_DRAG_STARTED);
         dispatchToRailDragListener(DragEvent.ACTION_DRAG_LOCATION);
         dispatchToRailDragListener(DragEvent.ACTION_DRAG_EXITED);
+        verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
 
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_ENDED);
         verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
     }
 
@@ -5079,9 +5131,10 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testRailDragListener_HoverControllerObservesBeforeHandler() {
         createCoordinator();
         hoverExpandRail();
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_EXITED);
 
         View container = mCoordinator.getView();
-        DragEvent event = mockDragEvent(DragEvent.ACTION_DRAG_EXITED, /* result= */ false);
+        DragEvent event = mockDragEvent(DragEvent.ACTION_DRAG_ENDED, /* result= */ false);
         getOnDragListener(container).onDrag(container, event);
 
         InOrder inOrder = inOrder(mMockRailStateChangeDelegate, mTabSwitcherDragHandler);
@@ -5116,57 +5169,57 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     /**
-     * A rail-originated drag installs a different delegate; leaving the rail must still collapse
-     * it, since the hover controller is fed by the container listener, not by either delegate.
+     * A rail-originated drag installs a different delegate; leaving the rail must still keep it
+     * expanded until the drag ends, since the hover controller is fed by the container listener,
+     * not by either delegate.
      */
     @Test
-    public void testDragLeavesTheRail_OriginatingDrag_CollapsesAHoverExpandedRail() {
+    public void testDragLeavesTheRail_OriginatingDrag_KeepsAHoverExpandedRailUntilDragEnds() {
         setUpRailDragSource();
         createCoordinator();
         startRailDragAndCaptureDelegate();
+        when(mTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(true);
         hoverExpandRail();
 
         dispatchToRailDragListener(DragEvent.ACTION_DRAG_EXITED);
+        verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
 
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_ENDED);
         verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
     }
 
-    /** Delivers a drag event to the rail container's drag listener, as the framework does. */
-    private void dispatchToRailDragListener(int action) {
-        View container = mCoordinator.getView();
-        getOnDragListener(container).onDrag(container, mockDragEvent(action, /* result= */ false));
-    }
+    /** A drag from another window over a user-collapsed rail expands it for hovering. */
+    @Test
+    public void testExternalDragOverRail_ExpandsForHovering() {
+        createCoordinator();
+        collapseRailByUser();
+        when(mTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
 
-    /**
-     * Puts the rail in the only state {@link VerticalTabRailCollapseController} will collapse out
-     * of on hover: a rail the user collapsed, currently expanded because the pointer is over it.
-     *
-     * <p>The expansion is driven through a real mouse hover, so {@link
-     * VerticalTabRailHoverController} tracks the pointer as inside the rail.
-     */
-    private void hoverExpandRail() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
-        mCoordinator.getCollapseController().toggleCollapseState();
-        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
-
-        View containerView = mCoordinator.getView();
-        containerView.layout(0, 0, 200, 500);
-        containerView.findViewById(R.id.collapse_button).layout(0, 0, 200, 60);
-        MotionEvent hoverEnter =
-                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 50f, 300f, 0);
-        hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
-        containerView.dispatchGenericMotionEvent(hoverEnter);
-        hoverEnter.recycle();
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_STARTED);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_LOCATION);
         ShadowLooper.idleMainLooper(
                 VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
+
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+    }
 
-        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
-        clearInvocations(mMockRailStateChangeDelegate);
+    /** A drag from this window over a user-collapsed rail does not expand it. */
+    @Test
+    public void testDragFromThisWindowOverRail_StaysCollapsed() {
+        createCoordinator();
+        collapseRailByUser();
+        when(mTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(true);
+
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_STARTED);
+        dispatchToRailDragListener(DragEvent.ACTION_DRAG_LOCATION);
+        ShadowLooper.idleMainLooper(
+                VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
+
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
     }
 
     @Test

@@ -369,19 +369,19 @@ public class VerticalTabRailHoverControllerUnitTest {
     public void testDrag_StopsHoveringWhenDragEnds() {
         hoverInsideRail();
 
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
 
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
         verify(mCollapseController).setHovering(false);
         assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
     }
 
     @Test
     public void testDrag_IgnoredWhenPointerOutside() {
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
 
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
@@ -390,14 +390,14 @@ public class VerticalTabRailHoverControllerUnitTest {
     @Test
     public void testDrag_LocationOverRail_KeepsHoveringWhenDragEnds() {
         hoverInsideRail();
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
 
         // A drag location is only delivered to the rail while the pointer is over it.
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_LOCATION));
+        dispatchDrag(DragEvent.ACTION_DRAG_LOCATION);
         assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
 
         // E.g. ESC over the rail.
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
     }
@@ -405,51 +405,181 @@ public class VerticalTabRailHoverControllerUnitTest {
     @Test
     public void testDrag_DropOnRail_KeepsHoveringWhenDragEnds() {
         hoverInsideRail();
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
 
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DROP));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        dispatchDrag(DragEvent.ACTION_DROP);
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
 
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
     }
 
     @Test
-    public void testDrag_ExitedRail_StopsHoveringOnce() {
+    public void testDrag_ExitedRail_KeepsHoveringUntilDragEnds() {
         hoverInsideRail();
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_LOCATION));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchDrag(DragEvent.ACTION_DRAG_LOCATION);
 
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_EXITED));
+        // The tab is dragged off the rail, e.g. to another window, without being released.
+        dispatchDrag(DragEvent.ACTION_DRAG_EXITED);
+        verify(mCollapseController, never()).setHovering(false);
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+
+        // The tab is released away from the rail.
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
         verify(mCollapseController).setHovering(false);
         assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
-
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
-        verify(mCollapseController).setHovering(false);
     }
 
     @Test
     public void testDrag_ExitedWhilePointerOutside_DoesNotStopHovering() {
         // E.g. a drag from another window passing over the rail.
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_EXITED));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchDrag(DragEvent.ACTION_DRAG_EXITED);
 
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
     }
 
     @Test
-    public void testDrag_LocationAfterExit_DoesNotReconfirmPointer() {
+    public void testDrag_LeavesAndReentersRailRepeatedly_KeepsHoveringUntilReleased() {
         hoverInsideRail();
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_EXITED));
-        clearInvocations(mCollapseController);
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
 
-        // Re-entering the rail mid-drag does not re-expand it; hover events after the drag do.
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_LOCATION));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        // Out, back over the rail, and out again, without releasing.
+        dispatchDrag(DragEvent.ACTION_DRAG_EXITED);
+        dispatchDrag(DragEvent.ACTION_DRAG_LOCATION);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+        dispatchDrag(DragEvent.ACTION_DRAG_EXITED);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
+        verify(mCollapseController).setHovering(false);
+    }
+
+    @Test
+    public void testDrag_ReleasedOnRailAfterLeavingIt_KeepsHovering() {
+        hoverInsideRail();
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchDrag(DragEvent.ACTION_DRAG_EXITED);
+
+        dispatchDrag(DragEvent.ACTION_DRAG_LOCATION);
+        dispatchDrag(DragEvent.ACTION_DROP);
+        dispatchDrag(DragEvent.ACTION_DRAG_ENDED);
 
         verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExternalDrag_OverRail_ExpandsAfterDebounceWhenNotTopResumed() {
+        // The drag started in another window, which is the one in front.
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(false);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_STARTED);
+
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS - 1);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        // Later LOCATION events do not postpone the expansion.
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        idleMainLooper(1);
+        verify(mCollapseController).setHovering(true);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExternalDrag_ExitsRail_StaysExpandedUntilDragEnds() {
+        dragExternallyIntoRail();
+
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_EXITED);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+
+        // The tab is dropped elsewhere.
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_ENDED);
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExternalDrag_PassesAcrossRail_DoesNotExpand() {
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+
+        // The pointer leaves the rail before the debounce elapses.
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_EXITED);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(true);
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+
+        // Coming back over the still collapsed rail expands it after the debounce.
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+        verify(mCollapseController).setHovering(true);
+    }
+
+    @Test
+    public void testExternalDrag_ReentersRail_StaysExpanded() {
+        dragExternallyIntoRail();
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_EXITED);
+
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(false);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExternalDrag_DroppedOnRail_StaysExpanded() {
+        dragExternallyIntoRail();
+
+        dispatchExternalDrag(DragEvent.ACTION_DROP);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_ENDED);
+
+        // The pointer is still over the rail: the hover events that follow take over.
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExternalDrag_EscOverRail_StaysExpanded() {
+        dragExternallyIntoRail();
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_EXITED);
+
+        // Back over the rail, then ESC: the drag ends without a drop.
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_ENDED);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDragFromThisWindow_OverRail_DoesNotExpand() {
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchDrag(DragEvent.ACTION_DRAG_LOCATION);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExternalDrag_ExpandOnHoverDisabled_IgnoresEvents() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_EXITED);
+
+        verifyNoInteractions(mCollapseController);
         assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
     }
 
@@ -644,8 +774,8 @@ public class VerticalTabRailHoverControllerUnitTest {
         dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
         dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
         dispatchMouseTouch(MotionEvent.ACTION_UP, OUTSIDE_X, Y);
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
-        mHoverController.onDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_EXITED));
+        dispatchDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchDrag(DragEvent.ACTION_DRAG_EXITED);
         mHoverController.onActivityTopResumedChanged(false);
 
         verifyNoInteractions(mCollapseController);
@@ -719,6 +849,28 @@ public class VerticalTabRailHoverControllerUnitTest {
         dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
         verify(mCollapseController).setHovering(true);
         clearInvocations(mCollapseController);
+    }
+
+    /**
+     * Drags a tab from another window over the rail until it expands, then forgets the resulting
+     * interaction with the collapse controller.
+     */
+    private void dragExternallyIntoRail() {
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_STARTED);
+        dispatchExternalDrag(DragEvent.ACTION_DRAG_LOCATION);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+        verify(mCollapseController).setHovering(true);
+        clearInvocations(mCollapseController);
+    }
+
+    /** Feeds the hover controller a drag event of a drag started in this window. */
+    private void dispatchDrag(int action) {
+        mHoverController.onDragEvent(mockDragEvent(action), /* isExternalDrag= */ false);
+    }
+
+    /** Feeds the hover controller a drag event of a drag started in another window. */
+    private void dispatchExternalDrag(int action) {
+        mHoverController.onDragEvent(mockDragEvent(action), /* isExternalDrag= */ true);
     }
 
     private void dispatchMouseHover(int action, float x, float y) {
