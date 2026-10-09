@@ -379,6 +379,15 @@ static int gAnyContext = 0;
   DCHECK_EQ(object, self.underlyingScrollView);
   CHECK(web::features::ShouldUseBroadcasterForSmoothScrolling());
 
+  NSValue* oldValue =
+      base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
+  NSValue* newValue =
+      base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeNewKey]);
+  // If the value is unchanged, return without notifying observers.
+  if ([newValue isEqualToValue:oldValue]) {
+    return;
+  }
+
   if ([keyPath isEqualToString:@"frame"]) {
     [_observers webViewScrollViewFrameDidChange:self];
   }

@@ -86,10 +86,16 @@
 #pragma mark Public
 
 - (void)scrollViewSizeDidChange:(CGSize)scrollViewSize {
+  if (CGSizeEqualToSize(scrollViewSize, self.state.scrollViewSize)) {
+    return;
+  }
   self.state.scrollViewSize = scrollViewSize;
 }
 
 - (void)scrollViewDidResetContentSize:(CGSize)contentSize {
+  if (CGSizeEqualToSize(contentSize, self.state.contentSize)) {
+    return;
+  }
   self.state.contentSize = contentSize;
 }
 

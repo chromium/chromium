@@ -379,6 +379,33 @@ TEST_F(CRWWebViewScrollViewProxyTest, FrameDidChange) {
   OCMExpect([mock_delegate
       webViewScrollViewFrameDidChange:web_view_scroll_view_proxy_]);
   underlying_scroll_view.frame = CGRectMake(1, 2, 3, 4);
+  // Setting the same frame again should not notify observers.
+  underlying_scroll_view.frame = CGRectMake(1, 2, 3, 4);
+  EXPECT_OCMOCK_VERIFY((id)mock_delegate);
+  [web_view_scroll_view_proxy_ setScrollView:nil];
+  EXPECT_OCMOCK_VERIFY((id)mock_delegate);
+}
+
+// Tests that contentSize changes are communicated to observers only when the
+// value changes.
+TEST_F(CRWWebViewScrollViewProxyTest, ContentSizeDidChange) {
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kSmoothScrollingDefault);
+
+  UIScrollView* underlying_scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectZero];
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+  id mock_delegate =
+      OCMProtocolMock(@protocol(CRWWebViewScrollViewProxyObserver));
+  [web_view_scroll_view_proxy_ addObserver:mock_delegate];
+  OCMExpect([mock_delegate
+      webViewScrollViewDidResetContentSize:web_view_scroll_view_proxy_]);
+  underlying_scroll_view.contentSize = CGSizeMake(10, 20);
+  // Setting the same contentSize again should not notify observers.
+  underlying_scroll_view.contentSize = CGSizeMake(10, 20);
   EXPECT_OCMOCK_VERIFY((id)mock_delegate);
   [web_view_scroll_view_proxy_ setScrollView:nil];
   EXPECT_OCMOCK_VERIFY((id)mock_delegate);
