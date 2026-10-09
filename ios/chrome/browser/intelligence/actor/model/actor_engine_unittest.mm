@@ -216,9 +216,7 @@ class ActorEngineTest : public PlatformTest {
   // Runs tasks until the current tool is executing. Returns false on timeout.
   [[nodiscard]] bool WaitForToolInvoking() {
     return base::test::RunUntil([this]() {
-      ToolController* controller = GetToolController();
-      return controller &&
-             controller->state() == ToolController::State::kInvoking;
+      return GetToolController()->state() == ToolController::State::kInvoking;
     });
   }
 
@@ -410,6 +408,57 @@ TEST_F(ActorEngineTest, ActMultipleSuccess) {
   EXPECT_EQ(results.size(), 2U);
   EXPECT_TRUE(results[0].tool_result.IsOk());
   EXPECT_TRUE(results[1].tool_result.IsOk());
+  EXPECT_EQ(ToolController::State::kReady, GetToolController()->state());
+}
+
+// Tests that a failed tool creation leaves the `ToolController` ready for the
+// next `Act()`.
+TEST_F(ActorEngineTest, ActRecoversAfterToolCreationFailure) {
+  std::vector<std::unique_ptr<ActorToolRequest>> failing_actions;
+  // An action with no case set fails tool creation.
+  failing_actions.push_back(
+      std::make_unique<ActorToolRequest>(optimization_guide::proto::Action()));
+  base::test::TestFuture<std::vector<ActionResult>> failing_future;
+  engine_->Act(std::move(failing_actions), failing_future.GetCallback());
+
+  std::vector<ActionResult> failing_results = failing_future.Take();
+  ASSERT_EQ(1U, failing_results.size());
+  EXPECT_FALSE(failing_results[0].tool_result.IsOk());
+  EXPECT_EQ(ToolController::State::kReady, GetToolController()->state());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(ToolController::State::kReady, GetToolController()->state());
+}
+
+// Tests that a failed tool validation leaves the `ToolController` ready for the
+// next `Act()`.
+TEST_F(ActorEngineTest, ActRecoversAfterToolValidationFailure) {
+  std::vector<std::unique_ptr<ActorToolRequest>> failing_actions;
+  failing_actions.push_back(MakeFailingActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> failing_future;
+  engine_->Act(std::move(failing_actions), failing_future.GetCallback());
+
+  std::vector<ActionResult> failing_results = failing_future.Take();
+  ASSERT_EQ(1U, failing_results.size());
+  EXPECT_FALSE(failing_results[0].tool_result.IsOk());
+  EXPECT_EQ(ToolController::State::kReady, GetToolController()->state());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_EQ(ToolController::State::kReady, GetToolController()->state());
 }
 
 // Tests the helper method that maps the 1-based `next_action_index_` to the

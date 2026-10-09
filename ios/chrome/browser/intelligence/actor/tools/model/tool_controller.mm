@@ -7,6 +7,7 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/logging.h"
@@ -54,6 +55,28 @@ std::string StateToString(ToolController::State state) {
   }
 }
 
+// Runs `callback` with `result` unless `controller` was cancelled or destroyed.
+// A free function so that no `ToolController` method is on the stack if
+// `callback` destroys the controller.
+void RunResultIfNotCancelled(base::WeakPtr<ToolController> controller,
+                             ToolController::ResultCallback callback,
+                             ToolExecutionResult result) {
+  if (!controller) {
+    return;
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+// Posts `callback` with `result` so that the caller is never re-entered on the
+// controller's stack. The result is dropped if `controller` is cancelled first.
+void PostResult(base::WeakPtr<ToolController> controller,
+                ToolController::ResultCallback callback,
+                ToolExecutionResult result) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&RunResultIfNotCancelled, std::move(controller),
+                                std::move(callback), std::move(result)));
+}
+
 }  // namespace
 
 ToolController::ActiveState::ActiveState(
@@ -72,14 +95,14 @@ ToolController::ActiveState::~ActiveState() = default;
 ToolController::ToolController(ToolDelegate* tool_delegate)
     : tool_delegate_(tool_delegate) {
   CHECK(tool_delegate_);
-  if (IsPageStabilityEnabled()) {
-    observation_delayer_ =
-        std::make_unique<ObservationDelayController>(task_id(), &journal());
-  }
   state_ = State::kReady;
 }
 
-ToolController::~ToolController() = default;
+ToolController::~ToolController() {
+  // Not `Cancel()`, as it journals through `tool_delegate_`, whose owner may be
+  // partially destroyed.
+  ResetActiveTool();
+}
 
 void ToolController::SetState(State state) {
   GURL journal_url;
@@ -121,8 +144,17 @@ std::ostream& operator<<(std::ostream& o, const ToolController::State& s) {
   return o << StateToString(s);
 }
 
+void ToolController::ReplyAndSetState(ResultCallback callback,
+                                      ToolExecutionResult result,
+                                      State state) {
+  PostResult(weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+             std::move(result));
+  SetState(state);
+}
+
 void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
                                            ResultCallback callback) {
+  CHECK_EQ(state_, State::kReady);
   SetState(State::kCreating);
   std::string tool_name =
       ActorActionCaseToToolName(request.action().action_case())
@@ -140,7 +172,8 @@ void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
     LogToolExecutionResult(journal(), GURL(), task_id(),
                            "Failed to create tool request: " + tool_name,
                            tool_result.error());
-    std::move(callback).Run(std::move(tool_result).error());
+    ReplyAndSetState(std::move(callback), std::move(tool_result).error(),
+                     State::kReady);
     return;
   }
 
@@ -160,10 +193,8 @@ void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
                         std::move(journal_entry));
 
   SetState(State::kValidating);
-  // Wrap the callback in base::BindPostTaskToCurrentDefault to execute it
-  // asynchronously. This prevents a Use-After-Free (UAF) crash on the active
-  // tool's call stack if executing the callback synchronously destroys this
-  // controller (and the tool).
+  // Posted so that the tool is never destroyed while it is on the stack, even
+  // if it runs the callback synchronously.
   active_state_->tool->Validate(
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &ToolController::PostValidate, weak_ptr_factory_.GetWeakPtr())));
@@ -187,10 +218,8 @@ void ToolController::PostUpdateTask(ToolExecutionResult result) {
     CompleteToolRequest(std::move(result));
     return;
   }
-  SetState(State::kInvokable);
-  ResultCallback completion_callback =
-      std::move(active_state_->completion_callback);
-  std::move(completion_callback).Run(ToolExecutionResult::Ok());
+  ReplyAndSetState(std::move(active_state_->completion_callback),
+                   ToolExecutionResult::Ok(), State::kInvokable);
 }
 
 void ToolController::Invoke(ResultCallback result_callback) {
@@ -201,26 +230,27 @@ void ToolController::Invoke(ResultCallback result_callback) {
   // TODO(crbug.com/520098751): Call ActorTool::TimeOfUseValidation here.
 
   SetState(State::kInvoking);
-  // Wrap the callback in base::BindPostTaskToCurrentDefault to execute it
-  // asynchronously. This prevents a Use-After-Free (UAF) crash on the active
-  // tool's call stack if executing the callback synchronously destroys this
-  // controller (and the tool).
+  // Created per tool so that no observation state carries over from the
+  // previous tool.
+  if (IsPageStabilityEnabled()) {
+    observation_delayer_ =
+        std::make_unique<ObservationDelayController>(task_id(), &journal());
+  }
+  // Posted so that the tool is never destroyed while it is on the stack, even
+  // if it runs the callback synchronously.
   active_state_->tool->Execute(base::BindPostTaskToCurrentDefault(
       base::BindOnce(&ToolController::DidFinishToolExecution,
                      weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ToolController::Cancel() {
-  // Only cancel callbacks and states if the tool has been created.
-  if (state_ != State::kInit && state_ != State::kReady) {
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    observation_delayer_.reset();
-    if (active_state_) {
-      active_state_->tool->Cancel();
-    }
-    active_state_.reset();
-    SetState(State::kReady);
+  // Drops results that are posted but not yet delivered, even when idle.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (state_ == State::kInit || state_ == State::kReady) {
+    return;
   }
+  ResetActiveTool();
+  SetState(State::kReady);
 }
 
 void ToolController::FailCurrentTool(mojom::ActionResultCode code) {
@@ -239,8 +269,6 @@ void ToolController::FailCurrentToolInternal(mojom::ActionResultCode code) {
     return;
   }
 
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  observation_delayer_.reset();
   PostInvokeTool(ToolExecutionResult(code));
 }
 
@@ -258,6 +286,7 @@ void ToolController::DidFinishToolExecution(ToolExecutionResult result) {
 
 void ToolController::WaitForObservation(ToolExecutionResult result) {
   CHECK(active_state_);
+  CHECK(observation_delayer_);
   if (base::WeakPtr<web::WebState> target_web_state =
           active_state_->tool->GetTargetWebState()) {
     observation_delayer_->Wait(
@@ -312,17 +341,23 @@ void ToolController::PostInvokeTool(ToolExecutionResult result) {
 void ToolController::CompleteToolRequest(ToolExecutionResult result) {
   CHECK(active_state_);
 
-  SetState(State::kReady);
+  // Drops callbacks bound to the completed tool.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   EndAsyncJournalEntry(active_state_->journal_entry.get(), result);
 
-  ResultCallback completion_callback =
-      std::move(active_state_->completion_callback);
+  ReplyAndSetState(std::move(active_state_->completion_callback),
+                   std::move(result), State::kReady);
 
-  active_state_->tool->Cancel();
+  ResetActiveTool();
+}
+
+void ToolController::ResetActiveTool() {
+  observation_delayer_.reset();
+  if (active_state_) {
+    active_state_->tool->Cancel();
+  }
   active_state_.reset();
-
-  std::move(completion_callback).Run(std::move(result));
 }
 
 ActorTaskId ToolController::task_id() const {

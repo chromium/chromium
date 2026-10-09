@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -96,9 +97,12 @@ class SyncActorToolFactory : public ActorToolFactory {
   bool* callback_completed_flag_;
 };
 
-// A test tool that never completes, added to test ToolController::Cancel.
+// A test tool that never completes and optionally records when it is cancelled.
 class AsyncActorTool : public ActorTool {
  public:
+  explicit AsyncActorTool(bool* cancelled_flag)
+      : cancelled_flag_(cancelled_flag) {}
+
   void Validate(ToolExecutionCallback callback) override {
     std::move(callback).Run(ToolExecutionResult::Ok());
   }
@@ -106,22 +110,35 @@ class AsyncActorTool : public ActorTool {
     // Do not run the callback, simulating an async operation that gets
     // cancelled.
   }
+  void Cancel() override {
+    if (cancelled_flag_) {
+      *cancelled_flag_ = true;
+    }
+    ActorTool::Cancel();
+  }
   base::WeakPtr<web::WebState> GetTargetWebState() const override {
     return nullptr;
   }
   ToolType GetToolType() const override { return ToolType::kWait; }
   std::string DebugString() const override { return "AsyncActorTool"; }
+
+ private:
+  raw_ptr<bool> cancelled_flag_ = nullptr;
 };
 
 class AsyncActorToolFactory : public ActorToolFactory {
  public:
-  explicit AsyncActorToolFactory(ProfileIOS* profile)
-      : ActorToolFactory(profile) {}
+  explicit AsyncActorToolFactory(ProfileIOS* profile,
+                                 bool* cancelled_flag = nullptr)
+      : ActorToolFactory(profile), cancelled_flag_(cancelled_flag) {}
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
       const ActorToolRequest& request,
       ToolDelegate* tool_delegate) override {
-    return std::make_unique<AsyncActorTool>();
+    return std::make_unique<AsyncActorTool>(cancelled_flag_);
   }
+
+ private:
+  raw_ptr<bool> cancelled_flag_ = nullptr;
 };
 
 // A test tool that completes by requiring page stabilization.
@@ -296,9 +313,17 @@ TEST_F(ToolControllerTest, SyncCreationFailure) {
   EXPECT_TRUE(callback_called);
   ASSERT_TRUE(creation_result.has_value());
   EXPECT_FALSE(creation_result->IsOk());
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
 
-  // Cancel should be a no-op / safe transition.
+  // The controller accepts the next tool.
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  EXPECT_TRUE(validation_future.Get().IsOk());
+
+  // Cancels the validated tool.
   controller_->Cancel();
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
 }
 
 // Tests that a tool can be canceled during execution.
@@ -319,6 +344,24 @@ TEST_F(ToolControllerTest, CancelMidExecution) {
   }));
 
   controller_->Cancel();
+}
+
+// Tests that destroying the controller during execution cancels the tool.
+TEST_F(ToolControllerTest, DestroyingControllerCancelsActiveTool) {
+  bool tool_cancelled = false;
+  tool_factory_ =
+      std::make_unique<AsyncActorToolFactory>(profile_.get(), &tool_cancelled);
+
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+  controller_->Invoke(base::BindOnce([](ToolExecutionResult result) {
+    FAIL() << "Callback should not be called after destruction.";
+  }));
+
+  controller_.reset();
+  EXPECT_TRUE(tool_cancelled);
 }
 
 // Tests that if a navigation occurs during the observation delay, the
@@ -504,6 +547,46 @@ TEST_F(ToolControllerTest, CancelDropsPendingFailCurrentTool) {
   EXPECT_EQ(ToolController::State::kReady, controller_->state());
 }
 
+// Tests that cancelling drops a validation result that is posted but not yet
+// delivered.
+TEST_F(ToolControllerTest, CancelDropsPostedValidationResult) {
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
+
+  controller_->CreateToolAndValidate(
+      *MakeSuccessfulActorToolRequest(),
+      base::BindOnce([](ToolExecutionResult result) {
+        FAIL() << "Callback should not be called when cancelled.";
+      }));
+
+  // Runs the posted validation, which posts its result.
+  FlushCurrentSequence();
+  ASSERT_EQ(ToolController::State::kInvokable, controller_->state());
+
+  controller_->Cancel();
+
+  // Flushes the posted validation result.
+  FlushCurrentSequence();
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
+}
+
+// Tests that cancelling an idle controller drops a result that is posted but
+// not yet delivered.
+TEST_F(ToolControllerTest, CancelWhenReadyDropsPostedResult) {
+  // An action with no case set fails tool creation.
+  ActorToolRequest request{optimization_guide::proto::Action()};
+  controller_->CreateToolAndValidate(
+      request, base::BindOnce([](ToolExecutionResult result) {
+        FAIL() << "Callback should not be called when cancelled.";
+      }));
+  ASSERT_EQ(ToolController::State::kReady, controller_->state());
+
+  controller_->Cancel();
+
+  // Flushes the posted creation failure.
+  FlushCurrentSequence();
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
+}
+
 // Test that CreateToolAndValidate logs the tool's DebugString in the
 // AggregatedJournal rather than duplicating the generic tool name.
 TEST_F(ToolControllerTest, LogsToolDebugStringToJournal) {
@@ -520,6 +603,48 @@ TEST_F(ToolControllerTest, LogsToolDebugStringToJournal) {
   EXPECT_TRUE(HasJournalEntryWithDetail(*journal_, "Execute Tool: WaitTool",
                                         "tool", "SyncActorTool"));
   controller_->Cancel();
+}
+
+// Tests that a reused controller gives each tool its own observation delay.
+TEST_F(ToolControllerTest, ReusedForConsecutiveTools) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorTools, {{"PageStabilityEnabled", "true"}});
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+  tool_factory_ = std::make_unique<StabilizingActorToolFactory>(
+      profile_.get(), fake_web_state->GetWeakPtr());
+
+  // First tool.
+  base::test::TestFuture<ToolExecutionResult> first_validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     first_validation_future.GetCallback());
+  ASSERT_TRUE(first_validation_future.Get().IsOk());
+
+  base::test::TestFuture<ToolExecutionResult> first_invoke_future;
+  controller_->Invoke(first_invoke_future.GetCallback());
+
+  // The observation delay holds the result until it times out.
+  task_environment_.FastForwardBy(GetActorObservationDelayTimeout() / 2);
+  EXPECT_FALSE(first_invoke_future.IsReady());
+  task_environment_.FastForwardBy(GetActorObservationDelayTimeout() / 2);
+  EXPECT_TRUE(first_invoke_future.Get().IsOk());
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
+
+  // Second tool, which gets a new observation delay.
+  base::test::TestFuture<ToolExecutionResult> second_validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     second_validation_future.GetCallback());
+  ASSERT_TRUE(second_validation_future.Get().IsOk());
+
+  base::test::TestFuture<ToolExecutionResult> second_invoke_future;
+  controller_->Invoke(second_invoke_future.GetCallback());
+
+  task_environment_.FastForwardBy(GetActorObservationDelayTimeout() / 2);
+  EXPECT_FALSE(second_invoke_future.IsReady());
+  task_environment_.FastForwardBy(GetActorObservationDelayTimeout() / 2);
+  EXPECT_TRUE(second_invoke_future.Get().IsOk());
+  EXPECT_EQ(ToolController::State::kReady, controller_->state());
 }
 
 }  // namespace

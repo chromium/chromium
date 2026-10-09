@@ -168,9 +168,9 @@
   optimization_guide::proto::Action* waitAction = actions.add_actions();
   waitAction->mutable_wait()->set_wait_time_ms(500);
 
-  // Execute both actions in a single task. Under the hood, this creates and
-  // destructs of two ToolController objects. This verifies that the lifetimes
-  // are managed correctly and don't cause a crash.
+  // Execute both actions in a single task. Under the hood, the same
+  // ToolController runs both tools. This verifies that the lifetimes are
+  // managed correctly and don't cause a crash.
   [self executeActions:actions];
 }
 

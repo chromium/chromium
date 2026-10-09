@@ -204,10 +204,6 @@ class ActorEngine : public ToolDelegate {
   // implementation.
   std::vector<ActionResult> action_results_;
 
-  // The state machine responsible for validating, creating, invoking and
-  // post-invocation of the current tool.
-  std::unique_ptr<ToolController> tool_controller_;
-
   // The delegate to notify of execution milestones.
   raw_ptr<ExecutionUpdatesDelegate> execution_updates_delegate_ = nullptr;
 
@@ -221,6 +217,13 @@ class ActorEngine : public ToolDelegate {
 
   // The handler for form filling and login tasks.
   std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
+
+  // The state machine responsible for validating, creating, invoking and
+  // post-invocation of the current tool. Reused for every action so that it is
+  // never destroyed while one of its methods is on the stack. Declared after
+  // the members its tools reach through `ToolDelegate` so that it is destroyed
+  // first.
+  const std::unique_ptr<ToolController> tool_controller_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorEngine> weak_ptr_factory_{this};

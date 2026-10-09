@@ -48,13 +48,18 @@ class ToolController {
   ToolController(const ToolController&) = delete;
   ToolController& operator=(const ToolController&) = delete;
 
-  // Transitions state and runs validation hooks.
+  // Creates the tool for `request` and validates it. Must be called in
+  // `kReady`. `callback` is always run asynchronously, and is dropped if the
+  // controller is cancelled or destroyed first.
   void CreateToolAndValidate(const ActorToolRequest& request,
                              ResultCallback callback);
 
   // Performs tool execution, including pre-execution hooks and observation
-  // delays.
+  // delays. `result_callback` is always run asynchronously, and is dropped if
+  // the controller is cancelled or destroyed first.
   void Invoke(ResultCallback result_callback);
+  // Cancels the current tool, if any, and drops any result that is posted but
+  // not yet delivered.
   void Cancel();
   // Asynchronously fails the currently executing tool with `code`. Safe to call
   // from within the tool.
@@ -87,6 +92,12 @@ class ToolController {
 
   void SetState(State state);
 
+  // Posts `callback` with `result`, then moves to `state`. The posted result is
+  // dropped if the controller is cancelled or destroyed first.
+  void ReplyAndSetState(ResultCallback callback,
+                        ToolExecutionResult result,
+                        State state);
+
   // Called when the tool itself finishes its execution.
   void DidFinishToolExecution(ToolExecutionResult result);
 
@@ -95,6 +106,9 @@ class ToolController {
 
   // Clears the current tool invocation and returns the result.
   void CompleteToolRequest(ToolExecutionResult result);
+
+  // Cancels and destroys the active tool and its observation delayer.
+  void ResetActiveTool();
 
   void PostValidate(ToolExecutionResult result);
   void PostUpdateTask(ToolExecutionResult result);
