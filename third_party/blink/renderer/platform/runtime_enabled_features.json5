@@ -6330,6 +6330,7 @@
       // fullscreen, unless it has a fullscreen token through capability
       // delegation. https://crbug.com/40052279
       name: "SuppressFullscreenFromUnfocusedView",
+      status: "stable",
     },
     // 'pointercancel' and boundary leave ('pointerout' and 'pointerleave')
     // events would now fire after a mouse drag start, matching the spec's
