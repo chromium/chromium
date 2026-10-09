@@ -43,16 +43,16 @@ enum class ToolId {
   kPauseVideo = 11,
   // Starts or resumes media playback in the active tab.
   kPlayVideo = 12,
-  kMaxValue = kPlayVideo,
+  // Search using the default search engine.
+  kPerformSearch = 13,
+  kMaxValue = kPerformSearch,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.
 struct ToolDefinition {
   ToolDefinition(ToolId id, std::string name, std::string description);
-  ToolDefinition(ToolId id,
-                 std::string name,
-                 std::string description,
+  ToolDefinition(ToolId id, std::string name, std::string description,
                  base::DictValue parameters_json_schema);
   ~ToolDefinition();
 

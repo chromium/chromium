@@ -5,11 +5,15 @@
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -24,6 +28,17 @@
 
 namespace actor {
 
+namespace {
+
+// Default description for the `perform_search` tool.
+constexpr std::string_view kPerformSearchToolDescription =
+    "Search using the default search engine.";
+
+// Description for the `query` parameter of the `perform_search` tool.
+constexpr std::string_view kQueryParamDescription = "The terms to search for.";
+
+}  // namespace
+
 using ::tabs::TabHandle;
 
 PerformSearchToolRequest::PerformSearchToolRequest(TabHandle tab_handle,
@@ -31,6 +46,15 @@ PerformSearchToolRequest::PerformSearchToolRequest(TabHandle tab_handle,
     : TabToolRequest(tab_handle), query_(std::move(query)) {}
 
 PerformSearchToolRequest::~PerformSearchToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> PerformSearchToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kPerformSearch, kModelFacingName,
+                               kPerformSearchToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kQueryParam, kQueryParamDescription))
+      .Build();
+}
 
 // Uses the navigate tool, which is tab scoped, but navigates away from the
 // current URL.

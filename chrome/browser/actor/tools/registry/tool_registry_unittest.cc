@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
@@ -98,7 +99,6 @@ TEST(ToolRegistryTest, ScrollToolDefinition) {
               HasParamOfType(ScrollToolRequest::kDomNodeIdParam, "integer"));
   EXPECT_THAT(*definition, RequiresParam(ScrollToolRequest::kDomNodeIdParam));
 }
-
 TEST(ToolRegistryTest, SelectOptionToolDefinition) {
   const std::optional<ToolDefinition> definition =
       SelectToolRequest::GetToolDefinition();
@@ -209,6 +209,18 @@ TEST(ToolRegistryTest, PlayMediaToolDefinition) {
                                              base::Value(base::DictValue())));
 }
 
+TEST(ToolRegistryTest, PerformSearchToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      PerformSearchToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kPerformSearch);
+  EXPECT_EQ(definition->name, PerformSearchToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(PerformSearchToolRequest::kQueryParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(PerformSearchToolRequest::kQueryParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -243,7 +255,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsScrollTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kScroll, &ToolDefinition::id));
 }
-
 TEST(ToolRegistryTest, GetAllToolsContainsSelectOptionTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -278,7 +289,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsTranslatePageTool) {
                                     ToolId::kTranslatePage,
                                     &ToolDefinition::id));
 }
-
 TEST(ToolRegistryTest, GetAllToolsContainsHistoryBackTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -344,6 +354,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsPlayMediaTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kPlayVideo, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsPerformSearchTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kPerformSearch,
+                                    &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
