@@ -1023,8 +1023,19 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
       return true;
     }
     case InfoBarType::kWebAppBlockedMigration: {
-      web_app::WebAppBlockedMigrationInfoBarDelegate::Create(
-          web_contents, /*on_dismiss_callback=*/base::DoNothing());
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            active_tab, infobars::InfoBarDelegate::
+                            WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE);
+      } else {
+        web_app::WebAppBlockedMigrationInfoBarDelegate::Create(
+            web_contents, /*on_dismiss_callback=*/base::DoNothing());
+      }
       return true;
     }
     case InfoBarType::kWebAuthFlow: {

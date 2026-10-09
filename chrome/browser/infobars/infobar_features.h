@@ -45,6 +45,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedExtensionDevTools);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedSessionRestore);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedTabSharing);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallationError);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedWebAppBlockedMigration);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedWebAuthFlow);
 
 // Returns true if the centralization framework is enabled and the specified

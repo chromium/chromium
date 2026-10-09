@@ -482,6 +482,27 @@ void RegisterInfoBars() {
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
+
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(
+            InfoBarDelegate::WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE)
+            .SetMessageText(l10n_util::GetStringUTF16(
+                IDS_WEB_APP_BLOCKED_MIGRATION_MESSAGE))
+            .SetIcon(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kSettingsFilledIcon
+                         : vector_icons::kSettingsOldIcon)
+            .SetLinkText(l10n_util::GetStringUTF16(IDS_LEARN_MORE))
+            .SetLinkNavigationUrl(GURL(
+                "https://support.google.com/chrome/a/?p=pwa_origin_migration"))
+            .SetScope(InfoBarScope::kTab)
+            .SetExpireOnNavigation(false)
+            .AddOkButton(l10n_util::GetStringUTF16(IDS_APP_OK),
+                         base::DoNothing())
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
 }
 
 void RegisterPreProfileInitInfoBars() {

@@ -122,6 +122,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/banners:test_support",
+    "//chrome/browser/infobars",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
     "//chrome/browser/shortcuts",

@@ -32,6 +32,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -73,6 +77,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -102,11 +107,7 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/numerics/clamped_math.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/infobars/infobar_features.h"
-#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -868,12 +869,55 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
 void WebAppUiManagerImpl::MaybeCreateWebAppBlockedMigrationInfoBar(
     content::WebContents* web_contents,
     base::OnceClosure on_dismiss_callback) {
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::
+              WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE)) {
+    CHECK(on_dismiss_callback);
+    auto* tab = web_contents
+                    ? tabs::TabInterface::MaybeGetFromContents(web_contents)
+                    : nullptr;
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (!tab || !browser_infobar_manager) {
+      return;
+    }
+    infobars::InfoBarShowParams params;
+    params.result_callback = base::BindRepeating(
+        [](base::OnceClosure& callback, content::WebContents*,
+           infobars::InfoBarResult result) {
+          if ((result == infobars::InfoBarResult::kAccepted ||
+               result == infobars::InfoBarResult::kDismissed) &&
+              callback) {
+            std::move(callback).Run();
+          }
+        },
+        base::OwnedRef(std::move(on_dismiss_callback)));
+    browser_infobar_manager->Show(
+        tab,
+        infobars::InfoBarDelegate::WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE,
+        std::move(params));
+    return;
+  }
+
   WebAppBlockedMigrationInfoBarDelegate::Create(web_contents,
                                                 std::move(on_dismiss_callback));
 }
 
 void WebAppUiManagerImpl::MaybeRemoveWebAppBlockedMigrationInfoBar(
     content::WebContents* web_contents) {
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::
+              WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (web_contents && browser_infobar_manager) {
+      browser_infobar_manager->Hide(
+          web_contents, infobars::InfoBarDelegate::
+                            WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE);
+    }
+    return;
+  }
+
   WebAppBlockedMigrationInfoBarDelegate::Remove(web_contents);
 }
 
