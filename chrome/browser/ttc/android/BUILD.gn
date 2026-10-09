@@ -9,17 +9,65 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ttc/TtcKeyedService.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediator.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionPillView.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionProperties.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcSessionViewBinder.java",
   ]
   deps = [
+    ":java_resources",
     "//base:base_java",
+    "//base:supplier_java",
     "//build/android:build_java",
+    "//chrome/app:java_strings_grd",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   srcjar_deps = [
     ":jni_headers",
     "//chrome/browser/ttc/core:enums_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ttc"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/ttc_session_pill_background.xml",
+    "java/res/layout/ttc_session_pill.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/app:java_strings_grd",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediatorTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:supplier_java",
+    "//chrome/app:java_strings_grd",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -42,7 +90,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//components/ttc/app/public",
     "//chrome/browser/ttc/core",
+    "//components/ttc/app/public",
   ]
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Content of the floating pill shown while a TTC session is live. Tapping
+     it ends the session. Hosted in an AnchoredPopupWindow, which supplies the
+     background, elevation and position. The root is the single accessibility
+     target: TalkBack reads the status text and the click action label set in
+     TtcSessionPillView. The icon cannot be a TextView compound drawable because
+     TtcSessionPillView dynamically scales it for audio level feedback. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ttc_session_pill"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/ttc_session_pill_height"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/ttc_session_pill_padding_horizontal"
+    android:paddingEnd="@dimen/ttc_session_pill_padding_horizontal"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/ttc_session_pill_icon"
+        android:layout_width="@dimen/ttc_session_pill_icon_size"
+        android:layout_height="@dimen/ttc_session_pill_icon_size"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_mic_white_24dp"
+        app:tint="@macro/default_text_color_on_accent1" />
+
+    <TextView
+        android:id="@+id/ttc_session_pill_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/ttc_session_pill_text_margin_start"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.OnAccent1"
+        android:text="@string/ttc_session_connecting" />
+
+</LinearLayout>

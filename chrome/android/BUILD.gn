@@ -1267,6 +1267,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android:junit",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:junit",
       "//chrome/browser/translate/android:junit",
+      "//chrome/browser/ttc/android:junit",
       "//chrome/browser/ui/android/actions:junit",
       "//chrome/browser/ui/android/app_rating:junit",
       "//chrome/browser/ui/android/appmenu/internal:junit",

@@ -8008,6 +8008,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Allow
       </message>
 
+      <!-- TTC strings -->
+      <message name="IDS_TTC_SESSION_ERROR" desc="Status shown on the TTC session pill when the session failed." translateable="false">
+        Something went wrong. Try again later
+      </message>
+      <message name="IDS_TTC_SESSION_CONNECTING" desc="Status shown on the TTC session pill while the session is connecting." translateable="false">
+        Connecting…
+      </message>
+      <message name="IDS_TTC_SESSION_LISTENING" desc="Status shown on the TTC session pill while the session is active." translateable="false">
+        Listening
+      </message>
+      <message name="IDS_TTC_SESSION_END_DESCRIPTION" desc="Accessibility description of the TTC session pill. Tapping it ends the session." translateable="false">
+        End TTC session
+      </message>
+
       <!-- Immersive Playback Confirmation strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode.">
         Watch with immersive playback?

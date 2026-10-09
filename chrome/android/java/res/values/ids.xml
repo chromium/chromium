@@ -294,6 +294,7 @@ found in the LICENSE file.
     <item type="id" name="toggle_bookmarks_bar_menu_id" />
     <item type="id" name="toggle_tab_layout_menu_id" />
     <item type="id" name="translate_id" />
+    <item type="id" name="ttc_menu_id" />
     <item type="id" name="universal_install" />
     <item type="id" name="unmute_site_menu_id" />
     <item type="id" name="unpin_tab_menu_id" />

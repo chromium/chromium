@@ -240,6 +240,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.ttc.TtcSessionCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionUtils;
@@ -428,6 +429,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBottomSheetContainerMarginAdjuster;
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
+    private @Nullable TtcSessionCoordinator mTtcSessionCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
     private @Nullable VerticalTabsSideUiCoordinator mVerticalTabsSideUiCoordinator;
     private @Nullable TabSearchOverlayCoordinator mTabSearchOverlayCoordinator;
@@ -1084,6 +1086,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mGlicUiCoordinator = null;
         }
 
+        if (mTtcSessionCoordinator != null) {
+            mTtcSessionCoordinator.destroy();
+            mTtcSessionCoordinator = null;
+        }
+
         if (mGlicButtonContextMenuCoordinator != null) {
             mGlicButtonContextMenuCoordinator.dismiss();
             mGlicButtonContextMenuCoordinator = null;
@@ -1509,6 +1516,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (IntentHandler.hasPendingActorTaskExtra(mActivity.getIntent())) {
                 mGlicUiCoordinator.onPendingActorTaskTrigger();
             }
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TTC)) {
+            mTtcSessionCoordinator =
+                    new TtcSessionCoordinator(
+                            mActivity.findViewById(R.id.coordinator),
+                            mWindowAndroid,
+                            mProfileSupplier,
+                            mActivityLifecycleDispatcher);
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)) {
@@ -3298,6 +3314,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         } else if (id == R.id.glic_menu_id) {
             return toggleGlic(false, GlicInvocationSource.THREE_DOTS_MENU);
+        } else if (id == R.id.ttc_menu_id) {
+            if (mTtcSessionCoordinator == null) return false;
+            mTtcSessionCoordinator.toggleSession();
+            return true;
         }
         return false;
     }
