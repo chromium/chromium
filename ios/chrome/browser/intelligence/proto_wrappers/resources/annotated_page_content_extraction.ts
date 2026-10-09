@@ -6,7 +6,7 @@ import {HAS_BEEN_PASSWORD_SYMBOL, ID_SYMBOL} from '//components/autofill/ios/for
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId, safeOwnerDocument} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {AxRole, FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentCssPosition, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
-import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData, Point, Rect as BasicRect} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData, Point, Rect} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
 // TODO(crbug.com/504261632): Report metrics from here down to the native
 // browser side so they can be uma-reported.
@@ -1472,16 +1472,8 @@ function getScrollerInfo(
   // Make sure to call element.clientWidth before element.scrollWidth.
   // This will guide the layout engine to perform the shallow layout first
   // and then the deep layout calculation.
-  const visibleArea = {
-    x: scrollLeft,
-    y: scrollTop,
-    width: clientWidth,
-    height: clientHeight,
-    top: scrollTop,
-    right: scrollLeft + clientWidth,
-    bottom: scrollTop + clientHeight,
-    left: scrollLeft,
-  };
+  const visibleArea =
+      createRect(scrollLeft, scrollTop, clientWidth, clientHeight);
 
   // Populate bounds.
   // Scrolling bounds = whole content size.
@@ -3247,18 +3239,6 @@ function addAnnotatedRoles(
   }
 }
 
-// Defines a rectangle compatible with DOMRectReadOnly.
-interface Rect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-}
-
 /**
  * Computes the intersection of two rectangles.
  * Returns a 0-size rectangle at (0,0) if they do not intersect,
@@ -3271,8 +3251,8 @@ function intersection(r1: Rect, r2: Rect): Rect {
 
   const x = Math.max(r1.x, r2.x);
   const y = Math.max(r1.y, r2.y);
-  const right = Math.min(r1.right, r2.right);
-  const bottom = Math.min(r1.bottom, r2.bottom);
+  const right = Math.min(r1.x + r1.width, r2.x + r2.width);
+  const bottom = Math.min(r1.y + r1.height, r2.y + r2.height);
 
   // TODO(crbug.com/499496584): Double check that a 0-size rectangle and no
   // rectangle are semantically the same for fully clipped rectangles.
@@ -3292,17 +3272,13 @@ function createRect(x: number, y: number, width: number, height: number): Rect {
     y,
     width,
     height,
-    top: y,
-    right: x + width,
-    bottom: y + height,
-    left: x,
   };
 }
 
 /**
  * Calculates the center point of a given rectangle.
  */
-function getCenterPoint(rect: BasicRect): Point {
+function getCenterPoint(rect: Rect): Point {
   return {
     x: rect.x + (rect.width / 2),
     y: rect.y + (rect.height / 2),
@@ -3320,8 +3296,8 @@ function toEnclosingRect(rect: Rect): Rect {
   }
   const x = Math.floor(rect.x);
   const y = Math.floor(rect.y);
-  const right = Math.ceil(rect.right);
-  const bottom = Math.ceil(rect.bottom);
+  const right = Math.ceil(rect.x + rect.width);
+  const bottom = Math.ceil(rect.y + rect.height);
   return createRect(x, y, right - x, bottom - y);
 }
 
@@ -3633,8 +3609,8 @@ function addTextNodeGeometry(
       clipRect.height > 0) {
     const left = Math.max(domRect.x, clipRect.x);
     const top = Math.max(domRect.y, clipRect.y);
-    const right = Math.min(domRect.right, clipRect.right);
-    const bottom = Math.min(domRect.bottom, clipRect.bottom);
+    const right = Math.min(domRect.right, clipRect.x + clipRect.width);
+    const bottom = Math.min(domRect.bottom, clipRect.y + clipRect.height);
     if (left < right && top < bottom) {
       const x = Math.floor(left);
       const y = Math.floor(top);
@@ -4134,7 +4110,8 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
   for (const node of actionableNodes) {
     const box = node.visibleBox;
     sweepPoints.push({top: box.y, pointType: SWEEP_POINT_START, node});
-    sweepPoints.push({top: box.bottom, pointType: SWEEP_POINT_END, node});
+    sweepPoints.push(
+        {top: box.y + box.height, pointType: SWEEP_POINT_END, node});
   }
 
   // Sort sweep points from lowest to highest Y.
@@ -4163,8 +4140,8 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
       for (const activeNode of activeSet) {
         const activeNodeBox = activeNode.visibleBox;
         // X-overlap check
-        if (newNodeBox.x < activeNodeBox.right &&
-            newNodeBox.right > activeNodeBox.x) {
+        if (newNodeBox.x < activeNodeBox.x + activeNodeBox.width &&
+            newNodeBox.x + newNodeBox.width > activeNodeBox.x) {
           // True 2D overlap occurs. Calculate intersection rectangle.
           const intersectionRect = intersection(newNodeBox, activeNodeBox);
 

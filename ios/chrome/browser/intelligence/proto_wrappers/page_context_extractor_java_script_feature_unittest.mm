@@ -1600,21 +1600,10 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   ASSERT_TRUE(visible_h.has_value());
   EXPECT_EQ(static_cast<int>(visible_h.value()), 100);
 
-  std::optional<double> visible_t = visible_area->FindDouble("top");
-  ASSERT_TRUE(visible_t.has_value());
-  EXPECT_EQ(static_cast<int>(visible_t.value()), 70);
-
-  std::optional<double> visible_l = visible_area->FindDouble("left");
-  ASSERT_TRUE(visible_l.has_value());
-  EXPECT_EQ(static_cast<int>(visible_l.value()), 50);
-
-  std::optional<double> visible_b = visible_area->FindDouble("bottom");
-  ASSERT_TRUE(visible_b.has_value());
-  EXPECT_EQ(static_cast<int>(visible_b.value()), 170);
-
-  std::optional<double> visible_r = visible_area->FindDouble("right");
-  ASSERT_TRUE(visible_r.has_value());
-  EXPECT_EQ(static_cast<int>(visible_r.value()), 150);
+  EXPECT_FALSE(visible_area->FindDouble("top").has_value());
+  EXPECT_FALSE(visible_area->FindDouble("left").has_value());
+  EXPECT_FALSE(visible_area->FindDouble("bottom").has_value());
+  EXPECT_FALSE(visible_area->FindDouble("right").has_value());
 
   std::optional<bool> user_scrollable_horizontal =
       scroller_info->FindBool("userScrollableHorizontal");
