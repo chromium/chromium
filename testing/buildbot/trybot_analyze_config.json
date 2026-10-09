@@ -14,7 +14,6 @@
       "build/config/siso/.*",
       "build/get_landmines.py",
       "build/gn_helpers.py",
-      "build/mac_toolchain.py",
       "build/toolchain/.*py",
       "build/util/lib/common/unittest_util.py",
       "build/vs_toolchain.py",
@@ -95,6 +94,7 @@
   },
   "ios": {
     "exclusions": [
+      "build/mac_toolchain.py",
       "ios/build/bots/.*",
       "tools/clang/dsymutil/bin/dsymutil.arm64.sha1",
       "tools/clang/dsymutil/bin/dsymutil.x64.sha1"
@@ -109,6 +109,7 @@
   },
   "mac": {
     "exclusions": [
+      "build/mac_toolchain.py",
       "tools/clang/dsymutil/bin/dsymutil.arm64.sha1",
       "tools/clang/dsymutil/bin/dsymutil.x64.sha1"
     ]
