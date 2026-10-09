@@ -223,15 +223,16 @@ class ThumbnailTabHelper::TabStateTracker
 
   const raw_ptr<ThumbnailTabHelper> thumbnail_tab_helper_;
 
+  // Scoped request for video capture. Declared before `capture_driver_` because
+  // `~ThumbnailCaptureDriver()` may call back into `StopCapture()`.
+  base::ScopedClosureRunner scoped_capture_;
+
   ThumbnailCaptureDriver capture_driver_{
       this, &thumbnail_tab_helper_->GetScheduler()};
   ThumbnailReadinessTracker readiness_tracker_;
 
   // Where we are in the page lifecycle.
   CaptureReadiness page_readiness_ = CaptureReadiness::kNotReady;
-
-  // Scoped request for video capture.
-  base::ScopedClosureRunner scoped_capture_;
 };
 
 // ThumbnailTabHelper ----------------------------------------------------
@@ -274,12 +275,12 @@ void ThumbnailTabHelper::CaptureThumbnailOnTabBackgrounded() {
 ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
     : content::WebContentsUserData<ThumbnailTabHelper>(*contents),
       content::WebContentsObserver(contents),
-      state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
           base::BindRepeating(
               &ThumbnailTabHelper::StoreThumbnailForBackgroundCapture,
               base::Unretained(this)))),
+      state_(std::make_unique<TabStateTracker>(this, contents)),
       thumbnail_(base::MakeRefCounted<ThumbnailImage>(
           state_.get(),
           DiscardedTabThumbnailData::TakeThumbnailDataIfAvailable(contents))) {
