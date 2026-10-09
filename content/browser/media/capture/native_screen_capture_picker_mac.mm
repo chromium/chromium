@@ -462,6 +462,14 @@ void NativeScreenCapturePickerMac::Open(
     } else {
       config.allowsChangingSelectedContent = false;
     }
+    NSMutableArray<NSNumber*>* excluded_window_ids = [NSMutableArray array];
+    for (NSWindow* window in [NSApp windows]) {
+      if (![window isVisible] && ![window isMiniaturized] &&
+          [window windowNumber] > 0) {
+        [excluded_window_ids addObject:@([window windowNumber])];
+      }
+    }
+    config.excludedWindowIDs = excluded_window_ids;
     NSNumber* max_stream_count = @(kMaxContentShareCountValue.Get());
     if (type == DesktopMediaID::Type::TYPE_SCREEN) {
       config.allowedPickerModes = SCContentSharingPickerModeSingleDisplay;
