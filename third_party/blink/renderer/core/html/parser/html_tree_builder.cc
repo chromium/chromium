@@ -3227,8 +3227,16 @@ void HTMLTreeBuilder::Flush() {
   // we use an exponential backoff strategy. We always want to avoid the
   // O(n^2) string copies for text documents, because they generate a single
   // <pre> with a potentially very large amount of content.
+  //
+  // Fragment parsers (e.g. streamHTML()) always flush: each chunk corresponds
+  // to a write() whose resolution should reflect the DOM, and no text may be
+  // left in pending_text_ if the writer is dropped without close()/abort().
+  // The O(n^2) concern above only applies when a single raw-text run spans
+  // many chunks; synchronous fragment parsing flushes at most once per
+  // Append(), so it is not affected.
   const bool defer_text_run =
-      (insertion_mode_ == kTextMode) || is_text_document_;
+      ((insertion_mode_ == kTextMode) || is_text_document_) &&
+      !IsParsingFragment();
   if (defer_text_run && DeferTreeBuilderFlushEnabled()) {
     base::TimeTicks now = base::TimeTicks::Now();
 

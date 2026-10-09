@@ -507,6 +507,9 @@ void HTMLDocumentParser::Detach() {
 
 void HTMLDocumentParser::StopParsing() {
   DocumentParser::StopParsing();
+  if (tree_builder_ && IsParsingFragment()) {
+    tree_builder_->Flush();
+  }
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kNotScheduled);
 }
@@ -813,10 +816,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
                     starting_bytes - input_.length());
   }
 
-  const bool is_stopped_or_parsing_fragment =
-      IsStopped() || IsParsingFragment();
-
-  if (!is_stopped_or_parsing_fragment) {
+  if (!IsStopped()) {
     // There should only be PendingText left since the tree-builder always
     // flushes the task queue before returning. In case that ever changes,
     // crash.
@@ -829,7 +829,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
         chunk_parsing_timer.Elapsed() - time_executing_script, tokens_parsed);
   }
 
-  if (is_stopped_or_parsing_fragment) {
+  if (IsStopped() || IsParsingFragment()) {
     return false;
   }
 

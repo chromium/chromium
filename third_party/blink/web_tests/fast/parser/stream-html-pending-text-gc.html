@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>Collecting a streamHTML() parser with pending text must not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
+<body>
+<script>
+// crbug.com/568820698: text written through a streamHTML() writer used to
+// stay buffered in HTMLConstructionSite::pending_text_ until the next token.
+// If the writer was then dropped without close()/abort(), or write() threw,
+// ~HTMLConstructionSite() would hit DCHECK(pending_text_.IsEmpty()) when the
+// parser was garbage collected. Written text must be flushed into the DOM at
+// the end of every chunk and before the parser is stopped.
+
+promise_test(async () => {
+  const el = document.createElement("div");
+  document.body.append(el);
+  const writer = el.streamHTML().getWriter();
+  await writer.write("ABC");
+  assert_equals(el.textContent, "ABC", "text is flushed when write() resolves");
+  // Drop the writer without close() or abort().
+  el.remove();
+  await asyncGC();
+}, "Dropping a writer with trailing text does not crash on GC");
+
+promise_test(async (t) => {
+  const el = document.createElement("div");
+  document.body.append(el);
+  const writer = el.streamHTML().getWriter();
+  writer.closed.catch(() => {});
+  await writer.write("<b>ABC");
+  assert_equals(el.textContent, "ABC", "text in an open element is flushed");
+  await promise_rejects_js(t, TypeError, writer.write(Symbol()));
+  el.remove();
+  await asyncGC();
+}, "A rejected write() after trailing text does not crash on GC");
+
+promise_test(async () => {
+  const el = document.createElement("div");
+  document.body.append(el);
+  const writer = el.streamHTML().getWriter();
+  await writer.write("<style>a { color: red; }");
+  await writer.abort();
+  el.remove();
+  await asyncGC();
+}, "abort() after trailing raw text does not crash on GC");
+</script>
+</body>
