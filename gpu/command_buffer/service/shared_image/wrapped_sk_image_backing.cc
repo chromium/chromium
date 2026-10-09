@@ -375,22 +375,17 @@ bool WrappedSkImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), textures_.size());
 
-  SharedContextState* context_state = GetContextStateForCurrentThread();
-  if (!context_state || context_state->context_lost()) {
+  if (context_state_->context_lost()) {
     return false;
   }
 
-  DCHECK(context_state->IsCurrent(nullptr));
+  DCHECK(context_state_->IsCurrent(nullptr));
 
   bool updated = true;
   for (size_t i = 0; i < textures_.size(); ++i) {
-    updated = updated && context_state->gr_context()->updateBackendTexture(
+    updated = updated && context_state_->gr_context()->updateBackendTexture(
                              textures_[i].backend_texture, &pixmaps[i],
                              /*numLevels=*/1, nullptr, nullptr);
-  }
-
-  if (is_thread_safe()) {
-    context_state->gr_context()->submit();
   }
 
   return updated;
@@ -400,58 +395,29 @@ bool WrappedSkImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), textures_.size());
 
-  SharedContextState* context_state = GetContextStateForCurrentThread();
-  if (!context_state || context_state->context_lost()) {
+  if (context_state_->context_lost()) {
     return false;
   }
 
-  DCHECK(context_state->IsCurrent(nullptr));
+  DCHECK(context_state_->IsCurrent(nullptr));
 
   bool read = true;
   for (size_t i = 0; i < textures_.size(); ++i) {
     auto sk_image = SkImages::BorrowTextureFrom(
-        context_state->gr_context(), textures_[i].backend_texture,
+        context_state_->gr_context(), textures_[i].backend_texture,
         surface_origin(), GetSkColorType(i), alpha_type(),
         color_space().ToSkColorSpace());
     if (!sk_image) {
       read = false;
       break;
     }
-    if (!sk_image->readPixels(context_state->gr_context(), pixmaps[i], 0, 0)) {
+    if (!sk_image->readPixels(context_state_->gr_context(), pixmaps[i], 0, 0)) {
       read = false;
       break;
     }
   }
 
   return read;
-}
-
-SharedContextState* WrappedSkImageBacking::GetContextStateForCurrentThread()
-    const {
-  // `task_runner_` is only set when `is_thread_safe()` is true. On WebView,
-  // the render thread doesn't have a task runner or a thread-local
-  // SharedContextState, but `is_thread_safe()` is never true on WebView (since
-  // DrDC is disabled and WrappedSkImageBacking is only used on a single
-  // thread), so `!task_runner_` safely returns `context_state_`.
-  if (!task_runner_ || task_runner_->BelongsToCurrentThread()) {
-    return context_state_.get();
-  }
-
-  // A thread-safe backing can be accessed on a thread other than the one it was
-  // created on, e.g. the DrDC CompositorGpuThread, where `context_state_` and
-  // its GrDirectContext can't be used. Use the SharedContextState registered
-  // for the current thread instead.
-  if (SharedContextState* current_context_state =
-          SharedContextState::GetForCurrentThread()) {
-    if (!current_context_state->gr_context()) {
-      LOG(ERROR) << "SharedContextState for current thread is not Ganesh";
-      return nullptr;
-    }
-    return current_context_state;
-  }
-
-  LOG(ERROR) << "No SharedContextState registered for current thread";
-  return nullptr;
 }
 
 std::vector<sk_sp<GrPromiseImageTexture>>

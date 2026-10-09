@@ -84,10 +84,6 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state);
   std::vector<sk_sp<GrPromiseImageTexture>> GetPromiseTextures();
 
-  // Returns the SharedContextState to use for accessing the backing on the
-  // current thread, or nullptr if there is none.
-  SharedContextState* GetContextStateForCurrentThread() const;
-
   scoped_refptr<SharedContextState> context_state_;
 
   std::vector<TextureHolder> textures_;
