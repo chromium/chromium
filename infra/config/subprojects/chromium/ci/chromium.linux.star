@@ -760,6 +760,7 @@ ci.thin_tester(
                     # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
+                enable_rts_filtering = True,
             ),
             "not_site_per_process_blink_web_tests": targets.mixin(
                 args = [
