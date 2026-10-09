@@ -419,6 +419,10 @@ class ContextualSearchSessionHandle {
   // confirmation that they are available on the server.
   std::vector<base::UnguessableToken> GetSubmittedContextTokens() const;
 
+  // Returns `submitted_context_tokens_` combined with any non-deselected
+  // persisted submitted tab tokens in `tab_context_.attached` (deduplicated).
+  std::vector<base::UnguessableToken> GetActiveSubmittedContextTokens() const;
+
   // Returns true if any context tokens were submitted in any query in this
   // session.
   bool has_submitted_context() const { return has_submitted_context_; }

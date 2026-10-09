@@ -824,6 +824,62 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksContextManagementInteractiveUiTest,
+    ClearInputPlate_RemovesUnsubmittedTabUnderlinesAndPreservesSubmittedTabs) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+  const DeepQuery kCancelIcon = {"contextual-tasks-app", "#composebox",
+                                 "#composebox", "#composeboxInput",
+                                 "#cancelIcon"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      AddInstrumentedTab(kBackgroundTab2, kUrl2),
+      SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
+
+      // Attach Tab 1 without submitting, then click the cancel button to clear
+      // the uncommitted input plate. Its tab-strip underline must be removed.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({1}),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      WaitForElementExists(kSidePanelWebContentsId, kCancelIcon),
+      ExecuteJsAt(kSidePanelWebContentsId, kCancelIcon, "el => el.click()"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 0),
+      VerifyUnderlinedTabs({}),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 0),
+
+      // Re-attach Tab 1 and submit Turn 1.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({1}),
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "First turn query"),
+      VerifyUnderlinedTabs({1}),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+
+      // In Turn 2, attach Tab 2 without submitting, then click the cancel
+      // button. Tab 2's uncommitted underline is removed while Tab 1's
+      // submitted underline and coin are preserved.
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({1, 2}),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      WaitForElementExists(kSidePanelWebContentsId, kCancelIcon),
+      ExecuteJsAt(kSidePanelWebContentsId, kCancelIcon, "el => el.click()"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 0),
+      VerifyUnderlinedTabs({1}),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title1"}));
+}
+
 // --- Test 2: Turn 2 with no new tabs retains existing context across all
 // elements ---
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,

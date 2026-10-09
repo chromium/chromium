@@ -350,4 +350,71 @@ TEST(AiModeContextLibraryConverterTest,
   EXPECT_FALSE(url_resources[1].has_chrome_tab_data);
 }
 
+TEST(AiModeContextLibraryConverterTest,
+     ConvertWebpageWithMatchingUrlFallbackWhenContextIdMismatches) {
+  lens::UpdateThreadContextLibrary message;
+  auto* context = message.add_contexts();
+  context->set_context_id(456);
+  auto* webpage = context->mutable_webpage();
+  webpage->set_url("https://example.com/page1");
+  webpage->set_title("Server Title");
+  context->set_has_chrome_tab_data(true);
+
+  std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(123);
+  file_info.tab_url = GURL("https://example.com/page1");
+  file_info.tab_title = "Local Title 1";
+  file_info.tab_session_id = SessionID::FromSerializedValue(10);
+  local_contexts.push_back(file_info);
+
+  std::vector<UrlResource> url_resources =
+      ConvertAiModeContextToUrlResources(message, local_contexts);
+
+  ASSERT_EQ(url_resources.size(), 1u);
+  EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page1"));
+  EXPECT_EQ(url_resources[0].title, "Local Title 1");
+  ASSERT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 10);
+  EXPECT_EQ(url_resources[0].context_id, 456u);
+  EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
+}
+
+TEST(AiModeContextLibraryConverterTest,
+     ConvertWebpageContextIdMatchTakesPrecedenceOverUrlFallback) {
+  lens::UpdateThreadContextLibrary message;
+  auto* context = message.add_contexts();
+  context->set_context_id(456);
+  auto* webpage = context->mutable_webpage();
+  webpage->set_url("https://example.com/shared");
+  webpage->set_title("Server Title");
+  context->set_has_chrome_tab_data(true);
+
+  std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo url_only_match;
+  url_only_match.request_id.emplace();
+  url_only_match.request_id->set_context_id(111);
+  url_only_match.tab_url = GURL("https://example.com/shared");
+  url_only_match.tab_title = "Earlier URL Match";
+  url_only_match.tab_session_id = SessionID::FromSerializedValue(10);
+  local_contexts.push_back(url_only_match);
+
+  contextual_search::FileInfo exact_context_id_match;
+  exact_context_id_match.request_id.emplace();
+  exact_context_id_match.request_id->set_context_id(456);
+  exact_context_id_match.tab_url = GURL("https://example.com/shared");
+  exact_context_id_match.tab_title = "Exact Context ID Match";
+  exact_context_id_match.tab_session_id = SessionID::FromSerializedValue(20);
+  local_contexts.push_back(exact_context_id_match);
+
+  std::vector<UrlResource> url_resources =
+      ConvertAiModeContextToUrlResources(message, local_contexts);
+
+  ASSERT_EQ(url_resources.size(), 1u);
+  EXPECT_EQ(url_resources[0].title, "Exact Context ID Match");
+  ASSERT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 20);
+}
+
 }  // namespace contextual_tasks

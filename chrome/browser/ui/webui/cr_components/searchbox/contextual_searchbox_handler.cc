@@ -1881,11 +1881,16 @@ void ContextualSearchboxHandler::ClearFiles(
     bool should_block_auto_suggested_tabs,
     bool query_submitted) {
   CancelAllTabContextFetches();
+  std::set<base::UnguessableToken> submitted_tokens;
   if (auto* contextual_session_handle = GetContextualSessionHandle()) {
     // Clears files if `query_submitted`=true, and if
     // `omnibox::kContextManagementInComposebox` is enabled.
     contextual_session_handle->ClearFiles(
         query_submitted);
+    for (const auto& token :
+         contextual_session_handle->GetActiveSubmittedContextTokens()) {
+      submitted_tokens.insert(token);
+    }
     // Clear cached tab images (snapshots) if tab context no longer exists
     // due to being deleted in `clearFiles` (this will clear it fully
     // if it does decide to).
@@ -1898,19 +1903,36 @@ void ContextualSearchboxHandler::ClearFiles(
     tab_context_snapshot_.reset();
   }
 
-  // Clear token-to-tab id pairs and local tab underlines if this function is
-  // due to the 'clear all' or close button being clicked (not on query
-  // submission).
+  // Clear token-to-tab id pairs and local tab underlines for unsubmitted tabs
+  // if this function is due to the 'clear all' or close button being clicked
+  // (not on query submission). Tabs that were already submitted in previous
+  // turns remain in context and keep their underlines.
   if (!query_submitted) {
+    std::set<int32_t> removed_handles;
+    std::erase_if(selected_tabs, [&](const auto& pair) {
+      if (submitted_tokens.contains(pair.first)) {
+        return false;
+      }
+      removed_handles.insert(pair.second);
+      return true;
+    });
     if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
       if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
-        for (const auto& [token, handle] : selected_tabs) {
+        for (int32_t handle : removed_handles) {
           active_task_context_provider->RemoveLocalTabUnderline(
               tabs::TabHandle(handle));
         }
+        // `RemoveLocalTabUnderline()` only removes from
+        // `local_tab_underlines_`. Tabs attached on an AIM page are also cached
+        // in the provider's `backend_context_tabs_` (which is unioned with
+        // `local_tab_underlines_` when notifying observers). Calling
+        // `RefreshContext()` after `contextual_session_handle->ClearFiles()`
+        // dropped the pending tokens evicts those cleared unsubmitted tabs from
+        // `backend_context_tabs_` while keeping any tabs already submitted in
+        // prior turns underlined.
+        active_task_context_provider->RefreshContext();
       }
     }
-    selected_tabs.clear();
   }
 
   // Ensure `input_state_model_` is updated when context is cleared.

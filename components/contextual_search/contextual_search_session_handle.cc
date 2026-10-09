@@ -1025,13 +1025,8 @@ ContextualSearchSessionHandle::GetSubmittedContextTokens() const {
   return submitted_context_tokens_;
 }
 
-std::vector<FileInfo>
-ContextualSearchSessionHandle::GetUploadedContextFileInfos() const {
-  return TokensToFileInfos(GetController(), uploaded_context_tokens_);
-}
-
-std::vector<FileInfo>
-ContextualSearchSessionHandle::GetSubmittedContextFileInfos() const {
+std::vector<base::UnguessableToken>
+ContextualSearchSessionHandle::GetActiveSubmittedContextTokens() const {
   std::vector<base::UnguessableToken> tokens = submitted_context_tokens_;
   for (const TabInfo& tab : tab_context_.attached) {
     if (!tab.submitted || !tab.tab_id.has_value() ||
@@ -1043,7 +1038,17 @@ ContextualSearchSessionHandle::GetSubmittedContextFileInfos() const {
       tokens.push_back(tab.context_token);
     }
   }
-  return TokensToFileInfos(GetController(), tokens);
+  return tokens;
+}
+
+std::vector<FileInfo>
+ContextualSearchSessionHandle::GetUploadedContextFileInfos() const {
+  return TokensToFileInfos(GetController(), uploaded_context_tokens_);
+}
+
+std::vector<FileInfo>
+ContextualSearchSessionHandle::GetSubmittedContextFileInfos() const {
+  return TokensToFileInfos(GetController(), GetActiveSubmittedContextTokens());
 }
 
 std::vector<std::string>

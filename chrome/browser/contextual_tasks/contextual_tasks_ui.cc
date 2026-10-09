@@ -636,7 +636,8 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            contextual_tasks::
                GetContextualTasksAskGTooltipSessionImpressionCap());
   dict.Set("askGCoBrowseEnabled", omnibox::kAskGCoBrowse.Get());
-  dict.Set("clearAllInputsWhenSubmittingQuery", true);
+  dict.Set("clearAllInputsWhenSubmittingQuery",
+           ShouldClearAllInputsOnSubmit(std::nullopt));
   dict.Set("contextualTasksSidePanelRearchitectureEnabled",
            contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled());
 

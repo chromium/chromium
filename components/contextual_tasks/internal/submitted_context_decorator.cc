@@ -14,7 +14,7 @@ SubmittedContextDecorator::~SubmittedContextDecorator() = default;
 std::vector<base::UnguessableToken>
 SubmittedContextDecorator::GetTokensToDecorate(
     contextual_search::ContextualSearchSessionHandle* handle) const {
-  return handle->GetSubmittedContextTokens();
+  return handle->GetActiveSubmittedContextTokens();
 }
 
 }  // namespace contextual_tasks

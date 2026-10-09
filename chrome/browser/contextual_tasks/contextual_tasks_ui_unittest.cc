@@ -1095,20 +1095,43 @@ TEST_F(ContextualTasksUiTest,
 }
 
 TEST_F(ContextualTasksUiTest, ShouldClearAllInputsOnSubmit) {
-  // Default / no invocation source should clear inputs.
-  EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(std::nullopt));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kContextManagementInComposebox);
+
+    // Default / no invocation source should clear inputs when context
+    // management is disabled.
+    EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(std::nullopt));
+    base::DictValue load_time_data =
+        ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
+    EXPECT_EQ(load_time_data.FindBool("clearAllInputsWhenSubmittingQuery"),
+              true);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Omnibox page action entrypoint should retain inputs.
-  EXPECT_FALSE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
-      lens::LensOverlayInvocationSource::kOmniboxPageAction));
+    // Omnibox page action entrypoint should retain inputs.
+    EXPECT_FALSE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+        lens::LensOverlayInvocationSource::kOmniboxPageAction));
 
-  // Other entrypoints should clear inputs.
-  EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
-      lens::LensOverlayInvocationSource::kAppMenu));
-  EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
-      lens::LensOverlayInvocationSource::kToolbar));
+    // Other entrypoints should clear inputs.
+    EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+        lens::LensOverlayInvocationSource::kAppMenu));
+    EXPECT_TRUE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+        lens::LensOverlayInvocationSource::kToolbar));
 #endif
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+    // When context management is enabled, inputs should not clear restored
+    // tabs on submit.
+    EXPECT_FALSE(ContextualTasksUI::ShouldClearAllInputsOnSubmit(std::nullopt));
+    base::DictValue load_time_data =
+        ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
+    EXPECT_EQ(load_time_data.FindBool("clearAllInputsWhenSubmittingQuery"),
+              false);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 

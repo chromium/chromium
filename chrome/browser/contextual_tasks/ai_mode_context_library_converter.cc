@@ -17,12 +17,20 @@
 namespace {
 const contextual_search::FileInfo* GetFileInfoFromContext(
     int64_t context_id,
+    const GURL& url,
     const std::vector<contextual_search::FileInfo>& contexts) {
   for (auto& file_info : contexts) {
     // TODO(nyquist): Remove this cast when we roll in the new request ID proto.
     if (file_info.GetContextId().has_value() &&
         static_cast<int64_t>(file_info.GetContextId().value()) == context_id) {
       return &file_info;
+    }
+  }
+  if (url.is_valid()) {
+    for (const auto& file_info : contexts) {
+      if (file_info.tab_url.has_value() && file_info.tab_url.value() == url) {
+        return &file_info;
+      }
     }
   }
   return nullptr;
@@ -65,8 +73,8 @@ std::vector<contextual_tasks::UrlResource> ConvertImpl(
     url_resource->has_chrome_tab_data = context.has_chrome_tab_data();
 
     if (url_resource) {
-      const contextual_search::FileInfo* file_info =
-          GetFileInfoFromContext(context.context_id(), local_contexts);
+      const contextual_search::FileInfo* file_info = GetFileInfoFromContext(
+          context.context_id(), url_resource->url, local_contexts);
       if (file_info) {
         // Tab-derived inputs (e.g. Lens overlay selections) may be returned as
         // an Image by the server. Preserve the underlying tab's webpage URL

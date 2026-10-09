@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -4238,20 +4239,104 @@ IN_PROC_BROWSER_TEST_F(
   SetUpHandler();
   ASSERT_NE(handler_, nullptr);
   ASSERT_NE(session_handle_, nullptr);
-  const auto submitted_token = base::UnguessableToken::Create();
+
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  const int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  std::optional<base::UnguessableToken> token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+  });
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
+  ASSERT_TRUE(token_opt.has_value());
+  const auto submitted_token = *token_opt;
+  ASSERT_THAT(handler_->GetSelectedTabIds(), testing::Contains(active_tab_id));
+
   session_handle_->SetSubmittedContextTokens({submitted_token});
 
-  const SessionID tab_session_id = SessionID::FromSerializedValue(1);
+  const SessionID tab_session_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
   session_handle_->SetPersistedTabs(
       {{tab_session_id, {submitted_token, lens::LensOverlayRequestId()}}});
   session_handle_->set_deselected_tabs_urls(
       {{tab_session_id, {GURL("https://example.com"), "Example"}}});
+  contextual_search::TabInfo restored_tab;
+  restored_tab.tab_id = tab_session_id.id();
+  restored_tab.url = GURL("https://restored.example.com");
+  restored_tab.title = "Restored";
+  session_handle_->SetRestoredTabs({restored_tab});
 
   handler_->OnTaskChanged();
 
   EXPECT_TRUE(session_handle_->GetSubmittedContextTokens().empty());
   EXPECT_TRUE(session_handle_->GetPersistedTabs().empty());
   EXPECT_TRUE(session_handle_->deselected_tabs_urls().empty());
+  EXPECT_TRUE(session_handle_->GetTabContextState().restored.empty());
+  EXPECT_TRUE(handler_->GetSelectedTabIds().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    ClearFiles_ClearsDelayedTabsAndDismissesAutoSuggestionBeforeRefreshingContext) {
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  const int32_t active_tab_id = active_tab->GetHandle().raw_value();
+
+  std::optional<base::UnguessableToken> token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+  });
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
+  ASSERT_TRUE(token_opt.has_value());
+  ASSERT_EQ(handler_->GetNumTabsDelayed(), 1);
+
+  auto suggestion = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+  suggestion->url = GURL("https://example.com/suggested");
+  suggestion->title = u"Suggested";
+  suggestion->tab_id = active_tab_id;
+  auto_suggestion_manager_.SetCurrentSuggestion(std::move(suggestion));
+  ASSERT_TRUE(mock_ui_->IsActiveTabContextSuggestionShowing());
+
+  auto* provider = contextual_tasks::ActiveTaskContextProvider::From(browser());
+  ASSERT_NE(provider, nullptr);
+
+  struct RefreshOrderObserver
+      : public contextual_tasks::ActiveTaskContextProvider::Observer {
+    explicit RefreshOrderObserver(ContextualTasksComposeboxHandler* handler,
+                                  MockContextualTasksUI* ui)
+        : handler_(handler), ui_(ui) {}
+    void OnContextTabsChanged(
+        const std::set<tabs::TabHandle>& context_tabs) override {
+      refresh_count_++;
+      EXPECT_EQ(handler_->GetNumTabsDelayed(), 0);
+      EXPECT_TRUE(handler_->GetSelectedTabIds().empty());
+      EXPECT_FALSE(ui_->IsActiveTabContextSuggestionShowing());
+    }
+    raw_ptr<ContextualTasksComposeboxHandler> handler_;
+    raw_ptr<MockContextualTasksUI> ui_;
+    int refresh_count_ = 0;
+  } observer(handler_.get(), mock_ui_.get());
+  provider->AddObserver(&observer);
+
+  handler_->ClearFiles(/*should_block_auto_suggested_tabs=*/true);
+
+  EXPECT_GE(observer.refresh_count_, 1);
+  provider->RemoveObserver(&observer);
 }
 
 IN_PROC_BROWSER_TEST_F(

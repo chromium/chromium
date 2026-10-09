@@ -2193,7 +2193,7 @@ export const ComposeboxEmbedderMixin =
           // clearing, clear input here.
           if (!querySubmitted || this.clearAllInputsWhenSubmittingQuery) {
             this.resetModes();
-            if (this.shouldResetRestoredTabs()) {
+            if (this.shouldResetRestoredTabs(querySubmitted)) {
               this.resetRestoredTabs();
             }
           }
@@ -2340,10 +2340,10 @@ export const ComposeboxEmbedderMixin =
 
         // If context management flag is on, do not delete persisted
         // (restored) tabs unless the source is Omnibox or
-        // clearAllInputsWhenSubmittingQuery is set.
-        shouldResetRestoredTabs(): boolean {
+        // clearAllInputsWhenSubmittingQuery is set on query submission.
+        shouldResetRestoredTabs(querySubmitted: boolean = false): boolean {
           return this.composeboxSource === 'Omnibox' ||
-              this.clearAllInputsWhenSubmittingQuery ||
+              (querySubmitted && this.clearAllInputsWhenSubmittingQuery) ||
               !this.contextManagementInComposeboxEnabled;
         }
 
@@ -3580,7 +3580,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
   getInputType(type: string): InputType;
   resetModes(): void;
-  shouldResetRestoredTabs(): boolean;
+  shouldResetRestoredTabs(querySubmitted?: boolean): boolean;
   resetRestoredTabs(): void;
   setDefaultModel(): void;
   resetToolsAndModels(): void;

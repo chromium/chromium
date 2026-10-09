@@ -150,6 +150,109 @@ suite('NewTabPageComposeboxTest', () => {
       });
 
   test(
+      'clear functionality preserves restored tabs when context management ' +
+          'enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          'clearAllInputsWhenSubmittingQuery': true,
+          'contextManagementInComposeboxEnabled': true,
+        });
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        await microtasksFinished();
+
+        testProxy.searchboxCallbackRouterRemote.setAimThreadRestoredTabs([{
+          tabId: 10,
+          title: 'Restored Tab',
+          url: 'https://example.com/restored',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+          isLoading: false,
+        }]);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        assertEquals(testProxy.element.aimThreadRestoredTabs.length, 1);
+
+        const input =
+            testProxy.element.getInputElement()
+                .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+        input.value = 'draft query';
+        input.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        $$<HTMLElement>(
+            testProxy.element.getInputElement(), '#cancelIcon')!.click();
+        await microtasksFinished();
+
+        assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
+        assertEquals(testProxy.searchboxHandler.getArgs('clearFiles')[0], true);
+        assertEquals(testProxy.element.aimThreadRestoredTabs.length, 1);
+        assertEquals(testProxy.element.aimThreadRestoredTabs[0]!.tabId, 10);
+      });
+
+  test(
+      'clear functionality resets restored tabs when context management ' +
+          'disabled or source is Omnibox',
+      async () => {
+        loadTimeData.overrideValues({
+          'clearAllInputsWhenSubmittingQuery': false,
+          'contextManagementInComposeboxEnabled': false,
+        });
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        await microtasksFinished();
+
+        const restoredTab = {
+          tabId: 10,
+          title: 'Restored Tab',
+          url: 'https://example.com/restored',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+          isLoading: false,
+        };
+        testProxy.searchboxCallbackRouterRemote.setAimThreadRestoredTabs(
+            [restoredTab]);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        assertEquals(testProxy.element.aimThreadRestoredTabs.length, 1);
+
+        const input =
+            testProxy.element.getInputElement()
+                .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+        input.value = 'draft query';
+        input.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        $$<HTMLElement>(
+            testProxy.element.getInputElement(), '#cancelIcon')!.click();
+        await microtasksFinished();
+        assertEquals(testProxy.element.aimThreadRestoredTabs.length, 0);
+
+        // Even with context management enabled, Omnibox source resets restored
+        // tabs on cancel.
+        testProxy.element.contextManagementInComposeboxEnabled = true;
+        testProxy.element.composeboxSource = 'Omnibox';
+        testProxy.searchboxCallbackRouterRemote.setAimThreadRestoredTabs(
+            [restoredTab]);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        assertEquals(testProxy.element.aimThreadRestoredTabs.length, 1);
+
+        input.value = 'draft query 2';
+        input.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        $$<HTMLElement>(
+            testProxy.element.getInputElement(), '#cancelIcon')!.click();
+        await microtasksFinished();
+        assertEquals(testProxy.element.aimThreadRestoredTabs.length, 0);
+      });
+
+  test(
       'suggestion activity link triggers navigation', async () => {
         createComposeboxElement(testProxy);
         await microtasksFinished();

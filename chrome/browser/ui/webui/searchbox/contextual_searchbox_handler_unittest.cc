@@ -30,6 +30,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
@@ -424,6 +425,21 @@ class MockContextualTasksContextService
               OnTypedQuery,
               (base::WeakPtr<BrowserWindowInterface>),
               (override));
+};
+
+class MockActiveTaskContextProvider
+    : public contextual_tasks::ActiveTaskContextProvider {
+ public:
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RefreshContext, (), (override));
+  MOCK_METHOD(void,
+              SetContextualTasksPanelController,
+              (contextual_tasks::ContextualTasksPanelController*),
+              (override));
+  MOCK_METHOD(void, AddLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void, RemoveLocalTabUnderline, (tabs::TabHandle), (override));
+  MOCK_METHOD(void, ClearAllLocalTabUnderlines, (), (override));
 };
 
 }  // namespace
@@ -3719,6 +3735,143 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
                observer.context_tabs_.end());
 
   active_task_context_provider->RemoveObserver(&observer);
+}
+
+// Clearing the input plate via the clear button must recompute the tab strip
+// underlines. Tabs attached from an AIM page are underlined through the backend
+// task context rather than only through local underlines, so removing the
+// local underlines alone leaves stale underlines behind.
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       ClearFiles_RefreshesActiveTaskContextProviderOnClear) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  testing::StrictMock<MockActiveTaskContextProvider> provider;
+  ui::ScopedUnownedUserData<contextual_tasks::ActiveTaskContextProvider>
+      provider_registration(user_data_host_, provider);
+
+  // Seed a tab token submitted in an earlier turn so the test verifies that
+  // clearing unsubmitted tabs preserves prior-turn submitted tab tokens and
+  // does not remove their local tab underline.
+  const int32_t submitted_tab_id = 123;
+  const SessionID submitted_session_tab_id =
+      SessionID::FromSerializedValue(submitted_tab_id);
+  base::UnguessableToken submitted_token =
+      contextual_session_handle_->CreateContextToken();
+  query_controller().AddTabFileInfoForTesting(
+      submitted_token, GURL("https://submitted.example.com"),
+      lens::MimeType::kAnnotatedPageContent, submitted_session_tab_id);
+
+  // Also seed a submitted tab that was subsequently deselected in the context
+  // library so the test verifies deselected tabs are NOT preserved in
+  // `selected_tabs` on clear.
+  const int32_t deselected_tab_id = 321;
+  const SessionID deselected_session_tab_id =
+      SessionID::FromSerializedValue(deselected_tab_id);
+  base::UnguessableToken deselected_token =
+      contextual_session_handle_->CreateContextToken();
+  query_controller().AddTabFileInfoForTesting(
+      deselected_token, GURL("https://deselected.example.com"),
+      lens::MimeType::kAnnotatedPageContent, deselected_session_tab_id);
+
+  contextual_session_handle_->ClearFiles(/*query_submitted=*/true);
+  // Keep only `submitted_token` in `submitted_context_tokens_` and mark
+  // `deselected_session_tab_id` deselected in `tab_context_`.
+  contextual_session_handle_->SetSubmittedContextTokens({submitted_token});
+  contextual_session_handle_->set_deselected_tabs_urls(
+      {{deselected_session_tab_id,
+        {GURL("https://deselected.example.com"), "Deselected"}}});
+  ASSERT_EQ(
+      contextual_session_handle_->GetTokenForTab(submitted_session_tab_id),
+      submitted_token);
+
+  // Seed an unsubmitted tab token on the session handle so the test verifies
+  // that `ClearFiles()` drops unsubmitted session tokens before
+  // `RefreshContext()` recomputes backend underlines.
+  const SessionID session_tab_id = SessionID::FromSerializedValue(456);
+  base::UnguessableToken token1 =
+      contextual_session_handle_->CreateContextToken();
+  query_controller().AddTabFileInfoForTesting(
+      token1, GURL("https://example.com"),
+      lens::MimeType::kAnnotatedPageContent, session_tab_id);
+  ASSERT_EQ(contextual_session_handle_->GetTokenForTab(session_tab_id), token1);
+
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  int32_t tab_id1 = 456;
+  int32_t tab_id2 = 789;
+  handler().selected_tabs[submitted_token] = submitted_tab_id;
+  handler().selected_tabs[deselected_token] = deselected_tab_id;
+  handler().selected_tabs[token1] = tab_id1;
+  handler().selected_tabs[token2] = tab_id2;
+
+  testing::Expectation remove_deselected = EXPECT_CALL(
+      provider, RemoveLocalTabUnderline(tabs::TabHandle(deselected_tab_id)));
+  testing::Expectation remove1 =
+      EXPECT_CALL(provider, RemoveLocalTabUnderline(tabs::TabHandle(tab_id1)));
+  testing::Expectation remove2 =
+      EXPECT_CALL(provider, RemoveLocalTabUnderline(tabs::TabHandle(tab_id2)));
+  EXPECT_CALL(provider, RefreshContext())
+      .After(remove_deselected, remove1, remove2)
+      .WillOnce([&]() {
+        // Unsubmitted session tokens must already be cleared when
+        // `RefreshContext()` runs (so their backend underlines are dropped),
+        // while tokens from tabs submitted in earlier turns must remain intact.
+        EXPECT_TRUE(handler().GetUploadedContextTokens().empty());
+        EXPECT_TRUE(contextual_session_handle_->GetTokenForTab(session_tab_id)
+                        .is_empty());
+        EXPECT_EQ(contextual_session_handle_->GetTokenForTab(
+                      submitted_session_tab_id),
+                  submitted_token);
+      });
+
+  handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false);
+
+  ASSERT_EQ(handler().selected_tabs.size(), 1u);
+  EXPECT_EQ(handler().selected_tabs[submitted_token], submitted_tab_id);
+}
+
+// Even when `selected_tabs` is empty (for example, when only delayed or
+// session-level context is being cleared), `ClearFiles()` must still call
+// `RefreshContext()` once so backend underlines are recomputed.
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       ClearFiles_RefreshesContextWhenSelectedTabsEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  testing::StrictMock<MockActiveTaskContextProvider> provider;
+  ui::ScopedUnownedUserData<contextual_tasks::ActiveTaskContextProvider>
+      provider_registration(user_data_host_, provider);
+
+  ASSERT_TRUE(handler().selected_tabs.empty());
+
+  EXPECT_CALL(provider, RemoveLocalTabUnderline).Times(0);
+  EXPECT_CALL(provider, RefreshContext()).Times(1);
+
+  handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false);
+}
+
+// Submitting a query keeps the attached tabs in context, so the underlines
+// must not be touched on that path.
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       ClearFiles_DoesNotTouchUnderlinesOnSubmit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  testing::StrictMock<MockActiveTaskContextProvider> provider;
+  ui::ScopedUnownedUserData<contextual_tasks::ActiveTaskContextProvider>
+      provider_registration(user_data_host_, provider);
+
+  base::UnguessableToken context_token = base::UnguessableToken::Create();
+  int32_t tab_id = 456;
+  handler().selected_tabs[context_token] = tab_id;
+
+  EXPECT_CALL(provider, RemoveLocalTabUnderline).Times(0);
+  EXPECT_CALL(provider, RefreshContext).Times(0);
+
+  handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+                       /*query_submitted=*/true);
+
+  EXPECT_EQ(handler().selected_tabs.size(), 1u);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
