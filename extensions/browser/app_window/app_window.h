@@ -237,6 +237,10 @@ class AppWindow : public content::WebContentsDelegate,
   AppWindow& operator=(const AppWindow&) = delete;
 
   // Initializes the render interface, web contents, and native window.
+  // Note: Initial window state transitions (such as entering fullscreen) may
+  // synchronously close the native window and destroy `this` (e.g., if a
+  // nested run loop spins during the transition). Callers that access the
+  // AppWindow after calling Init() must check liveness via GetWeakPtr().
   void Init(const GURL& url,
             std::unique_ptr<AppWindowContents> app_window_contents,
             content::RenderFrameHost* creator_frame,
@@ -307,6 +311,9 @@ class AppWindow : public content::WebContentsDelegate,
   // not exit fullscreen mode because a window may have a different type of
   // fullscreen enabled). If `type` is not FORCED, checks that the extension has
   // the required permission.
+  // Note: Transitioning fullscreen state may synchronously close the native
+  // window and destroy `this`. Callers that access the AppWindow after this
+  // call must check liveness via GetWeakPtr().
   void SetFullscreen(FullscreenType type, bool enable);
 
   // Returns true if the app window is in a fullscreen state.
@@ -324,16 +331,26 @@ class AppWindow : public content::WebContentsDelegate,
 
   // Transitions window into fullscreen, maximized, minimized or restores based
   // on chrome.app.window API.
+  // Note: Fullscreen() and Restore() (when exiting fullscreen) may
+  // synchronously close the native window and destroy `this`. Callers that
+  // access the AppWindow after these calls must check liveness via
+  // GetWeakPtr().
   void Fullscreen();
   void Maximize();
   void Minimize();
   void Restore();
 
   // Transitions to OS fullscreen. See FULLSCREEN_TYPE_OS for more details.
+  // Note: May synchronously close the native window and destroy `this`.
+  // Callers that access the AppWindow after this call must check liveness via
+  // GetWeakPtr().
   void OSFullscreen();
 
   // Transitions to forced fullscreen. See FULLSCREEN_TYPE_FORCED for more
   // details.
+  // Note: May synchronously close the native window and destroy `this`.
+  // Callers that access the AppWindow after this call must check liveness via
+  // GetWeakPtr().
   void ForcedFullscreen();
 
   // Set the minimum and maximum size of the content bounds.
@@ -400,6 +417,10 @@ class AppWindow : public content::WebContentsDelegate,
   }
 
   bool DidFinishFirstNavigation() { return did_finish_first_navigation_; }
+
+  base::WeakPtr<AppWindow> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  protected:
   ~AppWindow() override;
@@ -499,6 +520,9 @@ class AppWindow : public content::WebContentsDelegate,
   CreateParams LoadDefaults(CreateParams params) const;
 
   // Set the fullscreen state in the native app window.
+  // Note: May synchronously close the native window and destroy `this`.
+  // Callers that access `this` after this call must check liveness via
+  // `weak_ptr_factory_`.
   void SetNativeWindowFullscreen();
 
   // Returns true if there is any overlap between the window and the taskbar
