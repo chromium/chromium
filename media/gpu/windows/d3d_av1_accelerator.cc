@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d_av1_accelerator.h"
 
+#include <array>
 #include <numeric>
 #include <tuple>
 #include <utility>
@@ -377,12 +378,12 @@ bool D3DAV1Accelerator::FillPicParams(
   pp->loop_filter.delta_lf_res = frame_header.delta_lf.scale;
 
   for (size_t i = 0; i < libgav1::kMaxPlanes; ++i) {
-    constexpr uint8_t kD3D11LoopRestorationMapping[4] = {
+    constexpr auto kD3D11LoopRestorationMapping = std::to_array<uint8_t>({
         0,  // libgav1::kLoopRestorationTypeNone,
         3,  // libgav1::kLoopRestorationTypeSwitchable,
         1,  // libgav1::kLoopRestorationTypeWiener,
         2,  // libgav1::kLoopRestorationTypeSgrProj
-    };
+    });
 
     UNSAFE_TODO({
       pp->loop_filter.frame_restoration_type[i] =

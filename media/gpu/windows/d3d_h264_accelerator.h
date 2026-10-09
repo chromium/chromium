@@ -9,6 +9,8 @@
 #include <d3d9.h>
 #include <dxva.h>
 
+#include <array>
+
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/video_frame.h"
 #include "media/base/win/mf_helpers.h"
@@ -79,10 +81,10 @@ class D3DH264Accelerator : public H264Decoder::H264Accelerator {
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.
-  DXVA_PicEntry_H264 ref_frame_list_[kRefFrameMaxCount];
+  std::array<DXVA_PicEntry_H264, kRefFrameMaxCount> ref_frame_list_ = {};
   H264SPS sps_;
-  INT field_order_cnt_list_[kRefFrameMaxCount][2];
-  USHORT frame_num_list_[kRefFrameMaxCount];
+  std::array<std::array<INT, 2>, kRefFrameMaxCount> field_order_cnt_list_ = {};
+  std::array<USHORT, kRefFrameMaxCount> frame_num_list_ = {};
   UINT used_for_reference_flags_;
   USHORT non_existing_frame_flags_;
 

@@ -4,6 +4,8 @@
 
 #include "media/gfx/video_frame_test_utils.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -21,7 +23,7 @@ namespace media {
 
 namespace {
 
-static constexpr const uint8_t kYuvColors[8][3] = {
+static constexpr std::array<std::array<const uint8_t, 3>, 8> kYuvColors = {{
     {0x00, 0x80, 0x80},  // Black
     {0x4c, 0x54, 0xff},  // Red
     {0x95, 0x2b, 0x15},  // Green
@@ -30,7 +32,7 @@ static constexpr const uint8_t kYuvColors[8][3] = {
     {0x69, 0xd3, 0xec},  // Magenta
     {0xb3, 0xaa, 0x00},  // Cyan
     {0xff, 0x80, 0x80},  // White
-};
+}};
 
 // Destroys a list of shared images after a sync token is passed. Also runs
 // |callback|.
@@ -122,12 +124,12 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
     for (int y = 0; y < coded_size.height() / 2; ++y) {
       for (size_t block_x = 0; block_x < 4u; ++block_x) {
         size_t color_index = block_x + block_y * 4;
-        const uint8_t* yuv = UNSAFE_TODO(kYuvColors[color_index]);
+        const auto& yuv = kYuvColors[color_index];
         for (int x = 0; x < coded_size.width() / 4; ++x) {
           y_pixels[y_i++] = yuv[0];
           if ((x % 2) && (y % 2)) {
-            u_pixels[uv_i] = UNSAFE_TODO(yuv[1]);
-            v_pixels[uv_i++] = UNSAFE_TODO(yuv[2]);
+            u_pixels[uv_i] = yuv[1];
+            v_pixels[uv_i++] = yuv[2];
           }
         }
       }
@@ -208,12 +210,12 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
     for (int y = 0; y < coded_size.height() / 2; ++y) {
       for (size_t block_x = 0; block_x < 4u; ++block_x) {
         size_t color_index = block_x + block_y * 4;
-        const uint8_t* yuv = UNSAFE_TODO(kYuvColors[color_index]);
+        const auto& yuv = kYuvColors[color_index];
         for (int x = 0; x < coded_size.width() / 4; ++x) {
           y_pixels[y_i++] = yuv[0];
           if ((x % 2) && (y % 2)) {
-            uv_pixels[uv_i++] = UNSAFE_TODO(yuv[1]);
-            uv_pixels[uv_i++] = UNSAFE_TODO(yuv[2]);
+            uv_pixels[uv_i++] = yuv[1];
+            uv_pixels[uv_i++] = yuv[2];
           }
         }
       }

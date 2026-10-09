@@ -108,7 +108,7 @@ MEDIA_EXPORT extern const uint8_t kZigZag8x8[64];
 // Table K.1 Luminance quantization table
 // Table K.2 Chrominance quantization table
 MEDIA_EXPORT
-extern const JpegQuantizationTable kDefaultQuantTable[2];
+extern const std::array<JpegQuantizationTable, 2> kDefaultQuantTable;
 
 // Parsing result of a JPEG component.
 struct JpegComponent {

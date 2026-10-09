@@ -80,7 +80,7 @@ constexpr uint8_t kZigZag8x8[64] = {
     35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
-constexpr JpegQuantizationTable kDefaultQuantTable[2] = {
+constexpr std::array<JpegQuantizationTable, 2> kDefaultQuantTable = {{
     // Table K.1 Luminance quantization table values.
     {
         true,
@@ -97,7 +97,7 @@ constexpr JpegQuantizationTable kDefaultQuantTable[2] = {
          99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
          99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
     },
-};
+}};
 
 bool ParseJpegPicture(base::span<const uint8_t> buffer,
                       JpegParseResult* result) {

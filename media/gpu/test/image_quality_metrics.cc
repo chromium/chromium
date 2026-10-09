@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -196,7 +197,9 @@ constexpr int kJointDistributionBitDepth = 4;
 constexpr int kJointDistributionDim = 1 << kJointDistributionBitDepth;
 
 using DistributionTable =
-    double[kJointDistributionDim][kJointDistributionDim][kJointDistributionDim];
+    std::array<std::array<std::array<double, kJointDistributionDim>,
+                          kJointDistributionDim>,
+               kJointDistributionDim>;
 
 bool ComputeLogJointDistribution(const VideoFrame& frame,
                                  DistributionTable& log_joint_distribution) {
@@ -217,7 +220,7 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
   for (int i = 0; i < kJointDistributionDim; i++) {
     for (int j = 0; j < kJointDistributionDim; j++) {
       for (int k = 0; k < kJointDistributionDim; k++) {
-        UNSAFE_TODO(log_joint_distribution[i][j][k]) = kMinProbabilityValue;
+        log_joint_distribution[i][j][k] = kMinProbabilityValue;
       }
     }
   }
@@ -225,16 +228,18 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
   // Downsample the RGB values of the plane into 4-bits per channel, and use the
   // downsampled color information to increment the corresponding element of the
   // distribution table.
-  const uint8_t* row_ptr = frame.visible_data(0);
+  const base::span<const uint8_t> plane_span = frame.GetVisiblePlaneData(0);
+  const size_t row_stride = frame.stride(0);
+  const size_t visible_row_bytes =
+      static_cast<size_t>(frame.GetVisibleRowBytes(0));
   for (int y = 0; y < frame.visible_rect().height(); y++) {
+    const auto row = plane_span.subspan(y * row_stride, visible_row_bytes);
     for (int x = 0; x < frame.visible_rect().width(); x++) {
-      UNSAFE_TODO(log_joint_distribution
-                      [row_ptr[4 * x + 1] >> kJointDistributionBitDepth]
-                      [row_ptr[4 * x + 2] >> kJointDistributionBitDepth]
-                      [row_ptr[4 * x + 3] >> kJointDistributionBitDepth]) +=
+      log_joint_distribution[row[4 * x + 1] >> kJointDistributionBitDepth]
+                            [row[4 * x + 2] >> kJointDistributionBitDepth]
+                            [row[4 * x + 3] >> kJointDistributionBitDepth] +=
           1.0;
     }
-    UNSAFE_TODO(row_ptr += frame.stride(0));
   }
 
   // Normalize the joint distribution so that it sums to 1.0 and then take the
@@ -242,9 +247,8 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
   for (int i = 0; i < kJointDistributionDim; i++) {
     for (int j = 0; j < kJointDistributionDim; j++) {
       for (int k = 0; k < kJointDistributionDim; k++) {
-        UNSAFE_TODO(log_joint_distribution[i][j][k]) /= normalization_factor;
-        UNSAFE_TODO(log_joint_distribution[i][j][k]) =
-            log(UNSAFE_TODO(log_joint_distribution[i][j][k]));
+        log_joint_distribution[i][j][k] /= normalization_factor;
+        log_joint_distribution[i][j][k] = log(log_joint_distribution[i][j][k]);
       }
     }
   }
@@ -260,16 +264,18 @@ double ComputeLogProbability(const VideoFrame& frame,
 
   double ret = 0.0;
 
-  const uint8_t* row_ptr = frame.visible_data(0);
+  const base::span<const uint8_t> plane_span = frame.GetVisiblePlaneData(0);
+  const size_t row_stride = frame.stride(0);
+  const size_t visible_row_bytes =
+      static_cast<size_t>(frame.GetVisibleRowBytes(0));
   for (int y = 0; y < frame.visible_rect().height(); y++) {
+    const auto row = plane_span.subspan(y * row_stride, visible_row_bytes);
     for (int x = 0; x < frame.visible_rect().width(); x++) {
       ret +=
-          UNSAFE_TODO(log_joint_distribution
-                          [row_ptr[4 * x + 1] >> kJointDistributionBitDepth]
-                          [row_ptr[4 * x + 2] >> kJointDistributionBitDepth]
-                          [row_ptr[4 * x + 3] >> kJointDistributionBitDepth]);
+          log_joint_distribution[row[4 * x + 1] >> kJointDistributionBitDepth]
+                                [row[4 * x + 2] >> kJointDistributionBitDepth]
+                                [row[4 * x + 3] >> kJointDistributionBitDepth];
     }
-    UNSAFE_TODO(row_ptr += frame.stride(0));
   }
 
   return ret;
@@ -336,7 +342,7 @@ double ComputeLogLikelihoodRatio(scoped_refptr<const VideoFrame> golden_frame,
     test_frame = ConvertVideoFrame(test_frame.get(), PIXEL_FORMAT_ARGB);
   }
 
-  DistributionTable log_joint_distribution;
+  DistributionTable log_joint_distribution = {};
   double golden_log_prob = 0.0;
   ASSERT_TRUE_OR_RETURN(
       ComputeLogJointDistribution(*golden_frame, log_joint_distribution), 0.0);

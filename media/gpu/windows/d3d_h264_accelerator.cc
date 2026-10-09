@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -86,12 +87,9 @@ H264DecoderStatus D3DH264Accelerator::SubmitFrameMetadata(
   }
 
   sps_ = *sps;
-  for (size_t i = 0; i < media::kRefFrameMaxCount; i++) {
-    UNSAFE_TODO(ref_frame_list_[i].bPicEntry) = 0xFF;
-    UNSAFE_TODO(field_order_cnt_list_[i][0]) = 0;
-    UNSAFE_TODO(field_order_cnt_list_[i][1]) = 0;
-    UNSAFE_TODO(frame_num_list_[i]) = 0;
-  }
+  ref_frame_list_.fill({.bPicEntry = 0xFF});
+  field_order_cnt_list_.fill({0, 0});
+  frame_num_list_.fill(0);
   used_for_reference_flags_ = 0;
   non_existing_frame_flags_ = 0;
 
@@ -115,15 +113,13 @@ H264DecoderStatus D3DH264Accelerator::SubmitFrameMetadata(
     if (!our_ref_pic || !our_ref_pic->ref) {
       continue;
     }
-    UNSAFE_TODO(ref_frame_list_[i].Index7Bits) = our_ref_pic->picture_index_;
-    UNSAFE_TODO(ref_frame_list_[i].AssociatedFlag) = our_ref_pic->long_term;
-    UNSAFE_TODO(field_order_cnt_list_[i][0]) = our_ref_pic->top_field_order_cnt;
-    UNSAFE_TODO(field_order_cnt_list_[i][1]) =
-        our_ref_pic->bottom_field_order_cnt;
-    UNSAFE_TODO(frame_num_list_[i]) =
-        UNSAFE_TODO(ref_frame_list_[i].AssociatedFlag)
-            ? our_ref_pic->long_term_pic_num
-            : our_ref_pic->frame_num;
+    ref_frame_list_[i].Index7Bits = our_ref_pic->picture_index_;
+    ref_frame_list_[i].AssociatedFlag = our_ref_pic->long_term;
+    field_order_cnt_list_[i][0] = our_ref_pic->top_field_order_cnt;
+    field_order_cnt_list_[i][1] = our_ref_pic->bottom_field_order_cnt;
+    frame_num_list_[i] = ref_frame_list_[i].AssociatedFlag
+                             ? our_ref_pic->long_term_pic_num
+                             : our_ref_pic->frame_num;
     unsigned ref = 3;
     used_for_reference_flags_ |= ref << (2 * i);
     non_existing_frame_flags_ |= (our_ref_pic->nonexisting) << i;
@@ -282,14 +278,10 @@ H264DecoderStatus D3DH264Accelerator::SubmitSlice(
     }
     PicParamsFromPic(&pic_param, d3d11_pic);
 
-    UNSAFE_TODO(memcpy(pic_param.RefFrameList, ref_frame_list_,
-                       sizeof pic_param.RefFrameList));
-
-    UNSAFE_TODO(memcpy(pic_param.FieldOrderCntList, field_order_cnt_list_,
-                       sizeof pic_param.FieldOrderCntList));
-
-    UNSAFE_TODO(memcpy(pic_param.FrameNumList, frame_num_list_,
-                       sizeof pic_param.FrameNumList));
+    base::span(pic_param.RefFrameList).copy_from(ref_frame_list_);
+    base::as_writable_byte_span(pic_param.FieldOrderCntList)
+        .copy_from(base::as_byte_span(field_order_cnt_list_));
+    base::span(pic_param.FrameNumList).copy_from(frame_num_list_);
     pic_param.UsedForReferenceFlags = used_for_reference_flags_;
     pic_param.NonExistingFrameFlags = non_existing_frame_flags_;
 

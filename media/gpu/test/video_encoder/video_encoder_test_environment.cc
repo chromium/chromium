@@ -81,16 +81,16 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
     // bitrate[0]: for speed and quality performance
     // bitrate[1]: for validation.
     // The three values are for H264/VP8, VP9 and AV1, respectively.
-    double bitrate[2][3];
+    std::array<std::array<double, 3>, 2> bitrate;
   };
   constexpr auto kBitrateTable = std::to_array<BitrateTable>({
-      {0, {{77.5, 65.0, 60.0}, {100.0, 100.0, 100.0}}},
-      {240 * 160, {{77.5, 65.0, 60.0}, {115.0, 100.0, 100.0}}},
-      {320 * 240, {{165.0, 105.0, 105.0}, {230.0, 180.0, 180.0}}},
-      {480 * 270, {{195.0, 180.0, 180.0}, {320.0, 250, 250}}},
-      {640 * 480, {{550.0, 355.0, 342.5}, {690.0, 520, 520}}},
-      {1280 * 720, {{1700.0, 990.0, 800.0}, {2500.0, 1500, 1200}}},
-      {1920 * 1080, {{2480.0, 2060.0, 1500.0}, {4000.0, 3350.0, 2500.0}}},
+      {0, {{{77.5, 65.0, 60.0}, {100.0, 100.0, 100.0}}}},
+      {240 * 160, {{{77.5, 65.0, 60.0}, {115.0, 100.0, 100.0}}}},
+      {320 * 240, {{{165.0, 105.0, 105.0}, {230.0, 180.0, 180.0}}}},
+      {480 * 270, {{{195.0, 180.0, 180.0}, {320.0, 250, 250}}}},
+      {640 * 480, {{{550.0, 355.0, 342.5}, {690.0, 520, 520}}}},
+      {1280 * 720, {{{1700.0, 990.0, 800.0}, {2500.0, 1500, 1200}}}},
+      {1920 * 1080, {{{2480.0, 2060.0, 1500.0}, {4000.0, 3350.0, 2500.0}}}},
   });
   size_t codec_index = 0;
   switch (codec) {
@@ -110,8 +110,8 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
   }
 
   const int area = resolution.GetArea();
-  size_t index = std::size(kBitrateTable) - 1;
-  for (size_t i = 0; i < std::size(kBitrateTable); ++i) {
+  size_t index = kBitrateTable.size() - 1;
+  for (size_t i = 0; i < kBitrateTable.size(); ++i) {
     if (area < kBitrateTable[i].area) {
       index = i;
       break;
@@ -119,10 +119,10 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
   }
   const int low_area = kBitrateTable[index - 1].area;
   const double low_bitrate =
-      UNSAFE_TODO(kBitrateTable[index - 1].bitrate[validation][codec_index]);
+      kBitrateTable[index - 1].bitrate[validation][codec_index];
   const int up_area = kBitrateTable[index].area;
   const double up_bitrate =
-      UNSAFE_TODO(kBitrateTable[index].bitrate[validation][codec_index]);
+      kBitrateTable[index].bitrate[validation][codec_index];
 
   const double bitrate_in_30fps_in_kbps =
       (up_bitrate - low_bitrate) / (up_area - low_area) * (area - low_area) +
