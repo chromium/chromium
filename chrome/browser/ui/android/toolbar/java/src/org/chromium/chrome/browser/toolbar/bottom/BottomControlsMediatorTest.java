@@ -14,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -107,6 +109,7 @@ public class BottomControlsMediatorTest {
     @Mock InsetObserver mInsetObserver;
     @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     @Mock EdgeToEdgeManager mEdgeToEdgeManager;
+    @Mock Runnable mRequestRenderRunnable;
 
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
@@ -153,7 +156,8 @@ public class BottomControlsMediatorTest {
                         mOverlayPanelStateSupplier,
                         mEdgeToEdgeControllerSupplier,
                         mTabObservableSupplier,
-                        mReadAloudRestoringSupplier);
+                        mReadAloudRestoringSupplier,
+                        mRequestRenderRunnable);
     }
 
     @Test
@@ -173,7 +177,8 @@ public class BottomControlsMediatorTest {
                         mOverlayPanelStateSupplier,
                         ObservableSuppliers.alwaysNull(),
                         mTabObservableSupplier,
-                        mReadAloudRestoringSupplier);
+                        mReadAloudRestoringSupplier,
+                        mRequestRenderRunnable);
     }
 
     @Test
@@ -273,7 +278,8 @@ public class BottomControlsMediatorTest {
                         mOverlayPanelStateSupplier,
                         mEdgeToEdgeControllerSupplier,
                         mTabObservableSupplier,
-                        mReadAloudRestoringSupplier);
+                        mReadAloudRestoringSupplier,
+                        mRequestRenderRunnable);
 
         bottomAppBarMediator.setBottomControlsVisible(true);
         // At rest (bottomControlOffset = 0), it should translate to 0 (padding handles shift)
@@ -323,7 +329,8 @@ public class BottomControlsMediatorTest {
                         mOverlayPanelStateSupplier,
                         ObservableSuppliers.createNonNull(liveEdgeToEdgeController),
                         mTabObservableSupplier,
-                        mReadAloudRestoringSupplier);
+                        mReadAloudRestoringSupplier,
+                        mRequestRenderRunnable);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         plainMediator.destroy();
         assertNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
@@ -357,7 +364,8 @@ public class BottomControlsMediatorTest {
                 mOverlayPanelStateSupplier,
                 ObservableSuppliers.createNonNull(liveEdgeToEdgeController),
                 mTabObservableSupplier,
-                mReadAloudRestoringSupplier);
+                mReadAloudRestoringSupplier,
+                mRequestRenderRunnable);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         liveEdgeToEdgeController.setIsOptedIntoBottomEdgeToEdgeForTesting(false);
         int toNormalHeight = mModel.get(ANDROID_VIEW_HEIGHT_NO_PADDING);
@@ -536,7 +544,8 @@ public class BottomControlsMediatorTest {
                         mOverlayPanelStateSupplier,
                         mEdgeToEdgeControllerSupplier,
                         mTabObservableSupplier,
-                        mReadAloudRestoringSupplier);
+                        mReadAloudRestoringSupplier,
+                        mRequestRenderRunnable);
 
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
@@ -676,5 +685,66 @@ public class BottomControlsMediatorTest {
         mMediator.destroy();
         mBrowserControlsVisibilityDelegate.showControlsPersistent();
         assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+    }
+
+    /**
+     * Drives a browser-applied offset stream: the bar's Y_OFFSET changes every frame (0 -> H in
+     * steps of 10) while no other bar property changes.
+     */
+    private void driveBrowserOffsetStream() {
+        mMediator.setBottomControlsVisible(true);
+        ShadowLooper.idleMainLooper();
+        doReturn(0).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        clearInvocations(mRequestRenderRunnable);
+
+        for (int offset = 10; offset <= DEFAULT_HEIGHT; offset += 10) {
+            doReturn(offset).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+            mMediator.onBrowserControlsOffsetUpdate(offset);
+        }
+        assertEquals(DEFAULT_HEIGHT, mModel.get(BottomControlsProperties.Y_OFFSET));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT
+    })
+    public void testYOffsetChange_RequestsRenderWithoutOffsetTag() {
+        mModel.set(BottomControlsProperties.OFFSET_TAG, null);
+        driveBrowserOffsetStream();
+        // Y_OFFSET is excluded from the compositor MCP under the jank improvement, so the
+        // mediator must request a frame for each browser-driven offset change.
+        verify(mRequestRenderRunnable, times(DEFAULT_HEIGHT / 10)).run();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT
+    })
+    public void testYOffsetChange_NoRenderRequestWithOffsetTag() {
+        mModel.set(BottomControlsProperties.OFFSET_TAG, OffsetTag.createRandom());
+        driveBrowserOffsetStream();
+        // Viz moves the bar via the OffsetTag; the browser must not request frames.
+        verify(mRequestRenderRunnable, never()).run();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT
+    })
+    public void testYOffsetUnchanged_NoRenderRequest() {
+        mModel.set(BottomControlsProperties.OFFSET_TAG, null);
+        mMediator.setBottomControlsVisible(true);
+        ShadowLooper.idleMainLooper();
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        clearInvocations(mRequestRenderRunnable);
+
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        verify(mRequestRenderRunnable, never()).run();
     }
 }

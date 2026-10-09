@@ -56,6 +56,9 @@ public interface LayoutManager extends LayoutStateProvider {
                     viewBinder,
             Set<PropertyKey> exclusions);
 
+    /** Requests a new compositor frame to be drawn. */
+    void requestUpdate();
+
     /**
      * Start hiding the currently visible layout and show the one provided.
      *

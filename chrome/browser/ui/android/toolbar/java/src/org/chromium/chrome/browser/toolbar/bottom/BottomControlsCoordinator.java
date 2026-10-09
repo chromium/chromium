@@ -159,7 +159,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         overlayPanelStateSupplier,
                         edgeToEdgeControllerSupplier,
                         tabSupplier,
-                        readAloudRestoringSupplier);
+                        readAloudRestoringSupplier,
+                        layoutManager::requestUpdate);
         mResourceManager
                 .getDynamicResourceLoader()
                 .registerResource(root.getId(), root.getResourceAdapter());

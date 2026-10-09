@@ -96,6 +96,9 @@ class BottomControlsMediator
 
     private final Supplier<Boolean> mReadAloudRestoringSupplier;
 
+    /** Requests a compositor frame; see {@link #setYOffset(int)}. */
+    private final Runnable mRequestRenderRunnable;
+
     private final NullableObservableSupplier<Tab> mTabSupplier;
 
     private final ValueChangedCallback<EdgeToEdgeController> mEdgeToEdgeControllerCallback =
@@ -148,6 +151,7 @@ class BottomControlsMediator
      * @param tabSupplier Supplies the current tab.
      * @param readAloudRestoringSupplier Supplier that returns true if Read Aloud is currently
      *     restoring its player, e.g. after theme change.
+     * @param requestRenderRunnable Requests a new compositor frame.
      */
     BottomControlsMediator(
             WindowAndroid windowAndroid,
@@ -163,7 +167,8 @@ class BottomControlsMediator
             NonNullObservableSupplier<@PanelState Integer> overlayPanelStateSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             NullableObservableSupplier<Tab> tabSupplier,
-            Supplier<Boolean> readAloudRestoringSupplier) {
+            Supplier<Boolean> readAloudRestoringSupplier,
+            Runnable requestRenderRunnable) {
         // Watch for keyboard events so we can hide the bottom toolbar when the keyboard is showing.
         mWindowAndroid = windowAndroid;
         mWindowAndroid.getKeyboardDelegate().addKeyboardVisibilityListener(this);
@@ -232,6 +237,7 @@ class BottomControlsMediator
                 mEdgeToEdgeControllerCallback);
 
         mReadAloudRestoringSupplier = readAloudRestoringSupplier;
+        mRequestRenderRunnable = requestRenderRunnable;
         mBottomControlsStacker.addLayer(this);
 
         overlayPanelStateSupplier.addSyncObserverAndCallIfNonNull(
@@ -362,7 +368,17 @@ class BottomControlsMediator
     }
 
     private void setYOffset(int yOffset) {
+        int oldYOffset = mModel.get(BottomControlsProperties.Y_OFFSET);
         mModel.set(BottomControlsProperties.Y_OFFSET, yOffset);
+
+        // Under the jank improvement Y_OFFSET is excluded from the compositor MCP's frame
+        // requests because viz normally moves the bar via its OffsetTag. Without a tag the
+        // browser owns the motion and nothing else is guaranteed to draw it, so request a frame.
+        if (oldYOffset != yOffset
+                && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                && mModel.get(BottomControlsProperties.OFFSET_TAG) == null) {
+            mRequestRenderRunnable.run();
+        }
 
         // This call also updates the view's position if the animation has just finished.
         updateAndroidViewVisibility();
