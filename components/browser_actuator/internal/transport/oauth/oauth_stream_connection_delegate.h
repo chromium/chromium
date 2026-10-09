@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -66,7 +67,8 @@ class OAuthStreamConnectionDelegate : public StreamConnectionDelegate {
   std::optional<StreamUploadBody> GetConnectionRequestBody() override;
 
  private:
-  void OnTokenFetched(std::unique_ptr<network::ResourceRequest> request,
+  void OnTokenFetched(base::TimeTicks start_time,
+                      std::unique_ptr<network::ResourceRequest> request,
                       PrepareRequestCallback callback,
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);

@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "net/http/http_request_headers.h"
@@ -67,8 +69,8 @@ void OAuthStreamConnectionDelegate::PrepareRequest(
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       oauth_consumer_id_, identity_manager_,
       base::BindOnce(&OAuthStreamConnectionDelegate::OnTokenFetched,
-                     base::Unretained(this), std::move(request),
-                     std::move(callback)),
+                     base::Unretained(this), base::TimeTicks::Now(),
+                     std::move(request), std::move(callback)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSignin);
 }
@@ -100,6 +102,7 @@ bool OAuthStreamConnectionDelegate::ShouldRetryOnHttpFailure(
 }
 
 void OAuthStreamConnectionDelegate::OnTokenFetched(
+    base::TimeTicks start_time,
     std::unique_ptr<network::ResourceRequest> request,
     PrepareRequestCallback callback,
     GoogleServiceAuthError error,
@@ -109,6 +112,10 @@ void OAuthStreamConnectionDelegate::OnTokenFetched(
     std::move(callback).Run(nullptr);
     return;
   }
+  // Only successful fetches are recorded: Mode::kImmediate failures (e.g. no
+  // primary account) complete near-instantly and would skew the distribution.
+  base::UmaHistogramTimes("Browser.Actuator.OAuth.TokenFetchLatency",
+                          base::TimeTicks::Now() - start_time);
   last_access_token_ = access_token_info.token;
   request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,

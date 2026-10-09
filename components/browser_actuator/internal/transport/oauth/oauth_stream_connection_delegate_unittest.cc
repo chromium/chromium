@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -68,7 +69,8 @@ class OAuthStreamConnectionDelegateTest
   using RequestFuture =
       base::test::TestFuture<std::unique_ptr<network::ResourceRequest>>;
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   int tokens_removed_from_cache_ = 0;
 };
@@ -138,6 +140,57 @@ TEST_F(OAuthStreamConnectionDelegateTest, AbortsOnTokenError) {
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromServiceError(""));
   EXPECT_FALSE(future.Take());
+}
+
+TEST_F(OAuthStreamConnectionDelegateTest, RecordsTokenFetchLatencyOnSuccess) {
+  base::HistogramTester histogram_tester;
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  auto delegate = MakeDelegate();
+
+  RequestFuture future;
+  delegate->PrepareRequest(std::make_unique<network::ResourceRequest>(),
+                           future.GetCallback());
+  // Simulate time spent waiting on IdentityManager before the token arrives.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access-token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(future.Take());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Browser.Actuator.OAuth.TokenFetchLatency", base::Milliseconds(250), 1);
+}
+
+TEST_F(OAuthStreamConnectionDelegateTest,
+       DoesNotRecordTokenFetchLatencyWithoutPrimaryAccount) {
+  base::HistogramTester histogram_tester;
+  auto delegate = MakeDelegate();
+
+  RequestFuture future;
+  delegate->PrepareRequest(std::make_unique<network::ResourceRequest>(),
+                           future.GetCallback());
+  EXPECT_FALSE(future.Take());
+
+  histogram_tester.ExpectTotalCount("Browser.Actuator.OAuth.TokenFetchLatency",
+                                    0);
+}
+
+TEST_F(OAuthStreamConnectionDelegateTest,
+       DoesNotRecordTokenFetchLatencyOnTokenError) {
+  base::HistogramTester histogram_tester;
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  auto delegate = MakeDelegate();
+
+  RequestFuture future;
+  delegate->PrepareRequest(std::make_unique<network::ResourceRequest>(),
+                           future.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromServiceError(""));
+  EXPECT_FALSE(future.Take());
+
+  histogram_tester.ExpectTotalCount("Browser.Actuator.OAuth.TokenFetchLatency",
+                                    0);
 }
 
 TEST_F(OAuthStreamConnectionDelegateTest, RetriesOnceOn401ThenFails) {

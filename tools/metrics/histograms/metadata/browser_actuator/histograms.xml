@@ -57,6 +57,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.Actuator.OAuth.TokenFetchLatency" units="ms"
+    expires_after="2027-10-01">
+  <owner>bryansong@google.com</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/browser_actuator/OWNERS</owner>
+  <summary>
+    Records the time taken to acquire an OAuth2 access token from
+    IdentityManager for the browser actuator stream connection, measured from
+    OAuthStreamConnectionDelegate::PrepareRequest to the token fetch callback.
+    Isolates Gaia token acquisition latency from network round-trip time.
+    Recorded once per successful token fetch; not recorded when the fetch fails
+    (e.g. no primary account or an auth error) or is cancelled.
+  </summary>
+</histogram>
+
 <histogram name="Browser.Actuator.SessionRegistry.ExistingSessionsCount"
     units="sessions" expires_after="2027-08-01">
   <owner>andylky@google.com</owner>
