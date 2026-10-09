@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -31,11 +32,13 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the {@link AutofillOptionsLauncher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "crbug.com/391296691: Replace ActivityScenario with ActivityScenarioRule.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/571995058
 public class AutofillOptionsLauncherTest {
 
     @Before
