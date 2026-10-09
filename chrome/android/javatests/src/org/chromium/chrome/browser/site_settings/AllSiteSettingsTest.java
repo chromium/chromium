@@ -62,10 +62,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(AllSiteSettingsTest.TEST_BATCH_NAME)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 // TODO(https://crbug.com/464015936): these tests could be flaky because of AnimatedProgressBar.
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
-})
+@DisableFeatures({ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER})
 public class AllSiteSettingsTest {
     public static final String TEST_BATCH_NAME = "AllSiteSettingsTest";
     private static final String A_GITHUB_IO = "a.github.io";

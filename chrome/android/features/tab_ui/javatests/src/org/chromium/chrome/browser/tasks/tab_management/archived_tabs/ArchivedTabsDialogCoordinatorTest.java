@@ -114,8 +114,9 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({
     "IPH_AndroidTabDeclutter",
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+    ChromeFeatureList.SETTINGS_IN_TAB,
+    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287024
 public class ArchivedTabsDialogCoordinatorTest {

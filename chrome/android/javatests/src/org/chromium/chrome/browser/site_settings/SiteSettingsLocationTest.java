@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.site_settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -75,7 +77,6 @@ import java.util.concurrent.TimeoutException;
 })
 @DisableFeatures({
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034012
@@ -311,7 +312,8 @@ public class SiteSettingsLocationTest {
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
         assertEquals(allowSetting, getGeolocationSetting(url));
 
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Remove")).perform(click());
         assertEquals(
@@ -331,7 +333,8 @@ public class SiteSettingsLocationTest {
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
         assertEquals(allowSetting, getGeolocationSetting(url));
 
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Edit")).perform(click());
         onView(withText("Approximate")).perform(click());
@@ -361,7 +364,8 @@ public class SiteSettingsLocationTest {
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
         assertEquals(blockSetting, getGeolocationSetting(url));
 
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Edit")).perform(click());
 
@@ -397,7 +401,8 @@ public class SiteSettingsLocationTest {
 
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
 
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText("Automatically blocked")).check(matches(isDisplayed()));
         onView(withText(origin)).perform(click());
         onView(withText("Edit")).perform(click());

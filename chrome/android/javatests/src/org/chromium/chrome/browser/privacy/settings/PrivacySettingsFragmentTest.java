@@ -9,10 +9,12 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -98,7 +100,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class PrivacySettingsFragmentTest {
     // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
     public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
@@ -157,7 +159,7 @@ public class PrivacySettingsFragmentTest {
     }
 
     private void scrollToSetting(Matcher<View> matcher) {
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 
@@ -167,7 +169,7 @@ public class PrivacySettingsFragmentTest {
                         ? R.string.settings_incognito_window_lock_title
                         : R.string.settings_incognito_tab_lock_title;
         String incognitoLockTitle = mSettingsActivityTestRule.getActivity().getString(titleResId);
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(incognitoLockTitle))));
         onView(withText(incognitoLockTitle)).check(matches(isDisplayed()));
         for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
@@ -238,7 +240,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForSettingsToRender();
@@ -253,7 +254,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderBottomView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForSettingsToRender();
@@ -274,7 +274,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -290,7 +289,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -306,7 +304,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
 
@@ -322,7 +319,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
@@ -402,7 +398,8 @@ public class PrivacySettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         String footer =
                 mSettingsActivityTestRule
                         .getActivity()
@@ -420,12 +417,18 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     public void testSettingsFragmentAttachedMetric() {
-        // Expect "PrivacySettings".hashCode() to be logged.
-        int expectedValue = 1505293227;
-        assertEquals(expectedValue, "PrivacySettings".hashCode());
+        // Expect "MainSettings".hashCode() and "PrivacySettings".hashCode() to be logged.
+        int expectedMainValue = -67456740;
+        int expectedPrivacyValue = 1505293227;
+        assertEquals(expectedMainValue, "MainSettings".hashCode());
+        assertEquals(expectedPrivacyValue, "PrivacySettings".hashCode());
         try (var histogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Settings.FragmentAttached", expectedValue)) {
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Settings.FragmentAttached",
+                                expectedMainValue,
+                                expectedPrivacyValue)
+                        .build()) {
             mSettingsActivityTestRule.startSettingsActivity();
             SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         }

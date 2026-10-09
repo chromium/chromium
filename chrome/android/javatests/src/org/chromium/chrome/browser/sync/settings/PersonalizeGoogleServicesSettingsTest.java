@@ -37,9 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -97,7 +95,6 @@ public class PersonalizeGoogleServicesSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "PersonalizedGoogleServices"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testLayout() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsTestRule.startSettingsActivity();

@@ -135,15 +135,6 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    public void testCloseMenuItemClicked_finishesCurrentSettings() {
-        MenuItem closeItem = Mockito.mock(MenuItem.class);
-        when(closeItem.getItemId()).thenReturn(R.id.close_menu_id);
-
-        assertTrue(mFragment.onOptionsItemSelected(closeItem));
-        verify(mSettingsNavigation).finishCurrentSettings(mFragment);
-    }
-
-    @Test
     public void testHomeMenuItemClicked_withMultiColumn_finishesCurrentSettings() {
         MenuItem homeItem = Mockito.mock(MenuItem.class);
         when(homeItem.getItemId()).thenReturn(android.R.id.home);

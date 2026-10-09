@@ -43,6 +43,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.display.DisplayUtil;
 
 import java.util.concurrent.TimeoutException;
@@ -62,7 +64,6 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
     ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
 })
@@ -82,6 +83,8 @@ public class SettingsActivityUnitTest {
         ChromeBrowserInitializer.setForTesting(mInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        MainSettings.setSkipPreferencesForTesting(true);
     }
 
     @After
@@ -90,6 +93,7 @@ public class SettingsActivityUnitTest {
             mActivityScenario.close();
             mActivityScenario = null;
         }
+        SettingsIndexData.reset();
     }
 
     @Test
@@ -122,7 +126,6 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
     public void testDefaultLaunchProcess() {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.CREATED);
@@ -134,19 +137,10 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
-    public void testDefaultLaunchProcessSingleActivity() {
-        startSettingsActivity(TestEmbeddableFragment.class.getName());
-        mActivityScenario.moveToState(State.CREATED);
-
-        assertTrue(
-                "SettingsActivity is using a wrong fragment.",
-                mSettingsActivity.getMainFragment() instanceof TestEmbeddableFragment);
-        assertNotNull(mSettingsActivity.getIntentRequestTracker());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    @DisabledTest(
+            message =
+                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
+                            + " Robolectric.")
     public void testUpdateTitle() {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.RESUMED);
@@ -155,7 +149,10 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    @DisabledTest(
+            message =
+                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
+                            + " Robolectric.")
     public void testUpdateTitleSingleActivity() {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.RESUMED);
@@ -179,7 +176,6 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
     public void testIntentFlags() {
         startSettingsActivity(TestEmbeddableFragment.class.getName());
         mActivityScenario.moveToState(State.RESUMED);
@@ -250,7 +246,8 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.STARTED);
         mActivityScenario.moveToState(State.RESUMED);
 
-        RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView =
+                mSettingsActivity.getMainFragment().getView().findViewById(R.id.recycler_view);
         PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int parentPadding =
@@ -269,7 +266,8 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.STARTED);
         mActivityScenario.moveToState(State.RESUMED);
 
-        RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView =
+                mSettingsActivity.getMainFragment().getView().findViewById(R.id.recycler_view);
         PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int itemOffset = decoration.getItemOffsetForTesting();
@@ -287,7 +285,8 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.STARTED);
         mActivityScenario.moveToState(State.RESUMED);
 
-        RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView =
+                mSettingsActivity.getMainFragment().getView().findViewById(R.id.recycler_view);
         PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int parentPadding =
@@ -311,7 +310,8 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.STARTED);
         mActivityScenario.moveToState(State.RESUMED);
 
-        RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView =
+                mSettingsActivity.getMainFragment().getView().findViewById(R.id.recycler_view);
         PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
 
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
@@ -412,8 +412,8 @@ public class SettingsActivityUnitTest {
 
         // Robolectric records the Intent passed to startActivity() instead of launching it, so no
         // second SettingsActivity is created here. Only the Intent target is checked. In
-        // production the Intent carries FLAG_ACTIVITY_SINGLE_TOP when SettingsSingleActivity is
-        // enabled, so it is delivered to this activity's onNewIntent().
+        // production the Intent carries FLAG_ACTIVITY_SINGLE_TOP, so it is delivered to this
+        // activity's onNewIntent().
         Intent startedIntent = shadowOf(mSettingsActivity).getNextStartedActivity();
         assertNotNull("startSettings() should have sent an Intent.", startedIntent);
         assertEquals(

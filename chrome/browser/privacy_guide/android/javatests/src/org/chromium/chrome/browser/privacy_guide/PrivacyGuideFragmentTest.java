@@ -89,8 +89,8 @@ import java.util.Map;
 /** Tests {@link PrivacyGuideFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
+@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
@@ -279,7 +279,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderWelcomeCard() throws IOException {
         launchPrivacyGuide();
         mRenderTestRule.render(getRootView(), "privacy_guide_welcome");
@@ -288,7 +287,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderMSBBCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.MSBB);
@@ -299,7 +297,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @RequiresRestart("crbug.com/344675713")
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderHistorySyncCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.HISTORY_SYNC);
@@ -309,7 +306,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testRenderSBCard() throws IOException {
         launchPrivacyGuide();
@@ -320,7 +316,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testRenderSBEnhancedBottomSheet() throws IOException {
         launchPrivacyGuide();
@@ -333,7 +328,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @RequiresRestart("crbug.com/344675713")
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderCookiesCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.COOKIES);
@@ -343,7 +337,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderCompletionCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);

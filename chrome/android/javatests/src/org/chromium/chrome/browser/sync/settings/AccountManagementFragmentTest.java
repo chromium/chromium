@@ -73,10 +73,7 @@ import java.util.Set;
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(https://crbug.com/464015738): these tests could be flaky because of AnimatedProgressBar.
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
-})
+@DisableFeatures({ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER})
 public class AccountManagementFragmentTest {
     @ClassParameter
     private static final List<ParameterSet> sClassParameters =
@@ -181,6 +178,7 @@ public class AccountManagementFragmentTest {
         onViewWaiting(allOf(is(view), isDisplayed()));
         onView(
                         allOf(
+                                isDescendantOfA(withId(R.id.preferences_detail)),
                                 isDescendantOfA(withId(android.R.id.list_container)),
                                 withText(accountInfo.getFullName())))
                 .check(matches(isDisplayed()));
@@ -212,6 +210,7 @@ public class AccountManagementFragmentTest {
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
         onView(
                         allOf(
+                                isDescendantOfA(withId(R.id.preferences_detail)),
                                 isDescendantOfA(withId(android.R.id.list_container)),
                                 withText(R.string.default_google_account_username)))
                 .check(matches(isDisplayed()));

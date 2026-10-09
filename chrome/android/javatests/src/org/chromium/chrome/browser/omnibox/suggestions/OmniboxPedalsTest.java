@@ -83,7 +83,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445129
 public class OmniboxPedalsTest {
     @Rule
@@ -174,10 +174,18 @@ public class OmniboxPedalsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(mTargetActivity, Matchers.notNullValue());
-                    Fragment fragment =
-                            mTargetActivity
-                                    .getSupportFragmentManager()
-                                    .findFragmentById(R.id.settings_content);
+                    Fragment fragment;
+                    if (fragmentType == MainSettings.class) {
+                        Criteria.checkThat(
+                                mTargetActivity.getMultiColumnSettings(), Matchers.notNullValue());
+                        fragment =
+                                mTargetActivity
+                                        .getMultiColumnSettings()
+                                        .getChildFragmentManager()
+                                        .findFragmentById(R.id.preferences_header);
+                    } else {
+                        fragment = mTargetActivity.getMainFragment();
+                    }
                     Criteria.checkThat(fragment, Matchers.instanceOf(fragmentType));
                 });
     }
@@ -193,7 +201,6 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testManagePaymentMethods() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.UPDATE_CREDIT_CARD));
         clickOnPedalToSettings(
@@ -253,7 +260,6 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testOpenChromeSafetyHub() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 
@@ -269,7 +275,6 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testManageChromeSettings() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_SETTINGS));
 

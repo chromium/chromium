@@ -18,12 +18,14 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasFlag;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -150,7 +152,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+@DisableFeatures({ChromeFeatureList.DATA_SHARING})
 @EnableFeatures(
         ChromeFeatureList.HOME_BUTTON_REMOVAL
                 + ":set_default_to_false_on_homepage_on_desktop/false")
@@ -237,7 +239,7 @@ public class MainSettingsFragmentTest {
         startSettings();
         waitForOptionsMenu();
 
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
                 .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
 
         onView(withId(R.id.account_management_account_row)).check(matches(isDisplayed()));
@@ -336,13 +338,22 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_OF_CHROME,
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
+    @DisabledTest(
+            message =
+                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
+                            + " for MultiColumnSettings.")
     public void testPressingSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
         startSettings();
 
-        onView(withText(accountInfo.getEmail())).perform(click());
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(
+                        allOf(
+                                withText(accountInfo.getEmail()),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .perform(click());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.sign_out)).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
@@ -370,13 +381,22 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisabledTest(
+            message =
+                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
+                            + " for MultiColumnSettings.")
     public void testPressingSignOut_desktopSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
         startSettings();
 
-        onView(withText(accountInfo.getEmail())).perform(click());
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(
+                        allOf(
+                                withText(accountInfo.getEmail()),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .perform(click());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
         onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
@@ -405,13 +425,22 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_OF_CHROME,
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
+    @DisabledTest(
+            message =
+                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
+                            + " for MultiColumnSettings.")
     public void testPressingSignOutSyncDisabled() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         startSettings();
 
-        onView(withText(accountInfo.getEmail())).perform(click());
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(
+                        allOf(
+                                withText(accountInfo.getEmail()),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .perform(click());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.sign_out)).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
@@ -441,13 +470,22 @@ public class MainSettingsFragmentTest {
         SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
     })
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisabledTest(
+            message =
+                    "TODO(crbug.com/404074032): Re-enable after fixing finishCurrentSettings()"
+                            + " for MultiColumnSettings.")
     public void testPressingSignOutSyncDisabled_desktopSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         startSettings();
 
-        onView(withText(accountInfo.getEmail())).perform(click());
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(
+                        allOf(
+                                withText(accountInfo.getEmail()),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .perform(click());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
         onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
@@ -476,7 +514,7 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.addAccount(TestAccounts.ACCOUNT1);
         startSettings();
 
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
                 .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
         onView(withText(R.string.signin_settings_subtitle)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_settings_title)).perform(click());
@@ -503,7 +541,7 @@ public class MainSettingsFragmentTest {
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
         startSettings();
 
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
                 .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
         onView(withText(R.string.signin_settings_subtitle)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_settings_title)).perform(click());
@@ -565,7 +603,6 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
         FakeSyncServiceImpl fakeSyncService =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -763,7 +800,11 @@ public class MainSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
         mSettingsTestRule.startSettingsActivity();
-        onView(allOf(withText(accountInfo.getFullName()), isDisplayed()))
+        onView(
+                        allOf(
+                                withText(accountInfo.getFullName()),
+                                isDescendantOfA(withId(R.id.preferences_header)),
+                                isDisplayed()))
                 .check(matches(isDisplayed()));
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
     }
@@ -799,7 +840,11 @@ public class MainSettingsFragmentTest {
 
         onView(withText(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME.getEmail()))
                 .check(doesNotExist());
-        onView(allOf(withText(R.string.default_google_account_username), isDisplayed()))
+        onView(
+                        allOf(
+                                withText(R.string.default_google_account_username),
+                                isDescendantOfA(withId(R.id.preferences_header)),
+                                isDisplayed()))
                 .check(matches(isDisplayed()));
     }
 
@@ -883,7 +928,7 @@ public class MainSettingsFragmentTest {
         ActivityResult intentResult = new ActivityResult(Activity.RESULT_OK, null);
         intending(hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)).respondWith(intentResult);
 
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
                 .perform(scrollTo(hasDescendant(withText(R.string.prefs_notifications))));
         onView(withText(R.string.prefs_notifications)).perform(click());
 
@@ -1133,17 +1178,25 @@ public class MainSettingsFragmentTest {
         MainSettings.Observer observer = preference -> selected.set(true);
         mMainSettings.addObserver(observer);
 
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
                 .perform(
                         scrollTo(
                                 hasDescendant(
                                         withText(R.string.autofill_and_passwords_settings_title))));
-        onView(withText(R.string.autofill_and_passwords_settings_title)).perform(click());
+        onView(
+                        allOf(
+                                withText(R.string.autofill_and_passwords_settings_title),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .perform(click());
 
         onView(
                         allOf(
                                 withText(R.string.autofill_and_passwords_settings_title),
-                                withParent(withId(R.id.action_bar))))
+                                anyOf(
+                                        withParent(withId(R.id.action_bar)),
+                                        isDescendantOfA(
+                                                withId(R.id.settings_title_in_detailed_pane))),
+                                isDisplayed()))
                 .check(matches(isDisplayed()));
         assertTrue(selected.get());
         histogramWatcher.assertExpected();

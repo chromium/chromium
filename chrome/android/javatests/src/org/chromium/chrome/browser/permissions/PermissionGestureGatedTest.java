@@ -60,10 +60,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
     "ignore-certificate-errors",
     "enable-features=PermissionsGestureGatedPrompts:mute_notifications/true/mute_geolocation/true"
 })
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-    ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID})
 @EnableFeatures({
     PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION,
     PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_LOUD,
