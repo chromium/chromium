@@ -503,21 +503,14 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchIbanData() {
         GetMemoryDataTypeNameForI18n(MemoryDataType::kIban), obfuscated_value,
         iban->usage_history().GetRankingScore(base::Time::Now()));
     entry.is_obfuscated = true;
-    entry.is_local = [&] {
-      switch (iban->record_type()) {
-        case Iban::kLocalIban:
-          return true;
-        case Iban::kServerIban:
-        case Iban::kUnknown:
-          return false;
-      }
-      NOTREACHED();
-    }();
     switch (iban->record_type()) {
       case Iban::kLocalIban:
+        entry.is_local = true;
         entry.identifier = iban->guid();
         break;
-      default:
+      case Iban::kServerIban:
+      case Iban::kUnknown:
+        entry.is_local = false;
         entry.identifier = iban->instrument_id();
         break;
     }
@@ -537,11 +530,11 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     FieldType field_type,
     MemoryDataType memory_data_type) {
   std::vector<MemorySearchResult> entries;
+  const std::string& app_locale =
+      personal_data_manager_->address_data_manager().app_locale();
   for (const CreditCard* credit_card : GetCreditCardsToSuggest(
            personal_data_manager_->payments_data_manager())) {
-    std::u16string value = credit_card->GetInfo(
-        field_type,
-        personal_data_manager_->address_data_manager().app_locale());
+    std::u16string value = credit_card->GetInfo(field_type, app_locale);
     if (value.empty()) {
       continue;
     }
@@ -571,9 +564,6 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
       }
       NOTREACHED();
     }();
-
-    std::string app_locale =
-        personal_data_manager_->address_data_manager().app_locale();
 
     // All of the non-empty types different than the one being requested are
     // added as metadata.
