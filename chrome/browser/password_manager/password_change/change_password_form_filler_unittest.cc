@@ -409,6 +409,12 @@ TEST_F(ChangePasswordFormFillerTest,
   autofill::FormData filled_form = CreateFilledTestPasswordFormData();
   filled_form.set_renderer_id(new_form_data.renderer_id());
 
+  EXPECT_CALL(driver(), FillChangePasswordForm).Times(0);
+  static_cast<password_manager::PasswordFormManagerObserver*>(
+      filler->form_waiter())
+      ->OnPasswordFormParsed(form_manager);
+  testing::Mock::VerifyAndClearExpectations(&driver());
+
   EXPECT_CALL(driver(), FillChangePasswordForm)
       .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
@@ -416,6 +422,12 @@ TEST_F(ChangePasswordFormFillerTest,
       ->OnPasswordFormParsed(new_form_manager);
 
   EXPECT_TRUE(filling_future.Get().has_value());
+  const auto& quality =
+      logs_uploader()->GetFinalLog().password_change_submission().quality();
+  ASSERT_EQ(quality.discarded_forms_data_size(), 1);
+  EXPECT_EQ(quality.discarded_forms_data(0).discard_reason(),
+            optimization_guide::proto::
+                PasswordChangeQuality_FormData_DiscardReason_FIELD_TO_IGNORE);
 }
 
 TEST_F(ChangePasswordFormFillerTest,
@@ -435,4 +447,14 @@ TEST_F(ChangePasswordFormFillerTest,
       filler->form_waiter())
       ->OnPasswordFormParsed(form_manager);
   testing::Mock::VerifyAndClearExpectations(&driver());
+
+  // Destroy `filler` while `form_waiter()` is still active to flush buffered
+  // discarded forms to `logs_uploader()`.
+  filler.reset();
+  const auto& quality =
+      logs_uploader()->GetFinalLog().password_change_submission().quality();
+  ASSERT_EQ(quality.discarded_forms_data_size(), 1);
+  EXPECT_EQ(quality.discarded_forms_data(0).discard_reason(),
+            optimization_guide::proto::
+                PasswordChangeQuality_FormData_DiscardReason_FIELD_TO_IGNORE);
 }

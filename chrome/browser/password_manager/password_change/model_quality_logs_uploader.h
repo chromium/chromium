@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_MODEL_QUALITY_LOGS_UPLOADER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_MODEL_QUALITY_LOGS_UPLOADER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
@@ -25,21 +26,14 @@ enum class LogInWithChangedPasswordOutcome;
 struct PasswordForm;
 }  // namespace password_manager
 
+namespace password_change {
+struct DiscardedForm;
+}  // namespace password_change
+
 // Helper class which handles Model Logging Quality logic and uploads the
 // logs to the Server.
 class ModelQualityLogsUploader {
  public:
-  enum class FormDiscardReason {
-    kUnknown = 0,
-    kNoNewPasswordField = 1,
-    kNewPasswordFieldDisabled = 2,
-    kUsernameFieldEmptyAndFocusable = 3,
-    kFieldToIgnore = 4,
-    kNoDriver = 5,
-    kFormNotVisible = 6,
-    kNotInPrimaryMainFrame = 7,
-  };
-
   using LoggingData =
       optimization_guide::proto::PasswordChangeSubmissionLoggingData;
   using QualityStatus = optimization_guide::proto::
@@ -110,9 +104,9 @@ class ModelQualityLogsUploader {
   void SetChangePasswordFormData(
       const password_manager::PasswordForm& password_form);
 
-  // Called when APC flow discards a parsed form.
-  void RecordDiscardedForm(const password_manager::PasswordForm* password_form,
-                           FormDiscardReason discard_reason);
+  // Called when APC flow discards parsed forms.
+  void RecordDiscardedForms(
+      base::span<const password_change::DiscardedForm> discarded_forms);
 
   // Called when generating a password. Logs password requirements spec.
   void SetPasswordRequirementsSpec(

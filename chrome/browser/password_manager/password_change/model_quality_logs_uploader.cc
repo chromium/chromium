@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +40,8 @@ using FieldData =
     optimization_guide::proto::PasswordChangeQuality_FormData_FieldData;
 using FieldType = optimization_guide::proto::
     PasswordChangeQuality_FormData_FieldData_FieldType;
-using FormDiscardReason = ModelQualityLogsUploader::FormDiscardReason;
+using password_change::DiscardedForm;
+using password_change::FormDiscardReason;
 
 namespace {
 int64_t ComputeRequestLatencyMs(base::Time server_request_start_time) {
@@ -555,36 +559,34 @@ void ModelQualityLogsUploader::SetChangePasswordFormData(
   SetFormData(*quality->mutable_change_password_form_data(), password_form);
 }
 
-void ModelQualityLogsUploader::RecordDiscardedForm(
-    const password_manager::PasswordForm* password_form,
-    FormDiscardReason discard_reason) {
+void ModelQualityLogsUploader::RecordDiscardedForms(
+    base::span<const DiscardedForm> discarded_forms) {
   if (!base::FeatureList::IsEnabled(
           password_change::features::kRecordDiscardedFormsToModelQualityLogs)) {
-    return;
-  }
-
-  if (!password_form) {
     return;
   }
 
   optimization_guide::proto::PasswordChangeQuality* quality =
       final_log_data_.mutable_password_change_submission()->mutable_quality();
 
-  optimization_guide::proto::PasswordChangeQuality_FormData_DiscardReason
-      proto_discard_reason = ToProtoDiscardReason(discard_reason);
+  for (const auto& [password_form, discard_reason] : discarded_forms) {
+    optimization_guide::proto::PasswordChangeQuality_FormData_DiscardReason
+        proto_discard_reason = ToProtoDiscardReason(discard_reason);
 
-  uint64_t form_signature =
-      autofill::CalculateFormSignature(password_form->form_data).value();
-  for (const auto& discarded_form : quality->discarded_forms_data()) {
-    if (discarded_form.form_signature() == form_signature &&
-        discarded_form.discard_reason() == proto_discard_reason) {
-      return;
+    uint64_t form_signature =
+        autofill::CalculateFormSignature(password_form.form_data).value();
+    if (std::ranges::any_of(
+            quality->discarded_forms_data(), [&](const auto& existing) {
+              return existing.form_signature() == form_signature &&
+                     existing.discard_reason() == proto_discard_reason;
+            })) {
+      continue;
     }
-  }
 
-  FormData* form_data_proto = quality->add_discarded_forms_data();
-  SetFormData(*form_data_proto, *password_form);
-  form_data_proto->set_discard_reason(proto_discard_reason);
+    FormData* form_data_proto = quality->add_discarded_forms_data();
+    SetFormData(*form_data_proto, password_form);
+    form_data_proto->set_discard_reason(proto_discard_reason);
+  }
 }
 
 void ModelQualityLogsUploader::SetPasswordRequirementsSpec(

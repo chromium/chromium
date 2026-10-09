@@ -20,7 +20,10 @@ class WebContents;
 
 namespace optimization_guide {
 struct OptimizationGuideModelExecutionResult;
-}
+namespace proto {
+class PasswordChangeSubmissionLoggingData;
+}  // namespace proto
+}  // namespace optimization_guide
 
 namespace password_manager {
 class PasswordFormManager;
@@ -57,13 +60,14 @@ class ChangePasswordFormFinder {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:ChangePasswordFormFinderError)
 
   using FailureCallback = base::OnceCallback<void(ErrorCase)>;
+  using SuccessCallback =
+      base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
-  ChangePasswordFormFinder(
-      content::WebContents* web_contents,
-      password_manager::PasswordManagerClient* client,
-      ModelQualityLogsUploader* logs_uploader,
-      ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
-      FailureCallback failure_callback);
+  ChangePasswordFormFinder(content::WebContents* web_contents,
+                           password_manager::PasswordManagerClient* client,
+                           ModelQualityLogsUploader* logs_uploader,
+                           SuccessCallback success_callback,
+                           FailureCallback failure_callback);
 
   ~ChangePasswordFormFinder();
 
@@ -83,6 +87,7 @@ class ChangePasswordFormFinder {
   void OnPageStableInitially();
   void OnPageStableAfterClick();
 
+  void OnInitialFormWaitingResult(ChangePasswordFormWaiter::Result result);
   void OnFormNotFoundInitially();
   void OnFormFoundInitially(
       password_manager::PasswordFormManager* form_manager);
@@ -102,7 +107,7 @@ class ChangePasswordFormFinder {
   void OnButtonClicked(actor::mojom::ActionResultCode result);
 
   void OnChangePasswordFormFoundAfterClick(
-      password_manager::PasswordFormManager* form_manager);
+      ChangePasswordFormWaiter::Result result);
   void OnFormNotFound();
 
   const base::Time creation_time_;
@@ -111,7 +116,7 @@ class ChangePasswordFormFinder {
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
 
   FailureCallback failure_callback_;
-  ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback_;
+  SuccessCallback success_callback_;
 
   std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
 

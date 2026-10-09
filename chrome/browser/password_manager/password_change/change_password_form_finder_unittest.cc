@@ -304,7 +304,40 @@ TEST_P(ChangePasswordFormFinderTest,
   auto invisible_form = CreateHiddenFormData();
   auto* form_manager = CreateFormManager(invisible_form);
   EXPECT_CALL(driver(), CheckViewAreaVisible)
-      .WillOnce(base::test::RunOnceCallback<1>(false));
+      .WillRepeatedly(base::test::RunOnceCallback<1>(false));
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      web_contents(), client(), &logs_uploader, completion_callback.Get(),
+      base::DoNothing());
+
+  if (!form_finder->form_waiter()) {
+    form_finder->TriggerPageStabilityForTesting();
+  }
+
+  ASSERT_TRUE(form_finder->form_waiter());
+  EXPECT_CALL(completion_callback, Run(form_manager)).Times(0);
+  static_cast<password_manager::PasswordFormManagerObserver*>(
+      form_finder->form_waiter())
+      ->OnPasswordFormParsed(form_manager);
+
+  form_finder.reset();
+  const auto& quality =
+      logs_uploader.GetFinalLog().password_change_submission().quality();
+  ASSERT_EQ(quality.discarded_forms_data_size(), 1);
+  EXPECT_EQ(quality.discarded_forms_data(0).discard_reason(),
+            optimization_guide::proto::
+                PasswordChangeQuality_FormData_DiscardReason_FORM_NOT_VISIBLE);
+}
+
+TEST_P(ChangePasswordFormFinderTest,
+       InitialFormWaiter_DiscardedFormLoggedOnFormFound) {
+  auto invisible_form = CreateHiddenFormData();
+  auto* invisible_form_manager = CreateFormManager(invisible_form);
+  auto visible_form = CreateFormData();
+  auto* visible_form_manager = CreateFormManager(visible_form);
+
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
@@ -317,10 +350,24 @@ TEST_P(ChangePasswordFormFinderTest,
   }
 
   ASSERT_TRUE(form_finder.form_waiter());
-  EXPECT_CALL(completion_callback, Run(form_manager)).Times(0);
+  EXPECT_CALL(driver(), CheckViewAreaVisible)
+      .WillOnce(base::test::RunOnceCallback<1>(false))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder.form_waiter())
-      ->OnPasswordFormParsed(form_manager);
+      ->OnPasswordFormParsed(invisible_form_manager);
+
+  EXPECT_CALL(completion_callback, Run(visible_form_manager));
+  static_cast<password_manager::PasswordFormManagerObserver*>(
+      form_finder.form_waiter())
+      ->OnPasswordFormParsed(visible_form_manager);
+
+  const auto& quality =
+      logs_uploader.GetFinalLog().password_change_submission().quality();
+  ASSERT_EQ(quality.discarded_forms_data_size(), 1);
+  EXPECT_EQ(quality.discarded_forms_data(0).discard_reason(),
+            optimization_guide::proto::
+                PasswordChangeQuality_FormData_DiscardReason_FORM_NOT_VISIBLE);
 }
 
 TEST_P(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {

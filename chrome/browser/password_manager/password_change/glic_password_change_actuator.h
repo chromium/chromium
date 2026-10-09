@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -39,7 +40,6 @@ namespace password_manager {
 class PasswordFormManager;
 }  // namespace password_manager
 
-class ChangePasswordFormWaiter;
 class Profile;
 
 // Actuator implementation that uses Gemini in Chrome (Glic) and Actor for
@@ -88,7 +88,7 @@ class GlicPasswordChangeActuator
                        tabs::TabInterface::DetachReason reason);
   void OnActorTaskStateChanged(actor::ActorTask& task);
   void OnChangePasswordFormManagerFound(
-      password_manager::PasswordFormManager* form_manager);
+      ChangePasswordFormWaiter::Result result);
   void OnChangePasswordFormFilled(
       ChangePasswordFormFiller::FillingResult result);
   void InvokeVerificationFlow(std::string post_submission_prompt);

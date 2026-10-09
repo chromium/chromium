@@ -15,7 +15,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/browser/password_manager/password_change/password_change_page_stability_waiter.h"
@@ -84,7 +83,7 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
     ModelQualityLogsUploader* logs_uploader,
-    ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
+    SuccessCallback success_callback,
     FailureCallback failure_callback)
     : creation_time_(base::Time::Now()),
       web_contents_(web_contents),
@@ -115,6 +114,9 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
 }
 
 ChangePasswordFormFinder::~ChangePasswordFormFinder() {
+  if (form_waiter_) {
+    logs_uploader_->RecordDiscardedForms(form_waiter_->GetDiscardedForms());
+  }
   logs_uploader_->SetStepDuration(kOpenFormFlowStep,
                                   base::Time::Now() - creation_time_);
 }
@@ -124,14 +126,23 @@ void ChangePasswordFormFinder::OnPageStableInitially() {
   form_waiter_ =
       ChangePasswordFormWaiter::Builder(
           web_contents_, client_,
-          base::BindOnce(&ChangePasswordFormFinder::OnFormFoundInitially,
+          base::BindOnce(&ChangePasswordFormFinder::OnInitialFormWaitingResult,
                          weak_ptr_factory_.GetWeakPtr()))
-          .SetTimeoutCallback(
-              base::BindOnce(&ChangePasswordFormFinder::OnFormNotFoundInitially,
-                             weak_ptr_factory_.GetWeakPtr()))
+          .EnableTimeout()
           .IgnoreHiddenForms()
-          .SetLogsUploader(logs_uploader_)
           .Build();
+}
+
+void ChangePasswordFormFinder::OnInitialFormWaitingResult(
+    ChangePasswordFormWaiter::Result result) {
+  form_waiter_.reset();
+  logs_uploader_->RecordDiscardedForms(result.discarded_forms);
+
+  if (!result.form_manager) {
+    OnFormNotFoundInitially();
+    return;
+  }
+  OnFormFoundInitially(result.form_manager);
 }
 
 void ChangePasswordFormFinder::OnFormNotFoundInitially() {
@@ -145,7 +156,6 @@ void ChangePasswordFormFinder::OnFormNotFoundInitially() {
 
 void ChangePasswordFormFinder::OnFormFoundInitially(
     password_manager::PasswordFormManager* form_manager) {
-  form_waiter_.reset();
   CHECK(success_callback_);
   CHECK(form_manager);
 
@@ -235,7 +245,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     return;
   }
 
-  form_waiter_.reset();
+  CHECK(!form_waiter_);
   button_click_attempted_ = true;
   click_helper_ = std::make_unique<ButtonClickHelper>(
       web_contents_, client_, dom_node_id,
@@ -275,23 +285,27 @@ void ChangePasswordFormFinder::OnPageStableAfterClick() {
           base::BindOnce(
               &ChangePasswordFormFinder::OnChangePasswordFormFoundAfterClick,
               weak_ptr_factory_.GetWeakPtr()))
-          .SetLogsUploader(logs_uploader_)
           .Build();
 }
 
 void ChangePasswordFormFinder::OnChangePasswordFormFoundAfterClick(
-    password_manager::PasswordFormManager* form_manager) {
-  CHECK(form_manager);
+    ChangePasswordFormWaiter::Result result) {
+  CHECK(result.form_manager);
   CHECK(success_callback_);
 
   form_waiter_.reset();
+  logs_uploader_->RecordDiscardedForms(result.discarded_forms);
   LogBoolean(client_,
              Logger::STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT,
-             form_manager);
-  std::move(success_callback_).Run(form_manager);
+             true);
+  std::move(success_callback_).Run(result.form_manager);
 }
 
 void ChangePasswordFormFinder::OnFormNotFound() {
+  if (form_waiter_) {
+    logs_uploader_->RecordDiscardedForms(form_waiter_->GetDiscardedForms());
+    form_waiter_.reset();
+  }
   LogMessage(client_, Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_NOT_FOUND);
   if (button_click_attempted_) {
     logs_uploader_->FormNotDetectedAfterOpening();

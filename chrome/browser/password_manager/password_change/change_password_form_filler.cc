@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -44,7 +43,11 @@ ChangePasswordFormFiller::ChangePasswordFormFiller(
       client_(client),
       logs_uploader_(logs_uploader) {}
 
-ChangePasswordFormFiller::~ChangePasswordFormFiller() = default;
+ChangePasswordFormFiller::~ChangePasswordFormFiller() {
+  if (form_waiter_ && logs_uploader_) {
+    logs_uploader_->RecordDiscardedForms(form_waiter_->GetDiscardedForms());
+  }
+}
 
 void ChangePasswordFormFiller::FillForm(
     password_manager::PasswordFormManager* form_manager,
@@ -154,11 +157,8 @@ void ChangePasswordFormFiller::ChangePasswordFormFilled(
             web_contents_, client_,
             base::BindOnce(&ChangePasswordFormFiller::OnChangePasswordFormFound,
                            weak_ptr_factory_.GetWeakPtr()))
-            .SetTimeoutCallback(
-                base::BindOnce(&ChangePasswordFormFiller::OnFormFillingFailed,
-                               weak_ptr_factory_.GetWeakPtr()))
+            .EnableTimeout()
             .SetFieldsToIgnore(observed_fields_)
-            .SetLogsUploader(logs_uploader_)
             .Build();
     return;
   }
@@ -182,10 +182,17 @@ void ChangePasswordFormFiller::OnFormFillingFailed() {
 }
 
 void ChangePasswordFormFiller::OnChangePasswordFormFound(
-    password_manager::PasswordFormManager* form_manager) {
+    ChangePasswordFormWaiter::Result result) {
   form_waiter_.reset();
-  CHECK(form_manager);
+  if (logs_uploader_) {
+    logs_uploader_->RecordDiscardedForms(result.discarded_forms);
+  }
+  if (!result.form_manager) {
+    OnFormFillingFailed();
+    return;
+  }
 
+  password_manager::PasswordFormManager* form_manager = result.form_manager;
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
 

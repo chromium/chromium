@@ -26,7 +26,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -479,9 +478,10 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
 }
 
 void GlicPasswordChangeActuator::OnChangePasswordFormManagerFound(
-    password_manager::PasswordFormManager* form_manager) {
+    ChangePasswordFormWaiter::Result result) {
   form_waiter_.reset();
 
+  password_manager::PasswordFormManager* form_manager = result.form_manager;
   if (!actuation_web_contents_ || !form_manager) {
     CloseGlicSession();
     NotifyStateChanged(
