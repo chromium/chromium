@@ -8,10 +8,13 @@
 #include "cc/tiles/image_decode_cache_utils.h"
 
 #include "base/byte_size.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/system/sys_info.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 #endif
 
 namespace cc {
@@ -19,9 +22,20 @@ namespace cc {
 // static
 size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     bool for_renderer) {
-  base::ByteSize decoded_image_working_set_budget = base::MiB(128);
-#if !BUILDFLAG(IS_ANDROID)
-  if (for_renderer) {
+  // Note: Android WebView does not use the increased working set budget on
+  // Desktop Android and uses `kDefaultWorkingSet` (see
+  // `layer_tree_settings.cc`).
+  base::ByteSize decoded_image_working_set_budget = kDefaultWorkingSet;
+#if BUILDFLAG(IS_ANDROID)
+  const bool use_desktop_limits =
+      base::android::device_info::is_desktop() &&
+      base::FeatureList::IsEnabled(
+          features::kDesktopAndroidUnifiedCompositorLimits);
+#else
+  constexpr bool use_desktop_limits = true;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (use_desktop_limits && for_renderer) {
     const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
     // If there's over 4GB of RAM, increase the working set size to 256MB for
     // both gpu and software.
@@ -33,7 +47,6 @@ size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
       decoded_image_working_set_budget = base::MiB(256);
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   return decoded_image_working_set_budget.InBytes();
 }
 

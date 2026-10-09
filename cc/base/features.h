@@ -199,6 +199,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60HzWebView);
 
 // Same as above, for Desktop Android.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60HzDesktopAndroid);
+
+// When enabled, compositor limit settings (such as visible GPU memory limit,
+// prepaint percentage, and image decode cache budget) on Desktop Android are
+// unified with other desktop platforms. This is only for Chromium, not WebView.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDesktopAndroidUnifiedCompositorLimits);
 #endif
 
 // When enabled, clients can request a high framerate, which disables

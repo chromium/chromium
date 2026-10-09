@@ -7,12 +7,15 @@
 
 #include <stddef.h>
 
+#include "base/byte_size.h"
 #include "cc/cc_export.h"
 
 namespace cc {
 
 class CC_EXPORT ImageDecodeCacheUtils {
  public:
+  static constexpr base::ByteSize kDefaultWorkingSet = base::MiB(128);
+
   // Returns budget bytes for decoded images that may be different depending
   // whether it's for renderer or for the ui compositor.
   static size_t GetWorkingSetBytesForImageDecode(bool for_renderer);
