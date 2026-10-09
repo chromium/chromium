@@ -392,8 +392,17 @@
   --cr-icon-button-size: var(--icon-menu-button-size);
 }
 
+/* The overlapping favicon coins are separated by a 2px border that must be
+ * painted in the color of the surface they sit on, so the gap reads as
+ * background rather than a light outline. */
+#composebox::part(entrypoint-button) {
+  --composebox-favicon-border-color: var(--cr-composebox-background-color);
+}
+
 :host([energy-effect-enabled_]) #composebox:not([in-tool-mode_])::part(context-menu-entrypoint-icon),
 :host([energy-effect-enabled_]) #composebox:not([in-tool-mode_])::part(entrypoint-button) {
+  --composebox-favicon-border-color:
+      var(--color-composebox-context-entrypoint-background);
   --cr-composebox-entrypoint-background-color:
       var(--color-composebox-context-entrypoint-background);
   --cr-composebox-entrypoint-border-radius: 100px;
