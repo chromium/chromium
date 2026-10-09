@@ -28,7 +28,7 @@
 #include "base/process/process.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
-#include "chrome/common/child_module/child_module_helper.h"  // nogncheck
+#include "chrome/browser/child_module/child_module_paths.h"  // nogncheck
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_constants.h"

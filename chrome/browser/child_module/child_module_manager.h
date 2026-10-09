@@ -14,7 +14,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/version.h"
-#include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/browser/child_module/version_set.h"
 
 class PrefRegistrySimple;
 class PrefService;

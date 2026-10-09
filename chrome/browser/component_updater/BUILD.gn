@@ -275,9 +275,9 @@ source_set("impl") {
       sources += [ "recovery_improved_component_installer_win.cc" ]
     }
     deps += [
+      "//chrome/browser/child_module",
       "//chrome/browser/enterprise",
       "//chrome/browser/google",
-      "//chrome/common/child_module",
       "//chrome/elevation_service:public_headers",
       "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",
@@ -422,9 +422,9 @@ source_set("unit_tests") {
 
   if (is_win) {
     deps += [
+      "//chrome/browser/child_module",
       "//chrome/browser/enterprise",
       "//chrome/browser/google",
-      "//chrome/common/child_module",
       "//chrome/install_static/test:test_support",
       "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",

@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/win/sid.h"
@@ -17,15 +16,6 @@
 #include "crypto/hash.h"
 
 namespace child_module {
-
-base::FilePath CanonicalizeUserDataDir(const base::FilePath& user_data_dir) {
-  base::FilePath canonical_udd;
-  if (user_data_dir.empty() ||
-      !base::NormalizeFilePath(user_data_dir, &canonical_udd)) {
-    return base::FilePath();
-  }
-  return canonical_udd;
-}
 
 base::FilePath ComputeUserPathComponent(
     const base::win::Sid& sid,

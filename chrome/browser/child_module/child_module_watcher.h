@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
-#include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/browser/child_module/version_set.h"
 
 namespace child_module {
 
