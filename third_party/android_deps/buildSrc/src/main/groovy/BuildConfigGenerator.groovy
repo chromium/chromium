@@ -130,22 +130,6 @@ class BuildConfigGenerator extends DefaultTask {
     String pathToBuildGradle
 
     /**
-     * Directory where autorolled dep binary files will live (.aar/.jar)
-     * when rolled. This is used to inform filepaths in BUILD.gn and the
-     * like.
-     */
-    @Optional @Input
-    String artifactSubdir
-
-    /**
-     * Directory where autorolled dep text files will live when rolled
-     * (and extracted from to_commit.zip). This is used to inform
-     * filepaths in additional_readme_paths and the like.
-     */
-    @Optional @Input
-    String committedSubdir
-
-    /**
      * cipd package prefix where artifacts are uploaded.
      */
     @Optional @Input
