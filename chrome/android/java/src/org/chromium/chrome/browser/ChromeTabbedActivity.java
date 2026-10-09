@@ -2113,6 +2113,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (IntentHandler.isActorNotificationIntent(intent)) {
             ActorNotificationService.maybeDismissNotificationFromIntent(
                     intent, mTabModelProfileSupplier.get());
+            if (tabIdToBringToFront == Tab.INVALID_TAB_ID) {
+                ActorTabStateHelper.listenAndSelectTabOnAdded(
+                        getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
+            }
         }
         if (url == null
                 && tabIdToBringToFront == Tab.INVALID_TAB_ID
@@ -3003,27 +3007,26 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     // Standard tryToRestoreTabStateForId is only needed for non-Actor intents.
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                     maybeRescueArchivedTab(profile, tabIdToBringToFront);
-                }
-
-                resultTab =
-                        ActorTabStateHelper.selectTabAndShow(
-                                getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
-                if (resultTab == null
-                        && isActorIntent
-                        && tabIdToBringToFront != Tab.INVALID_TAB_ID) {
-                    ActorTabStateHelper.listenAndSelectTabOnAdded(
-                            getTabModelSelector(),
-                            getLayoutManager(),
-                            tabIdToBringToFront,
-                            selectedTab -> {
-                                if (isActivityFinishingOrDestroyed()) return;
-                                GlicKeyedService.maybeInvokeGlic(
-                                        ChromeTabbedActivity.this,
-                                        getTabModelSelector(),
-                                        getProfileProviderSupplier(),
-                                        selectedTab,
-                                        glicConversationId);
-                            });
+                    resultTab =
+                            ActorTabStateHelper.selectTabAndShow(
+                                    getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
+                } else {
+                    resultTab = null;
+                    if (tabIdToBringToFront != Tab.INVALID_TAB_ID) {
+                        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                                getTabModelSelector(),
+                                getLayoutManager(),
+                                tabIdToBringToFront,
+                                selectedTab -> {
+                                    if (isActivityFinishingOrDestroyed()) return;
+                                    GlicKeyedService.maybeInvokeGlic(
+                                            ChromeTabbedActivity.this,
+                                            getTabModelSelector(),
+                                            getProfileProviderSupplier(),
+                                            selectedTab,
+                                            glicConversationId);
+                                });
+                    }
                 }
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:

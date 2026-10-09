@@ -38,6 +38,8 @@ public class ActorMetrics implements ActorKeyedService.Observer {
             "Actor.BackgroundActuation.OnTabAdded.Latency.ColdStart";
     public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM =
             "Actor.BackgroundActuation.OnTabAdded.Latency.WarmStart";
+    public static final String ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS =
+            "Actor.Notification.FetchTabId.Status";
     public static final String ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES =
             "Actor.Notification.TimeBetweenWorklogUpdates";
     public static final String ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION =
@@ -113,6 +115,27 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorNotificationPermissionState)
+
+    // LINT.IfChange(ActorFetchTabIdStatus)
+
+    @IntDef({
+        ActorFetchTabIdStatus.SUCCESS,
+        ActorFetchTabIdStatus.TAB_NOT_FOUND,
+        ActorFetchTabIdStatus.TAB_CLOSED,
+        ActorFetchTabIdStatus.INVALID_ID,
+        ActorFetchTabIdStatus.TIMEOUT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActorFetchTabIdStatus {
+        int SUCCESS = 0;
+        int TAB_NOT_FOUND = 1;
+        int TAB_CLOSED = 2;
+        int INVALID_ID = 3;
+        int TIMEOUT = 4;
+        int NUM_ENTRIES = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorFetchTabIdStatus)
 
     @IntDef({
         ActorPauseResumeSource.PIP,
@@ -324,6 +347,15 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                 "Actor.Notification.PermissionState",
                 state,
                 ActorNotificationPermissionState.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the status of fetching and selecting the target tab ID when an Actor notification is
+     * clicked.
+     */
+    public static void recordNotificationFetchTabIdStatus(@ActorFetchTabIdStatus int status) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS, status, ActorFetchTabIdStatus.NUM_ENTRIES);
     }
 
     /**

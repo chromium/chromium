@@ -46,6 +46,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.actor.ActorMetrics.ActorFetchTabIdStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
@@ -1044,5 +1045,162 @@ public class ActorTabStateHelperTest {
 
         verify(mTabModel, never()).addTab(any(), anyInt(), anyInt(), anyInt());
         verify(mTabRemover, never()).removeTab(any(), anyBoolean());
+    }
+
+    @Test
+    public void testSelectTabAndShow_closingOrDestroyedTab_returnsNull() {
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTab.isClosing()).thenReturn(true);
+        assertNull(ActorTabStateHelper.selectTabAndShow(mTabModelSelector, mLayoutManager, TAB_ID));
+
+        when(mTab.isClosing()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(true);
+        assertNull(ActorTabStateHelper.selectTabAndShow(mTabModelSelector, mLayoutManager, TAB_ID));
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsInvalidId() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.INVALID_ID);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, Tab.INVALID_TAB_ID, mOnTabSelected);
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(null);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsTabNotFound_nullSelector() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.TAB_NOT_FOUND);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(null, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(null);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsTabNotFound_alreadyInitialized() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.TAB_NOT_FOUND);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(null);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsTabClosed_existingTabClosing() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isClosing()).thenReturn(true);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.TAB_CLOSED);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(null);
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsTabClosed_didAddClosingTab() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isDestroyed()).thenReturn(true);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.TAB_CLOSED);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.didAddTab(
+                mTab,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* markedForSelection= */ false);
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(null);
+        verify(mTabModel).removeObserver(observer);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsSuccess_didAddTab() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.SUCCESS);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.didAddTab(
+                mTab,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* markedForSelection= */ false);
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(mTab);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_recordsTimeout_whenTabStateInitializedWithoutTab() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                        ActorFetchTabIdStatus.TIMEOUT);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
+
+        selectorObserver.onTabStateInitialized();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        watcher.assertExpected();
+        verify(mOnTabSelected).onResult(null);
     }
 }

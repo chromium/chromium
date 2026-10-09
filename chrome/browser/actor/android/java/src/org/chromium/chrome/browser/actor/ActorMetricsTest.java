@@ -789,4 +789,29 @@ public class ActorMetricsTest {
 
         watcher.assertExpected();
     }
+
+    @Test
+    public void testRecordNotificationFetchTabIdStatus() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ActorMetrics.ACTOR_NOTIFICATION_FETCH_TAB_ID_STATUS,
+                                ActorMetrics.ActorFetchTabIdStatus.SUCCESS,
+                                ActorMetrics.ActorFetchTabIdStatus.TAB_NOT_FOUND,
+                                ActorMetrics.ActorFetchTabIdStatus.TAB_CLOSED,
+                                ActorMetrics.ActorFetchTabIdStatus.INVALID_ID,
+                                ActorMetrics.ActorFetchTabIdStatus.TIMEOUT)
+                        .build();
+
+        ActorMetrics.recordNotificationFetchTabIdStatus(ActorMetrics.ActorFetchTabIdStatus.SUCCESS);
+        ActorMetrics.recordNotificationFetchTabIdStatus(
+                ActorMetrics.ActorFetchTabIdStatus.TAB_NOT_FOUND);
+        ActorMetrics.recordNotificationFetchTabIdStatus(
+                ActorMetrics.ActorFetchTabIdStatus.TAB_CLOSED);
+        ActorMetrics.recordNotificationFetchTabIdStatus(
+                ActorMetrics.ActorFetchTabIdStatus.INVALID_ID);
+        ActorMetrics.recordNotificationFetchTabIdStatus(ActorMetrics.ActorFetchTabIdStatus.TIMEOUT);
+
+        watcher.assertExpected();
+    }
 }

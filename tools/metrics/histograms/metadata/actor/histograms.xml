@@ -534,6 +534,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Notification.FetchTabId.Status"
+    enum="ActorFetchTabIdStatus" expires_after="2027-10-08">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when the user clicks an Actor notification to bring the associated
+    tab to the foreground. Captures whether the target tab ID was valid and
+    whether the tab was successfully found and selected, closed, not found, or
+    timed out during restoration. Note that this metric is only recorded on
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Notification.PermissionState"
     enum="ActorNotificationPermissionState" expires_after="2027-09-30">
   <owner>bbetini@google.com</owner>
