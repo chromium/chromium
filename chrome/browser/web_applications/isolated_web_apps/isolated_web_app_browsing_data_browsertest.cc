@@ -514,7 +514,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
       url_info.GetStoragePartitionConfigForControlledFrame(
           profile(), "partition_name_1", /*in_memory=*/true)};
 
-  // Set a partitioned and an unpartitioned cookie for each storage partition.
+  // Set a partitioned and an unpartitioned cookie for each storage partition
+  // and verify initial cookie state.
   for (const auto& config : storage_partition_configs) {
     SCOPED_TRACE("partition_name: " + config.partition_name());
     content::StoragePartition* partition =
@@ -528,13 +529,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
         partition, GURL("https://c.com"), base::Time::Now(),
         "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
-  }
-
-  for (const auto& config : storage_partition_configs) {
-    SCOPED_TRACE("partition_name: " + config.partition_name());
-    content::StoragePartition* partition =
-        profile()->GetStoragePartition(config, false);
-    ASSERT_TRUE(partition);
     ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
   }
 
@@ -602,7 +596,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
       url_info.GetStoragePartitionConfigForControlledFrame(
           profile(), "partition_name_1", /*in_memory=*/true)};
 
-  // Set a partitioned and an unpartitioned cookie for each storage partition.
+  // Set a partitioned and an unpartitioned cookie for each storage partition
+  // and verify initial cookie state.
   for (const auto& config : storage_partition_configs) {
     SCOPED_TRACE("partition_name: " + config.partition_name());
     content::StoragePartition* partition =
@@ -616,13 +611,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
         partition, GURL("https://c.com"), base::Time::Now(),
         "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
-  }
-
-  for (const auto& config : storage_partition_configs) {
-    SCOPED_TRACE("partition_name: " + config.partition_name());
-    content::StoragePartition* partition =
-        profile()->GetStoragePartition(config, false);
-    ASSERT_TRUE(partition);
     ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
   }
 
@@ -681,7 +669,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   // 2000 because non-persistent partitions are not counted toward usage.
   ASSERT_THAT(GetIwaUsage(url_info), IsApproximately(2000));
 
-  // Set a partitioned and an unpartitioned cookie for each storage partition.
+  // Set a partitioned and an unpartitioned cookie for each storage partition
+  // and verify initial cookie and cache state.
   for (const auto& config : storage_partition_configs) {
     SCOPED_TRACE("partition_name: " + config.partition_name());
     content::StoragePartition* partition =
@@ -695,17 +684,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
         partition, GURL("https://c.com"), base::Time::Now(),
         "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
-  }
-
-  for (const auto& config : storage_partition_configs) {
-    SCOPED_TRACE("partition_name: " + config.partition_name());
-    content::StoragePartition* partition =
-        profile()->GetStoragePartition(config, false);
-    ASSERT_TRUE(partition);
     // Each partition should have 2 cookies.
     ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
     // Each partition should have cache.
-
     ASSERT_GT(GetCacheSize(partition), 0);
   }
 
@@ -767,31 +748,20 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
       url_info.GetStoragePartitionConfigForControlledFrame(
           profile(), "partition_name_1", /*in_memory=*/true)};
 
-  // Set a partitioned and an unpartitioned cookie for each storage partition.
+  // Set a partitioned and an unpartitioned cookie for each storage partition
+  // and verify initial cookie and cache state.
   for (const auto& config : storage_partition_configs) {
     SCOPED_TRACE("partition_name: " + config.partition_name());
     content::StoragePartition* partition =
         profile()->GetStoragePartition(config, false);
     ASSERT_TRUE(partition);
-    // Unpartitioned Cookie
     ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
                           "A=0", std::nullopt));
-    // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
         partition, GURL("https://c.com"), base::Time::Now(),
         "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
-  }
-
-  for (const auto& config : storage_partition_configs) {
-    SCOPED_TRACE("partition_name: " + config.partition_name());
-    content::StoragePartition* partition =
-        profile()->GetStoragePartition(config, false);
-    ASSERT_TRUE(partition);
-    // Each partition should have 2 cookies.
     ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
-    // Each partition should have cache.
-
     ASSERT_GT(GetCacheSize(partition), 0);
   }
 

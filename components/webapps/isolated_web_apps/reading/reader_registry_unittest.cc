@@ -79,6 +79,9 @@ constexpr uint8_t kEd25519Signature[64] = {
 
 }  // namespace
 
+using ReadResult =
+    base::expected<IsolatedWebAppResponseReader::Response, ReadResponseError>;
+
 class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -160,6 +163,18 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         response_->Clone());
   }
 
+  ReadResult ReadAndFulfillResponse() {
+    network::ResourceRequest resource_request;
+    resource_request.url = kUrl;
+    base::test::TestFuture<ReadResult> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                            read_response_future.GetCallback());
+    FulfillIntegrityBlock();
+    FulfillMetadata();
+    FulfillResponse(resource_request);
+    return read_response_future.Take();
+  }
+
   void BindParserFactory(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) {
@@ -202,9 +217,6 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
               &signature_verifier_);
   test::TestIwaClient iwa_client_;
 };
-
-using ReadResult =
-    base::expected<IsolatedWebAppResponseReader::Response, ReadResponseError>;
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -815,20 +827,17 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   base::test::TestFuture<ReadResult> read_response_future_1;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_1.GetCallback());
-
-  histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
-      ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
-                  base::Bucket(ReaderCacheState::kCachedReady, 0),
-                  base::Bucket(ReaderCacheState::kCachedPending, 0));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.Isolated.ResponseReaderCacheState"),
+              ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1)));
 
   base::test::TestFuture<ReadResult> read_response_future_2;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_2.GetCallback());
-
-  histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
-      ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
-                  base::Bucket(ReaderCacheState::kCachedReady, 0),
-                  base::Bucket(ReaderCacheState::kCachedPending, 1));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.Isolated.ResponseReaderCacheState"),
+              ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
+                          base::Bucket(ReaderCacheState::kCachedPending, 1)));
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -837,7 +846,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
     ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
                          read_response_future_1.Take());
     EXPECT_EQ(response.head()->response_code, 200);
-
     std::string response_body = ReadAndFulfillResponseBody(
         response.head()->payload_length,
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
@@ -850,7 +858,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
     ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
                          read_response_future_2.Take());
     EXPECT_EQ(response.head()->response_code, 200);
-
     std::string response_body = ReadAndFulfillResponseBody(
         response.head()->payload_length,
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
@@ -861,18 +868,17 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   base::test::TestFuture<ReadResult> read_response_future_3;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
                           read_response_future_3.GetCallback());
-
-  histogram_tester.GetAllSamples("WebApp.Isolated.ResponseReaderCacheState"),
-      ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
-                  base::Bucket(ReaderCacheState::kCachedReady, 1),
-                  base::Bucket(ReaderCacheState::kCachedPending, 1));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.Isolated.ResponseReaderCacheState"),
+              ElementsAre(base::Bucket(ReaderCacheState::kNotCached, 1),
+                          base::Bucket(ReaderCacheState::kCachedReady, 1),
+                          base::Bucket(ReaderCacheState::kCachedPending, 1)));
 
   FulfillResponse(resource_request);
   {
     ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
                          read_response_future_3.Take());
     EXPECT_EQ(response.head()->response_code, 200);
-
     std::string response_body = ReadAndFulfillResponseBody(
         response.head()->payload_length,
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
@@ -888,19 +894,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, Close) {
   EXPECT_CALL(signature_verifier_, VerifySignatures)
       .WillOnce(RunOnceCallback<2>(base::ok()));
 #endif
-  network::ResourceRequest resource_request;
-  resource_request.url = kUrl;
-
-  base::test::TestFuture<ReadResult> read_response_future;
-  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
-                          read_response_future.GetCallback());
-
-  FulfillIntegrityBlock();
-  FulfillMetadata();
-  FulfillResponse(resource_request);
 
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
-                       read_response_future.Take());
+                       ReadAndFulfillResponse());
   EXPECT_EQ(response.head()->response_code, 200);
 
   base::test::TestFuture<void> close_future;
@@ -915,6 +911,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, Close) {
       error_future.GetCallback());
   EXPECT_EQ(net::ERR_FAILED, error_future.Take());
 
+  // Check that the file is closed and thus can be deleted.
   ASSERT_TRUE(base::DeleteFile(web_bundle_path_));
 }
 
@@ -925,6 +922,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
   EXPECT_CALL(signature_verifier_, VerifySignatures)
       .WillOnce(RunOnceCallback<2>(base::ok()));
 #endif
+
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
@@ -934,6 +932,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
 
   base::test::TestFuture<void> close_future;
   registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
+
   FulfillIntegrityBlock();
   FulfillMetadata();
 
@@ -942,9 +941,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
                                           ReadResponseError::Type::kOtherError),
                                     Field(&ReadResponseError::message,
                                           "The bundle is waiting to close"))));
-
   ASSERT_TRUE(close_future.Wait());
 
+  // Check that the file is closed and thus can be deleted.
   ASSERT_TRUE(base::DeleteFile(web_bundle_path_));
 }
 
@@ -952,7 +951,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
 TEST_F(IsolatedWebAppReaderRegistryTest, CloseEmpty) {
   base::test::TestFuture<void> close_future;
   registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
-
   ASSERT_TRUE(close_future.Wait());
 }
 
@@ -964,52 +962,26 @@ TEST_F(IsolatedWebAppReaderRegistryTest, OpenCloseOpen) {
 #endif
   // Open the signed web bundle for the first time.
   {
-    network::ResourceRequest resource_request;
-    resource_request.url = kUrl;
-
-    base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
-                            read_response_future.GetCallback());
-
-    FulfillIntegrityBlock();
-    FulfillMetadata();
-    FulfillResponse(resource_request);
-
     ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
-                         read_response_future.Take());
+                         ReadAndFulfillResponse());
     EXPECT_EQ(response.head()->response_code, 200);
   }
 
-  // Close the file.
+  // Close the file and reopen the signed web bundle without any issues.
   {
     base::test::TestFuture<void> close_future;
     registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
     ASSERT_TRUE(close_future.Wait());
-  }
 
-  // After closing we should be able to reopen the signed web bundle without any
-  // issues.
-  {
-    network::ResourceRequest new_resource_request;
-    new_resource_request.url = kUrl;
-
-    base::test::TestFuture<ReadResult> new_read_response_future;
-    registry_->ReadResponse(web_bundle_path_, kWebBundleId,
-                            new_resource_request,
-                            new_read_response_future.GetCallback());
-
-    FulfillIntegrityBlock();
-    FulfillMetadata();
-    FulfillResponse(new_resource_request);
     ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response new_response,
-                         new_read_response_future.Take());
+                         ReadAndFulfillResponse());
     EXPECT_EQ(new_response.head()->response_code, 200);
   }
 }
 
 // TODO(crbug.com/40239531): Add a test that checks the behavior when
 // `SignedWebBundleReader`s for two different Web Bundle IDs are requested
-// concurrently. Testing this is currently not possible, since running two
-// `MockWebBundleParser`s at the same time is not yet possible.
+// concurrently. Testing this is currently not possible, since watching for two
+// `MockWebBundleParser`s being created in parallel is flaky.
 
 }  // namespace web_app

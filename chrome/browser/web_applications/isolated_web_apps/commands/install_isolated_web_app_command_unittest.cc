@@ -82,19 +82,13 @@ namespace {
 using ::base::BucketsAre;
 using ::base::test::ErrorIs;
 using ::base::test::HasValue;
-using ::base::test::IsNotNullCallback;
-using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
-using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
-using ::testing::IsEmpty;
-using ::testing::IsFalse;
 using ::testing::IsNull;
 using ::testing::IsTrue;
-using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Optional;
@@ -104,7 +98,6 @@ using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
-using ::testing::WithArg;
 
 constexpr std::string_view kManifestPath =
     "/.well-known/_generated_install_page.html";
@@ -140,7 +133,6 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
   icon.type = u"image/png";
   icon.sizes = {gfx::Size(256, 256)};
   manifest->icons.push_back(icon);
-
   return manifest;
 }
 
@@ -181,7 +173,6 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
         application_url.Resolve(kManifestPath));
     page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
-
     page_state.manifest_url = CreateDefaultManifestURL(application_url);
     page_state.valid_manifest_for_web_app = true;
     page_state.manifest_before_default_processing =
@@ -190,7 +181,6 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
     auto& icon_state = web_contents_manager().GetOrCreateIconState(
         application_url.Resolve(kIconPath));
     icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorRED)};
-
     return {page_state, icon_state};
   }
 
@@ -215,6 +205,14 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
     return test_future.Take();
   }
 
+  void ExpectInstallErrorHistogram(int error_bucket) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
+        BucketsAre(base::Bucket(false, 1)));
+    EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
+                BucketsAre(base::Bucket(error_bucket, 1)));
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 
@@ -231,12 +229,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr("Error during URL loading: "))));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kCantLoadInstallUrl*/ 3, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantLoadInstallUrl*/ 3);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -249,12 +242,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr("FailedWebContentsDestroyed"))));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kCantLoadInstallUrl*/ 3, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantLoadInstallUrl*/ 3);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -277,12 +265,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
       ErrorIs(
           Field(&InstallIsolatedWebAppCommandError::message,
                 HasSubstr("Isolated Web App Developer Mode is not enabled"))));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kTrustCheckFailed*/ 2, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kTrustCheckFailed*/ 2);
 }
 
 struct ProxyInstallSourceParam {
@@ -306,7 +289,6 @@ TEST_P(InstallIsolatedWebAppCommandProxyInstallSourceTest,
 
   const WebApp* web_app = web_app_registrar().GetAppById(url_info.app_id());
   ASSERT_THAT(web_app, NotNull());
-
   EXPECT_THAT(web_app->GetSources(),
               Eq(WebAppManagementTypes{GetParam().expected_management_type}));
   EXPECT_THAT(web_app->latest_install_source(),
@@ -339,12 +321,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr("App is not installable"))));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kAppIsNotInstallable*/ 4, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kAppIsNotInstallable*/ 4);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
@@ -371,12 +348,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
           HasSubstr("does not match the version provided in the manifest"))));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-              BucketsAre(base::Bucket(
-                  /*IWAInstallError::kCantValidateManifest*/ 5, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantValidateManifest*/ 5);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
@@ -498,14 +470,8 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
                             HasSubstr(R"(Manifest `id` must be "/")"))));
-
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()), IsNull());
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-              BucketsAre(base::Bucket(
-                  /*IWAInstallError::kCantValidateManifest*/ 5, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantValidateManifest*/ 5);
 }
 
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
@@ -516,7 +482,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
       url_info.origin().GetURL().Resolve("/");
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("scope", &WebApp::scope,
                                Eq(url_info.origin().GetURL()))));
@@ -530,7 +495,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
       u"test application name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
                                Eq("test application name"))));
@@ -545,7 +509,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
       u"test short name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
                                Eq("test short name"))));
@@ -560,7 +523,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
       u"other test short name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("untranslated_name", &WebApp::untranslated_name,
                                Eq("other test short name"))));
@@ -580,9 +542,7 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
   web_app_icon_manager().ReadIconAndResize(url_info.app_id(), IconPurpose::ANY,
                                            SquareSizePx{1},
                                            test_future.GetCallback());
-
   OrderedSizeToBitmap icon_bitmaps = test_future.Get();
-
   EXPECT_THAT(icon_bitmaps,
               UnorderedElementsAre(Pair(_, ResultOf(
                                                "bitmap.color.at.0.0",
@@ -590,7 +550,6 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
                                                  return bitmap.getColor(0, 0);
                                                },
                                                Eq(SK_ColorRED)))));
-
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(Property("manifest_icons", &WebApp::manifest_icons,
                                UnorderedElementsAre(_))));
@@ -608,12 +567,7 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
           HasSubstr("Error during icon downloading, stopping installation."))));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kCantRetrieveIcons*/ 6, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantRetrieveIcons*/ 6);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -622,7 +576,6 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   SetUpPageAndIconStates(url_info);
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(true, 1)));
 
@@ -632,7 +585,6 @@ TEST_F(InstallIsolatedWebAppCommandTest,
               BucketsAre());
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Source.Failure"),
               BucketsAre());
-
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
               BucketsAre(base::Bucket(true, 1)));
   histogram_tester_.ExpectTotalCount("WebApp.Isolated.InstallError", 0);
@@ -646,15 +598,9 @@ TEST_F(InstallIsolatedWebAppCommandTest, ReportErrorWhenUrlLoaderFails) {
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               Not(HasValue()));
-
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kCantLoadInstallUrl*/ 3, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantLoadInstallUrl*/ 3);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenAppIsNotInstallable) {
@@ -666,15 +612,9 @@ TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenAppIsNotInstallable) {
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               Not(HasValue()));
-
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kAppIsNotInstallable*/ 4, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kAppIsNotInstallable*/ 4);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenManifestIsNull) {
@@ -685,15 +625,9 @@ TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenManifestIsNull) {
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               Not(HasValue()));
-
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kAppIsNotInstallable*/ 4, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kAppIsNotInstallable*/ 4);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -707,12 +641,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
               Not(HasValue()));
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-              BucketsAre(base::Bucket(
-                  /*IWAInstallError::kCantValidateManifest*/ 5, 1)));
+  ExpectInstallErrorHistogram(/*IWAInstallError::kCantValidateManifest*/ 5);
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest, UpdateManifestUrlIgnoredInDevMode) {
@@ -730,7 +659,6 @@ TEST_F(InstallIsolatedWebAppCommandTest, UpdateManifestUrlIgnoredInDevMode) {
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
                                         .install_source = install_source}),
               HasValue());
-
   const WebApp* installed_app =
       web_app_registrar().GetAppById(url_info.app_id());
   EXPECT_NE(installed_app, nullptr);
@@ -753,7 +681,6 @@ TEST_F(InstallIsolatedWebAppCommandTest, UpdateManifestUrlSavedInProdMode) {
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
                                         .install_source = install_source}),
               HasValue());
-
   const WebApp* installed_app =
       web_app_registrar().GetAppById(url_info.app_id());
   EXPECT_NE(installed_app, nullptr);
@@ -771,11 +698,9 @@ TEST_F(InstallIsolatedWebAppCommandTest, FailsWhenAppInstalledAlready) {
   app->TrustSigningKey();
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
 
-  // Installation 1
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
                                         .install_source = install_source}),
               HasValue());
-  // Installation 2
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
                                         .install_source = install_source}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
@@ -795,20 +720,10 @@ class InstallIsolatedWebAppCommandBundleTest
   InstallIsolatedWebAppCommandBundleTest()
       : is_dev_mode_(std::get<0>(GetParam())),
         bundle_info_(std::get<1>(GetParam())) {
-    if (is_dev_mode_) {
-      if (bundle_info_.not_trusted) {
-        // For a dev mode bundle to not be trusted, disable developer mode.
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kIsolatedWebAppDevMode);
-      } else {
-        // Otherwise enable developer mode.
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kIsolatedWebAppDevMode);
-      }
-    } else {  // !is_dev_mode_
-      // Disable developer mode so that the bundle is not automatically trusted.
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kIsolatedWebAppDevMode);
+    scoped_feature_list_.InitWithFeatureState(
+        features::kIsolatedWebAppDevMode,
+        is_dev_mode_ && !bundle_info_.not_trusted);
+    if (!is_dev_mode_) {
       if (bundle_info_.not_trusted) {
         SetTrustedWebBundleIdsForTesting({});
       } else {
@@ -820,6 +735,7 @@ class InstallIsolatedWebAppCommandBundleTest
   void SetUp() override {
     base::FilePath bundle_path;
     ASSERT_NO_FATAL_FAILURE(WriteWebBundle(bundle_path));
+
     if (is_dev_mode_) {
       install_source_ = IsolatedWebAppInstallSource::FromDevUi(
           IwaSourceBundleDevModeWithFileOp(bundle_path,
@@ -866,7 +782,6 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
       .url_info = url_info_,
       .install_source = install_source_,
   });
-
   const base::FilePath iwa_root_dir = profile()->GetPath().Append(kIwaDirName);
 
   if (bundle_info_.want_success) {
@@ -960,15 +875,8 @@ TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
               Not(HasValue()));
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
-              BucketsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallError"),
-      BucketsAre(base::Bucket(/*IWAInstallError::kAppNotPermitted*/ 8, 1)));
-
-  const WebApp* web_app = web_app_registrar().GetAppById(url_info.app_id());
-  ASSERT_THAT(web_app, IsNull());
+  ExpectInstallErrorHistogram(/*IWAInstallError::kAppNotPermitted*/ 8);
+  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()), IsNull());
 }
 
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
