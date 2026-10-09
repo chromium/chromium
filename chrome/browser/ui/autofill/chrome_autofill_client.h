@@ -276,7 +276,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
   bool ShowPrivateInferenceNoticeBottomSheet(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
-  void HideAmbientAutofillNotice() override;
+  void HideTouchToFillAutofillNotice() override;
 
   // The AutofillMessageController is used to show native Android messages via
   // the messages API.

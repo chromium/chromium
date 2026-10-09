@@ -301,7 +301,7 @@ bool AutofillClient::ShowPrivateInferenceNoticeBottomSheet(
   return false;
 }
 
-void AutofillClient::HideAmbientAutofillNotice() {}
+void AutofillClient::HideTouchToFillAutofillNotice() {}
 
 AutofillSnackbarControllerImpl*
 AutofillClient::GetAutofillSnackbarController() {

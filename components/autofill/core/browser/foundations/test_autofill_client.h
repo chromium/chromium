@@ -626,11 +626,11 @@ class TestAutofillClientTemplate : public T {
   void set_show_ambient_autofill_notice_result(bool result) {
     show_ambient_autofill_notice_result_ = result;
   }
-  void HideAmbientAutofillNotice() override {
-    hide_ambient_autofill_notice_called_ = true;
+  void HideTouchToFillAutofillNotice() override {
+    hide_touch_to_fill_autofill_notice_called_ = true;
   }
-  bool hide_ambient_autofill_notice_called() const {
-    return hide_ambient_autofill_notice_called_;
+  bool hide_touch_to_fill_autofill_notice_called() const {
+    return hide_touch_to_fill_autofill_notice_called_;
   }
 #endif
 
@@ -1030,7 +1030,7 @@ class TestAutofillClientTemplate : public T {
 
   bool show_ambient_autofill_notice_called_ = false;
   bool show_ambient_autofill_notice_result_ = false;
-  bool hide_ambient_autofill_notice_called_ = false;
+  bool hide_touch_to_fill_autofill_notice_called_ = false;
 
   personal_context::TestPersonalContextFirstRunService
       personal_context_first_run_service_;

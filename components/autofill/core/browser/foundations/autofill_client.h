@@ -798,8 +798,9 @@ class AutofillClient {
   virtual bool ShowPrivateInferenceNoticeBottomSheet(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate);
 
-  // Hides the Personal Context ambient autofill notice.
-  virtual void HideAmbientAutofillNotice();
+  // Hides the currently shown Touch To Fill autofill notice (either the
+  // Personal Context ambient autofill notice or the private inference notice).
+  virtual void HideTouchToFillAutofillNotice();
 
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.

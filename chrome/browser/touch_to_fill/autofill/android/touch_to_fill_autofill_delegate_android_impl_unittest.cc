@@ -44,7 +44,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowPrivateInferenceNoticeBottomSheet,
               (base::WeakPtr<TouchToFillAutofillDelegate> delegate),
               (override));
-  MOCK_METHOD(void, HideAmbientAutofillNotice, (), (override));
+  MOCK_METHOD(void, HideTouchToFillAutofillNotice, (), (override));
 };
 
 class TouchToFillAutofillDelegateAndroidImplTest
@@ -284,7 +284,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, HideTouchToFillHidesNotice) {
   ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
   ASSERT_TRUE(delegate().IsShowingTouchToFill());
 
-  EXPECT_CALL(autofill_client(), HideAmbientAutofillNotice);
+  EXPECT_CALL(autofill_client(), HideTouchToFillAutofillNotice);
   delegate().HideTouchToFill();
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }

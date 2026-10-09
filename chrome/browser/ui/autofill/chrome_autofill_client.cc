@@ -1237,7 +1237,7 @@ bool ChromeAutofillClient::ShowPrivateInferenceNoticeBottomSheet(
       std::move(delegate));
 }
 
-void ChromeAutofillClient::HideAmbientAutofillNotice() {
+void ChromeAutofillClient::HideTouchToFillAutofillNotice() {
   if (touch_to_fill_autofill_controller_) {
     touch_to_fill_autofill_controller_->Hide();
   }
