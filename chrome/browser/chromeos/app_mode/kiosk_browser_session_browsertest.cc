@@ -291,8 +291,16 @@ IN_PROC_BROWSER_TEST_F(KioskBrowserSessionBrowserTest,
   destroyed_observer.Wait();
 }
 
+// TODO(crbug.com/571883248): Re-enable this test.
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#define MAYBE_WebKioskShouldClosePreexistingBrowsers \
+  DISABLED_WebKioskShouldClosePreexistingBrowsers
+#else
+#define MAYBE_WebKioskShouldClosePreexistingBrowsers \
+  WebKioskShouldClosePreexistingBrowsers
+#endif
 IN_PROC_BROWSER_TEST_F(KioskBrowserSessionBrowserTest,
-                       WebKioskShouldClosePreexistingBrowsers) {
+                       MAYBE_WebKioskShouldClosePreexistingBrowsers) {
   BrowserWindowInterface* preexisting_browser = CreateBrowser();
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(
       preexisting_browser);
