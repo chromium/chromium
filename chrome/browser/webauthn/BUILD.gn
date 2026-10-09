@@ -392,6 +392,7 @@ if (!is_android) {
       "//components/trusted_vault/proto",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",
+      "//components/webauthn/core/browser:test_support",
       "//crypto:test_support",
       "//device/fido",
       "//device/fido:test_support",

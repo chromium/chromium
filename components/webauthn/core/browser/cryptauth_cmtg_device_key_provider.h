@@ -33,6 +33,14 @@ enum class CmtgDeviceKeysResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/webauthn/enums.xml:CmtgDeviceKeysResult)
 
+// Production CryptAuth CMTG wrapper key service URL and endpoint paths.
+inline constexpr char kCmtgServiceUrl[] =
+    "https://cryptauthfidoenrollment.pa.googleapis.com";
+inline constexpr char kCmtgGetOrCreatePath[] =
+    "/v1/users/me/cmtgWrapperKeys:getOrCreate";
+inline constexpr char kCmtgBatchGetPath[] =
+    "/v1/users/me/cmtgWrapperKeys:batchGet";
+
 // Default implementation of CmtgDeviceKeyProvider that vends device keys from
 // the CryptAuth CMTG wrapper key service.
 class CryptauthCmtgDeviceKeyProvider : public CmtgDeviceKeyProvider {

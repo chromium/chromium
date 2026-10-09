@@ -192,9 +192,13 @@ static_library("test_support") {
     "fake_cmtg_device_key_provider.cc",
     "fake_cmtg_device_key_provider.h",
   ]
+  public_deps = [ "//net" ]
   deps = [
     ":browser",
     "//base",
+    "//base:i18n",
+    "//services/network/public/cpp",
+    "//url",
   ]
 
   if (use_blink) {

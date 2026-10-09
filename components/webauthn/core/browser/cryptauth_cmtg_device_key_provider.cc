@@ -57,11 +57,8 @@ constexpr size_t kWrapperKeySize = 32;
 constexpr char kJsonContentType[] = "application/json";
 constexpr char kQueryParameterAlternateOutputKey[] = "alt";
 constexpr char kQueryParameterAlternateOutputJson[] = "json";
-constexpr char kDefaultServiceUrl[] =
-    "https://cryptauthfidoenrollment.pa.googleapis.com";
-// Command-line switch to override `kDefaultServiceUrl`.
+// Command-line switch to override `kCmtgServiceUrl`.
 constexpr char kCmtgUrlSwitch[] = "webauthn-cmtg-url";
-constexpr char kGetOrCreatePath[] = "/v1/users/me/cmtgWrapperKeys:getOrCreate";
 
 // The request messages (see cmtg_key_service.proto) are currently empty, so
 // their JSON encoding is hardcoded.
@@ -120,11 +117,11 @@ GURL GetBaseUrl() {
     }
     FIDO_LOG(ERROR) << "Invalid CMTG URL from switch: " << switch_url;
   }
-  return GURL(kDefaultServiceUrl);
+  return GURL(kCmtgServiceUrl);
 }
 
 GURL GetGetOrCreateUrl() {
-  return net::AppendQueryParameter(GetBaseUrl().Resolve(kGetOrCreatePath),
+  return net::AppendQueryParameter(GetBaseUrl().Resolve(kCmtgGetOrCreatePath),
                                    kQueryParameterAlternateOutputKey,
                                    kQueryParameterAlternateOutputJson);
 }
