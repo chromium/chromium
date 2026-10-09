@@ -3918,30 +3918,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Settings.Export.Event"
-    enum="PasswordExportEvent" expires_after="2025-04-20">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Measures the frequency of various password export events in settings menu.
-    Recorded when the user interacts with the password export menu item or
-    dialog. Curently logged only on Android.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.Settings.Export.Result2"
-    enum="HistogramExportResult" expires_after="2025-04-20">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records whether the export flow finished successfully or the type of error
-    for passwords export started from password settings. Recorded when the
-    export flow finishes. Logged only on Android. This is an updated version of
-    PasswordManager.Settings.Export.Result, which logs more possible export flow
-    results in adition to the old values.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.ShortcutMetric"
     enum="PasswordManagerShortcutMetric" expires_after="M165">
   <owner>vsemeniuk@google.com</owner>
