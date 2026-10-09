@@ -55,6 +55,7 @@ export abstract class TabObservable<T> extends ObservableValueImpl<T> {
           return;
         }
         this.disconnectFromSource();
+        this.reset();
       });
       return;
     }
@@ -77,6 +78,7 @@ export abstract class TabObservable<T> extends ObservableValueImpl<T> {
     this.isCompleting = true;
     this.unsubscribeTimer.reset();
     this.disconnectFromSource();
+    this.reset();
     this.onComplete();
     super.complete();
   }

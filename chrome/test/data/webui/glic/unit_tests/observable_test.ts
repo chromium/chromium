@@ -20,6 +20,26 @@ suite('ObservableTest', () => {
     assertEquals(1, valueReceived);
   });
 
+  test('ObservableValue reset() clears stored value', () => {
+    const observable = ObservableValue.withNoValue<number>();
+    observable.assignAndSignal(1);
+    assertEquals(1, observable.getCurrentValue());
+
+    observable.reset();
+    assertEquals(undefined, observable.getCurrentValue());
+
+    const received: number[] = [];
+    const sub = observable.subscribe((value) => {
+      received.push(value);
+    });
+    assertEquals(0, received.length);
+
+    observable.assignAndSignal(1);
+    assertEquals(1, received.length);
+    assertEquals(1, received[0]);
+    sub.unsubscribe();
+  });
+
   test('ObservableValue gets completion callback when complete', () => {
     let reportedHasActiveSubscription;
     const observable =

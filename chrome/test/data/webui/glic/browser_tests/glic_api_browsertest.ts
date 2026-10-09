@@ -3101,12 +3101,14 @@ class FaviconTest extends ApiTests {
     const tab = tabs[0]!;
 
     assertDefined(this.host.getTabFaviconById);
-    const subscription =
-        this.host.getTabFaviconById(tab.tabId).subscribe(() => {});
+    const faviconObs = this.host.getTabFaviconById(tab.tabId);
+    const subscription = faviconObs.subscribe(() => {});
+    await runUntil(() => faviconObs.getCurrentValue() !== undefined);
 
     await this.advanceToNextStep();
 
     subscription.unsubscribe();
+    await runUntil(() => faviconObs.getCurrentValue() === undefined);
   }
 
   async testTabFaviconObserverTabWillClose() {

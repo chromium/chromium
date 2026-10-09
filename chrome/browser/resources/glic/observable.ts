@@ -276,6 +276,16 @@ export class ObservableValue<T> extends Subject<T> {
     super.next(v);
   }
 
+  /**
+   * Clears the stored value and resets the ObservableValue to an uninitialized
+   * state. Does not signal subscribers; subsequent subscribers will not receive
+   * a value until assignAndSignal() is called again.
+   */
+  reset(): void {
+    this.isSet = false;
+    this.value = undefined;
+  }
+
   /** Returns the current value, or undefined if not initialized. */
   getCurrentValue(): T|undefined {
     return this.value;

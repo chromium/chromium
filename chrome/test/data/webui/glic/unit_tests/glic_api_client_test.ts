@@ -153,12 +153,16 @@ suite('TabObservableSet', () => {
     const sub1 = obs.subscribe(() => {});
     assertEquals(
         env.activeSubscriptions.length, 1, 'observation was not created');
+    obs.assignAndSignal('val1');
 
     sub1.unsubscribe();
 
     // Subscribe before the original subscription is disconnected. This should
-    // keep the connection active.
-    const sub2 = obs.subscribe(() => {});
+    // keep the connection active and replay the current value.
+    const received2: string[] = [];
+    const sub2 = obs.subscribe(v => received2.push(v));
+    assertEquals(received2.length, 1);
+    assertEquals(received2[0], 'val1');
 
     await sleep(TEST_UNSUBSCRIBE_DELAY + 5);
     assertEquals(
@@ -172,38 +176,60 @@ suite('TabObservableSet', () => {
     await waitUntilEqual(() => env.activeSubscriptions.length, 0);
     assertTrue(
         !obs.isStopped(), 'observable should not be stopped after disconnect');
+    assertEquals(
+        obs.getCurrentValue(), undefined,
+        'stored value should be cleared after disconnect');
   });
 
   test('cached observable reconnects after disconnect delay', async () => {
     const env = createEnvironment();
     const obs = env.obs.getObservableByTabId('123');
 
-    const sub1 = obs.subscribe(() => {});
+    const received1: string[] = [];
+    const sub1 = obs.subscribe(v => received1.push(v));
     assertEquals(
         env.activeSubscriptions.length, 1, 'first observation was not created');
+    obs.assignAndSignal('stale_val');
+    assertEquals(received1.length, 1);
+    assertEquals(obs.getCurrentValue(), 'stale_val');
 
     sub1.unsubscribe();
     await waitUntilEqual(() => env.activeSubscriptions.length, 0);
     assertTrue(
         !obs.isStopped(), 'observable must not be stopped after disconnect');
+    assertEquals(
+        obs.getCurrentValue(), undefined,
+        'stored value must be cleared after disconnect');
 
     // Subscribe after the disconnect delay has passed. The cached observable
-    // should reconnect to the source.
+    // should reconnect to the source and must not synchronously replay the
+    // stale value from the previous connection.
     const sameObs = env.obs.getObservableByTabId('123');
     assertEquals(
         obs, sameObs, 'Expected same observable instance to be cached');
     assertTrue(!sameObs.isStopped(), 'Cached observable must not be stopped');
 
-    const sub2 = sameObs.subscribe(() => {});
+    const received2: string[] = [];
+    const sub2 = sameObs.subscribe(v => received2.push(v));
     assertEquals(
         env.activeSubscriptions.length, 1,
         'second observation was not created');
+    assertEquals(
+        received2.length, 0,
+        'stale value must not be synchronously replayed upon re-subscribing');
+
+    sameObs.assignAndSignal('fresh_val');
+    assertEquals(received2.length, 1);
+    assertEquals(received2[0], 'fresh_val');
 
     sub2.unsubscribe();
     await waitUntilEqual(() => env.activeSubscriptions.length, 0);
     assertTrue(
         !sameObs.isStopped(),
         'observable must not be stopped after second disconnect');
+    assertEquals(
+        sameObs.getCurrentValue(), undefined,
+        'stored value must be cleared after second disconnect');
   });
 
   test('multiple concurrent subscribers (deduplication)', async () => {
