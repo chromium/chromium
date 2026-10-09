@@ -295,6 +295,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/management",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//chrome/browser/ui/webui/version",
+    "//chrome/browser/universal_optout",
     "//chrome/browser/usb",
     "//chrome/browser/user_education",
     "//chrome/browser/web_applications",
