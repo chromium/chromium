@@ -5,6 +5,7 @@
 module history_cross_device_signin_promo.mojom;
 
 // Browser-side handler for the cross-device sign-in promo card.
+// Messages sent from TS to C++.
 interface HistoryCrossDeviceSigninPromoHandler {
   // Checks if the promo card should be shown.
   ShouldShowPromoCard() => (bool should_show);
@@ -15,7 +16,30 @@ interface HistoryCrossDeviceSigninPromoHandler {
   // Called when the promo card is dismissed.
   OnPromoCardDismissed();
 
-  // Called when the promo card action button is clicked.
-  // The callback is resolved when the action is completed.
+  // Called when the promo card action button is clicked. Opens the QR code
+  // bubble unless one is already open for the profile. Replies when the bubble
+  // opened by this click closes (including when it is replaced from the
+  // profile menu), or right away if no bubble was opened.
   OnPromoCardActionClicked() => ();
+
+  // Registers the WebUI `page` remote to receive browser-initiated promo state
+  // updates for this profile, replacing any previously bound remote (for
+  // instance if the promo element is removed and re-attached to the DOM).
+  // The current QR code bubble state is pushed to `page` immediately via
+  // `OnPromoBubbleStateChanged()`, and subsequent state transitions are
+  // forwarded until `page` disconnects or is replaced.
+  SetPage(pending_remote<HistoryCrossDeviceSigninPromoPage> page);
+};
+
+// WebUI-side receiver for the cross-device sign-in promo card.
+// Note: This interface is compiled on both Desktop and Android because
+// `chrome://history` shares a single TypeScript bundle across platforms; on
+// Android it is backed by a no-op stub in
+// `history_ui_platform_handlers_android.cc`.
+// Messages sent from C++ to TS.
+interface HistoryCrossDeviceSigninPromoPage {
+  // Called when the open state of the QR code bubble changes for this profile
+  // (and once immediately upon `SetPage()`). At most one bubble is open per
+  // profile across all browser windows.
+  OnPromoBubbleStateChanged(bool is_open);
 };

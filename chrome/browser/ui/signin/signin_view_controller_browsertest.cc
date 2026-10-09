@@ -5,16 +5,21 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 
 #include <string_view>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -1523,6 +1528,86 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   handle3.reset();
   destroyed_waiter3.Wait();
   EXPECT_EQ(future3.Get(), SigninInterceptionResult::kIgnored);
+}
+
+// Opening the bubble from the profile menu while it is open in another window
+// closes the existing bubble and opens it in the requesting window, without the
+// profile ever being reported as having no open bubble.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ProfileMenuReplacesBubbleOpenInAnotherWindow) {
+  SetPrimaryAccount();
+  Profile* profile = browser()->GetProfile();
+  BrowserWindowInterface* other_browser = CreateBrowser(profile);
+
+  views::NamedWidgetShownWaiter first_bubble_waiter(
+      views::test::AnyWidgetTestPasskey{}, "CrossDeviceSigninQrBubbleViews");
+  base::MockCallback<base::OnceClosure> first_closing_callback;
+  OpenSigninToPhoneQrCodeBubble(browser(),
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                first_closing_callback.Get());
+  views::Widget* first_bubble = first_bubble_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(first_bubble);
+  ASSERT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+
+  std::vector<bool> observed_states;
+  base::CallbackListSubscription subscription =
+      RegisterCrossDeviceSigninPromoBubbleStateCallback(
+          profile, base::BindLambdaForTesting([&](bool is_open) {
+            observed_states.push_back(is_open);
+          }));
+
+  views::NamedWidgetShownWaiter second_bubble_waiter(
+      views::test::AnyWidgetTestPasskey{}, "CrossDeviceSigninQrBubbleViews");
+  views::test::WidgetDestroyedWaiter first_bubble_destroyed(first_bubble);
+  base::MockCallback<base::OnceClosure> second_closing_callback;
+  EXPECT_CALL(first_closing_callback, Run());
+  EXPECT_CALL(second_closing_callback, Run()).Times(0);
+  OpenSigninToPhoneQrCodeBubble(other_browser,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                second_closing_callback.Get());
+
+  // The first bubble is destroyed asynchronously; its destruction must be
+  // ignored since it has been replaced.
+  first_bubble_destroyed.Wait();
+  testing::Mock::VerifyAndClearExpectations(&first_closing_callback);
+  views::Widget* second_bubble = second_bubble_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(second_bubble);
+  EXPECT_NE(first_bubble, second_bubble);
+  EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+  EXPECT_TRUE(observed_states.empty());
+  testing::Mock::VerifyAndClearExpectations(&second_closing_callback);
+
+  views::test::WidgetDestroyedWaiter second_bubble_destroyed(second_bubble);
+  EXPECT_CALL(second_closing_callback, Run());
+  second_bubble->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  second_bubble_destroyed.Wait();
+
+  EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+  EXPECT_THAT(observed_states, testing::ElementsAre(false));
+}
+
+// Closing the window that hosts the bubble marks the bubble as closed.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ClosingBrowserWindowClosesBubble) {
+  SetPrimaryAccount();
+  Profile* profile = browser()->GetProfile();
+  BrowserWindowInterface* other_browser = CreateBrowser(profile);
+
+  views::NamedWidgetShownWaiter bubble_waiter(
+      views::test::AnyWidgetTestPasskey{}, "CrossDeviceSigninQrBubbleViews");
+  base::MockCallback<base::OnceClosure> closing_callback;
+  OpenSigninToPhoneQrCodeBubble(other_browser,
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                closing_callback.Get());
+  ASSERT_TRUE(bubble_waiter.WaitIfNeededAndGet());
+  ASSERT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+
+  EXPECT_CALL(closing_callback, Run());
+  CloseBrowserSynchronously(other_browser);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return !IsCrossDeviceSigninPromoBubbleOpen(profile); }));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

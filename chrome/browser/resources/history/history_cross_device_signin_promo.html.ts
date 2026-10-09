@@ -27,6 +27,7 @@ export function getHtml(this: HistoryCrossDeviceSigninPromoElement) {
 
     <div class="flex-row">
       <cr-button id="actionButton" class="action-button"
+          ?disabled="${this.isBubbleOpen_}"
           @click="${this.onActionButtonClick_}">
         ${this.i18n('signinOnPhonePromoButton')}
       </cr-button>

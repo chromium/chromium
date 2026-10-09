@@ -6,10 +6,11 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
+import {HistoryCrossDeviceSigninPromoPageReceiver} from 'chrome://resources/cr_components/history/history_cross_device_signin_promo.mojom-webui.js';
+import type {HistoryCrossDeviceSigninPromoPageInterface} from 'chrome://resources/cr_components/history/history_cross_device_signin_promo.mojom-webui.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './history_cross_device_signin_promo.css.js';
@@ -23,11 +24,11 @@ export interface HistoryCrossDeviceSigninPromoElement {
   };
 }
 
-const HistoryCrossDeviceSigninPromoElementBase =
-    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
+const HistoryCrossDeviceSigninPromoElementBase = I18nMixinLit(CrLitElement);
 
 export class HistoryCrossDeviceSigninPromoElement extends
-    HistoryCrossDeviceSigninPromoElementBase {
+    HistoryCrossDeviceSigninPromoElementBase implements
+        HistoryCrossDeviceSigninPromoPageInterface {
   static get is() {
     return 'history-cross-device-signin-promo';
   }
@@ -40,8 +41,19 @@ export class HistoryCrossDeviceSigninPromoElement extends
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      isBubbleOpen_: {type: Boolean},
+    };
+  }
+
+  protected accessor isBubbleOpen_: boolean = false;
+
   override connectedCallback() {
     super.connectedCallback();
+    this.receiver_ = new HistoryCrossDeviceSigninPromoPageReceiver(this);
+    this.handler_.setPage(this.receiver_.$.bindNewPipeAndPassRemote());
+
     this.handler_.shouldShowPromoCard().then(
         ({shouldShow}: {shouldShow: boolean}) => {
           this.propagateShouldShowPromo_(shouldShow);
@@ -51,11 +63,22 @@ export class HistoryCrossDeviceSigninPromoElement extends
         });
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.isBubbleOpen_ = false;
+    this.receiver_?.$.close();
+    this.receiver_ = null;
+  }
+
+  onPromoBubbleStateChanged(isOpen: boolean): void {
+    this.isBubbleOpen_ = isOpen;
+  }
+
   private handler_ =
       HistoryCrossDeviceSigninPromoBrowserProxy.getInstance().handler;
+  private receiver_: HistoryCrossDeviceSigninPromoPageReceiver|null = null;
 
   protected onActionButtonClick_() {
-    this.$.actionButton.disabled = true;
     this.handler_.onPromoCardActionClicked().then(() => {
       this.propagateShouldShowPromo_(false);
     });

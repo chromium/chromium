@@ -8,6 +8,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -599,4 +601,148 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   std::string email_val;
   EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
   EXPECT_EQ(email_val, "user+test@gmail.com");
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       OpenSigninToPhoneQrCodeBubbleFromPromoIsNoOpWhileBubbleIsOpen) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  std::vector<bool> observed_states;
+  base::CallbackListSubscription subscription =
+      RegisterCrossDeviceSigninPromoBubbleStateCallback(
+          profile(), base::BindLambdaForTesting([&](bool is_open) {
+            observed_states.push_back(is_open);
+          }));
+
+  base::OnceClosure closing_callback;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kHistoryPage))
+      .WillOnce(MoveArg<2>(&closing_callback));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                base::DoNothing());
+  ASSERT_TRUE(closing_callback);
+
+  bool second_closing_callback_run = false;
+  OpenSigninToPhoneQrCodeBubble(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+      base::BindLambdaForTesting([&] { second_closing_callback_run = true; }));
+
+  EXPECT_FALSE(second_closing_callback_run);
+  EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile()));
+  EXPECT_THAT(observed_states, testing::ElementsAre(true));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, 1);
+
+  std::move(closing_callback).Run();
+  EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile()));
+  EXPECT_THAT(observed_states, testing::ElementsAre(true, false));
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       ProfileMenuReopensBubbleWhenAlreadyOpen) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  std::vector<bool> observed_states;
+  base::CallbackListSubscription subscription =
+      RegisterCrossDeviceSigninPromoBubbleStateCallback(
+          profile(), base::BindLambdaForTesting([&](bool is_open) {
+            observed_states.push_back(is_open);
+          }));
+
+  base::OnceClosure first_bubble_on_closed;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kHistoryPage))
+      .WillOnce(MoveArg<2>(&first_bubble_on_closed));
+
+  bool first_closing_callback_run = false;
+  OpenSigninToPhoneQrCodeBubble(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+      base::BindLambdaForTesting([&] { first_closing_callback_run = true; }));
+  ASSERT_TRUE(first_bubble_on_closed);
+
+  base::OnceClosure second_bubble_on_closed;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kProfileMenu))
+      .WillOnce(MoveArg<2>(&second_bubble_on_closed));
+
+  bool second_closing_callback_run = false;
+  OpenSigninToPhoneQrCodeBubble(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+      base::BindLambdaForTesting([&] { second_closing_callback_run = true; }));
+  ASSERT_TRUE(second_bubble_on_closed);
+  EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile()));
+  EXPECT_THAT(observed_states, testing::ElementsAre(true));
+
+  // The replaced bubble is destroyed asynchronously; its destruction must not
+  // mark the new bubble as closed.
+  std::move(first_bubble_on_closed).Run();
+  EXPECT_TRUE(first_closing_callback_run);
+  EXPECT_FALSE(second_closing_callback_run);
+  EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile()));
+  EXPECT_THAT(observed_states, testing::ElementsAre(true));
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble", 2);
+
+  std::move(second_bubble_on_closed).Run();
+  EXPECT_TRUE(second_closing_callback_run);
+  EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile()));
+  EXPECT_THAT(observed_states, testing::ElementsAre(true, false));
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest, BubbleOpenStateIsPerProfile) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  std::unique_ptr<TestingProfile> other_profile =
+      TestingProfile::Builder().Build();
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  base::OnceClosure closing_callback;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kHistoryPage))
+      .WillOnce(MoveArg<2>(&closing_callback));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                base::DoNothing());
+
+  EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile()));
+  EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(other_profile.get()));
 }

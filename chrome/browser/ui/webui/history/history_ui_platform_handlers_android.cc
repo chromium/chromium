@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"
@@ -81,6 +82,9 @@ class AndroidHistoryCrossDeviceSigninPromoHandler
       OnPromoCardActionClickedCallback callback) override {
     std::move(callback).Run();
   }
+  void SetPage(mojo::PendingRemote<history_cross_device_signin_promo::mojom::
+                                       HistoryCrossDeviceSigninPromoPage> page)
+      override {}
 
  private:
   mojo::Receiver<history_cross_device_signin_promo::mojom::

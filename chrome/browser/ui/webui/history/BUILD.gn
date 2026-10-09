@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/webui/resources/cr_components/history:mojo_bindings",
@@ -150,6 +151,9 @@ source_set("unit_tests") {
       "foreign_session_handler_unittest.cc",
       "history_identity_state_watcher_unittest.cc",
     ]
+    if (enable_dice_support) {
+      sources += [ "history_cross_device_signin_promo_handler_unittest.cc" ]
+    }
     deps += [
       "//chrome/browser/bookmarks",
       "//chrome/browser/critical_actions",
@@ -163,6 +167,7 @@ source_set("unit_tests") {
       "//components/history/core/browser",
       "//components/prefs",
       "//components/sessions",
+      "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync:test_support",
