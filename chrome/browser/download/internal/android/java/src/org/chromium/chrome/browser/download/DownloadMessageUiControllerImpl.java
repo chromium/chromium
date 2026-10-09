@@ -388,7 +388,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         Context context = ContextUtils.getApplicationContext();
 
         if (window == null) {
-            mDelegate.maybeSwitchToFocusedActivity();
+            maybeSwitchToFocusedActivity();
         }
 
         MessageDispatcher dispatcher =
@@ -755,11 +755,16 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     /**
      * Prepares the message to show the next state. This includes setting the message title,
      * description, icon, and action.
+     *
      * @param uiState The UI state to be shown.
      * @param resultState The state of the corresponding offline items to be shown.
      */
     private void createMessageForState(@UiState int uiState, @ResultState int resultState) {
-        if (getContext() == null) return;
+        maybeSwitchToFocusedActivity();
+        if (getContext() == null || getMessageDispatcher() == null) {
+            clearCurrentMessage();
+            return;
+        }
         DownloadProgressMessageUiData info = new DownloadProgressMessageUiData();
 
         @PluralsRes int stringRes = -1;
@@ -961,18 +966,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * Central function called to show the message UI. If the previous message has been dismissed,
      * it will be recreated only if |info.forceShow| is true. If the message hasn't been dismissed,
      * it will be simply updated.
+     *
      * @param state The state of the message to be shown.
      * @param info Contains the information to be displayed in the UI.
      */
     @VisibleForTesting
     protected void showMessage(@UiState int state, DownloadProgressMessageUiData info) {
-        if (mDelegate.maybeSwitchToFocusedActivity()) {
-            closePreviousMessage();
-        }
-
-        boolean shouldShowMessage =
-                getMessageDispatcher() != null && (info.forceShow || mPropertyModel != null);
-        if (!shouldShowMessage) return;
+        final MessageDispatcher dispatcher = getMessageDispatcher();
+        if (dispatcher == null || (!info.forceShow && mPropertyModel == null)) return;
 
         recordMessageState(state, info);
 
@@ -1026,16 +1027,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(
                 MessageBannerProperties.ON_PRIMARY_ACTION,
                 () -> onPrimaryAction(info.id, info.ignoreAction));
-        final MessageDispatcher dispatcher = getMessageDispatcher();
         mDismissRunnable =
                 () -> {
-                    if (dispatcher == null || mPropertyModel == null) return;
+                    if (mPropertyModel == null) return;
                     dispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
                 };
 
         if (updateOnly) return;
-        assumeNonNull(dispatcher)
-                .enqueueWindowScopedMessage(mPropertyModel, /* highPriority= */ false);
+        dispatcher.enqueueWindowScopedMessage(mPropertyModel, /* highPriority= */ false);
     }
 
     @VisibleForTesting
@@ -1045,6 +1044,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             mDismissRunnable = null;
         }
         mPropertyModel = null;
+    }
+
+    private void clearCurrentMessage() {
+        closePreviousMessage();
+        mCurrentInfo = null;
+        clearEndTimerRunnable();
+    }
+
+    private void maybeSwitchToFocusedActivity() {
+        if (mDelegate.maybeSwitchToFocusedActivity()) {
+            closePreviousMessage();
+            mCurrentInfo = null;
+        }
     }
 
     private Context getContext() {

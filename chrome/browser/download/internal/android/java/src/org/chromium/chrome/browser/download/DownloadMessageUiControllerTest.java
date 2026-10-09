@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
@@ -101,15 +102,19 @@ public class DownloadMessageUiControllerTest {
 
     static class TestDelegate implements DownloadMessageUiController.Delegate {
         public boolean mMaybeSwitchToFocusedActivityCalled;
+        public @Nullable Context mContext = ApplicationProvider.getApplicationContext();
+        public @Nullable MessageDispatcher mMessageDispatcher =
+                Mockito.mock(MessageDispatcher.class);
+        public boolean mSwitchToFocusedActivityResult;
 
         @Override
         public @Nullable Context getContext() {
-            return ApplicationProvider.getApplicationContext();
+            return mContext;
         }
 
         @Override
         public @Nullable MessageDispatcher getMessageDispatcher() {
-            return null;
+            return mMessageDispatcher;
         }
 
         @Override
@@ -120,6 +125,11 @@ public class DownloadMessageUiControllerTest {
         @Override
         public boolean maybeSwitchToFocusedActivity() {
             mMaybeSwitchToFocusedActivityCalled = true;
+            if (mSwitchToFocusedActivityResult) {
+                mContext = ApplicationProvider.getApplicationContext();
+                mSwitchToFocusedActivityResult = false;
+                return true;
+            }
             return false;
         }
 
@@ -137,6 +147,8 @@ public class DownloadMessageUiControllerTest {
     static class TestDownloadMessageUiController extends DownloadMessageUiControllerImpl {
         private DownloadProgressMessageUiData mInfo;
         public final TestDelegate mDelegate;
+        public int mShowMessageCallCount;
+        public int mClosePreviousMessageCallCount;
 
         public TestDownloadMessageUiController() {
             this(new TestDelegate());
@@ -149,11 +161,14 @@ public class DownloadMessageUiControllerTest {
 
         @Override
         protected void showMessage(@UiState int state, DownloadProgressMessageUiData info) {
+            mShowMessageCallCount++;
             mInfo = info;
         }
 
         @Override
         protected void closePreviousMessage() {
+            super.closePreviousMessage();
+            mClosePreviousMessageCallCount++;
             mInfo = null;
         }
 
@@ -946,5 +961,75 @@ public class DownloadMessageUiControllerTest {
         mTestController.mDelegate.mMaybeSwitchToFocusedActivityCalled = false;
         mTestController.showIncognitoDownloadMessage((result) -> {});
         Assert.assertTrue(mTestController.mDelegate.mMaybeSwitchToFocusedActivityCalled);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testCreateMessageSwitchesToFocusedActivityWhenPreviousContextIsNull() {
+        mTestController.mDelegate.mContext = null;
+        mTestController.mDelegate.mSwitchToFocusedActivityResult = true;
+
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+
+        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testCreateMessageResetsCurrentInfoWhenSwitchingActivity() {
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
+        Assert.assertEquals(1, mTestController.mShowMessageCallCount);
+
+        mTestController.mDelegate.mSwitchToFocusedActivityResult = true;
+        mTestController.onItemUpdated(item);
+
+        Assert.assertEquals(1, mTestController.mClosePreviousMessageCallCount);
+        Assert.assertEquals(2, mTestController.mShowMessageCallCount);
+        Assert.assertTrue(mTestController.mInfo.forceShow);
+        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testNullMessageDispatcherClearsCurrentInfoAndAllowsRetry() {
+        mTestController.mDelegate.mMessageDispatcher = null;
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
+
+        mTestController.mDelegate.mMessageDispatcher = Mockito.mock(MessageDispatcher.class);
+        mTestController.onItemUpdated(item);
+
+        Assert.assertTrue(mTestController.mInfo.forceShow);
+        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testNullMessageDispatcherDuringDangerousResultAllowsImmediateValidation() {
+        enableDangerousDownloadMessage();
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
+        Assert.assertEquals(1, mTestController.mShowMessageCallCount);
+
+        mTestController.mDelegate.mMessageDispatcher = null;
+        markItemDangerous(item);
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
+
+        mTestController.mDelegate.mMessageDispatcher = Mockito.mock(MessageDispatcher.class);
+        markItemValidated(item);
+        mTestController.onItemUpdated(item);
+
+        Assert.assertEquals(2, mTestController.mShowMessageCallCount);
+        mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
     }
 }
