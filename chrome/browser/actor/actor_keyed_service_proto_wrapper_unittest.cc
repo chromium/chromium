@@ -7,17 +7,38 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_controller.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/actor/core/task_id.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
 
 class ActorKeyedServiceProtoWrapperTest : public testing::Test {
+ public:
+  ActorKeyedServiceProtoWrapperTest()
+      : profile_(TestingProfile::Builder().Build()),
+        actor_service_(ActorKeyedService::Get(profile_.get())),
+        wrapper_(actor_service_) {}
+  ~ActorKeyedServiceProtoWrapperTest() override = default;
+
  protected:
+  TaskId CreateTask() {
+    return actor_service_->CreateTask(
+        TaskSourceInfo(TaskSourceInfo::Client::kTest, "test_session"),
+        GetNullEnterprisePolicyChecker());
+  }
+
   static optimization_guide::proto::ActionsResult BuildActionsResult(
       base::TimeTicks start_time,
       const std::vector<ActionResultWithLatencyInfo>& action_results,
@@ -25,9 +46,62 @@ class ActorKeyedServiceProtoWrapperTest : public testing::Test {
     return ActorKeyedServiceProtoWrapper::BuildActionsResult(
         start_time, action_results, observation_result);
   }
+
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<ActorKeyedService> actor_service_;
+  ActorKeyedServiceProtoWrapper wrapper_;
 };
 
 namespace {
+
+TEST_F(ActorKeyedServiceProtoWrapperTest, PerformActionsRejectsUnknownTask) {
+  optimization_guide::proto::Actions unknown_actions;
+  unknown_actions.set_task_id(9999);
+  unknown_actions.add_actions()->mutable_wait()->set_wait_time_ms(0);
+
+  base::test::TestFuture<optimization_guide::proto::ActionsResult>
+      unknown_future;
+  wrapper_.PerformActions(unknown_actions, unknown_future.GetCallback());
+  EXPECT_EQ(unknown_future.Get().action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+}
+
+TEST_F(ActorKeyedServiceProtoWrapperTest,
+       PerformActionsRejectsInvalidActionArguments) {
+  TaskId task_id = CreateTask();
+
+  optimization_guide::proto::Actions actions;
+  actions.set_task_id(task_id.value());
+  actions.add_actions()->mutable_click()->set_tab_id(1);
+
+  base::test::TestFuture<optimization_guide::proto::ActionsResult> future;
+  wrapper_.PerformActions(actions, future.GetCallback());
+
+  const auto& result = future.Get();
+  EXPECT_EQ(result.action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kClickMissingTarget));
+  ASSERT_TRUE(result.has_index_of_failed_action());
+  EXPECT_EQ(result.index_of_failed_action(), 0);
+}
+
+TEST_F(ActorKeyedServiceProtoWrapperTest,
+       PerformActionsRunsWaitActionAndBuildsResult) {
+  TaskId task_id = CreateTask();
+
+  optimization_guide::proto::Actions actions;
+  actions.set_task_id(task_id.value());
+  actions.add_actions()->mutable_wait()->set_wait_time_ms(0);
+
+  base::test::TestFuture<optimization_guide::proto::ActionsResult> future;
+  wrapper_.PerformActions(actions, future.GetCallback());
+
+  const auto& result = future.Get();
+  EXPECT_EQ(result.action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kOk));
+  EXPECT_FALSE(result.has_index_of_failed_action());
+  EXPECT_GE(result.latency_information().latency_steps_size(), 1);
+}
 
 TEST_F(ActorKeyedServiceProtoWrapperTest,
        BuildActionsResultPopulatesObservationsAndLatencies) {

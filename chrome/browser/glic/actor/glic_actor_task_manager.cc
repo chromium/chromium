@@ -108,6 +108,7 @@ GlicActorClientSession::GlicActorClientSession(
     mojo::PendingReceiver<mojom::ActorHandler> receiver,
     mojo::PendingRemote<mojom::ActorClient> client)
     : manager_(*manager),
+      actor_keyed_service_proto_wrapper_(manager->actor_keyed_service_),
       journal_handler_(
           std::make_unique<GlicActorJournalHandler>(manager->profile())) {
   receiver_.Bind(std::move(receiver));
@@ -322,177 +323,11 @@ void GlicActorTaskManager::OnConversationRegistered(
   pending_conversation_task_ids_.clear();
 }
 
-void GlicActorClientSession::PerformActionsFinished(
-    PerformActionsCallback callback,
-    actor::TaskId task_id,
-    base::TimeTicks start_time,
-    bool skip_async_observation_information,
-    std::optional<page_content_annotations::ScreenshotOptions::
-                      ScreenshotCollectionOptions>
-        screenshot_collection_options,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
-    actor::TabObservationStrategy observation_strategy) {
-  actor::mojom::ActionResultCode result_code =
-      actor::mojom::ActionResultCode::kOk;
-  std::optional<size_t> index_of_failed_action;
-  actor::ExtractErrorResult(action_results, &result_code,
-                            index_of_failed_action);
-  actor_keyed_service().GetJournal().Log(
-      GURL::EmptyGURL(), task_id, "PerformActionsFinished",
-      actor::JournalDetailsBuilder()
-          .Add("result_code", base::ToString(result_code))
-          .Build());
-
-  actor::ActorTask* task = actor_keyed_service().GetTask(task_id);
-  // TODO(b/470985724): Reply at the time the task is stopped/canceled instead
-  // of here.
-  if (!task) {
-    optimization_guide::proto::ActionsResult response =
-        actor::BuildErrorActionsResult(
-            actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt);
-    std::move(callback).Run(mojo_base::ProtoWrapper(response));
-    return;
-  }
-
-  if (result_code == actor::mojom::ActionResultCode::kTaskPaused ||
-      result_code == actor::mojom::ActionResultCode::kTaskWentAway) {
-    optimization_guide::proto::ActionsResult response =
-        actor::BuildErrorActionsResult(result_code, std::nullopt);
-    std::move(callback).Run(mojo_base::ProtoWrapper(response));
-    return;
-  }
-
-  actor::mojom::ActionResultCode controller_result_code =
-      actor::mojom::ActionResultCode::kOk;
-  std::optional<size_t> controller_index_of_failed_action;
-  actor::ExtractErrorResult(action_results, &controller_result_code,
-                            controller_index_of_failed_action);
-  auto journal_entry =
-      actor_keyed_service().GetJournal().CreatePendingAsyncEntry(
-          GURL(), task_id, MakeBrowserTrackUUID(task_id),
-          "TabObservationController",
-          actor::JournalDetailsBuilder()
-              .Add("result_code", base::ToString(controller_result_code))
-              .Add("skip_async_observation_information",
-                   skip_async_observation_information)
-              .Build());
-
-  // base::Unretained(this) is safe because `observation_controllers_` is
-  // owned by this class and the controller guarantees that it will not run
-  // the callback after its own destruction.
-  auto done_callback =
-      base::BindOnce(&GlicActorClientSession::OnPerformActionsComplete,
-                     base::Unretained(this), std::move(callback), start_time,
-                     action_results, std::move(journal_entry));
-
-  auto controller = std::make_unique<actor::TabObservationController>(
-      &profile(), task_id, start_time, skip_async_observation_information,
-      action_results, std::move(observation_strategy),
-      std::move(done_callback));
-
-  controller->set_screenshot_collection_options(
-      std::move(screenshot_collection_options));
-  auto* controller_ptr = controller.get();
-  observation_controllers_.push_back(std::move(controller));
-  controller_ptr->Start();
-}
-
-void GlicActorClientSession::OnPerformActionsComplete(
-    PerformActionsCallback callback,
-    base::TimeTicks start_time,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
-    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
-    actor::TabObservationController* controller_ptr,
-    std::unique_ptr<actor::ObservationResult> result) {
-  CHECK(result);
-  std::erase_if(observation_controllers_, [&](const auto& controller) {
-    return controller.get() == controller_ptr;
-  });
-
-  optimization_guide::proto::ActionsResult response;
-
-  actor::mojom::ActionResultCode result_code =
-      actor::mojom::ActionResultCode::kOk;
-  std::optional<size_t> index_of_failed_action;
-  actor::ExtractErrorResult(action_results, &result_code,
-                            index_of_failed_action);
-
-  response.set_action_result(static_cast<int32_t>(result_code));
-  if (index_of_failed_action) {
-    response.set_index_of_failed_action(*index_of_failed_action);
-  }
-
-  actor::CopyScriptToolResults(response, action_results);
-
-  for (const auto& action_result : action_results) {
-    if (actor::IsOk(*action_result.result)) {
-      response.add_extra_information(action_result.result->message);
-    } else {
-      // In case of an error, the message is copied to `error_message` instead.
-      response.add_extra_information(std::string());
-    }
-  }
-
-  auto* latency_info = response.mutable_latency_information();
-  for (size_t i = 0; i < action_results.size(); ++i) {
-    auto& action_result = action_results.at(i);
-    CHECK(action_result.result->execution_end_time);
-    {
-      auto* latency_step = latency_info->add_latency_steps();
-      latency_step->mutable_action()->set_action_index(i);
-      latency_step->set_latency_start_ms(
-          (action_result.start_time - start_time).InMilliseconds());
-      latency_step->set_latency_stop_ms(
-          (*action_result.result->execution_end_time - start_time)
-              .InMilliseconds());
-    }
-    // Don't report a page stabilization time if the start and end
-    // are the same. Not every tool needs stabilization.
-    if (*action_result.result->execution_end_time != action_result.end_time) {
-      auto* latency_step = latency_info->add_latency_steps();
-      latency_step->mutable_page_stabilization()->set_action_index(i);
-      latency_step->set_latency_start_ms(
-          (*action_result.result->execution_end_time - start_time)
-              .InMilliseconds());
-      latency_step->set_latency_stop_ms(
-          (action_result.end_time - start_time).InMilliseconds());
-    }
-    if (!actor::IsOk(*action_result.result)) {
-      CHECK_EQ(*index_of_failed_action, i);
-      response.set_error_message(action_result.result->message);
-    }
-  }
-
-  for (auto& obs : result->tab_observations) {
-    *response.add_tabs() = std::move(obs);
-  }
-  for (auto& obs : result->window_observations) {
-    *response.add_windows() = std::move(obs);
-  }
-  for (auto& step : result->latency_steps) {
-    *latency_info->add_latency_steps() = std::move(step);
-  }
-
-  actor::RecordTabObservationResultHistogram(response);
-  actor::RecordObservationOutcomeHistogram(response,
-                                           result->attempted_observation_retry);
-
-  if (journal_entry) {
-    journal_entry->EndEntry({});
-  }
-
-  std::move(callback).Run(mojo_base::ProtoWrapper(response));
-}
-
-
 void GlicActorClientSession::PerformActions(
     const std::vector<uint8_t>& actions_proto,
     PerformActionsCallback callback) {
   LogApiRequestCount(GlicHostApiRequestId::kPerformActions);
   instance_metrics().OnPerformActions();
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  // TODO(bokan): Refactor the actor code in this class into an actor-specific
-  // wrapper for proto-to-actor conversion.
   optimization_guide::proto::Actions actions;
   if (!actions.ParseFromArray(actions_proto.data(), actions_proto.size())) {
     // TODO(bokan): include the base64 proto in the error
@@ -519,8 +354,7 @@ void GlicActorClientSession::PerformActions(
 
   actor::TaskId task_id(actions.task_id());
   if (!ValidateTaskIdMatchesCurrent(
-          task_id, GlicActorTaskIdMismatchMethod::kPerformActions) ||
-      !actor_keyed_service().GetTask(task_id)) {
+          task_id, GlicActorTaskIdMismatchMethod::kPerformActions)) {
     actor_keyed_service().GetJournal().Log(GURL::EmptyGURL(), task_id,
                                            "Act Failed",
                                            actor::JournalDetailsBuilder()
@@ -535,35 +369,17 @@ void GlicActorClientSession::PerformActions(
     return;
   }
 
-  actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
-  if (!requests.has_value()) {
-    actor_keyed_service().GetJournal().Log(
-        GURL::EmptyGURL(), task_id, "Act Failed",
-        actor::JournalDetailsBuilder()
-            .AddError("Failed to convert proto::Actions to ToolRequest")
-            .Add("failed_action_index", requests.error().first)
-            .Add("error_code", static_cast<int>(requests.error().second))
-            .Build());
-    optimization_guide::proto::ActionsResult response =
-        actor::BuildErrorActionsResult(requests.error().second,
-                                       requests.error().first);
-    std::move(callback).Run(mojo_base::ProtoWrapper(response));
-    return;
-  }
-  bool skip_async_observation_information =
-      actions.has_skip_async_observation_collection() &&
-      actions.skip_async_observation_collection();
-
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       base::unexpected(mojom::PerformActionsErrorReason::kUnknown));
 
-  actor_keyed_service().PerformActions(
-      task_id, std::move(requests.value()), actor::ActorTaskMetadata(actions),
-      base::BindOnce(&GlicActorClientSession::PerformActionsFinished,
-                     GetWeakPtr(), std::move(wrapped_callback), task_id,
-                     start_time, skip_async_observation_information,
-                     actor::GetScreenshotCollectionOptions(actions)));
+  actor_keyed_service_proto_wrapper_.PerformActions(
+      actions, base::BindOnce(
+                   [](PerformActionsCallback callback,
+                      optimization_guide::proto::ActionsResult response) {
+                     std::move(callback).Run(mojo_base::ProtoWrapper(response));
+                   },
+                   std::move(wrapped_callback)));
 }
 
 void GlicActorClientSession::CancelActions(int32_t task_id,

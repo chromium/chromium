@@ -13,8 +13,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service_proto_wrapper.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -22,7 +22,6 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/task_id.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,11 +29,8 @@
 class Profile;
 
 namespace actor {
-struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
-struct ObservationResult;
-class TabObservationController;
 }  // namespace actor
 
 namespace glic {
@@ -242,24 +238,6 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
           params) override;
 
  private:
-  void PerformActionsFinished(
-      PerformActionsCallback callback,
-      actor::TaskId task_id,
-      base::TimeTicks start_time,
-      bool skip_async_observation_information,
-      std::optional<page_content_annotations::ScreenshotOptions::
-                        ScreenshotCollectionOptions>
-          screenshot_collection_options,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results,
-      actor::TabObservationStrategy observation_strategy);
-  void OnPerformActionsComplete(
-      PerformActionsCallback callback,
-      base::TimeTicks start_time,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results,
-      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
-          journal_entry,
-      actor::TabObservationController* controller_ptr,
-      std::unique_ptr<actor::ObservationResult> result);
   void CreateActorTabFinished(CreateActorTabCallback callback,
                               tabs::TabInterface* new_tab);
   void NotifyActorTaskStateChanged(actor::ActorTask& task);
@@ -274,8 +252,6 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
 
   mojo::Remote<mojom::ActorClient> actor_client_;
   mojo::Receiver<mojom::ActorHandler> receiver_{this};
-  std::vector<std::unique_ptr<actor::TabObservationController>>
-      observation_controllers_;
 
   base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
       autofill_selection_event_handler_;
@@ -285,6 +261,7 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
       actor_task_state_changed_subscription_;
   base::CallbackListSubscription can_act_on_web_changed_subscription_;
   raw_ref<GlicActorTaskManager> manager_;
+  actor::ActorKeyedServiceProtoWrapper actor_keyed_service_proto_wrapper_;
   std::unique_ptr<GlicActorJournalHandler> journal_handler_;
   base::WeakPtrFactory<GlicActorClientSession> weak_ptr_factory_{this};
 };
