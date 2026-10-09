@@ -37,6 +37,23 @@ JourneyContinuationQuery::JourneyContinuationQuery(
 JourneyContinuationQuery& JourneyContinuationQuery::operator=(
     JourneyContinuationQuery&&) noexcept = default;
 
+JourneyHistoryEntryCollection::JourneyHistoryEntryCollection() = default;
+
+JourneyHistoryEntryCollection::JourneyHistoryEntryCollection(
+    std::string title,
+    std::vector<JourneyHistoryEntry> items)
+    : title(std::move(title)), items(std::move(items)) {}
+
+JourneyHistoryEntryCollection::~JourneyHistoryEntryCollection() = default;
+JourneyHistoryEntryCollection::JourneyHistoryEntryCollection(
+    const JourneyHistoryEntryCollection&) = default;
+JourneyHistoryEntryCollection& JourneyHistoryEntryCollection::operator=(
+    const JourneyHistoryEntryCollection&) = default;
+JourneyHistoryEntryCollection::JourneyHistoryEntryCollection(
+    JourneyHistoryEntryCollection&&) noexcept = default;
+JourneyHistoryEntryCollection& JourneyHistoryEntryCollection::operator=(
+    JourneyHistoryEntryCollection&&) noexcept = default;
+
 JourneyRow::JourneyRow() = default;
 
 JourneyRow::JourneyRow(
@@ -47,7 +64,8 @@ JourneyRow::JourneyRow(
     std::optional<std::string> overview,
     std::optional<std::string> short_overview,
     std::vector<JourneyHistoryEntry> history_entries,
-    std::vector<JourneyContinuationQuery> continuation_queries)
+    std::vector<JourneyContinuationQuery> continuation_queries,
+    std::vector<JourneyHistoryEntryCollection> collections)
     : journey_id(std::move(journey_id)),
       title(std::move(title)),
       creation_time(creation_time),
@@ -55,7 +73,8 @@ JourneyRow::JourneyRow(
       overview(std::move(overview)),
       short_overview(std::move(short_overview)),
       history_entries(std::move(history_entries)),
-      continuation_queries(std::move(continuation_queries)) {}
+      continuation_queries(std::move(continuation_queries)),
+      collections(std::move(collections)) {}
 
 JourneyRow::~JourneyRow() = default;
 JourneyRow::JourneyRow(const JourneyRow&) = default;

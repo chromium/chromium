@@ -3120,6 +3120,8 @@ TEST_P(HistoryBackendDBTest, InitJourneysTablesOnExistingDatabase) {
     ASSERT_FALSE(db.DoesTableExist("journeys"));
     ASSERT_FALSE(db.DoesTableExist("journey_history_entries"));
     ASSERT_FALSE(db.DoesTableExist("journey_continuation_queries"));
+    ASSERT_FALSE(db.DoesTableExist("journey_collections"));
+    ASSERT_FALSE(db.DoesTableExist("journey_collection_items"));
     ASSERT_FALSE(db.DoesTableExist("journey_sync_metadata"));
   }
 
@@ -3140,6 +3142,8 @@ TEST_P(HistoryBackendDBTest, InitJourneysTablesOnExistingDatabase) {
     EXPECT_TRUE(db.DoesTableExist("journeys"));
     EXPECT_TRUE(db.DoesTableExist("journey_history_entries"));
     EXPECT_TRUE(db.DoesTableExist("journey_continuation_queries"));
+    EXPECT_TRUE(db.DoesTableExist("journey_collections"));
+    EXPECT_TRUE(db.DoesTableExist("journey_collection_items"));
     EXPECT_TRUE(db.DoesTableExist("journey_sync_metadata"));
   }
 }

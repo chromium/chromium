@@ -76,6 +76,7 @@ sequence and delivering remote updates to the bridge on the backend sequence.
 ║     │              journeys                                                ║
 ║     │              journey_history_entries                                 ║
 ║     │              journey_continuation_queries                            ║
+║     │              journey_collections, journey_collection_items           ║
 ║     │                                                                      ║
 ║     ├── owns ──► JourneysSyncMetadataDatabase                              ║
 ║     │              journey_sync_metadata                                   ║
@@ -160,22 +161,26 @@ a separate file could not be committed atomically with the surrounding history
 changes.
 
 A journey is a title, an optional emoji, a long and a short summary, a set of
-visits, and any number of suggested follow-up searches. That maps onto the
-tables below — see [`InitJourneysTables`][schema] for the authoritative
-definitions:
+visits, any number of suggested follow-up searches, and optional collections of
+similar pages. That maps onto the tables below — see
+[`InitJourneysTables`][schema] for the authoritative definitions:
 
 | Table | Keyed by | Holds |
 |---|---|---|
 | **`journeys`** | `journey_id` | Journey metadata: title, creation time, emoji, and the two summaries. |
 | **`journey_history_entries`** | journey + visit timestamp | Which visits belong to a journey. |
 | **`journey_continuation_queries`** | grouped by `journey_id`, each row with its own id | Suggested follow-up searches. |
+| **`journey_collections`** | journey + position | Titled collections of similar pages, in display order. |
+| **`journey_collection_items`** | journey + collection position + item position | The items of each collection, as visit timestamps, in display order. |
 | **`journey_sync_metadata`** | `storage_key` | Per-entity sync metadata. |
 | **`meta_table`** | key-value | The per-data-type sync state, in the shared History meta table. |
 
-Two details of the physical layout are deliberate. A row of
-`journey_history_entries` is nothing but its key, so the table is `WITHOUT
-ROWID` and the rows live directly in the primary key index. And indices back the
-three lookups the schema is built around: listing journeys newest-first,
+The physical layout is deliberate. The rows of `journey_history_entries`,
+`journey_collections` and `journey_collection_items` are small and keyed by a
+composite primary key, so these tables are `WITHOUT ROWID` and the rows live
+directly in the primary key index. Their primary keys start with `journey_id`,
+so they also serve fetching and deleting a journey's rows. And indices back the
+other lookups the schema is built around: listing journeys newest-first,
 fetching and deleting a journey's continuation queries, and going from a visit
 back to the journeys that reference it.
 
@@ -184,9 +189,18 @@ title shown to the user, and a prompt used to run the follow-up search. Unlike
 visits these are stored in full, so they need no resolution against the history
 tables. They get their own table because a journey may have any number of them.
 
+A *collection* is a titled group of similar pages from a journey, shown as one
+section of the journey's details page (e.g. "Boats you've visited"). Each item
+is expected to reference one of the journey's visits by timestamp; this isn't
+checked when storing. Collections are optional.
+Display order is stored explicitly in `position` and `item_position` columns;
+reads join items to their collection and don't rely on positions being
+contiguous. A visit repeated within a collection is stored once, at its first
+position.
+
 Writes go through [`AddOrUpdateJourneys`][add-or-update], which replaces a
 journey's child rows wholesale rather than merging into them, so an update that
-shrinks a journey leaves no stale visits or queries behind.
+shrinks a journey leaves no stale visits, queries or collections behind.
 
 ## Visit Resolution Pipeline (`journeys_backend_util.h`)
 
@@ -301,6 +315,8 @@ sync engine ── ClientTagBasedDataTypeProcessor
          │              journeys
          │              journey_history_entries
          │              journey_continuation_queries
+         │              journey_collections
+         │              journey_collection_items
          │
          ├─► ACTION_ADD / ACTION_UPDATE
          │      JourneyRowFromSpecifics()   (deserialize)
@@ -477,7 +493,8 @@ end-to-end tests of the public APIs, and the schema-creation test. Avoid
   `journeys_backend_util.cc`. Run with `--v=1` to see which journeys are being
   dropped and why.
 - To inspect storage directly, the `journeys`, `journey_history_entries`,
-  `journey_continuation_queries`, and `journey_sync_metadata` tables all live in
+  `journey_continuation_queries`, `journey_collections`,
+  `journey_collection_items`, and `journey_sync_metadata` tables all live in
   the profile's main `History` SQLite file.
 
 ### Metrics
@@ -518,8 +535,14 @@ user's sync state.
 
 `JourneysDatabase` is a mixin, not a self-contained database, and does not carry
 its own version number. Table creation and any future migrations are driven by
-`HistoryDatabase`, so a schema change here means bumping the History database
-version and adding the migration alongside the others.
+`HistoryDatabase`. `HistoryDatabase::Init()` calls `InitJourneysTables()` on
+every open, before `EnsureCurrentVersion()`, and it creates any missing table.
+So adding a table needs no version bump. Instead, add its `CREATE TABLE` to the
+newest `components/test/data/history/history.N.sql`, and extend
+`InitJourneysTablesOnExistingDatabase` (history_backend_db_unittest.cc) to cover
+databases created before the table existed. Changing an existing table means
+bumping the History database version and adding the migration alongside the
+others.
 
 [add-or-update]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_database.h?q=AddOrUpdateJourneys
 [apply-incremental]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_sync_bridge.h?q=ApplyIncrementalSyncChanges

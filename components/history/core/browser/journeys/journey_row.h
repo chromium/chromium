@@ -46,6 +46,30 @@ struct JourneyContinuationQuery {
   std::string prompt;
 };
 
+// A titled group of similar pages from a journey, shown as one section of the
+// journey's details page.
+struct JourneyHistoryEntryCollection {
+  JourneyHistoryEntryCollection();
+  JourneyHistoryEntryCollection(std::string title,
+                                std::vector<JourneyHistoryEntry> items);
+  ~JourneyHistoryEntryCollection();
+  JourneyHistoryEntryCollection(const JourneyHistoryEntryCollection&);
+  JourneyHistoryEntryCollection& operator=(
+      const JourneyHistoryEntryCollection&);
+  JourneyHistoryEntryCollection(JourneyHistoryEntryCollection&&) noexcept;
+  JourneyHistoryEntryCollection& operator=(
+      JourneyHistoryEntryCollection&&) noexcept;
+
+  bool operator==(const JourneyHistoryEntryCollection& other) const = default;
+
+  // Complete section heading, shown as-is.
+  std::string title;
+
+  // Items in display order. Each is expected to reference one of the
+  // journey's `history_entries` by visit timestamp.
+  std::vector<JourneyHistoryEntry> items;
+};
+
 // Holds all information associated with one journey record in the history
 // database.
 struct JourneyRow {
@@ -57,7 +81,8 @@ struct JourneyRow {
              std::optional<std::string> overview = std::nullopt,
              std::optional<std::string> short_overview = std::nullopt,
              std::vector<JourneyHistoryEntry> history_entries = {},
-             std::vector<JourneyContinuationQuery> continuation_queries = {});
+             std::vector<JourneyContinuationQuery> continuation_queries = {},
+             std::vector<JourneyHistoryEntryCollection> collections = {});
   ~JourneyRow();
   JourneyRow(const JourneyRow&);
   JourneyRow& operator=(const JourneyRow&);
@@ -89,6 +114,10 @@ struct JourneyRow {
 
   // Associated continuation query suggestions.
   std::vector<JourneyContinuationQuery> continuation_queries;
+
+  // Collections of similar pages, in display order. Empty if the journey has
+  // no collections.
+  std::vector<JourneyHistoryEntryCollection> collections;
 };
 
 }  // namespace history::journeys

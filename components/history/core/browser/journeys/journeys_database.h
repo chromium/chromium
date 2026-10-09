@@ -27,6 +27,10 @@ namespace history::journeys {
 //   (matching `visits.visit_time` in VisitDatabase).
 // - `journey_continuation_queries`: Child table linking `journey_id` to
 //   continuation queries.
+// - `journey_collections`: Child table storing the titled collections of a
+//   journey, in display order.
+// - `journey_collection_items`: Child table storing the items of each
+//   collection as visit timestamps, in display order.
 class JourneysDatabase {
  public:
   JourneysDatabase();
@@ -37,29 +41,34 @@ class JourneysDatabase {
   virtual ~JourneysDatabase();
 
   // Adds or updates a batch of journeys in the database, including their
-  // history entries and continuation queries. Returns true on success.
+  // history entries, continuation queries and collections. A visit repeated
+  // within a collection is stored once, at its first position; collection
+  // items aren't checked against `history_entries`. Returns true on success.
   bool AddOrUpdateJourneys(const std::vector<JourneyRow>& journeys);
 
   // Deletes a batch of journeys and their associated child entries (history
-  // entries and continuation queries) identified by `journey_ids`. Returns true
-  // on success.
+  // entries, continuation queries and collections) identified by
+  // `journey_ids`. Returns true on success.
   bool DeleteJourneys(const std::vector<std::string>& journey_ids);
 
-  // Retrieves a full journey by its journey_id (including history entries and
-  // continuation queries). Returns std::nullopt if not found or on error.
+  // Retrieves a full journey by its journey_id (including history entries,
+  // continuation queries and collections). Returns std::nullopt if not found or
+  // on error.
   std::optional<JourneyRow> GetJourney(const std::string& journey_id);
 
   // Retrieves all stored journeys, ordered by creation_time DESC.
   // Returns an empty vector on error or if none exist.
   std::vector<JourneyRow> GetAllJourneys();
 
-  // Deletes all journeys and all associated child entries from all 3 tables.
+  // Deletes all journeys and all associated child entries from all journeys
+  // tables listed above.
   // Returns true on success.
   bool DeleteAllJourneys();
 
  protected:
-  // Initializes the database tables and indices for a fresh database. Returns
-  // true on success.
+  // Creates any missing tables and indices; existing ones are left untouched.
+  // So adding a table needs no migration, but changing an existing one does.
+  // Returns true on success.
   bool InitJourneysTables();
 
   // Drops all journey tables. Used by HistoryDatabase::RecreateAllTablesButURL.

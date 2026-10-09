@@ -24,6 +24,8 @@ CREATE TABLE history_sync_metadata (storage_key INTEGER PRIMARY KEY NOT NULL, va
 CREATE TABLE journeys (journey_id TEXT PRIMARY KEY NOT NULL, title TEXT NOT NULL, emoji TEXT, overview TEXT, short_overview TEXT, creation_time_micros INTEGER NOT NULL);
 CREATE TABLE journey_history_entries (journey_id TEXT NOT NULL, visit_timestamp_micros INTEGER NOT NULL, PRIMARY KEY (journey_id, visit_timestamp_micros)) WITHOUT ROWID;
 CREATE TABLE journey_continuation_queries (id INTEGER PRIMARY KEY, journey_id TEXT NOT NULL, title TEXT NOT NULL, prompt TEXT NOT NULL);
+CREATE TABLE journey_collections (journey_id TEXT NOT NULL, position INTEGER NOT NULL, title TEXT NOT NULL, PRIMARY KEY (journey_id, position)) WITHOUT ROWID;
+CREATE TABLE journey_collection_items (journey_id TEXT NOT NULL, collection_position INTEGER NOT NULL, item_position INTEGER NOT NULL, visit_timestamp_micros INTEGER NOT NULL, PRIMARY KEY (journey_id, collection_position, item_position)) WITHOUT ROWID;
 CREATE TABLE journey_sync_metadata (storage_key TEXT PRIMARY KEY NOT NULL, value BLOB NOT NULL);
 DELETE FROM sqlite_sequence;
 CREATE INDEX visits_url_index ON visits (url);
