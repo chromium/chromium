@@ -95,6 +95,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ax_strings.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -517,7 +518,7 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   ASSERT_NE(empty_item, nullptr);
   EXPECT_EQ(empty_item->GetType(), views::MenuItemView::Type::kEmpty);
   EXPECT_EQ(empty_item->title(),
-            l10n_util::GetStringUTF16(IDS_MENU_EMPTY_SUBMENU));
+            l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU));
   EXPECT_FALSE(empty_item->GetEnabled());
 
   // Other bookmarks folder containing child bookmark.

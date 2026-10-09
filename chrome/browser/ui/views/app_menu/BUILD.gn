@@ -255,6 +255,7 @@ if (toolkit_views) {
       "//ui/actions:actions_headers",
       "//ui/base",
       "//ui/base:test_support",
+      "//ui/strings",
       "//ui/views",
       "//ui/views:test_support",
     ]
