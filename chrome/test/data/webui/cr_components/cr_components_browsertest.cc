@@ -347,8 +347,9 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest,
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, RecordingWave) {
-  RunTest("cr_components/composebox/recording_wave_test.js", "mocha.run()");
+typedef WebUIMochaBrowserTest CrComponentsSearchTest;
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchTest, RecordingWave) {
+  RunTest("cr_components/search/recording_wave_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, LensSearch) {

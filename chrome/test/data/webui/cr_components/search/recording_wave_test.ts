@@ -6,17 +6,30 @@ import 'chrome://resources/cr_components/search/recording_wave.js';
 
 import {AudioProcessor} from 'chrome://resources/cr_components/search/audio_processor.service.js';
 import {MAX_BAR_BOUND_HEIGHT} from 'chrome://resources/cr_components/search/recording_wave.js';
-import type {RecordingWaveElement} from 'chrome://resources/cr_components/search/recording_wave.js';
+import type {Bar, RecordingWaveElement} from 'chrome://resources/cr_components/search/recording_wave.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+type MockRecordingWaveElement =
+    Omit<
+        RecordingWaveElement,
+        'animationFrameId_'|'barsData_'|'maxBars_'|'animationLoop_'>&{
+      animationFrameId_: number | null,
+      barsData_: Bar[],
+      maxBars_: number,
+      animationLoop_: (timestamp?: number) => void,
+    };
+
 suite('RecordingWaveElementTest', () => {
-  let recordingWaveElement: RecordingWaveElement;
+  let recordingWaveElement: MockRecordingWaveElement;
   let originalMatchMedia: typeof window.matchMedia;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    recordingWaveElement = document.createElement('recording-wave');
+    const initialElement: RecordingWaveElement =
+        document.createElement('recording-wave');
+    recordingWaveElement = initialElement as
+        unknown as MockRecordingWaveElement;
     recordingWaveElement.style.display = 'block';
     recordingWaveElement.style.width = '1500px';
     document.body.appendChild(recordingWaveElement);
@@ -78,7 +91,7 @@ suite('RecordingWaveElementTest', () => {
       await microtasksFinished();
 
       assertTrue(startCalled);
-      assertTrue((recordingWaveElement as any).animationFrameId_ !== null);
+      assertTrue(recordingWaveElement.animationFrameId_ !== null);
       const pills =
           recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
       assertTrue(pills.length > 0);
@@ -88,7 +101,7 @@ suite('RecordingWaveElementTest', () => {
       await microtasksFinished();
 
       assertTrue(stopCalled);
-      assertEquals(null, (recordingWaveElement as any).animationFrameId_);
+      assertEquals(null, recordingWaveElement.animationFrameId_);
       assertEquals(0, recordingWaveElement.$.barsContainer.children.length);
     } finally {
       AudioProcessor.startMonitoringLevels = origStart;
@@ -97,7 +110,8 @@ suite('RecordingWaveElementTest', () => {
   });
 
   test(
-      'dark theme colors are shown if prefers-color-scheme dark and darkThemeColorsEnabled is true',
+      'dark theme colors are shown if prefers-color-scheme' +
+          ' dark and darkThemeColorsEnabled is true',
       async () => {
         setPrefersColorSchemeDark(true);
         recordingWaveElement.darkThemeColorsEnabled = true;
@@ -106,8 +120,8 @@ suite('RecordingWaveElementTest', () => {
         await microtasksFinished();
 
         // Spawn all bars to set their colors.
-        const barsData = (recordingWaveElement as any).barsData_;
-        barsData.forEach((bar: any) => {
+        const barsData = recordingWaveElement.barsData_;
+        barsData.forEach((bar: Bar) => {
           bar.isUnspawned = false;
         });
 
@@ -141,8 +155,8 @@ suite('RecordingWaveElementTest', () => {
         await microtasksFinished();
 
         // Spawn all bars to set their colors.
-        const barsData = (recordingWaveElement as any).barsData_;
-        barsData.forEach((bar: any) => {
+        const barsData = recordingWaveElement.barsData_;
+        barsData.forEach((bar: Bar) => {
           bar.isUnspawned = false;
         });
 
@@ -176,17 +190,17 @@ suite('RecordingWaveElementTest', () => {
       await recordingWaveElement.updateComplete;
       await microtasksFinished();
 
-      const barsData = (recordingWaveElement as any).barsData_;
+      const barsData = recordingWaveElement.barsData_;
 
       const testVolumeMapping = (volume: number, expectedHeightPx: number) => {
         mockVolume = volume;
         // ACTIVATION_DELAY_INDEX is 6.
-        barsData[6].isUnspawned = true;
+        barsData[6]!.isUnspawned = true;
 
         // Manually trigger animation loop frame logic.
-        (recordingWaveElement as any).animationLoop_(performance.now());
+        recordingWaveElement.animationLoop_(performance.now());
 
-        assertEquals(expectedHeightPx, barsData[6].targetHeightPx);
+        assertEquals(expectedHeightPx, barsData[6]!.targetHeightPx);
       };
 
       testVolumeMapping(0, 8);     // MINIMUM_BAR_HEIGHT
@@ -206,13 +220,13 @@ suite('RecordingWaveElementTest', () => {
       await recordingWaveElement.updateComplete;
       await microtasksFinished();
 
-      const barsData = (recordingWaveElement as any).barsData_;
-      barsData[6].isUnspawned = true;
+      const barsData = recordingWaveElement.barsData_;
+      barsData[6]!.isUnspawned = true;
 
-      (recordingWaveElement as any).animationLoop_(performance.now());
+      recordingWaveElement.animationLoop_(performance.now());
 
-      assertEquals(0, barsData[6].level);
-      assertEquals(8, barsData[6].targetHeightPx);
+      assertEquals(0, barsData[6]!.level);
+      assertEquals(8, barsData[6]!.targetHeightPx);
     } finally {
       AudioProcessor.getVolume = originalGetVolume;
     }
@@ -224,14 +238,14 @@ suite('RecordingWaveElementTest', () => {
     await new Promise(
         resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     await microtasksFinished();
-    assertEquals(20, (recordingWaveElement as any).maxBars_);
+    assertEquals(20, recordingWaveElement.maxBars_);
 
     // 150px width should yield 150 / 15 = 10 bars.
     recordingWaveElement.style.width = '150px';
     await new Promise(
         resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     await microtasksFinished();
-    assertEquals(10, (recordingWaveElement as any).maxBars_);
+    assertEquals(10, recordingWaveElement.maxBars_);
   });
 
   test('animation loop shrinks or grows bars dynamically', async () => {
@@ -247,29 +261,29 @@ suite('RecordingWaveElementTest', () => {
     let pills =
         recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
     assertEquals(20, pills.length);
-    assertEquals(20, (recordingWaveElement as any).barsData_.length);
+    assertEquals(20, recordingWaveElement.barsData_.length);
 
     // Shrink width to 150px (10 bars).
     recordingWaveElement.style.width = '150px';
     await new Promise(
         resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     await microtasksFinished();
-    (recordingWaveElement as any).animationLoop_();
+    recordingWaveElement.animationLoop_();
 
     pills = recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
     assertEquals(10, pills.length);
-    assertEquals(10, (recordingWaveElement as any).barsData_.length);
+    assertEquals(10, recordingWaveElement.barsData_.length);
 
     // Grow width back to 300px (20 bars).
     recordingWaveElement.style.width = '300px';
     await new Promise(
         resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     await microtasksFinished();
-    (recordingWaveElement as any).animationLoop_();
+    recordingWaveElement.animationLoop_();
 
     pills = recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
     assertEquals(20, pills.length);
-    assertEquals(20, (recordingWaveElement as any).barsData_.length);
+    assertEquals(20, recordingWaveElement.barsData_.length);
   });
 
   test('disconnected callback cleans up resources', async () => {
@@ -285,13 +299,13 @@ suite('RecordingWaveElementTest', () => {
       await recordingWaveElement.updateComplete;
       await microtasksFinished();
 
-      assertTrue((recordingWaveElement as any).animationFrameId_ !== null);
+      assertTrue(recordingWaveElement.animationFrameId_ !== null);
 
       recordingWaveElement.remove();
       await microtasksFinished();
 
       assertTrue(stopCalled);
-      assertEquals(null, (recordingWaveElement as any).animationFrameId_);
+      assertEquals(null, recordingWaveElement.animationFrameId_);
     } finally {
       AudioProcessor.stopListening = origStop;
     }
@@ -353,18 +367,18 @@ suite('RecordingWaveElementTest', () => {
           await recordingWaveElement.updateComplete;
           await microtasksFinished();
 
-          const barsData = (recordingWaveElement as any).barsData_;
+          const barsData = recordingWaveElement.barsData_;
           // Trigger spawn at ACTIVATION_DELAY_INDEX (6).
-          barsData[6].isUnspawned = true;
-          (recordingWaveElement as any).animationLoop_(performance.now());
-          assertEquals(36, barsData[6].targetHeightPx);
+          barsData[6]!.isUnspawned = true;
+          recordingWaveElement.animationLoop_(performance.now());
+          assertEquals(36, barsData[6]!.targetHeightPx);
 
           // Simulate spring overshoot peak (currentScaleY = 1.372).
-          barsData[6].isSpawning = true;
-          barsData[6].currentScaleY = 1.372;
-          barsData[6].currentScaleX = 1.0;
+          barsData[6]!.isSpawning = true;
+          barsData[6]!.currentScaleY = 1.372;
+          barsData[6]!.currentScaleX = 1.0;
 
-          (recordingWaveElement as any).animationLoop_(performance.now());
+          recordingWaveElement.animationLoop_(performance.now());
 
           const pill =
               recordingWaveElement.$.barsContainer.children[6] as HTMLElement;
@@ -373,7 +387,7 @@ suite('RecordingWaveElementTest', () => {
           assertTrue(!!match, 'scaleY should be present in transform');
           const scaleY = parseFloat(match?.[1] ?? '0');
           assertTrue(scaleY > 0, 'scaleY should be greater than 0');
-          const renderedHeight = barsData[6].targetHeightPx * scaleY;
+          const renderedHeight = barsData[6]!.targetHeightPx * scaleY;
           assertTrue(
               renderedHeight <= MAX_BAR_BOUND_HEIGHT + 0.01,
               `Rendered height ${renderedHeight} should not exceed ` +
