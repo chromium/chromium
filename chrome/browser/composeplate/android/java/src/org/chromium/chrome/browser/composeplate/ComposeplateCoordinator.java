@@ -66,16 +66,6 @@ public class ComposeplateCoordinator {
                 resources.getDimensionPixelSize(R.dimen.composeplate_view_legacy_height);
         mView.setLayoutParams(containerParams);
 
-        View searchIcon = mView.findViewById(R.id.composeplate_button_icon);
-        if (searchIcon != null) {
-            ViewGroup.LayoutParams searchIconParams = searchIcon.getLayoutParams();
-            int iconSize =
-                    mView.getResources().getDimensionPixelSize(R.dimen.composeplate_view_icon_size);
-            searchIconParams.width = iconSize;
-            searchIconParams.height = iconSize;
-            searchIcon.setLayoutParams(searchIconParams);
-        }
-
         mView.setTextStyle(R.style.TextAppearance_ComposeplateTextMedium);
     }
 
