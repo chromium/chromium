@@ -5687,9 +5687,6 @@ crbug.com/1323246 external/wpt/web-animations/timing-model/timelines/sibling-ifr
 # introduce blink_wpt_tests
 crbug.com/1299834 [ Win ] wpt_internal/html/interaction/focus/the-autofocus-attribute/object-fallback.html [ Timeout ]
 
-# Sheriff 2022-05-20
-crbug.com/1291841 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Pass Timeout ]
-
 # Sheriff 2022-05-26
 crbug.com/1329596 virtual/gpu-rasterization/images/jpeg-with-non-interleaved-dc-channels.html [ Failure Pass ]
 
