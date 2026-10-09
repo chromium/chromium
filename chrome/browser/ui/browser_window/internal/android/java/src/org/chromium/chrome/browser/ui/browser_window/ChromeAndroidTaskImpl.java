@@ -943,7 +943,7 @@ final class ChromeAndroidTaskImpl
         ThreadUtils.assertOnUiThread();
         if (mState == State.PENDING_CREATE) return false;
 
-        @Nullable Boolean isActiveFuture = mPendingActionManager.isActiveFuture(mState);
+        @Nullable Boolean isActiveFuture = mPendingActionManager.isActiveFuture();
         if (isActiveFuture != null) {
             return isActiveFuture;
         }
@@ -961,7 +961,7 @@ final class ChromeAndroidTaskImpl
 
         if (mState == State.PENDING_CREATE) return false;
 
-        @Nullable Boolean isMaximizedFuture = mPendingActionManager.isMaximizedFuture(mState);
+        @Nullable Boolean isMaximizedFuture = mPendingActionManager.isMaximizedFuture();
         if (isMaximizedFuture != null) {
             return isMaximizedFuture;
         }
@@ -974,7 +974,7 @@ final class ChromeAndroidTaskImpl
         ThreadUtils.assertOnUiThread();
         if (mState == State.PENDING_CREATE) return false;
 
-        @Nullable Boolean isVisibleFuture = mPendingActionManager.isVisibleFuture(mState);
+        @Nullable Boolean isVisibleFuture = mPendingActionManager.isVisibleFuture();
         if (isVisibleFuture != null) {
             return !isVisibleFuture;
         }
@@ -1047,7 +1047,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (Boolean.TRUE.equals(mPendingActionManager.isActiveFuture(mState))) {
+        if (Boolean.TRUE.equals(mPendingActionManager.isActiveFuture())) {
             return;
         }
 
@@ -1059,7 +1059,7 @@ final class ChromeAndroidTaskImpl
         ThreadUtils.assertOnUiThread();
         if (mState == State.PENDING_CREATE) return false;
 
-        Boolean isVisible = mPendingActionManager.isVisibleFuture(mState);
+        Boolean isVisible = mPendingActionManager.isVisibleFuture();
         if (isVisible != null) return isVisible;
 
         return mWindowStateManager.getWindowState() != WindowState.MINIMIZED;
@@ -1075,7 +1075,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (Boolean.FALSE.equals(mPendingActionManager.isActiveFuture(mState))) return;
+        if (Boolean.FALSE.equals(mPendingActionManager.isActiveFuture())) return;
 
         useActivity(
                 topActivityScopedObjects -> {
@@ -1117,7 +1117,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (Boolean.TRUE.equals(mPendingActionManager.isActiveFuture(mState))) return;
+        if (Boolean.TRUE.equals(mPendingActionManager.isActiveFuture())) return;
 
         useActivity(
                 topActivityScopedObjects -> {
@@ -1135,7 +1135,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (Boolean.FALSE.equals(mPendingActionManager.isActiveFuture(mState))) return;
+        if (Boolean.FALSE.equals(mPendingActionManager.isActiveFuture())) return;
 
         useActivity(
                 topActivityScopedObjects -> {
@@ -1178,7 +1178,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (Boolean.TRUE.equals(mPendingActionManager.isMaximizedFuture(mState))) return;
+        if (Boolean.TRUE.equals(mPendingActionManager.isMaximizedFuture())) return;
 
         useActivity(this::maximizeInternal);
     }
@@ -1196,7 +1196,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (Boolean.FALSE.equals(mPendingActionManager.isVisibleFuture(mState))) return;
+        if (Boolean.FALSE.equals(mPendingActionManager.isVisibleFuture())) return;
 
         useActivity(this::minimizeInternal);
     }

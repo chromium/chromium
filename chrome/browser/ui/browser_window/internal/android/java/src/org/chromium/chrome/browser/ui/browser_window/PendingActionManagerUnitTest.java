@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 
 /** Unit tests for {@link PendingActionManager}. */
@@ -464,7 +463,7 @@ public class PendingActionManagerUnitTest {
         assertEquals(
                 "isActive should be true in the future when ACTIVATE is in progress",
                 true,
-                mManager.isActiveFuture(State.PENDING_CREATE));
+                mManager.isActiveFuture());
     }
 
     @Test
@@ -476,7 +475,7 @@ public class PendingActionManagerUnitTest {
         assertEquals(
                 "isVisible should be true in the future when SHOW is in progress",
                 true,
-                mManager.isVisibleFuture(State.PENDING_UPDATE));
+                mManager.isVisibleFuture());
     }
 
     @Test
@@ -488,7 +487,7 @@ public class PendingActionManagerUnitTest {
         assertEquals(
                 "isVisible should be false in the future when MINIMIZE is in progress",
                 false,
-                mManager.isVisibleFuture(State.PENDING_UPDATE));
+                mManager.isVisibleFuture());
     }
 
     @Test
@@ -500,7 +499,7 @@ public class PendingActionManagerUnitTest {
         assertEquals(
                 "isMaximized should be true in the future when MAXIMIZE is in progress",
                 true,
-                mManager.isMaximizedFuture(State.PENDING_UPDATE));
+                mManager.isMaximizedFuture());
     }
 
     @Test
@@ -513,7 +512,7 @@ public class PendingActionManagerUnitTest {
                 "isMaximized should be false in the future when non-maximized SET_BOUNDS is in"
                         + " progress",
                 false,
-                mManager.isMaximizedFuture(State.PENDING_UPDATE));
+                mManager.isMaximizedFuture());
     }
 
     @Test
@@ -524,7 +523,7 @@ public class PendingActionManagerUnitTest {
         // Assert.
         assertNull(
                 "isActiveFuture should not be affected when MAXIMIZE is in progress",
-                mManager.isActiveFuture(State.PENDING_UPDATE));
+                mManager.isActiveFuture());
     }
 
     @Test
@@ -535,7 +534,7 @@ public class PendingActionManagerUnitTest {
         // Assert.
         assertNull(
                 "isActiveFuture should not be affected when RESTORE is in progress",
-                mManager.isActiveFuture(State.PENDING_UPDATE));
+                mManager.isActiveFuture());
     }
 
     @Test
@@ -564,12 +563,11 @@ public class PendingActionManagerUnitTest {
     public void testGetAndClearTargetPendingActions_afterClear_stateReturnsNull() {
         // Arrange.
         mManager.requestAction(PendingAction.ACTIVATE);
-        assertEquals(true, mManager.isActiveFuture(State.PENDING_UPDATE));
+        assertEquals(true, mManager.isActiveFuture());
 
         mManager.getAndClearTargetPendingActions(PendingAction.ACTIVATE);
         assertNull(
-                "No pending action affecting isActive's future state",
-                mManager.isActiveFuture(State.PENDING_UPDATE));
+                "No pending action affecting isActive's future state", mManager.isActiveFuture());
     }
 
     private void doTestActionOverridesLowerPrecedenceAction(

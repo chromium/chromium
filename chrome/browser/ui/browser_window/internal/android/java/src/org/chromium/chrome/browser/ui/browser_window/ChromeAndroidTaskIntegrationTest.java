@@ -1417,7 +1417,7 @@ public class ChromeAndroidTaskIntegrationTest {
                     Criteria.checkThat(
                             chromeAndroidTask
                                     .getPendingActionManagerForTesting()
-                                    .isMaximizedFuture(chromeAndroidTask.getState()),
+                                    .isMaximizedFuture(),
                             Matchers.nullValue());
 
                     Criteria.checkThat(

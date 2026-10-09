@@ -12,22 +12,20 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
-import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Locale;
 
 /**
  * Class that holds business logic to track and manage actions requested on a {@code
- * State.PENDING_CREATE} or a {@code State.PENDING_UPDATE} {@link ChromeAndroidTask}.
+ * State.PENDING_UPDATE} {@link ChromeAndroidTask}.
+ *
+ * <p>Actions are not queued for a {@code State.PENDING_CREATE} {@link ChromeAndroidTask}.
  */
 @NullMarked
 final class PendingActionManager {
     /**
-     * Enumerates actions that can be requested on a {@code State.PENDING_CREATE or a {@code
-     * State.PENDING_UPDATE} browser window.
+     * Enumerates actions that can be requested on a {@code State.PENDING_UPDATE} browser window.
      */
     @IntDef({
         PendingAction.NONE,
@@ -81,17 +79,12 @@ final class PendingActionManager {
      * By definition, a secondary action will be initiated independently (when no primary action is
      * requested) or after a primary action.
      */
-    private @PendingAction int[] mPendingActions = {PendingAction.NONE, PendingAction.NONE};
+    private final @PendingAction int[] mPendingActions = {PendingAction.NONE, PendingAction.NONE};
 
-    /**
-     * Tracks the size a window should have when it is fully initialized based on a SET_BOUNDS
-     * request.
-     */
+    /** Tracks the size a window should have when the pending SET_BOUNDS request is done. */
     private @Nullable Rect mPendingBoundsInDp;
 
-    /**
-     * Tracks the size a window should have when it is fully initialized based on a RESTORE request.
-     */
+    /** Tracks the bounds a window should be restored to based on a SET_BOUNDS request. */
     private @Nullable Rect mFutureRestoredBoundsInDp;
 
     /**
@@ -119,8 +112,8 @@ final class PendingActionManager {
     private @Nullable Rect mFutureBoundsInDp;
 
     /**
-     * Requests an action to be performed on the pending task. Use this for actions that do not
-     * require an input.
+     * Requests an action to be performed on the task. Use this for actions that do not require an
+     * input.
      *
      * @param action The action to be performed.
      */
@@ -175,46 +168,10 @@ final class PendingActionManager {
         mPendingActions[1] = PendingAction.NONE;
         mPendingBoundsInDp = boundsInDp;
         if (!isMaximizedBounds) {
-            // Cache last requested bounds for potential subsequent restoration. Pending restored
-            // bounds will be cleared after all pending actions are dispatched.
+            // Cache last requested bounds for potential subsequent restoration.
             mFutureRestoredBoundsInDp = mPendingBoundsInDp;
         }
         updateFutureStatesInternal();
-    }
-
-    /**
-     * Update future states, such as isVisible, isActive based on the current pending task info.
-     *
-     * @param pendingTaskInfo The pending task info when task is created.
-     */
-    void updateFutureStates(PendingTaskInfo pendingTaskInfo) {
-        ThreadUtils.assertOnUiThread();
-        // Future states per Android default behavior
-        mIsVisibleFuture = true;
-        mIsActiveFuture = true;
-
-        // A window of given bounds will be launched.
-        mFutureBoundsInDp = pendingTaskInfo.mCreateParams.getInitialBoundsInDp();
-        mFutureRestoredBoundsInDp = mFutureBoundsInDp;
-
-        // Update states based on PendingTaskInfo
-        @WindowShowState.EnumType
-        int initialShowState = pendingTaskInfo.mCreateParams.getInitialShowState();
-        switch (initialShowState) {
-            case WindowShowState.MINIMIZED:
-                requestGlobalOverrideAction(PendingAction.MINIMIZE);
-                break;
-            case WindowShowState.MAXIMIZED:
-                requestGlobalOverrideAction(PendingAction.MAXIMIZE);
-                break;
-            case WindowShowState.DEFAULT:
-            case WindowShowState.NORMAL:
-                // No pending action needed.
-                break;
-            default:
-                throw new UnsupportedOperationException(
-                        String.format(Locale.US, "Unsupported show state: %d", initialShowState));
-        }
     }
 
     @Nullable Rect getFutureBoundsInDp() {
@@ -228,81 +185,36 @@ final class PendingActionManager {
     }
 
     /**
-     * Determines whether a pending request exists for the given action.
-     *
-     * @param action The {@link PendingAction} that will be checked.
-     * @return {@code true} if a request for {@code action} is pending, {@code false} otherwise.
-     */
-    boolean isActionRequested(@PendingAction int action) {
-        ThreadUtils.assertOnUiThread();
-        if (isPrimaryAction(action)) {
-            return mPendingActions[0] == action;
-        }
-        return mPendingActions[1] == action;
-    }
-
-    /**
      * Whether isActive will return true when the in-progress event is finished.
      *
-     * @param state The current state of task.
-     * @return Null if there is no on-going events affecting the result at the current state. True
-     *     when an event will make isActive true when finished; otherwise false.
+     * @return Null if there is no on-going events affecting the result. True when an event will
+     *     make isActive true when finished; otherwise false.
      */
-    @Nullable Boolean isActiveFuture(@State int state) {
+    @Nullable Boolean isActiveFuture() {
         ThreadUtils.assertOnUiThread();
-        if (state == State.PENDING_CREATE) {
-            return Boolean.TRUE.equals(mIsActiveFuture);
-        } else if (state == State.PENDING_UPDATE) {
-            return mIsActiveFuture;
-        }
-        return null;
+        return mIsActiveFuture;
     }
 
     /**
      * Whether isMaximized will return true when the in-progress event is finished.
      *
-     * @param state The current state of task.
-     * @return Null if there is no on-going events affecting the result at the current state. True
-     *     when an event will make isMaximized true when finished; otherwise false.
+     * @return Null if there is no on-going events affecting the result. True when an event will
+     *     make isMaximized true when finished; otherwise false.
      */
-    @Nullable Boolean isMaximizedFuture(@State int state) {
+    @Nullable Boolean isMaximizedFuture() {
         ThreadUtils.assertOnUiThread();
-        if (state == State.PENDING_CREATE) {
-            return Boolean.TRUE.equals(mIsMaximizedFuture);
-        } else if (state == State.PENDING_UPDATE) {
-            return mIsMaximizedFuture;
-        }
-        return null;
+        return mIsMaximizedFuture;
     }
 
     /**
      * Whether isVisible will return true when the in-progress event is finished.
      *
-     * @param state The current state of task.
-     * @return Null if there is no on-going events affecting the result at the current state. True
-     *     when an event will make isVisible true when finished; otherwise false.
+     * @return Null if there is no on-going events affecting the result. True when an event will
+     *     make isVisible true when finished; otherwise false.
      */
-    @Nullable Boolean isVisibleFuture(@State int state) {
+    @Nullable Boolean isVisibleFuture() {
         ThreadUtils.assertOnUiThread();
-        if (state == State.PENDING_CREATE) {
-            return Boolean.TRUE.equals(mIsVisibleFuture);
-        } else if (state == State.PENDING_UPDATE) {
-            return mIsVisibleFuture;
-        }
-        return null;
-    }
-
-    @SuppressLint("WrongConstant")
-    @PendingAction
-    int[] getAndClearPendingActions() {
-        ThreadUtils.assertOnUiThread();
-        var actions = mPendingActions;
-        mPendingActions = new int[] {PendingAction.NONE, PendingAction.NONE};
-        mPendingBoundsInDp = null;
-        mFutureRestoredBoundsInDp = null;
-        mIsVisibleFuture = null;
-        mIsActiveFuture = null;
-        return actions;
+        return mIsVisibleFuture;
     }
 
     @SuppressLint("WrongConstant")

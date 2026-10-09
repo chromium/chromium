@@ -2038,9 +2038,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Future state of isVisible() should be false when minimize() is pending",
                 false,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
         chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 1, /* isVisible= */ false);
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
 
@@ -2490,9 +2488,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Show should be pending after #show is triggered",
                 true,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
 
         chromeAndroidTask.show();
@@ -2530,9 +2526,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Future state of isActive() should be false when showInactive() is pending",
                 false,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertFalse("isActive is false while pending", chromeAndroidTask.isActive());
         chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
         when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
@@ -2540,9 +2534,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "Future state of showInactive() should be cleared when showInactive() is completed",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertFalse(chromeAndroidTask.isActive());
     }
 
@@ -2566,9 +2558,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Activate should be pending after #activate is triggered",
                 true,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
 
         chromeAndroidTask.activate();
@@ -2636,9 +2626,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Future state of isActive() should be false when deactivate() is pending",
                 false,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertFalse("isActive is false while pending", chromeAndroidTask.isActive());
         chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
         when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
@@ -2646,9 +2634,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "Future state of isActive() should be cleared when deactivate() is completed",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertFalse(chromeAndroidTask.isActive());
     }
 
@@ -2671,9 +2657,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         assertNull(
                 "Future state of isActive() should be null when nothing is pending",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertFalse("isActive should still be false", chromeAndroidTask.isActive());
     }
 
@@ -2696,9 +2680,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         assertNull(
                 "Future state of isActive() should be null when nothing is pending",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertTrue("isActive should still be true", chromeAndroidTask.isActive());
     }
 
@@ -2723,9 +2705,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "No future state as deactivate is a no-op in this case",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertTrue(chromeAndroidTask.isActive());
     }
 
@@ -2749,9 +2729,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Maximize should be pending after #maximize is triggered",
                 true,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isMaximizedFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isMaximizedFuture());
         assertTrue("isMaximized is true while pending", chromeAndroidTask.isMaximized());
         verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), any());
         assertEquals(
@@ -2765,9 +2743,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "Maximize should be not pending after #maximize is finished",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isMaximizedFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isMaximizedFuture());
     }
 
     @Test
@@ -2871,9 +2847,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.activate();
         Assert.assertTrue(
                 "Activate should be pending after #activate is triggered",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
 
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
@@ -2882,9 +2856,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "Activate should be pending after #activate is triggered",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isActiveFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
         assertTrue(chromeAndroidTask.isActive());
     }
 
@@ -2932,9 +2904,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Future state of isVisible() should be false when minimize() is pending",
                 false,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
         assertTrue(
                 "isMinimized() should be true when minimize() is pending",
                 chromeAndroidTask.isMinimized());
@@ -2944,9 +2914,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertNull(
                 "Future state of isVisible() should be cleared after minimized() is completed",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
         assertFalse(chromeAndroidTask.isMinimized());
     }
 
@@ -2961,18 +2929,14 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Future state of isVisible() should be true when show() is pending",
                 true,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
 
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
         assertNull(
                 "Future state of isVisible() should be cleared after show() is completed",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
         assertTrue(chromeAndroidTask.isVisible());
     }
 
@@ -2988,9 +2952,7 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Future state of isVisible() should be false when minimize() is pending",
                 false,
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
 
         chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 1, /* isVisible= */ false);
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
@@ -2998,9 +2960,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertNull(
                 "Future state of isVisible() should be cleared when minimize() is completed",
-                chromeAndroidTask
-                        .getPendingActionManagerForTesting()
-                        .isVisibleFuture(chromeAndroidTask.getState()));
+                chromeAndroidTask.getPendingActionManagerForTesting().isVisibleFuture());
         assertTrue("Should be minimized", chromeAndroidTask.isMinimized());
         assertFalse("Should not be visible", chromeAndroidTask.isVisible());
     }
