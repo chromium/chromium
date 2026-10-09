@@ -68,8 +68,6 @@ if (!is_android) {
       "//ui/base/unowned_user_data",
       "//ui/views",
     ]
-
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 
   source_set("service") {

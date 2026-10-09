@@ -35,7 +35,6 @@ source_set("impl") {
     "lcp_critical_path_predictor_util.cc",
     "prewarm_http_disk_cache_manager.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":headers",
     "//chrome/browser:after_startup_task_utils",

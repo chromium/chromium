@@ -31,7 +31,6 @@ source_set("impl") {
     "//components/content_settings/browser",
     "//content/public/common",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

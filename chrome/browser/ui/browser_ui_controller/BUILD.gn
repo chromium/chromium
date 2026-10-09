@@ -20,10 +20,7 @@ source_set("browser_ui_controller") {
 source_set("impl") {
   sources = [ "browser_ui_controller.cc" ]
 
-  public_deps = [
-    ":browser_ui_controller",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":browser_ui_controller" ]
 
   deps = [
     "//base",

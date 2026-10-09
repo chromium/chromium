@@ -21,10 +21,7 @@ source_set("reduce_accept_language") {
 source_set("impl") {
   sources = [ "reduce_accept_language_factory.cc" ]
 
-  public_deps = [
-    ":reduce_accept_language",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":reduce_accept_language" ]
 
   deps = [
     "//chrome/browser/content_settings:content_settings_factory",

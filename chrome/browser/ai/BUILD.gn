@@ -77,10 +77,7 @@ source_set("impl") {
     "//build/config/compiler:wglobal_constructors",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//components/content_extraction/content/browser",
-  ]
+  public_deps = [ "//components/content_extraction/content/browser" ]
   deps = [
     ":ai",
     "//base:i18n",

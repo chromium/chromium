@@ -70,7 +70,6 @@ source_set("exclusive_access") {
     ]
   }
   if (!is_android) {
-    public_deps += [ "//chrome/browser:browser_public_dependencies" ]
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/ui:browser_command_controller",

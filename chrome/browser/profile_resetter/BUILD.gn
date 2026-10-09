@@ -35,8 +35,6 @@ if (!is_android) {
   }
 
   source_set("impl") {
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
     sources = [
       "brandcode_config_fetcher.cc",
       "brandcoded_default_settings.cc",

@@ -63,8 +63,6 @@ source_set("impl") {
     sources += [ "badge_manager_delegate_mac.cc" ]
     deps += [ "//chrome/browser/apps/app_shim" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

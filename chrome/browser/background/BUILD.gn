@@ -38,8 +38,6 @@ source_set("impl") {
     sources = [ "background_contents.cc" ]
   }
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":background",
     "//chrome/browser/profiles",

@@ -35,7 +35,6 @@ source_set("impl") {
     "//components/site_engagement/content",
     "//services/metrics/public/cpp:ukm_builders",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

@@ -98,8 +98,6 @@ source_set("impl") {
   if (is_linux || is_mac) {
     sources += [ "relaunch_chrome_bubble_controller.cc" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
