@@ -173,6 +173,11 @@ export class PostSelectionRendererElement extends
         reflectToAttribute: true,
         value: false,
       },
+      hideCloseButton: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
       multiRegionSelectionEnabled: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableMultiRegionSelection'),
@@ -268,6 +273,8 @@ export class PostSelectionRendererElement extends
   // Whether to hide the corner handles. The region can't be resized without
   // them.
   declare hideHandles: boolean;
+  // Whether to hide the close button on the active region.
+  declare hideCloseButton: boolean;
   declare private multiRegionSelectionEnabled: boolean;
   declare private staticRegions: StaticRegion[];
   declare private activeRegionId: string;
@@ -379,8 +386,8 @@ export class PostSelectionRendererElement extends
     const elements = this.shadowRoot!.elementsFromPoint(
                          event.clientX, event.clientY) as HTMLElement[];
 
-    // If we're hovering over the active region's controls (close button, corners),
-    // don't switch focus.
+    // If we're hovering over the active region's controls (close button,
+    // corners), don't switch focus.
     if (elements.some(
             el => el.classList.contains('close-button') ||
                 el.classList.contains('corner-hit-box'))) {

@@ -267,6 +267,11 @@
     pointer-events: auto;
   }
 
+  :host([hide-close-button]) .close-button,
+  :host([hide-close-button]) .close-button-polyline {
+    display: none;
+  }
+
   #activeRegionShadow {
     display: none;
   }

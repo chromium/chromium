@@ -1646,6 +1646,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
   const DeepQuery kSelectionOverlay = {"selection-overlay-app",
                                        "glic-selection-overlay"};
+  const DeepQuery kCloseRegionButton = {
+      "selection-overlay-app", "glic-selection-overlay", "#closeRegionButton"};
 
   RunTestSequence(
       OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
@@ -1662,7 +1664,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(150, 150)),
+                  GetPointWithOffset(250, 150)),
       WaitForJsResultAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => {"
@@ -1682,7 +1684,41 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
           "  const titles = chips.map(c => "
           "c.querySelector('.chip-label')?.textContent?.trim());"
           "  return titles[0] === 'Ask Gemini';"
-          "}"));
+          "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const renderer = "
+          "el.shadowRoot.querySelector('#postSelectionRenderer');"
+          "  const rendererCloseBtn = "
+          "renderer?.shadowRoot?.querySelector('.close-button');"
+          "  return renderer?.hideCloseButton === true && "
+          "      rendererCloseBtn !== null && "
+          "      getComputedStyle(rendererCloseBtn).display === 'none';"
+          "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const container = "
+          "el.shadowRoot.querySelector('#floatingPromptContainer');"
+          "  const closeBtn = "
+          "el.shadowRoot.querySelector('#closeRegionButton');"
+          "  const chip = el.shadowRoot.querySelector('.action-chip');"
+          "  if (!container || !closeBtn || !chip) return false;"
+          "  const containerRect = container.getBoundingClientRect();"
+          "  const btnRect = closeBtn.getBoundingClientRect();"
+          "  const chipRect = chip.getBoundingClientRect();"
+          "  const overlayRect = el.selectionOverlayRect;"
+          "  const sel = el.activeSelection;"
+          "  const selRight = overlayRect.left + (sel.left + sel.width) * "
+          "overlayRect.width;"
+          "  const selTop = overlayRect.top + sel.top * overlayRect.height;"
+          "  return Math.abs(containerRect.left - selRight) <= 2 && "
+          "      Math.abs(containerRect.bottom - selTop) <= 2 && "
+          "      btnRect.left >= chipRect.right;"
+          "}"),
+      MoveMouseTo(kOverlayWebContentsId, kCloseRegionButton), ClickMouse(),
+      WaitForHide(OverlayBaseController::kOverlayId));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
