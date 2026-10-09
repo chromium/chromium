@@ -88,7 +88,6 @@ component("features") {
   public_deps = [
     "//base",
     "//components/optimization_guide/public/mojom",
-    "//ui/accessibility",
   ]
   deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",

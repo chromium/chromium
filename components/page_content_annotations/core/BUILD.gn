@@ -80,6 +80,7 @@ static_library("core") {
     "//components/optimization_guide/core",
     "//components/search",
     "//components/search_engines",
+    "//ui/base",
   ]
   deps = [
     "//components/database_utils",

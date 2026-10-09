@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "//services/network:network_service",
     "//services/network:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 
   visibility = [ "//components/skills:unit_tests" ]
