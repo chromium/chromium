@@ -10,6 +10,7 @@
 :host {
   align-items: center;
   display: flex;
+  border-radius: 8px;
 }
 
 :host(:not([disabled]):hover),
@@ -30,7 +31,7 @@
   font-size: 9px;
   font-weight: 700;
   line-height: 16px;
-  padding: 8px 16px;
+  padding: 8px;
   text-transform: uppercase;
 }
 
@@ -41,7 +42,7 @@
 #expandButton::part(icon) {
   margin-block: -4px;
   margin-inline-end: 12px;
-  margin-inline-start: 8px;
+  margin-inline-start: 0;
   order: -1;
 }
 

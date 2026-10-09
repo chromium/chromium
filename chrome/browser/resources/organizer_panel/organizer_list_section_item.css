@@ -14,12 +14,15 @@
 #crUrlListItem {
   --organizer-list-section-item-trailing-icon-size_: 16px;
   --organizer-list-section-item-trailing-button-size_: 24px;
+  --cr-url-list-item-container-width: 24px;
+  --cr-url-list-item-padding: 4px 8px;
+
+  border-radius: 8px;
 }
 
 #crUrlListItem::part(iconContainer) {
   background: none;
-  margin-inline-end: 4px;
-  width: 40px;
+  margin-inline-end: 10px;
 }
 
 #content {
