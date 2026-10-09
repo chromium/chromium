@@ -26,6 +26,7 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,6 +41,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.tab_ui.R;
@@ -87,14 +90,25 @@ public class TabGroupUiUtilsUnitTest {
     @Mock private TabModelSelector mOtherSelector;
     @Mock private TabModel mOtherModel;
     @Mock private TabModel mOtherIncognitoModel;
+    @Mock private TabRemover mTabRemover;
+    @Mock private TabRemover mOtherTabRemover;
 
     private Context mContext;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         when(mOtherSelector.getModel(true)).thenReturn(mOtherIncognitoModel);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mOtherModel.getTabRemover()).thenReturn(mOtherTabRemover);
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     private GroupWindowInfo createGroupWindowInfo(
@@ -1498,5 +1512,378 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
         verify(mUiActionHandler).openTabGroup(syncId);
+    }
+
+    @Test
+    public void testDeleteTabGroup_inCurrent() {
+        Token groupId = Token.createRandom();
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, "sync-curr", GroupWindowState.IN_CURRENT);
+
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_CURRENT,
+                /* allowDialog= */ true);
+
+        verify(mTabRemover).closeTabs(any(), eq(true));
+        verify(mTabGroupSyncService, never()).removeGroup(any(String.class));
+        verify(mTabGroupSyncService, never()).removeGroup(any(LocalTabGroupId.class));
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    public void testDeleteTabGroup_inCurrent_noTabsInGroup() {
+        Token groupId = Token.createRandom();
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, "sync-curr-empty", GroupWindowState.IN_CURRENT);
+
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_CURRENT,
+                /* allowDialog= */ true);
+
+        verify(mTabRemover, never()).closeTabs(any(), anyBoolean());
+        verify(mTabGroupSyncService).removeGroup("sync-curr-empty");
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    public void testDeleteTabGroup_inCurrent_tabsAlreadyClosing_commitsAndRemovesSync() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-curr-closing-tabs";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_CURRENT);
+
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
+        when(mClosingTab.getId()).thenReturn(42);
+        when(mClosingTab.getTabGroupId()).thenReturn(groupId);
+        when(mClosingTab.isClosing()).thenReturn(true);
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mClosingTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_CURRENT,
+                /* allowDialog= */ true);
+
+        verify(mTabRemover, never()).closeTabs(any(), anyBoolean());
+        verify(mTabModel).commitTabClosure(42);
+        verify(mTabGroupSyncService).removeGroup(syncId);
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_inCurrentClosing() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-curr-closing";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_CURRENT_CLOSING);
+
+        when(mClosingTab.getId()).thenReturn(42);
+        when(mClosingTab.getTabGroupId()).thenReturn(groupId);
+        when(mClosingTab.isClosing()).thenReturn(true);
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mClosingTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_CURRENT_CLOSING,
+                /* allowDialog= */ false);
+
+        verify(mTabModel).commitTabClosure(42);
+        verify(mTabGroupSyncService).removeGroup(syncId);
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_inAnother_activeWindow() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-other-123";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_ANOTHER);
+
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_ANOTHER,
+                /* allowDialog= */ false);
+
+        verify(mOtherTabRemover).closeTabs(any(), eq(false));
+        verify(mTabGroupSyncService, never()).removeGroup(any(String.class));
+        verify(mTabGroupSyncService, never()).removeGroup(any(LocalTabGroupId.class));
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_inAnother_windowNotFound() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-closed-456";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_ANOTHER);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean()))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_ANOTHER,
+                /* allowDialog= */ false);
+
+        verify(mTabGroupSyncService).removeGroup(syncId);
+        verify(mOtherTabRemover, never()).closeTabs(any(), anyBoolean());
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_inAnother_tabsAlreadyClosing_commitsAndRemovesSync() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-other-closing-tabs";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_ANOTHER);
+
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.getTabsInGroup(groupId)).thenReturn(List.of());
+
+        when(mClosingTabInWindow2.getId()).thenReturn(88);
+        when(mClosingTabInWindow2.getTabGroupId()).thenReturn(groupId);
+        when(mClosingTabInWindow2.isClosing()).thenReturn(true);
+        when(mOtherComprehensiveModel.iterator())
+                .thenAnswer(inv -> List.of(mClosingTabInWindow2).iterator());
+        when(mOtherModel.getComprehensiveModel()).thenReturn(mOtherComprehensiveModel);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_ANOTHER,
+                /* allowDialog= */ false);
+
+        verify(mOtherTabRemover, never()).closeTabs(any(), anyBoolean());
+        verify(mOtherModel).commitTabClosure(88);
+        verify(mTabGroupSyncService).removeGroup(syncId);
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    public void testDeleteTabGroup_inAnother_groupInCurrentModel_closesTabs() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-moved-to-curr";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_ANOTHER);
+
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_ANOTHER,
+                /* allowDialog= */ false);
+
+        verify(mTabRemover).closeTabs(any(), eq(false));
+        verify(mTabGroupSyncService, never()).removeGroup(any(String.class));
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_hidden() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-hidden-789";
+        GroupWindowInfo groupInfo = createGroupWindowInfo(groupId, syncId, GroupWindowState.HIDDEN);
+
+        when(mClosingTab.getId()).thenReturn(42);
+        when(mClosingTab.getTabGroupId()).thenReturn(groupId);
+        when(mClosingTab.isClosing()).thenReturn(true);
+        when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mClosingTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.HIDDEN,
+                /* allowDialog= */ false);
+
+        verify(mTabModel).commitTabClosure(42);
+        verify(mTabGroupSyncService).removeGroup(syncId);
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_hidden_withoutLocal() {
+        String syncId = "sync-hidden-nolocal";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(/* groupId= */ null, syncId, GroupWindowState.HIDDEN);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.HIDDEN,
+                /* allowDialog= */ false);
+
+        verify(mTabGroupSyncService).removeGroup(syncId);
+        verify(mTabModel, never()).commitTabClosure(anyInt());
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithoutLocal"));
+    }
+
+    @Test
+    public void testDeleteTabGroup_nullSyncService() {
+        Token groupId = Token.createRandom();
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, "sync-null", GroupWindowState.IN_CURRENT);
+
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                /* syncService= */ null,
+                groupInfo,
+                GroupWindowState.IN_CURRENT,
+                /* allowDialog= */ true);
+
+        verify(mTabRemover).closeTabs(any(), eq(true));
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    public void testDeleteTabGroup_nullSyncService_hidden() {
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(/* groupId= */ null, "sync-null", GroupWindowState.HIDDEN);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                /* syncService= */ null,
+                groupInfo,
+                GroupWindowState.HIDDEN,
+                /* allowDialog= */ false);
+
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithoutLocal"));
+    }
+
+    @Test
+    public void testDeleteTabGroup_dynamicLocalIdFallback_inCurrent() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-dynamic-123";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(/* groupId= */ null, syncId, GroupWindowState.IN_CURRENT);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_CURRENT,
+                /* allowDialog= */ true);
+
+        verify(mTabRemover).closeTabs(any(), eq(true));
+        verify(mTabGroupSyncService, never()).removeGroup(any(String.class));
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testDeleteTabGroup_dynamicLocalIdFallback_inAnother() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-dynamic-other";
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(/* groupId= */ null, syncId, GroupWindowState.IN_ANOTHER);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_ANOTHER,
+                /* allowDialog= */ false);
+
+        verify(mOtherTabRemover).closeTabs(any(), eq(false));
+        verify(mTabGroupSyncService, never()).removeGroup(any(String.class));
+        assertEquals(1, mUserActionTester.getActionCount("SyncedTabGroup.DeleteWithLocal"));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testDeleteTabGroup_inAnother_flagDisabled_returnsEarly() {
+        String syncId = "sync_id";
+        Token groupId = Token.createRandom();
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(groupId, syncId, GroupWindowState.IN_ANOTHER);
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                groupInfo,
+                GroupWindowState.IN_ANOTHER,
+                /* allowDialog= */ false);
+
+        verify(mTabGroupSyncService, never()).removeGroup(any(String.class));
+        verify(mTabRemover, never()).closeTabs(any(), anyBoolean());
     }
 }

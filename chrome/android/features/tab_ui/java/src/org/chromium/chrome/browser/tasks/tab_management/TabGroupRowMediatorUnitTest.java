@@ -55,6 +55,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -481,19 +483,69 @@ public class TabGroupRowMediatorUnitTest {
     public void testDelete_NotShared_InAnother() {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
+        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
 
         assertNotNull(propertyModel.get(DELETE_RUNNABLE));
         assertNull(propertyModel.get(LEAVE_RUNNABLE));
         propertyModel.get(DELETE_RUNNABLE).run();
-        verifyNoInteractions(mTabRemover);
-        verify(mTabModel, never()).commitTabClosure(anyInt());
-        verify(mTabGroupSyncService, never()).removeGroup((String) any());
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(mConfirmationCaptor.capture());
+
+        mConfirmationCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID1);
+    }
+
+    @Test
+    public void testDelete_NotShared_InAnother_ConfirmationNegative() {
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
+
+        assertNotNull(propertyModel.get(DELETE_RUNNABLE));
+        assertNull(propertyModel.get(LEAVE_RUNNABLE));
+        propertyModel.get(DELETE_RUNNABLE).run();
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(mConfirmationCaptor.capture());
+
+        mConfirmationCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mTabGroupSyncService, never()).removeGroup(SYNC_GROUP_ID1);
+    }
+
+    @Test
+    public void testDelete_NotShared_InAnother_DestroyedBeforeConfirmation() {
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
+
+        assertNotNull(propertyModel.get(DELETE_RUNNABLE));
+        assertNull(propertyModel.get(LEAVE_RUNNABLE));
+        propertyModel.get(DELETE_RUNNABLE).run();
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(mConfirmationCaptor.capture());
+
+        propertyModel.get(DESTROYABLE).destroy();
+        mConfirmationCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mTabGroupSyncService, never()).removeGroup(SYNC_GROUP_ID1);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testDelete_NotShared_InAnother_FlagDisabled_NoDialog() {
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
+
+        assertNotNull(propertyModel.get(DELETE_RUNNABLE));
+        propertyModel.get(DELETE_RUNNABLE).run();
+
+        verify(mActionConfirmationManager, never()).processDeleteGroupAttempt(any());
     }
 
     @Test
     public void testDelete_NotShared_InCurrentClosing() {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT_CLOSING);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
+        Tab closingTab = mock(Tab.class);
+        when(closingTab.getId()).thenReturn(mFirstTabId);
+        when(closingTab.getTabGroupId()).thenReturn(GROUP_ID1);
+        when(closingTab.isClosing()).thenReturn(true);
+        TabList comprehensiveModel = mock(TabList.class);
+        when(comprehensiveModel.iterator()).thenAnswer(inv -> List.of(closingTab).iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(comprehensiveModel);
 
         assertNotNull(propertyModel.get(DELETE_RUNNABLE));
         assertNull(propertyModel.get(LEAVE_RUNNABLE));

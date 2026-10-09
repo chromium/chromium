@@ -109,8 +109,8 @@ import java.util.Set;
 public class TabGroupListMediatorUnitTest {
     private static final Token LOCAL_GROUP_ID1 = new Token(1, 1);
     private static final Token LOCAL_GROUP_ID2 = new Token(2, 2);
-    private static final int ROOT_ID1 = 1;
-    private static final int ROOT_ID2 = 2;
+    private static final int TAB_ID1 = 1;
+    private static final int TAB_ID2 = 2;
     private static final String GROUP_NAME1 = "Shopping";
     private static final String GROUP_NAME2 = "Travel";
     private static final String GROUP_NAME3 = "Chamber of Secrets";
@@ -468,7 +468,7 @@ public class TabGroupListMediatorUnitTest {
     @Test
     public void testOpenRunnable_CurrentClosing_Racy() {
         SavedTabGroup group1 = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
-        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(ROOT_ID1);
+        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(TAB_ID1);
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         List<Tab> tabList = List.of(mTab1);
@@ -497,7 +497,7 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
-        verify(mTabModel, never()).cancelTabClosure(ROOT_ID1);
+        verify(mTabModel, never()).cancelTabClosure(TAB_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
     }
@@ -505,7 +505,7 @@ public class TabGroupListMediatorUnitTest {
     @Test
     public void testOpenRunnable_CurrentClosing_NoRace() {
         SavedTabGroup group1 = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
-        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(ROOT_ID1);
+        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(TAB_ID1);
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         List<Tab> tabList = List.of(mTab1);
@@ -521,7 +521,7 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(OPEN_RUNNABLE).run();
-        verify(mTabModel).cancelTabClosure(ROOT_ID1);
+        verify(mTabModel).cancelTabClosure(TAB_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
     }
@@ -529,7 +529,7 @@ public class TabGroupListMediatorUnitTest {
     @Test
     public void testOpenRunnable_ClosingAfterShowing() {
         SavedTabGroup group1 = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
-        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(ROOT_ID1, ROOT_ID2);
+        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(TAB_ID1, TAB_ID2);
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         List<Tab> tabList = List.of(mTab1, mTab2);
@@ -545,19 +545,19 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(OPEN_RUNNABLE).run();
-        verify(mTabModel, never()).cancelTabClosure(ROOT_ID1);
+        verify(mTabModel, never()).cancelTabClosure(TAB_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
 
         when(mTab1.isClosing()).thenReturn(true);
         model1.get(OPEN_RUNNABLE).run();
-        verify(mTabModel, never()).cancelTabClosure(ROOT_ID1);
+        verify(mTabModel, never()).cancelTabClosure(TAB_ID1);
         verify(mPaneManager, times(2)).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase, times(2)).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
 
         when(mTab2.isClosing()).thenReturn(true);
         model1.get(OPEN_RUNNABLE).run();
-        verify(mTabModel).cancelTabClosure(ROOT_ID1);
+        verify(mTabModel).cancelTabClosure(TAB_ID1);
         verify(mPaneManager, times(3)).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase, times(3)).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
     }
@@ -611,7 +611,7 @@ public class TabGroupListMediatorUnitTest {
     @Test
     public void testDeleteRunnable_CurrentClosing() {
         SavedTabGroup group1 = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
-        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(ROOT_ID1);
+        group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(TAB_ID1);
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         when(mTabModel.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
@@ -620,6 +620,7 @@ public class TabGroupListMediatorUnitTest {
         when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(true);
+        when(mTab1.getId()).thenReturn(TAB_ID1);
 
         createMediator();
 
@@ -628,7 +629,7 @@ public class TabGroupListMediatorUnitTest {
         // IN_CURRENT_CLOSING
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(DELETE_RUNNABLE).run();
-        verify(mTabModel).commitTabClosure(ROOT_ID1);
+        verify(mTabModel).commitTabClosure(TAB_ID1);
         verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID1);
     }
 

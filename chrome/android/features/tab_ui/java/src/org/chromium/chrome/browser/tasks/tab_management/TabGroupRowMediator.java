@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
-import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
@@ -235,18 +234,6 @@ class TabGroupRowMediator {
         }
     }
 
-    private void commitPendingTabClosures() {
-        SavedTabGroup savedTabGroup = getSavedTabGroup();
-        if (savedTabGroup == null) {
-            return;
-        }
-        for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
-            if (savedTab.localId != null) {
-                mTabModel.commitTabClosure(savedTab.localId);
-            }
-        }
-    }
-
     private void openGroup() {
         @GroupWindowState int state = mFetchGroupState.get();
         if (state == GroupWindowState.IN_ANOTHER) {
@@ -300,21 +287,26 @@ class TabGroupRowMediator {
 
     private void processDeleteGroup() {
         @GroupWindowState int state = mFetchGroupState.get();
-        if (state == GroupWindowState.HIDDEN) {
-            // A hidden group needs to show a dialog here because the TabRemover is not used.
-            mActionConfirmationManager.processDeleteGroupAttempt(
-                    (@ActionConfirmationResult Integer result) -> {
-                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            // A dialog already happened so we can bypass it. We shouldn't assume
-                            // the group is still in the HIDDEN state though so call deleteGroup and
-                            // do whatever is appropriate based on the current state.
-                            deleteGroup(/* allowDialog= */ false);
-                        }
-                    });
-        } else {
-            // TabRemover used in deleteGroup will handle the dialog if required.
+        if (state != GroupWindowState.HIDDEN
+                && (state != GroupWindowState.IN_ANOTHER
+                        || !TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled())) {
             deleteGroup(/* allowDialog= */ true);
+            return;
         }
+
+        // A hidden or other-window group needs to show a dialog here because the local
+        // TabRemover in this window is not used to prompt the user.
+        mActionConfirmationManager.processDeleteGroupAttempt(
+                mCallbackController.makeCancelable(
+                        result -> {
+                            if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+                                // A dialog already happened so we can bypass it. We shouldn't
+                                // assume the group is still in the HIDDEN state though so call
+                                // deleteGroup and do whatever is appropriate based on the
+                                // current state.
+                                deleteGroup(/* allowDialog= */ false);
+                            }
+                        }));
     }
 
     private void processLeaveOrDeleteShareGroup() {
@@ -332,37 +324,8 @@ class TabGroupRowMediator {
 
     private void deleteGroup(boolean allowDialog) {
         @GroupWindowState int state = mFetchGroupState.get();
-        if (state == GroupWindowState.IN_ANOTHER) {
-            return;
-        }
-
-        if (state == GroupWindowState.HIDDEN) {
-            RecordUserAction.record("SyncedTabGroup.DeleteWithoutLocal");
-        } else {
-            RecordUserAction.record("SyncedTabGroup.DeleteWithLocal");
-        }
-
-        if (state == GroupWindowState.IN_CURRENT_CLOSING) {
-            // No need to show a dialog for this since the closure already started.
-            commitPendingTabClosures();
-            // Because the pending closure might have been hiding or part of a closure containing
-            // more tabs we need to forcibly remove the group.
-            mTabGroupSyncService.removeGroup(assumeNonNull(mGroupInfo.syncId));
-        } else if (state == GroupWindowState.IN_CURRENT) {
-            assumeNonNull(mGroupInfo.localId);
-            mTabModel
-                    .getTabRemover()
-                    .closeTabs(
-                            assumeNonNull(
-                                            TabClosureParams.forCloseTabGroup(
-                                                    mTabModel, mGroupInfo.localId))
-                                    .allowUndo(false)
-                                    .build(),
-                            allowDialog);
-        } else {
-            assert !allowDialog : "A dialog should have already been shown.";
-            mTabGroupSyncService.removeGroup(assumeNonNull(mGroupInfo.syncId));
-        }
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel, mTabGroupSyncService, mGroupInfo, state, allowDialog);
     }
 
     /** Determine the last used timestamp from the group's last modified time. */

@@ -10,6 +10,7 @@ import android.content.Intent;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -268,12 +270,16 @@ public class TabGroupUiUtils {
      * @param groupId The target tab group ID whose closing tabs should be committed.
      */
     public static void commitClosingTabsForGroup(TabModel tabModel, @Nullable Token groupId) {
-        if (!isRemoteGroupOperationsEnabled() || groupId == null) {
+        if (groupId == null) {
             return;
         }
-        TabModel targetModel = getTabModelForGroup(tabModel, groupId);
-        if (targetModel != null) {
-            commitClosingTabsForModel(targetModel, groupId);
+        if (isRemoteGroupOperationsEnabled()) {
+            TabModel targetModel = getTabModelForGroup(tabModel, groupId);
+            if (targetModel != null) {
+                commitClosingTabsForModel(targetModel, groupId);
+            }
+        } else {
+            commitClosingTabsForModel(tabModel, groupId);
         }
     }
 
@@ -470,6 +476,75 @@ public class TabGroupUiUtils {
     }
 
     /**
+     * Deletes a tab group across local, cross-window, and remote/hidden states.
+     *
+     * @param currentTabModel The current {@link TabModel}.
+     * @param syncService The {@link TabGroupSyncService}.
+     * @param groupInfo The {@link GroupWindowInfo} representing the group to delete.
+     * @param state The re-determined {@link GroupWindowState} of the group.
+     * @param allowDialog Whether confirmation dialogs may be shown by the TabRemover.
+     */
+    public static void deleteTabGroup(
+            TabModel currentTabModel,
+            @Nullable TabGroupSyncService syncService,
+            GroupWindowInfo groupInfo,
+            @GroupWindowState int state,
+            boolean allowDialog) {
+        Token localId = groupInfo.localId;
+        if (localId == null && syncService != null && groupInfo.syncId != null) {
+            SavedTabGroup savedGroup = syncService.getGroup(groupInfo.syncId);
+            if (savedGroup != null && savedGroup.localId != null) {
+                localId = savedGroup.localId.tabGroupId;
+            }
+        }
+
+        if (localId != null) {
+            RecordUserAction.record("SyncedTabGroup.DeleteWithLocal");
+        } else {
+            RecordUserAction.record("SyncedTabGroup.DeleteWithoutLocal");
+        }
+
+        switch (state) {
+            case GroupWindowState.IN_CURRENT -> {
+                if (localId == null || !closeTabGroup(currentTabModel, localId, allowDialog)) {
+                    if (localId != null) {
+                        commitClosingTabsForGroup(currentTabModel, localId);
+                    }
+                    maybeRemoveSyncGroup(syncService, groupInfo.syncId);
+                }
+            }
+            case GroupWindowState.IN_CURRENT_CLOSING -> {
+                if (localId != null) {
+                    commitClosingTabsForGroup(currentTabModel, localId);
+                }
+                maybeRemoveSyncGroup(syncService, groupInfo.syncId);
+            }
+            case GroupWindowState.IN_ANOTHER -> {
+                if (!isCrossWindowTabGroupOperationsEnabled()) {
+                    return;
+                }
+                if (localId != null) {
+                    TabModel targetModel = getTabModelForGroup(currentTabModel, localId);
+                    if (targetModel != null) {
+                        if (closeTabGroup(targetModel, localId, /* allowDialog= */ false)) {
+                            break;
+                        }
+                        commitClosingTabsForGroup(targetModel, localId);
+                    }
+                }
+                maybeRemoveSyncGroup(syncService, groupInfo.syncId);
+            }
+            default -> {
+                assert !allowDialog : "A dialog should have already been shown.";
+                if (localId != null) {
+                    commitClosingTabsForGroup(currentTabModel, localId);
+                }
+                maybeRemoveSyncGroup(syncService, groupInfo.syncId);
+            }
+        }
+    }
+
+    /**
      * Adds the given tabs to the destination tab group. Handles local tab group merge within the
      * same window, cross-window move to another window, and restoring remote tab groups.
      *
@@ -606,5 +681,22 @@ public class TabGroupUiUtils {
             areTabsAlreadyInGroup &= Objects.equals(destinationGroupId, tab.getTabGroupId());
         }
         return areTabsAlreadyInGroup;
+    }
+
+    private static boolean closeTabGroup(TabModel tabModel, Token groupId, boolean allowDialog) {
+        TabClosureParams.Builder builder = TabClosureParams.forCloseTabGroup(tabModel, groupId);
+        if (builder == null) {
+            return false;
+        }
+        TabClosureParams params = builder.allowUndo(/* allowUndo= */ false).build();
+        tabModel.getTabRemover().closeTabs(params, allowDialog);
+        return true;
+    }
+
+    private static void maybeRemoveSyncGroup(
+            @Nullable TabGroupSyncService syncService, @Nullable String syncId) {
+        if (syncService != null && syncId != null) {
+            syncService.removeGroup(syncId);
+        }
     }
 }
