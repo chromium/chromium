@@ -117,6 +117,14 @@ class BrowserController {
                                             content::WebContents* old_contents,
                                             content::WebContents* new_contents,
                                             bool selection_only) {}
+
+    // Called when the tab's loading state, as reported by
+    // content::WebContents::IsLoading() and ShouldShowLoadingUI(), may have
+    // changed: whenever the tab starts or stops loading, but also on other
+    // occasions such as navigation commits.
+    // `browser` and `contents` are never nullptr.
+    virtual void OnTabLoadingStateChanged(BrowserDelegate* browser,
+                                          content::WebContents* contents) {}
   };
 
   // See CreateWebApp below.

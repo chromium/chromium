@@ -180,7 +180,8 @@ ash::BrowserDelegate* FindTabOnDeskAtIndex(const GURL& url,
 
         int idx = 0;
         for (tabs::TabInterface* tab : browser.GetTabIterator()) {
-          if (tab->GetContents()->GetVisibleURL() == url) {
+          // Must be consistent with the URL reported by TabClusterUIClient.
+          if (tab->GetContents()->GetLastCommittedURL() == url) {
             out_tab_index = idx;
             found_browser = &browser;
             break;

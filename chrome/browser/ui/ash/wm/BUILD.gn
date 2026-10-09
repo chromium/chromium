@@ -16,6 +16,7 @@ static_library("wm") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chromeos/ash/components/browser_delegate",
   ]
 
   deps = [
@@ -29,7 +30,6 @@ static_library("wm") {
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/webui/ash/scanner_feedback_dialog",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/services/coral/public/mojom",
     "//chromeos/ui/wm",
     "//components/app_constants",
@@ -49,12 +49,14 @@ source_set("browser_tests") {
     "coral_browsertest.cc",
     "float_controller_browsertest.cc",
     "snap_group_browsertest.cc",
+    "tab_cluster_ui_client_browsertest.cc",
     "wmp_browsertest.cc",
   ]
 
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_restore",
@@ -74,6 +76,7 @@ source_set("browser_tests") {
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/coral/public/mojom",
     "//content/test:test_support",
+    "//net:test_support",
     "//ui/display",
     "//ui/display:test_support",
     "//ui/events:test_support",
