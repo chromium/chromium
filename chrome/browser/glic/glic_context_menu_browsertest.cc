@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -1243,6 +1245,40 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
   link_params.unfiltered_link_url = GURL("https://example.com");
   EXPECT_FALSE(CreateContextMenuWithParams(link_params)
                    ->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+}
+
+class GlicSelectionPromptContextMenuBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicSelectionPromptContextMenuBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlic, features::kGlicContextMenu,
+                                    features::kGlicSelectionPrompt},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionPromptContextMenuBrowserTest,
+                       ContextMenuDismissesSelectionWidget) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  content::WebContents* web_contents = tab->GetContents();
+  ASSERT_TRUE(web_contents);
+
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+  EXPECT_FALSE(selection_observer->IsShowingWidgetForTesting());
+
+  web_contents->Focus();
+  web_contents->SelectAll();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return selection_observer->IsShowingWidgetForTesting(); }));
+
+  auto menu = CreateContextMenu();
+  EXPECT_FALSE(selection_observer->IsShowingWidgetForTesting());
 }
 
 }  // namespace glic

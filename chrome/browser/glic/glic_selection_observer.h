@@ -57,8 +57,8 @@ class GlicSelectionObserver
   enum class DismissReason {
     kActionTaken,  // User clicked Ask Gemini, Copy, or Copy Link.
     kCloseButton,  // User clicked the close button on the widget.
-    kExternal,  // Click outside, focus change, scroll, resize, navigation, or
-                // ESC key.
+    kExternal,     // Click outside, focus change, scroll, resize, navigation,
+                   // context menu, or ESC key.
   };
 
   enum class SelectionSource {
@@ -91,6 +91,8 @@ class GlicSelectionObserver
   // Dismisses the selection UI.
   // Virtual for testing.
   virtual void DismissUI(DismissReason reason);
+
+  bool IsShowingWidgetForTesting() const;
 
  protected:
   // `ShakeTriggerClient`:

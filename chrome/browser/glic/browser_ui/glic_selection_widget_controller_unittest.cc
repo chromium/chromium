@@ -382,4 +382,17 @@ TEST_F(GlicSelectionWidgetControllerTest,
   EXPECT_TRUE(controller->show_selection_overlay_called());
 }
 
+TEST_F(GlicSelectionWidgetControllerTest,
+       ShouldShowSelectionWidgetFalseWhenContextMenuShowing) {
+  NavigateAndCommit(GURL("https://example.com"));
+  controller_->OnPrimaryPageChanged();
+  EXPECT_TRUE(controller_->ShouldShowSelectionWidget());
+
+  web_contents()->SetShowingContextMenu(true);
+  EXPECT_FALSE(controller_->ShouldShowSelectionWidget());
+
+  web_contents()->SetShowingContextMenu(false);
+  EXPECT_TRUE(controller_->ShouldShowSelectionWidget());
+}
+
 }  // namespace glic

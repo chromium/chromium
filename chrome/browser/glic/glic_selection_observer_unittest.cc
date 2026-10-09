@@ -268,6 +268,8 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
     return observer_->observed_frames_.size();
   }
 
+  bool IsSelecting() const { return observer_->is_selecting_; }
+
   void SimulateMouseMove(float x, float y) {
     blink::WebMouseEvent event(
         blink::WebInputEvent::Type::kMouseMove,
@@ -1385,6 +1387,44 @@ TEST_F(GlicSelectionObserverTest,
   EXPECT_FALSE(observer->has_sent_selection_context());
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest, DismissUIClearsPendingSelection) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Simulate MouseDown to start drag.
+  blink::WebMouseEvent mouse_down_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down_event.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_down_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return IsSelecting(); }));
+
+  // Selection changes during drag.
+  observer->OnTextSelectionChanged(nullptr, u"Drag Selection");
+  EXPECT_EQ(0, observer->update_count());
+
+  // Dismiss UI (e.g. when a context menu opens).
+  observer->DismissUI(GlicSelectionObserver::DismissReason::kExternal);
+
+  // Simulate MouseUp. The pending selection should have been cleared.
+  blink::WebMouseEvent mouse_up_event(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up_event.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_up_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsSelecting(); }));
+
+  EXPECT_EQ(0, observer->update_count());
 }
 
 }  // namespace glic

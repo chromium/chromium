@@ -66,6 +66,8 @@ class GlicSelectionWidgetController
 
   void OnPrimaryPageChanged();
 
+  bool IsShowingWidgetForTesting() const { return widget_delegate_ != nullptr; }
+
  protected:
   // `content_settings::Observer`:
   void OnContentSettingChanged(

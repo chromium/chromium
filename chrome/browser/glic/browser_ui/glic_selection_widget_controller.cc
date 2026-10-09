@@ -332,7 +332,8 @@ void GlicSelectionWidgetController::ShowSelectionOverlay() {
 }
 
 bool GlicSelectionWidgetController::ShouldShowSelectionWidget() {
-  return !is_hidden_on_current_page_ && !is_site_blocked_on_current_page_;
+  return !is_hidden_on_current_page_ && !is_site_blocked_on_current_page_ &&
+         web_contents() && !web_contents()->IsShowingContextMenu();
 }
 
 void GlicSelectionWidgetController::UpdatePageBlockedState() {

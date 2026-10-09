@@ -63,6 +63,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -1601,6 +1602,12 @@ void RenderViewContextMenu::InitMenu() {
     autofill_client->HideSuggestions(
         autofill::SuggestionHidingReason::kContextMenuOpened,
         /*product=*/std::nullopt);
+  }
+
+  if (auto* selection_observer = glic::GlicSelectionObserver::From(
+          tabs::TabInterface::MaybeGetFromContents(web_contents))) {
+    selection_observer->DismissUI(
+        glic::GlicSelectionObserver::DismissReason::kExternal);
   }
 
   if (features::IsReadAnythingMenuShuffleExperimentEnabled() &&

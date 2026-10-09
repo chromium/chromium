@@ -246,7 +246,13 @@ void GlicSelectionObserver::UpdateSelectionStateFromContextMenu(
 }
 
 void GlicSelectionObserver::DismissUI(DismissReason reason) {
+  bounds_retry_count_ = 0;
+  ResetPendingSelection();
   widget_controller_->Dismiss(reason);
+}
+
+bool GlicSelectionObserver::IsShowingWidgetForTesting() const {
+  return widget_controller_->IsShowingWidgetForTesting();
 }
 
 bool GlicSelectionObserver::IsTextSelectionSharingEnabled() const {
