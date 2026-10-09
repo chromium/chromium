@@ -849,7 +849,8 @@ public class SettingsPageFragmentDelegateImpl
                 return BackPressResult.SUCCESS;
             }
             // When Url Navigation is enabled, the back press should not close the sliding
-            // pane, instead the back press should route to the Chrome navigation stack.
+            // pane, instead the back press should route to the Chrome navigation stack (see
+            // shouldNavigateUpOnBack()).
             // This keeps the UI in-sync with the Url, while keep compatibility with the
             // old navigation stack (e.g., still used for search results)
             if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
@@ -866,7 +867,33 @@ public class SettingsPageFragmentDelegateImpl
                 return BackPressResult.SUCCESS;
             }
         }
+        if (shouldNavigateUpOnBack()) {
+            assumeNonNull(mSettingsNavigationDelegate).navigateUp();
+            return BackPressResult.SUCCESS;
+        }
         return BackPressResult.FAILURE;
+    }
+
+    /**
+     * Returns whether a back press navigates up within settings rather than going back in the tab's
+     * history.
+     *
+     * <p>With URL navigation, this is the case on a subpage in single-column layout, i.e. whenever
+     * the toolbar shows a back button, which presses back. A subpage may have been opened directly
+     * from outside settings, e.g. "Edit homepage" on the NTP, and going back in the tab's history
+     * would then leave settings for the NTP rather than return to main settings, which is what the
+     * user expects from a subpage that slid in over main settings. Elsewhere, e.g. in two-column
+     * layout where main settings stays on screen, back presses go back in the tab's history.
+     */
+    private boolean shouldNavigateUpOnBack() {
+        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
+                || mSettingsNavigationDelegate == null) {
+            return false;
+        }
+        MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+        return multiColumnSettings != null
+                && !multiColumnSettings.isTwoColumn()
+                && multiColumnSettings.isLayoutOpen();
     }
 
     private void updateBackPressState() {
@@ -885,6 +912,8 @@ public class SettingsPageFragmentDelegateImpl
                     if (slidingPane != null && slidingPane.isSlideable() && slidingPane.isOpen()) {
                         canHandle = true;
                     }
+                } else {
+                    canHandle = shouldNavigateUpOnBack();
                 }
             } else if (mSettingsHostFragment != null
                     && mSettingsHostFragment.isAttachedToActivity()) {

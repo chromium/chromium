@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.Toolbar;
@@ -60,6 +61,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -75,6 +77,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -1027,6 +1031,98 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
 
         assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testHandleBackPress_WithUrlNavEnabled_SingleColumnSubpage_NavigatesUp() {
+        showSubpage(/* twoColumn= */ false);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
+        mDelegate.onHeaderLayoutUpdated();
+
+        assertTrue(mDelegate.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
+
+        // Going back in the tab's history would leave settings, e.g. for the NTP that the page was
+        // opened from with "Edit homepage". https://crbug.com/571791288
+        verify(mTab, never()).goBack();
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTab).loadUrl(captor.capture());
+        assertEquals(UrlConstants.SETTINGS_URL, captor.getValue().getUrl());
+        assertTrue(captor.getValue().getShouldReplaceCurrentEntry());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testHandleBackPress_WithUrlNavEnabled_SingleColumnSubpage_PopsBackStackFirst() {
+        showSubpage(/* twoColumn= */ false);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
+
+        assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
+
+        // A page shown on the fragment back stack has no navigation entry of its own.
+        verify(mMultiColumnSettings).popBackStack();
+        verify(mTab, never()).loadUrl(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testHandleBackPress_WithUrlNavEnabled_TwoColumn_FallsThrough() {
+        showSubpage(/* twoColumn= */ true);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
+        mDelegate.onHeaderLayoutUpdated();
+
+        // Main settings stays on screen, so back goes back in the tab's history.
+        assertFalse(mDelegate.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
+        verify(mTab, never()).loadUrl(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testHandleBackPress_WithUrlNavDisabled_SingleColumnSubpage_DoesNotNavigateUp() {
+        showSubpage(/* twoColumn= */ false);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
+
+        assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
+        verify(mTab, never()).loadUrl(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testBackButton_PressesBack() {
+        showSubpage(/* twoColumn= */ false);
+        mDelegate.onHeaderLayoutUpdated();
+
+        clickBackButton();
+
+        // The toolbar back button and the system back gesture share handleBackPress().
+        verify(mActivity).onBackPressed();
+    }
+
+    /** Shows a subpage, which has a toolbar back button in single-column layout. */
+    private void showSubpage(boolean twoColumn) {
+        mDelegate.initSettings(mContainerView, "", mPadAdjusterGenerator);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(twoColumn);
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(true);
+    }
+
+    /** Clicks the toolbar back button. */
+    private void clickBackButton() {
+        Toolbar toolbar = mInflatedSettingsView.findViewById(R.id.action_bar);
+        assertNotNull(toolbar);
+        assertEquals(mContext.getString(R.string.back), toolbar.getNavigationContentDescription());
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View child = toolbar.getChildAt(i);
+            if (child instanceof ImageButton
+                    && ((ImageButton) child).getDrawable() == toolbar.getNavigationIcon()) {
+                child.performClick();
+                return;
+            }
+        }
+        throw new AssertionError("Toolbar has no navigation button.");
     }
 
     @Test

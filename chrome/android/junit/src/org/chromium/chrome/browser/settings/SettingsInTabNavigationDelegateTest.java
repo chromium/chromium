@@ -346,6 +346,45 @@ public class SettingsInTabNavigationDelegateTest {
     }
 
     @Test
+    public void testNavigateUp_GoesBackWhenPreviousEntryIsSettings() {
+        setPreviousEntryUrl("chrome://settings");
+
+        mDelegate.navigateUp();
+
+        // Going back rather than loading keeps the page being left as a forward entry.
+        verify(mMockTab).goBack();
+        verify(mMockTab, never()).loadUrl(any());
+    }
+
+    @Test
+    public void testNavigateUp_ReplacesWithMainSettingsWhenPreviousEntryIsNotSettings() {
+        // E.g. the page was opened from "Edit homepage" on the NTP.
+        setPreviousEntryUrl("chrome-native://newtab/");
+
+        mDelegate.navigateUp();
+
+        // Going back would leave settings altogether.
+        verify(mMockTab, never()).goBack();
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mMockTab).loadUrl(captor.capture());
+        assertEquals(UrlConstants.SETTINGS_URL, captor.getValue().getUrl());
+        // Pushing would have the next back press return to the page being left, which would
+        // navigate up again, so that back presses could never leave settings.
+        assertTrue(captor.getValue().getShouldReplaceCurrentEntry());
+    }
+
+    @Test
+    public void testNavigateUp_ReplacesWithMainSettingsWhenThereIsNoPreviousEntry() {
+        mDelegate.navigateUp();
+
+        verify(mMockTab, never()).goBack();
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mMockTab).loadUrl(captor.capture());
+        assertEquals(UrlConstants.SETTINGS_URL, captor.getValue().getUrl());
+        assertTrue(captor.getValue().getShouldReplaceCurrentEntry());
+    }
+
+    @Test
     // SettingsHostFragment may only exist where settings-in-tab does: both flags on, tablet width.
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "w720dp-h1024dp")

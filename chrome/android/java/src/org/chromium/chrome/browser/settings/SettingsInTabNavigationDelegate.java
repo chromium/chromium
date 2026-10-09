@@ -263,6 +263,17 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
     }
 
     /**
+     * Navigates up without leaving settings: goes back to the previous settings page if there is
+     * one, otherwise replaces the current entry with main settings, so that the next back press
+     * leaves settings.
+     */
+    void navigateUp() {
+        if (goBackToPreviousSettingsEntry()) return;
+
+        navigateReplacingCurrentEntry(UrlConstants.SETTINGS_URL);
+    }
+
+    /**
      * Goes back if the previous navigation entry is a settings page, and returns whether it did.
      *
      * <p>The previous entry is deliberately required to be a settings page: going back out of
