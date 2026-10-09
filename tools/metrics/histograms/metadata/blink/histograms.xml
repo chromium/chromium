@@ -167,6 +167,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Accessibility.RadioGroupAncestorSearchDepth"
+    units="ancestors" expires_after="2027-03-28">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Records how many unignored ancestors were visited when searching for the
+    nearest ARIA radiogroup ancestor of a radio button. Recorded only when
+    accessibility is turned on and a web page with radios is rendered or
+    changes.
+
+    ARIA does not constrain how near the radiogroup must be to the radio
+    children, but if radios are typically close to their parent, then we can
+    constrain how far up the tree we look.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Accessibility.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-03-14">
   <owner>ikilpatrick@chromium.org</owner>

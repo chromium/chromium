@@ -40,6 +40,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -213,6 +214,10 @@
 
 namespace blink {
 namespace {
+
+// Used as max depth for Blink.Accessibility.RadioGroupAncestorSearchDepth
+// metric
+constexpr int kMaxRadioGroupDepth = 40;
 
 bool IsIgnoredAsInsideInactiveColumnTab(Node* node) {
   if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() ||
@@ -4110,11 +4115,22 @@ AXObject* AXNodeObject::NearestAriaRadioGroupAncestor(const AXObject* radio) {
   if (!radio) {
     return nullptr;
   }
-  for (AXObject* ancestor = radio->ParentObjectUnignored(); ancestor;
-       ancestor = ancestor->ParentObjectUnignored()) {
+
+  bool record_depth =
+      radio->RoleValue() == ax::mojom::blink::Role::kRadioButton;
+  int depth = 0;
+  AXObject* ancestor = radio->ParentObjectUnignored();
+  while (ancestor) {
+    ++depth;
     if (ancestor->RoleValue() == ax::mojom::blink::Role::kRadioGroup) {
+      if (record_depth) {
+        UMA_HISTOGRAM_EXACT_LINEAR(
+            "Blink.Accessibility.RadioGroupAncestorSearchDepth", depth,
+            kMaxRadioGroupDepth);
+      }
       return ancestor;
     }
+    ancestor = ancestor->ParentObjectUnignored();
   }
   return nullptr;
 }
