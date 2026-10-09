@@ -102,7 +102,7 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   ConsumeCachedDetailsForUpsertPass(EntityType entity_type);
 
   // Invoked when an asynchronous background preload request completes.
-  // Stores the successful response in `upsert_details_cache_`.
+  // Stores valid responses in `upsert_details_cache_`.
   void OnPreloadDetailsForUpsertPassComplete(
       wallet::WalletHttpClient::PassType pass_type,
       base::expected<GetDetailsForUpsertPassResponse,

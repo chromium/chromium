@@ -254,15 +254,17 @@ WalletPassAccessManagerImpl::ExtractPreloadedDetailsForUpsertPass(
   const bool was_in_flight = in_flight_preloads_.contains(pass_type);
   std::optional<GetDetailsForUpsertPassResponse> response =
       ConsumeCachedDetailsForUpsertPass(entity_type);
-  if (response.has_value() && IsValidUpsertPassDetailsResponse(*response)) {
+  if (response.has_value()) {
     LogUpsertDetailsCacheStatus(AutofillAiUpsertDetailsCacheStatus::kHit);
-  } else {
-    LogUpsertDetailsCacheStatus(
-        was_in_flight
-            ? AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight
-            : AutofillAiUpsertDetailsCacheStatus::kMissNoRequestInFlight);
+    return response;
   }
-  return response;
+
+  LogUpsertDetailsCacheStatus(
+      was_in_flight
+          ? AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight
+          : AutofillAiUpsertDetailsCacheStatus::kMissNoRequestInFlight);
+
+  return std::nullopt;
 }
 
 void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
@@ -419,13 +421,14 @@ void WalletPassAccessManagerImpl::OnPreloadDetailsForUpsertPassComplete(
                    wallet::WalletHttpClient::WalletRequestError> response) {
   in_flight_preloads_.erase(pass_type);
 
+  const bool is_valid =
+      response.has_value() && IsValidUpsertPassDetailsResponse(*response);
   LogWalletNoticeFunnelEvent(
-      response.has_value() && IsValidUpsertPassDetailsResponse(*response)
-          ? AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess
-          : AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError,
+      is_valid ? AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess
+               : AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError,
       /*in_settings=*/true);
 
-  if (response.has_value()) {
+  if (is_valid) {
     upsert_details_cache_.insert_or_assign(pass_type,
                                            std::move(response).value());
   }
