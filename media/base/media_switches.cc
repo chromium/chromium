@@ -470,11 +470,11 @@ BASE_FEATURE(kCdmHostVerification, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Elevates the CDM service process' priority to improve media playback
 // performance.
-BASE_FEATURE(kCdmProcessPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCdmProcessPriorityElevation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Elevates the CDM service process' main thread priority to improve media
 // playback performance.
-BASE_FEATURE(kCdmThreadPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCdmThreadPriorityElevation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Safety switch to allow us to revert to the previous behavior of using the
 // cached bounds when the permission prompt is visible. If this feature is
