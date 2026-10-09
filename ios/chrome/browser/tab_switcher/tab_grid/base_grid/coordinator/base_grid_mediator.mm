@@ -1843,6 +1843,8 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   }
   _destinationItemForGroupCreation = destinationItem;
   if (!tabIndexes.empty()) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
     _webStateList->CreateGroup(tabIndexes, visualData,
                                tab_groups::TabGroupId::GenerateNew());
   }

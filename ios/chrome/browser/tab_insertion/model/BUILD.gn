@@ -8,6 +8,7 @@ source_set("model") {
     "tab_insertion_browser_agent.mm",
   ]
   deps = [
+    "//base",
     "//build:blink_buildflags",
     "//components/tab_groups",
     "//ios/chrome/browser/ntp/model",

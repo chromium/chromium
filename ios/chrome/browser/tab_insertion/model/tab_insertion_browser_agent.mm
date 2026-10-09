@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "build/blink_buildflags.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -119,6 +121,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
   web::WebState* web_state_ptr = web_state.get();
   web_state_list->InsertWebState(std::move(web_state), params);
   if (tab_insertion_params.insert_in_group && !tab_insertion_params.tab_group) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
     web_state_list->CreateGroup(
         {web_state_list->GetIndexOfWebState(web_state_ptr)},
         tab_groups::TabGroupVisualData{

@@ -24679,7 +24679,8 @@ should be able to be added at any place in this file.
   <owner>huitingyu@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <description>
-    User in the iOS tab group edition view, confirmed the group creation.
+    User in iOS created a new tab group (e.g., from the tab group edition view,
+    drag and drop in the tab grid, or opening a link in a new group).
   </description>
 </action>
 
