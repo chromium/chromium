@@ -78,6 +78,10 @@ class JourneysDatabase {
   // `DeleteAllJourneys()` and `DropJourneysTables()`; the schema-enumerating
   // tests in journeys_database_unittest.cc fail otherwise.
   bool DeleteChildRows(const std::string& journey_id);
+
+  // Inserts the rows of `journey` into all child tables. Returns false on the
+  // first failure.
+  bool InsertChildRows(const JourneyRow& journey);
 };
 
 }  // namespace history::journeys

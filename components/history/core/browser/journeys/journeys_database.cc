@@ -105,6 +105,41 @@ std::vector<JourneyRow> ReadJourneys(sql::Statement& journeys_statement,
   return journeys;
 }
 
+// Inserts `journey.history_entries`. Duplicate visits are ignored.
+bool InsertHistoryEntries(sql::Database& db, const JourneyRow& journey) {
+  sql::Statement insert_entry(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO journey_history_entries "
+      "(journey_id, visit_timestamp_micros) VALUES(?, ?)"));
+  for (const JourneyHistoryEntry& entry : journey.history_entries) {
+    insert_entry.Reset(true);
+    insert_entry.BindString(0, journey.journey_id);
+    insert_entry.BindTime(1, entry.visit_time);
+    if (!insert_entry.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Inserts `journey.continuation_queries`, in order.
+bool InsertContinuationQueries(sql::Database& db, const JourneyRow& journey) {
+  sql::Statement insert_query(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "INSERT INTO journey_continuation_queries "
+                            "(journey_id, title, prompt) VALUES(?, ?, ?)"));
+  for (const JourneyContinuationQuery& query : journey.continuation_queries) {
+    insert_query.Reset(true);
+    insert_query.BindString(0, journey.journey_id);
+    insert_query.BindString(1, query.title);
+    insert_query.BindString(2, query.prompt);
+    if (!insert_query.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 JourneysDatabase::JourneysDatabase() = default;
@@ -212,16 +247,6 @@ bool JourneysDatabase::AddOrUpdateJourneys(
       "INSERT OR REPLACE INTO journeys (journey_id, title, emoji, overview, "
       "short_overview, creation_time_micros) VALUES(?, ?, ?, ?, ?, ?)"));
 
-  sql::Statement insert_entry(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT OR IGNORE INTO journey_history_entries "
-      "(journey_id, visit_timestamp_micros) VALUES(?, ?)"));
-
-  sql::Statement insert_query(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT INTO journey_continuation_queries "
-      "(journey_id, title, prompt) VALUES(?, ?, ?)"));
-
   for (const JourneyRow& journey : journeys) {
     if (journey.journey_id.empty()) {
       continue;
@@ -252,30 +277,10 @@ bool JourneysDatabase::AddOrUpdateJourneys(
       return false;
     }
 
-    // 2. Clear old child rows in case of update to avoid orphaned entries.
-    if (!DeleteChildRows(journey.journey_id)) {
+    // 2. Replace the child rows wholesale, so that an update leaves no stale
+    // rows behind.
+    if (!DeleteChildRows(journey.journey_id) || !InsertChildRows(journey)) {
       return false;
-    }
-
-    // 3. Insert history entries.
-    for (const JourneyHistoryEntry& entry : journey.history_entries) {
-      insert_entry.Reset(true);
-      insert_entry.BindString(0, journey.journey_id);
-      insert_entry.BindTime(1, entry.visit_time);
-      if (!insert_entry.Run()) {
-        return false;
-      }
-    }
-
-    // 4. Insert continuation queries.
-    for (const JourneyContinuationQuery& query : journey.continuation_queries) {
-      insert_query.Reset(true);
-      insert_query.BindString(0, journey.journey_id);
-      insert_query.BindString(1, query.title);
-      insert_query.BindString(2, query.prompt);
-      if (!insert_query.Run()) {
-        return false;
-      }
     }
   }
 
@@ -372,6 +377,11 @@ bool JourneysDatabase::DeleteAllJourneys() {
   return GetDB().Execute("DELETE FROM journeys") &&
          GetDB().Execute("DELETE FROM journey_history_entries") &&
          GetDB().Execute("DELETE FROM journey_continuation_queries");
+}
+
+bool JourneysDatabase::InsertChildRows(const JourneyRow& journey) {
+  return InsertHistoryEntries(GetDB(), journey) &&
+         InsertContinuationQueries(GetDB(), journey);
 }
 
 bool JourneysDatabase::DeleteChildRows(const std::string& journey_id) {
