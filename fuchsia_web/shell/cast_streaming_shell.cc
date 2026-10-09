@@ -23,8 +23,10 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/test/cast_streaming_test_sender.h"
@@ -38,6 +40,7 @@
 #include "fuchsia_web/shell/shell_relauncher.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/gpu/test/video_test_helpers.h"
 
@@ -265,6 +268,22 @@ int main(int argc, char** argv) {
   video_decoder_buffer->set_timestamp(base::TimeDelta());
   video_decoder_buffer->set_is_key_frame(true);
   sender.SendVideoBuffer(video_decoder_buffer);
+
+  // Periodically resend the first keyframe to keep the receiver session alive
+  // on slow emulators (such as Fuchsia QEMU bots) where Telemetry DevTools
+  // setup and page load can exceed the 15-second kNoDataTimeout.
+  constexpr base::TimeDelta kKeyframeResendInterval = base::Seconds(1);
+  base::TimeDelta next_timestamp = kKeyframeResendInterval;
+  base::RepeatingTimer keyframe_timer;
+  keyframe_timer.Start(
+      FROM_HERE, kKeyframeResendInterval, base::BindLambdaForTesting([&]() {
+        scoped_refptr<media::DecoderBuffer> copy =
+            media::DecoderBuffer::CopyFrom(*video_decoder_buffer);
+        copy->set_timestamp(next_timestamp);
+        copy->set_is_key_frame(true);
+        next_timestamp += kKeyframeResendInterval;
+        sender.SendVideoBuffer(std::move(copy));
+      }));
 
   run_loop.Run();
 
