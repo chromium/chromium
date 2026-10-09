@@ -2131,7 +2131,7 @@ if (!is_android) {
     }
 
     if (is_win) {
-      sources += [ "../test/delayload/delayload_hook_browsertest.cc" ]
+      deps += [ "//chrome/test/delayload:browser_tests" ]
 
       data_deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher" ]
       data += [ "$root_out_dir/chrome_200_percent.pak" ]
