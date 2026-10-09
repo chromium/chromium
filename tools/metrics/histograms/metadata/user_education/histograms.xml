@@ -163,6 +163,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SaveTabGroups" summary="the module for Saved Tab Groups"/>
   <variant name="SearchBoxSuggestions"
       summary="the module for Search Box Suggestions"/>
+  <variant name="SendTabToSelfEnhancedHandoff"
+      summary="the module for Send Tab To Self Enhanced Handoff"/>
   <variant name="SideBySide" summary="the module for Split View"/>
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
   <variant name="SyncAccountSettings"

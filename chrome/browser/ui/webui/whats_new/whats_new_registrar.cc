@@ -38,6 +38,10 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // M155
   registry->RegisterModule(
       WhatsNewModule(media::kHeadlessLiveCaption, "ahmedmoussa@google.com"));
+
+  // M157
+  registry->RegisterModule(
+      WhatsNewModule("SendTabToSelfEnhancedHandoff", "treib@google.com"));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {

@@ -1104,6 +1104,8 @@ should be able to be added at any place in this file.
   <variant name=".SafetySafetycheck" summary="Safety Check"/>
   <variant name=".SaveTabGroups" summary="Saved Tab Groups"/>
   <variant name=".SearchBoxSuggestions" summary="Search Box Suggestions"/>
+  <variant name=".SendTabToSelfEnhancedHandoff"
+      summary="Send Tab To Self Enhanced Handoff"/>
   <variant name=".SideBySide" summary="Split View"/>
   <variant name=".SidePanelPinning" summary="Side Panel Pinning"/>
   <variant name=".SyncAccountSettings"
