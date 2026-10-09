@@ -19,10 +19,12 @@
 @property(nonatomic, weak) id<AppBarMutator> mutator;
 
 // Returns the menu, with the entry matching `checkedState` checked. The "Ask
-// Gemini", "Lens" and "Account" entries are only present when `showAskGemini`,
-// `showLens` and `showAccount` are respectively `YES`.
+// Gemini", "AI Mode", "Lens" and "Account" entries are only present when
+// `showAskGemini`, `showAIM`, `showLens` and `showAccount` are respectively
+// `YES`.
 - (UIMenu*)menuWithCheckedState:(AppBarAssistantButtonState)checkedState
                   showAskGemini:(BOOL)showAskGemini
+                        showAIM:(BOOL)showAIM
                        showLens:(BOOL)showLens
                     showAccount:(BOOL)showAccount;
 

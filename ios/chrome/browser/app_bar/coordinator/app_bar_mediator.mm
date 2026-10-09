@@ -136,18 +136,6 @@ AppBarAssistantButtonPreferredState PreferredStateFromPrefValue(
   return AppBarAssistantButtonPreferredState::kDefault;
 }
 
-// Returns the state of the assistant button menu entry matching
-// `displayed_state`, the state shown by the assistant button. AI Mode doesn't
-// have its own entry as it is reached through the "Ask Gemini" entry, which
-// uses the default priority order, starting with Gemini.
-AppBarAssistantButtonState AssistantButtonMenuState(
-    AppBarAssistantButtonState displayed_state) {
-  if (displayed_state == AppBarAssistantButtonState::kAIM) {
-    return AppBarAssistantButtonState::kAsk;
-  }
-  return displayed_state;
-}
-
 inline LayoutStateAssistantPassKey PassKey() {
   return layout_state::AppBarMediatorPassKeyFactory::CreateKey();
 }
@@ -1215,21 +1203,23 @@ inline LayoutStateAssistantPassKey PassKey() {
   if ([self isIncognitoActive] || !IsAppBarAssistantCustomizationEnabled()) {
     return nil;
   }
-  // "Ask Gemini" uses the default priority order, so it is useful as long as
-  // either Gemini or AI Mode can be shown.
-  BOOL showAskGemini = [self isGeminiEligible] || [self isAimEligible];
+  // If Gemini is available, AI Mode is not shown in the menu. Otherwise, AI
+  // Mode is shown when eligible so the menu entry matches what is displayed on
+  // the button.
+  BOOL showAskGemini = [self isGeminiEligible];
+  BOOL showAIM = !showAskGemini && [self isAimEligible];
   BOOL showLens = [self isLensEligible];
   BOOL showAccount = [self isAccountEligible];
-  NSUInteger entryCount =
-      (showAskGemini ? 1 : 0) + (showLens ? 1 : 0) + (showAccount ? 1 : 0);
+  NSUInteger entryCount = (showAskGemini ? 1 : 0) + (showAIM ? 1 : 0) +
+                          (showLens ? 1 : 0) + (showAccount ? 1 : 0);
   if (entryCount < kMinimumAssistantButtonMenuEntryCount) {
     return nil;
   }
-  return [_assistantButtonMenuFactory
-      menuWithCheckedState:AssistantButtonMenuState(displayedState)
-             showAskGemini:showAskGemini
-                  showLens:showLens
-               showAccount:showAccount];
+  return [_assistantButtonMenuFactory menuWithCheckedState:displayedState
+                                             showAskGemini:showAskGemini
+                                                   showAIM:showAIM
+                                                  showLens:showLens
+                                               showAccount:showAccount];
 }
 
 // Records the assistant button state and the user preference metrics on load.

@@ -27,6 +27,7 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -2816,10 +2817,12 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonCustomization_LensWithoutTab) {
 }
 
 // Tests the content of the assistant button menu when all the entries are
-// available and the user didn't choose any.
+// available and the user didn't choose any. When Gemini is available, AI Mode
+// is not present in the menu even if it is eligible.
 TEST_F(AppBarMediatorTest, TestAssistantButtonCustomization_Menu) {
   base::test::ScopedFeatureList feature_list(kAppBarAssistantCustomization);
   SetLocationEligible(true);
+  SetAimEligible(true);
   mediator_.overrideLensAvailabilityForTesting = YES;
 
   UIMenu* menu = UpdateAssistantButtonAndGetMenu();
@@ -2846,11 +2849,11 @@ TEST_F(AppBarMediatorTest,
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/false}});
 }
 
-// Tests that the assistant button menu shows and checks "Ask Gemini" when
-// Gemini isn't available but AI Mode is, as the assistant button shows AI
-// Mode.
+// Tests that the assistant button menu shows and checks "AI Mode" when
+// Gemini isn't available but AI Mode is, matching what the assistant button
+// displays.
 TEST_F(AppBarMediatorTest,
-       TestAssistantButtonCustomization_MenuShowsAskGeminiWhenAimAvailable) {
+       TestAssistantButtonCustomization_MenuShowsAimWhenGeminiUnavailable) {
   base::test::ScopedFeatureList feature_list(kAppBarAssistantCustomization);
   SetLocationEligible(false);
   SetAimEligible(true);
@@ -2863,7 +2866,7 @@ TEST_F(AppBarMediatorTest,
                                       signedIn:NO]);
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_IOS_APP_BAR_ASK_GEMINI, /*checked=*/true},
+      {{IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT, /*checked=*/true},
        {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/false}});
 }
@@ -2881,7 +2884,7 @@ TEST_F(AppBarMediatorTest,
 
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_IOS_APP_BAR_ASK_GEMINI, /*checked=*/false},
+      {{IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT, /*checked=*/false},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/true}});
 }
 
@@ -2935,7 +2938,7 @@ TEST_F(AppBarMediatorTest,
                                       signedIn:NO]);
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_IOS_APP_BAR_ASK_GEMINI, /*checked=*/true},
+      {{IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT, /*checked=*/true},
        {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false}});
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

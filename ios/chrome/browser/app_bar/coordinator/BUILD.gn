@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
     "//components/sync_preferences:test_support",
     "//components/tab_groups",
     "//ios/chrome/app/strings",
