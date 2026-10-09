@@ -82,6 +82,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.annotations.Nullable;
@@ -332,6 +333,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     @SuppressWarnings("BooleanLiteral")
     public void testAddsClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
@@ -356,6 +358,7 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511286641
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     @SuppressWarnings("BooleanLiteral")
     public void testGroupedSuggestionsAreClickable() {
         AtomicReference<Boolean> clickRecorded1 = new AtomicReference<>();
