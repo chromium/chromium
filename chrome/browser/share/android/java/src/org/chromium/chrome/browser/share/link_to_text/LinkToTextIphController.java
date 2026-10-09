@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.link_to_text;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -33,52 +34,65 @@ import org.chromium.url.GURL;
 
 /** This class is responsible for rendering an IPH, when receiving a link-to-text. */
 @NullMarked
-public class LinkToTextIphController {
+public class LinkToTextIphController implements Destroyable {
     private static final String FEATURE_NAME =
             FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE;
 
     private final TabModelSelector mTabModelSelector;
+    private final CurrentTabObserver mCurrentTabObserver;
+    private boolean mIsDestroyed;
     private @MonotonicNonNull Tracker mTracker; // Set when page load finishes.
 
     /**
      * Creates an {@link LinkToTextIphController}.
      *
-     * @param tabSupplier An {@link MonotonicObservableSupplier} for {@link Tab} where the IPH will be
+     * @param tabSupplier A {@link NullableObservableSupplier} for {@link Tab} where the IPH will be
      *     rendered.
      * @param tabModelSelector The {@link TabModelSelector} to open a new tab.
+     * @param profileSupplier A {@link MonotonicObservableSupplier} for {@link Profile} used to
+     *     fetch the feature engagement tracker.
      */
     public LinkToTextIphController(
             NullableObservableSupplier<Tab> tabSupplier,
             TabModelSelector tabModelSelector,
             MonotonicObservableSupplier<Profile> profileSupplier) {
         mTabModelSelector = tabModelSelector;
-        new CurrentTabObserver(
-                tabSupplier,
-                new TabObserver() {
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        if (!LinkToTextHelper.hasTextFragment(url)) return;
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new TabObserver() {
+                            @Override
+                            public void onPageLoadFinished(Tab tab, GURL url) {
+                                if (!LinkToTextHelper.hasTextFragment(url)) return;
 
-                        Profile profile = profileSupplier.get();
-                        if (profile == null) {
-                            assert false : "Unexpected null profile";
-                            return;
-                        }
-                        mTracker = TrackerFactory.getTrackerForProfile(profile);
-                        if (!mTracker.wouldTriggerHelpUi(FEATURE_NAME)) {
-                            return;
-                        }
+                                Profile profile = profileSupplier.get();
+                                if (profile == null) {
+                                    assert false : "Unexpected null profile";
+                                    return;
+                                }
+                                mTracker = TrackerFactory.getTrackerForProfile(profile);
+                                if (!mTracker.wouldTriggerHelpUi(FEATURE_NAME)) {
+                                    return;
+                                }
 
-                        LinkToTextHelper.hasExistingSelectors(
-                                tab,
-                                (hasSelectors) -> {
-                                    if (mTracker.shouldTriggerHelpUi(FEATURE_NAME)) {
-                                        showMessageIph(tab);
-                                    }
-                                });
-                    }
-                },
-                null);
+                                LinkToTextHelper.hasExistingSelectors(
+                                        tab,
+                                        (hasSelectors) -> {
+                                            if (!mIsDestroyed
+                                                    && mTracker.shouldTriggerHelpUi(FEATURE_NAME)) {
+                                                showMessageIph(tab);
+                                            }
+                                        });
+                            }
+                        },
+                        null);
+    }
+
+    @Override
+    public void destroy() {
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
+        mCurrentTabObserver.destroy();
     }
 
     private void showMessageIph(Tab tab) {

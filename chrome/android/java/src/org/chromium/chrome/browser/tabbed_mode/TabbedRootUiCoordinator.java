@@ -356,6 +356,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private @Nullable OfflineIndicatorInProductHelpController
             mOfflineIndicatorInProductHelpController;
+    private @Nullable LinkToTextIphController mLinkToTextIphController;
     private @Nullable ReadAloudIphController mReadAloudIphController;
     private @Nullable ReadLaterIphController mReadLaterIphController;
     private @Nullable SendTabToSelfOmniboxIphController mSendTabToSelfOmniboxIphController;
@@ -927,6 +928,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mOfflineIndicatorInProductHelpController != null) {
             mOfflineIndicatorInProductHelpController.destroy();
+        }
+        if (mLinkToTextIphController != null) {
+            mLinkToTextIphController.destroy();
+            mLinkToTextIphController = null;
         }
         if (mStatusIndicatorCoordinator != null) {
             mStatusIndicatorCoordinator.removeObserver(mStatusIndicatorObserver);
@@ -1860,10 +1865,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mStatusIndicatorCoordinator);
         }
 
-        new LinkToTextIphController(
-                mActivityTabProvider.asObservable(),
-                mTabModelSelectorSupplier.asNonNull().get(),
-                mProfileSupplier);
+        mLinkToTextIphController =
+                new LinkToTextIphController(
+                        mActivityTabProvider.asObservable(),
+                        mTabModelSelectorSupplier.asNonNull().get(),
+                        mProfileSupplier);
 
         Tab tab = mActivityTabProvider.get();
 
