@@ -151,7 +151,7 @@ if (is_android) {
   android_ndk_root = "//third_party/android_toolchain/ndk"
 
   public_android_sdk_root = "//third_party/android_sdk/public"
-  public_android_sdk_platform_version = "37.0"
+  public_android_sdk_platform_version = "37.2"
   public_android_sdk_build_tools_version = "37.0.0"
   if (android_sdk_release == "public") {
     default_android_sdk_root = public_android_sdk_root
