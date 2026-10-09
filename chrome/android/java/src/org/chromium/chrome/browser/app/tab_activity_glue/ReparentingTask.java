@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -243,6 +244,6 @@ public class ReparentingTask implements UserData {
 
     @NativeMethods
     interface Natives {
-        void attachTab(WebContents webContents);
+        void attachTab(@JniType("content::WebContents*") WebContents webContents);
     }
 }

@@ -14,10 +14,7 @@ using base::android::JavaRef;
 using chrome::android::BackgroundTabManager;
 using content::WebContents;
 
-static void JNI_ReparentingTask_AttachTab(
-    JNIEnv* env,
-    const JavaRef<jobject>& jweb_contents) {
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+static void JNI_ReparentingTask_AttachTab(content::WebContents* web_contents) {
   auto* background_tab_manager =
       BackgroundTabManager::FromWebContents(web_contents);
 
