@@ -217,8 +217,7 @@ void VideoCaptureController::AddClient(
     const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* event_handler,
     const media::VideoCaptureSessionId& session_id,
-    const media::VideoCaptureParams& params,
-    std::optional<url::Origin> origin) {
+    const media::VideoCaptureParams& params) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
   std::ostringstream string_stream;
   string_stream << "VideoCaptureController::AddClient(): id = " << id
@@ -251,7 +250,6 @@ void VideoCaptureController::AddClient(
   // If this is the first client added to the controller, cache the parameters.
   if (controller_clients_.empty()) {
     video_capture_format_ = params.requested_format;
-    first_client_origin_ = origin;
   }
 
   // Signal error in case device is already in error state.
@@ -431,11 +429,6 @@ const std::optional<media::VideoCaptureFormat>
 VideoCaptureController::GetVideoCaptureFormat() const {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
   return video_capture_format_;
-}
-
-const std::optional<url::Origin> VideoCaptureController::GetFirstClientOrigin()
-    const {
-  return first_client_origin_;
 }
 
 void VideoCaptureController::OnCaptureConfigurationChanged() {

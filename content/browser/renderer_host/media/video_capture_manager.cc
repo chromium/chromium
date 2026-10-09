@@ -488,7 +488,6 @@ void VideoCaptureManager::ConnectClient(
     VideoCaptureControllerID client_id,
     const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* client_handler,
-    std::optional<url::Origin> origin,
     bool is_allowed_on_lock_screen,
     DoneCB done_cb) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
@@ -518,20 +517,8 @@ void VideoCaptureManager::ConnectClient(
     return;
   }
 
-  bool client_exist =
-      controller->HasActiveClient() || controller->HasPausedClient();
-  base::UmaHistogramBoolean("Media.VideoCapture.StreamShared", client_exist);
-  if (client_exist) {
-    std::optional<url::Origin> first_client_origin =
-        controller->GetFirstClientOrigin();
-    bool same_origin = first_client_origin.has_value() && origin.has_value() &&
-                       *first_client_origin == *origin;
-    base::UmaHistogramBoolean("Media.VideoCapture.StreamSharedSameOrigin",
-                              same_origin);
-  }
-
   // First client starts the device.
-  if (!client_exist) {
+  if (!controller->HasActiveClient() && !controller->HasPausedClient()) {
     std::ostringstream string_stream;
     string_stream
         << "VideoCaptureManager queueing device start for device_id = "
@@ -543,7 +530,7 @@ void VideoCaptureManager::ConnectClient(
   // Run the callback first, as AddClient() may trigger OnFrameInfo().
   std::move(done_cb).Run(controller->GetWeakPtrForIOThread());
   controller->AddClient(client_id, render_frame_host_id, client_handler,
-                        session_id, params, origin);
+                        session_id, params);
 }
 
 void VideoCaptureManager::DisconnectClient(

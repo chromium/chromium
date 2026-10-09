@@ -126,7 +126,6 @@ class CONTENT_EXPORT VideoCaptureManager
                      VideoCaptureControllerID client_id,
                      const GlobalRenderFrameHostId& render_frame_host_id,
                      VideoCaptureControllerEventHandler* client_handler,
-                     std::optional<url::Origin> origin,
                      bool is_allowed_on_lock_screen,
                      DoneCB done_cb);
 

@@ -482,9 +482,6 @@ class CONTENT_EXPORT MediaStreamManager
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
   size_t num_video_capture_hosts() const { return video_capture_hosts_.size(); }
 
-  std::optional<url::Origin> GetOriginByVideoSessionId(
-      const base::UnguessableToken& session_id);
-
   bool IsSessionAllowedOnLockScreen(const base::UnguessableToken& session_id);
 
   // Validates that the renderer-supplied `session_id` is authorized for use by

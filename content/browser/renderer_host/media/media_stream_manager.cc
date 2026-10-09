@@ -4571,16 +4571,6 @@ void MediaStreamManager::RegisterVideoCaptureHost(
 #endif
 }
 
-std::optional<url::Origin> MediaStreamManager::GetOriginByVideoSessionId(
-    const base::UnguessableToken& session_id) {
-  SessionType actual_type;
-  DeviceRequest* request = FindRequestBySessionId(session_id, &actual_type);
-  if (request == nullptr || actual_type != SessionType::kVideo) {
-    return std::nullopt;
-  }
-  return request->salt_and_origin.origin();
-}
-
 bool MediaStreamManager::IsSessionAllowedOnLockScreen(
     const base::UnguessableToken& session_id) {
   SessionType actual_type;

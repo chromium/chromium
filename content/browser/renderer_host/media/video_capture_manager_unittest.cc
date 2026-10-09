@@ -336,11 +336,9 @@ class VideoCaptureManagerTest : public testing::Test {
     }
   }
 
-  VideoCaptureControllerID StartClient(
-      const base::UnguessableToken& session_id,
-      bool expect_success,
-      std::optional<url::Origin> origin = std::nullopt,
-      bool is_allowed_on_lock_screen = false) {
+  VideoCaptureControllerID StartClient(const base::UnguessableToken& session_id,
+                                       bool expect_success,
+                                       bool is_allowed_on_lock_screen = false) {
     media::VideoCaptureParams params;
     params.requested_format = media::VideoCaptureFormat(
         gfx::Size(320, 240), 30, media::PIXEL_FORMAT_I420);
@@ -348,7 +346,7 @@ class VideoCaptureManagerTest : public testing::Test {
     VideoCaptureControllerID client_id = base::UnguessableToken::Create();
     vcm_->ConnectClient(
         session_id, params, client_id, render_frame_host_id_,
-        frame_observer_.get(), origin, is_allowed_on_lock_screen,
+        frame_observer_.get(), is_allowed_on_lock_screen,
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
                        base::Unretained(this), client_id, expect_success));
     base::RunLoop().RunUntilIdle();
@@ -1182,8 +1180,6 @@ class TestContentBrowserClientForLockScreen : public ContentBrowserClient {
 TEST_F(VideoCaptureManagerTest, ScreenLockAllowsAuthorizedOriginDeviceStart) {
   const url::Origin allowed_origin =
       url::Origin::Create(GURL("https://allowed-origin.com"));
-  const url::Origin disallowed_origin =
-      url::Origin::Create(GURL("https://disallowed-origin.com"));
 
   TestContentBrowserClientForLockScreen test_browser_client(allowed_origin);
   ContentBrowserClient* old_browser_client =
@@ -1197,7 +1193,7 @@ TEST_F(VideoCaptureManagerTest, ScreenLockAllowsAuthorizedOriginDeviceStart) {
               Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
   EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(0);
   auto video_session_id1 = vcm_->Open(devices_.front());
-  StartClient(video_session_id1, false, disallowed_origin);
+  StartClient(video_session_id1, false);
   EXPECT_FALSE(video_capture_device_factory_->has_active_devices());
   Mock::VerifyAndClearExpectations(frame_observer_.get());
 
@@ -1207,7 +1203,7 @@ TEST_F(VideoCaptureManagerTest, ScreenLockAllowsAuthorizedOriginDeviceStart) {
               Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
   EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(1);
   auto video_session_id2 = vcm_->Open(devices_.front());
-  auto client_id2 = StartClient(video_session_id2, true, allowed_origin,
+  auto client_id2 = StartClient(video_session_id2, true,
                                 /*is_allowed_on_lock_screen=*/true);
   EXPECT_TRUE(video_capture_device_factory_->has_active_devices());
 
