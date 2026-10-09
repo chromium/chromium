@@ -137,13 +137,15 @@ MessageEvent::MessageEvent(scoped_refptr<const SecurityOrigin> origin,
   DCHECK(IsValidSource(source_.Get()));
 }
 
-MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
-                           scoped_refptr<const SecurityOrigin> origin,
-                           MessageOriginKind message_origin_kind,
-                           const String& last_event_id,
-                           EventTarget* source,
-                           GCedMessagePortArray* ports,
-                           UserActivation* user_activation)
+MessageEvent::MessageEvent(
+    scoped_refptr<SerializedScriptValue> data,
+    scoped_refptr<const SecurityOrigin> origin,
+    MessageOriginKind message_origin_kind,
+    const String& last_event_id,
+    EventTarget* source,
+    GCedMessagePortArray* ports,
+    UserActivation* user_activation,
+    mojom::blink::DelegatedCapability delegated_capability)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeSerializedScriptValue),
       data_as_serialized_script_value_(
@@ -154,7 +156,8 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       last_event_id_(last_event_id),
       source_(source),
       ports_(ports),
-      user_activation_(user_activation) {
+      user_activation_(user_activation),
+      delegated_capability_(delegated_capability) {
   DCHECK(IsValidSource(source_.Get()));
   serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
                                              SizeOfExternalMemoryInBytes());

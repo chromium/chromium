@@ -671,6 +671,18 @@ void RenderFrameProxyHost::RouteMessageEvent(
 
   if (message.delegated_capability !=
       blink::mojom::DelegatedCapability::kNone) {
+    // The popup capability can only be delegated by a Service Worker to one of
+    // its window clients (see
+    // ServiceWorkerContainerHostForClient::PostMessageToClient); frames can
+    // never delegate it. Reject it here, before the message is routed to the
+    // target renderer.
+    if (message.delegated_capability ==
+        blink::mojom::DelegatedCapability::kPopup) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFPH_POST_MESSAGE_INVALID_DELEGATED_CAPABILITY);
+      return;
+    }
     if (!source_frame_token) {
       bad_message::ReceivedBadMessage(
           GetProcess(),

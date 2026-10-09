@@ -819,6 +819,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
+  // Checks if there is an active and pending event that allows the worker to
+  // open a new window or focus an existing one.
+  bool HasPendingWindowInteractionEvent();
+
   base::WeakPtr<ServiceWorkerVersion> GetWeakPtr();
 
  private:
@@ -1157,10 +1161,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Checks if there is an active and pending PAYMENT_REQUEST event
   // for the current service worker version.
   bool HasPendingPaymentRequestEvent();
-
-  // Checks if there is an active and pending event that allows the worker to
-  // open a new window or focus an existing one.
-  bool HasPendingWindowInteractionEvent();
 
   void DidShowPaymentHandlerWindow(
       const GURL& url,

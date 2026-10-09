@@ -2908,4 +2908,16 @@ void ServiceWorkerGlobalScope::OnRaceNetworkRequestDisconnected(
   }
 }
 
+void ServiceWorkerGlobalScope::AllowPopupCapabilityDelegation() {
+  popup_capability_token_.Activate();
+}
+
+bool ServiceWorkerGlobalScope::ConsumePopupCapabilityDelegation() {
+  return popup_capability_token_.ConsumeIfActive();
+}
+
+bool ServiceWorkerGlobalScope::IsPopupCapabilityDelegationAllowed() const {
+  return popup_capability_token_.IsActive();
+}
+
 }  // namespace blink

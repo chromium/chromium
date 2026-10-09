@@ -1146,6 +1146,10 @@
       status: "experimental",
     },
     {
+      name: "CapabilityDelegationPopup",
+      status: "experimental",
+    },
+    {
       // Enables icon-only mode for capability elements.
       // https://issues.chromium.org/issues/514564817
       name: "CapabilityElementIconOnlyMode",

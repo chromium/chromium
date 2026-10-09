@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -519,6 +522,77 @@ TEST_F(ServiceWorkerContainerTest, ReceiveMessageWhichCannotDeserialize) {
 
   auto* event = wait->GetLastEvent();
   EXPECT_EQ(event->type(), event_type_names::kMessageerror);
+}
+
+TEST_F(ServiceWorkerContainerTest,
+       ReceiveMessageWithDelegatedCapabilityActivatesToken) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *window, stub_provider.Provider());
+  ASSERT_FALSE(window->IsPaymentRequestTokenActive());
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  auto message = MakeTransferableMessage();
+  message.delegated_capability =
+      mojom::blink::DelegatedCapability::kPaymentRequest;
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(), std::move(message));
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  ASSERT_EQ(event->type(), event_type_names::kMessage);
+  EXPECT_TRUE(event->isTrusted());
+  EXPECT_EQ(To<MessageEvent>(event)->delegatedCapability(),
+            mojom::blink::DelegatedCapability::kPaymentRequest);
+  EXPECT_TRUE(window->IsPaymentRequestTokenActive());
+}
+
+// A page that once legitimately received a delegated message must not be able
+// to re-arm the capability token by re-dispatching that (now untrusted) event
+// via navigator.serviceWorker.dispatchEvent().
+TEST_F(ServiceWorkerContainerTest,
+       RedispatchedUntrustedMessageDoesNotActivateToken) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *window, stub_provider.Provider());
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  auto message = MakeTransferableMessage();
+  message.delegated_capability =
+      mojom::blink::DelegatedCapability::kPaymentRequest;
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(), std::move(message));
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  ASSERT_EQ(event->type(), event_type_names::kMessage);
+  ASSERT_TRUE(window->IsPaymentRequestTokenActive());
+
+  // Consume the legitimately granted token.
+  EXPECT_TRUE(window->ConsumePaymentRequestToken());
+  ASSERT_FALSE(window->IsPaymentRequestTokenActive());
+
+  // Re-dispatch the same event the way script would via `dispatchEvent()`.
+  // The event still carries the delegated capability, but is now untrusted.
+  DummyExceptionStateForTesting exception_state;
+  container->dispatchEventForBindings(event, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_FALSE(event->isTrusted());
+  EXPECT_EQ(To<MessageEvent>(event)->delegatedCapability(),
+            mojom::blink::DelegatedCapability::kPaymentRequest);
+  EXPECT_FALSE(window->IsPaymentRequestTokenActive());
 }
 
 }  // namespace

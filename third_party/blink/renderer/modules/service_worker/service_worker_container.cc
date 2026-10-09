@@ -832,10 +832,10 @@ void ServiceWorkerContainer::DispatchMessageEvent(
     if ((!msg.locked_to_sender_agent_cluster ||
          context->IsSameAgentCluster(msg.sender_agent_cluster_id)) &&
         msg.message->CanDeserializeIn(context)) {
-      event = MessageEvent::Create(ports, std::move(msg.message),
-                                   context->GetSecurityOrigin(),
-                                   MessageEvent::kMessageIsSameOrigin,
-                                   String() /* lastEventId */, service_worker);
+      event = MessageEvent::Create(
+          ports, std::move(msg.message), context->GetSecurityOrigin(),
+          MessageEvent::kMessageIsSameOrigin, String() /* lastEventId */,
+          service_worker, msg.delegated_capability);
     } else {
       event = MessageEvent::CreateError(context->GetSecurityOrigin(),
                                         service_worker);
@@ -851,6 +851,25 @@ void ServiceWorkerContainer::OnGetRegistrationForReady(
   DCHECK_EQ(ready_->GetState(), ReadyProperty::kPending);
 
   ready_->Resolve(GetOrCreateServiceWorkerRegistration(std::move(info)));
+}
+
+DispatchEventResult ServiceWorkerContainer::DispatchEventInternal(
+    Event& event) {
+  // Only browser-originated (trusted) message events may activate a delegated
+  // capability. Script can re-dispatch a previously received MessageEvent via
+  // navigator.serviceWorker.dispatchEvent(), which must not re-arm any token.
+  if (event.isTrusted() && event.type() == event_type_names::kMessage) {
+    if (auto* message_event = DynamicTo<MessageEvent>(&event)) {
+      if (message_event->delegatedCapability() !=
+          mojom::blink::DelegatedCapability::kNone) {
+        if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+          window->ActivateDelegatedCapability(
+              message_event->delegatedCapability());
+        }
+      }
+    }
+  }
+  return EventTarget::DispatchEventInternal(event);
 }
 
 }  // namespace blink

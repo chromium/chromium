@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -70,15 +72,18 @@ class CORE_EXPORT MessageEvent final : public Event {
     return MakeGarbageCollected<MessageEvent>(std::move(origin), last_event_id,
                                               source, ports);
   }
-  static MessageEvent* Create(GCedMessagePortArray* ports,
-                              scoped_refptr<SerializedScriptValue> data,
-                              scoped_refptr<const SecurityOrigin> origin,
-                              MessageOriginKind message_origin_kind,
-                              const String& last_event_id,
-                              EventTarget* source) {
+  static MessageEvent* Create(
+      GCedMessagePortArray* ports,
+      scoped_refptr<SerializedScriptValue> data,
+      scoped_refptr<const SecurityOrigin> origin,
+      MessageOriginKind message_origin_kind,
+      const String& last_event_id,
+      EventTarget* source,
+      mojom::blink::DelegatedCapability delegated_capability =
+          mojom::blink::DelegatedCapability::kNone) {
     return MakeGarbageCollected<MessageEvent>(
         std::move(data), std::move(origin), message_origin_kind, last_event_id,
-        source, ports, nullptr);
+        source, ports, nullptr, delegated_capability);
   }
   static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
@@ -144,7 +149,9 @@ class CORE_EXPORT MessageEvent final : public Event {
                const String& last_event_id,
                EventTarget* source,
                GCedMessagePortArray*,
-               UserActivation* user_activation);
+               UserActivation* user_activation,
+               mojom::blink::DelegatedCapability delegated_capability =
+                   mojom::blink::DelegatedCapability::kNone);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
                scoped_refptr<const SecurityOrigin> origin,
                MessageOriginKind message_origin_kind,
@@ -299,12 +306,20 @@ class CORE_EXPORT MessageEvent final : public Event {
   bool is_ports_dirty_ = true;
   Vector<MessagePortChannel> channels_;
   Member<UserActivation> user_activation_;
-  mojom::blink::DelegatedCapability delegated_capability_;
+  mojom::blink::DelegatedCapability delegated_capability_ =
+      mojom::blink::DelegatedCapability::kNone;
   // For serialized messages across process this attribute contains the
   // information of whether the actual original SerializedScriptValue was locked
   // to the agent cluster.
   bool locked_to_agent_cluster_ = false;
   uint64_t trace_id_;
+};
+
+template <>
+struct DowncastTraits<MessageEvent> {
+  static bool AllowFrom(const Event& event) {
+    return event.InterfaceName() == event_interface_names::kMessageEvent;
+  }
 };
 
 }  // namespace blink

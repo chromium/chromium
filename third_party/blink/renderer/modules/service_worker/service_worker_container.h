@@ -130,6 +130,9 @@ class MODULES_EXPORT ServiceWorkerContainer final
   // object if needed, or else returns the existing one.
   ServiceWorker* GetOrCreateServiceWorker(WebServiceWorkerObjectInfo);
 
+ protected:
+  DispatchEventResult DispatchEventInternal(Event&) override;
+
  private:
   class DomContentLoadedListener;
 

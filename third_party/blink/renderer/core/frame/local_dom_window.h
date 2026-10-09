@@ -450,6 +450,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       SourceLocation*,
       const base::UnguessableToken& source_agent_cluster_id);
 
+  // Activates the transient capability token on this window corresponding to
+  // `delegated_capability` when a delegated message is dispatched.
+  void ActivateDelegatedCapability(
+      mojom::blink::DelegatedCapability delegated_capability);
+
   // Events
   // EventTarget API
   void RemoveAllEventListeners() override;
@@ -686,6 +691,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   DelegatedCapabilityRequestToken display_capture_request_token_;
   DelegatedCapabilityRequestToken digital_credentials_create_token_;
   DelegatedCapabilityRequestToken digital_credentials_get_token_;
+  DelegatedCapabilityRequestToken popup_request_token_;
 
   // https://dom.spec.whatwg.org/#window-current-event
   // We represent the "undefined" value as nullptr.

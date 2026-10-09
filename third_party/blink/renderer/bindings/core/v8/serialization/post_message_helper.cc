@@ -140,6 +140,19 @@ PostMessageHelper::MapStringToDelegatedCapability(
   Vector<StringView> capability_list =
       StringView(capability_string).SplitSkippingEmpty(' ');
 
+  if (execution_context->IsServiceWorkerGlobalScope()) {
+    if (RuntimeEnabledFeatures::CapabilityDelegationPopupEnabled(
+            execution_context) &&
+        capability_list.Contains("popup")) {
+      return mojom::blink::DelegatedCapability::kPopup;
+    }
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({"Delegation of \'", capability_string,
+                "\' is not supported from Service Workers."}));
+    return mojom::blink::DelegatedCapability::kNone;
+  }
+
   if (capability_list.Contains("payment")) {
     return mojom::blink::DelegatedCapability::kPaymentRequest;
   }
@@ -158,6 +171,14 @@ PostMessageHelper::MapStringToDelegatedCapability(
           execution_context) &&
       capability_list.Contains("digital-credentials-get")) {
     return mojom::blink::DelegatedCapability::kDigitalCredentialsGet;
+  }
+  if (RuntimeEnabledFeatures::CapabilityDelegationPopupEnabled(
+          execution_context) &&
+      capability_list.Contains("popup")) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Delegation of 'popup' is only supported from Service Workers.");
+    return mojom::blink::DelegatedCapability::kNone;
   }
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotSupportedError,

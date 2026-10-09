@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
@@ -102,8 +103,44 @@ void ServiceWorkerClient::postMessage(ScriptState* script_state,
     return;
   DCHECK(serialized_message);
 
+  auto* sw_scope = To<ServiceWorkerGlobalScope>(context);
+  bool has_activation = sw_scope->IsWindowInteractionAllowed();
+
+  mojom::blink::DelegatedCapability delegated_capability =
+      mojom::blink::DelegatedCapability::kNone;
+  if (options->hasDelegate()) {
+    delegated_capability = PostMessageHelper::MapStringToDelegatedCapability(
+        options->delegate(), context, exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    if (delegated_capability != mojom::blink::DelegatedCapability::kNone) {
+      CHECK_EQ(delegated_capability, mojom::blink::DelegatedCapability::kPopup);
+      if (type_ != mojom::blink::ServiceWorkerClientType::kWindow) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "Delegation of 'popup' is only supported for WindowClient.");
+        return;
+      }
+      // Transient popup capability is tracked on ServiceWorkerGlobalScope.
+      // See crbug.com/542314185.
+      if (!sw_scope->ConsumePopupCapabilityDelegation()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotAllowedError,
+            "Delegation is not allowed without transient user activation.");
+        return;
+      }
+    }
+  }
+
   BlinkTransferableMessage msg;
   msg.message = serialized_message;
+  msg.delegated_capability = delegated_capability;
+  if (options->includeUserActivation()) {
+    msg.user_activation =
+        mojom::blink::UserActivationSnapshot::New(false,  // sticky
+                                                  has_activation);
+  }
   msg.sender_origin = context->GetSecurityOrigin()->IsolatedCopy();
   msg.ports = MessagePort::DisentanglePorts(
       context, transferables.message_ports, exception_state);

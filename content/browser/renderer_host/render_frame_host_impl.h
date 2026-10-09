@@ -1842,6 +1842,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the last committed ServiceWorkerClient of this frame.
   base::WeakPtr<ServiceWorkerClient> GetLastCommittedServiceWorkerClient();
 
+  // Activates the transient popup delegation token when a Service Worker
+  // delegates the popup capability to this window client.
+  void AllowPopupThroughCapabilityDelegation();
+
   // Request a new NavigationClient interface from the renderer and returns the
   // ownership of the mojo::AssociatedRemote. This is intended for use by the
   // NavigationRequest.
@@ -5309,6 +5313,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Manages a transient affordance for this frame to request fullscreen.
   blink::DelegatedCapabilityRequestToken fullscreen_request_token_;
+
+  // Manages a transient affordance for this frame to open a popup via
+  // capability delegation.
+  blink::DelegatedCapabilityRequestToken popup_delegation_token_;
 
   // The user activation state of this document.  See |UserActivationState| for
   // details on how this state is maintained.

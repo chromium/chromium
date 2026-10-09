@@ -1154,13 +1154,13 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   }
 
   {
+    // The delegation info is passed through a postMessage that is sent with
+    // both user activation and the delegation option for known `fullscreen`
+    // capability.
     String post_message_w_fullscreen_request(
         "window.frames[0].postMessage("
         "'1', {targetOrigin: '/', delegate: 'fullscreen'});");
 
-    // The delegation info is passed through a postMessage that is sent with
-    // both user activation and the delegation option for another known
-    // capability.
     ScriptExecutionCallbackHelper callback_helper;
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_w_fullscreen_request,
@@ -1173,13 +1173,41 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   }
 
   {
+    // The delegation info is not passed through a frame-to-frame postMessage
+    // that is sent with user activation and the delegation option for the
+    // `popup` capability, because `popup` delegation is only supported from
+    // Service Workers (`Client.postMessage`) and throws `NotSupportedError` on
+    // `Window.postMessage`.
+    String post_message_w_popup_request(R"JS(
+        var result = 'success';
+        try {
+          window.frames[0].postMessage('1', {targetOrigin: '/', delegate: 'popup'});
+        } catch (e) {
+          result = e.name;
+        }
+        result;
+    )JS");
+
+    ScriptExecutionCallbackHelper callback_helper;
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_w_popup_request,
+                             callback_helper.Callback(),
+                             blink::mojom::PromiseResultOption::kAwait,
+                             blink::mojom::UserActivationOption::kActivate);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_EQ(callback_helper.SingleStringValue(), "NotSupportedError");
+    EXPECT_FALSE(message_event_listener->DelegateCapability());
+  }
+
+  {
+    // The delegation info is passed through a postMessage that is sent with
+    // both user activation and the delegation option for known
+    // `display-capture` capability.
     String post_message_w_display_capture_request(
         "window.frames[0].postMessage("
         "'1', {targetOrigin: '/', delegate: 'display-capture'});");
 
-    // The delegation info is passed through a postMessage that is sent with
-    // both user activation and the delegation option for another known
-    // capability.
     ScriptExecutionCallbackHelper callback_helper;
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_w_display_capture_request,
@@ -1192,12 +1220,12 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   }
 
   {
+    // The delegation info is not passed through a postMessage that is sent with
+    // user activation and the delegation option for an unknown capability.
     String post_message_w_unknown_request(
         "window.frames[0].postMessage("
         "'1', {targetOrigin: '/', delegate: 'foo'});");
 
-    // The delegation info is not passed through a postMessage that is sent with
-    // user activation and the delegation option for an unknown capability.
     ScriptExecutionCallbackHelper callback_helper;
     ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                              post_message_w_unknown_request,
