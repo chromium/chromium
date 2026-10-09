@@ -128,9 +128,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // for a URL being navigated to.
   static bool ShouldAssignSiteForUrlInfo(const UrlInfo& url_info);
 
-  // Returns the SiteInstanceGroup |this| belongs to.
-  // Currently, each SiteInstanceGroup has exactly one SiteInstance, but that
-  // will change as the migration continues. See crbug.com/1195535.
+  // Returns the SiteInstanceGroup |this| belongs to. See SiteInstanceGroup for
+  // cases where a group may contain multiple SiteInstances.
   SiteInstanceGroup* group() { return site_instance_group_.get(); }
 
   // Use this to get a related SiteInstance during navigations, where UrlInfo

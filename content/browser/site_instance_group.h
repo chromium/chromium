@@ -63,8 +63,16 @@ struct ChildProcessTerminationInfo;
 // may outlive this (e.g., when kept alive by NavigationEntry), in which case
 // they will get a new SiteInstanceGroup the next time one is needed.
 // SiteInstanceGroups are refcounted by the SiteInstances using them, allowing
-// for flexible policies. Currently, each SiteInstanceGroup has exactly one
-// SiteInstance. See crbug.com/1195535.
+// for flexible policies. A SiteInstanceGroup may contain multiple SiteInstances
+// in the following cases:
+// - Subframe data: URLs get their own SiteInstance in the same group as their
+//   initiator (see features::kSiteInstanceGroupsForDataUrls).
+// - When not all sites require a dedicated process (e.g., on Android),
+//   SiteInstances for sites that don't require isolation are placed in a
+//   default SiteInstanceGroup per BrowsingInstance, rather than sharing a
+//   default SiteInstance (see features::kDefaultSiteInstanceGroups).
+// Otherwise, each SiteInstanceGroup has exactly one SiteInstance. See
+// crbug.com/40176090.
 class CONTENT_EXPORT SiteInstanceGroup
     : public base::RefCounted<SiteInstanceGroup>,
       public RenderProcessHostObserver {
