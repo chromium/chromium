@@ -190,6 +190,10 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return true;
   }
 
+  override shouldWaitForDelayedTabContext(): boolean {
+    return true;
+  }
+
   override deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean):
       ComposeboxFile|null {
     const file = super.deleteFile(uuidToDelete, fromUserAction);
