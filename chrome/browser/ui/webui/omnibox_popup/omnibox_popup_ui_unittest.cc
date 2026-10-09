@@ -139,3 +139,17 @@ TEST_F(OmniboxPopupUITest, PopulateLocalResourceLoaderConfig) {
 
   theme_colors_manager->SetColorProviderForTesting(nullptr);
 }
+
+// Every window builds popups, so the session is created on first use rather
+// than with the popup.
+TEST_F(OmniboxPopupUITest, CreatesContextualSessionLazily) {
+  ASSERT_TRUE(ContextualSearchServiceFactory::GetForProfile(profile()));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(web_contents());
+  auto omnibox_popup_ui = std::make_unique<OmniboxPopupUI>(&web_ui);
+  EXPECT_FALSE(omnibox_popup_ui->HasContextualSessionHandleForTesting());
+
+  EXPECT_TRUE(omnibox_popup_ui->GetOrCreateContextualSessionHandle());
+  EXPECT_TRUE(omnibox_popup_ui->HasContextualSessionHandleForTesting());
+}

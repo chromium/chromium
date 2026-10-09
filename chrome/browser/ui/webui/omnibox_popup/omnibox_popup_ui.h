@@ -132,6 +132,10 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
   void ClearContextualSessionHandle();
 
+  bool HasContextualSessionHandleForTesting() const {
+    return !!shared_session_handle_;
+  }
+
   void SetPresenterDelegate(OmniboxPopupPresenterBase* delegate);
 
  private:

@@ -128,11 +128,13 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUIOmniboxPopupHost);
 
-  bool session_allows_drag_and_drop = false;
-  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
-    session_allows_drag_and_drop =
-        session_handle->CheckSearchContentSharingSettings(profile_->GetPrefs());
-  }
+  // Read the pref directly rather than creating the contextual search session
+  // here: every window builds popups, and most never use the session.
+  // Handlers create it on first use.
+  const bool session_allows_drag_and_drop =
+      ContextualSearchServiceFactory::GetForProfile(profile_) &&
+      contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs());
 
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
       Profile::FromWebUI(web_ui),
@@ -180,7 +182,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       "Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint");
 
   // Add composebox data.
-  auto composebox_config = omnibox::FeatureConfig::Get().config.composebox();
+  const auto& composebox_config =
+      omnibox::FeatureConfig::Get().config.composebox();
   const std::string attachment_mime_types =
       composebox_config.attachment_upload().mime_types_allowed();
   source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);
