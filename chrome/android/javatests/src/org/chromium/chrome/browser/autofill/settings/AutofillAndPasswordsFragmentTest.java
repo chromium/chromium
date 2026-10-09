@@ -54,6 +54,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -95,6 +96,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link AutofillAndPasswordsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -511,6 +513,7 @@ public class AutofillAndPasswordsFragmentTest {
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
     })
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/571973537
     public void testClickAutofillSettingsLaunchesAutofillOptions() {
         mSettingsTestRule.startSettingsActivity();
 
