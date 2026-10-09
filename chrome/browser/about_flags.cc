@@ -4128,29 +4128,73 @@ constexpr char kWebiumFlag[] = "webium";
 constexpr char kWebiumFeatures[] =
     "Webium,SurfaceEmbed,ExtensionsMenuAccessControl";
 constexpr char kWebUIToolbarFlag[] = "webui-toolbar";
+// To update kWebUIToolbarEnableFeatures:
+// 1. Edit chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh.
+// 2. Run generate_chrome_flags.sh in the same directory.
+// 3. Replace the list below with its output.
+// 4. Make sure kWebUIToolbarDisableFeatures includes every feature in
+//    the list (names only, without params).
+// The script appends `WebUIToolbar` so that the flag turns on the entire
+// WebUI toolbar.
+// LINT.IfChange(WebUIToolbarEnableFeatures)
 constexpr char kWebUIToolbarEnableFeatures[] =
-    "InitialWebUI:high_stream_priority/true,"
-    "WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/false/"
-    "WebUIReloadButtonKeepVisibleUntilPaint/true/"
-    "WebUIReloadButtonRestartUnresponsive/true/"
-    "WebUIReloadButtonRestartUnresponsiveRenderersTimeout/5s/"
-    "WebUIReloadButtonPrewarmWebUI/true/"
-    "WebUIReloadButtonPrewarmWebUIPreNavigate/true,"
-    "WebUIToolbar,"
-    "SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,"
-    "InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,"
-    "WebUIBundledCodeCache,"
+    "BypassOutdatedSurfaceActivation,"
+    "DeferHistoryBackendInit,"
+    "DeferLayoutDuringBrowserStartup,"
+    "DeferSessionStorageScavengingOnStartup,"
+    "DeferSpellcheckInitialization,"
+    "InitialWebUI,"
     "InitialWebUISurfaceSync:deadline_in_frames/12000/"
     "renderer_commit_delay_ms/100000,"
-    "BypassOutdatedSurfaceActivation,SendGPUChannelEarly";
+    "InitialWebUIWithoutExtensions,"
+    "LazyKeyedServiceInstantiation,"
+    "PerDependencyDeadlines,"
+    "PrioritizeResizeTaskRunnerOnStartup,"
+    "SendGPUChannelEarly,"
+    "SkipIPCChannelPausingForNonGuests,"
+    "WebiumMetricsMapping:config/"
+    "CjsKOUV2ZW50TGF0ZW5jeS5HZXN0dXJlU2Nyb2xsVXBkYXRlLlRvdWNoc2NyZWVuLlRvdGFs"
+    "TGF0ZW5jeQooCiZQYWdlTG9hZC5JbnRlcmFjdGl2ZVRpbWluZy5JbnB1dERlbGF5Mwo4CjZH"
+    "cmFwaGljcy5TbW9vdGhuZXNzLlBlcmNlbnREcm9wcGVkRnJhbWVzMy5BbGxTZXF1ZW5jZXM=,"
+    "WebUIBackForwardButton,"
+    "WebUIBundledCodeCache,"
+    "WebUIBypassMojoConnections,"
+    "WebUIHomeButton,"
+    "WebUIReloadButton:WebUIReloadButtonBypassLoaderThrottles/true/"
+    "WebUIReloadButtonDeferBrowserViewShow/false/"
+    "WebUIReloadButtonKeepVisibleUntilPaint/true/"
+    "WebUIReloadButtonPrewarmWebUI/true/"
+    "WebUIReloadButtonPrewarmWebUIPreNavigate/true/"
+    "WebUIReloadButtonRestartUnresponsive/true/"
+    "WebUIReloadButtonRestartUnresponsiveRenderersTimeout/5s,"
+    "WebUISplitTabsButton,"
+    "WebUIToolbarFrameEvictionOptOut,"
+    "WebUIToolbar";
+// LINT.ThenChange(//chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh)
 constexpr char kWebUIToolbarDisableFeatures[] =
-    "InitialWebUI,WebUIReloadButton,WebUIBackForwardButton,WebUIHomeButton,"
-    "WebUIToolbar,WebUILocationBar,"
-    "WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,"
-    "WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,"
-    "InitialWebUIWithoutExtensions,WebUIBundledCodeCache,"
-    "InitialWebUISurfaceSync,BypassOutdatedSurfaceActivation,"
-    "SendGPUChannelEarly";
+    "BypassOutdatedSurfaceActivation,"
+    "DeferHistoryBackendInit,"
+    "DeferLayoutDuringBrowserStartup,"
+    "DeferSessionStorageScavengingOnStartup,"
+    "DeferSpellcheckInitialization,"
+    "InitialWebUI,"
+    "InitialWebUISurfaceSync,"
+    "InitialWebUIWithoutExtensions,"
+    "LazyKeyedServiceInstantiation,"
+    "PerDependencyDeadlines,"
+    "PrioritizeResizeTaskRunnerOnStartup,"
+    "SendGPUChannelEarly,"
+    "SkipIPCChannelPausingForNonGuests,"
+    "WebiumMetricsMapping,"
+    "WebUIBackForwardButton,"
+    "WebUIBundledCodeCache,"
+    "WebUIBypassMojoConnections,"
+    "WebUIHomeButton,"
+    "WebUILocationBar,"
+    "WebUIReloadButton,"
+    "WebUISplitTabsButton,"
+    "WebUIToolbarFrameEvictionOptOut,"
+    "WebUIToolbar";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 constexpr char kTabsFromOtherDevicesEnhancementFeatures[] =

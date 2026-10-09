@@ -37,6 +37,7 @@ function WebUIReloadButtonParams() {
     # empty line
 }
 
+# LINT.IfChange
 join , \
   BypassOutdatedSurfaceActivation \
   DeferHistoryBackendInit \
@@ -60,3 +61,4 @@ join , \
   WebUIToolbarFrameEvictionOptOut \
   WebiumMetricsMapping:$(WebiumMetricsMappingParams) \
   # empty line
+# LINT.ThenChange(//chrome/browser/about_flags.cc:WebUIToolbarEnableFeatures)
