@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -36,7 +37,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/color/color_id.h"
 
 namespace omnibox {
 
@@ -357,8 +357,8 @@ IN_PROC_BROWSER_TEST_F(
                 .view();
         ASSERT_NE(view, nullptr);
         SkColor actual_bg_color = view->GetBackgroundColorForTesting();
-        SkColor expected_bg_color =
-            view->GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+        SkColor expected_bg_color = view->GetColorProvider()->GetColor(
+            kColorOmniboxComposeboxContextEntrypointBackground);
         EXPECT_EQ(actual_bg_color, expected_bg_color);
       }));
 }
@@ -377,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(
                 .view();
         ASSERT_NE(view, nullptr);
         SkColor actual_fg_color = view->GetForegroundColorForTesting();
-        SkColor expected_fg_color =
-            view->GetColorProvider()->GetColor(ui::kColorSysOnSurface);
+        SkColor expected_fg_color = view->GetColorProvider()->GetColor(
+            kColorOmniboxContextEntrypointText);
         EXPECT_EQ(actual_fg_color, expected_fg_color);
       }));
 }
