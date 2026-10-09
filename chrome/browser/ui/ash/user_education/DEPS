@@ -10,13 +10,19 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/apps/app_service/metrics",
   "+chrome/browser/ash/app_list",
-  "+chrome/browser/ash/system_web_apps/test_support",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
-  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/views/user_education",
-  "+chrome/browser/ui/web_applications",
   "+chrome/browser/user_education",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "chrome_user_education_delegate_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service/metrics",
+    "+chrome/browser/ash/system_web_apps/test_support",
+    "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/web_applications",
+  ],
+}

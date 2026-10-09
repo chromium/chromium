@@ -14,5 +14,11 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/web_applications",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "office_web_app_unittest\\.cc": [
+    "+chrome/test",
+  ],
+}

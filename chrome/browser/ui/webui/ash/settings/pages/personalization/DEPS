@@ -16,5 +16,11 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "personalization_section_unittest\\.cc": [
+    "+chrome/test",
+  ],
+}

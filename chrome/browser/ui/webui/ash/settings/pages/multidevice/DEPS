@@ -6,7 +6,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/phonehub",
   "+chrome/browser/nearby_sharing",
@@ -18,5 +17,15 @@ include_rules = [
   "+chrome/browser/ui/webui/nearby_share",
   "+chrome/browser/ui/webui/settings",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "multidevice_handler_unittest\\.cc": [
+    "+chrome/test",
+  ],
+  "multidevice_section_unittest\\.cc": [
+    "+chrome/browser/ash/eche_app",
+    "+chrome/test",
+  ],
+}

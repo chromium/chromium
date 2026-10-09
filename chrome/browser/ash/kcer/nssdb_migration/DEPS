@@ -11,9 +11,15 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/kcer",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "pkcs12_migrator_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+    "+chrome/test/base",
+  ],
+}

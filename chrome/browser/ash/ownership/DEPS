@@ -14,12 +14,21 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_paths.h",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "owner_key_loader_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+    "+chrome/test/base",
+  ],
+  "owner_settings_service_ash_unittest\\.cc": [
+    "+chrome/common/chrome_paths.h",
+    "+chrome/test/base",
+  ],
+}

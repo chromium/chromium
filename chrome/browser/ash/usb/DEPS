@@ -20,7 +20,13 @@ include_rules = [
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/profiles",
   "+chrome/grit",
-  "+chrome/test/base",
 
   "+ui/message_center/message_center.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "cros_usb_detector_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

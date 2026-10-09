@@ -16,19 +16,28 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/note_taking",
-  "+chrome/browser/ash/printing",
   "+chrome/browser/ash/system",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/webui/ash/settings/os_settings_features_util.h",
-  "+chrome/browser/ui/webui/ash/settings/os_settings_identifier.h",
   "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
   "+chrome/browser/ui/webui/ash/settings/pages/printing",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/grit",
-  "+chrome/test",
 
   "+ash/shell.h",
   "+ash/shell_observer.h",
   "+ash/display/cros_display_config.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "device_keyboard_handler_unittest\\.cc": [
+    "+chrome/test",
+  ],
+  "device_section_unittest\\.cc": [
+    "+chrome/browser/ash/printing",
+    "+chrome/browser/ui/webui/ash/settings/os_settings_identifier.h",
+    "+chrome/test",
+  ],
+}

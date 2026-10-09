@@ -10,19 +10,30 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/login",
-  "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/policy/handlers",
-  "+chrome/browser/ash/policy/server_backed_state",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/net",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
-  "+chrome/common/chrome_paths.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "enrollment_embedded_policy_server_browsertest\\.cc": [
+    "+chrome/browser/ash/app_mode",
+    "+chrome/browser/ash/ownership",
+    "+chrome/browser/ash/policy/server_backed_state",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
+  "enrollment_screen_browsertest\\.cc": [
+    "+chrome/common/chrome_paths.h",
+  ],
+  "enrollment_screen_unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
+}

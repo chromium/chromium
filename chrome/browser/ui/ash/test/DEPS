@@ -6,15 +6,39 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/apps/platform_apps",
-  "+chrome/browser/ash/app_restore",
-  "+chrome/browser/ash/login",
-  "+chrome/browser/profiles",
-  "+chrome/browser/ui/accelerator_table.h",
-  "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/browser_window/public",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
-  "+chrome/browser/ui/views/frame",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "accelerator_commands_browsertest\\.cc": [
+    "+chrome/browser/apps/platform_apps",
+    "+chrome/browser/profiles",
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/views/frame",
+  ],
+  "accelerator_metadata_unittest\\.cc": [
+    "+chrome/browser/ui/accelerator_table.h",
+  ],
+  "annotator_client_impl_browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+  "event_latency_metrics_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/ui/views/frame",
+  ],
+  "feature_discovery_duration_reporter_browsertest\\.cc": [
+    "+chrome/browser/ash/login",
+    "+chrome/browser/profiles",
+    "+chrome/browser/ui/ash/login",
+  ],
+  "first_web_contents_profiler_ash_browsertest\\.cc": [
+    "+chrome/browser/ash/app_restore",
+    "+chrome/browser/profiles",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}

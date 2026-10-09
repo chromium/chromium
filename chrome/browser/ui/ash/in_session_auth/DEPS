@@ -12,10 +12,16 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/auth",
   "+chrome/browser/ash/login/quick_unlock",
-  "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/browser/ui/navigator/browser_navigator_params.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "in_session_auth_dialog_client_unittest\\.cc": [
+    "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/profiles",
+  ],
+}

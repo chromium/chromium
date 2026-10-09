@@ -10,16 +10,26 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/accessibility",
-  "+chrome/browser/policy/policy_test_utils.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/web_view",
 
   # Dependency for locale on the browser process.
   "+chrome/browser/browser_process.h",
 
   "+chrome/browser/ash/attestation",
-  "+chrome/browser/ash/settings/stub_cros_settings_provider.h",
-  "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
   "+third_party/boringssl/src/pki/pem.h",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "certificate_manager_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+    "+chrome/browser/ash/settings/stub_cros_settings_provider.h",
+  ],
+  "focus_mode_browsertest\\.cc": [
+    "+chrome/browser/ash/accessibility",
+    "+chrome/browser/ui/ash/web_view",
+  ],
+  "focus_mode_policy_browsertest\\.cc": [
+    "+chrome/browser/policy/policy_test_utils.h",
+  ],
+}

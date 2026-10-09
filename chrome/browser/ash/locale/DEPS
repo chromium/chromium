@@ -18,5 +18,11 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/profiles",
   "+chrome/common",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "startup_settings_cache_browsertest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

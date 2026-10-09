@@ -16,5 +16,11 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/extension_control_handler.h",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "internet_handler_unittest\\.cc": [
+    "+chrome/test",
+  ],
+}

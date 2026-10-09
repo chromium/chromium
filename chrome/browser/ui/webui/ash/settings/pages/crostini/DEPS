@@ -21,5 +21,11 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/common",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "crostini_section_unittest\\.cc": [
+    "+chrome/test",
+  ],
+}

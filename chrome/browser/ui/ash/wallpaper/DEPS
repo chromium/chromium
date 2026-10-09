@@ -8,9 +8,15 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles/profile_helper.h",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/ash/wallpaper_handlers",
   "+chrome/browser/ash/wallpaper",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/system_web_apps",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "wallpaper_controller_client_impl_unittest\\.cc": [
+    "+chrome/browser/ash/settings",
+  ],
+}

@@ -17,5 +17,11 @@ include_rules = [
   "+chrome/browser/profile_resetter",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/settings",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "chrome_sanitize_ui_delegate_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

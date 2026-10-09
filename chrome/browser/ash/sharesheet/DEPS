@@ -21,5 +21,11 @@ include_rules = [
   "+chrome/browser/sharesheet",
   "+chrome/browser/ui/ash/sharesheet",
   "+chrome/grit",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "copy_to_clipboard_share_action_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}

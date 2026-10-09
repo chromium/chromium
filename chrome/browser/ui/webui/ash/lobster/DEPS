@@ -13,5 +13,11 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/mako/draggable_bubble_dialog_view.h",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "lobster_page_handler_unittest\\.cc": [
+    "+chrome/test",
+  ],
+}

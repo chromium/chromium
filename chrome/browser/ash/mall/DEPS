@@ -16,5 +16,11 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/almanac_api_client",
   "+chrome/browser/profiles",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "mall_url_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}
