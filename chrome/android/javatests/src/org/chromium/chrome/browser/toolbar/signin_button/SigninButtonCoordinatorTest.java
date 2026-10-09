@@ -47,6 +47,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -546,6 +547,7 @@ public class SigninButtonCoordinatorTest {
         startActivityOnNtp();
 
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         ViewUtils.waitForVisibleView(withId(R.id.avatar_button));
         onView(withId(R.id.avatar_button)).check(matches(isEnabled()));
 
@@ -571,6 +573,7 @@ public class SigninButtonCoordinatorTest {
         startActivityOnNtp();
 
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         setSigninAllowed(false);
         ViewUtils.waitForVisibleView(withId(R.id.avatar_button));
 
