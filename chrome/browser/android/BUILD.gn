@@ -201,6 +201,7 @@ source_set("tabs_impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/site_protection",
+    "//chrome/browser/ssl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/supervised_user",
     "//chrome/browser/sync",

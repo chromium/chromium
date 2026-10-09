@@ -54,6 +54,13 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # Chrome App window WebContents in ChromeAppDelegate::InitWebContents, so
   # the WebContents must own it.
   'FileSystemAccessPermissionRequestManager::CreateForWebContents',
+  # HttpsOnlyModeTabHelper is also attached to non-tab and pre-tab WebContents
+  # in HttpsUpgradesInterceptor::MaybeCreateLoader and
+  # HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor, and is queried on
+  # WebContents by chrome_security_state::GetVisibleSecurityState during
+  # WebContentsDestroyed() after TabFeatures is destroyed, so the WebContents
+  # must continue to own it.
+  'HttpsOnlyModeTabHelper::CreateForWebContents',
   # TabModalDialogManager lives in //components/javascript_dialogs and is also
   # attached to non-tab Document Picture-in-Picture WebContents in
   # DocumentPipHost, so the WebContents must own it.
