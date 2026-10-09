@@ -172,15 +172,6 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
         mojom::ExtensionConnectionStatus::kExtensionNotFound);
   }
 
-  const std::string GetMachineRootID() override { return ""; }
-
-  void PersistMachineRootID(const std::string& id) override {}
-
-  void PersistNotification(
-      mojom::DriveFsNotificationPtr notification) override {}
-
-  void PersistSyncErrors(mojom::MirrorSyncErrorListPtr error_list) override {}
-
   const AccountId account_id_;
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;
   bool verbose_logging_enabled_ = false;
@@ -192,9 +183,6 @@ class MockDriveFsHostObserver : public DriveFsHost::Observer {
   MOCK_METHOD(void, OnUnmounted, ());
   MOCK_METHOD(void,
               OnSyncingStatusUpdate,
-              (const mojom::SyncingStatus& status));
-  MOCK_METHOD(void,
-              OnMirrorSyncingStatusUpdate,
               (const mojom::SyncingStatus& status));
   MOCK_METHOD(void,
               OnFilesChanged,

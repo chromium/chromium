@@ -97,7 +97,7 @@ class DriveFsHost::MountState : public DriveFsSession {
         std::move(access_token),
         auth_delegate->IsMetricsCollectionEnabled(),
         delegate->GetLostAndFoundDirectoryName(),
-        base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
+        /*enable_experimental_mirroring=*/false,
         delegate->IsVerboseLoggingEnabled(),
         mojom::CSESupport::kListing,
         /*fetch_modifying_user_metadata=*/true,
@@ -166,12 +166,7 @@ class DriveFsHost::MountState : public DriveFsSession {
     }
   }
 
-  void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
-    for (Observer& observer : host_->observers_) {
-      DCHECK_EQ(observer.GetHost(), host_);
-      observer.OnMirrorSyncingStatusUpdate(*status);
-    }
-  }
+  void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {}
 
   void OnFilesChanged(std::vector<mojom::FileChangePtr> changes) override {
     std::vector<mojom::FileChange> changes_values;
@@ -229,33 +224,15 @@ class DriveFsHost::MountState : public DriveFsSession {
   }
 
   void GetMachineRootID(GetMachineRootIDCallback callback) override {
-    if (!ash::features::IsDriveFsMirroringEnabled()) {
-      std::move(callback).Run({});
-      return;
-    }
-    std::move(callback).Run(host_->delegate_->GetMachineRootID());
+    std::move(callback).Run({});
   }
 
-  void PersistMachineRootID(const std::string& id) override {
-    if (!ash::features::IsDriveFsMirroringEnabled()) {
-      return;
-    }
-    host_->delegate_->PersistMachineRootID(std::move(id));
-  }
+  void PersistMachineRootID(const std::string& id) override {}
 
   void OnNotificationReceived(
-      mojom::DriveFsNotificationPtr notification) override {
-    if (!ash::features::IsDriveFsMirroringEnabled()) {
-      return;
-    }
-    host_->delegate_->PersistNotification(std::move(notification));
-  }
+      mojom::DriveFsNotificationPtr notification) override {}
 
-  void OnMirrorSyncError(mojom::MirrorSyncErrorListPtr error_list) override {
-    if (ash::features::IsDriveFsMirroringEnabled()) {
-      host_->delegate_->PersistSyncErrors(std::move(error_list));
-    }
-  }
+  void OnMirrorSyncError(mojom::MirrorSyncErrorListPtr error_list) override {}
 
   // Owns |this|.
   const raw_ptr<DriveFsHost> host_;

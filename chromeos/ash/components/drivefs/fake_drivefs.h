@@ -95,11 +95,6 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
               (drivefs::mojom::DriveFs::GetSyncingPathsCallback callback),
               (override));
 
-  void GetSyncingPathsForTesting(
-      drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) {
-    std::move(callback).Run(drive::FILE_ERROR_OK, syncing_paths_);
-  }
-
   MOCK_METHOD(void,
               StartSearchQuery,
               (mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
@@ -295,8 +290,6 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   mojo::Receiver<drivefs::mojom::DriveFsBootstrap> bootstrap_receiver_{this};
   mojo::PendingReceiver<drivefs::mojom::DriveFsDelegate>
       pending_delegate_receiver_;
-
-  std::vector<base::FilePath> syncing_paths_;
 
   base::WeakPtrFactory<FakeDriveFs> weak_factory_{this};
 };
