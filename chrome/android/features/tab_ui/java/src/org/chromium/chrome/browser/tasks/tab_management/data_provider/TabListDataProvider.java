@@ -247,12 +247,11 @@ public abstract class TabListDataProvider {
 
         int newSelectedIndex = indexOfTabId(newSelectedTabId);
 
-        // Deselect the previously selected item first to avoid an intermediate state with two
-        // selected items, matching TabListMediator#selectTab.
-        int prevSelectedIndex = indexOfSelectedTab();
-        if (prevSelectedIndex != TabList.INVALID_TAB_INDEX
-                && prevSelectedIndex != newSelectedIndex) {
-            updateSelection(prevSelectedIndex, /* isSelected= */ false);
+        // Deselect all other tabs first so only one tab remains selected.
+        for (int i = 0; i < mItems.size(); i++) {
+            if (i != newSelectedIndex && mItems.get(i).isSelected()) {
+                updateSelection(i, /* isSelected= */ false);
+            }
         }
 
         if (newSelectedIndex != TabList.INVALID_TAB_INDEX) {
@@ -293,6 +292,26 @@ public abstract class TabListDataProvider {
         }
     }
 
+    /**
+     * Notifies observers that a tab closure was undone if shown by this provider.
+     *
+     * @param tab The {@link Tab} whose closure was undone.
+     */
+    protected void notifyTabClosureUndone(Tab tab) {
+        if (!shouldShowTab(tab)) return;
+        notifyObservers(obs -> obs.onTabClosureUndone(tab.getId()));
+    }
+
+    /**
+     * Notifies observers that a tab closure was committed if shown by this provider.
+     *
+     * @param tab The {@link Tab} whose closure was committed.
+     */
+    protected void notifyTabClosureCommitted(Tab tab) {
+        if (!shouldShowTab(tab)) return;
+        notifyObservers(obs -> obs.onTabClosureCommitted(tab.getId()));
+    }
+
     private void updateSelection(int index, boolean isSelected) {
         TabListItem currentItem = mItems.get(index);
         if (currentItem.isSelected() == isSelected) return;
@@ -306,13 +325,6 @@ public abstract class TabListDataProvider {
         if (tabId == Tab.INVALID_TAB_ID) return TabList.INVALID_TAB_INDEX;
         for (int i = 0; i < mItems.size(); i++) {
             if (isTabItem(mItems.get(i), tabId)) return i;
-        }
-        return TabList.INVALID_TAB_INDEX;
-    }
-
-    private int indexOfSelectedTab() {
-        for (int i = 0; i < mItems.size(); i++) {
-            if (mItems.get(i).isSelected()) return i;
         }
         return TabList.INVALID_TAB_INDEX;
     }

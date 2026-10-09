@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.TabId;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -95,5 +96,17 @@ public interface TabListDataObserver {
         // property events directly, updating specific PropertyModel keys based on payload.
     }
 
-    // TODO(crbug.com/562590772): Add remaining structural and property update callbacks.
+    /**
+     * Called when a tab closure has been undone in the underlying tab model.
+     *
+     * @param tabId The ID of the tab whose closure was undone.
+     */
+    default void onTabClosureUndone(@TabId int tabId) {}
+
+    /**
+     * Called when a tab closure has been committed in the underlying tab model.
+     *
+     * @param tabId The ID of the tab whose closure was committed.
+     */
+    default void onTabClosureCommitted(@TabId int tabId) {}
 }
