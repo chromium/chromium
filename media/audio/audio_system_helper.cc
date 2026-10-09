@@ -21,8 +21,8 @@ std::optional<AudioParameters> TryToFixChannels(const AudioParameters& params) {
   // better to report a valid value if this is the only problem.
   if (params.channels() > limits::kMaxChannels) {
     DCHECK(params.channel_layout() == CHANNEL_LAYOUT_DISCRETE);
-    params_copy.SetChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE,
-                                       limits::kMaxChannels);
+    params_copy.set_channel_layout_config(
+        {CHANNEL_LAYOUT_DISCRETE, limits::kMaxChannels});
   }
 
   return params_copy.IsValid() ? params_copy : std::optional<AudioParameters>();

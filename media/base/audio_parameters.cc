@@ -348,11 +348,6 @@ bool AudioParameters::IsFormatSupportedByHardware(Format format) const {
          (hardware_capabilities_->bitstream_formats & format);
 }
 
-void AudioParameters::SetChannelLayoutConfig(ChannelLayout layout,
-                                             int channels) {
-  channel_layout_config_ = {layout, channels};
-}
-
 bool AudioParameters::RequireEncapsulation() const {
   return hardware_capabilities_.has_value() &&
          hardware_capabilities_->require_encapsulation;

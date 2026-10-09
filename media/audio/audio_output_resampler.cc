@@ -157,9 +157,8 @@ AudioParameters GetFallbackLowLatencyOutputParams(
     int effects = output_params.effects();
     effects |= original_output_params.effects();
     output_params.set_effects(effects);
-    output_params.SetChannelLayoutConfig(
-        original_output_params.channel_layout(),
-        original_output_params.channels());
+    output_params.set_channel_layout_config(
+        original_output_params.channel_layout_config());
     return output_params;
   }
   // If we fail to get preferred audio parameters, return empty(invalid)

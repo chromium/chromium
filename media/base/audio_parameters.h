@@ -328,8 +328,9 @@ class MEDIA_EXPORT AudioParameters {
   void set_format(Format format) { format_ = format; }
   Format format() const { return format_; }
 
-  void SetChannelLayoutConfig(ChannelLayout layout, int channels);
-
+  void set_channel_layout_config(ChannelLayoutConfig config) {
+    channel_layout_config_ = config;
+  }
   const ChannelLayoutConfig& channel_layout_config() const {
     return channel_layout_config_;
   }

@@ -1053,8 +1053,8 @@ void AudioRendererImpl::DecodedAudioReady(
 
     last_decoded_channel_layout_config_ =
         ChannelLayoutConfig(buffer->channel_layout(), buffer->channel_count());
-    audio_parameters_.SetChannelLayoutConfig(buffer->channel_layout(),
-                                             buffer->channel_count());
+    audio_parameters_.set_channel_layout_config(
+        last_decoded_channel_layout_config_);
 
     last_decoded_sample_rate_ = buffer->sample_rate();
     audio_parameters_.set_sample_rate(last_decoded_sample_rate_);
