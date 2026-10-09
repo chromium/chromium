@@ -11,12 +11,12 @@ import multiprocessing
 import os
 import random
 import shutil
-import subprocess
+import subprocess  # noqa: F401
 import sys
 import time
 
 from contextlib import AbstractContextManager
-from pathlib import Path
+from pathlib import Path  # noqa: F401
 
 import camera
 import server
@@ -27,12 +27,12 @@ TEST_SCRIPTS_ROOT = os.path.join(
 )
 sys.path.append(TEST_SCRIPTS_ROOT)
 
-import monitors
-import perf_trace
-import version
-from chrome_driver_wrapper import ChromeDriverWrapper
-from common import get_build_info, get_free_local_port, get_ip_address, ssh_run
-from repeating_log import RepeatingLog
+import monitors  # noqa: E402
+import perf_trace  # noqa: E402
+import version  # noqa: E402
+from chrome_driver_wrapper import ChromeDriverWrapper  # noqa: E402
+from common import get_build_info, get_free_local_port, get_ip_address, ssh_run  # noqa: E402, F401
+from repeating_log import RepeatingLog  # noqa: E402
 
 
 HTTP_SERVER_PORT = get_free_local_port()

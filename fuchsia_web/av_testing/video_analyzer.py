@@ -22,7 +22,7 @@ sys.path.append(
     )
 )
 
-from repeating_log import RepeatingLog
+from repeating_log import RepeatingLog  # noqa: E402
 
 
 def from_original_video(recorded: str, original: str) -> object:

@@ -7,3 +7,6 @@ quote-style = "preserve"
 [per-file-target-version]
 # TODO: remove once Fuchsia upgrades the Py version.
 "*" = "py38"
+
+[lint]
+unfixable = ["F401"]
