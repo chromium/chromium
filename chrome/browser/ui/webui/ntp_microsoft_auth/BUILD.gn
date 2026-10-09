@@ -35,7 +35,6 @@ source_set("ntp_microsoft_auth") {
     "ntp_microsoft_auth_response_capture_navigation_throttle.h",
     "ntp_microsoft_auth_untrusted_ui.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":shared",
     ":untrusted",

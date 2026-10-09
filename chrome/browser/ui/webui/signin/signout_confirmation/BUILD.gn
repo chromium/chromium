@@ -44,8 +44,6 @@ source_set("signout_confirmation_impl") {
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions" ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 static_library("test_support") {

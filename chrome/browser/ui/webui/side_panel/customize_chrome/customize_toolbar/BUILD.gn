@@ -10,7 +10,6 @@ source_set("customize_toolbar") {
   sources = [ "customize_toolbar_handler.cc" ]
   public = [ "customize_toolbar_handler.h" ]
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

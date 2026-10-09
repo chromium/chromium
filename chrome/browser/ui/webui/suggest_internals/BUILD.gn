@@ -22,7 +22,6 @@ source_set("suggest_internals") {
     "suggest_internals_handler.h",
     "suggest_internals_ui.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":mojo_bindings",
     "//base",

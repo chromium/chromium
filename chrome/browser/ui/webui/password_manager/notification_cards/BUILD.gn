@@ -8,7 +8,6 @@ import("//chrome/common/features.gni")
 source_set("notification_cards") {
   sources = []
   public = []
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
     "//chrome/app:generated_resources",

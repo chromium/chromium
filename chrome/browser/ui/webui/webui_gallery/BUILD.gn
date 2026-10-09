@@ -6,13 +6,6 @@ source_set("webui_gallery") {
   sources = [ "webui_gallery_ui.cc" ]
   public = [ "webui_gallery_ui.h" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  # webui_gallery_ui.cc includes favicon_source.h which is in
-  # //chrome/browser/ui:ui.
-  allow_circular_includes_from =
-      [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",

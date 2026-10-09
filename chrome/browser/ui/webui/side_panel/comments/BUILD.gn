@@ -22,7 +22,6 @@ source_set("comments") {
   ]
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/top_chrome",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

@@ -34,7 +34,6 @@ source_set("password_manager_ui_handler") {
 source_set("notification_card") {
   sources = [ "notification_card.cc" ]
   public = [ "notification_card.h" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -53,7 +52,6 @@ source_set("notification_card") {
 source_set("notification_cards_handler") {
   sources = [ "notification_cards_handler.cc" ]
   public = [ "notification_cards_handler.h" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":notification_card",
     "//base",
@@ -88,7 +86,6 @@ source_set("password_manager_ui") {
   public_deps = [
     ":mojo_bindings",
     ":password_manager_ui_handler",
-    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/webui",

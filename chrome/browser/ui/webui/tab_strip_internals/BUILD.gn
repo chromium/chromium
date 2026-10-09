@@ -35,8 +35,6 @@ source_set("impl") {
     "tab_strip_internals_util.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":tab_strip_internals",
     "//base",

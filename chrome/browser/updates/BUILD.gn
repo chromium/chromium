@@ -15,10 +15,7 @@ source_set("impl") {
 
   sources = [ "update_metrics_provider.cc" ]
 
-  public_deps = [
-    ":update_metrics",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":update_metrics" ]
 
   deps = [
     "//base",

@@ -15,7 +15,6 @@ if (!is_android) {
       "media_router_internals_webui_message_handler.h",
       "web_contents_display_observer.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
       "//chrome/browser/media/router",

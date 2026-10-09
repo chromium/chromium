@@ -52,8 +52,6 @@ source_set("whats_new") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [ "whats_new_util.cc" ]
 
   deps = [

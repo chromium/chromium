@@ -36,7 +36,6 @@ if (is_win || is_mac || is_linux) {
       "sign_in_promo_handler.h",
       "welcome_handler.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":mojo_bindings",
       "//base",

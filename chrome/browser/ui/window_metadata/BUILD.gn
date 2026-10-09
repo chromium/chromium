@@ -13,7 +13,6 @@ source_set("window_metadata") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/browser_window",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",

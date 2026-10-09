@@ -12,7 +12,6 @@ if (!is_android) {
       "support_tool_ui.h",
       "support_tool_ui_utils.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
       "//chrome/app:branded_strings",
