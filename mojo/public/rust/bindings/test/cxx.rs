@@ -7,7 +7,9 @@ chromium::import! {
     "//mojo/public/rust/system";
 }
 
-use crate::rust_associated_sender::{RequestHandleRemote, RequestRemote, RustAssociatedSender};
+use crate::rust_associated_sender::{
+    RequestHandleRemote, RequestRemote, RustAssociatedSender, SendHandleReceiver, SendReceiver,
+};
 use crate::tests::{
     BindRustAssociatedSenderReceiver, BindRustHandleServiceReceiver, BindRustMathServiceReceiver,
 };
@@ -26,6 +28,14 @@ pub mod ffi {
         fn BindRustAssociatedSenderReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
 
         type RustAssociatedSender;
+        fn SendReceiver(
+            sender: &mut RustAssociatedSender,
+            adapter: UniquePtr<AssociatedEndpointRustAdapter>,
+        );
+        fn SendHandleReceiver(
+            sender: &mut RustAssociatedSender,
+            adapter: UniquePtr<AssociatedEndpointRustAdapter>,
+        );
         fn RequestRemote(
             sender: &mut RustAssociatedSender,
         ) -> UniquePtr<AssociatedEndpointRustAdapter>;
@@ -85,8 +95,12 @@ pub mod ffi {
             receiver_adapter: UniquePtr<AssociatedEndpointRustAdapter>,
         );
 
+        fn TestRequestRemoteAndAddCppRemote(remote: Pin<&mut AssociatedSenderTestRemote>);
         fn TestSendReceiverAndAddCppRemote(remote: Pin<&mut AssociatedSenderTestRemote>);
 
+        fn TestRequestHandleRemoteAndPassHandlesCppRemote(
+            remote: Pin<&mut AssociatedSenderTestRemote>,
+        );
         fn TestSendHandleReceiverAndPassHandlesCppRemote(
             remote: Pin<&mut AssociatedSenderTestRemote>,
         );
@@ -99,8 +113,10 @@ pub mod ffi {
             adapter: UniquePtr<AssociatedEndpointRustAdapter>,
         ) -> UniquePtr<PlusSevenMathService>;
 
+        fn TestSendReceiverAndAddRustRemote(sender: &mut RustAssociatedSender);
         fn TestRequestRemoteAndAddRustRemote(sender: &mut RustAssociatedSender);
 
+        fn TestSendHandleReceiverAndPassHandlesRustRemote(sender: &mut RustAssociatedSender);
         fn TestRequestHandleRemoteAndPassHandlesRustRemote(sender: &mut RustAssociatedSender);
 
         fn SetPlusSevenDisconnectCallback(
@@ -110,9 +126,17 @@ pub mod ffi {
 
         fn TestBadMessageToRustReceiver();
 
+        fn TestFailedSendMessageNotifiesSerializedEndpoint(
+            adapter: UniquePtr<AssociatedEndpointRustAdapter>,
+        );
+
+        fn TestFailedSendMessageFails(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+
         fn HaveSameGroupController(
             first: UniquePtr<AssociatedEndpointRustAdapter>,
             second: UniquePtr<AssociatedEndpointRustAdapter>,
         ) -> bool;
+
+        fn AdapterIsAssociated(adapter: &AssociatedEndpointRustAdapter) -> bool;
     }
 }

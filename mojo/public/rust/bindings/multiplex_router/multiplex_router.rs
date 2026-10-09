@@ -49,6 +49,7 @@ use super::control_messages::{
     construct_peer_endpoint_closed_message, parse_incoming_control_message, RunOrClosePipeInput,
 };
 use super::cpp_interop::ffi;
+use super::cpp_interop::CppRouterHandle;
 
 use crate::message::MojomMessage;
 use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
@@ -246,6 +247,14 @@ impl MultiplexRouter {
         self.schedule_all_possible_tasks();
 
         return Some(interface_id);
+    }
+
+    /// Allocates a new interface ID and associates an unassociated C++ endpoint
+    /// with this router using it.
+    pub(super) fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId> {
+        let id = self.add_associated_interface(None, None)?;
+        handle.associate_with_rust_router(self, id);
+        Some(id)
     }
 
     /// Indicate that the endpoint associated with `interface_id` has been bound

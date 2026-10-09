@@ -56,6 +56,25 @@ void TestRemoteFromCpp(
   run_loop.Run();
 }
 
+// Tests requesting an associated remote from Rust across a C++ primary remote,
+// and verifies by calling `Add(100, 200)`.
+void TestRequestRemoteAndAddCppRemote(AssociatedSenderTestRemote& remote) {
+  auto adapter = remote.RequestRemote();
+  mojo::PendingAssociatedRemote<MathService> pending_remote =
+      PassPendingAssociatedRemote<MathService>(std::move(adapter));
+
+  mojo::AssociatedRemote<MathService> math_remote(std::move(pending_remote));
+  base::RunLoop run_loop;
+  math_remote->Add(100, 200,
+                   base::BindOnce(
+                       [](base::OnceClosure quit, uint32_t result) {
+                         EXPECT_EQ(result, 307u);
+                         std::move(quit).Run();
+                       },
+                       run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 // Tests sending an associated receiver to Rust across a C++ primary remote,
 // and verifies by calling `Add(500, 300)`.
 void TestSendReceiverAndAddCppRemote(AssociatedSenderTestRemote& remote) {
@@ -65,6 +84,28 @@ void TestSendReceiverAndAddCppRemote(AssociatedSenderTestRemote& remote) {
 
   auto adapter = MakeAssociatedEndpointRustAdapter(std::move(pending_receiver));
   remote.SendReceiver(std::move(adapter));
+
+  mojo::AssociatedRemote<MathService> math_remote(std::move(pending_remote));
+  base::RunLoop run_loop;
+  math_remote->Add(500, 300,
+                   base::BindOnce(
+                       [](base::OnceClosure quit, uint32_t result) {
+                         EXPECT_EQ(result, 807u);
+                         std::move(quit).Run();
+                       },
+                       run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+// Tests creating an associated pair in C++, sending the receiver to a Rust
+// primary remote, and verifying by calling `Add(500, 300)`.
+void TestSendReceiverAndAddRustRemote(RustAssociatedSender& sender) {
+  mojo::PendingAssociatedRemote<MathService> pending_remote;
+  mojo::PendingAssociatedReceiver<MathService> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+
+  auto adapter = MakeAssociatedEndpointRustAdapter(std::move(pending_receiver));
+  SendReceiver(sender, std::move(adapter));
 
   mojo::AssociatedRemote<MathService> math_remote(std::move(pending_remote));
   base::RunLoop run_loop;
@@ -97,6 +138,40 @@ void TestRequestRemoteAndAddRustRemote(RustAssociatedSender& sender) {
   run_loop.Run();
 }
 
+// Tests requesting an associated HandleService remote from Rust across a C++
+// primary remote, and verifies by calling `PassHandles` and sending a message
+// over the passed message pipe.
+void TestRequestHandleRemoteAndPassHandlesCppRemote(
+    AssociatedSenderTestRemote& remote) {
+  auto adapter = remote.RequestHandleRemote();
+  mojo::PendingAssociatedRemote<HandleService> pending_remote =
+      PassPendingAssociatedRemote<HandleService>(std::move(adapter));
+
+  mojo::AssociatedRemote<HandleService> handle_remote(
+      std::move(pending_remote));
+  mojo::PendingRemote<MathService> pending_math_remote;
+  mojo::ScopedMessagePipeHandle math_receiver_handle =
+      pending_math_remote.InitWithNewPipeAndPassReceiver().PassPipe();
+  mojo::MessagePipe pipe2;
+  mojo::MessagePipe pipe3;
+  mojo::MessagePipe pipe4;
+  handle_remote->PassHandles(
+      std::move(math_receiver_handle), std::move(pipe2.handle0),
+      std::move(pipe3.handle0),
+      mojo::ScopedHandle::From(std::move(pipe4.handle0)));
+
+  mojo::Remote<MathService> math_remote(std::move(pending_math_remote));
+  base::RunLoop run_loop;
+  math_remote->Add(100, 200,
+                   base::BindOnce(
+                       [](base::OnceClosure quit, uint32_t result) {
+                         EXPECT_EQ(result, 307u);
+                         std::move(quit).Run();
+                       },
+                       run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 // Tests sending an associated HandleService receiver to Rust across a C++
 // primary remote, and verifies by calling `PassHandles` and sending a message
 // over the passed message pipe.
@@ -108,6 +183,43 @@ void TestSendHandleReceiverAndPassHandlesCppRemote(
 
   auto adapter = MakeAssociatedEndpointRustAdapter(std::move(pending_receiver));
   remote.SendHandleReceiver(std::move(adapter));
+
+  mojo::AssociatedRemote<HandleService> handle_remote(
+      std::move(pending_remote));
+  mojo::PendingRemote<MathService> pending_math_remote;
+  mojo::ScopedMessagePipeHandle math_receiver_handle =
+      pending_math_remote.InitWithNewPipeAndPassReceiver().PassPipe();
+  mojo::MessagePipe pipe2;
+  mojo::MessagePipe pipe3;
+  mojo::MessagePipe pipe4;
+  handle_remote->PassHandles(
+      std::move(math_receiver_handle), std::move(pipe2.handle0),
+      std::move(pipe3.handle0),
+      mojo::ScopedHandle::From(std::move(pipe4.handle0)));
+
+  mojo::Remote<MathService> math_remote(std::move(pending_math_remote));
+  base::RunLoop run_loop;
+  math_remote->Add(500, 300,
+                   base::BindOnce(
+                       [](base::OnceClosure quit, uint32_t result) {
+                         EXPECT_EQ(result, 807u);
+                         std::move(quit).Run();
+                       },
+                       run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+// Tests creating an associated HandleService pair in C++, sending the receiver
+// to a Rust primary remote, and verifying by calling `PassHandles` and sending
+// a message over the passed message pipe.
+void TestSendHandleReceiverAndPassHandlesRustRemote(
+    RustAssociatedSender& sender) {
+  mojo::PendingAssociatedRemote<HandleService> pending_remote;
+  mojo::PendingAssociatedReceiver<HandleService> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+
+  auto adapter = MakeAssociatedEndpointRustAdapter(std::move(pending_receiver));
+  SendHandleReceiver(sender, std::move(adapter));
 
   mojo::AssociatedRemote<HandleService> handle_remote(
       std::move(pending_remote));
@@ -204,6 +316,47 @@ void TestBadMessageToRustReceiver() {
   run_loop.RunUntilIdle();
 }
 
+void TestFailedSendMessageNotifiesSerializedEndpoint(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter) {
+  auto sender_adapter = adapter->RegisterNewEndpoint(mojo::kInvalidInterfaceId);
+  ASSERT_TRUE(sender_adapter);
+  mojo::PendingAssociatedRemote<AssociatedSender> pending_sender =
+      mojo::rust::bindings::PassPendingAssociatedRemote<AssociatedSender>(
+          std::move(sender_adapter));
+  mojo::AssociatedRemote<AssociatedSender> sender(std::move(pending_sender));
+
+  mojo::PendingAssociatedRemote<MathService> child_remote;
+  mojo::PendingAssociatedReceiver<MathService> child_receiver =
+      child_remote.InitWithNewEndpointAndPassReceiver();
+
+  mojo::AssociatedRemote<MathService> math_remote(std::move(child_remote));
+  bool child_disconnected = false;
+  math_remote.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { child_disconnected = true; }));
+
+  sender->SendReceiver(std::move(child_receiver));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(child_disconnected);
+}
+
+void TestFailedSendMessageFails(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter) {
+  auto sender_adapter = adapter->RegisterNewEndpoint(mojo::kInvalidInterfaceId);
+  ASSERT_TRUE(sender_adapter);
+  mojo::PendingAssociatedRemote<AssociatedSender> pending_sender =
+      mojo::rust::bindings::PassPendingAssociatedRemote<AssociatedSender>(
+          std::move(sender_adapter));
+  mojo::AssociatedRemote<AssociatedSender> sender(std::move(pending_sender));
+
+  sender->RequestRemote(
+      base::BindOnce([](mojo::PendingAssociatedRemote<MathService>) {}));
+
+  // If SendMessage fails, we shouldn't be waiting for a reply
+  EXPECT_FALSE(sender.internal_state()->has_pending_callbacks());
+}
+
 bool HaveSameGroupController(
     mojo::rust::bindings::CxxPendingAssociatedEndpoint first,
     mojo::rust::bindings::CxxPendingAssociatedEndpoint second) {
@@ -214,6 +367,11 @@ bool HaveSameGroupController(
   mojo::ScopedInterfaceEndpointHandle second_handle = second->PassHandle();
   return first_handle.group_controller() != nullptr &&
          first_handle.group_controller() == second_handle.group_controller();
+}
+
+bool AdapterIsAssociated(
+    const mojo::rust::bindings::AssociatedEndpointRustAdapter& adapter) {
+  return adapter.is_associated();
 }
 
 }  // namespace bindings_unittests::mojom

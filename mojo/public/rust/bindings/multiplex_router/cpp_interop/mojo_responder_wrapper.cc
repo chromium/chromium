@@ -90,4 +90,12 @@ MojoResponderWrapper::RegisterNewEndpoint(uint32_t interface_id) const {
   return adapter->is_valid() ? std::move(adapter) : nullptr;
 }
 
+uint32_t MojoResponderWrapper::AssociateInterface(
+    std::unique_ptr<AssociatedEndpointRustAdapter> endpoint) const {
+  if (!group_controller_ || !endpoint) {
+    return mojo::kInvalidInterfaceId;
+  }
+  return group_controller_->AssociateInterface(endpoint->PassHandle());
+}
+
 }  // namespace mojo::rust::bindings

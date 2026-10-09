@@ -13,11 +13,12 @@ chromium::import! {
 
 use std::sync::{Arc, Mutex};
 
+use bindings::receiver::PendingAssociatedReceiver;
 use bindings::remote::Remote;
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
 use cxx::UniquePtr;
 use run_loop::RunLoop;
-use test_mojom::AssociatedSender;
+use test_mojom::{AssociatedSender, HandleService, MathService};
 
 use bindings::CxxPendingAssociatedEndpoint;
 
@@ -31,6 +32,28 @@ impl RustAssociatedSender {
     pub fn new(remote: Remote<dyn AssociatedSender>) -> Self {
         Self { remote }
     }
+}
+
+/// Converts a C++ adapter to a PendingAssociatedReceiver and sends it via
+/// SendReceiver.
+#[allow(non_snake_case)]
+pub fn SendReceiver(
+    sender: &mut RustAssociatedSender,
+    adapter: UniquePtr<CxxPendingAssociatedEndpoint>,
+) {
+    let pending_receiver = PendingAssociatedReceiver::<dyn MathService>::from_cpp(adapter);
+    sender.remote.SendReceiver(pending_receiver);
+}
+
+/// Converts a C++ adapter to a PendingAssociatedReceiver<dyn HandleService> and
+/// sends it via SendHandleReceiver.
+#[allow(non_snake_case)]
+pub fn SendHandleReceiver(
+    sender: &mut RustAssociatedSender,
+    adapter: UniquePtr<CxxPendingAssociatedEndpoint>,
+) {
+    let pending_receiver = PendingAssociatedReceiver::<dyn HandleService>::from_cpp(adapter);
+    sender.remote.SendHandleReceiver(pending_receiver);
 }
 
 /// Calls RequestRemote, waits for the response, and returns the endpoint to

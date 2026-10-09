@@ -28,18 +28,36 @@ class AssociatedSenderTestRemote;
 void TestRemoteFromCpp(
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper);
 
+// Tests requesting an associated remote from Rust across a C++ primary remote,
+// and verifies by calling `Add(100, 200)`.
+void TestRequestRemoteAndAddCppRemote(AssociatedSenderTestRemote& remote);
+
 // Tests sending an associated receiver to Rust across a C++ primary remote,
 // and verifies by calling `Add(500, 300)`.
 void TestSendReceiverAndAddCppRemote(AssociatedSenderTestRemote& remote);
+
+// Tests creating an associated pair in C++, sending the receiver to a Rust
+// primary remote, and verifying by calling `Add(500, 300)`.
+void TestSendReceiverAndAddRustRemote(RustAssociatedSender& sender);
 
 // Tests requesting an associated remote from a Rust primary remote, and
 // verifying by calling `Add(100, 200)`.
 void TestRequestRemoteAndAddRustRemote(RustAssociatedSender& sender);
 
+// Tests requesting an associated HandleService remote from Rust across a C++
+// primary remote, and verifies by calling `PassHandles`.
+void TestRequestHandleRemoteAndPassHandlesCppRemote(
+    AssociatedSenderTestRemote& remote);
+
 // Tests sending an associated HandleService receiver to Rust across a C++
 // primary remote, and verifies by calling `PassHandles`.
 void TestSendHandleReceiverAndPassHandlesCppRemote(
     AssociatedSenderTestRemote& remote);
+
+// Tests creating an associated HandleService pair in C++, sending the receiver
+// to a Rust primary remote, and verifying by calling `PassHandles`.
+void TestSendHandleReceiverAndPassHandlesRustRemote(
+    RustAssociatedSender& sender);
 
 // Tests requesting an associated HandleService remote from a Rust primary
 // remote, and verifying by calling `PassHandles`.
@@ -50,11 +68,24 @@ void TestRequestHandleRemoteAndPassHandlesRustRemote(
 // primary pipe to a Rust associated receiver.
 void TestBadMessageToRustReceiver();
 
+// When SendMessage fails on an associated endpoint, any
+// endpoints serialized into that message should be notified of peer closure.
+void TestFailedSendMessageNotifiesSerializedEndpoint(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter);
+
+// SendMessage failing must properly do all cleanup on the C++ side
+void TestFailedSendMessageFails(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter);
+
 // Returns true if both adapters are associated with the same
 // `AssociatedGroupController`. Consumes both adapters, closing their endpoints.
 bool HaveSameGroupController(
     mojo::rust::bindings::CxxPendingAssociatedEndpoint first,
     mojo::rust::bindings::CxxPendingAssociatedEndpoint second);
+
+// Returns true if the given adapter reports that it is associated.
+bool AdapterIsAssociated(
+    const mojo::rust::bindings::AssociatedEndpointRustAdapter& adapter);
 
 }  // namespace bindings_unittests::mojom
 

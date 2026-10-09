@@ -69,4 +69,14 @@ impl crate::pending_associated_endpoint_parsing::Registrar for ResponseSender {
             }
         }
     }
+
+    fn associate_interface(
+        &self,
+        handle: super::cpp_interop::CppRouterHandle,
+    ) -> Option<InterfaceId> {
+        match self {
+            Self::Rust(multiplex_router, _) => multiplex_router.associate_interface(handle),
+            Self::Cpp(cpp_sender) => cpp_sender.associate_interface(handle),
+        }
+    }
 }

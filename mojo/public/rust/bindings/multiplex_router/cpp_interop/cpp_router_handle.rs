@@ -16,8 +16,11 @@ chromium::import! {
 }
 
 use crate::message::MojomMessage;
+use crate::multiplex_router::multiplex_router::MultiplexRouter;
 use crate::multiplex_router::response_sender::ResponseSender;
-use crate::multiplex_router::{EndpointInfo, InterfaceId, INVALID_INTERFACE_ID};
+use crate::multiplex_router::{
+    EndpointInfo, InterfaceId, INVALID_INTERFACE_ID, PRIMARY_INTERFACE_ID,
+};
 use system::mojo_types::{RawMojoHandle, UntypedHandle};
 
 use super::cxx::ffi;
@@ -98,9 +101,33 @@ impl CppRouterHandle {
         self.adapter
     }
 
+    /// Returns true if this endpoint is already associated with a message pipe.
+    pub fn is_associated(&self) -> bool {
+        self.adapter().is_associated()
+    }
+
     /// Returns the wrapped adapter.
     fn adapter(&self) -> &ffi::AssociatedEndpointRustAdapter {
         self.adapter.as_ref().expect("CppRouterHandle's adapter is never null")
+    }
+
+    /// Associates the peer of this unassociated C++ adapter with a Rust primary
+    /// router.
+    pub(crate) fn associate_with_rust_router(
+        mut self,
+        router: &MultiplexRouter,
+        interface_id: InterfaceId,
+    ) {
+        self.adapter
+            .pin_mut()
+            .AssociatePeerWithRustController(router.cpp_group_controller().as_pin(), interface_id);
+    }
+
+    /// Associates an unassociated C++ endpoint with this router's group
+    /// controller.
+    pub(crate) fn associate_interface(&self, other: CppRouterHandle) -> Option<InterfaceId> {
+        let id = self.adapter.AssociateInterface(other.into_adapter());
+        (id != PRIMARY_INTERFACE_ID && id != INVALID_INTERFACE_ID).then_some(id)
     }
 }
 
@@ -156,6 +183,16 @@ impl CppResponseSender {
             handle.bind(info);
         }
         Some(handle)
+    }
+
+    /// Associates an unassociated C++ endpoint with this responder's group
+    /// controller.
+    pub(crate) fn associate_interface(&self, other: CppRouterHandle) -> Option<InterfaceId> {
+        if self.responder.is_null() {
+            return None;
+        }
+        let id = self.responder.AssociateInterface(other.into_adapter());
+        (id != PRIMARY_INTERFACE_ID && id != INVALID_INTERFACE_ID).then_some(id)
     }
 }
 

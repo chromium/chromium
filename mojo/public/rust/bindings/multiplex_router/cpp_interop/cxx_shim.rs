@@ -175,3 +175,20 @@ pub fn attach_cpp_endpoint(
 
     router.bind_interface(interface_id, endpoint_info);
 }
+
+/// Binds an unassociated C++ endpoint adapter to the current sequence with a
+/// dummy handler, transitioning it to the "bound" state without associating it
+/// with any pipe.
+pub fn bind_cpp_adapter_for_testing(
+    mut adapter: std::pin::Pin<&mut ffi::AssociatedEndpointRustAdapter>,
+) {
+    let task_runner =
+        SequencedTaskRunnerHandle::get_current_default().expect("Must be in a sequenced context");
+    let info = Box::new(EndpointInfo {
+        runner: task_runner.clone(),
+        incoming_message_handler: Arc::new(|_, _| ()),
+        disconnect_handler: None,
+    });
+    let runner = task_runner.as_scoped_refptr().as_pin();
+    adapter.as_mut().Bind(runner, info);
+}

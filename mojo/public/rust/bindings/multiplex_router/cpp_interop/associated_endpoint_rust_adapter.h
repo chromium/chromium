@@ -79,6 +79,15 @@ class AssociatedEndpointRustAdapter {
   static std::unique_ptr<AssociatedEndpointRustAdapter> Create(
       mojo::ScopedInterfaceEndpointHandle handle);
 
+  // Returns true if the endpoint is already associated with a group controller.
+  bool is_associated() const;
+
+  // Associates the peer of this unassociated C++ endpoint adapter with the
+  // group controller of a Rust primary router. Consumes this adapter.
+  void AssociatePeerWithRustController(
+      RustAssociatedGroupController& controller,
+      uint32_t interface_id);
+
   // Takes ownership of the underlying endpoint handle.
   mojo::ScopedInterfaceEndpointHandle PassHandle();
 
@@ -101,6 +110,11 @@ class AssociatedEndpointRustAdapter {
   // if the pipe has already been closed.
   std::unique_ptr<AssociatedEndpointRustAdapter> RegisterNewEndpoint(
       uint32_t interface_id) const;
+
+  // Associates an unassociated endpoint with this adapter's group controller,
+  // returning the assigned interface ID, or kInvalidInterfaceId on failure.
+  uint32_t AssociateInterface(
+      std::unique_ptr<AssociatedEndpointRustAdapter> endpoint) const;
 
  private:
   // Returns the underlying group controller.

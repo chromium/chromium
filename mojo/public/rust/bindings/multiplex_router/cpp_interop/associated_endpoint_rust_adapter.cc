@@ -104,6 +104,23 @@ std::unique_ptr<AssociatedEndpointRustAdapter> CreateWithRustController(
   return AssociatedEndpointRustAdapter::Create(std::move(handle));
 }
 
+bool AssociatedEndpointRustAdapter::is_associated() const {
+  return group_controller() != nullptr;
+}
+
+void AssociatedEndpointRustAdapter::AssociatePeerWithRustController(
+    RustAssociatedGroupController& controller,
+    uint32_t interface_id) {
+  CHECK(!is_associated());
+  CHECK(mojo::IsValidInterfaceId(interface_id) &&
+        !mojo::IsPrimaryInterfaceId(interface_id));
+  bool success = controller.AssociatePeer(PassHandle(), interface_id);
+  // TODO(crbug.com/556744520): Handle failure gracefully. Simply sending a
+  // disconnect notification now is wrong because it will be sent too early
+  // and arrive _before_ the interface that's supposed to be disconnected.
+  CHECK(success);
+}
+
 void CreatePairPendingAssociation(
     std::unique_ptr<AssociatedEndpointRustAdapter>& self_out,
     std::unique_ptr<AssociatedEndpointRustAdapter>& peer_out) {
@@ -164,6 +181,15 @@ mojo::AssociatedGroupController*
 AssociatedEndpointRustAdapter::group_controller() const {
   return client_adapter_ ? client_adapter_->group_controller()
                          : handle_.group_controller();
+}
+
+uint32_t AssociatedEndpointRustAdapter::AssociateInterface(
+    std::unique_ptr<AssociatedEndpointRustAdapter> endpoint) const {
+  auto* controller = group_controller();
+  if (!controller || !endpoint) {
+    return mojo::kInvalidInterfaceId;
+  }
+  return controller->AssociateInterface(endpoint->PassHandle());
 }
 
 }  // namespace mojo::rust::bindings

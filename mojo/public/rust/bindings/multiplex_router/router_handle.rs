@@ -92,13 +92,22 @@ impl Registrar for RouterHandle {
                 .register_new_endpoint(interface_id, endpoint_info),
         }
     }
+
+    fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId> {
+        match self {
+            Self::Primary(primary_handle) => primary_handle.associate_interface(handle),
+            Self::Associated(lock) => {
+                lock.get().expect(NOT_YET_ASSOCIATED_ERR_STR).associate_interface(handle)
+            }
+        }
+    }
 }
 
 impl AssociatedRouterHandle {
     pub(crate) fn ready_for_messages(&self) -> bool {
         match self {
             Self::Rust(_) => true,
-            Self::Cpp(_) => true,
+            Self::Cpp(cpp_handle) => cpp_handle.is_associated(),
         }
     }
 
@@ -160,6 +169,13 @@ impl Registrar for AssociatedRouterHandle {
             Self::Cpp(cpp_handle) => cpp_handle
                 .register_new_endpoint(interface_id, endpoint_info)
                 .map(AssociatedRouterHandle::Cpp),
+        }
+    }
+
+    fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId> {
+        match self {
+            Self::Rust(rust_handle) => rust_handle.associate_interface(handle),
+            Self::Cpp(cpp_handle) => cpp_handle.associate_interface(handle),
         }
     }
 }

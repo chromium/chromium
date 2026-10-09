@@ -27,5 +27,6 @@ pub use cxx_associated_endpoint::CxxPendingAssociatedEndpoint;
 pub use multiplex_router::cpp_interop as cxx_associated_endpoint;
 
 pub mod for_testing {
+    pub use crate::cxx_associated_endpoint::bind_cpp_adapter_for_testing;
     pub use crate::pending_associated_endpoint_parsing::DummyRegistrarForTesting;
 }

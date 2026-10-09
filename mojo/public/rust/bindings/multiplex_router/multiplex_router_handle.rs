@@ -16,6 +16,7 @@ use system::message_pipe::MessageEndpoint;
 
 use crate::message::MojomMessage;
 
+use super::cpp_interop::CppRouterHandle;
 pub(crate) use super::multiplex_router::EndpointInfo;
 use super::multiplex_router::{InterfaceId, MultiplexRouter, PRIMARY_INTERFACE_ID};
 
@@ -128,6 +129,11 @@ impl MultiplexRouterHandle {
     /// Return this handle's interface ID
     pub fn interface_id(&self) -> InterfaceId {
         self.interface_id
+    }
+
+    /// Associates an unassociated C++ endpoint with this router.
+    pub(crate) fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId> {
+        self.router.associate_interface(handle)
     }
 
     /// Breaks this handle into its component parts.

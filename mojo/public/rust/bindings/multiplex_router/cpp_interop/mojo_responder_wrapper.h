@@ -68,6 +68,11 @@ class MojoResponderWrapper {
   std::unique_ptr<AssociatedEndpointRustAdapter> RegisterNewEndpoint(
       uint32_t interface_id) const;
 
+  // Associates an unassociated endpoint with this responder's group controller,
+  // returning the assigned interface ID, or kInvalidInterfaceId on failure.
+  uint32_t AssociateInterface(
+      std::unique_ptr<AssociatedEndpointRustAdapter> endpoint) const;
+
  private:
   class ResponderHolder;
 

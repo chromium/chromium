@@ -550,11 +550,9 @@ let mut math_remote = p_remote.bind();
 
 This returns a tuple containing:
 1. A normal Rust `PendingAssociatedRemote` (or `PendingAssociatedReceiver`),
-   which you can bind and use in Rust. Note that this endpoint is managed
-   by C++ under the hood and cannot be sent in a Mojo message.
+   which you can bind and use in Rust, or send in a Mojo message.
 2. A `cxx::UniquePtr<CxxPendingAssociatedEndpoint>`, which can be converted
-   into a C++ `PendingAssociated*` and therefore sent in a Mojo message via the
-   C++ endpoint:
+   into a C++ `PendingAssociated*` and thereafter sent in a Mojo message:
 
 ```cpp
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"

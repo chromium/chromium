@@ -156,6 +156,17 @@ pub mod ffi {
             interface_id: u32,
         ) -> UniquePtr<AssociatedEndpointRustAdapter>;
 
+        /// Returns true if the endpoint is already associated with a router.
+        fn is_associated(self: &AssociatedEndpointRustAdapter) -> bool;
+
+        /// Associates the peer of this unassociated C++ adapter with a Rust
+        /// router's group controller.
+        fn AssociatePeerWithRustController(
+            self: Pin<&mut AssociatedEndpointRustAdapter>,
+            controller: Pin<&mut RustAssociatedGroupController>,
+            interface_id: u32,
+        );
+
         /// Binds the endpoint to a sequence and starts routing incoming
         /// messages to Rust.
         fn Bind(
@@ -176,6 +187,13 @@ pub mod ffi {
             self: &AssociatedEndpointRustAdapter,
             interface_id: u32,
         ) -> UniquePtr<AssociatedEndpointRustAdapter>;
+
+        /// Associates an unassociated endpoint with this adapter's group
+        /// controller.
+        fn AssociateInterface(
+            self: &AssociatedEndpointRustAdapter,
+            endpoint: UniquePtr<AssociatedEndpointRustAdapter>,
+        ) -> u32;
 
         /// Called by Rust when an incoming message arrives for a C++ associated
         /// endpoint. Returns true if the message passed validation and was
@@ -209,6 +227,13 @@ pub mod ffi {
             self: &MojoResponderWrapper,
             interface_id: u32,
         ) -> UniquePtr<AssociatedEndpointRustAdapter>;
+
+        /// Associates an unassociated endpoint with the responder's
+        /// underlying group controller.
+        fn AssociateInterface(
+            self: &MojoResponderWrapper,
+            endpoint: UniquePtr<AssociatedEndpointRustAdapter>,
+        ) -> u32;
     }
 }
 

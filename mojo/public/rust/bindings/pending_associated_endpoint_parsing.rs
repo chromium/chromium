@@ -26,6 +26,7 @@ use mojom_value_parser_core::{MojomType, MojomValue};
 
 use crate::interface::DynMojomInterface;
 use crate::marker_types::IsRemote;
+use crate::multiplex_router::cpp_interop::CppRouterHandle;
 use crate::multiplex_router::{
     AssociatedRouterHandle, EndpointInfo, InterfaceId, MultiplexRouterHandle, INVALID_INTERFACE_ID,
     PRIMARY_INTERFACE_ID,
@@ -58,6 +59,9 @@ pub trait Registrar: Send {
         interface_id: Option<InterfaceId>,
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<AssociatedRouterHandle>;
+
+    #[allow(private_interfaces)]
+    fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId>;
 }
 
 impl Registrar for MultiplexRouterHandle {
@@ -67,6 +71,10 @@ impl Registrar for MultiplexRouterHandle {
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<AssociatedRouterHandle> {
         self.register_new_endpoint(interface_id, endpoint_info).map(AssociatedRouterHandle::Rust)
+    }
+
+    fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId> {
+        self.associate_interface(handle)
     }
 }
 
@@ -78,6 +86,11 @@ impl Registrar for () {
         _interface_id: Option<InterfaceId>,
         _endpoint_info: Option<EndpointInfo>,
     ) -> Option<AssociatedRouterHandle> {
+        panic!("This implementation only exists for testing, and should never be called!")
+    }
+
+    #[allow(private_interfaces)]
+    fn associate_interface(&self, _handle: CppRouterHandle) -> Option<InterfaceId> {
         panic!("This implementation only exists for testing, and should never be called!")
     }
 }
@@ -98,6 +111,11 @@ impl Registrar for DummyRegistrarForTesting {
         endpoint_info: Option<EndpointInfo>,
     ) -> Option<AssociatedRouterHandle> {
         self.0.register_new_endpoint(interface_id, endpoint_info).map(AssociatedRouterHandle::Rust)
+    }
+
+    #[allow(private_interfaces)]
+    fn associate_interface(&self, handle: CppRouterHandle) -> Option<InterfaceId> {
+        self.0.associate_interface(handle)
     }
 }
 
@@ -132,8 +150,13 @@ where
                     "Cannot serialize an associated endpoint whose peer was already dropped",
                 )
             }
-            AssociatedEndpointState::Singleton(AssociatedRouterHandle::Cpp(_)) => {
-                panic!("Cannot serialize an associated endpoint that is already associated with a message pipe")
+            AssociatedEndpointState::Singleton(AssociatedRouterHandle::Cpp(cpp_handle)) => {
+                if cpp_handle.is_associated() {
+                    panic!("Cannot serialize an associated endpoint that is already associated with a message pipe");
+                }
+                context
+                    .associate_interface(cpp_handle)
+                    .expect("Failed to allocate interface ID on message pipe router")
             }
             AssociatedEndpointState::Singleton(AssociatedRouterHandle::Rust(_)) => {
                 panic!("Cannot serialize an associated endpoint that is already associated with a message pipe")
