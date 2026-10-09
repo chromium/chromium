@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -604,8 +605,14 @@ QuickInsertController::Session::Session(
     input_method::ImeKeyboard* ime_keyboard,
     QuickInsertModel::EditorStatus editor_status,
     QuickInsertModel::LobsterStatus lobster_status,
+    QuickInsertModel::ClipboardStatus clipboard_status,
     QuickInsertEmojiSuggester::GetNameCallback get_name)
-    : model(prefs, focused_client, ime_keyboard, editor_status, lobster_status),
+    : model(prefs,
+            focused_client,
+            ime_keyboard,
+            editor_status,
+            lobster_status,
+            clipboard_status),
       emoji_history_model(prefs),
       emoji_suggester(&emoji_history_model, std::move(get_name)),
       session_metrics(prefs) {
@@ -641,6 +648,9 @@ void QuickInsertController::ShowWidget(base::TimeTicks trigger_event_timestamp,
       show_lobster_callback_.is_null()
           ? QuickInsertModel::LobsterStatus::kDisabled
           : QuickInsertModel::LobsterStatus::kEnabled,
+      clipboard_history_util::IsEnabledByPolicy()
+          ? QuickInsertModel::ClipboardStatus::kEnabled
+          : QuickInsertModel::ClipboardStatus::kDisabled,
       base::BindRepeating(
           [](base::WeakPtr<QuickInsertController> weak_controller,
              std::string_view emoji) -> std::string {
@@ -708,18 +718,19 @@ void QuickInsertController::InsertResultOnNextFocus(
             }
 
             // This cancels the previous request if there was one.
-            insert_media_request_ = std::make_unique<
-                QuickInsertInsertMediaRequest>(
-                input_method, media, kInsertMediaTimeout,
-                base::BindOnce(
-                    [](base::WeakPtr<QuickInsertController> weak_controller) {
-                      return weak_controller
-                                 ? weak_controller->GetWebPasteTarget()
-                                 : std::nullopt;
-                    },
-                    weak_ptr_factory_.GetWeakPtr()),
-                base::BindOnce(&QuickInsertController::OnInsertCompleted,
-                               weak_ptr_factory_.GetWeakPtr(), media));
+            insert_media_request_ =
+                std::make_unique<QuickInsertInsertMediaRequest>(
+                    input_method, media, kInsertMediaTimeout,
+                    base::BindOnce(
+                        [](base::WeakPtr<QuickInsertController>
+                               weak_controller) {
+                          return weak_controller
+                                     ? weak_controller->GetWebPasteTarget()
+                                     : std::nullopt;
+                        },
+                        weak_ptr_factory_.GetWeakPtr()),
+                    base::BindOnce(&QuickInsertController::OnInsertCompleted,
+                                   weak_ptr_factory_.GetWeakPtr(), media));
           },
           [&](QuickInsertClipboardResult data) {
             // This cancels the previous request if there was one.

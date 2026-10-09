@@ -138,6 +138,30 @@ TEST(QuickInsertModelTest, AvailableCategoriesOmitsLobsterWriteWhenDisabled) {
               Not(Contains(QuickInsertCategory::kLobsterWithSelectedText)));
 }
 
+TEST(QuickInsertModelTest, AvailableCategoriesContainsClipboardWhenEnabled) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kDisabled,
+                         QuickInsertModel::LobsterStatus::kDisabled,
+                         QuickInsertModel::ClipboardStatus::kEnabled);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Contains(QuickInsertCategory::kClipboard));
+}
+
+TEST(QuickInsertModelTest, AvailableCategoriesOmitsClipboardWhenDisabled) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  QuickInsertModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
+                         QuickInsertModel::EditorStatus::kDisabled,
+                         QuickInsertModel::LobsterStatus::kDisabled,
+                         QuickInsertModel::ClipboardStatus::kDisabled);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Not(Contains(QuickInsertCategory::kClipboard)));
+}
+
 TEST(QuickInsertModelTest,
      AvailableCategoriesContainsEmojisAndGifsWhenGifsEnabled) {
   sync_preferences::TestingPrefServiceSyncable prefs;

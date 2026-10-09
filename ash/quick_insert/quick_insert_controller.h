@@ -184,6 +184,7 @@ class ASH_EXPORT QuickInsertController
             input_method::ImeKeyboard* ime_keyboard,
             QuickInsertModel::EditorStatus editor_status,
             QuickInsertModel::LobsterStatus lobster_status,
+            QuickInsertModel::ClipboardStatus clipboard_status,
             QuickInsertEmojiSuggester::GetNameCallback get_name);
     ~Session();
   };

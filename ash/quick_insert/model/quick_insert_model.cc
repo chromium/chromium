@@ -60,7 +60,8 @@ QuickInsertModel::QuickInsertModel(PrefService* prefs,
                                    ui::TextInputClient* focused_client,
                                    input_method::ImeKeyboard* ime_keyboard,
                                    EditorStatus editor_status,
-                                   LobsterStatus lobster_status)
+                                   LobsterStatus lobster_status,
+                                   ClipboardStatus clipboard_status)
     : has_focus_(focused_client != nullptr &&
                  focused_client->GetTextInputType() !=
                      ui::TextInputType::TEXT_INPUT_TYPE_NONE),
@@ -71,6 +72,7 @@ QuickInsertModel::QuickInsertModel(PrefService* prefs,
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
       editor_status_(editor_status),
       lobster_status_(lobster_status),
+      clipboard_status_(clipboard_status),
       text_input_type_(GetTextInputType(focused_client)),
       is_gifs_enabled_(GetIsGifsEnabled(prefs)) {}
 
@@ -109,8 +111,10 @@ std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
         categories.push_back(is_gifs_enabled_ ? QuickInsertCategory::kEmojisGifs
                                               : QuickInsertCategory::kEmojis);
       }
+      if (clipboard_status_ == ClipboardStatus::kEnabled) {
+        categories.push_back(QuickInsertCategory::kClipboard);
+      }
       categories.insert(categories.end(), {
-                                              QuickInsertCategory::kClipboard,
                                               QuickInsertCategory::kDriveFiles,
                                               QuickInsertCategory::kLocalFiles,
                                               QuickInsertCategory::kDatesTimes,

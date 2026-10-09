@@ -30,15 +30,18 @@ class ASH_EXPORT QuickInsertModel {
  public:
   enum class EditorStatus { kEnabled, kDisabled };
   enum class LobsterStatus { kEnabled, kDisabled };
+  enum class ClipboardStatus { kEnabled, kDisabled };
 
   // `focused_client` is the input field that was focused when Quick Insert is
   // opened. It can be null. `ime_keyboard` is used to monitor caps lock state.
   // This cannot be null.
-  explicit QuickInsertModel(PrefService* prefs,
-                            ui::TextInputClient* focused_client,
-                            input_method::ImeKeyboard* ime_keyboard,
-                            EditorStatus editor_status,
-                            LobsterStatus lobster_status);
+  explicit QuickInsertModel(
+      PrefService* prefs,
+      ui::TextInputClient* focused_client,
+      input_method::ImeKeyboard* ime_keyboard,
+      EditorStatus editor_status,
+      LobsterStatus lobster_status,
+      ClipboardStatus clipboard_status = ClipboardStatus::kEnabled);
 
   std::vector<QuickInsertCategory> GetAvailableCategories() const;
 
@@ -61,6 +64,7 @@ class ASH_EXPORT QuickInsertModel {
   bool is_caps_lock_enabled_;
   EditorStatus editor_status_;
   LobsterStatus lobster_status_;
+  ClipboardStatus clipboard_status_;
   ui::TextInputType text_input_type_;
   bool is_gifs_enabled_;
 };

@@ -12,6 +12,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -894,6 +895,42 @@ TEST_F(QuickInsertControllerTest,
 
   EXPECT_THAT(controller().GetAvailableCategories(),
               Not(Contains(QuickInsertCategory::kEditorWrite)));
+}
+
+TEST_F(QuickInsertControllerTest,
+       AvailableCategoriesContainsClipboardWhenEnabledByPolicy) {
+  base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.Focus();
+  prefs()->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kEnabled));
+
+  controller().ToggleWidget();
+
+  EXPECT_THAT(controller().GetAvailableCategories(),
+              Contains(QuickInsertCategory::kClipboard));
+}
+
+TEST_F(QuickInsertControllerTest,
+       AvailableCategoriesDoesNotContainClipboardWhenDisabledByPolicy) {
+  base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.Focus();
+  prefs()->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kDisabled));
+
+  controller().ToggleWidget();
+
+  EXPECT_THAT(controller().GetAvailableCategories(),
+              Not(Contains(QuickInsertCategory::kClipboard)));
 }
 
 TEST_F(QuickInsertControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
