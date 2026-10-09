@@ -1015,6 +1015,8 @@ message ClientActionRequired {
   // Whether device needs to upload an enterprise enrollment certificate to
   // cloud.
   optional bool enrollment_certificate_needed = 1;
+  // Whether the device needs to renew its DM token.
+  optional bool renew_dm_token = 2;
 }
 
 message PolicyFetchResponse {
@@ -5078,6 +5080,14 @@ enum DeviceManagementErrorDetail {
   CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN = 2;
 }
 
+message RenewDmTokenRequest {
+  optional BrowserDeviceIdentifier browser_device_identifier = 1;
+}
+
+message RenewDmTokenResponse {
+  optional string device_management_token = 1;
+}
+
 // Request from the DMAgent on the device to the DMServer.  This is
 // container for all requests from device to server.  The overall HTTP
 // request MUST be in the following format:
@@ -5327,7 +5337,11 @@ message DeviceManagementRequest {
   optional UserManagementStatusAndPoliciesRequest
       user_management_status_and_policies_request = 45;
 
-  // Next id: 46.
+  // Request to obtain a new DM token after being instructed to do so by the
+  // server.
+  optional RenewDmTokenRequest renew_dm_token_request = 46;
+
+  // Next id: 47.
 }
 
 // Response from server to device.
@@ -5503,7 +5517,9 @@ message DeviceManagementResponse {
   optional UserManagementStatusAndPoliciesResponse
       user_management_status_and_policies_response = 45;
 
-  // Next id: 46.
+  optional RenewDmTokenResponse renew_dm_token_response = 46;
+
+  // Next id: 47.
 }
 
 // Request from device to server to check if a user is managed and retrieve
