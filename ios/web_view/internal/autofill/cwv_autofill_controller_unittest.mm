@@ -256,14 +256,20 @@ class CWVAutofillControllerTestBase : public web::WebTest {
         &pref_service_, &personal_data_manager_, &autocomplete_history_manager_,
         &web_state_, /*bridge=*/nil, /*identity_manager=*/nullptr,
         &strike_database_, &sync_service_, /*log_router=*/nullptr);
-    autofill_controller_ = [[CWVAutofillController alloc]
-             initWithWebState:&web_state_
-                  prefService:&pref_service_
-        autofillClientForTest:std::move(autofill_client)
-                autofillAgent:autofill_agent_
-              passwordManager:std::move(password_manager)
-        passwordManagerClient:std::move(password_manager_client)
-           passwordController:password_controller_];
+    // Drain the autoreleased NSInvocation created by OCMock when
+    // `-initWithWebState:...` sets `password_controller_.delegate = self`, so
+    // `autofill_controller_ = nil` in `TearDown()` actually deallocates the
+    // controller before `web_state_` is destroyed.
+    @autoreleasepool {
+      autofill_controller_ = [[CWVAutofillController alloc]
+               initWithWebState:&web_state_
+                    prefService:&pref_service_
+          autofillClientForTest:std::move(autofill_client)
+                  autofillAgent:autofill_agent_
+                passwordManager:std::move(password_manager)
+          passwordManagerClient:std::move(password_manager_client)
+             passwordController:password_controller_];
+    }
   }
 
   void TearDown() override {

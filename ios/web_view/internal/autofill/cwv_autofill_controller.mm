@@ -168,10 +168,12 @@ struct FocusedFieldState {
   // The |webState| which this autofill controller should observe.
   web::WebState* _webState;
 
-  // Handles password autofilling related logic.
-  std::unique_ptr<password_manager::PasswordManager> _passwordManager;
+  // Handles password autofilling related logic. `_passwordManagerClient` must
+  // outlive `_passwordManager` because `PasswordManager` holds a `raw_ptr` to
+  // it and C++ ivars are destroyed in reverse declaration order.
   std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>
       _passwordManagerClient;
+  std::unique_ptr<password_manager::PasswordManager> _passwordManager;
   SharedPasswordController* _passwordController;
 
   // The current credit card saver. Can be nil if no save attempt is pending.
