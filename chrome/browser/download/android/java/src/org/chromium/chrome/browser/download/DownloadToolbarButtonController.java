@@ -41,9 +41,10 @@ import java.util.concurrent.TimeUnit;
  * <p>The button is shown while any trackable item is active (in progress, pending or paused). Once
  * the last active item reaches a terminal state it stays visible for {@link #AUTO_HIDE_DELAY_MS}
  * within the current session, then hides. If every tracked item is removed before then, it hides
- * immediately. Transient and suggested items are ignored, as in {@code
- * DownloadMessageUiControllerImpl}. Items from all profiles are tracked, since the toolbar is
- * shared by both tab models within an activity.
+ * immediately. After a download completes the icon is drawn in the active colour for {@link
+ * #ACTIVE_AFTER_COMPLETE_MS}, or until the user acts on the button via {@link #markActioned()}.
+ * Transient and suggested items are ignored, as in {@code DownloadMessageUiControllerImpl}. Items
+ * from all profiles are tracked, since the toolbar is shared by both tab models within an activity.
  *
  * <p>TODO(crbug.com/569024304): Derive state from a shared download-state model (the Android
  * analogue of desktop's {@code DownloadBubbleUpdateService}) once the download tray needs it.
@@ -52,10 +53,17 @@ import java.util.concurrent.TimeUnit;
 public class DownloadToolbarButtonController
         implements OfflineContentProvider.Observer, Destroyable {
     /**
-     * How long the button stays visible after the last active download ends. Held in memory only,
-     * so it does not survive a process restart.
+     * How long the button stays visible after the last active download ends. Mirrors desktop's
+     * {@code kToolbarIconVisibilityTimeInterval}. Held in memory only, so it does not survive a
+     * process restart.
      */
     @VisibleForTesting static final long AUTO_HIDE_DELAY_MS = TimeUnit.MINUTES.toMillis(60);
+
+    /**
+     * How long the icon stays in the active colour after a download completes, unless the user acts
+     * on the button first. Mirrors desktop's {@code kToolbarIconActiveTimeInterval}.
+     */
+    @VisibleForTesting static final long ACTIVE_AFTER_COMPLETE_MS = TimeUnit.MINUTES.toMillis(1);
 
     private final OfflineContentProvider mProvider;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -72,6 +80,14 @@ public class DownloadToolbarButtonController
     private final Set<ContentId> mEndedItems = new HashSet<>();
 
     private final Runnable mAutoHideRunnable = this::onAutoHideTimeout;
+    private final Runnable mInactiveRunnable = this::onInactiveTimeout;
+
+    /**
+     * Items that completed within the last {@link #ACTIVE_AFTER_COMPLETE_MS} and have not been
+     * acted on or removed since; a subset of {@link #mEndedItems}. Non-empty draws the complete
+     * icon in the active colour. Cleared by {@link #mInactiveRunnable} or {@link #markActioned()}.
+     */
+    private final Set<ContentId> mUnactionedCompletions = new HashSet<>();
 
     /**
      * Ids reported by observer callbacks before the initial {@link
@@ -100,7 +116,20 @@ public class DownloadToolbarButtonController
     }
 
     /**
-     * Stops observing downloads, cancels any pending auto-hide and resets the supplier to {@link
+     * Records that the user has acted on the button (e.g. opened the downloads UI from it), which
+     * ends the active colour window of any recent completion.
+     */
+    public void markActioned() {
+        if (mIsDestroyed || mUnactionedCompletions.isEmpty()) {
+            return;
+        }
+        mHandler.removeCallbacks(mInactiveRunnable);
+        mUnactionedCompletions.clear();
+        publishState();
+    }
+
+    /**
+     * Stops observing downloads, cancels any pending timers and resets the supplier to {@link
      * DownloadToolbarButtonState#HIDDEN} so observers that outlive this controller do not keep a
      * stale state.
      */
@@ -111,9 +140,11 @@ public class DownloadToolbarButtonController
         }
         mIsDestroyed = true;
         cancelAutoHide();
+        mHandler.removeCallbacks(mInactiveRunnable);
         mProvider.removeObserver(this);
         mActiveItems.clear();
         mEndedItems.clear();
+        mUnactionedCompletions.clear();
         mIdsUpdatedBeforeSnapshot = null;
         // With both collections cleared this publishes HIDDEN. Reset rather than destroy the
         // supplier: destroying would null the value of a non-null supplier, which is unsafe for
@@ -151,6 +182,9 @@ public class DownloadToolbarButtonController
         recordUpdateBeforeSnapshot(id);
         boolean wasActive = mActiveItems.remove(id) != null;
         boolean wasEnded = mEndedItems.remove(id);
+        if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
+            mHandler.removeCallbacks(mInactiveRunnable);
+        }
         if (!wasActive && !wasEnded) {
             return;
         }
@@ -208,6 +242,9 @@ public class DownloadToolbarButtonController
             mActiveItems.put(id, item);
             // A resumed or retried item is active again rather than ended.
             mEndedItems.remove(id);
+            if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
+                mHandler.removeCallbacks(mInactiveRunnable);
+            }
             cancelAutoHide();
             publishState();
             return;
@@ -220,6 +257,14 @@ public class DownloadToolbarButtonController
             return;
         }
         mEndedItems.add(id);
+        if (item.state == OfflineItemState.COMPLETE) {
+            // Only a successful completion draws the icon in the active colour for a while. The
+            // other terminal states (CANCELLED, FAILED, INTERRUPTED) still keep the button visible
+            // via mEndedItems but do not call attention to themselves.
+            mUnactionedCompletions.add(id);
+            mHandler.removeCallbacks(mInactiveRunnable);
+            mHandler.postDelayed(mInactiveRunnable, ACTIVE_AFTER_COMPLETE_MS);
+        }
         if (mActiveItems.isEmpty()) {
             // The last active item reached a terminal state. Regardless of outcome, keep the
             // button visible for the window so the user can still reach the item, matching
@@ -236,6 +281,14 @@ public class DownloadToolbarButtonController
 
     private void cancelAutoHide() {
         mHandler.removeCallbacks(mAutoHideRunnable);
+    }
+
+    private void onInactiveTimeout() {
+        if (mIsDestroyed) {
+            return;
+        }
+        mUnactionedCompletions.clear();
+        publishState();
     }
 
     private void onAutoHideTimeout() {
@@ -259,14 +312,14 @@ public class DownloadToolbarButtonController
     }
 
     /**
-     * Derives the button state purely from {@link #mActiveItems} and {@link #mEndedItems}, so it
-     * can be recomputed after any change without tracking what changed. Mirrors {@code
-     * DownloadDisplayController::UpdateToolbarButtonState} on desktop.
+     * Derives the button state purely from {@link #mActiveItems}, {@link #mEndedItems} and {@link
+     * #mUnactionedCompletions}, so it can be recomputed after any change without tracking what
+     * changed. Mirrors {@code DownloadDisplayController::UpdateToolbarButtonState} on desktop.
      *
      * <ul>
      *   <li>Nothing active and nothing ended: {@link DownloadToolbarButtonState#HIDDEN}.
      *   <li>Nothing active but some items ended: the button lingers for the auto-hide window,
-     *       showing the inactive complete icon.
+     *       showing the complete icon, active only while a recent completion is unactioned.
      *   <li>Anything active: the progress icon, active unless every item is paused, with the count
      *       and aggregate progress of the active items.
      * </ul>
@@ -278,12 +331,11 @@ public class DownloadToolbarButtonController
 
         int downloadCount = mActiveItems.size();
         if (downloadCount == 0) {
-            // Lingering after the last active item ended. The icon is inactive; the active window
-            // for an unactioned completion is handled separately.
+            // Lingering after the last active item ended.
             return new DownloadToolbarButtonState(
                     /* shouldShow= */ true,
                     IconState.COMPLETE,
-                    /* isActive= */ false,
+                    /* isActive= */ !mUnactionedCompletions.isEmpty(),
                     /* downloadCount= */ 0,
                     /* progressPercent= */ 0,
                     /* progressCertain= */ true);

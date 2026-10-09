@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -33,24 +34,44 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for {@link DownloadButtonCoordinator} and {@link DownloadButtonMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class DownloadButtonCoordinatorTest {
+    private static final DownloadToolbarButtonState SHOWN_INACTIVE =
+            new DownloadToolbarButtonState(
+                    /* shouldShow= */ true,
+                    IconState.PROGRESS,
+                    /* isActive= */ false,
+                    /* downloadCount= */ 1,
+                    /* progressPercent= */ 50,
+                    /* progressCertain= */ true);
+    private static final DownloadToolbarButtonState SHOWN_ACTIVE =
+            new DownloadToolbarButtonState(
+                    /* shouldShow= */ true,
+                    IconState.PROGRESS,
+                    /* isActive= */ true,
+                    /* downloadCount= */ 1,
+                    /* progressPercent= */ 50,
+                    /* progressCertain= */ true);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private Runnable mOnButtonClickedRunnable;
     @Mock private Runnable mOnVisibilityChangedRunnable;
 
-    private final SettableNonNullObservableSupplier<Boolean> mShouldShowSupplier =
-            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<DownloadToolbarButtonState> mStateSupplier =
+            ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
     private IncognitoStateProvider mIncognitoStateProvider;
     private Activity mActivity;
     private ViewStub mViewStub;
@@ -75,15 +96,32 @@ public class DownloadButtonCoordinatorTest {
                         mIncognitoStateProvider,
                         mOnButtonClickedRunnable,
                         mOnVisibilityChangedRunnable,
-                        mShouldShowSupplier);
+                        mStateSupplier);
+    }
+
+    private void show() {
+        mStateSupplier.set(SHOWN_INACTIVE);
+    }
+
+    private void hide() {
+        mStateSupplier.set(DownloadToolbarButtonState.HIDDEN);
     }
 
     private DownloadButtonView showAndGetView() {
         mCoordinator.setHasSpaceToShow(true);
-        mCoordinator.setShouldShow(true);
+        show();
         DownloadButtonView view = (DownloadButtonView) mCoordinator.getViewForTesting();
         assertNotNull(view);
         return view;
+    }
+
+    private ColorStateList colorStateList(int colorRes) {
+        return mActivity.getColorStateList(colorRes);
+    }
+
+    private static void assertTint(ColorStateList expected, DownloadButtonView view) {
+        assertEquals(
+                expected.getDefaultColor(), view.getButton().getImageTintList().getDefaultColor());
     }
 
     @Test
@@ -102,18 +140,18 @@ public class DownloadButtonCoordinatorTest {
         assertNull("View should not be inflated", mCoordinator.getViewForTesting());
 
         // shouldShow = true with space -> visible and inflated
-        mCoordinator.setShouldShow(true);
+        show();
         assertTrue(
                 "Should be visible when space and shouldShow are true", mCoordinator.isVisible());
         assertEquals(View.VISIBLE, mCoordinator.getViewForTesting().getVisibility());
 
         // shouldShow = false -> not visible
-        mCoordinator.setShouldShow(false);
+        hide();
         assertFalse("Should not be visible when shouldShow is false", mCoordinator.isVisible());
         assertEquals(View.GONE, mCoordinator.getViewForTesting().getVisibility());
 
         // Space lost -> hidden
-        mCoordinator.setShouldShow(true);
+        show();
         mCoordinator.setHasSpaceToShow(false);
         assertFalse("Should not be visible when no space", mCoordinator.isVisible());
         assertEquals(View.GONE, mCoordinator.getViewForTesting().getVisibility());
@@ -125,7 +163,7 @@ public class DownloadButtonCoordinatorTest {
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         // Turn off shouldShow
-        mCoordinator.setShouldShow(false);
+        hide();
         int expectedConsumedWidth = 0;
         assertEquals(
                 "Consumed width should be 0 px when not showing",
@@ -135,7 +173,7 @@ public class DownloadButtonCoordinatorTest {
         assertNull(mCoordinator.getViewForTesting());
 
         // Turn on shouldShow
-        mCoordinator.setShouldShow(true);
+        show();
         assertEquals(
                 "Consumed width should equal button width",
                 buttonWidth,
@@ -170,16 +208,48 @@ public class DownloadButtonCoordinatorTest {
 
     @Test
     public void testOnVisibilityChangedCallback() {
-        mCoordinator.setShouldShow(true);
+        show();
         verify(mOnVisibilityChangedRunnable).run();
+
+        // A state change that keeps the button shown is not a visibility change.
+        mStateSupplier.set(SHOWN_ACTIVE);
+        verifyNoMoreInteractions(mOnVisibilityChangedRunnable);
     }
 
     @Test
     public void testOnTintChanged_updatesView() {
         DownloadButtonView view = showAndGetView();
         ColorStateList newTint = ColorStateList.valueOf(Color.RED);
-        mCoordinator.onTintChanged(null, newTint, 0);
-        assertEquals(newTint, view.getButton().getImageTintList());
+        mCoordinator.onTintChanged(null, newTint, BrandedColorScheme.APP_DEFAULT);
+        assertTint(newTint, view);
+    }
+
+    @Test
+    public void testActiveState_usesAccentTint() {
+        DownloadButtonView view = showAndGetView();
+        ColorStateList themeTint = ColorStateList.valueOf(Color.RED);
+        mCoordinator.onTintChanged(null, themeTint, BrandedColorScheme.APP_DEFAULT);
+
+        mStateSupplier.set(SHOWN_ACTIVE);
+        assertTint(colorStateList(R.color.default_icon_color_accent1_tint_list), view);
+
+        // A theme change while active must not override the accent.
+        ColorStateList otherThemeTint = ColorStateList.valueOf(Color.BLUE);
+        mCoordinator.onTintChanged(null, otherThemeTint, BrandedColorScheme.APP_DEFAULT);
+        assertTint(colorStateList(R.color.default_icon_color_accent1_tint_list), view);
+
+        // Back to inactive restores the latest theme tint.
+        mStateSupplier.set(SHOWN_INACTIVE);
+        assertTint(otherThemeTint, view);
+    }
+
+    @Test
+    public void testActiveState_incognitoBranded_usesIncognitoAccent() {
+        DownloadButtonView view = showAndGetView();
+        mCoordinator.onTintChanged(
+                null, ColorStateList.valueOf(Color.RED), BrandedColorScheme.INCOGNITO);
+        mStateSupplier.set(SHOWN_ACTIVE);
+        assertTint(colorStateList(R.color.default_icon_color_blue_light), view);
     }
 
     @Test
@@ -205,22 +275,22 @@ public class DownloadButtonCoordinatorTest {
     }
 
     @Test
-    public void testShouldShowSupplier_drivesShouldShow() {
+    public void testStateSupplier_drivesShouldShow() {
         assertFalse("Should follow initial supplier value", mCoordinator.shouldShow());
 
-        mShouldShowSupplier.set(true);
-        assertTrue("Should show when supplier becomes true", mCoordinator.shouldShow());
+        show();
+        assertTrue("Should show when supplier state is shown", mCoordinator.shouldShow());
         verify(mOnVisibilityChangedRunnable).run();
 
-        mShouldShowSupplier.set(false);
-        assertFalse("Should hide when supplier becomes false", mCoordinator.shouldShow());
+        hide();
+        assertFalse("Should hide when supplier state is hidden", mCoordinator.shouldShow());
         verify(mOnVisibilityChangedRunnable, times(2)).run();
     }
 
     @Test
-    public void testDestroy_stopsObservingShouldShowSupplier() {
+    public void testDestroy_stopsObservingStateSupplier() {
         mCoordinator.destroy();
-        mShouldShowSupplier.set(true);
+        show();
         assertFalse(
                 "Destroyed coordinator should ignore supplier changes", mCoordinator.shouldShow());
     }

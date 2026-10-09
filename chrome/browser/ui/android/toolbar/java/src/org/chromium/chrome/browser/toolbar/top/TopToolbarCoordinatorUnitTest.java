@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -117,6 +118,7 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Runnable mOnSigninTapped;
+    @Mock private Runnable mOnDownloadButtonClicked;
     @Mock private View.OnLongClickListener mGlicLongClickListener;
 
     private final MonotonicObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier =
@@ -129,8 +131,9 @@ public class TopToolbarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final NonNullObservableSupplier<Boolean> mCompositorInMotionSupplier =
             ObservableSuppliers.alwaysFalse();
-    private final NonNullObservableSupplier<Boolean> mDownloadButtonShouldShowSupplier =
-            ObservableSuppliers.alwaysFalse();
+    private final NonNullObservableSupplier<DownloadToolbarButtonState>
+            mDownloadButtonStateSupplier =
+                    ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
     private final BrowserStateBrowserControlsVisibilityDelegate
             mBrowserStateBrowserControlsVisibilityDelegate =
                     new BrowserStateBrowserControlsVisibilityDelegate(
@@ -217,7 +220,8 @@ public class TopToolbarCoordinatorUnitTest {
                         mModalDialogManager,
                         mSnackbarManager,
                         mOnSigninTapped,
-                        mDownloadButtonShouldShowSupplier,
+                        mDownloadButtonStateSupplier,
+                        mOnDownloadButtonClicked,
                         /* suppressTabStripAtStart= */ false);
     }
 
@@ -573,7 +577,8 @@ public class TopToolbarCoordinatorUnitTest {
                 mModalDialogManager,
                 mSnackbarManager,
                 mOnSigninTapped,
-                mDownloadButtonShouldShowSupplier,
+                mDownloadButtonStateSupplier,
+                mOnDownloadButtonClicked,
                 /* suppressTabStripAtStart= */ false);
         assertEquals(mOnLongClickListener, Shadows.shadowOf(toolbarPhone).getOnLongClickListener());
     }

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopContro
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.download.DownloadFeatures;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -216,8 +217,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      * @param topControlsStacker The TopControlsStacker for child objects to check state from.
      * @param browserControlsVisibilityManager BrowserControlsStateProvider instance.
      * @param onSigninTapped Runnable to be called when the signin button is tapped.
-     * @param downloadButtonShouldShowSupplier Supplies whether the download toolbar button should
-     *     be shown based on download state.
+     * @param downloadButtonStateSupplier Supplies the state the download toolbar button should
+     *     display.
+     * @param onDownloadButtonClicked Runnable to be called when the download button is tapped.
      * @param suppressTabStripAtStart if {@code true}, suppress tab strip when Chrome starts.
      */
     public TopToolbarCoordinator(
@@ -267,7 +269,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             Runnable onSigninTapped,
-            NonNullObservableSupplier<Boolean> downloadButtonShouldShowSupplier,
+            NonNullObservableSupplier<DownloadToolbarButtonState> downloadButtonStateSupplier,
+            Runnable onDownloadButtonClicked,
             boolean suppressTabStripAtStart) {
         mSuppressTabStripAtStart = suppressTabStripAtStart;
         mToolbarLayout = toolbarLayout;
@@ -307,17 +310,15 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
             ViewStub downloadButtonStub = mToolbarLayout.findViewById(R.id.download_button_stub);
             if (downloadButtonStub != null) {
-                // TODO(crbug.com/564646561): Wire up onButtonClickedRunnable to open the downloads
-                // page.
                 mDownloadButtonCoordinator =
                         new DownloadButtonCoordinator(
                                 mToolbarLayout.getContext(),
                                 downloadButtonStub,
                                 normalThemeColorProvider,
                                 incognitoStateProvider,
-                                /* onButtonClickedRunnable= */ () -> {},
+                                onDownloadButtonClicked,
                                 mToolbarLayout::onWidthConsumerVisibilityChanged,
-                                downloadButtonShouldShowSupplier);
+                                downloadButtonStateSupplier);
             }
         }
         mResourceManagerSupplier = resourceManagerSupplier;

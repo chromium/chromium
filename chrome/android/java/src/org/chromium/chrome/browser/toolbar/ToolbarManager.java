@@ -342,8 +342,11 @@ public class ToolbarManager
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final SettableNonNullObservableSupplier<Boolean> mDownloadButtonShouldShowSupplier =
-            ObservableSuppliers.createNonNull(false);
+    // Placeholder the toolbar observes from construction; fed by the controller once native is
+    // ready.
+    private final SettableNonNullObservableSupplier<DownloadToolbarButtonState>
+            mDownloadButtonStateSupplier =
+                    ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
 
@@ -452,9 +455,8 @@ public class ToolbarManager
     private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
 
     private @Nullable DownloadToolbarButtonController mDownloadToolbarButtonController;
-    // Only visibility is bridged until the toolbar button renders progress and colour.
     private final Callback<DownloadToolbarButtonState> mDownloadButtonStateObserver =
-            state -> mDownloadButtonShouldShowSupplier.set(state.shouldShow);
+            mDownloadButtonStateSupplier::set;
 
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -2258,7 +2260,8 @@ public class ToolbarManager
                         mModalDialogManagerSupplier.get(),
                         snackbarManager,
                         this::endFuseboxInput,
-                        mDownloadButtonShouldShowSupplier,
+                        mDownloadButtonStateSupplier,
+                        this::onDownloadButtonClicked,
                         suppressTabStripAtStart);
 
         mHomepageStateListener =
@@ -2921,7 +2924,7 @@ public class ToolbarManager
 
         if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
             // The offline content aggregator requires native, so the controller is created
-            // here and bridged to the toolbar via mDownloadButtonShouldShowSupplier.
+            // here and bridged to the toolbar via mDownloadButtonStateSupplier.
             // TODO(crbug.com/570641245): Consolidate download state observation into a shared
             // model (seed-on-attach, single OfflineContentProvider observer) instead of the
             // controller observing the aggregator directly alongside DownloadMessageUiController.
@@ -2933,6 +2936,13 @@ public class ToolbarManager
         }
 
         TraceEvent.end("ToolbarManager.initializeWithNative");
+    }
+
+    private void onDownloadButtonClicked() {
+        // TODO(crbug.com/564646561): Open the downloads UI.
+        if (mDownloadToolbarButtonController != null) {
+            mDownloadToolbarButtonController.markActioned();
+        }
     }
 
     private void onGlicToggled() {

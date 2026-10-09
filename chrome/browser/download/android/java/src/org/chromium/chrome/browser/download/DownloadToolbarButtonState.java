@@ -54,8 +54,9 @@ public final class DownloadToolbarButtonState {
     public final @IconState int iconState;
 
     /**
-     * Whether the icon should use the active (primary) colour rather than the default. False while
-     * every active download is paused, matching desktop.
+     * Whether the icon should use the active (primary) colour rather than the default. While
+     * downloading, false only if every active download is paused; after a download completes, true
+     * for a short window until the user acts on the button. Matches desktop.
      */
     public final boolean isActive;
 

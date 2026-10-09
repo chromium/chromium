@@ -13,9 +13,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -28,8 +30,8 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
     private @Nullable DownloadButtonView mView;
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final Runnable mOnVisibilityChangedRunnable;
-    private final NonNullObservableSupplier<Boolean> mShouldShowSupplier;
-    private final Callback<Boolean> mShouldShowObserver = this::setShouldShow;
+    private final NonNullObservableSupplier<DownloadToolbarButtonState> mStateSupplier;
+    private final Callback<DownloadToolbarButtonState> mStateObserver = this::onStateChanged;
 
     /**
      * Creates a new {@link DownloadButtonCoordinator}.
@@ -40,8 +42,7 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
      * @param incognitoStateProvider The provider for incognito state.
      * @param onButtonClickedRunnable Runnable invoked when the download button is clicked.
      * @param onVisibilityChangedRunnable Runnable invoked when button visibility changes.
-     * @param shouldShowSupplier Supplies whether the button should be shown based on download
-     *     state. Changes are forwarded to {@link #setShouldShow(boolean)}.
+     * @param stateSupplier Supplies the state the button should display.
      */
     public DownloadButtonCoordinator(
             Context context,
@@ -50,44 +51,30 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
             IncognitoStateProvider incognitoStateProvider,
             Runnable onButtonClickedRunnable,
             Runnable onVisibilityChangedRunnable,
-            NonNullObservableSupplier<Boolean> shouldShowSupplier) {
+            NonNullObservableSupplier<DownloadToolbarButtonState> stateSupplier) {
         super(context, themeColorProvider, incognitoStateProvider);
         mViewStub = viewStub;
         mOnVisibilityChangedRunnable = onVisibilityChangedRunnable;
         mModel =
                 new PropertyModel.Builder(DownloadButtonProperties.ALL_KEYS)
                         .with(
-                                DownloadButtonProperties.TINT,
-                                themeColorProvider.getActivityFocusTint())
-                        .with(
                                 DownloadButtonProperties.IS_INCOGNITO,
                                 incognitoStateProvider.isIncognitoSelected())
                         .build();
-        mMediator = new DownloadButtonMediator(mModel, onButtonClickedRunnable);
-        mShouldShowSupplier = shouldShowSupplier;
-        mShouldShowSupplier.addSyncObserverAndCall(mShouldShowObserver);
+        mMediator =
+                new DownloadButtonMediator(
+                        context, mModel, themeColorProvider, onButtonClickedRunnable);
+        mStateSupplier = stateSupplier;
+        mStateSupplier.addSyncObserverAndCall(mStateObserver);
     }
 
     @Override
     public void destroy() {
-        mShouldShowSupplier.removeObserver(mShouldShowObserver);
+        mStateSupplier.removeObserver(mStateObserver);
         super.destroy();
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
             mPropertyModelChangeProcessor = null;
-        }
-    }
-
-    /**
-     * Sets whether the button should be displayed.
-     *
-     * @param shouldShow True if the button should be displayed; false otherwise.
-     */
-    public void setShouldShow(boolean shouldShow) {
-        if (mMediator.shouldShow() != shouldShow) {
-            mMediator.setShouldShow(shouldShow);
-            inflateViewIfNeeded();
-            mOnVisibilityChangedRunnable.run();
         }
     }
 
@@ -98,6 +85,15 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
      */
     public boolean shouldShow() {
         return mMediator.shouldShow();
+    }
+
+    private void onStateChanged(DownloadToolbarButtonState state) {
+        boolean shouldShowChanged = mMediator.shouldShow() != state.shouldShow;
+        mMediator.setState(state);
+        if (shouldShowChanged) {
+            inflateViewIfNeeded();
+            mOnVisibilityChangedRunnable.run();
+        }
     }
 
     // ToolbarChildButton / ToolbarWidthConsumer implementation:
@@ -133,12 +129,12 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
-            int brandedColorScheme) {
+            @BrandedColorScheme int brandedColorScheme) {
         super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         // Use activityFocusTint so the icon dims when Chrome loses window focus (e.g.
         // multi-window).
-        if (mModel != null && activityFocusTint != null) {
-            mModel.set(DownloadButtonProperties.TINT, activityFocusTint);
+        if (mMediator != null && activityFocusTint != null) {
+            mMediator.onTintChanged(activityFocusTint, brandedColorScheme);
         }
     }
 
