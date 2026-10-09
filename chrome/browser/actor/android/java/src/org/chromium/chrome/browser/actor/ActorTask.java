@@ -32,7 +32,7 @@ public class ActorTask {
     private final int mId;
     private final String mTitle;
     private final WeakReference<Profile> mProfile;
-    private final @Nullable String mGlicConversationId;
+    private @Nullable String mGlicConversationId;
 
     @CalledByNative
     private ActorTask(
@@ -59,6 +59,9 @@ public class ActorTask {
      * @return The conversation ID associated with this task, if any.
      */
     public @Nullable String getGlicConversationId() {
+        if (mGlicConversationId == null && mNativeTask != 0) {
+            mGlicConversationId = ActorTaskJni.get().getGlicConversationId(mNativeTask);
+        }
         return mGlicConversationId;
     }
 
@@ -194,6 +197,10 @@ public class ActorTask {
 
     @NativeMethods
     interface Natives {
+        @Nullable
+        @JniType("std::optional<std::string>")
+        String getGlicConversationId(long nativeActorTaskAndroid);
+
         @JniType("std::string")
         String getCurrentActionName(long nativeActorTaskAndroid);
 

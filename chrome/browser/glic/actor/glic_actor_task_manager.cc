@@ -296,6 +296,24 @@ void GlicActorTaskManager::OnConversationRegistered(
     return;
   }
 
+  // Backfill the conversation ID onto pending tasks created before
+  // RegisterConversation() completed. This is expected to happen while the task
+  // is still in kCreated (while awaiting asynchronous tab creation before
+  // PerformActions() transitions the task to kActing, which rebuilds the
+  // Android notification with the populated conversation ID). If registration
+  // arrives after the task is already acting, the updated ID will be picked up
+  // on the next notification rebuild (e.g. step progress or state category
+  // transition).
+  for (const auto& task_id_str : pending_conversation_task_ids_) {
+    int task_id_int;
+    if (base::StringToInt(task_id_str, &task_id_int)) {
+      if (actor::ActorTask* task =
+              actor_keyed_service_->GetTask(actor::TaskId(task_id_int))) {
+        task->SetSourceId(conversation_id);
+      }
+    }
+  }
+
   if (auto* critical_action_service =
           critical_actions::CriticalActionFactory::GetForProfile(profile_)) {
     critical_action_service->SetCriticalActionsConversationId(

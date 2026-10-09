@@ -486,6 +486,14 @@ public class ActorNotificationFactoryTest {
                 ActorNotificationFactory.shouldUpdateNotification(
                         ActorTaskState.ACTING, ActorTaskState.REFLECTING));
 
+        // Transition out of CREATED must update even though both map to RUNNING category.
+        assertTrue(
+                ActorNotificationFactory.shouldUpdateNotification(
+                        ActorTaskState.CREATED, ActorTaskState.ACTING));
+        assertFalse(
+                ActorNotificationFactory.shouldUpdateNotification(
+                        ActorTaskState.CREATED, ActorTaskState.CREATED));
+
         // State change different category
         assertTrue(
                 ActorNotificationFactory.shouldUpdateNotification(

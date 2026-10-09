@@ -1229,4 +1229,26 @@ public class ActorNotificationServiceTest {
                 0,
                 mMockNotificationManager.getMutationCountAndDecrement());
     }
+
+    @Test
+    public void testCreatedToActingTransition_RebuildsNotification() {
+        int taskId = 55;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        when(mServiceController.createTrustedBringTabToFrontIntent(mTask)).thenReturn(new Intent());
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.CREATED, /* isSilent= */ false, /* isWarning= */ false);
+        // Each buildNotification calls createTrustedBringTabToFrontIntent twice (content + action).
+        verify(mServiceController, org.mockito.Mockito.times(2))
+                .createTrustedBringTabToFrontIntent(mTask);
+
+        // Transitioning from CREATED to ACTING must rebuild the notification so its PendingIntent
+        // extras pick up the newly provisioned target tab ID and Glic conversation ID.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        verify(mServiceController, org.mockito.Mockito.times(4))
+                .createTrustedBringTabToFrontIntent(mTask);
+    }
 }

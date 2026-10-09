@@ -8,10 +8,12 @@
 #include <iosfwd>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -104,6 +106,14 @@ class ActorTask : public base::SupportsUserData {
   TaskId id() const { return id_; }
 
   const TaskSourceInfo& source_info() const { return source_info_; }
+
+  // Used for late registration/backfilling of the source-defined ID (e.g. Glic
+  // conversation ID) when it is not yet known at task creation time.
+  void SetSourceId(std::string id) {
+    DCHECK(!id.empty());
+    DCHECK(!source_info_.id.has_value() || source_info_.id == id);
+    source_info_.id = std::move(id);
+  }
 
   glic::mojom::FeatureMode feature_mode() const { return feature_mode_; }
 

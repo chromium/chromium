@@ -143,6 +143,9 @@ public class ActorNotificationFactory {
      */
     public static boolean shouldUpdateNotification(
             @ActorTaskState int oldState, @ActorTaskState int newState) {
+        if (oldState == ActorTaskState.CREATED && newState != ActorTaskState.CREATED) {
+            return true;
+        }
         return getNotificationCategory(oldState) != getNotificationCategory(newState);
     }
 
