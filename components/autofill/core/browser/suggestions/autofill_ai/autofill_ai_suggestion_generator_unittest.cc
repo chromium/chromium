@@ -2461,6 +2461,60 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       Not(Contains(EqualsSuggestion(SuggestionType::kFetchingAmbientData))));
 }
 
+// Tests that focusing a dynamic field (`NAME_FULL`) in an address form with no
+// static entity fields does not generate a
+// `SuggestionType::kFetchingAmbientData` loading suggestion even when
+// `kPassport` prefetch status is `kPending` on the page.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       NoFetchingSuggestionOnUnrelatedNameField) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+
+  SetForm({NAME_FULL, ADDRESS_HOME_LINE1});
+  SetEntities({});
+
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)), IsEmpty());
+}
+
+// Tests that focusing a dynamic field (`NAME_FULL`) separated by more than
+// `kMaxPropagationDistance` (5) fields from the nearest `kPassport` field does
+// not generate a `SuggestionType::kFetchingAmbientData` loading suggestion,
+// whereas focusing an adjacent `NAME_FULL` field does.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       NoFetchingSuggestionOnDistantNameField) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+
+  // Field 0 (`NAME_FULL`) is at distance 6 (> `kMaxPropagationDistance` = 5)
+  // from Field 6 (`NAME_FULL`), whereas Field 6 (`NAME_FULL`) is adjacent to
+  // Field 7 (`PASSPORT_NUMBER`).
+  SetForm({NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY,
+           ADDRESS_HOME_STATE, PHONE_HOME_WHOLE_NUMBER, NAME_FULL,
+           PASSPORT_NUMBER});
+  SetEntities({});
+
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)), IsEmpty());
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(6)),
+              IdentityDocSuggestionsAre(
+                  EqualsSuggestion(SuggestionType::kFetchingAmbientData)));
+}
+
 class AutofillAiSuggestionGeneratorOrderShipmentTest
     : public AutofillAiSuggestionGeneratorTest {
  public:

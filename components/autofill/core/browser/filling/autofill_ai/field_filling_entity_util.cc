@@ -18,6 +18,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,45 +54,34 @@ namespace autofill {
 namespace {
 
 // Returns the `AttributeType`, if any, that can be used to fill `field` using
-// `entity`. `section_to_entity_and_field_and_types` is the result of calling
-// `DetermineAttributeTypes()`. It is assumed that there is at most one such
-// type per entity for any given field.
+// `entity`. `entity_to_fields_and_types` is the result of calling
+// `RationalizeAndDetermineAttributeTypes()` for `field.section()`. It is
+// assumed that there is at most one such type per entity for any given field.
 std::optional<AttributeType> GetAttributeTypeForEntityAndField(
-    base::flat_map<
-        Section,
-        base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
-        section_to_entity_and_field_and_types,
+    const base::flat_map<EntityType,
+                         std::vector<AutofillFieldWithAttributeType>>&
+        entity_to_fields_and_types,
     const EntityInstance& entity,
     const AutofillField& field) {
-  auto it = section_to_entity_and_field_and_types.find(field.section());
-  if (it == section_to_entity_and_field_and_types.end()) {
-    // The whole section of the field does not contain a field fillable
-    // by AutofillAi, hence no appropriate `AttributeType` exists for `field`.
-    return std::nullopt;
-  }
-
-  const base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>&
-      entity_to_fields_and_types = it->second;
-  auto jt = entity_to_fields_and_types.find(entity.type());
-  if (jt == entity_to_fields_and_types.end()) {
+  const std::vector<AutofillFieldWithAttributeType>* field_and_types =
+      base::FindOrNull(entity_to_fields_and_types, entity.type());
+  if (!field_and_types) {
     // The section isn't fillable by the current entity, hence no appropriate
     // `AttributeType` exists for `field`.
     return std::nullopt;
   }
 
-  const std::vector<AutofillFieldWithAttributeType>& field_and_types =
-      jt->second;
-  auto kt = std::ranges::find(field_and_types, field.global_id(),
+  auto it = std::ranges::find(*field_and_types, field.global_id(),
                               [](const AutofillFieldWithAttributeType& f) {
                                 return f.field->global_id();
                               });
-  if (kt == field_and_types.end()) {
+  if (it == field_and_types->end()) {
     // The field isn't fillable by the current entity, hence no appropriate
     // `AttributeType` exists.
     return std::nullopt;
   }
 
-  return kt->type;
+  return it->type;
 }
 
 std::u16string MaybeStripPrefix(const std::u16string& value,
@@ -204,23 +194,30 @@ std::optional<SelectOption> GetOptionForSelect(
 
 }  // namespace
 
-DenseSet<EntityType> GetEntityTypesBeingFetched(const AutofillField& field,
-                                                const AutofillClient& client) {
+DenseSet<EntityType> GetEntityTypesBeingFetched(
+    const base::flat_map<EntityType,
+                         std::vector<AutofillFieldWithAttributeType>>&
+        entity_to_fields_and_types,
+    const AutofillField& field,
+    const AutofillClient& client) {
   const AutofillAiPersonalContextAccessManager* access_manager =
       client.GetAutofillAiPersonalContextAccessManager();
-  if (!access_manager) {
+  if (!access_manager || field.Type().GetAutofillAiTypes().empty()) {
     return {};
   }
   DenseSet<EntityType> types;
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
 
-  for (EntityType entity_type : DenseSet<EntityType>::all()) {
-    if (field.Type().GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
-      if (access_manager->ServerHasSpiiPresenceSignal(entity_type) &&
-          access_manager->GetPrefetchStatusByEntityType(entity_type) ==
-              RequestStatus::kPending) {
-        types.insert(entity_type);
-      }
+  for (const auto& [entity_type, fields_and_types] :
+       entity_to_fields_and_types) {
+    if (access_manager->ServerHasSpiiPresenceSignal(entity_type) &&
+        access_manager->GetPrefetchStatusByEntityType(entity_type) ==
+            RequestStatus::kPending &&
+        std::ranges::contains(fields_and_types, field.global_id(),
+                              [](const AutofillFieldWithAttributeType& f) {
+                                return f.field->global_id();
+                              })) {
+      types.insert(entity_type);
     }
   }
   return types;
@@ -268,15 +265,23 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
 
   // Returns true if there is data present that could fill the `field`.
   auto is_fillable = [&](const AutofillField& field) {
+    const base::flat_map<EntityType,
+                         std::vector<AutofillFieldWithAttributeType>>*
+        entity_to_fields_and_types = base::FindOrNull(
+            section_to_entity_and_field_and_types, field.section());
+    if (!entity_to_fields_and_types) {
+      return false;
+    }
     // Return true if the `field` is of an entity type that is currently being
     // prefetched.
-    if (!GetEntityTypesBeingFetched(field, client).empty()) {
+    if (!GetEntityTypesBeingFetched(*entity_to_fields_and_types, field, client)
+             .empty()) {
       return true;
     }
 
     return std::ranges::any_of(entities, [&](const EntityInstance* entity) {
       std::optional<AttributeType> type = GetAttributeTypeForEntityAndField(
-          section_to_entity_and_field_and_types, *entity, field);
+          *entity_to_fields_and_types, *entity, field);
       return type && entity->attribute(*type).has_value();
     });
   };

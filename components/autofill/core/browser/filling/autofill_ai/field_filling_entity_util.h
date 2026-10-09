@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -28,12 +29,18 @@ class FormStructure;
 class Section;
 
 // Returns the set of entity types that are currently being prefetched for the
-// given `field`. We collect all eligible types rather than returning the first
-// match to ensure the UI footer correctly decides between showing a
-// category-specific manage button (if exactly one section is being loaded) and
-// a generic manage button (if multiple sections are being loaded).
-DenseSet<EntityType> GetEntityTypesBeingFetched(const AutofillField& field,
-                                                const AutofillClient& client);
+// given `field` according to `entity_to_fields_and_types` (the result of
+// `RationalizeAndDetermineAttributeTypes` for `field.section()`). We collect
+// all eligible types rather than returning the first match to ensure the UI
+// footer correctly decides between showing a category-specific manage button
+// (if exactly one section is being loaded) and a generic manage button (if
+// multiple sections are being loaded).
+DenseSet<EntityType> GetEntityTypesBeingFetched(
+    const base::flat_map<EntityType,
+                         std::vector<AutofillFieldWithAttributeType>>&
+        entity_to_fields_and_types,
+    const AutofillField& field,
+    const AutofillClient& client);
 
 // Returns the entities from EntityDataManager::GetEntityInstances() for which
 // filling is enabled.

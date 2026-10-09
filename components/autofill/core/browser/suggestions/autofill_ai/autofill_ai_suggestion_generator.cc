@@ -141,6 +141,11 @@ class AttributeTypeAssignment {
     return it->second;
   }
 
+  const base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>&
+  map() const LIFETIME_BOUND {
+    return map_;
+  }
+
  private:
   base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>> map_;
 };
@@ -1301,7 +1306,7 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const AttributeTypeAssignment& assignment,
     AutofillClient& client) {
   const DenseSet<EntityType> entity_types_being_fetched =
-      GetEntityTypesBeingFetched(trigger_field, client);
+      GetEntityTypesBeingFetched(assignment.map(), trigger_field, client);
   const bool should_show_fetching_suggestions =
       !entity_types_being_fetched.empty();
 
@@ -1398,14 +1403,11 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
   const bool is_fillable =
       GetFieldsFillableByAutofillAi(*form_structure, client)
           .contains(trigger_field.global_id());
-  const bool is_fetching_data_for_field =
-      !GetEntityTypesBeingFetched(*trigger_autofill_field, client).empty();
   const bool should_show_private_inference_notice =
       ShouldShowPrivateInferenceNotice(*trigger_autofill_field, assignment,
                                        client.GetPrefs());
 
-  if ((!is_fillable && !is_fetching_data_for_field &&
-       !should_show_private_inference_notice) ||
+  if ((!is_fillable && !should_show_private_inference_notice) ||
       SuppressSuggestionsForAutocompleteUnrecognizedField(
           *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     callback({SuggestionDataSource::kAutofillAi, {}});

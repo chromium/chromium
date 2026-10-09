@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -167,6 +168,13 @@ class FieldFillingEntityUtilTest : public testing::Test {
 
   FieldGlobalId field(size_t i) const { return form_.fields()[i]->global_id(); }
 
+  DenseSet<EntityType> GetEntityTypesBeingFetchedForField(
+      const AutofillField& field) {
+    return GetEntityTypesBeingFetched(
+        RationalizeAndDetermineAttributeTypes(form_.fields(), field.section()),
+        field, client_);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillAiWithDataSchema};
@@ -276,42 +284,129 @@ TEST_F(FieldFillingEntityUtilTest, FillingUnavailable) {
 }
 
 TEST_F(FieldFillingEntityUtilTest, GetEntityTypesBeingFetched) {
-  AutofillField field;
-  field.SetTypeTo(AutofillType(PASSPORT_NUMBER),
-                  AutofillPredictionSource::kServerCrowdsourcing);
+  test_api(form()).SetFieldTypes({PASSPORT_NUMBER, NAME_FULL});
+  const AutofillField& passport_field = *form().field(0);
 
   // When access manager is null, returns empty.
   client().set_personal_context_access_manager(nullptr);
-  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()), IsEmpty());
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(passport_field), IsEmpty());
 
   testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
   client().set_personal_context_access_manager(&access_manager);
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
 
-  // When ServerHasSpiiPresenceSignal is false, returns empty.
+  // When `ServerHasSpiiPresenceSignal` is false, returns empty.
   ON_CALL(access_manager,
           ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
       .WillByDefault(Return(false));
   ON_CALL(access_manager,
           GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
       .WillByDefault(Return(RequestStatus::kPending));
-  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()), IsEmpty());
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(passport_field), IsEmpty());
 
-  // When status is not kPending (e.g. kSuccess), returns empty.
+  // When status is not `kPending` (e.g. `kSuccess`), returns empty.
   ON_CALL(access_manager,
           ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
       .WillByDefault(Return(true));
   ON_CALL(access_manager,
           GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
       .WillByDefault(Return(RequestStatus::kSuccess));
-  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()), IsEmpty());
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(passport_field), IsEmpty());
 
-  // When ServerHasSpiiPresenceSignal is true and status is kPending, returns
-  // entity type.
+  // When `ServerHasSpiiPresenceSignal` is true and status is `kPending`,
+  // returns the entity type for both the static field and the adjacent dynamic
+  // field.
   ON_CALL(access_manager,
           GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
       .WillByDefault(Return(RequestStatus::kPending));
-  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()),
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(passport_field),
+              UnorderedElementsAre(EntityType(EntityTypeName::kPassport)));
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(1)),
+              UnorderedElementsAre(EntityType(EntityTypeName::kPassport)));
+}
+
+// Tests that a dynamic Autofill AI field (`NAME_FULL`) in a form without any
+// static Autofill AI entity fields returns no pending entity types even when
+// `kPassport` prefetch status is `kPending` on the page.
+TEST_F(FieldFillingEntityUtilTest,
+       GetEntityTypesBeingFetched_DynamicFieldWithoutEntityForm) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+  test_api(form()).SetFieldTypes({NAME_FULL, ADDRESS_HOME_LINE1});
+
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(0)), IsEmpty());
+}
+
+// Tests that a dynamic Autofill AI field (`NAME_FULL`) separated by more than
+// `kMaxPropagationDistance` (5) fields from the nearest entity/dynamic field
+// of `kPassport` returns no pending entity types, while an adjacent
+// `NAME_FULL` field and the static `PASSPORT_NUMBER` field return `kPassport`.
+TEST_F(FieldFillingEntityUtilTest,
+       GetEntityTypesBeingFetched_DynamicFieldTooFarFromEntityField) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+  // `form()` starts with 2 fields; push 6 more so we have 8 fields total.
+  for (int i = 0; i < 6; ++i) {
+    test_api(form()).PushField(
+        test::CreateTestFormField("", "", "", FormControlType::kInputText));
+  }
+  // Field 0 (`NAME_FULL`) is at distance 6 (> `kMaxPropagationDistance` = 5)
+  // from Field 6 (`NAME_FULL`), whereas Field 6 (`NAME_FULL`) is at distance 1
+  // from Field 7 (`PASSPORT_NUMBER`).
+  test_api(form()).SetFieldTypes({NAME_FULL, ADDRESS_HOME_LINE1,
+                                  ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY,
+                                  ADDRESS_HOME_STATE, PHONE_HOME_WHOLE_NUMBER,
+                                  NAME_FULL, PASSPORT_NUMBER});
+
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(0)), IsEmpty());
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(6)),
+              UnorderedElementsAre(EntityType(EntityTypeName::kPassport)));
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(7)),
+              UnorderedElementsAre(EntityType(EntityTypeName::kPassport)));
+}
+
+// Tests that a dynamic Autofill AI field (`NAME_FULL`) in a different
+// `Section` from the static `PASSPORT_NUMBER` field returns no pending entity
+// types even when `kPassport` prefetch status is `kPending`.
+TEST_F(FieldFillingEntityUtilTest,
+       GetEntityTypesBeingFetched_DynamicFieldInDifferentSection) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+  test_api(form()).SetFieldTypes({NAME_FULL, PASSPORT_NUMBER});
+  form().field(0)->set_section(
+      Section::FromAutocomplete(Section::Autocomplete("section-1")));
+  form().field(1)->set_section(
+      Section::FromAutocomplete(Section::Autocomplete("section-2")));
+
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(0)), IsEmpty());
+  EXPECT_THAT(GetEntityTypesBeingFetchedForField(*form().field(1)),
               UnorderedElementsAre(EntityType(EntityTypeName::kPassport)));
 }
 
