@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -227,6 +228,9 @@ public class GlicPromoCoordinator {
 
     @NullMarked
     protected class GlicPromoSheetContent implements BottomSheetContent {
+        private static final BottomSheetType BOTTOM_SHEET_TYPE =
+                new BottomSheetType.Builder().build();
+
         private final View mContentView;
         private final BottomSheetController mController;
         private final BottomSheetObserver mBottomSheetOpenedObserver;
@@ -279,6 +283,11 @@ public class GlicPromoCoordinator {
         @Override
         public void destroy() {
             mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return BOTTOM_SHEET_TYPE;
         }
 
         @Override
