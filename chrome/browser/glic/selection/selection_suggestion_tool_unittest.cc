@@ -82,6 +82,8 @@ TEST_F(SelectionSuggestionToolTest, CreateSuggestionWithValidLabel) {
       tool().CreateSuggestion(aoi, server_suggestion);
   ASSERT_NE(suggestion, nullptr);
   EXPECT_EQ(suggestion->GetLabel(), u"Ask Glic");
+  EXPECT_EQ(suggestion->GetToolId(),
+            optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   const SelectionSuggestion* const selection_suggestion =
       static_cast<const SelectionSuggestion*>(suggestion.get());
   EXPECT_EQ(selection_suggestion->prompt(), "Ask Glic");

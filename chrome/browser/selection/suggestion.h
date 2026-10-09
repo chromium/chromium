@@ -23,6 +23,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace optimization_guide::proto {
+enum SmartSelectionToolId : int;
+}  // namespace optimization_guide::proto
+
 namespace selection {
 
 // Area of interest for the suggested service to examine.
@@ -43,6 +47,8 @@ struct AreaOfInterest {
 
 class Suggestion {
  public:
+  using ToolId = optimization_guide::proto::SmartSelectionToolId;
+
   // Binds an endpoint the surface supplied for `Interface`.
   template <typename Interface>
   using ReceiverBinder =
@@ -53,6 +59,9 @@ class Suggestion {
 
   // Returns the label for the suggestion.
   virtual const std::u16string& GetLabel() const = 0;
+
+  // Returns the tool ID that produced this suggestion.
+  virtual ToolId GetToolId() const = 0;
 
   // Called when the suggestion is presented.
   virtual void OnSuggestionPresented() = 0;

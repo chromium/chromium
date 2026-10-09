@@ -24,6 +24,7 @@ class SelectionSuggestion : public ::selection::Suggestion {
   ~SelectionSuggestion() override;
 
   // ::selection::Suggestion:
+  ToolId GetToolId() const override;
   const std::u16string& GetLabel() const override;
   void OnSuggestionPresented() override;
   void OnSuggestionExecuted() override;

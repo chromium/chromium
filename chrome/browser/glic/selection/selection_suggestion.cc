@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -21,6 +22,10 @@ SelectionSuggestion::SelectionSuggestion(tabs::TabInterface& tab,
     : tab_(tab), label_(std::move(label)), prompt_(std::move(prompt)) {}
 
 SelectionSuggestion::~SelectionSuggestion() = default;
+
+SelectionSuggestion::ToolId SelectionSuggestion::GetToolId() const {
+  return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+}
 
 const std::u16string& SelectionSuggestion::GetLabel() const {
   return label_;

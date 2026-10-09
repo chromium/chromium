@@ -42,11 +42,22 @@ enum DismissOverlayReason {
   kBackgroundClick = 1,
 };
 
+enum SuggestedActionIcon {
+  // No icon is shown on the action chip.
+  kNone = 0,
+  // The Gemini spark icon.
+  kSpark = 1,
+  // The Explain icon.
+  kExplain = 2,
+};
+
 struct SuggestedAction {
   // Unique identifier for the action.
   mojo_base.mojom.UnguessableToken id;
   // Display title shown on the action chip.
   string title;
+  // Icon shown on the action chip.
+  SuggestedActionIcon icon;
   // Describes what executing this action should do to the overlay.
   selection.mojom.Action action;
 };

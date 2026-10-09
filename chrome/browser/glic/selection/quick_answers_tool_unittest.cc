@@ -81,6 +81,8 @@ TEST_F(QuickAnswersToolTest, ExecutesQuickAnswersModelWithExpectedRequest) {
 
   ASSERT_NE(suggestion, nullptr);
   EXPECT_EQ(suggestion->GetLabel(), u"Explain");
+  EXPECT_EQ(suggestion->GetToolId(),
+            optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS);
   ASSERT_TRUE(suggestion->GetAction()->is_inline_fulfillment());
   EXPECT_EQ(suggestion->GetAction()->get_inline_fulfillment()->resource_name,
             "explain_fulfillment.js");

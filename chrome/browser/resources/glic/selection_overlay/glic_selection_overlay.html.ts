@@ -83,9 +83,12 @@ export function getHtml(this: SelectionOverlayElementElement) {
             <button class="action-chip"
                 data-index="${index}"
                 @click="${this.onSuggestedActionClick}">
-              <span class="chip-icon">
-                ${this.getActionIcon(action.title)}
-              </span>
+              ${this.getActionIcon(action.icon) ? html`
+                <span class="chip-icon">
+                  <img src="${this.getActionIcon(action.icon)}"
+                      width="16" height="16">
+                </span>
+              ` : ''}
               <span class="chip-label">${action.title}</span>
             </button>
           `)}

@@ -39,6 +39,7 @@ class ExplainSuggestion : public ::selection::Suggestion,
   ~ExplainSuggestion() override;
 
   // ::selection::Suggestion:
+  ToolId GetToolId() const override;
   const std::u16string& GetLabel() const override;
   void OnSuggestionPresented() override;
   void OnSuggestionExecuted() override;

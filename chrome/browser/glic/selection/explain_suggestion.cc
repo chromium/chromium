@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
@@ -47,6 +48,10 @@ ExplainSuggestion::ExplainSuggestion(
 }
 
 ExplainSuggestion::~ExplainSuggestion() = default;
+
+ExplainSuggestion::ToolId ExplainSuggestion::GetToolId() const {
+  return optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS;
+}
 
 const std::u16string& ExplainSuggestion::GetLabel() const {
   return label_;

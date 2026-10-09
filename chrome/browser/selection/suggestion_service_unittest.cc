@@ -61,6 +61,9 @@ class TestSuggestion : public Suggestion {
 
   // Suggestion:
   const std::u16string& GetLabel() const override { return label_; }
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
   void OnSuggestionPresented() override {}
   void OnSuggestionExecuted() override {}
   mojom::ActionPtr GetAction() const override {

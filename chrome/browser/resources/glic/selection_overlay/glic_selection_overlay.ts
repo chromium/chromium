@@ -14,7 +14,6 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverlayBorderGlowElement} from '/lens/overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from '/lens/overlay_shimmer_canvas.js';
@@ -27,7 +26,11 @@ import {DragFeature, GestureState} from '/lens/selection_utils.js';
 import {getCss} from './glic_selection_overlay.css.js';
 import {getHtml} from './glic_selection_overlay.html.js';
 import type {InlineFulfillmentHostElement} from './inline_fulfillment_host.js';
-import {DismissOverlayReason, SuggestedActionsListenerCallbackRouter} from './selection_overlay.mojom-webui.js';
+import {                                   //
+  DismissOverlayReason,                    //
+  SuggestedActionIcon,                     //
+  SuggestedActionsListenerCallbackRouter,  //
+} from './selection_overlay.mojom-webui.js';
 import type {InteractionOptions, SuggestedAction} from './selection_overlay.mojom-webui.js';
 import type {SelectionOverlayBaseHandlerImpl} from './selection_overlay_base_handler_impl.js';
 
@@ -593,14 +596,15 @@ export class SelectionOverlayElementElement extends
     event.stopPropagation();
   }
 
-  protected getActionIcon(title: string) {
-    switch (title.toLowerCase()) {
-      case 'explain':
-        return html`
-          <img src="/explain.svg" width="16" height="16">`;
+  protected getActionIcon(icon: SuggestedActionIcon): string {
+    switch (icon) {
+      case SuggestedActionIcon.kSpark:
+        return '/spark.svg';
+      case SuggestedActionIcon.kExplain:
+        return '/explain.svg';
+      case SuggestedActionIcon.kNone:
       default:
-        return html`
-          <img src="/spark.svg" width="16" height="16">`;
+        return '';
     }
   }
 

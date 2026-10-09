@@ -5,6 +5,7 @@
 #include "chrome/browser/selection/suggestion.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
@@ -29,6 +31,9 @@ class PlainSuggestion : public Suggestion {
 
   // Suggestion:
   const std::u16string& GetLabel() const override { return label_; }
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
   void OnSuggestionPresented() override {}
   void OnSuggestionExecuted() override { executed_ = true; }
   mojom::ActionPtr GetAction() const override {

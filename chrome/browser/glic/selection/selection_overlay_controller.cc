@@ -35,6 +35,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -93,6 +94,18 @@ BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuickAnswersSelectionSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+selection::SuggestedActionIcon GetIconForTool(
+    ::selection::Suggestion::ToolId tool_id) {
+  switch (tool_id) {
+    case optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS:
+      return selection::SuggestedActionIcon::kExplain;
+    case optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME:
+      return selection::SuggestedActionIcon::kSpark;
+    default:
+      return selection::SuggestedActionIcon::kNone;
+  }
+}
 
 gfx::RectF GetRectForRegion(const SkBitmap& image, const gfx::RectF& region) {
   double x_scale = image.width();
@@ -936,6 +949,7 @@ void SelectionOverlayController::GetSuggestedActionsImpl(
           base::ToVector(region_data->suggestions, [](const auto& item) {
             return selection::SuggestedAction::New(
                 item.first, base::UTF16ToUTF8(item.second->GetLabel()),
+                GetIconForTool(item.second->GetToolId()),
                 item.second->GetAction());
           });
       callback.Run(std::move(actions));
@@ -1067,11 +1081,13 @@ void SelectionOverlayController::OnSuggestionsReceived(
   for (auto& suggestion : suggestions) {
     auto action_id = base::UnguessableToken::Create();
     std::string label = base::UTF16ToUTF8(suggestion->GetLabel());
+    selection::SuggestedActionIcon icon =
+        GetIconForTool(suggestion->GetToolId());
     ::selection::mojom::ActionPtr action = suggestion->GetAction();
     suggestion->OnSuggestionPresented();
     region_data->suggestions.emplace_back(action_id, std::move(suggestion));
     actions.push_back(selection::SuggestedAction::New(
-        action_id, std::move(label), std::move(action)));
+        action_id, std::move(label), icon, std::move(action)));
   }
 
   // This appends the new ones. The `suggested_actions_listener_` will be

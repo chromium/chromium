@@ -295,10 +295,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   ASSERT_EQ(actions.size(), 3u);
   EXPECT_FALSE(actions[0]->id.is_empty());
   EXPECT_EQ(actions[0]->title, "Explain");
+  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kSpark);
   EXPECT_FALSE(actions[1]->id.is_empty());
   EXPECT_EQ(actions[1]->title, "Summarize");
+  EXPECT_EQ(actions[1]->icon, selection::SuggestedActionIcon::kSpark);
   EXPECT_FALSE(actions[2]->id.is_empty());
   EXPECT_EQ(actions[2]->title, "Create Image");
+  EXPECT_EQ(actions[2]->icon, selection::SuggestedActionIcon::kSpark);
   EXPECT_NE(actions[0]->id, actions[1]->id);
   EXPECT_NE(actions[1]->id, actions[2]->id);
 }
@@ -345,6 +348,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 1u);
   EXPECT_EQ(actions[0]->title, "Ask Gemini");
+  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kSpark);
   EXPECT_TRUE(actions[0]->action->is_handoff());
 }
 
@@ -401,6 +405,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 1u);
   EXPECT_EQ(actions[0]->title, "Explain");
+  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kExplain);
   ASSERT_TRUE(actions[0]->action->is_inline_fulfillment());
   EXPECT_EQ(actions[0]->action->get_inline_fulfillment()->resource_name,
             "explain_fulfillment.js");
@@ -1029,6 +1034,9 @@ class InlineSuggestion : public ::selection::Suggestion,
 
   // ::selection::Suggestion:
   const std::u16string& GetLabel() const override { return label_; }
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
   void OnSuggestionPresented() override {}
   void OnSuggestionExecuted() override {}
   ::selection::mojom::ActionPtr GetAction() const override {
