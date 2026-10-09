@@ -38,17 +38,9 @@ class AcceleratedCompositingTestPlatform
 
 class ScopedFakeGpuContext {
  public:
-  explicit ScopedFakeGpuContext(bool disable_imagebitmap) {
+  ScopedFakeGpuContext() {
     SharedGpuContext::Reset();
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-
-    if (disable_imagebitmap) {
-      // Disable CanvasNon2DResourceProvider using GPU.
-      auto& feature_info = test_context_provider_->GetWritableGpuFeatureInfo();
-      feature_info.enabled_gpu_driver_bug_workarounds.push_back(
-          DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU);
-    }
-
     InitializeSharedGpuContext(test_context_provider_.get());
   }
 
@@ -72,25 +64,20 @@ class ScopedFakeGpuContext {
 
 }  // namespace
 
-class VideoFrameImageUtilTest
-    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
+class VideoFrameImageUtilTest : public ::testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
 
     if (gpu_compositing()) {
-      fake_context_.emplace(disable_imagebitmap());
+      fake_context_.emplace();
       ASSERT_TRUE(SharedGpuContext::IsGpuCompositingEnabled());
     }
   }
 
-  bool gpu_compositing() { return std::get<0>(GetParam()); }
+  bool gpu_compositing() { return GetParam(); }
 
-  bool disable_imagebitmap() { return std::get<1>(GetParam()); }
-
-  bool expect_accelerated_images() {
-    return gpu_compositing() && !disable_imagebitmap();
-  }
+  bool expect_accelerated_images() { return gpu_compositing(); }
 
   viz::RasterContextProvider* raster_context_provider() {
     return SharedGpuContext::ContextProviderWrapper()
@@ -129,11 +116,7 @@ class VideoFrameImageUtilTest
   std::optional<ScopedFakeGpuContext> fake_context_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VideoFrameImageUtilTest,
-                         ::testing::Values(std::make_tuple(false, false),
-                                           std::make_tuple(true, true),
-                                           std::make_tuple(true, false)));
+INSTANTIATE_TEST_SUITE_P(, VideoFrameImageUtilTest, ::testing::Bool());
 
 TEST_P(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
   for (int i = static_cast<int>(ImageOrientationEnum::kMinValue);

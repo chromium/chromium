@@ -1764,18 +1764,6 @@
       ]
     },
     {
-      "id": 343,
-      "description": "Disable using GPU backed resource for imageBitmap from video on d3d9",
-      "cr_bugs": [1098445, 1105923],
-      "os": {
-        "type": "win"
-      },
-      "gl_renderer": ".*Direct3D9.*",
-      "features": [
-        "disable_imagebitmap_from_video_using_gpu"
-      ]
-    },
-    {
       "id": 344,
       "description": "VP8 decoding crashes before Windows 10 Fall Creators Update.",
       "cr_bugs": [1094840],

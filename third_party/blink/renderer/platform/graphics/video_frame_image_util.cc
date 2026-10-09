@@ -12,7 +12,6 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -210,11 +209,6 @@ bool ShouldCreateAcceleratedImages(
   }
 
   if (!SharedGpuContext::IsGpuCompositingEnabled()) {
-    return false;
-  }
-
-  if (raster_context_provider->GetGpuFeatureInfo().IsWorkaroundEnabled(
-          DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU)) {
     return false;
   }
 
