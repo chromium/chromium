@@ -262,7 +262,9 @@ bool BtmDatabaseMigrator::MigrateSchemaVersionFrom5To6() {
       "PRIMARY KEY (`key`)"
     ")";
   // clang-format on
-  CHECK(db_->IsSQLValid(kCreateConfigTableSql), base::NotFatalUntil::M158);
+  // TODO(crbug.com/570393056): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_->IsSQLValid(kCreateConfigTableSql));
 
   if (!db_->Execute(kCreateConfigTableSql)) {
     return false;
