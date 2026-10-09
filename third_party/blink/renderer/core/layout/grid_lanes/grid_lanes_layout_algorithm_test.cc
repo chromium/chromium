@@ -204,29 +204,22 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   GridLanesDataVector GetFragmentedGridLanesData() {
-    // Run the grid-lanes algorithm directly in a fragmentation context. The
-    // fragmentation pass currently only collects initial item offsets into the
-    // break token and does not add child layout results, so advancing to
-    // pre-paint would fail its layout-state checks.
-    //
-    // TODO(almaher): Once grid-lanes item fragmentation is supported, test this
-    // with a multicolumn container through a normal full lifecycle.
-    AdvanceToLayoutPhase();
-    BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
-    const auto space = ConstructBlockLayoutTestConstraintSpace(
-        {WritingMode::kHorizontalTb, TextDirection::kLtr},
-        LogicalSize(LayoutUnit(300), kIndefiniteSize),
-        /*stretch_inline_size_if_auto=*/true,
-        node.CreatesNewFormattingContext(),
-        /*fragmentainer_space_available=*/LayoutUnit(30));
-    const auto fragment_geometry =
-        CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+    InsertStyleElement(R"CSS(
+      body {
+        column-count: 2;
+        column-fill: auto;
+        column-gap: 0;
+        height: 30px;
+        margin: 0;
+        width: 600px;
+      }
+    )CSS");
+    UpdateAllLifecyclePhasesForTest();
 
-    GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
-    const LayoutResult* result = algorithm.Layout();
-    const auto* fragment =
-        To<PhysicalBoxFragment>(&result->GetPhysicalFragment());
-    const BlockBreakToken* break_token = fragment->GetBreakToken();
+    const LayoutBox* grid_lanes = GetLayoutBoxByElementId("grid-lanes");
+    CHECK_GT(grid_lanes->PhysicalFragmentCount(), 1u);
+    const BlockBreakToken* break_token =
+        grid_lanes->GetPhysicalFragment(0)->GetBreakToken();
     CHECK(break_token);
     return To<GridLanesBreakTokenData>(break_token->TokenData())->grid_lanes;
   }
