@@ -67,6 +67,9 @@ class UnguessableToken;
 @property(nonatomic, weak) id<ComposeboxMenuCoordinatorInputPlateDelegate>
     inputPlateDelegate;
 
+// Whether the bottom sheet is currently presented.
+@property(nonatomic, readonly) BOOL presentingBottomSheet;
+
 // Creates a coordinator for embedded mode with the given preselected
 // attachments and initial input state.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

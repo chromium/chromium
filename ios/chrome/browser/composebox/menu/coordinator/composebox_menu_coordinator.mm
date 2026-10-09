@@ -189,6 +189,10 @@ CGFloat const kSheetTopPadding = 40.0f;
   }
 }
 
+- (BOOL)presentingBottomSheet {
+  return _viewController.presentingViewController != nil;
+}
+
 - (void)presentBottomSheetMenu {
   CHECK(_entrypoint == ComposeboxEntrypoint::kCobrowse ||
         IsComposeboxPlusButtonBottomSheet());

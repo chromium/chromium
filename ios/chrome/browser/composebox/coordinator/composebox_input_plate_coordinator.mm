@@ -578,8 +578,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (UIMenu*)composeboxViewControllerPlusButtonMenu:
     (ComposeboxInputPlateViewController*)composeboxViewController {
-  ComposeboxUIInputState* state = [_mediator currentUIInputState];
-  [self createMenuCoordinatorForInputState:state];
+  if (!_menuCoorinator) {
+    ComposeboxUIInputState* state = [_mediator currentUIInputState];
+    [self createMenuCoordinatorForInputState:state];
+  }
   return [_menuCoorinator createMenu];
 }
 
@@ -629,6 +631,15 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (void)showSnackbarForItemUploadDidFail {
   [self showUnableToAddAttachmentSnackbarError];
+}
+
+- (void)inputStateManagerDidUpdateUIState {
+  // Don't recreate the coordinator if it's presenting the bottom sheet.
+  if (_menuCoorinator.presentingBottomSheet) {
+    return;
+  }
+  ComposeboxUIInputState* state = [_mediator currentUIInputState];
+  [self createMenuCoordinatorForInputState:state];
 }
 
 #pragma mark - LocationBarURLLoader

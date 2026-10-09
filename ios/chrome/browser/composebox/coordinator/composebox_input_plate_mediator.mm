@@ -2485,6 +2485,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 - (void)inputStateManagerDidUpdateUIState:
     (ComposeboxInputStateManager*)manager {
+  [self.delegate inputStateManagerDidUpdateUIState];
   [self commitUIUpdates];
 }
 

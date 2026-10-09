@@ -117,6 +117,8 @@
 - (void)showSnackbarForItemUploadDidFail {
   _showedSnackbarForItemUploadDidFail = YES;
 }
+- (void)inputStateManagerDidUpdateUIState {
+}
 @end
 
 // Mock consumer for the mediator.

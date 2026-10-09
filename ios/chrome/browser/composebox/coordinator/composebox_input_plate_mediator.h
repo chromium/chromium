@@ -58,6 +58,8 @@ class ContextualSearchSessionHandle;
 - (void)showAttachmentLimitError;
 // Informs the delegate that item upload has failed.
 - (void)showSnackbarForItemUploadDidFail;
+// Informs the delegate that input state was updated.
+- (void)inputStateManagerDidUpdateUIState;
 @end
 
 // Mediator for the composebox composebox.
