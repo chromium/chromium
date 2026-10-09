@@ -305,22 +305,19 @@ public class VerticalTabsSideUiCoordinator
     @Override
     public void onResizeLive(@Px int proposedWidthPx) {
         mLiveResizeWidth = proposedWidthPx;
-        // Dragging the rail is an explicit request for an expanded rail. The width is clamped to
-        // the rail's minimum until the drag is released.
-        mCollapseController.setCollapsedByUserFromResize(/* isCollapsed= */ false);
+        mCollapseController.onResizeLive(ViewUtils.pxToDp(mRootView.getContext(), proposedWidthPx));
     }
 
     @Override
     public void onResizeCommitted(@Px int finalWidthPx) {
         mLiveResizeWidth = 0;
-        boolean isCollapsed = finalWidthPx < mMinManualWidth;
-        mCollapseController.setCollapsedByUserFromResize(isCollapsed);
+        int finalWidthDp = ViewUtils.pxToDp(mRootView.getContext(), finalWidthPx);
+        boolean isCollapsed = mCollapseController.onResizeCommitted(finalWidthDp);
 
-        // Releasing the drag below the rail's minimum usable width collapses it. When isCollapsed
-        // is true, setCollapsedByUserFromResize() persists the collapsed state, so we only persist
-        // the non-collapsed user-set width here.
+        // A collapsed rail keeps its previous expanded width, so only persist the width chosen for
+        // an expanded rail.
         if (!isCollapsed) {
-            mCommittedResizeWidthDp = ViewUtils.pxToDp(mRootView.getContext(), finalWidthPx);
+            mCommittedResizeWidthDp = finalWidthDp;
             VerticalTabUtils.setUserResizedWidthDpInSharedPref(mCommittedResizeWidthDp);
         }
     }

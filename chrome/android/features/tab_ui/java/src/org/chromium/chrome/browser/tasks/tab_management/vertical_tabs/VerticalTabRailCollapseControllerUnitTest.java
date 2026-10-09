@@ -372,4 +372,53 @@ public class VerticalTabRailCollapseControllerUnitTest {
         mController.onActivityTopResumedChanged(true);
         assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
     }
+
+    @Test
+    public void testResize_LiveCollapsesWithoutPersistingUntilCommitted() {
+        mController.onResizeLive(/* proposedWidthDp= */ 40);
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+        assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
+
+        assertTrue(mController.onResizeCommitted(/* finalWidthDp= */ 40));
+        assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
+    }
+
+    @Test
+    public void testResize_LiveExpandsAgainWithinSameDrag() {
+        mController.onResizeLive(/* proposedWidthDp= */ 40);
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+
+        mController.onResizeLive(/* proposedWidthDp= */ 200);
+        assertEquals(RailCollapseState.EXPANDED, mController.getEffectiveRailCollapseState());
+
+        assertFalse(mController.onResizeCommitted(/* finalWidthDp= */ 200));
+        assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
+    }
+
+    @Test
+    public void testResize_CollapseThreshold() {
+        int thresholdDp = VerticalTabUtils.MIN_EXPANDED_WIDTH_DP;
+
+        mController.onResizeLive(thresholdDp);
+        assertEquals(RailCollapseState.EXPANDED, mController.getEffectiveRailCollapseState());
+
+        mController.onResizeLive(thresholdDp - 1);
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+
+        mController.onResizeLive(thresholdDp);
+        assertEquals(RailCollapseState.EXPANDED, mController.getEffectiveRailCollapseState());
+    }
+
+    @Test
+    public void testResize_ClearsHover() {
+        mController.toggleCollapseState();
+        hoverInsideRail();
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mController.getEffectiveRailCollapseState());
+
+        mController.onResizeLive(/* proposedWidthDp= */ 200);
+        mController.onResizeLive(/* proposedWidthDp= */ 40);
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+    }
 }

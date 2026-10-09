@@ -24,7 +24,8 @@ import org.chromium.ui.base.WindowAndroid;
  *
  * <ul>
  *   <li>The user preference, {@link RailCollapseState#EXPANDED} or {@link
- *       RailCollapseState#COLLAPSED}, changed by {@link #toggleCollapseState()}.
+ *       RailCollapseState#COLLAPSED}, changed by {@link #toggleCollapseState()} and by manual
+ *       resizes through {@link #onResizeLive(int)} and {@link #onResizeCommitted(int)}.
  *   <li>Whether the pointer is hovering the rail, fed by {@link VerticalTabRailHoverController}
  *       through {@link #setHovering(boolean)}.
  *   <li>The window width constraint, from {@link #setWindowWidthBoundary(int)}, supplied by {@link
@@ -188,15 +189,35 @@ class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateOb
     }
 
     /**
-     * Updates the user collapse preference from a manual resize. Does not apply the new state, as
-     * the resize flow drives its own Side UI update.
+     * Feeds the width proposed by an in-progress manual resize drag. Collapses or expands the rail
+     * as soon as the drag crosses the collapse threshold, rather than holding the rail expanded
+     * until the drag is released. The preference is only persisted once the drag is committed. Does
+     * not apply the new state, as the resize flow drives its own Side UI update.
      *
-     * @param isCollapsed Whether the rail should be collapsed.
+     * @param proposedWidthDp The unclamped rail width proposed by the drag, in dp.
      */
-    void setCollapsedByUserFromResize(boolean isCollapsed) {
+    void onResizeLive(int proposedWidthDp) {
+        setCollapsedByUserFromResize(shouldCollapseForResizeWidth(proposedWidthDp));
+    }
+
+    /**
+     * Ends a manual resize, collapsing the rail if the final width is below the collapse threshold,
+     * and persists the resulting preference. Does not apply the new state, as the resize flow
+     * drives its own Side UI update.
+     *
+     * @param finalWidthDp The unclamped rail width at the end of the resize, in dp.
+     * @return Whether the rail is collapsed by the resize.
+     */
+    boolean onResizeCommitted(int finalWidthDp) {
+        boolean isCollapsed = shouldCollapseForResizeWidth(finalWidthDp);
+        setCollapsedByUserFromResize(isCollapsed);
+        VerticalTabUtils.setRailCollapsedInSharedPref(isCollapsed);
+        return isCollapsed;
+    }
+
+    private void setCollapsedByUserFromResize(boolean isCollapsed) {
         if (mIsCollapsedByUser == isCollapsed) return;
         mIsCollapsedByUser = isCollapsed;
-        VerticalTabUtils.setRailCollapsedInSharedPref(isCollapsed);
         // A resize is an explicit request, so like a toggle it overrides the current hover.
         mIsHoverExpanded = false;
     }
@@ -277,6 +298,14 @@ class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateOb
         } else {
             applyEffectiveState();
         }
+    }
+
+    /**
+     * Returns whether a manual resize to {@code widthDp} should collapse the rail, i.e. whether the
+     * width is below the minimum expanded width.
+     */
+    private static boolean shouldCollapseForResizeWidth(int widthDp) {
+        return widthDp < VerticalTabUtils.MIN_EXPANDED_WIDTH_DP;
     }
 
     /**
