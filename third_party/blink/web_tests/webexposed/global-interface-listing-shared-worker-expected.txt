@@ -2947,7 +2947,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stencilMaskSeparate
 [Worker]     method stencilOp
 [Worker]     method stencilOpSeparate
-[Worker]     method texElementImage2D
 [Worker]     method texElementSubImage2D
 [Worker]     method texImage2D
 [Worker]     method texImage3D
@@ -3452,7 +3451,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stencilMaskSeparate
 [Worker]     method stencilOp
 [Worker]     method stencilOpSeparate
-[Worker]     method texElementImage2D
 [Worker]     method texElementSubImage2D
 [Worker]     method texImage2D
 [Worker]     method texParameterf

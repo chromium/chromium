@@ -606,12 +606,6 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                   MaybeShared<DOMArrayBufferView> data,
                   int64_t src_offset);
 
-  void texElementImage2D(GLenum target,
-                         GLenum internalformat,
-                         const V8UnionElementOrElementImage* element,
-                         const WebGLCopyElementImageConfig* config,
-                         ExceptionState& exception_state);
-
   void texElementSubImage2D(GLenum target,
                             GLint level,
                             GLint xoffset,

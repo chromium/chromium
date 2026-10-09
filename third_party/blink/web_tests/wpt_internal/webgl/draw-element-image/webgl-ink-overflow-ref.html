@@ -72,7 +72,7 @@ Array.from(document.querySelectorAll(".draw-element-wrapper")).forEach(wrapper =
   const colorGridHeight = Number.parseFloat(colorGridStyle.height);
   const outsetRight = colorGridWidth + outset;
   const outsetBottom = colorGridHeight + outset;
-  // Imitate (swidth|sheight) arguments to texElementImage2D
+  // Imitate (swidth|sheight) arguments to texElementSubImage2D
   colorGrid.style.clipPath = `rect(${-outset}px ${outsetRight}px ${outsetBottom}px ${-outset}px)`;
 });
 </script>

@@ -428,12 +428,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
                   ImageBitmap*,
                   ExceptionState&);
 
-  void texElementImage2D(GLenum target,
-                         GLenum internalformat,
-                         const V8UnionElementOrElementImage* element,
-                         const WebGLCopyElementImageConfig* config,
-                         ExceptionState& exception_state);
-
   void texElementSubImage2D(GLenum target,
                             GLint level,
                             GLint xoffset,
@@ -2010,19 +2004,19 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   void Dispose() override;
 
-  void TexElementImage2DInternal(GLenum target,
-                                 std::optional<GLenum> internalformat,
-                                 GLint level,
-                                 GLint xoffset,
-                                 GLint yoffset,
-                                 std::optional<GLfloat> sx,
-                                 std::optional<GLfloat> sy,
-                                 std::optional<GLfloat> swidth,
-                                 std::optional<GLfloat> sheight,
-                                 std::optional<GLsizei> width,
-                                 std::optional<GLsizei> height,
-                                 const V8UnionElementOrElementImage* element,
-                                 ExceptionState& exception_state);
+  void TexElementSubImage2DInternal(GLenum target,
+                                    std::optional<GLenum> internalformat,
+                                    GLint level,
+                                    GLint xoffset,
+                                    GLint yoffset,
+                                    std::optional<GLfloat> sx,
+                                    std::optional<GLfloat> sy,
+                                    std::optional<GLfloat> swidth,
+                                    std::optional<GLfloat> sheight,
+                                    std::optional<GLsizei> width,
+                                    std::optional<GLsizei> height,
+                                    const V8UnionElementOrElementImage* element,
+                                    ExceptionState& exception_state);
 
   // Used to provide accelerated snapshots and CanvasResources holding the
   // current content.

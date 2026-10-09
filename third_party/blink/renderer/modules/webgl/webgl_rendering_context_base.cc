@@ -6964,64 +6964,6 @@ void WebGLRenderingContextBase::texParameteri(GLenum target,
   TexParameter(target, pname, 0, param, false);
 }
 
-void WebGLRenderingContextBase::texElementImage2D(
-    GLenum target,
-    GLenum internalformat,
-    const V8UnionElementOrElementImage* element,
-    const WebGLCopyElementImageConfig* config,
-    ExceptionState& exception_state) {
-  std::optional<GLfloat> sx;
-  std::optional<GLfloat> sy;
-  std::optional<GLfloat> swidth;
-  std::optional<GLfloat> sheight;
-  std::optional<GLsizei> width;
-  std::optional<GLsizei> height;
-
-  size_t explicit_param_count = 0;
-  if (config) {
-    if (config->hasSx()) {
-      sx = config->sx();
-      explicit_param_count++;
-    }
-    if (config->hasSy()) {
-      sy = config->sy();
-      explicit_param_count++;
-    }
-    if (config->hasSwidth()) {
-      swidth = config->swidth();
-      explicit_param_count++;
-    }
-    if (config->hasSheight()) {
-      sheight = config->sheight();
-      explicit_param_count++;
-    }
-    if (explicit_param_count % 4 != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
-          "Must specify all or none of (sx,sy,swidth,sheight).");
-      return;
-    }
-    if (config->hasWidth()) {
-      width = config->width();
-      explicit_param_count++;
-    }
-    if (config->hasHeight()) {
-      height = config->height();
-      explicit_param_count++;
-    }
-    if (explicit_param_count % 2 != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
-          "Must specify neither or both of (width,height).");
-      return;
-    }
-  }
-
-  TexElementImage2DInternal(target, internalformat, /*level*/ 0, /*xoffset*/ 0,
-                            /*yoffset*/ 0, sx, sy, swidth, sheight, width,
-                            height, element, exception_state);
-}
-
 void WebGLRenderingContextBase::texElementSubImage2D(
     GLenum target,
     GLint level,
@@ -7077,12 +7019,12 @@ void WebGLRenderingContextBase::texElementSubImage2D(
     }
   }
 
-  TexElementImage2DInternal(target, /*internalformat*/ std::nullopt, level,
-                            xoffset, yoffset, sx, sy, swidth, sheight, width,
-                            height, element, exception_state);
+  TexElementSubImage2DInternal(target, /*internalformat*/ std::nullopt, level,
+                               xoffset, yoffset, sx, sy, swidth, sheight, width,
+                               height, element, exception_state);
 }
 
-void WebGLRenderingContextBase::TexElementImage2DInternal(
+void WebGLRenderingContextBase::TexElementSubImage2DInternal(
     GLenum target,
     std::optional<GLenum> internalformat,
     GLint level,
