@@ -21,6 +21,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace actor {
 
 // static
@@ -236,14 +240,12 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                                        ::ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
         (transition & ::ui::PAGE_TRANSITION_HOME_PAGE);
 
-#if !BUILDFLAG(IS_ANDROID)
     // Omnibox navigations carry FROM_ADDRESS_BAR, but an accepted paste
     // commits as LINK and a keyword search as KEYWORD.
     if (transition & ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) {
       is_user_ui_navigation = true;
     }
 
-    // TODO(crbug.com/559772874): Enable on Android.
     // Exclude session history navigations. A back/forward navigation replays
     // the core transition of the entry it restores, so returning to a page the
     // user originally typed arrives here as PAGE_TRANSITION_TYPED with the
@@ -253,7 +255,6 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     if (transition & ::ui::PAGE_TRANSITION_FORWARD_BACK) {
       is_user_ui_navigation = false;
     }
-#endif
 
     if (!is_user_ui_navigation) {
       return content::NavigationThrottle::PROCEED;
@@ -263,8 +264,13 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     if (!base::FeatureList::IsEnabled(features::kGlicConfirmTabClose)) {
       return content::NavigationThrottle::PROCEED;
     }
+#else
+    // On Android, only desktop form factors confirm user UI navigations.
+    if (!base::android::device_info::is_desktop()) {
+      return content::NavigationThrottle::PROCEED;
+    }
+#endif
 
-    // TODO(crbug.com/559772874): Enable on Android.
     // Typing in the omnibox starts a speculative prerender that carries the
     // same transition as the navigation the user may eventually commit.
     // Deferring it would prompt for typing alone, and letting it load is
@@ -278,7 +284,6 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                       .Build());
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
-#endif
 
     // A navigation to the current URL (ignoring the fragment) reloads the page
     // instead of leaving it, so proceed without confirmation, as for Reload.

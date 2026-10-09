@@ -328,10 +328,11 @@ UiTabState ActorUiTabController::GetCurrentUiTabState() const {
   return current_ui_tab_state_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 bool ActorUiTabController::MaybeDeferNavigation(
+    tabs::TabInterface* tab,
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    ActorNavigationThrottle::Delegate::NavigationConfirmedCallback callback) {
+  CHECK(!tab || tab == &*tab_);
   content::WebContents* contents = tab_->GetContents();
   if (!ActorTaskTabCloseConfirmDialog::ShouldShow(contents)) {
     return false;
@@ -339,7 +340,7 @@ bool ActorUiTabController::MaybeDeferNavigation(
 
   // A newer navigation supersedes the pending one. This frees the tab-modal
   // slot for the dialog created below.
-  CancelNavigationConfirmation();
+  CancelNavigationConfirmation(tab);
 
   // The task is left running here. If the user accepts, the throttle stops it
   // with `kUserNavigatedAway`.
@@ -355,7 +356,10 @@ bool ActorUiTabController::MaybeDeferNavigation(
   return true;
 }
 
-void ActorUiTabController::CancelNavigationConfirmation() {
+#if !BUILDFLAG(IS_ANDROID)
+void ActorUiTabController::CancelNavigationConfirmation(
+    tabs::TabInterface* tab) {
+  CHECK(!tab || tab == &*tab_);
   // Closing synchronously releases the old dialog's tab-modal slot and rejects
   // its navigation if that navigation's throttle still exists; the navigation
   // may already have been superseded.

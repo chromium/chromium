@@ -223,9 +223,7 @@ class ActorToolsTest : public PlatformBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_for_init_;
   base::ScopedTempDir temp_dir_;
-#if !BUILDFLAG(IS_ANDROID)
   bool previous_suppress_confirm_dialog_ = false;
-#endif
 };
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,

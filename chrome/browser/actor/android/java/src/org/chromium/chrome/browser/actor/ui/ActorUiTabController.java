@@ -14,6 +14,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
@@ -228,15 +229,20 @@ public class ActorUiTabController implements UserData {
 
     @CalledByNative
     @SuppressWarnings("unused")
-    private static boolean maybeDeferNavigation(
-            Tab tab, @JniType("GURL") GURL url, Callback<Boolean> navigationConfirmedCallback) {
+    @VisibleForTesting
+    static boolean maybeDeferNavigation(
+            Tab tab,
+            @JniType("GURL") GURL url,
+            JniOnceCallback<Boolean> navigationConfirmedCallback) {
         ActorUiTabController controller = from(tab);
         // TODO(crbug.com/520161144): `controller` should never be null here, since this call is
         // coming from native counter part.
-        if (controller == null) {
-            return false;
+        if (controller != null && controller.showConfirmationDialog(navigationConfirmedCallback)) {
+            return true;
         }
-        return controller.showConfirmationDialog(navigationConfirmedCallback);
+        // Without a dialog the callback never runs, so free the native callback.
+        navigationConfirmedCallback.destroy();
+        return false;
     }
 
     /** Returns true if an Actor task is currently active on this tab. */

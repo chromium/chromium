@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "chrome/browser/actor/ui/states/tab_indicator_state.h"
@@ -43,11 +44,11 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
-class ActorUiTabControllerInterface {
+class ActorUiTabControllerInterface : public ActorNavigationThrottle::Delegate {
  public:
   DECLARE_USER_DATA(ActorUiTabControllerInterface);
   explicit ActorUiTabControllerInterface(tabs::TabInterface& tab);
-  virtual ~ActorUiTabControllerInterface();
+  ~ActorUiTabControllerInterface() override;
 
   // Called whenever the UiTabState changes. These calls will be debounced by a
   // kUpdateUiDebounceDelay period of time. This means the callback will always

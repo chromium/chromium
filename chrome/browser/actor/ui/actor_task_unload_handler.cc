@@ -305,9 +305,10 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
   // that dialog first so it rejects its navigation and frees the tab-modal slot
   // that the close confirmation below needs.
   if (contents) {
-    if (auto* tab_controller = ui::ActorUiTabController::From(
-            tabs::TabInterface::MaybeGetFromContents(contents))) {
-      tab_controller->CancelNavigationConfirmation();
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(contents);
+    if (auto* tab_controller = ui::ActorUiTabController::From(tab)) {
+      tab_controller->CancelNavigationConfirmation(tab);
     }
   }
   owned_widget_ = ActorTaskTabCloseConfirmDialog::ShowModalIfActuating(

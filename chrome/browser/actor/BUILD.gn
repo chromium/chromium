@@ -552,7 +552,10 @@ source_set("tools_test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
-    deps += [ "//chrome/test:test_support_ui_android" ]
+    deps += [
+      "//chrome/browser/actor/android",
+      "//chrome/test:test_support_ui_android",
+    ]
   } else {
     deps += [ "//chrome/test:test_support_ui" ]
   }

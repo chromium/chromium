@@ -74,9 +74,9 @@ class ActorUiStateManager : public ActorUiStateManagerInterface,
   void OnUiEvent(SyncUiEvent event) override;
 #if !BUILDFLAG(IS_ANDROID)
   void LazyInitTabTracker() override;
+#endif
   base::WeakPtr<ActorNavigationThrottle::Delegate> GetNavigationDelegate()
       override;
-#endif
 
   // ActorNavigationThrottle::Delegate:
   bool MaybeDeferNavigation(tabs::TabInterface* tab,

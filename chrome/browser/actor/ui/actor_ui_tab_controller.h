@@ -42,13 +42,15 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetActorTaskResume() override;
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
   UiTabState GetCurrentUiTabState() const override;
+  bool MaybeDeferNavigation(
+      tabs::TabInterface* tab,
+      const GURL& url,
+      ActorNavigationThrottle::Delegate::NavigationConfirmedCallback callback)
+      override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  bool MaybeDeferNavigation(const GURL& url,
-                            base::OnceCallback<void(bool)> callback);
-
   // Closes this tab's navigation confirmation dialog, if one is showing.
-  void CancelNavigationConfirmation();
+  void CancelNavigationConfirmation(tabs::TabInterface* tab) override;
 
   views::Widget* GetActiveNavigationConfirmDialogWidgetForTesting() const;
 

@@ -36,10 +36,10 @@ class ActorUiStateManagerInterface {
   // a complete UI environment. Delaying until the first task ensures the UI
   // environment is fully set up.
   virtual void LazyInitTabTracker() = 0;
+#endif
 
   virtual base::WeakPtr<ActorNavigationThrottle::Delegate>
   GetNavigationDelegate() = 0;
-#endif
 
 };
 

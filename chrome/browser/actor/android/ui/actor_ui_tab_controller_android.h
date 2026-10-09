@@ -25,8 +25,7 @@ class ActorKeyedService;
 
 namespace actor::ui {
 
-class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface,
-                                    public ActorNavigationThrottle::Delegate {
+class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
  public:
   ActorUiTabControllerAndroid(tabs::TabInterface& tab,
                               ActorKeyedService* actor_keyed_service);
@@ -40,11 +39,13 @@ class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface,
   void SetActorTaskResume() override;
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
   UiTabState GetCurrentUiTabState() const override;
-
-  // ActorNavigationThrottle::Delegate:
   bool MaybeDeferNavigation(tabs::TabInterface* tab,
                             const GURL& url,
                             NavigationConfirmedCallback callback) override;
+
+  // Test hook to skip the navigation confirmation dialog.
+  static void SetSuppressNavigationDialogsForTesting(bool suppress);
+  static bool ShouldSuppressNavigationDialogsForTesting();
 
  private:
   const raw_ref<tabs::TabInterface> tab_;

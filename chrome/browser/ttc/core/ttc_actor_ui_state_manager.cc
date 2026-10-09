@@ -24,12 +24,12 @@ void TtcActorUiStateManager::OnUiEvent(actor::ui::SyncUiEvent event) {}
 
 #if !BUILDFLAG(IS_ANDROID)
 void TtcActorUiStateManager::LazyInitTabTracker() {}
+#endif
 
 base::WeakPtr<actor::ActorNavigationThrottle::Delegate>
 TtcActorUiStateManager::GetNavigationDelegate() {
   // TTC does not drive the actor tab UI that confirms navigations.
   return nullptr;
 }
-#endif
 
 }  // namespace ttc

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,9 +16,11 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/actor/core/actor_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
@@ -25,6 +29,10 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace actor {
 namespace {
@@ -84,10 +92,43 @@ class ActorNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
                               features::kGlicActor},
         /*disabled_features=*/{});
     ChromeRenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_ANDROID)
+    // Only desktop form factors confirm user UI navigations on Android.
+    base::android::device_info::set_is_desktop_for_testing(true);
+#endif
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_ANDROID)
+    base::android::device_info::reset_is_desktop_for_testing();
+#endif
+    tab_controller_.reset();
+    tab_state_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
+  // Adds a tab for web_contents() with a mock UI tab controller to a task
+  // created by ActorKeyedService::CreateTask.
+  ActorTask* CreateTaskOnMockTab() {
+    tab_state_.emplace(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &tab_state_->tab);
+    tab_controller_.emplace(tab_state_->tab);
+
+    ActorKeyedService* service = ActorKeyedService::Get(profile());
+    TaskId task_id =
+        service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+    ActorTask* task = service->GetTask(task_id);
+    CHECK(task);
+    AddTabToTask(tab_state_->tab, *task);
+    return task;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<TestTabState> tab_state_;
+  std::optional<testing::NiceMock<ui::MockActorUiTabController>>
+      tab_controller_;
 };
 
 TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_CancelIfDeferred) {
@@ -224,7 +265,78 @@ TEST_F(ActorNavigationThrottleTest, BrowserInitiated_DeferAndProceed) {
   EXPECT_EQ(nullptr, service->GetTask(task_id));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+// Uses the delegate installed by ActorKeyedService::CreateTask, which routes
+// user UI navigations to the tab's ActorUiTabControllerInterface.
+TEST_F(ActorNavigationThrottleTest, BrowserInitiated_CreateTaskRoutesToTab) {
+  NavigateAndCommit(GURL("https://source.com"));
+  ActorTask* task = CreateTaskOnMockTab();
+  ASSERT_TRUE(task->navigation_delegate());
+
+  const GURL destination("https://destination.com");
+  testing::NiceMock<content::MockNavigationHandle> handle(destination,
+                                                          main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_TYPED);
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_CALL(*tab_controller_,
+              MaybeDeferNavigation(&tab_state_->tab, destination, ::testing::_))
+      .WillOnce(Return(true));
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+}
+
+// User UI navigations on a paused task proceed without prompting.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_PausedTaskProceedsWithoutPrompt) {
+  NavigateAndCommit(GURL("https://source.com"));
+  ActorTask* task = CreateTaskOnMockTab();
+  ASSERT_TRUE(task->navigation_delegate());
+  task->Pause(/*from_actor=*/false);
+
+  const GURL destination("https://destination.com");
+  testing::NiceMock<content::MockNavigationHandle> handle(destination,
+                                                          main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_TYPED);
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_CALL(*tab_controller_,
+              MaybeDeferNavigation(&tab_state_->tab, destination, ::testing::_))
+      .Times(0);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillStartRequest().action());
+}
+
+// A same-URL navigation closes the pending confirmation through the tab's
+// ActorUiTabControllerInterface.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_SameUrlCancelsConfirmationOnTab) {
+  const GURL kPageUrl("https://site.com/page");
+  NavigateAndCommit(kPageUrl);
+  ActorTask* task = CreateTaskOnMockTab();
+  ASSERT_TRUE(task->navigation_delegate());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(kPageUrl, main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PAGE_TRANSITION_TYPED);
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_CALL(*tab_controller_, CancelNavigationConfirmation(&tab_state_->tab));
+  EXPECT_CALL(*tab_controller_, MaybeDeferNavigation).Times(0);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillStartRequest().action());
+}
+
 // Typing in the Omnibox starts a speculative prerender carrying the same
 // transition as the navigation the user may eventually commit. Cancelling such
 // a prerender without prompting ensures the committed navigation reaches this
@@ -264,6 +376,7 @@ TEST_F(ActorNavigationThrottleTest,
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // With the confirmation feature disabled on Desktop, browser-initiated user UI
 // navigations (including speculative prerenders) proceed without cancelling or
 // prompting.
@@ -299,6 +412,44 @@ TEST_F(ActorNavigationThrottleTest,
             throttle.WillStartRequest().action());
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
+#else
+// On Android phones, browser-initiated user UI navigations (including
+// speculative prerenders) proceed without cancelling or prompting.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_PhoneProceedsWithoutPrompt) {
+  base::android::device_info::set_is_desktop_for_testing(false);
+
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://source.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  for (bool is_prerender : {false, true}) {
+    SCOPED_TRACE(is_prerender);
+    testing::NiceMock<content::MockNavigationHandle> handle(
+        GURL("https://destination.com"), main_rfh());
+    ON_CALL(handle, IsInPrerenderedMainFrame())
+        .WillByDefault(Return(is_prerender));
+    handle.set_is_renderer_initiated(false);
+    handle.set_page_transition(::ui::PageTransitionFromInt(
+        ::ui::PAGE_TRANSITION_TYPED | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+
+    content::MockNavigationThrottleRegistry registry(&handle);
+    ActorNavigationThrottle throttle =
+        ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              throttle.WillStartRequest().action());
+  }
+  EXPECT_FALSE(test_delegate.confirm_navigation_called());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ActorNavigationThrottleTest,
@@ -330,7 +481,6 @@ TEST_F(ActorNavigationThrottleTest,
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // A session history navigation replays the core transition of the entry it
 // restores, so going back to a page the user originally typed arrives as
 // TYPED | FORWARD_BACK. Excluding FORWARD_BACK ensures neither the Actor's own
@@ -362,7 +512,6 @@ TEST_F(ActorNavigationThrottleTest, BrowserInitiated_NoDeferForBackForward) {
             throttle.WillStartRequest().action());
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Pressing Return in the omnibox on the current URL starts a new navigation
 // rather than a reload. It does not leave the page, so like Reload it proceeds
@@ -459,7 +608,6 @@ TEST_F(ActorNavigationThrottleTest,
   EXPECT_FALSE(test_delegate.cancel_navigation_confirmation_called());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // A pasted URL accepted while the omnibox popup is closed is committed as
 // LINK | FROM_ADDRESS_BAR instead of TYPED. It still leaves the page, so it is
 // confirmed.
@@ -553,7 +701,6 @@ TEST_F(ActorNavigationThrottleTest,
             throttle.WillStartRequest().action());
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ActorNavigationThrottleTest, UserConfirmedLeave_Proceed) {
   ActorKeyedService* service = ActorKeyedService::Get(profile());

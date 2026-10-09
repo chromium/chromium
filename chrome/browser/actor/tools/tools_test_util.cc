@@ -36,6 +36,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
+#else
+#include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
 #endif
 
 namespace actor {
@@ -228,6 +230,10 @@ void ActorToolsTest::SetUpOnMainThread() {
   previous_suppress_confirm_dialog_ =
       ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting();
   ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(true);
+#else
+  previous_suppress_confirm_dialog_ = ui::ActorUiTabControllerAndroid::
+      ShouldSuppressNavigationDialogsForTesting();
+  ui::ActorUiTabControllerAndroid::SetSuppressNavigationDialogsForTesting(true);
 #endif
 
   task_id_ =
@@ -263,6 +269,9 @@ void ActorToolsTest::SetUpCommandLine(base::CommandLine* command_line) {
 void ActorToolsTest::TearDownOnMainThread() {
 #if !BUILDFLAG(IS_ANDROID)
   ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(
+      previous_suppress_confirm_dialog_);
+#else
+  ui::ActorUiTabControllerAndroid::SetSuppressNavigationDialogsForTesting(
       previous_suppress_confirm_dialog_);
 #endif
 

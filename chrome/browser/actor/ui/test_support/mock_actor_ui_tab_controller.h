@@ -42,6 +42,18 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
 
   MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
 
+  MOCK_METHOD(bool,
+              MaybeDeferNavigation,
+              (tabs::TabInterface*,
+               const GURL&,
+               ActorNavigationThrottle::Delegate::NavigationConfirmedCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              CancelNavigationConfirmation,
+              (tabs::TabInterface*),
+              (override));
+
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, OnWebContentsAttached, (), (override));
   MOCK_METHOD(void, OnViewBoundsChanged, (), (override));
