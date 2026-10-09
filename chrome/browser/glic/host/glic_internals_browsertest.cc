@@ -219,6 +219,14 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
                        HotkeyGlobalScopeMigratedCheckboxTogglesLocalPref) {
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+
+  // Set initial state to not migrated before loading chrome://glic/internals.
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
+
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(contents);
@@ -227,14 +235,6 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
   ASSERT_TRUE(contents->GetWebUI());
 
   EXPECT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
-
-  PrefService* local_state = g_browser_process->local_state();
-  ASSERT_TRUE(local_state);
-
-  // Set initial state to not migrated.
-  local_state->SetInteger(
-      prefs::kGlicDefaultHotkeyScope,
-      std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
 
   constexpr char kSwitchToDebugControlsAndVerifyInitial[] = R"js(
     (async () => {

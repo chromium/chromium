@@ -104,6 +104,7 @@ suite('GlicSubpage', function() {
       showGlicSettings: true,
       glicDisallowedByAdmin: false,
       glicSelectionFeatureEnabled: true,
+      glicHotkeyLocalScopeEnabled: false,
       headlessCaptionsEnabled: false,
       showGlicShakeTrigger: false,
     });
