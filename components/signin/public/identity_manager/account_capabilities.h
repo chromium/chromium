@@ -80,11 +80,6 @@ class AccountCapabilities {
   // Chrome can override the account info for accounts with this capability.
   signin::Tribool can_override_account_info() const;
 
-#if !BUILDFLAG(IS_IOS)
-  // Chrome can run privacy sandbox trials for accounts with this capability.
-  signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
-#endif
-
   // Chrome can show history sync opt in screens without minor mode
   // restrictions with this capability.
   signin::Tribool
@@ -158,11 +153,6 @@ class AccountCapabilities {
   // Chrome applies account level enterprise policies to profiles signed in
   // with accounts with this capability.
   signin::Tribool is_subject_to_account_level_enterprise_policies() const;
-
-  // Chrome must show the notice before using the privacy sandbox restricted
-  // measurement API
-  signin::Tribool
-  is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const;
 
   // Chrome applies enterprise features to accounts with this capability.
   // This capability returns true all managed accounts and does not reflect

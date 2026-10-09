@@ -126,13 +126,6 @@ AccountCapabilities::can_override_account_info() const {
   return GetCapabilityByName(kCanOverrideAccountInfoCapabilityName);
 }
 
-#if !BUILDFLAG(IS_IOS)
-signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
-    const {
-  return GetCapabilityByName(kCanRunChromePrivacySandboxTrialsCapabilityName);
-}
-#endif
-
 signin::Tribool AccountCapabilities::
     can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
 #if BUILDFLAG(IS_IOS)
@@ -256,12 +249,6 @@ signin::Tribool
 AccountCapabilities::is_subject_to_account_level_enterprise_policies() const {
   return GetCapabilityByName(
       kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName);
-}
-
-signin::Tribool AccountCapabilities::
-    is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const {
-  return GetCapabilityByName(
-      kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice);
 }
 
 signin::Tribool AccountCapabilities::is_subject_to_enterprise_features() const {

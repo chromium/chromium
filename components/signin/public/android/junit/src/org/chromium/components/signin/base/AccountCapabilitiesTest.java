@@ -44,8 +44,6 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canHaveEmailAddressDisplayed();
             case AccountCapabilitiesConstants.CAN_OVERRIDE_ACCOUNT_INFO_CAPABILITY_NAME:
                 return capabilities.canOverrideAccountInfo();
-            case AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME:
-                return capabilities.canRunChromePrivacySandboxTrials();
             case AccountCapabilitiesConstants
                     .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME:
                 return capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions();
@@ -69,9 +67,6 @@ public final class AccountCapabilitiesTest {
             case AccountCapabilitiesConstants
                     .IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME:
                 return capabilities.isSubjectToAccountLevelEnterprisePolicies();
-            case AccountCapabilitiesConstants
-                    .IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE:
-                return capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME:
                 return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:

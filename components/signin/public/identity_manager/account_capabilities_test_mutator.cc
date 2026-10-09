@@ -57,15 +57,6 @@ void AccountCapabilitiesTestMutator::set_can_override_account_info(
       value;
 }
 
-#if !BUILDFLAG(IS_IOS)
-void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
-    bool value) {
-  capabilities_
-      ->capabilities_map_[kCanRunChromePrivacySandboxTrialsCapabilityName] =
-      value;
-}
-#endif
-
 void AccountCapabilitiesTestMutator::
     set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         bool value) {
@@ -183,13 +174,6 @@ void AccountCapabilitiesTestMutator::
     set_is_subject_to_account_level_enterprise_policies(bool value) {
   capabilities_->capabilities_map_
       [kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName] = value;
-}
-
-void AccountCapabilitiesTestMutator::
-    set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
-        bool value) {
-  capabilities_->capabilities_map_
-      [kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice] = value;
 }
 
 void AccountCapabilitiesTestMutator::set_is_subject_to_enterprise_features(

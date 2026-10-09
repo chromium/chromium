@@ -489,14 +489,7 @@ public class AccountManagerFacadeImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
         AccountCapabilities capabilities = promise.getResult();
 
-        Assert.assertEquals(
-                Tribool.TRUE,
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
         Assert.assertEquals(Tribool.TRUE, capabilities.isSubjectToParentalControls());
-        Assert.assertEquals(Tribool.TRUE, capabilities.canRunChromePrivacySandboxTrials());
-        Assert.assertEquals(
-                Tribool.TRUE,
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -513,14 +506,7 @@ public class AccountManagerFacadeImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
         AccountCapabilities capabilities = promise.getResult();
 
-        Assert.assertEquals(
-                Tribool.FALSE,
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
         Assert.assertEquals(Tribool.FALSE, capabilities.isSubjectToParentalControls());
-        Assert.assertEquals(Tribool.FALSE, capabilities.canRunChromePrivacySandboxTrials());
-        Assert.assertEquals(
-                Tribool.FALSE,
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -537,14 +523,7 @@ public class AccountManagerFacadeImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
         AccountCapabilities capabilities = promise.getResult();
 
-        Assert.assertEquals(
-                Tribool.UNKNOWN,
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
         Assert.assertEquals(Tribool.UNKNOWN, capabilities.isSubjectToParentalControls());
-        Assert.assertEquals(Tribool.UNKNOWN, capabilities.canRunChromePrivacySandboxTrials());
-        Assert.assertEquals(
-                Tribool.UNKNOWN,
-                capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
     }
 
     @Test
@@ -607,7 +586,6 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(Tribool.TRUE, capabilities.isSubjectToParentalControls());
         Assert.assertEquals(
                 Tribool.FALSE, capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions());
-        Assert.assertEquals(Tribool.UNKNOWN, capabilities.canRunChromePrivacySandboxTrials());
     }
 
     @Test

@@ -66,12 +66,6 @@ ACCOUNT_CAPABILITY(kCanOverrideAccountInfoCapabilityName,
                    CAN_OVERRIDE_ACCOUNT_INFO_CAPABILITY_NAME,
                    "accountcapabilities/gmydknbnmnqxa")
 
-#if !BUILDFLAG(IS_IOS)
-ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
-                   CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
-                   "accountcapabilities/gu2dqlldmfya")
-#endif
-
 ACCOUNT_CAPABILITY(
     kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
     CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
@@ -154,11 +148,6 @@ ACCOUNT_CAPABILITY(
     kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName,
     IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME,
     "accountcapabilities/ge4tgnznmnqxa")
-
-ACCOUNT_CAPABILITY(
-    kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice,
-    IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE,
-    "accountcapabilities/he4tolldmfya")
 
 ACCOUNT_CAPABILITY(kIsSubjectToEnterprisePoliciesCapabilityName,
                    IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,

@@ -174,23 +174,6 @@ TEST_F(AccountCapabilitiesTest, MustSkipAppleAgeRangeInChrome) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_IOS)
-TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
-  AccountCapabilities capabilities;
-  EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
-            signin::Tribool::kUnknown);
-
-  AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_can_run_chrome_privacy_sandbox_trials(true);
-  EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
-            signin::Tribool::kTrue);
-
-  mutator.set_can_run_chrome_privacy_sandbox_trials(false);
-  EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
-            signin::Tribool::kFalse);
-}
-#endif  // !BUILDFLAG(IS_IOS)
-
 TEST_F(AccountCapabilitiesTest, IsOptedInToParentalSupervision) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.is_opted_in_to_parental_supervision(),
@@ -418,32 +401,6 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAi) {
             signin::Tribool::kFalse);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-TEST_F(AccountCapabilitiesTest,
-       IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {
-  AccountCapabilities capabilities;
-  EXPECT_EQ(
-      capabilities
-          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-      signin::Tribool::kUnknown);
-
-  AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator
-      .set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
-          true);
-  EXPECT_EQ(
-      capabilities
-          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-      signin::Tribool::kTrue);
-
-  mutator
-      .set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
-          false);
-  EXPECT_EQ(
-      capabilities
-          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(),
-      signin::Tribool::kFalse);
-}
 
 TEST_F(AccountCapabilitiesTest, IsSubjectToUniversalOptOut) {
   AccountCapabilities capabilities;
