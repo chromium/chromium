@@ -163,8 +163,8 @@ void STGTabsMenuModel::Build(
     AddItemWithStringIdAndIcon(
         latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
         ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kTabCloseIcon
-                                           : kCloseGroupRefreshOldIcon,
+                                           ? kDeleteIcon
+                                           : kTrashCanRefreshOldIcon,
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kDeleteGroupMenuItem);
