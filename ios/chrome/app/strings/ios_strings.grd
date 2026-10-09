@@ -4856,7 +4856,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         Explore more ways to search
       </message>
       <message name="IDS_IOS_LEVEL_UP_SEE_ALL" desc="Link button to open all available level-up tasks. [iOS only]">
-        See All
+        See all
       </message>
       <message name="IDS_IOS_LEVEL_UP_SIGNED_OUT_SNACKBAR" desc="Snackbar message displayed when a user attempts to use Level Up without being signed in. [iOS only]">
         You have to be signed in to use Level Up
@@ -4916,8 +4916,8 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASKS_REMAINING" desc="Progress message explaining how many tasks remain to level up. [iOS only]">
         {count, plural,
-          =1 {Complete 1 more task to level up}
-          other {Complete {count} more tasks to level up}}
+          =1 {Complete 1 task to level up}
+          other {Complete {count} tasks to level up}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AI_SEARCH" desc="Completion snackbar message for the AI Search task. [iOS only]">
         "Search with AI Mode" completed!
@@ -4950,7 +4950,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         "Pin a tab" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_SAFE_BROWSING" desc="Completion snackbar message for the Safe Browsing task. [iOS only]">
-        "Go Incognito" completed!
+        "Explore Enhanced Safe Browsing" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_TAB_GROUPS" desc="Completion snackbar message for the Tab Groups task. [iOS only]">
         New achievement unlocked! 🥳
