@@ -272,6 +272,17 @@ bool IsInVerticalTabsMode(const BrowserView* browser_view) {
   return browser_view->ShouldDrawVerticalTabStrip();
 }
 
+user_education::HelpBubbleArrow GetTabStripRegionBubbleArrow(
+    const ui::TrackedElement* anchor_element) {
+  const BrowserView* const browser_view =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingViewAs<BrowserView>(kBrowserViewElementId,
+                                                anchor_element->context());
+  return browser_view && IsInVerticalTabsMode(browser_view)
+             ? user_education::HelpBubbleArrow::kLeftCenter
+             : user_education::HelpBubbleArrow::kNone;
+}
+
 // Returns the handle of the tab represented by `element`, or a null handle.
 // `Tab` is the legacy horizontal tab strip's tab view. `TabView` is used by the
 // vertical tab strip, and by the horizontal one when kTabStripUnification is
@@ -2256,8 +2267,9 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHGlassFrameOptInFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHGlassFrameOptInFeature, kTabStripElementId,
-          IDS_GLASS_FRAME_OPT_IN_IPH_BODY, IDS_GLASS_FRAME_IPH_SETTINGS_BUTTON,
+          feature_engagement::kIPHGlassFrameOptInFeature,
+          kTabStripRegionElementId, IDS_GLASS_FRAME_OPT_IN_IPH_BODY,
+          IDS_GLASS_FRAME_IPH_SETTINGS_BUTTON,
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -2274,7 +2286,8 @@ void MaybeRegisterChromeFeaturePromos(
                 }
               }))
           .SetBubbleTitleText(IDS_GLASS_FRAME_OPT_IN_IPH_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleArrowCallback(
+              base::BindRepeating(&GetTabStripRegionBubbleArrow))
           .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetCustomActionIsDefault(true)
           .SetMetadata(
@@ -2285,8 +2298,9 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHGlassFrameOptOutFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHGlassFrameOptOutFeature, kTabStripElementId,
-          IDS_GLASS_FRAME_OPT_OUT_IPH_BODY, IDS_GLASS_FRAME_IPH_SETTINGS_BUTTON,
+          feature_engagement::kIPHGlassFrameOptOutFeature,
+          kTabStripRegionElementId, IDS_GLASS_FRAME_OPT_OUT_IPH_BODY,
+          IDS_GLASS_FRAME_IPH_SETTINGS_BUTTON,
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -2303,7 +2317,8 @@ void MaybeRegisterChromeFeaturePromos(
                 }
               }))
           .SetBubbleTitleText(IDS_GLASS_FRAME_OPT_OUT_IPH_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleArrowCallback(
+              base::BindRepeating(&GetTabStripRegionBubbleArrow))
           .SetMetadata(156, "stluong@chromium.org",
                        "Triggered when the browser window is shown with the "
                        "glass frame enabled by default.")));
