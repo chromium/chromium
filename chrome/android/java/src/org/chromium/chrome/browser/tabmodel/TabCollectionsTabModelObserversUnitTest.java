@@ -834,7 +834,7 @@ public class TabCollectionsTabModelObserversUnitTest {
         verify(mTabGroupObserver).onTabGroupCreated(eq(groupId));
     }
 
-    // willRemoveTabGroup
+    // onTabGroupRemoving
 
     @Test
     public void testOnTabGroupRemoving() {
@@ -850,10 +850,10 @@ public class TabCollectionsTabModelObserversUnitTest {
         reset(mTabGroupObserver);
         mTabModel.closeTabs(
                 TabClosureParams.closeTabs(List.of(tab1, tab2)).allowUndo(false).build());
-        verify(mTabGroupObserver).willRemoveTabGroup(eq(groupId));
+        verify(mTabGroupObserver).onTabGroupRemoving(eq(groupId));
     }
 
-    // didMoveTabGroup
+    // onTabGroupMoved
 
     @Test
     public void testOnTabGroupMoved() {
@@ -871,7 +871,7 @@ public class TabCollectionsTabModelObserversUnitTest {
         reset(mTabGroupObserver);
         mTabModel.moveGroupToIndex(groupId, 1);
         verify(mTabGroupObserver)
-                .didMoveTabGroup(
+                .onTabGroupMoved(
                         eq(groupId), /* tabModelOldIndex= */ eq(0), /* tabModelNewIndex= */ eq(1));
     }
 

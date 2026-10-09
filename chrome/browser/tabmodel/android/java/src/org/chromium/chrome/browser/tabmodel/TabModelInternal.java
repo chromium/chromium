@@ -70,7 +70,7 @@ public interface TabModelInternal extends TabModel {
      * Notifies observers that a tab group is about to be removed.
      *
      * @param tabGroupId The id of the tab group being removed.
-     * @see TabGroupObserver#willRemoveTabGroup
+     * @see TabGroupObserver#onTabGroupRemoving
      */
     /* package */ void notifyWillRemoveTabGroup(Token tabGroupId);
 

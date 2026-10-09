@@ -592,8 +592,8 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidMoveTabGroup_NoOp() {
-        mDelegate.didMoveTabGroup(
+    public void testOnTabGroupMoved_NoOp() {
+        mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
 
         // Flat layout does not display tab group headers, so no updates should occur.

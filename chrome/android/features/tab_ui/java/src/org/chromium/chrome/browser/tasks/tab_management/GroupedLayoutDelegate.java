@@ -490,7 +490,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public void didMoveTabGroup(Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
+    public void onTabGroupMoved(Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
         if (tabModelOldIndex == tabModelNewIndex) return;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();

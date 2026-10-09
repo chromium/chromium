@@ -551,7 +551,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     }
 
     @Override
-    public void willRemoveTabGroup(Token tabGroupId) {
+    public void onTabGroupRemoving(Token tabGroupId) {
         if (!supportsTabGroups()) return;
         mRemovingTabGroupIds.add(tabGroupId);
     }

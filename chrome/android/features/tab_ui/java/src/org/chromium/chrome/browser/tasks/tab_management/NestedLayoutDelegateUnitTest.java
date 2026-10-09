@@ -626,7 +626,7 @@ public class NestedLayoutDelegateUnitTest {
 
         // When group removal is active, updateTabGroupHeaderId and updateTabGroupTitle should be
         // suppressed.
-        mDelegate.willRemoveTabGroup(TAB_GROUP_ID);
+        mDelegate.onTabGroupRemoving(TAB_GROUP_ID);
         mDelegate.didMoveTabOutOfGroup(mTab3, TAB_GROUP_ID);
 
         verify(mMediator).clearTabGroupProperties(tab3Model);
@@ -706,7 +706,7 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidMoveTabGroup_Forward() {
+    public void testOnTabGroupMoved_Forward() {
         addTabToModelList(TAB1_ID, null);
         addGroupHeaderToModelList(TAB2_ID);
         addTabToModelList(TAB2_ID, TAB_GROUP_ID);
@@ -715,14 +715,14 @@ public class NestedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab1);
 
-        mDelegate.didMoveTabGroup(
+        mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertModelListTabIds(TAB2_ID, TAB2_ID, TAB3_ID, TAB1_ID);
     }
 
     @Test
-    public void testDidMoveTabGroup_Backward() {
+    public void testOnTabGroupMoved_Backward() {
         addGroupHeaderToModelList(TAB1_ID);
         addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         addTabToModelList(TAB3_ID, TAB_GROUP_ID);
@@ -730,14 +730,14 @@ public class NestedLayoutDelegateUnitTest {
 
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
 
-        mDelegate.didMoveTabGroup(
+        mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
 
         assertModelListTabIds(TAB2_ID, TAB1_ID, TAB1_ID, TAB3_ID);
     }
 
     @Test
-    public void testDidMoveTabGroup_AdjacentToOtherGroup() {
+    public void testOnTabGroupMoved_AdjacentToOtherGroup() {
         Token groupId1 = new Token(1L, 1L);
         Token groupId2 = new Token(2L, 2L);
 
@@ -750,13 +750,13 @@ public class NestedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(1);
         when(mTabModel.getTabAt(1)).thenReturn(mTab2);
 
-        mDelegate.didMoveTabGroup(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
+        mDelegate.onTabGroupMoved(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertModelListTabIds(TAB1_ID, TAB1_ID, TAB2_ID, TAB2_ID);
     }
 
     @Test
-    public void testDidMoveTabGroup_CollapsedGroup() {
+    public void testOnTabGroupMoved_CollapsedGroup() {
         addTabToModelList(TAB1_ID, null);
         PropertyModel headerModel = addGroupHeaderToModelList(TAB2_ID);
         headerModel.set(TabProperties.IS_COLLAPSED, true);
@@ -764,7 +764,7 @@ public class NestedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab1);
 
-        mDelegate.didMoveTabGroup(
+        mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertModelListTabIds(TAB2_ID, TAB1_ID);

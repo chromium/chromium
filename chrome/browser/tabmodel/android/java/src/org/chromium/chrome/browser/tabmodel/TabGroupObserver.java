@@ -75,7 +75,7 @@ public interface TabGroupObserver {
      * @param tabModelOldIndex The old index of the first tab in the group in the {@link TabModel}.
      * @param tabModelNewIndex The new index of the first tab in the group in the {@link TabModel}.
      */
-    default void didMoveTabGroup(Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {}
+    default void onTabGroupMoved(Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {}
 
     /**
      * This method is called after a tab within a group is moved.
@@ -148,11 +148,9 @@ public interface TabGroupObserver {
      * Called when a tab group is about to be removed from the tab model (e.g. as a result of
      * closure, ungrouping, or merging), prior to {@link #didRemoveTabGroup}.
      *
-     * <p>TODO(crbug.com/517544602): Rename to onTabGroupRemoving for consistency with native.
-     *
      * @param tabGroupId The tab group id being removed.
      */
-    default void willRemoveTabGroup(Token tabGroupId) {}
+    default void onTabGroupRemoving(Token tabGroupId) {}
 
     /**
      * Called when a tab group is removed from the tab model. This could be the result of merging

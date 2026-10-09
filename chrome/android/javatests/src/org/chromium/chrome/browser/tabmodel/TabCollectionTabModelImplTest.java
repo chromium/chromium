@@ -1236,7 +1236,7 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(groupId);
 
         CallbackHelper willMoveTabGroupHelper = new CallbackHelper();
-        CallbackHelper didMoveTabGroupHelper = new CallbackHelper();
+        CallbackHelper onTabGroupMovedHelper = new CallbackHelper();
 
         TabGroupObserver groupObserver =
                 new TabGroupObserver() {
@@ -1247,12 +1247,12 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didMoveTabGroup(
+                    public void onTabGroupMoved(
                             Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
                         assertEquals(groupId, tabGroupId);
                         assertEquals(1, tabModelOldIndex);
                         assertEquals(2, tabModelNewIndex);
-                        didMoveTabGroupHelper.notifyCalled();
+                        onTabGroupMovedHelper.notifyCalled();
                     }
                 };
         TabModelObserver modelObserver =
@@ -1281,7 +1281,7 @@ public class TabCollectionTabModelImplTest {
                 });
 
         willMoveTabGroupHelper.waitForOnly();
-        didMoveTabGroupHelper.waitForOnly();
+        onTabGroupMovedHelper.waitForOnly();
 
         assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2));
     }
@@ -4552,7 +4552,7 @@ public class TabCollectionTabModelImplTest {
         TabGroupObserver observer =
                 new TabGroupObserver() {
                     @Override
-                    public void willRemoveTabGroup(Token groupId) {
+                    public void onTabGroupRemoving(Token groupId) {
                         assertFalse(groupId.isZero());
                         assertEquals(groupId, createdTabGroupId.get());
                         onTabGroupRemoving.notifyCalled();

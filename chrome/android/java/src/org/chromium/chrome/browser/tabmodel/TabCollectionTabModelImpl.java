@@ -888,7 +888,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     public void notifyWillRemoveTabGroup(Token tabGroupId) {
         assertOnUiThread();
         for (TabGroupObserver observer : mTabGroupObservers) {
-            observer.willRemoveTabGroup(tabGroupId);
+            observer.onTabGroupRemoving(tabGroupId);
         }
     }
 
@@ -1278,7 +1278,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             groupObservers.rewind();
             while (groupObservers.hasNext()) {
-                groupObservers.next().didMoveTabGroup(tabGroupId, oldIndex, finalIndex);
+                groupObservers.next().onTabGroupMoved(tabGroupId, oldIndex, finalIndex);
             }
         }
     }
@@ -2600,7 +2600,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 boolean hiding = mHidingTabGroups.contains(tabGroupId);
                 for (TabGroupObserver observer : mTabGroupObservers) {
                     observer.willCloseTabGroup(tabGroupId, hiding);
-                    observer.willRemoveTabGroup(tabGroupId);
+                    observer.onTabGroupRemoving(tabGroupId);
                 }
             }
         }

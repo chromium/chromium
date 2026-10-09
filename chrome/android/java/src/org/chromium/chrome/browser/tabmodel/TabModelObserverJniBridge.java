@@ -234,14 +234,14 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
     }
 
     @Override
-    public final void willRemoveTabGroup(Token tabGroupId) {
+    public final void onTabGroupRemoving(Token tabGroupId) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
                 .onTabGroupRemoving(mNativeTabModelObserverJniBridge, tabGroupId);
     }
 
     @Override
-    public final void didMoveTabGroup(
+    public final void onTabGroupMoved(
             Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()

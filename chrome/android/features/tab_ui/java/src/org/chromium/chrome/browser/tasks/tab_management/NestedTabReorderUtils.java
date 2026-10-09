@@ -169,7 +169,7 @@ public class NestedTabReorderUtils {
     /**
      * Performs basic list reordering by updating the {@link TabModel} immediately.
      *
-     * <p>- Group headers use moveGroupToIndex() to fire didMoveTabGroup(), which TabListMediator
+     * <p>- Group headers use moveGroupToIndex() to fire onTabGroupMoved(), which TabListMediator
      * observes to update top-level UI rows.
      *
      * <p>- Child tabs use moveTab() because they move within their group, firing

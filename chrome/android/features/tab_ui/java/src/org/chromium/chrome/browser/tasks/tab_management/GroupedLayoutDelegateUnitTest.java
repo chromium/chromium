@@ -1001,10 +1001,10 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
-        // Before willRemoveTabGroup, didMoveTabOutOfGroup updates the card.
-        // With willRemoveTabGroup(TAB_GROUP_ID), updating the old group is suppressed,
+        // Before onTabGroupRemoving, didMoveTabOutOfGroup updates the card.
+        // With onTabGroupRemoving(TAB_GROUP_ID), updating the old group is suppressed,
         // but adding the card for the newly ungrouped tab still occurs.
-        delegate.willRemoveTabGroup(TAB_GROUP_ID);
+        delegate.onTabGroupRemoving(TAB_GROUP_ID);
         delegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
@@ -1244,7 +1244,7 @@ public class GroupedLayoutDelegateUnitTest {
         setupRepresentativeTab(mTab1, mTab1, 0);
         setupRepresentativeTab(mTab2, mTab2, 1);
 
-        mDelegate.didMoveTabGroup(
+        mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
@@ -1252,7 +1252,7 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidMoveTabGroup() {
+    public void testOnTabGroupMoved() {
         Token groupId1 = new Token(1L, 1L);
         Token groupId2 = new Token(2L, 2L);
 
@@ -1276,14 +1276,14 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
-        mDelegate.didMoveTabGroup(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
+        mDelegate.onTabGroupMoved(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertEquals(groupCard1, mModelList.get(0).model);
         assertEquals(groupCard2, mModelList.get(1).model);
     }
 
     @Test
-    public void testDidMoveTabGroup_Forward() {
+    public void testOnTabGroupMoved_Forward() {
         Token groupId1 = new Token(1L, 1L);
 
         PropertyModel groupCard1 =
@@ -1299,18 +1299,18 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(mTab3);
 
-        mDelegate.didMoveTabGroup(groupId1, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
+        mDelegate.onTabGroupMoved(groupId1, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
 
         assertEquals(TAB3_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
         assertEquals(groupCard1, mModelList.get(1).model);
     }
 
     @Test
-    public void testDidMoveTabGroup_NonExistentGroup() {
+    public void testOnTabGroupMoved_NonExistentGroup() {
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
 
         // mModelList is empty at this point, so the group card is non-existent.
-        mDelegate.didMoveTabGroup(
+        mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 2, /* tabModelNewIndex= */ 1);
 
         // Verify it doesn't crash and we don't try to update a card.

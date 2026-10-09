@@ -240,7 +240,7 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didMoveTabGroup(
+                public void onTabGroupMoved(
                         Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
                     mMovingGroup = false;
 
