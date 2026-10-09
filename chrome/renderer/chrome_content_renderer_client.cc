@@ -125,6 +125,7 @@
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/surface_embed/common/features.h"
 #include "components/surface_embed/renderer/create_plugin.h"
+#include "components/universal_optout/features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -1546,6 +1547,15 @@ void ChromeContentRendererClient::
       features::kIncomingCallNotifications);
   if (state.has_value()) {
     blink::WebRuntimeFeatures::EnableIncomingCallNotifications(state.value());
+  }
+
+  // Expose the Global Privacy Control API when Universal Opt-Out and its
+  // settings are enabled.
+  if (base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOut) &&
+      base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOutSettings)) {
+    blink::WebRuntimeFeatures::EnableGlobalPrivacyControlApi(true);
   }
 
   if (IsStandaloneContentExtensionProcess()) {
