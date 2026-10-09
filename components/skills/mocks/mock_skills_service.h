@@ -59,6 +59,10 @@ class MockSkillsService : public SkillsService {
   MOCK_METHOD(bool, IsInitialized, (), (const));
   MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (const));
   MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
+  MOCK_METHOD(void,
+              DeleteSkillsModifiedBetween,
+              (base::Time, base::Time),
+              (override));
   MOCK_METHOD(void, FetchDiscoverySkills, ());
   MOCK_METHOD(void, RefreshDiscoverySkills, ());
   MOCK_METHOD(void,

@@ -249,6 +249,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/serial",
     "//chrome/browser/signin",
+    "//chrome/browser/skills",
     "//chrome/browser/ssl",
     "//chrome/browser/subresource_filter",
     "//chrome/browser/sync",

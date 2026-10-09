@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -144,6 +146,14 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
     AddCounter(
         BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref));
   }
+
+  // The skills counter is only available if the Skills feature is enabled for
+  // this profile.
+  if (std::unique_ptr<browsing_data::BrowsingDataCounter> skills_counter =
+          BrowsingDataCounterFactory::GetForProfileAndPref(
+              profile_, browsing_data::prefs::kDeleteSkills)) {
+    AddCounter(std::move(skills_counter));
+  }
 }
 
 void ClearBrowsingDataHandler::OnJavascriptDisallowed() {
@@ -226,6 +236,9 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       case BrowsingDataType::TABS:
         // Tab closure is not implemented yet.
         NOTIMPLEMENTED();
+        break;
+      case BrowsingDataType::SKILLS:
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SKILLS;
         break;
     }
 

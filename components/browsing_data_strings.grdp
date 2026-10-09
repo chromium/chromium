@@ -106,6 +106,18 @@
      =1 {1 site}
      other {# sites}}
   </message>
+  <message name="IDS_DEL_SKILLS_COUNTER" desc="A counter showing how many skills (saved AI prompts that the user can reuse) the user has created or modified in the selected time period.">
+    {COUNT, plural,
+     =0 {None}
+     =1 {1 skill}
+     other {# skills}}
+  </message>
+  <message name="IDS_DEL_SKILLS_COUNTER_SYNCED" desc="A counter showing how many skills (saved AI prompts that the user can reuse) the user has created or modified in the selected time period, and that they are synced.">
+    {COUNT, plural,
+     =0 {None}
+     =1 {1 skill (synced)}
+     other {# skills (synced)}}
+  </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_EMPTY" desc="A counter showing that the user has no form data stored.">
     None
   </message>

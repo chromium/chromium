@@ -959,6 +959,9 @@
     <message name="IDS_SETTINGS_CLEAR_HOSTED_APP_DATA" desc="Checkbox for deleting data of hosted apps">
       Hosted app data
     </message>
+    <message name="IDS_SETTINGS_CLEAR_SKILLS" desc="Checkbox for deleting skills. Skills are saved AI prompts that the user has created and can reuse.">
+      Skills
+    </message>
     <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MIN" desc="The option in the 'Delete browsing data' settings page time picker to delete browsing data from the last 15 minutes. The 'minutes' is shortened to 'min' to allow the time options in the time picker to fit in the screen.">
       Last 15 min
     </message>

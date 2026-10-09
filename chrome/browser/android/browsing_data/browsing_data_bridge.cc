@@ -154,6 +154,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
         break;
       case browsing_data::BrowsingDataType::DOWNLOADS:
       case browsing_data::BrowsingDataType::HOSTED_APPS_DATA:
+      case browsing_data::BrowsingDataType::SKILLS:
         // Only implemented on Desktop.
         NOTREACHED();
     }

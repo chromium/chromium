@@ -80,6 +80,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/strike_database/strike_database_factory.h"
@@ -143,6 +144,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/skills/public/skills_service.h"
 #include "components/strike_database/strike_database.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -853,6 +855,16 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       } else {
         NOTIMPLEMENTED();
       }
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_SKILLS
+  if (remove_mask & constants::DATA_TYPE_SKILLS) {
+    skills::SkillsService* skills_service =
+        skills::SkillsServiceFactory::GetForProfile(profile_);
+    if (skills_service) {
+      skills_service->DeleteSkillsModifiedBetween(delete_begin_, delete_end_);
     }
   }
 

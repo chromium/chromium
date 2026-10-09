@@ -93,6 +93,8 @@ class SkillsServiceImpl : public SkillsService {
 
   void DeleteSkill(std::string_view skill_id,
                    UpdateSource update_source) override;
+  void DeleteSkillsModifiedBetween(base::Time delete_begin,
+                                   base::Time delete_end) override;
   const Skill* GetSkillById(std::string_view skill_id) const override;
   void RefreshDiscoverySkills() override;
   void FetchDiscoverySkills() override;

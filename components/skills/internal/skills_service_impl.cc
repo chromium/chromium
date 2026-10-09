@@ -4,6 +4,9 @@
 
 #include "components/skills/internal/skills_service_impl.h"
 
+#include <string>
+#include <vector>
+
 #include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -193,6 +196,21 @@ void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
 
   if (num_erased > 0) {
     NotifySkillChanged(id_copy, update_source, /*is_position_changed=*/false);
+  }
+}
+
+void SkillsServiceImpl::DeleteSkillsModifiedBetween(base::Time delete_begin,
+                                                    base::Time delete_end) {
+  std::vector<std::string> skill_ids_to_delete;
+  for (const std::unique_ptr<Skill>& skill : skills_) {
+    if (skill->last_update_time >= delete_begin &&
+        skill->last_update_time < delete_end) {
+      skill_ids_to_delete.push_back(skill->id);
+    }
+  }
+
+  for (const std::string& skill_id : skill_ids_to_delete) {
+    DeleteSkill(skill_id, UpdateSource::kLocal);
   }
 }
 

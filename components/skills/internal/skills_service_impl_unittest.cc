@@ -522,6 +522,110 @@ TEST_F(SkillsServiceImplTest, DeleteSkillFromSync) {
   EXPECT_EQ(nullptr, service().GetSkillById(skill_id));
 }
 
+TEST_F(SkillsServiceImplTest, DeleteSkillsModifiedBetween) {
+  InitService();
+
+  const base::Time now = base::Time::Now();
+  const base::Time delete_begin = now - base::Days(1);
+  const base::Time delete_end = now - base::Minutes(1);
+
+  auto add_skill = [this](const std::string& id, base::Time last_update_time) {
+    ASSERT_NE(nullptr,
+              service().AddOrUpdateSkillFromSync(
+                  id, /*source_skill_id=*/"", "name", "icon", "prompt",
+                  "description", /*creation_time=*/last_update_time,
+                  last_update_time, sync_pb::SKILL_SOURCE_USER_CREATED));
+  };
+  add_skill("before_begin", delete_begin - base::Seconds(1));
+  add_skill("at_begin", delete_begin);
+  add_skill("in_range", now - base::Hours(1));
+  add_skill("at_end", delete_end);
+  add_skill("after_end", now);
+  ASSERT_EQ(5u, service().GetSkills().size());
+
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated("at_begin", SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/false));
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated("in_range", SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/false));
+  service().DeleteSkillsModifiedBetween(delete_begin, delete_end);
+
+  EXPECT_EQ(nullptr, service().GetSkillById("at_begin"));
+  EXPECT_EQ(nullptr, service().GetSkillById("in_range"));
+  EXPECT_NE(nullptr, service().GetSkillById("before_begin"));
+  EXPECT_NE(nullptr, service().GetSkillById("at_end"));
+  EXPECT_NE(nullptr, service().GetSkillById("after_end"));
+  EXPECT_EQ(3u, service().GetSkills().size());
+}
+
+TEST_F(SkillsServiceImplTest, DeleteSkillsModifiedBetween_AllTime) {
+  InitService();
+
+  service().AddSkill(/*source_skill_id=*/"", "name1", "icon1", "prompt1");
+  service().AddSkill(/*source_skill_id=*/"", "name2", "icon2", "prompt2");
+  ASSERT_EQ(2u, service().GetSkills().size());
+
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(_, SkillsService::UpdateSource::kLocal,
+                             /*is_position_changed=*/false))
+      .Times(2);
+  service().DeleteSkillsModifiedBetween(base::Time(), base::Time::Max());
+
+  EXPECT_THAT(service().GetSkills(), IsEmpty());
+}
+
+TEST_F(SkillsServiceImplTest, DeleteSkillsModifiedBetween_NoMatchingSkills) {
+  InitService();
+
+  const Skill* skill =
+      service().AddSkill(/*source_skill_id=*/"", "name", "icon", "prompt");
+  ASSERT_NE(nullptr, skill);
+  const std::string skill_id = skill->id;
+  const base::Time skill_update_time = skill->last_update_time;
+
+  EXPECT_CALL(mock_observer_, OnSkillUpdated).Times(0);
+  service().DeleteSkillsModifiedBetween(skill_update_time + base::Seconds(1),
+                                        base::Time::Max());
+  service().DeleteSkillsModifiedBetween(base::Time(), skill_update_time);
+
+  EXPECT_NE(nullptr, service().GetSkillById(skill_id));
+}
+
+// Verifies that first-party and provided skills are not deleted since they are
+// not user data.
+TEST_F(SkillsServiceImplTest,
+       DeleteSkillsModifiedBetween_DoesNotDeleteFirstPartyOrProvidedSkills) {
+  InitService();
+
+  skills::proto::Skill proto_skill;
+  proto_skill.set_id("1p_skill_id");
+  proto_skill.set_name("1P Skill Name");
+  auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
+  first_party_skill_data->skills_list.push_back(proto_skill);
+  service().Handle1pSkills(std::move(first_party_skill_data));
+
+  auto provider = std::make_unique<FakeSkillsProvider>();
+  FakeSkillsProvider* provider_ptr = provider.get();
+  service().AddProvider(std::move(provider));
+  auto enterprise_skill =
+      std::make_unique<Skill>(kEnterpriseSkillId, kEnterpriseSkillName,
+                              kDefaultSkillIcon, kDefaultSkillPrompt);
+  enterprise_skill->source = sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE;
+  provider_ptr->AddSkill(std::move(enterprise_skill));
+  provider_ptr->NotifySkillsChanged();
+
+  service().AddSkill(/*source_skill_id=*/"", "name", "icon", "prompt");
+  ASSERT_EQ(1u, service().GetSkills().size());
+
+  service().DeleteSkillsModifiedBetween(base::Time(), base::Time::Max());
+
+  EXPECT_THAT(service().GetSkills(), IsEmpty());
+  EXPECT_NE(nullptr, service().GetSkillById("1p_skill_id"));
+  EXPECT_NE(nullptr, service().GetSkillById(kEnterpriseSkillId));
+  EXPECT_EQ(1u, service().GetProvidedSkills().size());
+}
+
 TEST_F(SkillsServiceImplTest, Observer) {
   EXPECT_CALL(mock_observer_, OnStatusChanged).Times(AtLeast(1));
   InitService();

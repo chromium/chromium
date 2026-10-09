@@ -158,6 +158,12 @@ class SkillsService : public KeyedService {
   virtual void DeleteSkill(std::string_view skill_id,
                            UpdateSource update_source) = 0;
 
+  // Deletes all user skills whose last update time is within
+  // [`delete_begin`, `delete_end`). First-party and provided skills are not
+  // affected. The deletions are local and are propagated to sync.
+  virtual void DeleteSkillsModifiedBetween(base::Time delete_begin,
+                                           base::Time delete_end) = 0;
+
   // Returns the skill with the given ID or nullptr if not found (including
   // when the service is not in kReady state).
   virtual const Skill* GetSkillById(std::string_view skill_id) const = 0;

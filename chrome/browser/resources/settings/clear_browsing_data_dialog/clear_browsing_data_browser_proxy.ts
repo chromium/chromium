@@ -43,6 +43,7 @@ export enum BrowsingDataType {
   DOWNLOADS = 6,
   HOSTED_APPS_DATA = 7,
   // TABS = 8, Not used on Desktop.
+  SKILLS = 9,
 }
 // LINT.ThenChange(/components/browsing_data/core/browsing_data_utils.h:BrowsingDataType)
 

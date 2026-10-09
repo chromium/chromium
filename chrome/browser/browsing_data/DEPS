@@ -127,6 +127,7 @@ include_rules = [
   "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
   "+chrome/browser/signin/signin_util.h",
   "+chrome/browser/signin/test_signin_client_builder.h",
+  "+chrome/browser/skills/skills_service_factory.h",
   "+chrome/browser/spellchecker/spellcheck_custom_dictionary.h",
   "+chrome/browser/spellchecker/spellcheck_factory.h",
   "+chrome/browser/spellchecker/spellcheck_service.h",

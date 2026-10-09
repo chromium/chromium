@@ -48,6 +48,7 @@ constexpr DataType DATA_TYPE_SEARCH_ENGINE_CHOICE = DATA_TYPE_EMBEDDER_BEGIN
                                                     << 16;
 constexpr DataType DATA_TYPE_PRIVATE_VERIFICATION_TOKENS =
     DATA_TYPE_EMBEDDER_BEGIN << 17;
+constexpr DataType DATA_TYPE_SKILLS = DATA_TYPE_EMBEDDER_BEGIN << 18;
 
 // Group datatypes.
 

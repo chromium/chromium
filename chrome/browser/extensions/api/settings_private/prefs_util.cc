@@ -628,6 +628,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeleteHostedAppsData] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[browsing_data::prefs::kDeleteSkills] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeleteTimePeriod] =
       settings_api::PrefType::kNumber;
 

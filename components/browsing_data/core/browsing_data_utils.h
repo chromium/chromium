@@ -38,7 +38,9 @@ enum class BrowsingDataType {
   HOSTED_APPS_DATA = 7,
   // Only for Android:
   TABS = 8,
-  MAX_VALUE = TABS,
+  // Only for Desktop:
+  SKILLS = 9,
+  MAX_VALUE = SKILLS,
 };
 // LINT.ThenChange(/chrome/browser/resources/settings/clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts:BrowsingDataType)
 

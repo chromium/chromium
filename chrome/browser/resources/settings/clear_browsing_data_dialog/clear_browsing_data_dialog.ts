@@ -88,6 +88,7 @@ const ALL_BROWSING_DATATYPES_LIST: BrowsingDataType[] = [
   BrowsingDataType.FORM_DATA,
   BrowsingDataType.SITE_SETTINGS,
   BrowsingDataType.HOSTED_APPS_DATA,
+  BrowsingDataType.SKILLS,
 ];
 
 /** The list of Browsing Data types that should be expanded by default. */
@@ -119,6 +120,8 @@ function getDataTypeLabel(datatypes: BrowsingDataType) {
       return loadTimeData.getString('clearDownloadHistory');
     case BrowsingDataType.HOSTED_APPS_DATA:
       return loadTimeData.getString('clearHostedAppData');
+    case BrowsingDataType.SKILLS:
+      return loadTimeData.getString('clearSkills');
     default:
       assertNotReachedCase(datatypes);
   }
@@ -140,6 +143,8 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
       return 'browser.clear_data.download_history';
     case BrowsingDataType.HOSTED_APPS_DATA:
       return 'browser.clear_data.hosted_apps_data';
+    case BrowsingDataType.SKILLS:
+      return 'browser.clear_data.skills';
     default:
       assertNotReachedCase(datatypes);
   }
@@ -275,6 +280,13 @@ export class SettingsClearBrowsingDataDialogElement extends
     const moreOptionsList: BrowsingDataTypeOption[] = [];
 
     ALL_BROWSING_DATATYPES_LIST.forEach((datatype) => {
+      // The Skills data type is only available when the Skills feature is
+      // enabled for this profile.
+      if (datatype === BrowsingDataType.SKILLS &&
+          !loadTimeData.getBoolean('showDeleteSkillsDataType')) {
+        return;
+      }
+
       const datatypeOption: BrowsingDataTypeOption = {
         label: getDataTypeLabel(datatype),
         prefKey: getDataTypePrefName(datatype),

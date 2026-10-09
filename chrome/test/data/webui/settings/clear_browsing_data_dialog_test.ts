@@ -40,7 +40,8 @@ suite('DeleteBrowsingDataDialog', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     await setClearBrowsingDataPrefs(false);
-    loadTimeData.overrideValues({showGlicSettings: true});
+    loadTimeData.overrideValues(
+        {showGlicSettings: true, showDeleteSkillsDataType: false});
     return createDialog();
   });
 
@@ -64,6 +65,8 @@ suite('DeleteBrowsingDataDialog', function() {
     await prefService.setPrefValue(
         getDataTypePrefName(BrowsingDataType.HOSTED_APPS_DATA),
         enableCheckboxes);
+    await prefService.setPrefValue(
+        getDataTypePrefName(BrowsingDataType.SKILLS), enableCheckboxes);
   }
 
   async function createDialog() {
@@ -558,6 +561,99 @@ suite('DeleteBrowsingDataDialog', function() {
     assertEquals(
         'browser.clear_data.hosted_apps_data',
         getDataTypePrefName(BrowsingDataType.HOSTED_APPS_DATA));
+    assertEquals(
+        'browser.clear_data.skills',
+        getDataTypePrefName(BrowsingDataType.SKILLS));
+  });
+
+  test('SkillsCheckboxHiddenWhenUnavailable', async function() {
+    dialog.$.showMoreButton.click();
+    await microtasksFinished();
+
+    assertEquals(undefined, getCheckboxForDataType(BrowsingDataType.SKILLS));
+  });
+
+  test('SkillsCheckboxVisibleWhenAvailable', async function() {
+    loadTimeData.overrideValues({showDeleteSkillsDataType: true});
+    await createDialog();
+
+    verifyCheckboxesVisibleForDataTypesInOrder([
+      BrowsingDataType.HISTORY,
+      BrowsingDataType.SITE_DATA,
+      BrowsingDataType.CACHE,
+    ]);
+
+    dialog.$.showMoreButton.click();
+    await microtasksFinished();
+
+    verifyCheckboxesVisibleForDataTypesInOrder([
+      BrowsingDataType.HISTORY,
+      BrowsingDataType.SITE_DATA,
+      BrowsingDataType.CACHE,
+      BrowsingDataType.DOWNLOADS,
+      BrowsingDataType.FORM_DATA,
+      BrowsingDataType.SITE_SETTINGS,
+      BrowsingDataType.HOSTED_APPS_DATA,
+      BrowsingDataType.SKILLS,
+    ]);
+
+    const skillsCheckbox = getCheckboxForDataType(BrowsingDataType.SKILLS);
+    assertTrue(!!skillsCheckbox);
+    assertEquals(
+        loadTimeData.getString('clearSkills'),
+        skillsCheckbox.querySelector('.checkbox-title')!.textContent.trim());
+
+    webUIListenerCallback(
+        'browsing-data-counter-text-update', 'browser.clear_data.skills',
+        'skills result');
+    await microtasksFinished();
+    assertEquals(
+        'skills result',
+        getCheckboxForDataType(BrowsingDataType.SKILLS)!.subLabelHtml);
+  });
+
+  test('SkillsCheckboxExpandedWhenPrefSelected', async function() {
+    loadTimeData.overrideValues({showDeleteSkillsDataType: true});
+    await prefService.setPrefValue(
+        getDataTypePrefName(BrowsingDataType.SKILLS), true);
+    await createDialog();
+
+    verifyCheckboxesVisibleForDataTypesInOrder([
+      BrowsingDataType.HISTORY,
+      BrowsingDataType.SITE_DATA,
+      BrowsingDataType.CACHE,
+      BrowsingDataType.SKILLS,
+    ]);
+  });
+
+  test('ClearSkillsData', async function() {
+    loadTimeData.overrideValues({showDeleteSkillsDataType: true});
+    await createDialog();
+
+    dialog.$.showMoreButton.click();
+    await microtasksFinished();
+    const skillsCheckbox = getCheckboxForDataType(BrowsingDataType.SKILLS);
+    assertTrue(!!skillsCheckbox);
+    skillsCheckbox.$.checkbox.click();
+    await microtasksFinished();
+    assertFalse(dialog.$.deleteButton.disabled);
+
+    const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
+    testClearBrowsingDataBrowserProxy.setClearBrowsingDataPromise(
+        promiseResolver.promise);
+    dialog.$.deleteButton.click();
+
+    // Verify the Skills pref is updated.
+    assertEquals(true, prefService.getPref('browser.clear_data.skills').value);
+
+    // Verify the Skills datatype is sent to the proxy.
+    const args =
+        await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
+    assertArrayEquals(['browser.clear_data.skills'], args[0]);
+
+    promiseResolver.resolve(
+        {showHistoryNotice: false, showPasswordsNotice: false});
+    await promiseResolver.promise;
   });
 
   test('TimePeriodChangesRestartCounters', async function() {

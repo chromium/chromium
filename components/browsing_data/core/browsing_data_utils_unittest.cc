@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/features.h"
@@ -44,6 +45,15 @@ class FakeWebDataService : public autofill::AutofillWebDataService {
 
  protected:
   ~FakeWebDataService() override = default;
+};
+
+// A counter that is only used to produce results for the Skills data type.
+class FakeSkillsCounter : public BrowsingDataCounter {
+ public:
+  const char* GetPrefName() const override { return prefs::kDeleteSkills; }
+
+ private:
+  void Count() override {}
 };
 
 }  // namespace
@@ -276,6 +286,34 @@ TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
         "last visted domain is %s",
         test_case.unique_domains, test_case.has_sync_visits,
         test_case.last_visited_domain));
+    std::u16string output = browsing_data::GetCounterTextFromResult(&result);
+    EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
+  }
+}
+
+// Tests the output of the Skills counter.
+TEST_F(BrowsingDataUtilsTest, SkillsCounterResult) {
+  FakeSkillsCounter counter;
+
+  const struct TestCase {
+    int num_skills;
+    bool sync_enabled;
+    std::string expected_output;
+  } kTestCases[] = {
+      {0, false, "None"},
+      {1, false, "1 skill"},
+      {5, false, "5 skills"},
+      {0, true, "None"},
+      {1, true, "1 skill (synced)"},
+      {5, true, "5 skills (synced)"},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    BrowsingDataCounter::SyncResult result(&counter, test_case.num_skills,
+                                           test_case.sync_enabled);
+    SCOPED_TRACE(base::StringPrintf("Test params: %d skill(s), sync: %d",
+                                    test_case.num_skills,
+                                    test_case.sync_enabled));
     std::u16string output = browsing_data::GetCounterTextFromResult(&result);
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -31,6 +33,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -275,6 +278,25 @@ IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
                   browsing_data::TimePeriod::ALL_TIME)));
 
   handler_->HandleRestartCounters(args);
+}
+
+IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,
+                       ClearBrowsingData_Skills) {
+  base::ListValue data_types;
+  data_types.Append(browsing_data::prefs::kDeleteSkills);
+
+  base::ListValue args;
+  args.Append("fooCallback");
+  args.Append(std::move(data_types));
+  args.Append(static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
+
+  content::BrowsingDataRemover* remover =
+      browser()->GetProfile()->GetBrowsingDataRemover();
+  test_web_ui_.HandleReceivedMessage("clearBrowsingData", args);
+
+  // The removal task starts synchronously when the remover is idle.
+  EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_SKILLS,
+            remover->GetLastUsedRemovalMaskForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest,

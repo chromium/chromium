@@ -281,10 +281,19 @@ std::u16string GetCounterTextFromResult(
                                             count);
   }
 
+  if (pref_name == prefs::kDeleteSkills) {
+    const BrowsingDataCounter::SyncResult* skills_result =
+        static_cast<const BrowsingDataCounter::SyncResult*>(result);
+    return l10n_util::GetPluralStringFUTF16(skills_result->is_sync_enabled()
+                                                ? IDS_DEL_SKILLS_COUNTER_SYNCED
+                                                : IDS_DEL_SKILLS_COUNTER,
+                                            skills_result->Value());
+  }
+
   if (pref_name == prefs::kDeleteBrowsingHistory) {
     // History counter.
     return CreateHistoryCounterString(
-          static_cast<const HistoryCounter::HistoryResult*>(result));
+        static_cast<const HistoryCounter::HistoryResult*>(result));
   }
 
   if (pref_name == prefs::kDeleteFormData) {
@@ -414,6 +423,9 @@ bool GetDeletionPreferenceFromDataType(
     case BrowsingDataType::TABS:
       *out_pref = prefs::kCloseTabs;
       return true;
+    case BrowsingDataType::SKILLS:
+      *out_pref = prefs::kDeleteSkills;
+      return true;
   }
   NOTREACHED();
 }
@@ -431,6 +443,7 @@ std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
           {prefs::kDeleteSiteSettings, BrowsingDataType::SITE_SETTINGS},
           {prefs::kDeleteDownloadHistory, BrowsingDataType::DOWNLOADS},
           {prefs::kDeleteHostedAppsData, BrowsingDataType::HOSTED_APPS_DATA},
+          {prefs::kDeleteSkills, BrowsingDataType::SKILLS},
       });
 
   auto iter = preference_to_datatype->find(pref_name);

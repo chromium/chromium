@@ -44,6 +44,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -737,6 +738,7 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
       {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
       {"clearHostedAppData", IDS_SETTINGS_CLEAR_HOSTED_APP_DATA},
+      {"clearSkills", IDS_SETTINGS_CLEAR_SKILLS},
       {"clearPeriod15Min", IDS_SETTINGS_CLEAR_PERIOD_15_MIN},
       {"clearPeriod15Minutes", IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES},
       {"clearPeriodHour", IDS_SETTINGS_CLEAR_PERIOD_HOUR},
@@ -811,6 +813,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
                               ChromeSigninClientFactory::GetForProfile(profile)
                                   ->IsClearPrimaryAccountAllowed());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  html_source->AddBoolean(
+      "showDeleteSkillsDataType",
+      skills::SkillsServiceFactory::GetForProfile(profile) != nullptr);
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

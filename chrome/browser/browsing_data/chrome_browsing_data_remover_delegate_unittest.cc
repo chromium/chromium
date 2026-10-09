@@ -79,6 +79,7 @@
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -175,6 +176,7 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_isolation/pref_names.h"
+#include "components/skills/mocks/mock_skills_service.h"
 #include "components/strike_database/strike_database.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -2297,6 +2299,63 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearReadingList) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_READING_LIST, false);
   EXPECT_EQ(0u, reading_list_model->size());
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteSkills) {
+  auto* skills_service = static_cast<skills::MockSkillsService*>(
+      skills::SkillsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          GetProfile(),
+          base::BindRepeating([](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<
+                testing::NiceMock<skills::MockSkillsService>>();
+          })));
+  ASSERT_TRUE(skills_service);
+
+  // Partial time range.
+  const base::Time delete_begin = AnHourAgo();
+  EXPECT_CALL(*skills_service,
+              DeleteSkillsModifiedBetween(delete_begin, base::Time::Max()));
+  BlockUntilBrowsingDataRemoved(delete_begin, base::Time::Max(),
+                                constants::DATA_TYPE_SKILLS, false);
+  EXPECT_EQ(constants::DATA_TYPE_SKILLS, GetRemovalMask());
+  testing::Mock::VerifyAndClearExpectations(skills_service);
+
+  // Full time range.
+  EXPECT_CALL(*skills_service,
+              DeleteSkillsModifiedBetween(base::Time(), base::Time::Max()));
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_SKILLS, false);
+  EXPECT_EQ(constants::DATA_TYPE_SKILLS, GetRemovalMask());
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       DeleteSkillsWithoutServiceDoesNotCrash) {
+  skills::SkillsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      GetProfile(), base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+        return nullptr;
+      }));
+  ASSERT_FALSE(skills::SkillsServiceFactory::GetForProfile(GetProfile()));
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_SKILLS, false);
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, DoNotDeleteSkillsIfNotRequested) {
+  auto* skills_service = static_cast<skills::MockSkillsService*>(
+      skills::SkillsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          GetProfile(),
+          base::BindRepeating([](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<
+                testing::NiceMock<skills::MockSkillsService>>();
+          })));
+  ASSERT_TRUE(skills_service);
+
+  EXPECT_CALL(*skills_service, DeleteSkillsModifiedBetween).Times(0);
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_READING_LIST, false);
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarkHistory) {
