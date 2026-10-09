@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ਤਿਰਛਾ</translation>
 <translation id="2130448033692577677">ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਟੈਮਪਲੇਟ DnsOverHttpsMode ਨੀਤੀ ਸੈੱਟ ਨਾ ਕੀਤੇ ਜਾਣ ਕਾਰਨ ਸ਼ਾਇਦ ਲਾਗੂ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">'ਭੁਗਤਾਨਾਂ ਲਈ ਆਟੋਫਿਲ ਚਾਲੂ ਕਰੋ' ਵਿਕਲਪ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਿਆ ਹੈ।</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ਇਹ ਬੇਤਰਤੀਬਵਾਰ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਚੋਣ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2134584557120247184">ਫਲਾਈਟ ਟਿਕਟ</translation>
@@ -1364,6 +1365,7 @@
 <translation id="3289578402369490638">ਵੈੱਬ 'ਤੇ ਮੌਜੂਦ ਹੋਰ ਸਟੋਰਾਂ ਤੋਂ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ਨੀਤੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3295444047715739395">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="3296595523896103792">ਭੁਗਤਾਨਾਂ ਲਈ ਆਟੋਫਿਲ ਨੂੰ ਚਾਲੂ ਕਰਨ ਵਾਲੀ ਵਿੰਡੋ ਬੰਦ ਕੀਤੀ ਗਈ।</translation>
 <translation id="3299098170013242198">Windows Hello ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="3299197721044635447">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਾਰਨ, ਪ੍ਰਬੰਧਿਤ Chrome ਸੰਦਰਭ ਤੋਂ ਬਾਹਰ ਸਮੱਗਰੀ ਨੂੰ ਪੇਸਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
@@ -2802,7 +2804,6 @@
 <translation id="5649053991847567735">ਆਟੋਮੈਟਿਕ ਡਾਊਨਲੋਡਸ</translation>
 <translation id="5651323159439184939">ਟਰੈਕਟਰ ਫ਼ੀਡ</translation>
 <translation id="5653681867130739344">Google Wallet ਵਿੱਚ ਪਛਾਣ ਕਾਰਡ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਅੱਪਡੇਟ ਕਰੋ</translation>
-<translation id="5653744563415531641">ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5654927323611874862">ਅੱਪਲੋਡ ਕੀਤੀ ਗਈ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟ ਆਈਡੀ:</translation>
 <translation id="5654965123204121933">URL ਵਿੱਚ ਲੋੜੀਂਦੀ ਬਦਲਣ ਵਾਲੀ ਸਤਰ <ph name="SEARCH_TERMS_REPLACEMENT" /> ਸ਼ਾਮਲ ਨਹੀਂ ਹੈ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ਈਮੇਲ</translation>
@@ -3253,7 +3254,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ਲਈ ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ ਅਤੇ CVC ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">'ਮਾਂ-ਪਿਓ ਦੀ ਮਨਜ਼ੂਰੀ' ਵਿੰਡੋ</translation>
-<translation id="6413532517183895572">ਆਪਣੀਆਂ Wallet ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6415778972515849510">Chromium ਤੁਹਾਡੇ Google ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਅਤੇ ਪਾਸਵਰਡ ਬਦਲਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ਪੱਕਾ ਕਰੋ ਕਿ ਕੋਈ ਵੀ ਮਹੱਤਵਪੂਰਨ ਕਾਰੋਬਾਰ ਜਾਂ ਨਿੱਜੀ ਡਾਟਾ ਬਾਹਰੀ ਤੌਰ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਗਿਆ ਹੋਵੇ।</translation>
@@ -3759,7 +3759,6 @@
 <translation id="7308436126008021607">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
 <translation id="7310392214323165548">ਡੀਵਾਈਸ ਜਲਦ ਹੀ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ</translation>
 <translation id="7311244614769792472">ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> ਤੋਂ ਪੁੱਛਣ ਲਈ Tab ਦਬਾਓ, ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="7313107491291103073">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਇਸ ਸਾਈਟ ਨੂੰ ਫਲੈਗ ਕੀਤਾ ਹੈ ਕਿਉਂਕਿ ਕਿਸੇ ਨੀਤੀ ਦੀ ਉਲੰਘਣਾ ਕਰ ਸਕਦੀ ਹੈ।</translation>
 <translation id="7315372670898739748">ਲਿੰਕ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ, ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7316521168101843192">ਫ਼ਾਈਲ ਨੂੰ Microsoft OneDrive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -4167,6 +4166,7 @@
 <translation id="7955105108888461311">ਵਿਅਕਤੀਗਤ ਤੌਰ 'ਤੇ ਪੁੱਛੋ</translation>
 <translation id="7956713633345437162">ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕਸ</translation>
 <translation id="7961015016161918242">ਕਦੇ ਨਹੀਂ</translation>
+<translation id="7961493403319780137">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ - Gmail ਤੋਂ ਪੁਸ਼ਟੀਕਰਨ ਕੋਡਾਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="7962467575542381659">ਪਲੇਟਫਾਰਮ ਮਸ਼ੀਨ</translation>
 <translation id="796439090588610411">Chrome ਸਮਰਥਿਤ ਸਾਈਟਾਂ 'ਤੇ ਇਸ ਈਮੇਲ ਦੀ ਆਪਣੇ ਆਪ ਤਸਦੀਕ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਵੇਗਾ।</translation>
 <translation id="7966803981046576691">ਕਾਰਵਾਈ ਖਾਤੇ ਦੀ ਕਿਸਮ</translation>
@@ -4567,7 +4567,6 @@
 <translation id="8699041776323235191">HID ਡੀਵਾਈਸ</translation>
 <translation id="8699985386408839112">ਕਾਕੂ 1 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="8702965365666568344">ਮਾਊਂਟਿੰਗ ਟੇਪ</translation>
-<translation id="8703242769654966101">Wallet ਵਿੱਚ Pix ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8703372953981978786">ਇਹ ਲਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰਦਾ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ਨਾਲ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਐਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8705331520020532516">ਸੀਰੀਅਲ ਨੰਬਰ</translation>

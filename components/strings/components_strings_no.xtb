@@ -668,6 +668,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2127747486437921899">Kursiv</translation>
 <translation id="2130448033692577677">Malene du har angitt, kan ikke tas i bruk fordi DnsOverHttpsMode-regelen ikke er angitt.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">«Slå på autofyll for betalinger» er åpnet i full høyde.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Disse vises i tilfeldig rekkefølge. Du kan når som helst bytte standardsøkemotor.</translation>
 <translation id="2134584557120247184">Flybillett</translation>
@@ -1366,6 +1367,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3289578402369490638">Fra andre butikker på nettet</translation>
 <translation id="3293642807462928945">Finn ut mer om regelen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer passordene dine i Chrome-innstillingene</translation>
+<translation id="3296595523896103792">«Slå på autofyll for betalinger» er lukket.</translation>
 <translation id="3299098170013242198">Windows Hello er påslått for utfylling av passord</translation>
 <translation id="3299197721044635447">Innholdet kunne ikke limes inn utenfor den administrerte Chrome-konteksten på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="3299720788264079132">Noe gikk galt under bruk av <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5649053991847567735">Automatiske nedlastinger</translation>
 <translation id="5651323159439184939">Traktorinnmating</translation>
 <translation id="5653681867130739344">Oppdater identitetskortet trygt i Google Wallet</translation>
-<translation id="5653744563415531641">Lagre informasjonen din for å gjøre ting raskere, for eksempel fylle ut skjemaer i ulike Google-produkter. Du kan <ph name="MANAGE_WALLET_SETTINGS_LINK" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID for opplastet krasjrapport:</translation>
 <translation id="5654965123204121933">Nettadressen inneholder ikke den obligatoriske erstatningsstrengen <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-post</translation>
@@ -3257,7 +3258,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6410264514553301377">Skriv inn utløpsdatoen og verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialogboks for foreldregodkjenning</translation>
-<translation id="6413532517183895572">administrere Wallet-innstillingene dine</translation>
 <translation id="6415778972515849510">Chromium kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Sørg for at kritiske bedrifts- og personopplysninger lagres eksternt.</translation>
@@ -3763,7 +3763,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7308436126008021607">bakgrunnssynkronisering</translation>
 <translation id="7310392214323165548">Enheten startes på nytt veldig snart</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Trykk på Tab og deretter på Enter for å spørre <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Organisasjonen din har flagget dette nettstedet fordi det kan være i strid med retningslinjer.</translation>
 <translation id="7315372670898739748">Tilknytningen mislyktes. Prøv på nytt senere.</translation>
 <translation id="7316521168101843192">Lagrer filen i Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7955105108888461311">Spør fysisk</translation>
 <translation id="7956713633345437162">Bokmerker for mobil</translation>
 <translation id="7961015016161918242">Aldri</translation>
+<translation id="7961493403319780137">Finn ut mer om denne funksjonen – autofyll bekreftelseskoder fra Gmail</translation>
 <translation id="7962467575542381659">Plattformmaskin</translation>
 <translation id="796439090588610411">Chrome slutter å bekrefte denne e-postadressen automatisk på støttede nettsteder.</translation>
 <translation id="7966803981046576691">Jobbkontotype</translation>
@@ -4571,7 +4571,6 @@ Mer informasjon:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8699985386408839112">Kaku 1-konvolutt</translation>
 <translation id="8702965365666568344">Monteringsteip</translation>
-<translation id="8703242769654966101">Slå på Pix i Wallet</translation>
 <translation id="8703372953981978786">Denne linken fungerer ikke</translation>
 <translation id="8703575177326907206">Tilkoblingen til <ph name="DOMAIN" /> er ikke kryptert.</translation>
 <translation id="8705331520020532516">Serienummer</translation>

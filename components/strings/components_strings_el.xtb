@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Πλάγια γραφή</translation>
 <translation id="2130448033692577677">Τα πρότυπα που έχετε καθορίσει μπορεί να μην εφαρμοστούν επειδή δεν έχει ρυθμιστεί η πολιτική DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Η Ενεργοποίηση αυτόματης συμπλήρωσης πληρωμών άνοιξε σε πλήρες ύψος.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Αυτές εμφανίζονται με τυχαία σειρά. Μπορείτε να αλλάξετε την προεπιλογή ανά πάσα στιγμή.</translation>
 <translation id="2134584557120247184">Εισιτήριο πτήσης</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">Από άλλα καταστήματα στον ιστό</translation>
 <translation id="3293642807462928945">Μάθετε περισσότερα σχετικά με την πολιτική <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Δείτε και διαχειριστείτε τους κωδικούς πρόσβασής σας στις ρυθμίσεις του Chrome.</translation>
+<translation id="3296595523896103792">Η Ενεργοποίηση αυτόματης συμπλήρωσης πληρωμών έκλεισε.</translation>
 <translation id="3299098170013242198">Το Windows Hello είναι ενεργό για τη συμπλήρωση κωδικών πρόσβασης</translation>
 <translation id="3299197721044635447">Δεν ήταν δυνατή η επικόλληση περιεχομένου εκτός του διαχειριζόμενου περιβάλλοντος του Chrome λόγω των πολιτικών του οργανισμού σας</translation>
 <translation id="3299720788264079132">Παρουσιάστηκε κάποιο πρόβλημα κατά τη χρήση της λειτουργίας <ph name="FEATURE_NAME" /></translation>
@@ -2806,7 +2808,6 @@
 <translation id="5649053991847567735">Αυτόματες λήψεις</translation>
 <translation id="5651323159439184939">Τροφοδοσία ελκυσμού</translation>
 <translation id="5653681867130739344">Ασφαλής ενημέρωση ταυτότητας στο Πορτοφόλι Google</translation>
-<translation id="5653744563415531641">Αποθηκεύστε τις πληροφορίες σας και ολοκληρώστε πιο γρήγορα εργασίες, όπως τη συμπλήρωση φορμών σε όλα τα προϊόντα Google. Μπορείτε να <ph name="MANAGE_WALLET_SETTINGS_LINK" /> για τον λογαριασμό <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Αναγνωριστικό αναφοράς σφάλματος που ανέβηκε:</translation>
 <translation id="5654965123204121933">Το URL δεν περιλαμβάνει την απαιτούμενη συμβολοσειρά αντικατάστασης <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
@@ -3258,7 +3259,6 @@
 <translation id="6410264514553301377">Εισαγάγετε την ημερομηνία λήξης και τον κωδικό CVC για την κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Παράθυρο διαλόγου έγκρισης γονέα</translation>
-<translation id="6413532517183895572">διαχειριστείτε τις ρυθμίσεις του Πορτοφολιού σας</translation>
 <translation id="6415778972515849510">Το Chromium μπορεί να σας βοηθήσει να προστατεύσετε τον Λογαριασμό σας Google και να αλλάξετε τον κωδικό πρόσβασής σας.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Βεβαιωθείτε ότι τυχόν σημαντικά επιχειρηματικά ή προσωπικά δεδομένα αποθηκεύονται εξωτερικά.</translation>
@@ -3766,7 +3766,6 @@
 <translation id="7308436126008021607">συγχρονισμός παρασκηνίου</translation>
 <translation id="7310392214323165548">Θα γίνει επανεκκίνηση της συσκευής πολύ σύντομα</translation>
 <translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να κάνετε μια ερώτηση στη <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Ο οργανισμός σας έχει επισημάνει αυτόν τον ιστότοπο, καθώς ενδέχεται να παραβαίνει μια πολιτική.</translation>
 <translation id="7315372670898739748">Η σύνδεση απέτυχε, δοκιμάστε ξανά αργότερα</translation>
 <translation id="7316521168101843192">Αποθήκευση αρχείου στο Microsoft OneDrive</translation>
@@ -4174,6 +4173,7 @@
 <translation id="7955105108888461311">Ερώτηση αυτοπροσώπως</translation>
 <translation id="7956713633345437162">Σελιδοδείκτες κινητής συσκευής</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
+<translation id="7961493403319780137">Μάθετε περισσότερα σχετικά με αυτή τη λειτουργία - Αυτόματη συμπλήρωση κωδικών επαλήθευσης από το Gmail</translation>
 <translation id="7962467575542381659">Μηχάνημα πλατφόρμας</translation>
 <translation id="796439090588610411">Το Chrome θα σταματήσει να επιβεβαιώνει αυτόματα αυτή τη διεύθυνση ηλεκτρονικού ταχυδρομείου σε υποστηριζόμενους ιστοτόπους.</translation>
 <translation id="7966803981046576691">Τύπος λογαριασμού εργασίας</translation>
@@ -4575,7 +4575,6 @@
 <translation id="8699041776323235191">Συσκευή HID</translation>
 <translation id="8699985386408839112">Φάκελος Kaku 1</translation>
 <translation id="8702965365666568344">Ταινία στερέωσης</translation>
-<translation id="8703242769654966101">Ενεργοποίηση Pix στο Πορτοφόλι</translation>
 <translation id="8703372953981978786">Αυτός ο σύνδεσμος δεν λειτουργεί</translation>
 <translation id="8703575177326907206">Η σύνδεσή σας με τον τομέα <ph name="DOMAIN" /> δεν είναι κρυπτογραφημένη.</translation>
 <translation id="8705331520020532516">Σειριακός αριθμός</translation>

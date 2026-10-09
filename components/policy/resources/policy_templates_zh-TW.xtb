@@ -1473,7 +1473,6 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
 - 不封鎖 chrome://settings/certificates，改用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />。- 不封鎖 chrome-untrusted://crosh，改用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />。- 不封鎖 devtools://*，改用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 或 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。</translation>
 <translation id="1957093168333856467">停用無障礙虛擬鍵盤</translation>
 <translation id="1958110911685486719">已啟用 PDF XFA 表單支援功能</translation>
-<translation id="1960059835237529462">允許向使用者顯示 <ph name="IOS_NAME" /> App Store 評分宣傳</translation>
 <translation id="1960416154405676350">啟用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1961091374249454164">這項政策僅適用於受管理的訪客工作階段。
       你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
@@ -1634,17 +1633,6 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
 <translation id="2057317273526988987">允許存取網址清單</translation>
 <translation id="205807990145127714">要用於回報信號強度事件的遙測資料。</translation>
 <translation id="2060153898336610735">自動 (根據目前的語言)</translation>
-<translation id="2060316966423154087">指定使用者能否讓 <ph name="PRODUCT_NAME" /> 使用生成式 AI 進一步辨識表單，協助填寫更多欄位。
-
-0 = 效果與 1 相同。在 M153 之前，這項設定允許 Google 使用相關資料改良 AI 模型。相關資料可能包括提示詞、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
-
-1 = 允許使用這項功能，但不允許 Google 使用提示詞、輸入內容、輸出內容、來源資料和文字意見回饋等相關資料改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
-
-2 = 不允許使用這項功能。
-
-如果不設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
-
-如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="2061123930713023976">允許針對網路封包擷取作業進行偵錯</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
 <translation id="2062632109797189011">重新啟用已淘汰的 window.webkitStorageInfo API</translation>
@@ -2580,15 +2568,6 @@ PAC 樣式的字串：
 <translation id="2608535066974278204">用於指定重新啟動時間範圍長度的時間段 (分鐘)。</translation>
 <translation id="2608887839902987727">禁止網頁認證入口驗證機制忽略 Proxy 設定</translation>
 <translation id="2608985885792348429">預設剪貼簿設定</translation>
-<translation id="2613388238625781546">基於隱私權考量，我們計劃減少使用 <ph name="AL_HEADER_NAME" /> HTTP 要求標頭和 JavaScript <ph name="JS_GETTER_NAME" /> getter。
-為了方便測試及確保相容性，你可以透過這項政策啟用或停用「<ph name="ALR_FEATURE_NAME" />」功能。
-
-如果將這項政策設為啟用或不設定，系統會透過實測套用「<ph name="ALR_FEATURE_NAME" />」。
-如果將這項政策設為停用，實測就無法啟用「<ph name="ALR_FEATURE_NAME" />」。
-
-歡迎前往 https://github.com/explainers-by-googlers/reduce-accept-language 進一步瞭解這項功能。
-
-注意：在瀏覽器執行期間，只有新啟動的轉譯器程序會套用這項政策的變更。</translation>
 <translation id="2613493229743687635"><ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API 允許獨立的網頁應用程式 (依來源識別) 一次擷取多個畫面，無需額外的使用者授權。
       如果不設定這項政策，則 <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> 不適用於任何網頁應用程式。
 為進一步保護隱私權，這項政策不支援在工作階段中途更新政策值，因此系統只會在使用者登出並再次登入後套用變更。
@@ -2948,25 +2927,6 @@ PAC 樣式的字串：
 <translation id="2890645751406497668">自動授予權限給這些網站，以連結至指定廠商和產品 ID 的 USB 裝置。</translation>
 <translation id="2893546967669465276">將系統記錄傳送到管理伺服器</translation>
 <translation id="2893660462311365527">以毫秒為單位的網路遙測收集率。</translation>
-<translation id="2894720693512285641">這項政策會設定 <ph name="PRODUCT_NAME" /> 在 TLS 1.3 中偏好的加密演算法順序，優先採用特定法規遵循標準核准的演算法。
-
-設定這項政策無法保證一定會協商採用特定演算法。
-
-這項政策讓伺服器業者可區分用戶端是否有法規遵循需求，並只在用戶端明確指定偏好時，使用加密強度更高的特定非預設演算法。
-
-如果將政策設為「<ph name="CNSA_NAME" />」，<ph name="PRODUCT_NAME" /> 就會優先採用符合商用國家安全演算法套件 1.0 和 2.0 版 (CNSA 1.0 和 2.0) 規定的加密演算法。
-
-如果不設定這項政策或設為「<ph name="DEFAULT_NAME" />」，<ph name="PRODUCT_NAME" /> 會採用預設的加密演算法。
-
-設定這項政策並非安全性必要措施。<ph name="PRODUCT_NAME" /> 預設使用的加密技術強度極高，即使用盡太陽的全部能量發動蠻力攻擊，也無法攻破。
-
-如果設定這項政策，<ph name="PRODUCT_NAME" /> 存取網站的速度會變慢。
-
-這項政策只會影響 TLS 1.3 和 QUIC，不影響舊版 TLS。
-
-這項政策可針對機器和使用者設定。如果是針對使用者設定，此政策只會影響由使用者設定檔發出的網路要求，可能不會影響 <ph name="PRODUCT_NAME" /> 為了執行瀏覽器層級背景工作而發出的網路要求 (由機器層級的值控制)。如果同時在機器與使用者層級設定這項政策，系統會優先套用機器層級的值，除非 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 政策已變更政策優先順序。
-
-在 156 以下版本，這項政策僅適用於機器層級。</translation>
 <translation id="2894914342151915910">隱藏 Chrome 在不支援的系統上執行時所顯示的警告</translation>
 <translation id="2895444724612647239">自動授權網站連結至任何 HID 裝置。</translation>
 <translation id="2896434627453256512">設定這項政策可啟用 ghost 視窗功能。
@@ -3429,8 +3389,6 @@ PAC 樣式的字串：
 <translation id="3152135410085709340">允許這些網站在 PDF 檢視器中存取本機的 file:// 網址</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
-<translation id="3163167792874598128">如未設定這項政策或設為啟用，系統可能會向使用者顯示 App Store 評分宣傳 (一年最多一次)。
-如果將這項政策設為停用，系統就不會向使用者顯示 App Store 評分宣傳。</translation>
 <translation id="3163880369487075383">這項政策控管 ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本啟用時，能否清除跨網站頂層瀏覽的 window.name，以便建立新的瀏覽內容群組。
 
 ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本會控制是否要清除跨網站頂層瀏覽的 window.name，例如使用者透過網址列前往新網站，或是點選連結 (使用「target='_blank' rel='noopener'」) 前往新網站。在上述情況下，清除 window.name 可防止資訊透過 window.name 屬性在網站間外洩，強化使用者隱私保護。ClearWindowNameForNewBrowsingContextGroup 政策已生效，可還原先前的行為。如果啟用 ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本，同時也將這項政策設為啟用或不設定，系統會為適用瀏覽情況清除 window.name。如果停用，系統就不會清除 window.name。
@@ -4828,7 +4786,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="4136603825567209889">啟用使用者識別資訊報告功能</translation>
 <translation id="4138655880188755661">時間限制</translation>
 <translation id="4140646780789794190">停用將診斷資料共用至 PluginVm</translation>
-<translation id="4141430435877011529"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 應用程式的多區域或地區。如要進一步瞭解 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 地區，請前往 https://docs.cloud.google.com/gemini/enterprise/docs/locations。</translation>
 <translation id="4144417751555442768">生成式 AI</translation>
 <translation id="4145383150978634398">允許使用者使用整合桌面模式</translation>
 <translation id="4146319954420095470">(警告！這個依附元件即將停用，請改用 <ph name="GLS_POLICY_NAME" />) 如果這項政策設為 <ph name="BLOCK_GEOLOCATION_SETTING" />，<ph name="PRODUCT_OS_NAME" /> 系統服務和 Android 應用程式將無法存取位置資訊。如果將這項政策設為其他值或不設定，Android 應用程式要存取位置資訊時，會要求使用者授予存取權。</translation>
@@ -7798,7 +7755,6 @@ IP 位址空間覆寫有兩種形式：
 <translation id="5962271004971310788">如要以無痕模式瀏覽，使用者必須允許在無痕模式中執行這些擴充功能</translation>
 <translation id="5963752574792883406">通訊埠 990 (2022 年 2 月 1 日前可解除封鎖)</translation>
 <translation id="596523880465577341">這項政策已淘汰，因此系統不再支援，請改用「<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />」政策。</translation>
-<translation id="5965344524743236327">這個 <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> 專案 ID 或編號會對應到要啟用的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 執行個體。如要進一步瞭解專案 ID，請前往 https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects。</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
 <translation id="596732417280023843">憑證設定檔的名稱。</translation>
 <translation id="5972475504452039694">你可以設定網址模式清單，指定哪些網站不得自動下載多個檔案。
@@ -8218,7 +8174,6 @@ IP 位址空間覆寫有兩種形式：
 <translation id="6264247808139384018">如果將這項政策設為啟用或不設定，使用密碼驗證的使用者可以鎖定螢幕。
 
 如果將這項政策設為停用，使用者將無法鎖定螢幕，只能從使用者工作階段登出。</translation>
-<translation id="6265114688953151459"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 引擎的專屬 ID，長度必須介於 1 到 63 個半形字元，並符合下列格式：[a-z0-9][a-z0-9-_]*。詳情請參閱 https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine。</translation>
 <translation id="6265892395051519509">允許在這些網站上存取感應器</translation>
 <translation id="6266043141694454734">決定是否要使用 Chrome Root Store 和內建的憑證驗證器來驗證伺服器憑證</translation>
 <translation id="6266686172120601139">啟用「Web Audio 自動調節緩衝」</translation>
@@ -12638,21 +12593,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="91206085111961438">控制資訊清單 v2 擴充功能的可用性</translation>
 <translation id="9122865885571719292">控管 <ph name="PRODUCT_OS_NAME" /> 是否要在使用者登入後還原上一個工作階段及其還原方式。只有在 <ph name="FULL_RESTORE_ENABLED_NAME" /> 政策設為 True 時，這項政策才會生效。</translation>
 <translation id="9123464369663964441">允許使用者新增可載入複合型內容的例外網站</translation>
-<translation id="9123738611041078443">設定 <ph name="PRODUCT_NAME" /> 的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 連線設定。
-
-如要設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />，管理員必須提供下列其中一項：
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址 (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />)
-* 以下三個舊版參數：<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> 和 <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />。如果未完整指定這三個參數，且未提供網址，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數必須是有效的網址，且須採用 https 配置、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域，而且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-如果同時設定 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數和舊版參數，系統會優先採用 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數。
-
-如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
-
-如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="9124770007620653639">一律不將網域可靠性資料傳送給 Google</translation>
 <translation id="9126331659955304300">允許從本機檔案系統、相機圖庫和 Google 個人資料選取使用者顯示圖片</translation>
 <translation id="9126694586349976283">允許使用內建的 AI API。</translation>
@@ -12754,25 +12694,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="9204863016826119209">這項政策中列出的已安裝 Android 應用程式可以使用企業金鑰。</translation>
 <translation id="9206364386317031168">允許網站向本機裝置發出網路要求。</translation>
 <translation id="9206472508136116830">不允許 NetBIOS 檔案共用搜尋</translation>
-<translation id="9207289612253941907">這項政策會設定 <ph name="PRODUCT_NAME" /> 在 TLS 1.3 中偏好的金鑰協議演算法 (支援的群組) 順序，優先採用特定法規遵循標準核准的演算法。
-
-設定這項政策無法保證一定會協商採用特定演算法。
-
-這項政策讓伺服器業者可區分用戶端是否有法規遵循需求，並只在用戶端明確指定偏好時，使用加密強度更高的特定非預設演算法。
-
-如果將政策設為「<ph name="CNSA2_NAME" />」，<ph name="PRODUCT_NAME" /> 就會優先採用符合商用國家安全演算法套件 2.0 (CNSA 2.0) 規定的金鑰交換方法。
-
-如果不設定這項政策或設為「<ph name="DEFAULT_NAME" />」，<ph name="PRODUCT_NAME" /> 會採用預設的金鑰交換方法。
-
-設定這項政策並非安全性必要措施。<ph name="PRODUCT_NAME" /> 預設使用的加密技術強度極高，即使用盡太陽的全部能量發動蠻力攻擊，也無法攻破。
-
-如果設定這項政策，<ph name="PRODUCT_NAME" /> 存取網站的速度會變慢。
-
-這項政策只會影響 TLS 1.3 和 QUIC，不影響舊版 TLS。
-
-這項政策可針對機器和使用者設定。如果是針對使用者設定，此政策只會影響由使用者設定檔發出的網路要求，可能不會影響 <ph name="PRODUCT_NAME" /> 為了執行瀏覽器層級背景工作而發出的網路要求 (由機器層級的值控制)。如果同時在機器與使用者層級設定這項政策，系統會優先套用機器層級的值，除非 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 政策已變更政策優先順序。
-
-在 156 以下版本，這項政策僅適用於機器層級。</translation>
 <translation id="9207596996305971030">不回報登入/登出事件</translation>
 <translation id="9208328979373108724">允許隔離網頁應用程式來源新增子應用程式，但需要使用者確認</translation>
 <translation id="9210647066889383361">允許使用者透過 Smart Lock 登入裝置</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2086334242442703436">Ouvrir le sélecteur d'émoji</translation>
 <translation id="2089550919269323883">L'installation de <ph name="VM_NAME" /> est bloquée par la politique d'entreprise. Veuillez communiquer avec votre administrateur système pour obtenir de l'aide. Le code d'erreur est <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Actualités Steam pour Chromebook</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2107581415810719320">Autre bouton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Votre câble USB-C ne prend pas en charge la norme Thunderbolt. La performance de l'appareil peut être limitée.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Sur quoi aimeriez-vous vous concentrer? Appuyez sur Entrée pour ajouter la tâche.</translation>
 <translation id="229397294990920565">Désactivation des données cellulaires en cours…</translation>
 <translation id="2295777434187870477">Le microphone est activé. Si vous le désactivez, l'entrée sonore sera aussi désactivée.</translation>
+<translation id="2296880470921996802">L'historique du presse-papiers a été désactivé par votre administrateur informatique</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer ou désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2304702218354340897">Voulez-vous vraiment désactiver la commande par le visage?</translation>
@@ -1787,7 +1787,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6127395413317891856">Vous êtes hors ligne. Vérifiez votre connexion, puis réessayez.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6132714462430777655">Ignorer l'inscription scolaire?</translation>
-<translation id="6136872094979134163">Impossible de récupérer les actualités Steam pour Chromebook.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Sur quoi aimeriez-vous vous concentrer?</translation>
 <translation id="6141988275892716286">Confirmer le téléchargement</translation>

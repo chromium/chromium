@@ -668,6 +668,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2127747486437921899">Kurzíva</translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Spodní panel k zapnutí automatického vyplňování plateb je otevřený na celou výšku.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Vyhledávače jsou zobrazeny v náhodném pořadí. Výchozí nastavení můžete kdykoliv změnit.</translation>
 <translation id="2134584557120247184">Letenka</translation>
@@ -1363,6 +1364,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3289578402369490638">Z jiných obchodů na webu</translation>
 <translation id="3293642807462928945">Další informace o zásadě <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Zobrazte a spravujte svá hesla v nastavení Chromu</translation>
+<translation id="3296595523896103792">Spodní panel k zapnutí automatického vyplňování plateb byl zavřen.</translation>
 <translation id="3299098170013242198">Pro vyplňování hesel je zapnutá funkce Windows Hello</translation>
 <translation id="3299197721044635447">Obsah se kvůli zásadám vaší organizace nepodařilo vložit mimo spravovaný kontext Chromu</translation>
 <translation id="3299720788264079132">Při používání funkce <ph name="FEATURE_NAME" /> se něco pokazilo</translation>
@@ -2801,7 +2803,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5649053991847567735">Automatické stahování</translation>
 <translation id="5651323159439184939">Traktorový papír</translation>
 <translation id="5653681867130739344">Bezpečně si aktualizujte průkaz totožnosti v Peněžence Google</translation>
-<translation id="5653744563415531641">Uložte si své údaje, ať můžete ve službách Google pracovat rychleji, například rychleji vyplňovat formuláře. Můžete <ph name="MANAGE_WALLET_SETTINGS_LINK" /> pro účet <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID nahrané zprávy o selhání:</translation>
 <translation id="5654965123204121933">Adresa URL neobsahuje požadovaný zástupný řetězec <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -3252,7 +3253,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6410264514553301377">Zadejte datum konce platnosti a kód CVC karty <ph name="CREDIT_CARD" />.</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialogové okno schválení od rodičů</translation>
-<translation id="6413532517183895572">spravovat nastavení Peněženky</translation>
 <translation id="6415778972515849510">Chromium vám může pomoci ochránit váš účet Google a změnit heslo.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Ujistěte se, že máte všechna důležitá obchodní nebo osobní data uložená externě.</translation>
@@ -3758,7 +3758,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7308436126008021607">synchronizace na pozadí</translation>
 <translation id="7310392214323165548">Zařízení se brzy restartuje</translation>
 <translation id="7311244614769792472">Žádné výsledky</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Stisknutím tabulátoru a pak klávesy Enter se můžete zeptat nástroje <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Vaše organizace tento web nahlásila, protože by mohl porušovat zásady.</translation>
 <translation id="7315372670898739748">Propojení se nezdařilo, zkuste to znovu později</translation>
 <translation id="7316521168101843192">Ukládání souboru na Microsoft OneDrive</translation>
@@ -4166,6 +4165,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7955105108888461311">Zeptat se osobně</translation>
 <translation id="7956713633345437162">Mobilní záložky</translation>
 <translation id="7961015016161918242">Nikdy</translation>
+<translation id="7961493403319780137">Další informace o této funkci – Automatické vyplňování ověřovacích kódů z Gmailu</translation>
 <translation id="7962467575542381659">Zařízení platformy</translation>
 <translation id="796439090588610411">Chrome přestane tento e‑mail na podporovaných webech automaticky potvrzovat.</translation>
 <translation id="7966803981046576691">Typ účtu úlohy</translation>
@@ -4567,7 +4567,6 @@ Další podrobnosti:
 <translation id="8699041776323235191">Zařízení HID</translation>
 <translation id="8699985386408839112">Obálka Kaku 1</translation>
 <translation id="8702965365666568344">Montážní páska</translation>
-<translation id="8703242769654966101">Povolit v Peněžence službu Pix</translation>
 <translation id="8703372953981978786">Tento odkaz nefunguje</translation>
 <translation id="8703575177326907206">Vaše spojení se serverem <ph name="DOMAIN" /> není šifrované.</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>

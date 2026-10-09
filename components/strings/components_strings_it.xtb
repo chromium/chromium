@@ -668,6 +668,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2127747486437921899">Corsivo</translation>
 <translation id="2130448033692577677">I modelli che hai specificato potrebbero non essere applicati a causa della mancata impostazione della policy DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Riquadro per l'attivazione della compilazione automatica dei pagamenti aperto a schermo intero.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Questi sono mostrati in ordine casuale. Puoi modificare l'impostazione predefinita in qualsiasi momento.</translation>
 <translation id="2134584557120247184">Biglietto aereo</translation>
@@ -1363,6 +1364,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3289578402369490638">Da altri negozi sul web</translation>
 <translation id="3293642807462928945">Scopri di più sulla norma <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visualizza e gestisci le tue password nelle impostazioni di Chrome</translation>
+<translation id="3296595523896103792">Riquadro per l'attivazione della compilazione automatica dei pagamenti chiuso.</translation>
 <translation id="3299098170013242198">Windows Hello è attivo per inserire le password</translation>
 <translation id="3299197721044635447">Impossibile incollare i contenuti al di fuori del contesto Chrome gestito a causa delle policy della tua organizzazione</translation>
 <translation id="3299720788264079132">Si è verificato un problema durante l'utilizzo della funzionalità <ph name="FEATURE_NAME" /></translation>
@@ -2802,7 +2804,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5649053991847567735">Download automatici</translation>
 <translation id="5651323159439184939">Alimentatore a trattore</translation>
 <translation id="5653681867130739344">Aggiorna la carta d'identità in modo sicuro in Google Wallet</translation>
-<translation id="5653744563415531641">Salva le tue informazioni e velocizza le attività, ad esempio la compilazione dei moduli nei prodotti Google. Puoi <ph name="MANAGE_WALLET_SETTINGS_LINK" /> per <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID del report sugli arresti anomali caricato:</translation>
 <translation id="5654965123204121933">L'URL non include la stringa sostitutiva richiesta <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3253,7 +3254,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6410264514553301377">Inserisci la data di scadenza e il codice CVC della carta <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Finestra di dialogo per l'approvazione dei genitori</translation>
-<translation id="6413532517183895572">gestire le impostazioni di Wallet</translation>
 <translation id="6415778972515849510">Chromium può aiutarti a proteggere il tuo Account Google e a modificare la password.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Assicurati che tutti i dati aziendali o personali critici siano archiviati esternamente.</translation>
@@ -3760,7 +3760,6 @@ Ulteriori dettagli:
 <translation id="7308436126008021607">sincronizzazione in background</translation>
 <translation id="7310392214323165548">Il dispositivo verrà riavviato a breve</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Premi Tab, poi Invio per chiedere a <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">La tua organizzazione ha segnalato questo sito perché potrebbe violare una policy.</translation>
 <translation id="7315372670898739748">Collegamento non riuscito, riprova più tardi</translation>
 <translation id="7316521168101843192">Salvataggio del file su Microsoft OneDrive in corso…</translation>
@@ -4168,6 +4167,7 @@ Ulteriori dettagli:
 <translation id="7955105108888461311">Chiedi di persona</translation>
 <translation id="7956713633345437162">Preferiti mobile</translation>
 <translation id="7961015016161918242">Mai</translation>
+<translation id="7961493403319780137">Scopri di più su questa funzionalità: Compilazione automatica dei codici di verifica da Gmail</translation>
 <translation id="7962467575542381659">Macchina della piattaforma</translation>
 <translation id="796439090588610411">Chrome non confermerà più automaticamente questa email sui siti supportati.</translation>
 <translation id="7966803981046576691">Tipo di account lavoro</translation>
@@ -4568,7 +4568,6 @@ Ulteriori dettagli:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Busta Kaku 1</translation>
 <translation id="8702965365666568344">Nastro di fissaggio</translation>
-<translation id="8703242769654966101">Abilita Pix in Wallet</translation>
 <translation id="8703372953981978786">Questo link non funziona</translation>
 <translation id="8703575177326907206">La connessione a <ph name="DOMAIN" /> non è criptata.</translation>
 <translation id="8705331520020532516">Numero di serie</translation>

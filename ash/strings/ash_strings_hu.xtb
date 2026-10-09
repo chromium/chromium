@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2086334242442703436">Emojiválasztó megnyitása</translation>
 <translation id="2089550919269323883">A(z) <ph name="VM_NAME" /> telepítését vállalati házirend tiltja. Segítségért forduljon a rendszergazdához. A hibakód: <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Steam for Chromebook-hírek</translation>
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
 <translation id="2107581415810719320">Egyéb gomb: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Az USB-C kábel nem támogatja a Thunderbolt-eszközöket. Ez korlátozhatja az eszköz teljesítményét.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Mire szeretne összpontosítani? A feladat hozzáadásához nyomja meg az Enter billentyűt.</translation>
 <translation id="229397294990920565">Mobiladat-kapcsolat kikapcsolása…</translation>
 <translation id="2295777434187870477">A mikrofon be van kapcsolva, a gombra kattintva elnémítja.</translation>
+<translation id="2296880470921996802">A vágólapelőzményeket letiltotta a rendszergazda</translation>
 <translation id="2302092602801625023">Ezt a fiókot a Family Linkkel kezelik</translation>
 <translation id="2303600792989757991">Ablakáttekintési mód váltása</translation>
 <translation id="2304702218354340897">Biztosan kikapcsolja az arcalapú vezérlést?</translation>
@@ -1787,7 +1787,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6127395413317891856">Ön offline állapotban van. Ellenőrizze a kapcsolatot, majd próbálja meg újra.</translation>
 <translation id="6129953537138746214">Szóköz</translation>
 <translation id="6132714462430777655">Kihagyja az iskolai regisztrációt?</translation>
-<translation id="6136872094979134163">Nem sikerült lekérni a Steam for Chromebook-híreket.</translation>
 <translation id="6137566720514957455">Eltávolítási párbeszédpanel megnyitása, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Mire szeretne összpontosítani?</translation>
 <translation id="6141988275892716286">Letöltés megerősítése</translation>

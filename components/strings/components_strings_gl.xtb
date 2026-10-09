@@ -59,7 +59,7 @@
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091463901118115503">Seguir lendo</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
-<translation id="1095093219235104018">Buscar e completar información con Gemini</translation>
+<translation id="1095093219235104018">Buscar e completar con Gemini</translation>
 <translation id="1096545575934602868">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Descartaranse todas as restantes.</translation>
 <translation id="1099928364755383720">pantalla superposta automática</translation>
 <translation id="1100782917270858593">Botón para retomar o percorrido. Para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Introducir</translation>
@@ -668,6 +668,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2127747486437921899">Cursiva</translation>
 <translation id="2130448033692577677">Os modelos que especificaches poden non aplicarse debido a que non se definiu a política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Abriuse a altura completa a opción para activar o completado automático de pagos.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Móstranse en orde aleatoria. Podes cambiar a túa opción predeterminada cando queiras.</translation>
 <translation id="2134584557120247184">Billete de avión</translation>
@@ -1366,6 +1367,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3289578402369490638">Doutras tendas da Web</translation>
 <translation id="3293642807462928945">Máis información acerca da política de <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consultar e xestiona os teus contrasinais na configuración de Chrome</translation>
+<translation id="3296595523896103792">Pechouse a opción para activar o completado automático de pagos.</translation>
 <translation id="3299098170013242198">Windows Hello está activado para completar contrasinais</translation>
 <translation id="3299197721044635447">Non se puido pegar o contido fóra do contexto de Chrome xestionado debido ás políticas da túa organización</translation>
 <translation id="3299720788264079132">Produciuse un erro ao usar <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5651323159439184939">Avance por tracción</translation>
 <translation id="5653681867130739344">Actualiza o documento de identidade en Google Wallet</translation>
-<translation id="5653744563415531641">Garda a túa información e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes <ph name="MANAGE_WALLET_SETTINGS_LINK" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Código do informe de fallos cargado:</translation>
 <translation id="5654965123204121933">O URL non inclúe a cadea de substitución necesaria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
@@ -3257,7 +3258,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6410264514553301377">Introduce a data de caducidade e o código CVC da tarxeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Cadro de diálogo de aprobación parental</translation>
-<translation id="6413532517183895572">xestionar a configuración de Wallet</translation>
 <translation id="6415778972515849510">Chromium pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Se tes algún dato persoal ou empresarial importante, asegúrate de gardalo externamente.</translation>
@@ -3763,7 +3763,6 @@ Detalles adicionais:
 <translation id="7308436126008021607">sincronización en segundo plano</translation>
 <translation id="7310392214323165548">O dispositivo reiniciarase en breve</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Preme Tabulador e, a continuación, Introducir para facer preguntas co <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">A túa organización marcou este sitio porque podería infrinxir algunha política.</translation>
 <translation id="7315372670898739748">Produciuse un erro ao vincular a conta. Téntao de novo máis tarde</translation>
 <translation id="7316521168101843192">Gardando ficheiro en Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@ Detalles adicionais:
 <translation id="7955105108888461311">Preguntar en persoa</translation>
 <translation id="7956713633345437162">Marcadores do móbil</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7961493403319780137">Máis información sobre esta función: Autocompletar os códigos de verificación de Gmail</translation>
 <translation id="7962467575542381659">Máquina da plataforma</translation>
 <translation id="796439090588610411">Chrome deixará de confirmar automaticamente este correo electrónico nos sitios admitidos.</translation>
 <translation id="7966803981046576691">Tipo de conta para o traballo</translation>
@@ -4571,7 +4571,6 @@ Detalles adicionais:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Sobre Kaku-1</translation>
 <translation id="8702965365666568344">Cinta de escuma para montaxe</translation>
-<translation id="8703242769654966101">Activar Pix en Wallet</translation>
 <translation id="8703372953981978786">Esta ligazón non funciona</translation>
 <translation id="8703575177326907206">A túa conexión con <ph name="DOMAIN" /> non está cifrada.</translation>
 <translation id="8705331520020532516">Número de serie</translation>

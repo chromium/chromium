@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ଇଟାଲିକ୍</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ନୀତି ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ, ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ ଲାଗୁ ହୋଇନପାରେ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">ପେମେଣ୍ଟ ଅଟୋଫିଲକୁ ସକ୍ଷମ କରନ୍ତୁ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି।</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ଏଗୁଡ଼ିକ ରେଣ୍ଡମ ଅର୍ଡରରେ ଦେଖାଯାଏ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କର ଡିଫଲ୍ଟକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="2134584557120247184">ଫ୍ଲାଇଟ ଟିକେଟ</translation>
@@ -1364,6 +1365,7 @@
 <translation id="3289578402369490638">ସମଗ୍ର ୱେବରେ ଅନ୍ୟ ଷ୍ଟୋରଗୁଡ଼ିକରୁ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ନୀତି ସମ୍ଵନ୍ଧରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="3295444047715739395">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="3296595523896103792">ପେମେଣ୍ଟ ଅଟୋଫିଲକୁ ସକ୍ଷମ କରନ୍ତୁ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
 <translation id="3299098170013242198">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ Windows Hello ଚାଲୁ ଅଛି</translation>
 <translation id="3299197721044635447">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକ ଯୋଗୁଁ ପରିଚାଳିତ Chrome ପ୍ରସଙ୍ଗ ବାହାରେ ବିଷୟବସ୍ତୁକୁ ପେଷ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ବ୍ୟବହାର କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି</translation>
@@ -2802,7 +2804,6 @@
 <translation id="5649053991847567735">ସ୍ୱଚାଳିତ ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5651323159439184939">ଟ୍ରାକ୍ଟର ଫିଡ</translation>
 <translation id="5653681867130739344">Google Walletରେ ପରିଚୟ କାର୍ଡକୁ ସୁରକ୍ଷିତ ଭାବେ ଅପଡେଟ କରନ୍ତୁ</translation>
-<translation id="5653744563415531641">ଆପଣଙ୍କ ସୂଚନା ସେଭ କରି ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ଫର୍ମଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପରି କାର୍ଯ୍ୟଗୁଡ଼ିକ ଶୀଘ୍ର କରନ୍ତୁ। ଆପଣ <ph name="ACCOUNT" /> ପାଇଁ <ph name="MANAGE_WALLET_SETTINGS_LINK" /> କରିପାରିବେ।</translation>
 <translation id="5654927323611874862">କ୍ରାସ୍ ରିପୋର୍ଟ ID ଅପଲୋଡ୍ କରାଯାଇଛି:</translation>
 <translation id="5654965123204121933">URL ଆବଶ୍ୟକୀୟ ରିପ୍ଲେସମେଣ୍ଟ ଷ୍ଟ୍ରିଂ <ph name="SEARCH_TERMS_REPLACEMENT" />କୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ଇମେଲ</translation>
@@ -3253,7 +3254,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ପାଇଁ ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ ଏବଂ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">ବାପାମାଙ୍କ ଅନୁମୋଦନର ଡାଏଲଗ</translation>
-<translation id="6413532517183895572">ଆପଣଙ୍କ Wallet ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6415778972515849510">Chromium ଆପଣଙ୍କୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟକୁ ସୁରକ୍ଷିତ ରଖିବା ଏବଂ ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡ ବଦଳାଇବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ଯେ କୌଣସି ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବିଜିନେସ କିମ୍ବା ବ୍ୟକ୍ତିଗତ ଡାଟା ଏକ୍ସଟର୍ନଲ ଭାବେ ଷ୍ଟୋର କରାଯାଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
@@ -3759,7 +3759,6 @@
 <translation id="7308436126008021607">ପୃଷ୍ଠପଟ ସିଙ୍କ୍</translation>
 <translation id="7310392214323165548">ଡିଭାଇସଟି ଅତି ଶୀଘ୍ର ରିଷ୍ଟାର୍ଟ ହେବ</translation>
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" />କୁ ପଚାରିବା ପାଇଁ ପ୍ରଥମେ ଟାବ ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="7313107491291103073">ଏହି ସାଇଟ ଏକ ନୀତିର ଉଲ୍ଲଙ୍ଘନ କରିଥିବା ଯୋଗୁଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାର ଫ୍ଲାଗ କରିଛି</translation>
 <translation id="7315372670898739748">ଲିଙ୍କ କରିବା ବିଫଳ ହୋଇଛି, ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7316521168101843192">Microsoft OneDriveରେ ଫାଇଲ ସେଭ କରାଯାଉଛି</translation>
@@ -4167,6 +4166,7 @@
 <translation id="7955105108888461311">ବ୍ୟକ୍ତିଗତ ଭାବେ ପଚାରନ୍ତୁ</translation>
 <translation id="7956713633345437162">ମୋବାଇଲ୍‍ ବୁକ୍‍ମାର୍କ</translation>
 <translation id="7961015016161918242">ଆଦୌ ନୁହେଁ</translation>
+<translation id="7961493403319780137">ଏହି ଫିଚର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ - Gmailରୁ ଯାଞ୍ଚକରଣ କୋଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରନ୍ତୁ</translation>
 <translation id="7962467575542381659">ପ୍ଲାଟଫର୍ମ ମେସିନ</translation>
 <translation id="796439090588610411">ସପୋର୍ଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକରେ Chrome ଏହି ଇମେଲକୁ ସ୍ୱତଃ ସୁନିଶ୍ଚିତ କରିବା ବନ୍ଦ କରିଦେବ।</translation>
 <translation id="7966803981046576691">ଜବ୍ ଆକାଉଣ୍ଟ ପ୍ରକାର</translation>
@@ -4567,7 +4567,6 @@
 <translation id="8699041776323235191">HID ଡିଭାଇସ୍</translation>
 <translation id="8699985386408839112">ଏନଭେଲପ କାକୁ 1</translation>
 <translation id="8702965365666568344">ମାଉଣ୍ଟିଂ ଟେପ</translation>
-<translation id="8703242769654966101">Walletରେ Pixକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8703372953981978786">ଏହି ଲିଙ୍କଟି କାମ କରୁନାହିଁ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ସହ ଆପଣଙ୍କର ସଂଯୋଜନା ଏନକ୍ରିପ୍ଟ ହୋଇ ନାହିଁ ।</translation>
 <translation id="8705331520020532516">କ୍ରମିକ ସଂଖ୍ୟା</translation>

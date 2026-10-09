@@ -663,6 +663,7 @@
 <translation id="2127747486437921899">ఇటాలిక్</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">'పేమెంట్స్ ఆటోఫిల్‌ను ఎనేబుల్ చేయండి' అనే ఆప్షన్ పూర్తి స్క్రీన్‌లో ఓపెన్ అయింది.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ఇవి ర్యాండమ్ ఆర్డర్‌లో చూపబడుతున్నాయి. మీ ఆటోమేటిక్ సెట్టింగ్‌ను ఎప్పుడైనా మార్చుకోవచ్చు.</translation>
 <translation id="2134584557120247184">ఫ్లయిట్ టికెట్</translation>
@@ -1361,6 +1362,7 @@
 <translation id="3289578402369490638">వెబ్ అంతటా ఉన్న ఇతర స్టోర్‌లు</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> విధానం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3295444047715739395">Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
+<translation id="3296595523896103792">పేమెంట్‌ల ఆటోఫిల్‌ను ఎనేబుల్ చేయండి క్లోజ్ అయింది.</translation>
 <translation id="3299098170013242198">పాస్‌వర్డ్‌లను పూరించడానికి Windows Hello ఆన్ చేయబడింది</translation>
 <translation id="3299197721044635447">మీ సంస్థ పాలసీల కారణంగా, మేనేజ్ అయ్యే Chrome వెలుపల కంటెంట్‌ను పేస్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />‌ను ఉపయోగిస్తున్నప్పుడు ఏదో పొరపాటు జరిగింది</translation>
@@ -2800,7 +2802,6 @@
 <translation id="5649053991847567735">ఆటోమేటిక్ డౌన్‌లోడ్‌లు</translation>
 <translation id="5651323159439184939">ట్రాక్టర్ ఫీడ్</translation>
 <translation id="5653681867130739344">Google Walletలో ఐడెంటిటీ కార్డ్‌ను సురక్షితంగా అప్‌డేట్ చేయండి</translation>
-<translation id="5653744563415531641">మీ సమాచారాన్ని సేవ్ చేయండి. Google ప్రోడక్ట్‌లలో ఫారమ్‌లను ఫిల్ చేయడం వంటి పనులను వేగంగా పూర్తి చేయండి. మీరు <ph name="ACCOUNT" /> కోసం <ph name="MANAGE_WALLET_SETTINGS_LINK" /> చేయవచ్చు.</translation>
 <translation id="5654927323611874862">అప్‌లోడ్ చేసిన క్రాష్ రిపోర్ట్ ID:</translation>
 <translation id="5654965123204121933">URLలో అవసరమైన రీప్లేస్‌మెంట్ స్ట్రింగ్ <ph name="SEARCH_TERMS_REPLACEMENT" /> లేదు: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
@@ -3252,7 +3253,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> గడువు ముగింపు తేదీ మరియు CVCని నమోదు చేయండి</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">పేరెంట్ ఆమోదం డైలాగ్</translation>
-<translation id="6413532517183895572">మీ Wallet సెట్టింగ్స్‌ను మేనేజ్ చేయండి</translation>
 <translation id="6415778972515849510">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chromium మీకు సహాయపడగలదు.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ఏదైనా ముఖ్యమైన బిజినెస్ లేదా వ్యక్తిగత డేటా ఎక్స్‌టర్నల్‌గా స్టోర్ చేయబడిందని నిర్ధారించుకోండి.</translation>
@@ -3759,7 +3759,6 @@
 <translation id="7308436126008021607">బ్యాక్‌గ్రౌండ్ సింక్</translation>
 <translation id="7310392214323165548">పరికరం త్వరలోనే రీస్టార్ట్ అవుతుంది</translation>
 <translation id="7311244614769792472">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" />‌ను అడగడానికి ట్యాబ్ నొక్కి, ఆపై ఎంటర్ నొక్కండి</translation>
 <translation id="7313107491291103073">ఈ సైట్ ఒక పాలసీని ఉల్లంఘించే అవకాశం ఉందని మీ సంస్థ దాన్ని ఫ్లాగ్ చేసింది.</translation>
 <translation id="7315372670898739748">లింక్ చేయడం విఫలమైంది, తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="7316521168101843192">ఫైల్‌ను Microsoft OneDriveకు సేవ్ చేస్తోంది</translation>
@@ -4167,6 +4166,7 @@
 <translation id="7955105108888461311">స్వయంగా అడగండి</translation>
 <translation id="7956713633345437162">మొబైల్ బుక్‌మార్క్‌లు</translation>
 <translation id="7961015016161918242">ఎప్పుడూ వద్దు</translation>
+<translation id="7961493403319780137">ఈ ఫీచర్ గురించి మరింత తెలుసుకోండి - Gmail నుండి వెరిఫికేషన్ కోడ్‌లను ఆటోఫిల్ చేయండి</translation>
 <translation id="7962467575542381659">ప్లాట్‌ఫామ్ మెషీన్</translation>
 <translation id="796439090588610411">సపోర్ట్ ఉన్న సైట్‌లలో ఈ ఈమెయిల్‌ను ఆటోమేటిక్‌గా నిర్ధారించడాన్ని Chrome ఆపివేస్తుంది.</translation>
 <translation id="7966803981046576691">ఉద్యోగ ఖాతా రకం</translation>
@@ -4567,7 +4567,6 @@
 <translation id="8699041776323235191">HID పరికరం</translation>
 <translation id="8699985386408839112">ఎన్వలప్ కాకు 1</translation>
 <translation id="8702965365666568344">మౌంటింగ్ టేప్</translation>
-<translation id="8703242769654966101">Walletలో Pixను ఎనేబుల్ చేయండి</translation>
 <translation id="8703372953981978786">ఈ లింక్ పని చేయదు</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />కు మీ కనెక్షన్ ఎన్‌క్రిప్ట్ చేయ‌బ‌డ‌లేదు.</translation>
 <translation id="8705331520020532516">క్రమ సంఖ్య</translation>

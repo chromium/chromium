@@ -14,6 +14,7 @@
 <translation id="12739128458173458">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chromium als dos dispositius.</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
 <translation id="1383876407941801731">Cerca</translation>
+<translation id="1421604911662901100">Inicia la sessió en aquest lloc web i a Chromium per accedir a la informació desada i altres dades en tots els teus dispositius</translation>
 <translation id="1423007117030725713">Inicia una cerca en una pestanya nova de Chromium.</translation>
 <translation id="1431818719585918472">Deixa que Chromium bloquegi les teves pestanyes d'incògnit.</translation>
 <translation id="1451665391191990528">Amaga les pestanyes d'incògnit obertes quan surtis de Chromium</translation>
@@ -55,6 +56,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="2006345422933397527">Chromium no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="2025935492422922097">Chromium processa els títols de pàgina i els URL en un espai privat al núvol</translation>
 <translation id="2027881372245801507">Desactivar els suggeriments no afecta el processament que Chromium fa dels títols de pàgina i dels URL per a altres funcions. Pots gestionar l'accés a aquestes dades a la <ph name="BEGIN_LINK" />configuració de sincronització<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves contrasenyes i altres dades en tots els teus dispositius</translation>
 <translation id="2042889939382983733">Consulta l'historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium comprova periòdicament si les teves contrasenyes es troben en llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="2059365270911640413">Acaba de configurar Chromium</translation>
@@ -99,6 +101,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="2832168932648876507">Cerca amb la veu a Chromium.</translation>
 <translation id="2843571538056574338">Utilitza Chromium per a Emplenament automàtic</translation>
 <translation id="2844923129028437362">Evita copiar. Estableix Chromium com a navegador predeterminat d'iOS.</translation>
+<translation id="2876793692921835457">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves adreces d'interès i altres dades en tots els teus dispositius</translation>
 <translation id="2918709798697875261">La teva organització requereix que tanquis la sessió de Chromium.</translation>
 <translation id="2942241131342758843">Utilitza Chromium de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
@@ -225,6 +228,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5671188105328420281">Consells per a Chromium</translation>
 <translation id="5688047395118852662">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chromium.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
+<translation id="5714479833576517588">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves contrasenyes i altres dades <ph name="DEVICE_TYPE" /></translation>
 <translation id="5731004036450828399">Per protegir les teves claus d'accés, primer hauràs de crear un PIN de recuperació.
 
         Les claus d'accés es desen al gestor de contrasenyes, que et permet utilitzar-les a Chromium en qualsevol dispositiu.</translation>
@@ -243,6 +247,7 @@ Aspectes que cal tenir en compte:
   • Si sincronitzes l'historial amb el teu Compte de Google, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">Completa tasques ràpides i descobreix maneres de treure el màxim profit de Chromium:</translation>
 <translation id="5932787118589620366">Suprimeix les dades de navegació a Chromium</translation>
+<translation id="59347837447331606">Inicia la sessió en aquest lloc web i a Chromium per accedir a la informació desada i altres dades <ph name="DEVICE_TYPE" /></translation>
 <translation id="593808800391107017">Rep alertes sobre qualsevol problema de privadesa o de seguretat que Chromium detecti automàticament.</translation>
 <translation id="5951593919357934226">Treu el màxim profit de Chromium.</translation>
 <translation id="5985254578475526217">Per rebre notificacions de Chromium, activa-les a la configuració d'iOS.</translation>
@@ -304,6 +309,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
 <translation id="7285031092584344905">Accedeix a les teves contrasenyes de Chromium i a més elements en altres aplicacions.</translation>
+<translation id="7291896724424825868">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves adreces d'interès i altres dades <ph name="DEVICE_TYPE" /></translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">La contrasenya es desarà al gestor de contrasenyes per a <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Aquesta clau d'accés es desarà al gestor de contrasenyes de Google per a <ph name="USER_EMAIL" /></translation>

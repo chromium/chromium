@@ -1559,7 +1559,6 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
 - devtools://*를 차단하는 대신 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 또는 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책을 사용합니다.</translation>
 <translation id="1957093168333856467">접근성 가상 키보드 사용 중지</translation>
 <translation id="1958110911685486719">PDF XFA 양식 지원 사용 설정됨</translation>
-<translation id="1960059835237529462">사용자에게 <ph name="IOS_NAME" /> App Store 평가 프로모션이 표시되도록 허용</translation>
 <translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> 영역 검색을 사용 설정합니다.</translation>
 <translation id="1961091374249454164">관리되는 게스트 세션에만 적용되는 정책입니다.
       정책을 설정하면 제한적인 관리 게스트 세션 정리 절차에서 제외할 확장 프로그램 ID 목록이 지정됩니다(<ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" /> 참고).
@@ -1727,17 +1726,6 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2057317273526988987">URL 목록 액세스 허용</translation>
 <translation id="205807990145127714">신호 강도 이벤트를 보고하기 위한 텔레메트리 데이터</translation>
 <translation id="2060153898336610735">현재 언어를 기준으로 자동 설정됨</translation>
-<translation id="2060316966423154087">사용자가 <ph name="PRODUCT_NAME" />에서 생성형 AI를 사용하여 양식을 더 잘 이해하고 더 많은 입력란을 채울 수 있도록 허용할지 설정합니다.
-
-0 = 1과 동일한 효과를 가집니다. M153 이전에는 이 설정을 통해 Google에서 관련 데이터를 사용하여 AI 모델을 개선할 수 있었습니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
-
-1 = 기능을 사용하도록 허용하되 Google에서 관련 데이터(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
-
-2 = 기능을 허용하지 않습니다.
-
-정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
-
-생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="2061123930713023976">네트워크 패킷 캡처 디버깅 허용</translation>
 <translation id="2061810934846663491">원격 액세스 호스트에 필요한 도메인 이름을 설정합니다.</translation>
 <translation id="2062632109797189011">지원 중단된 window.mydomainStorageInfo API를 다시 사용 설정합니다.</translation>
@@ -2698,15 +2686,6 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2608535066974278204">다시 실행 창의 길이를 지정하는 기간(분)입니다.</translation>
 <translation id="2608887839902987727">종속 포털 인증에서 프록시 설정을 무시하지 못하도록 차단</translation>
 <translation id="2608985885792348429">기본 클립보드 설정</translation>
-<translation id="2613388238625781546">개인 정보 보호를 위해 <ph name="AL_HEADER_NAME" /> HTTP 요청 헤더와 JavaScript <ph name="JS_GETTER_NAME" /> getter가 축소될 예정입니다.
-테스트를 원활하게 진행하고 호환성을 보장하기 위해, 이 정책은 <ph name="ALR_FEATURE_NAME" /> 기능을 사용 설정하거나 사용 중지하도록 허용합니다.
-
-정책을 사용으로 설정하거나 설정하지 않으면 필드 체험판을 통해 <ph name="ALR_FEATURE_NAME" /> 기능이 적용됩니다.
-이 정책을 사용 중지로 설정하면 필드 체험판에서 <ph name="ALR_FEATURE_NAME" /> 기능을 활성화할 수 없습니다.
-
-이 기능에 관한 자세한 내용은 https://github.com/explainers-by-googlers/reduce-accept-language를 참고하세요.
-
-참고: 새로 시작된 렌더기 프로세스만 브라우저가 실행되는 동안 이 정책의 변경사항을 반영합니다.</translation>
 <translation id="2613493229743687635"><ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API를 사용하면 격리된 웹 애플리케이션(출처로 식별됨)이 추가 사용자 권한 없이 한 번에 여러 표시 경로를 캡처할 수 있습니다.
       정책을 설정하지 않으면 모든 웹 애플리케이션에서 <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> 사용이 불가합니다.
 이 정책은 개인 정보 보호를 위해 세션 동안 정책 값 업데이트를 지원하지 않으므로 사용자가 로그아웃한 다음 다시 로그인한 후에만 변경사항이 적용됩니다.
@@ -3071,25 +3050,6 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2890645751406497668">다음 사이트가 주어진 공급업체 및 제품 ID를 사용해 USB 기기에 연결할 수 있는 권한을 자동으로 부여합니다.</translation>
 <translation id="2893546967669465276">시스템 로그를 관리 서버로 전송합니다.</translation>
 <translation id="2893660462311365527">네트워크 텔레메트리 수집 속도(밀리초)</translation>
-<translation id="2894720693512285641">이 정책은 특정 규정 준수 체계에서 승인한 알고리즘에 대한 선호도를 반영하기 위해 <ph name="PRODUCT_NAME" />이 TLS 1.3에서 선호하는 암호화를 우선하도록 설정합니다.
-
-이 정책을 설정한다고 해서 특정 알고리즘이 협상된다는 보장은 없습니다.
-
-이 정책은 클라이언트의 규정 준수 요구사항 유무에 따라 클라이언트를 구분해 지원하려는 서버 운영자가 기본값이 아니라 암호화 강도가 강화된 특정 알고리즘을 선호하도록 명시적으로 설정한 클라이언트에 대해서만 해당 알고리즘을 사용하도록 허용하기 위해 존재합니다.
-
-정책을 '<ph name="CNSA_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 상업용 국가 보안 알고리즘 모음 버전 1.0 및 2.0(CNSA 1.0 및 2.0) 규정 준수에 요구되는 암호화를 선호하도록 구성됩니다.
-
-정책을 설정하지 않거나 '<ph name="DEFAULT_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 암호화를 사용하도록 구성됩니다.
-
-보안을 위해 이 정책을 설정할 필요는 없습니다. <ph name="PRODUCT_NAME" />에서 사용하는 기본 암호화 방식은 엄청난 연산량이 들어간 무차별 대입 공격을 견딜 수 있을 만큼 강력합니다.
-
-이 정책을 설정하면 웹사이트 액세스 시 <ph name="PRODUCT_NAME" />의 속도가 느려집니다.
-
-이 정책은 TLS 1.3 및 QUIC에만 영향을 미치며 TLS 이전 버전에는 영향을 미치지 않습니다.
-
-이 정책은 머신 및 사용자에 대해 설정할 수 있습니다. 사용자에게 설정된 경우 이 정책은 사용자 프로필에서 시작된 네트워크 요청에만 영향을 미치며, 브라우저 전체 백그라운드 작업을 실행하기 위해 <ph name="PRODUCT_NAME" />에서 수행하는 네트워크 요청에는 영향을 미치지 않을 수 있습니다. 이러한 요청은 머신 수준 값으로 제어됩니다. 이 정책이 머신 수준과 사용자 수준에서 모두 설정된 경우 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 정책에 의해 정책 우선순위가 변경되지 않는 한 머신 수준 값이 적용됩니다.
-
-버전 156 이하의 경우 이 정책은 머신 전체에만 적용됩니다.</translation>
 <translation id="2894914342151915910">Chrome이 지원되지 않는 시스템에서 실행 중인 경우 경고 표시 중단</translation>
 <translation id="2895444724612647239">사이트에 모든 HID 기기에 연결할 권한을 자동으로 부여합니다.</translation>
 <translation id="2896434627453256512">고스트 창 기능 사용에 관한 정책을 설정합니다.
@@ -3568,8 +3528,6 @@ URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />를 사용 �
 <translation id="3152135410085709340">로컬 파일이 PDF 뷰어에서 사이트의 file:// URL에 액세스하도록 허용</translation>
 <translation id="3152425128389603870">통합 바탕화면을 기본적으로 허용하고 사용 설정합니다.</translation>
 <translation id="3159375329008977062">사용자가 UI를 통해 Crostini 컨테이너를 내보내고 가져올 수 있음</translation>
-<translation id="3163167792874598128">이 정책을 설정하지 않거나 사용으로 설정하면 App Store 평가 프로모션이 사용자에게 1년에 최대 한 번 표시될 수 있습니다.
-정책을 사용 안함으로 설정하면 App Store 평가 프로모션이 사용자에게 표시되지 않습니다.</translation>
 <translation id="3163880369487075383">이 정책은 ClearCrossSiteCrossBrowsingContextGroupWindowName 변형이 사용 설정되어 있을 때 새 브라우징 컨텍스트 그룹이 생성되는 크로스 사이트 최상위 탐색에서 window.name을 삭제할 수 있는지 여부를 제어합니다.
 
 ClearCrossSiteCrossBrowsingContextGroupWindowName 변형은 크로스 사이트 최상위 탐색에서 window.name이 삭제되는지를 제어합니다. 사용자가 검색주소창을 통해 새 사이트로 이동하거나 'target='_blank' rel='noopener'"가 사용된 새 사이트 링크를 클릭하는 경우가 크로스 사이트 최상위 탐색에 해당합니다. 이러한 경우 window.name을 삭제하면 window.name 속성을 통해 사이트 간에 정보가 유출될 가능성이 차단되어 사용자 개인 정보가 보호됩니다. ClearWindowNameForNewBrowsingContextGroup 정책은 이전 동작을 복원하기 위해 적용됩니다. ClearCrossSiteCrossBrowsingContextGroupWindowName 변형이 사용 설정된 상태에서 이 정책을 설정하지 않거나 사용으로 설정하면, 요건을 충족하는 탐색에서 window.name이 삭제됩니다. 사용 중지하면 window.name이 삭제되지 않습니다.
@@ -5019,7 +4977,6 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 <translation id="4136603825567209889">사용자 식별 정보 보고 사용</translation>
 <translation id="4138655880188755661">시간 제한</translation>
 <translation id="4140646780789794190">PluginVm에 진단 데이터 공유 사용 안함</translation>
-<translation id="4141430435877011529"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 앱의 멀티 리전 또는 위치입니다. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 위치에 대해 자세히 알아보려면 https://docs.cloud.google.com/gemini/enterprise/docs/locations를 참고하세요.</translation>
 <translation id="4144417751555442768">생성형 AI</translation>
 <translation id="4145383150978634398">사용자가 통합 바탕화면 모드를 사용할 수 있도록 설정</translation>
 <translation id="4146319954420095470">(경고! 이 종속 항목이 곧 삭제되므로 대신 <ph name="GLS_POLICY_NAME" />를 사용하세요.) 정책을 <ph name="BLOCK_GEOLOCATION_SETTING" />으로 설정하면 <ph name="PRODUCT_OS_NAME" /> 시스템 서비스 및 Android 앱에서 위치 정보에 액세스할 수 없습니다. 이 정책을 다른 값으로 설정하거나 설정하지 않은 상태로 두면 Android 앱에서 위치 정보에 액세스할 필요가 있을 때 사용자에게 허용하라는 메시지가 표시됩니다.</translation>
@@ -8122,7 +8079,6 @@ IP 주소 공간 재정의에는 두 가지 형식이 있습니다.
 <translation id="5962271004971310788">시크릿 모드에서 탐색하려면 사용자가 시크릿 모드에서 실행하도록 허용해야 하는 확장 프로그램</translation>
 <translation id="5963752574792883406">포트 990(2022년 2월 1일까지 차단 해제될 수 있음)</translation>
 <translation id="596523880465577341">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />' 정책을 사용하세요.</translation>
-<translation id="5965344524743236327">사용 설정할 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 인스턴스에 해당하는 <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> 프로젝트의 ID 또는 번호입니다. https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects에서 프로젝트 ID에 대해 자세히 알아보세요.</translation>
 <translation id="5966615072639944554">원격 인증 API를 사용하도록 허용된 확장 프로그램입니다.</translation>
 <translation id="596732417280023843">인증서 프로필의 이름입니다.</translation>
 <translation id="5972475504452039694">여러 파일을 자동으로 다운로드하도록 허용되지 않는 사이트를 지정하는 URL 패턴 목록을 설정할 수 있습니다.
@@ -8561,7 +8517,6 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
 <translation id="6264247808139384018">정책을 사용 설정하거나 설정하지 않으면 비밀번호로 인증하는 사용자가 화면을 잠글 수 있습니다.
 
 정책을 사용 중지하면 사용자가 화면을 잠글 수 없습니다. (사용자 세션에서 로그아웃만 할 수 있음)</translation>
-<translation id="6265114688953151459"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 엔진의 고유 식별자입니다. 형식은 [a-z0-9][a-z0-9-_]* 패턴과 일치하는 1~63자(영문 기준)여야 합니다. https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine에서 자세히 알아보세요.</translation>
 <translation id="6265892395051519509">이 사이트에서 센서에 액세스하도록 허용</translation>
 <translation id="6266043141694454734">Chrome Root Store 및 내장된 인증서 확인 기능을 서버 인증서 확인에 사용할지 결정합니다.</translation>
 <translation id="6266686172120601139">Web Audio의 적응형 버퍼링 사용 설정</translation>
@@ -13188,21 +13143,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9122865885571719292">로그인 시 <ph name="PRODUCT_OS_NAME" />에서 마지막 세션 복원 여부 및 복원 방법을 제어합니다.
 이 정책은 <ph name="FULL_RESTORE_ENABLED_NAME" /> 정책이 True로 설정된 경우에만 적용됩니다.</translation>
 <translation id="9123464369663964441">사용자가 혼합 콘텐츠를 허용하는 예외를 추가하도록 허용</translation>
-<translation id="9123738611041078443"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
-
-<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품을 구성하려면 관리자가 다음 중 하나를 제공해야 합니다.
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL(<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) 또는
-* 기존 매개변수 3개 모두(<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />) URL 없이 이 세 매개변수의 일부 하위 집합만 지정하면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수는 https 스키마를 사용하고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 도메인을 가리키며 사용자 이름 또는 비밀번호를 포함하지 않는 유효한 URL이어야 합니다. 이러한 요구사항을 충족하지 않으면 정책이 무시되고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수와 기존 매개변수가 모두 구성된 경우 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수가 우선 적용됩니다.
-
-이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
-
-정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
-
-이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="9124770007620653639">Google에 도메인 안정성 데이터를 전송하지 않음</translation>
 <translation id="9126331659955304300">로컬 파일 시스템, 카메라, Google 프로필에서 사용자 아바타 선택을 허용합니다.</translation>
 <translation id="9126694586349976283">내장된 AI API를 사용하도록 허용</translation>
@@ -13311,25 +13251,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9204863016826119209">회사 키가 설치되고 이 정책 목록에 포함된 Android 애플리케이션에서 사용할 수 있습니다.</translation>
 <translation id="9206364386317031168">사이트에서 로컬 기기로 네트워크 요청을 보낼 수 있도록 허용합니다.</translation>
 <translation id="9206472508136116830">NetBIOS 공유 검색 허용 안함</translation>
-<translation id="9207289612253941907">이 정책은 특정 규정 준수 체계에서 승인한 알고리즘에 대한 선호도를 반영하기 위해 <ph name="PRODUCT_NAME" />이 TLS 1.3에서 선호하는 키 계약 알고리즘(지원되는 그룹)을 우선하도록 설정합니다.
-
-이 정책을 설정한다고 해서 특정 알고리즘이 협상된다는 보장은 없습니다.
-
-이 정책은 클라이언트의 규정 준수 요구사항 유무에 따라 클라이언트를 구분해 지원하려는 서버 운영자가 기본값이 아니라 암호화 강도가 강화된 특정 알고리즘을 선호하도록 명시적으로 설정한 클라이언트에 대해서만 해당 알고리즘을 사용하도록 허용하기 위해 존재합니다.
-
-정책을 '<ph name="CNSA2_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 상업용 국가 보안 알고리즘 모음 2.0(CNSA 2.0) 규정 준수에 요구되는 키 교환 방식을 선호하도록 구성됩니다.
-
-정책을 설정하지 않거나 '<ph name="DEFAULT_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 키 교환 방식을 사용하도록 구성됩니다.
-
-보안을 위해 이 정책을 설정할 필요는 없습니다. <ph name="PRODUCT_NAME" />에서 사용하는 기본 암호화 방식은 엄청난 연산량이 들어간 무차별 대입 공격을 견딜 수 있을 만큼 강력합니다.
-
-이 정책을 설정하면 웹사이트 액세스 시 <ph name="PRODUCT_NAME" />의 속도가 느려집니다.
-
-이 정책은 TLS 1.3 및 QUIC에만 영향을 미치며 TLS 이전 버전에는 영향을 미치지 않습니다.
-
-이 정책은 머신 및 사용자에 대해 설정할 수 있습니다. 사용자에게 설정된 경우 이 정책은 사용자 프로필에서 시작된 네트워크 요청에만 영향을 미치며, 브라우저 전체 백그라운드 작업을 실행하기 위해 <ph name="PRODUCT_NAME" />에서 수행하는 네트워크 요청에는 영향을 미치지 않을 수 있습니다. 이러한 요청은 머신 수준 값으로 제어됩니다. 이 정책이 머신 수준과 사용자 수준에서 모두 설정된 경우 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 정책에 의해 정책 우선순위가 변경되지 않는 한 머신 수준 값이 적용됩니다.
-
-버전 156 이하의 경우 이 정책은 머신 전체에만 적용됩니다.</translation>
 <translation id="9207596996305971030">로그인/로그아웃 이벤트 보고하지 않음</translation>
 <translation id="9208328979373108724">분리형 웹 앱 출처에서 하위 앱을 추가하도록 허용하지만 사용자 프롬프트가 필요함</translation>
 <translation id="9210647066889383361">사용자가 Smart Lock으로 기기에 로그인하도록 허용</translation>

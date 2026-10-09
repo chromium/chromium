@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2086334242442703436">Otvaranje alata za odabir emojija</translation>
 <translation id="2089550919269323883">Instaliranje aplikacije <ph name="VM_NAME" /> blokirano je prema pravilima organizacije. Obratite se administratoru sustava radi podrške. Kôd pogreške je <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Vijesti o Steamu za Chromebook</translation>
 <translation id="209965399369889474">Niste povezani s mrežom</translation>
 <translation id="2107581415810719320">Drugi gumb <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Vaš kabel USB-C ne podržava Thunderbolt. Izvedba uređaja može biti ograničena.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Na što se želite koncentrirati? Pritisnite Enter da biste dodali zadatak.</translation>
 <translation id="229397294990920565">Mobilni podaci se isključuju...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen, pomicanjem klizača ulijevo isključit će se zvuk.</translation>
+<translation id="2296880470921996802">Povijest međuspremnika onemogućio je vaš IT administrator</translation>
 <translation id="2302092602801625023">Tim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Prebaci na prozor pregleda</translation>
 <translation id="2304702218354340897">Jeste li sigurni da želite isključiti upravljanje licem?</translation>
@@ -1790,7 +1790,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6127395413317891856">Niste povezani s internetom. Provjerite vezu i pokušajte ponovo.</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6132714462430777655">Želite li preskočiti upis u školu?</translation>
-<translation id="6136872094979134163">Ne mogu se dohvatiti vijesti o Steamu za Chromebook.</translation>
 <translation id="6137566720514957455">Otvorite dijalog za uklanjanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na što se želite koncentrirati?</translation>
 <translation id="6141988275892716286">Potvrda preuzimanja</translation>

@@ -1550,7 +1550,6 @@ Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* c
 – Thay vì chặn devtools://*, hãy sử dụng một trong các chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> hoặc <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Tắt bàn phím ảo hỗ trợ tiếp cận</translation>
 <translation id="1958110911685486719">Đã bật tính năng hỗ trợ biểu mẫu XFA trong PDF</translation>
-<translation id="1960059835237529462">Cho phép người dùng thấy quảng cáo Xếp hạng <ph name="IOS_NAME" /> trong App Store</translation>
 <translation id="1960416154405676350">Bật tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Chính sách này chỉ áp dụng cho các phiên khách được quản lý.
       Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ định danh sách các mã tiện ích được miễn trừ khỏi quy trình xóa phiên khách được quản lý hạn chế (xem <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
@@ -1716,17 +1715,6 @@ Thông thường, chính sách này bị Disabled (Tắt) để chống lừa đ
 <translation id="2057317273526988987">Cho phép truy cập vào một danh sách các URL</translation>
 <translation id="205807990145127714">Dữ liệu đo từ xa để báo cáo khi xảy ra sự kiện tác động đến cường độ tín hiệu.</translation>
 <translation id="2060153898336610735">Tự động dựa trên ngôn ngữ hiện tại</translation>
-<translation id="2060316966423154087">Chỉ định xem người dùng có thể cho phép <ph name="PRODUCT_NAME" /> sử dụng AI tạo sinh để hiểu rõ hơn về các biểu mẫu và điền nhiều trường hơn hay không.
-
-0 = Có hiệu lực tương tự như 1. Trước phiên bản M153, chế độ cài đặt này cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Cho phép tính năng nhưng không cho phép Google sử dụng dữ liệu liên quan (bao gồm cả câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
-
-2 = Không cho phép tính năng.
-
-Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
-
-Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng tham khảo https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Cho phép dùng kỹ thuật chặn bắt gói tin qua mạng để gỡ lỗi</translation>
 <translation id="2061810934846663491">Định cấu hình tên miền bắt buộc cho máy chủ truy cập từ xa</translation>
 <translation id="2062632109797189011">Bật lại API window.webkitStorageInfo không được dùng nữa</translation>
@@ -2679,15 +2667,6 @@ Hãy truy cập https://wicg.github.io/private-network-access/ để biết các
 <translation id="2608535066974278204">Khoảng thời gian (tính bằng phút) chỉ định khoảng thời gian chạy lại.</translation>
 <translation id="2608887839902987727">Ngăn quá trình xác thực qua trang xác thực bỏ qua cài đặt proxy</translation>
 <translation id="2608985885792348429">Chế độ cài đặt bảng nhớ tạm mặc định</translation>
-<translation id="2613388238625781546">Tiêu đề của yêu cầu HTTP <ph name="AL_HEADER_NAME" /> và phương thức getter <ph name="JS_GETTER_NAME" /> JavaScript được lên kế hoạch giảm do lý do liên quan đến quyền riêng tư.
-Để tạo điều kiện cho hoạt động thử nghiệm và đảm bảo khả năng tương thích, chính sách này cho phép bạn bật hoặc tắt tính năng <ph name="ALR_FEATURE_NAME" />.
-
-Nếu bạn đặt chính sách này thành bật hoặc không đặt, thì <ph name="ALR_FEATURE_NAME" /> sẽ được áp dụng thông qua các hoạt động thử nghiệm.
-Nếu bạn đặt chính sách này thành tắt, thì các hoạt động thử nghiệm sẽ không thể kích hoạt <ph name="ALR_FEATURE_NAME" />.
-
-Để biết thêm thông tin về tính năng này, vui lòng truy cập vào: https://github.com/explainers-by-googlers/reduce-accept-language.
-
-LƯU Ý: Chỉ các quy trình kết xuất hình ảnh mới bắt đầu mới thể hiện các thay đổi đối với chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="2613493229743687635"><ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API cho phép các ứng dụng web riêng biệt (được xác định theo nguồn gốc) chụp nhiều bề mặt cùng lúc mà không cần người dùng cho phép thêm.
       Nếu bạn chưa đặt chính sách này thì mọi ứng dụng web đều không thể dùng <ph name="GET_ALL_SCREENS_MEDIA_NAME" />.
 Để cải thiện quyền riêng tư, chính sách này sẽ không hỗ trợ cập nhật giá trị chính sách vào giữa phiên. Do đó, nội dung thay đổi sẽ chỉ áp dụng sau khi người dùng đăng xuất rồi đăng nhập lại.
@@ -3049,25 +3028,6 @@ Bạn chỉ có thể đặt chính sách này thành chính sách người 
 <translation id="2890645751406497668">Tự động cấp quyền cho những trang web này để kết nối với các thiết bị USB bằng ID sản phẩm và nhà cung cấp cụ thể.</translation>
 <translation id="2893546967669465276">Gửi nhật ký hệ thống đến máy chủ quản lý</translation>
 <translation id="2893660462311365527">Chu kỳ thu thập từ xa của mạng tính bằng mili giây.</translation>
-<translation id="2894720693512285641">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự các thuật toán mật mã mã hoá được ưu tiên trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
-
-Việc đặt chính sách này không đảm bảo rằng thuật toán cụ thể sẽ được thương lượng.
-
-Chính sách này được thiết lập để cho phép các nhà điều hành máy chủ muốn hỗ trợ cả những máy khách có và không có yêu cầu tuân thủ phân biệt các máy khách đó, đồng thời chỉ sử dụng một số thuật toán không mặc định có độ mạnh mật mã cao hơn đối với những máy khách được định cấu hình rõ ràng để ưu tiên chúng.
-
-Việc đặt chính sách thành "<ph name="CNSA_NAME" />" sẽ định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên các thuật toán mật mã cần thiết cho việc tuân thủ phiên bản 1.0 và 2.0 của Bộ thuật toán bảo mật quốc gia thương mại (CNSA 1.0 và 2.0).
-
-Nếu bạn không đặt chính sách này hoặc đặt chính sách này thành "<ph name="DEFAULT_NAME" />", thì <ph name="PRODUCT_NAME" /> sẽ được định cấu hình để sử dụng các thuật toán mật mã mặc định.
-
-Bạn không cần đặt chính sách này để đảm bảo bảo mật. Mật mã mặc định mà <ph name="PRODUCT_NAME" /> sử dụng đủ mạnh để chống chịu một cuộc tấn công brute force dùng toàn bộ năng lượng của Mặt trời.
-
-Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ chậm hơn khi truy cập vào các trang web.
-
-Chính sách này chỉ ảnh hưởng đến TLS 1.3 và QUIC, chứ không ảnh hưởng đến các phiên bản TLS trước đó.
-
-Bạn có thể đặt chính sách này cho máy và cho người dùng. Nếu bạn đặt cho người dùng, chính sách này chỉ ảnh hưởng đến các yêu cầu mạng do hồ sơ người dùng khởi tạo và có thể không ảnh hưởng đến các yêu cầu mạng do <ph name="PRODUCT_NAME" /> đưa ra để thực hiện các tác vụ trong nền trên toàn trình duyệt; những yêu cầu đó được kiểm soát bằng giá trị ở cấp máy. Nếu bạn đặt chính sách này ở cả cấp máy và cấp người dùng, thì giá trị ở cấp máy sẽ được áp dụng, trừ phi thứ tự ưu tiên của chính sách đã được thay đổi theo chính sách <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
-
-Đối với các phiên bản từ 156 trở xuống, chính sách này chỉ áp dụng trên toàn bộ máy.</translation>
 <translation id="2894914342151915910">Chặn cảnh báo khi Chrome chạy trên một hệ thống không được hỗ trợ</translation>
 <translation id="2895444724612647239">Tự động cấp quyền cho các trang web để kết nối với thiết bị HID bất kỳ.</translation>
 <translation id="2896434627453256512">Đặt chính sách này để bật tính năng cửa sổ ảo.
@@ -3545,8 +3505,6 @@ Nếu bạn không đặt hoặc đặt chính sách này thành tắt, thì tr�
 <translation id="3152135410085709340">Cho phép truy cập tệp cục bộ vào URL file:// trên các trang web này trong Trình xem PDF</translation>
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
 <translation id="3159375329008977062">Người dùng được phép xuất/nhập các vùng chứa Crostini qua giao diện người dùng</translation>
-<translation id="3163167792874598128">Khi bạn không đặt hoặc đặt chính sách này thành Bật, người dùng có thể thấy quảng cáo Xếp hạng trong App Store tối đa một lần một năm.
-Khi bạn đặt chính sách này thành Tắt, người dùng sẽ không thấy quảng cáo Xếp hạng trong App Store.</translation>
 <translation id="3163880369487075383">Chính sách này kiểm soát việc có thể xoá window.name đối với các thao tác điều hướng ở cấp cao nhất giữa các trang web và dẫn đến việc tạo ra một nhóm bối cảnh duyệt web mới khi bật biến thể ClearCrossSiteCrossBrowsingContextGroupWindowName hay không.
 
 Biến thể ClearCrossSiteCrossBrowsingContextGroupWindowName kiểm soát việc có xoá window.name đối với các thao tác điều hướng ở cấp cao nhất giữa các trang web hay không. Ví dụ về các thao tác điều hướng này bao gồm trường hợp người dùng điều hướng đến một trang web mới thông qua thanh địa chỉ hoặc nhấp vào đường liên kết đến một trang web mới khi đường liên kết đó sử dụng "target='_blank' rel='noopener". Việc xoá window.name trong những trường hợp này sẽ ngăn chặn nguy cơ rò rỉ thông tin giữa các trang web thông qua thuộc tính window.name, qua đó cải thiện quyền riêng tư của người dùng. Chính sách ClearWindowNameForNewBrowsingContextGroup đang được áp dụng để khôi phục hành vi trước đó. Nếu bạn bật biến thể ClearCrossSiteCrossBrowsingContextGroupWindowName và đặt chính sách này thành Bật hoặc không đặt, window.name sẽ bị xoá đối với các thao tác điều hướng đủ điều kiện. Còn nếu bạn tắt biến thể, window.name sẽ không bị xoá.
@@ -5003,7 +4961,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="4136603825567209889">Bật chính sách báo cáo thông tin nhận dạng người dùng</translation>
 <translation id="4138655880188755661">Giới hạn thời gian</translation>
 <translation id="4140646780789794190">Tắt chính sách chia sẻ dữ liệu chẩn đoán cho PluginVm</translation>
-<translation id="4141430435877011529">Đa vùng hoặc vị trí của ứng dụng <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Tìm hiểu thêm về vị trí của <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tại https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">AI tạo sinh</translation>
 <translation id="4145383150978634398">Cung cấp Chế độ màn hình hợp nhất cho người dùng</translation>
 <translation id="4146319954420095470">(Cảnh báo! Phần phụ thuộc này sẽ sớm bị loại bỏ, vui lòng bắt đầu sử dụng <ph name="GLS_POLICY_NAME" />). Nếu bạn đặt chính sách này thành <ph name="BLOCK_GEOLOCATION_SETTING" /> thì các dịch vụ hệ thống <ph name="PRODUCT_OS_NAME" /> và các ứng dụng Android sẽ không thể truy cập vào thông tin vị trí. Nếu bạn đặt chính sách này thành bất kỳ giá trị nào khác hoặc không đặt chính sách này thì người dùng sẽ được nhắc cho phép khi một ứng dụng Android muốn truy cập vào thông tin vị trí.</translation>
@@ -8110,7 +8067,6 @@ Kể từ <ph name="PRODUCT_NAME" /> 147, chính sách này sẽ không được
 <translation id="5962271004971310788">Để điều hướng ở Chế độ ẩn danh, người dùng phải cho phép các tiện ích chạy ở Chế độ ẩn danh</translation>
 <translation id="5963752574792883406">cổng 990 (có thể được bỏ chặn cho đến ngày 1/2/2022)</translation>
 <translation id="596523880465577341">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".</translation>
-<translation id="5965344524743236327">Mã hoặc số của dự án <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> tương ứng với phiên bản <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> cần bật. Tìm hiểu thêm về mã dự án tại https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects.</translation>
 <translation id="5966615072639944554">Tiện ích được phép sử dụng API chứng thực từ xa</translation>
 <translation id="596732417280023843">Tên của hồ sơ chứng chỉ.</translation>
 <translation id="5972475504452039694">Cho phép bạn thiết lập danh sách mẫu URL chỉ định những trang web không được phép tự động tải xuống nhiều tệp.
@@ -8566,7 +8522,6 @@ Nếu bạn không đặt chính sách <ph name="ALLOWED_INPUT_METHODS_POLICY_NA
 <translation id="6264247808139384018">Nếu bạn đặt thành Enabled (Bật) hoặc không đặt chính sách này, những người dùng xác thực bằng mật khẩu có thể khoá màn hình.
 
 Nếu bạn đặt chính sách này thành Disabled (Tắt), người dùng sẽ không thể khoá màn hình. (Họ chỉ có thể đăng xuất khỏi phiên hoạt động của người dùng).</translation>
-<translation id="6265114688953151459">Giá trị nhận dạng riêng biệt của công cụ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Định dạng phải có từ 1 đến 63 ký tự, khớp với mẫu [a-z0-9][a-z0-9-_]*. Tìm hiểu thêm tại https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine.</translation>
 <translation id="6265892395051519509">Cho phép sử dụng cảm biến trên các trang web này</translation>
 <translation id="6266043141694454734">Xác định xem Chrome Root Store và trình xác minh chứng chỉ tích hợp có dùng để xác minh chứng chỉ máy chủ hay không</translation>
 <translation id="6266686172120601139">Bật vùng đệm thích ứng cho Web Audio</translation>
@@ -13193,21 +13148,6 @@ Nếu bạn không đặt chính sách này, thì <ph name="ASK_NOTIFICATIONS_PO
 <translation id="9122865885571719292">Kiểm soát việc có khôi phục hay không và cách <ph name="PRODUCT_OS_NAME" /> khôi phục phiên trước đó khi đăng nhập.
 Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name="FULL_RESTORE_ENABLED_NAME" /> thành true (đúng).</translation>
 <translation id="9123464369663964441">Cho phép người dùng thêm trường hợp ngoại lệ để cho phép nội dung hỗn hợp</translation>
-<translation id="9123738611041078443">Định cấu hình chế độ cài đặt kết nối cho <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />.
-
-Để định cấu hình <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, quản trị viên phải cung cấp:
-* URL ứng dụng web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) HOẶC
-* Cả ba tham số cũ: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> và <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Nếu bạn chỉ khai báo 1 hoặc 2 trong số 3 tham số này mà không có URL thì <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
-
-Tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> phải là một URL hợp lệ sử dụng giao thức HTTPS, trỏ đến miền <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> và không chứa tên người dùng hoặc mật khẩu. Nếu không đáp ứng các yêu cầu này, chính sách sẽ bị bỏ qua và <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
-
-Nếu bạn định cấu hình cả tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> và các tham số cũ thì tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> sẽ được ưu tiên.
-
-Nếu bạn đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ được định cấu hình cho những người dùng đăng nhập bằng tài khoản được quản lý hoặc qua trình duyệt được quản lý.
-
-Nếu bạn không đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
-
-Xin lưu ý rằng chính sách này không kiểm soát việc tích hợp <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> nói chung. Bạn có thể kiểm soát việc tích hợp này qua chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Không bao giờ gửi dữ liệu về độ tin cậy của miền cho Google</translation>
 <translation id="9126331659955304300">Cho phép tính năng lựa chọn hình đại diện của người dùng từ hệ thống tệp, máy ảnh và hồ sơ trên Google</translation>
 <translation id="9126694586349976283">Cho phép sử dụng các API AI tích hợp sẵn.</translation>
@@ -13316,25 +13256,6 @@ Giá trị mặc định là RollbackDisabled.</translation>
 <translation id="9204863016826119209">Những ứng dụng Android được cài đặt và liệt kê trong chính sách này có thể sử dụng khóa công ty.</translation>
 <translation id="9206364386317031168">Cho phép các trang web gửi yêu cầu mạng đến thiết bị cục bộ.</translation>
 <translation id="9206472508136116830">Không cho phép khám phá lượt chia sẻ tệp bằng NetBIOS</translation>
-<translation id="9207289612253941907">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự thuật toán thoả thuận về khoá được ưu tiên (nhóm được hỗ trợ) trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
-
-Việc đặt chính sách này không đảm bảo rằng thuật toán cụ thể sẽ được thương lượng.
-
-Chính sách này được thiết lập để cho phép các nhà điều hành máy chủ muốn hỗ trợ cả những máy khách có và không có yêu cầu tuân thủ phân biệt các máy khách đó, đồng thời chỉ sử dụng một số thuật toán không mặc định có độ mạnh mật mã cao hơn đối với những máy khách được định cấu hình rõ ràng để ưu tiên chúng.
-
-Việc đặt chính sách thành "<ph name="CNSA2_NAME" />" sẽ định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên các phương thức trao đổi khoá cần thiết cho việc tuân thủ Bộ thuật toán bảo mật quốc gia thương mại 2.0 (CNSA 2.0).
-
-Nếu bạn không đặt chính sách này hoặc đặt thành "<ph name="DEFAULT_NAME" />", thì <ph name="PRODUCT_NAME" /> sẽ được định cấu hình để sử dụng các phương thức trao đổi khoá mặc định.
-
-Bạn không cần đặt chính sách này để đảm bảo bảo mật. Mật mã mặc định mà <ph name="PRODUCT_NAME" /> sử dụng đủ mạnh để chống chịu một cuộc tấn công brute force dùng toàn bộ năng lượng của Mặt trời.
-
-Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ chậm hơn khi truy cập vào các trang web.
-
-Chính sách này chỉ ảnh hưởng đến TLS 1.3 và QUIC, chứ không ảnh hưởng đến các phiên bản TLS trước đó.
-
-Bạn có thể đặt chính sách này cho máy và cho người dùng. Nếu bạn đặt cho người dùng, chính sách này chỉ ảnh hưởng đến các yêu cầu mạng do hồ sơ người dùng khởi tạo và có thể không ảnh hưởng đến các yêu cầu mạng do <ph name="PRODUCT_NAME" /> đưa ra để thực hiện các tác vụ trong nền trên toàn trình duyệt; những yêu cầu đó được kiểm soát bằng giá trị ở cấp máy. Nếu bạn đặt chính sách này ở cả cấp máy và cấp người dùng, thì giá trị ở cấp máy sẽ được áp dụng, trừ phi thứ tự ưu tiên của chính sách đã được thay đổi theo chính sách <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
-
-Đối với các phiên bản từ 156 trở xuống, chính sách này chỉ áp dụng trên toàn bộ máy.</translation>
 <translation id="9207596996305971030">Không báo cáo các lần đăng nhập/đăng xuất</translation>
 <translation id="9208328979373108724">Cho phép các nguồn gốc của Ứng dụng web tách biệt thêm ứng dụng con nhưng cần người dùng xác nhận lời nhắc</translation>
 <translation id="9210647066889383361">Cho phép người dùng đăng nhập vào thiết bị của họ bằng Smart Lock</translation>

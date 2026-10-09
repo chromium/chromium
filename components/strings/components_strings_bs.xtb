@@ -668,6 +668,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2127747486437921899">Kurziv</translation>
 <translation id="2130448033692577677">Šabloni koje ste naveli neće se primijeniti jer pravilo DnsOverHttpsMode nije postavljeno.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Omogućavanje automatskog popunjavanja plaćanja je otvoreno u punoj visini.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Prikazuju se nasumičnim redoslijedom. Uvijek možete promijeniti zadani izbor.</translation>
 <translation id="2134584557120247184">Avionska karta</translation>
@@ -1366,6 +1367,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3289578402369490638">Iz drugih trgovina na webu</translation>
 <translation id="3293642807462928945">Saznajte više o pravilu <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u postavkama Chromea</translation>
+<translation id="3296595523896103792">Omogućavanje automatskog popunjavanja plaćanja je zatvoreno.</translation>
 <translation id="3299098170013242198">Windows Hello je uključen za popunjavanje lozinki</translation>
 <translation id="3299197721044635447">Sadržaj se nije mogao zalijepiti izvan upravljanog Chrome konteksta zbog pravila vaše organizacije</translation>
 <translation id="3299720788264079132">Došlo je do greške prilikom korištenja funkcije <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
 <translation id="5651323159439184939">Tabulir papir</translation>
 <translation id="5653681867130739344">Sigurno ažurirajte ličnu kartu u Google Novčaniku</translation>
-<translation id="5653744563415531641">Sačuvajte informacije da brže izvršavate radnje, npr. popunjavate obrasce na Googleovim proizvodima. Možete <ph name="MANAGE_WALLET_SETTINGS_LINK" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID otpremljenog izvještaja o padovima aplikacije:</translation>
 <translation id="5654965123204121933">URL ne uključuje obavezan zamjenski niz <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-pošta</translation>
@@ -3257,7 +3258,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dijaloški okvir za odobrenje roditelja</translation>
-<translation id="6413532517183895572">upravljati postavkama Novčanika</translation>
 <translation id="6415778972515849510">Chromium vam može pomoći da zaštitite svoj Google račun i promijenite lozinku.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Pobrinite se da ključne podatke o preduzeću ili lične podatke pohranite na vanjskom uređaju.</translation>
@@ -3764,7 +3764,6 @@ Dodatni detalji:
 <translation id="7308436126008021607">sinhronizacija u pozadini</translation>
 <translation id="7310392214323165548">Uređaj će se veoma brzo ponovo pokrenuti</translation>
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Pritisnite Tab, a zatim Enter da postavite pitanje u funkciji <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Vaša organizacija je prijavila ovu web lokaciju jer možda krši neko pravilo.</translation>
 <translation id="7315372670898739748">Povezivanje nije uspjelo. Pokušajte ponovo kasnije</translation>
 <translation id="7316521168101843192">Pohranjivanje fajla na Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Dodatni detalji:
 <translation id="7955105108888461311">Pitajte lično</translation>
 <translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7961015016161918242">Nikada</translation>
+<translation id="7961493403319780137">Više informacija o ovoj funkciji – automatskom popunjavanju kodova za potvrdu s Gmaila</translation>
 <translation id="7962467575542381659">Mašina platforme</translation>
 <translation id="796439090588610411">Chrome će zaustaviti automatsku potvrdu ove adrese e-pošte na podržanim web lokacijama.</translation>
 <translation id="7966803981046576691">Vrsta računa za posao</translation>
@@ -4572,7 +4572,6 @@ Dodatni detalji:
 <translation id="8699041776323235191">uređaj HID</translation>
 <translation id="8699985386408839112">Koverta Kaku 1</translation>
 <translation id="8702965365666568344">Montažna traka</translation>
-<translation id="8703242769654966101">Omogućite Pix u Novčaniku</translation>
 <translation id="8703372953981978786">Link ne funkcionira</translation>
 <translation id="8703575177326907206">Vaša veza na domenu <ph name="DOMAIN" /> nije šifrirana.</translation>
 <translation id="8705331520020532516">Serijski broj</translation>

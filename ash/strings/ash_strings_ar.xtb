@@ -373,7 +373,6 @@
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2086334242442703436">فتح "أداة اختيار رموز الإيموجي"</translation>
 <translation id="2089550919269323883">تحظر سياسة المؤسسة تثبيت "<ph name="VM_NAME" />". يُرجى التواصل مع مشرف النظام للحصول على المساعدة. رمز الخطأ هو <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">‏أخبار "Steam لأجهزة Chromebook"</translation>
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
 <translation id="2107581415810719320">الزر الآخر "<ph name="BUTTON_NUMBER" />"</translation>
 <translation id="2107914222138020205">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز Thunderbolt. وقد يصبح أداء الجهاز محدودًا.</translation>
@@ -423,6 +422,7 @@
 <translation id="2293443480080733021">‏ما الذي تريد التركيز عليه؟ اضغط على مفتاح Enter لإضافة المهمة.</translation>
 <translation id="229397294990920565">جارٍ إيقاف بيانات الجوّال...</translation>
 <translation id="2295777434187870477">الميكروفون مفعّل، وسيؤدي التبديل إلى كتم صوته.</translation>
+<translation id="2296880470921996802">أوقَف مشرف تكنولوجيا المعلومات سجلّ الحافظة</translation>
 <translation id="2302092602801625023">‏تتم إدارة هذا الحساب من خلال Family Link</translation>
 <translation id="2303600792989757991">نظرة عامة لنافذة التبديل</translation>
 <translation id="2304702218354340897">هل تريد فعلًا إيقاف ميزة "التحكّم بالوجه"؟</translation>
@@ -1792,7 +1792,6 @@
 <translation id="6127395413317891856">جهازك غير متصل بالإنترنت. يُرجى التحقّق من الاتصال والمحاولة مجددًا.</translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6132714462430777655">هل تريد تخطي تسجيل الجهاز ضمن المؤسسة التعليمية؟</translation>
-<translation id="6136872094979134163">‏تعذّر استرجاع أخبار "Steam لأجهزة Chromebook".</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">ما الذي تريد التركيز عليه؟</translation>
 <translation id="6141988275892716286">تأكيد التنزيل</translation>

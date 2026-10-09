@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ایتالیک</translation>
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">«فعال کردن تکمیل خودکار پرداخت‌ها» به‌صورت کامل باز شده است.</translation>
 <translation id="2131511685263818470">‫<ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ترتیب نمایش زیر تصادفی است. هر زمان که بخواهید می‌توانید انتخاب پیش‌فرضتان را تغییر دهید.</translation>
 <translation id="2134584557120247184">بلیت هواپیما</translation>
@@ -1367,6 +1368,7 @@
 <translation id="3289578402369490638">از فروشگاه‌های دیگر در سراسر وب</translation>
 <translation id="3293642807462928945">درباره خطمشی <ph name="POLICY_NAME" /> بیشتر بدانید</translation>
 <translation id="3295444047715739395">‏گذرواژه‌هایتان را در تنظیمات Chrome مشاهده و مدیریت کنید</translation>
+<translation id="3296595523896103792">«فعال کردن تکمیل خودکار پرداخت‌ها» بسته شد.</translation>
 <translation id="3299098170013242198">‏Windows Hello برای پر کردن گذرواژه‌ها روشن است</translation>
 <translation id="3299197721044635447">‏به‌دلیل خط‌مشی‌های سازمان‌تان، امکان جای‌گذاری محتوا در خارج از محیط مدیریت‌شده Chrome وجود ندارد</translation>
 <translation id="3299720788264079132">هنگام استفاده از <ph name="FEATURE_NAME" /> مشکلی پیش آمد</translation>
@@ -2806,7 +2808,6 @@
 <translation id="5649053991847567735">بارگیری‌های خودکار</translation>
 <translation id="5651323159439184939">تغذیه تراکتوری</translation>
 <translation id="5653681867130739344">‏کارت شناسایی را به‌طور امن در «کیف پول Google» به‌روزرسانی کنید</translation>
-<translation id="5653744563415531641">‏اطلاعاتتان را ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. می‌توانید <ph name="MANAGE_WALLET_SETTINGS_LINK" /> برای <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">شناسه گزارش خرابی بارگذاری‌شده:</translation>
 <translation id="5654965123204121933">نشانی وب حاوی رشته جایگزین الزامی <ph name="SEARCH_TERMS_REPLACEMENT" /> نیست: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ایمیل</translation>
@@ -3258,7 +3259,6 @@
 <translation id="6410264514553301377">‏CVC‏ و تاریخ انقضای <ph name="CREDIT_CARD" /> را وارد کنید</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">کادر گفتگوی تأیید ولی</translation>
-<translation id="6413532517183895572">مدیریت تنظیمات «کیف پول»</translation>
 <translation id="6415778972515849510">‏Chromium می‌تواند کمک کند از حساب Google خود محافظت کنید و گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="6416877227920300343">‫EDP</translation>
 <translation id="6418199314628742460">حتماً همه داده‌های شخصی یا کسب‌وکار مهم را در فضای ذخیره‌سازی خارجی ذخیره کنید.</translation>
@@ -3765,7 +3765,6 @@
 <translation id="7308436126008021607">همگام‌سازی پس‌زمینه</translation>
 <translation id="7310392214323165548">دستگاه به‌زودی بازراه‌اندازی خواهد شد</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
-<translation id="7311565174465466858">‏<ph name="TAB_KEY" /> برای پرسیدن از <ph name="AI_ENGINE_NAME" />، کلید Tab و سپس کلید Enter را فشار دهید</translation>
 <translation id="7313107491291103073">سازمانتان این سایت را پرچم‌گذاری کرده است، زیرا ممکن است یکی از خط‌مشی‌ها را نقض کند.</translation>
 <translation id="7315372670898739748">پیوند دادن انجام نشد، بعداً دوباره امتحان کنید</translation>
 <translation id="7316521168101843192">‏درحال ذخیره کردن فایل در Microsoft OneDrive</translation>
@@ -4173,6 +4172,7 @@
 <translation id="7955105108888461311">درخواست حضوری</translation>
 <translation id="7956713633345437162">نشانک‌های تلفن‌ همراه</translation>
 <translation id="7961015016161918242">هرگز</translation>
+<translation id="7961493403319780137">‏درباره این ویژگی بیشتر بدانید - تکمیل خودکار کدهای درستی‌سنجی از Gmail</translation>
 <translation id="7962467575542381659">ماشین پلاتفرم</translation>
 <translation id="796439090588610411">‏‫Chrome دیگر این ایمیل را در سایت‌های پشتیبانی‌شده به‌طور خودکار تأیید نخواهد کرد.</translation>
 <translation id="7966803981046576691">نوع حساب کار</translation>
@@ -4573,7 +4573,6 @@
 <translation id="8699041776323235191">‏دستگاه HID</translation>
 <translation id="8699985386408839112">پاکت کاکو ۱</translation>
 <translation id="8702965365666568344">نوارچسب نصب</translation>
-<translation id="8703242769654966101">‏فعال‌سازی Pix در «کیف پول»</translation>
 <translation id="8703372953981978786">این پیوند کار نمی‌کند</translation>
 <translation id="8703575177326907206">اتصال شما به <ph name="DOMAIN" /> رمزگذاری نشده است.</translation>
 <translation id="8705331520020532516">شمارهٔ سریال</translation>

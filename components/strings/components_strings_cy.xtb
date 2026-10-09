@@ -668,6 +668,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2127747486437921899">Italig</translation>
 <translation id="2130448033692577677">Mae'n bosib na fydd y templedi rydych wedi'u nodi yn cael eu defnyddio oherwydd nad yw'r polisi DnsOverHttpsMode wedi'i osod.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Galluogi Awtolenwi Taliadau wedi'i agor ar uchder llawn.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Dangosir y rhain mewn trefn ar hap. Gallwch newid eich dewis diofyn unrhyw bryd.</translation>
 <translation id="2134584557120247184">Tocyn awyren</translation>
@@ -1366,6 +1367,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3289578402369490638">O siopau eraill ar draws y we</translation>
 <translation id="3293642807462928945">Dysgu rhagor am y polisi <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Gweld a rheoli'ch cyfrineiriau yn Gosodiadau Chrome</translation>
+<translation id="3296595523896103792">Galluogi Awtolenwi Taliadau wedi cau.</translation>
 <translation id="3299098170013242198">Mae Windows Hello ymlaen ar gyfer llenwi cyfrineiriau</translation>
 <translation id="3299197721044635447">Nid oedd modd gludo cynnwys y tu allan i'r cyd-destun Chrome a reolir oherwydd polisïau eich sefydliad</translation>
 <translation id="3299720788264079132">Aeth rhywbeth o'i le wrth ddefnyddio <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5649053991847567735">Lawrlwythiadau awtomatig</translation>
 <translation id="5651323159439184939">Ffrwd Tractor</translation>
 <translation id="5653681867130739344">Diweddaru cerdyn adnabod yn Google Wallet</translation>
-<translation id="5653744563415531641">Cadwch eich gwybodaeth a chael pethau wedi'u gwneud yn gyflymach, megis llenwi ffurflenni ar draws cynhyrchion Google. Gallwch <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Rhif Adnabod yr Adroddiad am Doriad a Uwchlwythwyd:</translation>
 <translation id="5654965123204121933">Nid yw'r URL yn cynnwys y llinyn amnewid gofynnol <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-bost</translation>
@@ -3257,7 +3258,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6410264514553301377">Rhowch y dyddiad darfod a'r CVC ar gyfer <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Deialog cymeradwyo gan riant</translation>
-<translation id="6413532517183895572">rheoli eich gosodiadau Wallet</translation>
 <translation id="6415778972515849510">Gall Chromium eich helpu i amddiffyn eich Cyfrif Google ac i newid eich cyfrinair.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Sicrhewch fod unrhyw ddata busnes neu bersonol hanfodol yn cael eu storio'n allanol.</translation>
@@ -3763,7 +3763,6 @@ Manylion ychwanegol:
 <translation id="7308436126008021607">cysoni yn y cefndir</translation>
 <translation id="7310392214323165548">Bydd y ddyfais yn ailgychwyn yn fuan iawn</translation>
 <translation id="7311244614769792472">Ni chanfuwyd unrhyw ganlyniadau</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Pwyswch Tab yna Enter i ofyn i <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Mae eich sefydliad wedi fflagio'r wefan hon gan y gallai dorri polisi.</translation>
 <translation id="7315372670898739748">Wedi methu â chysylltu, rhowch gynnig arall arni yn nes ymlaen</translation>
 <translation id="7316521168101843192">Wrthi'n cadw'r ffeil i Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@ Manylion ychwanegol:
 <translation id="7955105108888461311">Gofyn yn bersonol</translation>
 <translation id="7956713633345437162">Nodau tudalen symudol</translation>
 <translation id="7961015016161918242">Byth</translation>
+<translation id="7961493403319780137">Dysgu rhagor am y nodwedd hon - Awtolenwi codau dilysu o Gmail</translation>
 <translation id="7962467575542381659">Peiriant platfform</translation>
 <translation id="796439090588610411">Bydd Chrome yn stopio cadarnhau'r e-bost hwn yn awtomatig ar wefannau a gefnogir.</translation>
 <translation id="7966803981046576691">Math cyfrif swydd</translation>
@@ -4571,7 +4571,6 @@ Manylion ychwanegol:
 <translation id="8699041776323235191">Dyfais HID</translation>
 <translation id="8699985386408839112">Amlen Kaku 1</translation>
 <translation id="8702965365666568344">Tâp Gosod</translation>
-<translation id="8703242769654966101">Galluogi Pix yn Wallet</translation>
 <translation id="8703372953981978786">Nid yw'r ddolen hon yn gweithio</translation>
 <translation id="8703575177326907206">Nid yw eich cysylltiad ag <ph name="DOMAIN" /> wedi'i amgryptio.</translation>
 <translation id="8705331520020532516">Rhif Cyfresol</translation>

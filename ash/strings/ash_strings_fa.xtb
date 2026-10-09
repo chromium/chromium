@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2086334242442703436">باز کردن «انتخاب‌گر اموجی»</translation>
 <translation id="2089550919269323883">نصب <ph name="VM_NAME" /> توسط خط‌مشی شرکتی مسدود شده است. لطفاً برای پشتیبانی با سرپرست سیستم تماس بگیرید. کد خطا <ph name="ERROR" /> است.</translation>
-<translation id="2093792000875799555">‏اخبار «Steam ویژه Chromebook»</translation>
 <translation id="209965399369889474">به شبکه متصل نیست</translation>
 <translation id="2107581415810719320">دکمه <ph name="BUTTON_NUMBER" /> دیگر</translation>
 <translation id="2107914222138020205">‏کابل USB-C شما از Thunderbolt پشتیبانی نمی‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">‏می‌خواهید روی چه چیزی تمرکز کنید؟ برای افزودن تکلیف، کلید Enter را فشار دهید؟</translation>
 <translation id="229397294990920565">داده تلفن همراه درحال خاموش شدن است...</translation>
 <translation id="2295777434187870477">میکروفون روشن است، با تغییر وضعیت صامت می‌شود.</translation>
+<translation id="2296880470921996802">سرپرست فناوری اطلاعات سابقه بریده‌دان را غیرفعال کرده است</translation>
 <translation id="2302092602801625023">‏این حساب با Family Link مدیریت می‌شود</translation>
 <translation id="2303600792989757991">مروری کلی بر پنجره تغییر حالت</translation>
 <translation id="2304702218354340897">مطمئنید می‌خواهید «کنترل چهره» را خاموش کنید؟</translation>
@@ -1788,7 +1788,6 @@
 <translation id="6127395413317891856">آفلاین هستید. اتصالتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">ثبت‌نام مدرسه رد شود؟</translation>
-<translation id="6136872094979134163">‏اخبار «Steam ویژه Chromebook» دریافت نشد.</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">می‌خواهید روی چه چیزی تمرکز کنید؟</translation>
 <translation id="6141988275892716286">تأیید بارگیری</translation>

@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Курзив</translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Долниот лист со „Овозможете автоматско пополнување за плаќања“ е отворен на целосна висина.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Пребарувачиве се прикажани по случаен редослед. Може да го промените вашиот стандарден пребарувач кога сакате.</translation>
 <translation id="2134584557120247184">Авионски билет</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">Од други продавници на интернет</translation>
 <translation id="3293642807462928945">Дознајте повеќе за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте ги и управувајте со лозинките во поставките за Chrome</translation>
+<translation id="3296595523896103792">Долниот лист со „Овозможете автоматско пополнување за плаќања“ е затворен.</translation>
 <translation id="3299098170013242198">Windows Hello е вклучено за пополнување лозинки</translation>
 <translation id="3299197721044635447">Содржините не можеше да се залепат надвор од управуваниот контекст на Chrome поради правилата на вашата организација</translation>
 <translation id="3299720788264079132">Нешто тргна наопаку при користењето <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@
 <translation id="5649053991847567735">Автоматски преземања</translation>
 <translation id="5651323159439184939">Хартија со дупчиња по страните</translation>
 <translation id="5653681867130739344">Ажурирајте ја личната карта безбедно во Google Wallet</translation>
-<translation id="5653744563415531641">Зачувајте ги вашите податоци и завршувајте ги работите побрзо, како пополнувањето формулари во производите на Google. Може <ph name="MANAGE_WALLET_SETTINGS_LINK" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID на прикачениот извештај за пад:</translation>
 <translation id="5654965123204121933">URL-адресата не ја опфаќа задолжителната заменска низа <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Е-пошта</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377">Внесете ги датумот на истекување и CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Дијалог за одобрување од родител</translation>
-<translation id="6413532517183895572">да управувате со вашите поставки за Wallet</translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да ја заштитите сметката на Google и да ја промените лозинката.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Погрижете се критичните деловни или лични податоци да бидат складирани во екстерен простор.</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">синхронизација во заднина</translation>
 <translation id="7310392214323165548">Уредот ќе се рестартира наскоро</translation>
 <translation id="7311244614769792472">Не се најдени резултати</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Притиснете Tab, па Enter за да ја прашате <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Вашата организација го означи сајтов бидејќи можеби прекршува правило.</translation>
 <translation id="7315372670898739748">Поврзувањето не успеа, обидете се повторно подоцна</translation>
 <translation id="7316521168101843192">Датотеката се зачувува во Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">Прашај лично</translation>
 <translation id="7956713633345437162">Мобилни обележувачи</translation>
 <translation id="7961015016161918242">Никогаш</translation>
+<translation id="7961493403319780137">Дознајте повеќе за функцијава – Автоматско пополнување на кодовите за потврда од Gmail</translation>
 <translation id="7962467575542381659">Компјутер на платформа</translation>
 <translation id="796439090588610411">Chrome ќе престане автоматски да ја потврдува е-поштава на поддржаните сајтови.</translation>
 <translation id="7966803981046576691">Тип работен налог</translation>
@@ -4571,7 +4571,6 @@
 <translation id="8699041776323235191">HID-уред</translation>
 <translation id="8699985386408839112">Плик Kaku 1</translation>
 <translation id="8702965365666568344">Лента за монтирање</translation>
-<translation id="8703242769654966101">Овозможете го Pix во Wallet</translation>
 <translation id="8703372953981978786">Линков не функционира</translation>
 <translation id="8703575177326907206">Вашата врска со <ph name="DOMAIN" /> не е шифрирана.</translation>
 <translation id="8705331520020532516">Сериски број</translation>

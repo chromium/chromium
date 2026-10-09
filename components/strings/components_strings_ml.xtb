@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ഇറ്റാലിക്</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">'പേയ്മെന്റുകൾ സ്വയമേവ പൂരിപ്പിക്കൽ പ്രവർത്തനക്ഷമമാക്കുക' മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ഇവ ക്രമരഹിതമായി കാണിച്ചിരിക്കുന്നു. ഏതുസമയത്തും നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം.</translation>
 <translation id="2134584557120247184">ഫ്ലൈറ്റ് ടിക്കറ്റ്</translation>
@@ -1365,6 +1366,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="3289578402369490638">വെബിലുടനീളമുള്ള മറ്റ് സ്റ്റോറുകളിൽ നിന്നുള്ളത്</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> നയത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3295444047715739395">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
+<translation id="3296595523896103792">'പേയ്മെന്റുകൾ സ്വയമേവ പൂരിപ്പിക്കൽ പ്രവർത്തനക്ഷമമാക്കുക' അടച്ചു.</translation>
 <translation id="3299098170013242198">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓണാണ്</translation>
 <translation id="3299197721044635447">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ കാരണം, മാനേജ് ചെയ്യുന്ന Chrome സന്ദർഭത്തിന് പുറത്ത് ഉള്ളടക്കം ഒട്ടിക്കാനായില്ല</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ഉപയോഗിക്കുന്നതിനിടെ എന്തോ കുഴപ്പമുണ്ടായി</translation>
@@ -2804,7 +2806,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="5649053991847567735">യാന്ത്രിക ഡൗൺലോഡുകൾ</translation>
 <translation id="5651323159439184939">ട്രാക്‌റ്റർ ഫീഡ്</translation>
 <translation id="5653681867130739344">Google Wallet-ൽ ഐഡന്റിറ്റി കാർഡ് സുരക്ഷിതമായി അപ്ഡേറ്റ് ചെയ്യുക</translation>
-<translation id="5653744563415531641">Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഫോമുകൾ പൂരിപ്പിക്കുന്നത് പോലെ, നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കുക. <ph name="ACCOUNT" /> എന്നതിനായി നിങ്ങൾക്ക് <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">അപ്‌ലോഡ് ചെയ്ത ക്രാഷ് റിപ്പോർട്ട് ഐഡി:</translation>
 <translation id="5654965123204121933">ആവശ്യമായ <ph name="SEARCH_TERMS_REPLACEMENT" /> എന്ന പകരം നൽകാനുള്ള സ്ട്രിംഗ് URL-ൽ ഇല്ല: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
@@ -3256,7 +3257,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-ന്‍റെ കാലാവധി തീരുന്ന തീയതിയും CVC-യും നൽകുക</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">രക്ഷാകർതൃ അനുമതി ഡയലോഗ്</translation>
-<translation id="6413532517183895572">നിങ്ങളുടെ Wallet ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="6415778972515849510">നിങ്ങളുടെ Google Account പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chromium സഹായിക്കും.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">പ്രധാനപ്പെട്ട ബിസിനസോ വ്യക്തിപരമായ ഡാറ്റയോ പുറത്താണ് സൂക്ഷിക്കുന്നതെന്ന് ഉറപ്പാക്കുക.</translation>
@@ -3763,7 +3763,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="7308436126008021607">പശ്ചാത്തലം സമന്വയിപ്പിക്കൽ</translation>
 <translation id="7310392214323165548">ഉപകരണം ഉടൻ റീസ്റ്റാർട്ട് ചെയ്യും</translation>
 <translation id="7311244614769792472">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> എന്നതിനോട് ചോദിക്കാൻ 'ടാബ്' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="7313107491291103073">നയം ലംഘിക്കാനിടയുള്ളതിനാൽ നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഈ സൈറ്റ് ഫ്ലാഗ് ചെയ്തു.</translation>
 <translation id="7315372670898739748">ലിങ്ക് ചെയ്യാനായില്ല, പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7316521168101843192">Microsoft OneDrive-ലേക്ക് ഫയൽ സംരക്ഷിക്കുന്നു</translation>
@@ -4169,6 +4168,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="7955105108888461311">നേരിട്ട് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="7956713633345437162">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
+<translation id="7961493403319780137">ഈ ഫീച്ചറിനെ കുറിച്ച് കൂടുതലറിയുക - Gmail-ൽ നിന്നുള്ള പരിശോധിച്ചുറപ്പിക്കൽ കോഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="7962467575542381659">പ്ലാറ്റ്‌ഫോം മെഷീൻ</translation>
 <translation id="796439090588610411">പിന്തുണയ്ക്കുന്ന സൈറ്റുകളിൽ ഈ ഇമെയിൽ സ്വയമേവ സ്ഥിരീകരിക്കുന്നത് Chrome നിർത്തും.</translation>
 <translation id="7966803981046576691">ജോബ് അക്കൗണ്ട് തരം</translation>
@@ -4569,7 +4569,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="8699041776323235191">HID ഉപകരണം</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">മൗണ്ട് ചെയ്യൽ ടേപ്പ്</translation>
-<translation id="8703242769654966101">Wallet-ൽ Pix പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8703372953981978786">ഈ ലിങ്ക് പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ലേക്കുള്ള നിങ്ങളുടെ കണക്ഷന്‍ എന്‍‌ക്രിപ്റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="8705331520020532516">സീരിയല്‍‌ നമ്പര്‍‌</translation>

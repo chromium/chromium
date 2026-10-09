@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2086334242442703436">ইমোজি পিকার খুলুন</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> ইনস্টল করার সুবিধা, এন্টারপ্রাইজ নীতির মাধ্যমে ব্লক করা হয়েছে। সহায়তার জন্য আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড হল <ph name="ERROR" />।</translation>
-<translation id="2093792000875799555">Steam for Chromebook-এর খবর</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2107581415810719320">অন্য বোতাম <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">আপনার USB-C কেবল Thunderbolt-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">আপনি কীসের উপর ফোকাস করতে চান? টাস্ক যোগ করতে Enter 'কী' প্রেস করুন।</translation>
 <translation id="229397294990920565">মোবাইল ডেটা বন্ধ করা হচ্ছে...</translation>
 <translation id="2295777434187870477">মাইক্রোফোন চালু করা আছে, টগল করলে এটি মিউট হয়ে যাবে।</translation>
+<translation id="2296880470921996802">আপনার আইটি অ্যাডমিন ক্লিপবোর্ড ইতিহাস বন্ধ করে দিয়েছেন</translation>
 <translation id="2302092602801625023">এই অ্যাকাউন্টটি Family Link দ্বারা ম্যানেজ করা</translation>
 <translation id="2303600792989757991">উইন্ডোর ওভারভিউ টগল করুন</translation>
 <translation id="2304702218354340897">আপনি কি সত্যিই ফেস কন্ট্রোল বন্ধ করতে চান?</translation>
@@ -1788,7 +1788,6 @@
 <translation id="6127395413317891856">আপনি অফলাইন আছেন। আপনার ডিভাইসের কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">স্কুলে নথিভুক্ত করা এড়িয়ে যাবেন?</translation>
-<translation id="6136872094979134163">Steam for Chromebook-এর খবর ফেরানো যাচ্ছে না।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
 <translation id="6141205840878048728">আপনি কীসের উপর ফোকাস করতে চান?</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>

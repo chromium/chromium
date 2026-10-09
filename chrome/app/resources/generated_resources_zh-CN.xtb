@@ -281,6 +281,7 @@
 <translation id="1190155014618058972">创建自定义组合键</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{可访问您计算机上存储的 1 个文件}other{可访问您计算机上存储的 # 个文件}}</translation>
 <translation id="1190706173655543975">Microsoft 应用政策</translation>
+<translation id="1191683799345917508">将顶部网站静音</translation>
 <translation id="119330003005586565">您已读过的页面</translation>
 <translation id="1193927020065025187">此网站可能正试图诱骗您允许显示侵扰性通知</translation>
 <translation id="11947597112837849">邮箱</translation>
@@ -433,6 +434,7 @@
 <translation id="130744661532298792">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
 <translation id="1308105352527684175">您可能无法访问某些内容</translation>
 <translation id="1311092170520822848">此网站正在控制连接到您的设备的智能卡读卡器，并且可能会控制读卡器中的智能卡</translation>
+<translation id="131112175593356748">显示部分</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
 <translation id="131188242279372879">了解增强型保护，为下载内容提供最高级别的 Chrome 安全防护</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{修复导致浏览器运行缓慢的标签页}other{修复导致浏览器运行缓慢的标签页}}</translation>
@@ -936,6 +938,7 @@
 <translation id="1708563369218024896">未选择任何数据收集器。请至少选择一个数据收集器。</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />（ID：<ph name="ID_PH" />）</translation>
 <translation id="1708839673480942471">管理应用通知、“勿扰”功能和应用标记</translation>
+<translation id="1708971471914925330">将左侧网站取消静音</translation>
 <translation id="1708979186656821319">下载完成后不显示</translation>
 <translation id="1709085899471866534">一目了然地了解标签页何时处于闲置状态。您可以随时在“设置”中停用此新外观。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
@@ -2311,6 +2314,7 @@
 <translation id="2756754491396884324">要屏蔽并退出分组吗？</translation>
 <translation id="2756936198272359372">不允许使用 JavaScript</translation>
 <translation id="2757161511365746634">查看打印机</translation>
+<translation id="2757292392033317957">将右侧网站取消静音</translation>
 <translation id="2757338480560142065">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> 未返回任何与“<ph name="SEARCH_QUERY" />”相符的搜索结果</translation>
 <translation id="2762441749940182211">已禁止使用摄像头</translation>
@@ -2440,7 +2444,7 @@
 <translation id="2854453262159518435">替换现有标签页分组</translation>
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2855812646048059450">通过 <ph name="CREDENTIAL_PROVIDER" /> 登录</translation>
-<translation id="2857047802954430547">登录即可在所有设备上获取密码、书签等信息</translation>
+<translation id="2857047802954430547">在您的各个设备上登录账号即可使用密码、书签等信息</translation>
 <translation id="2857195263461649321">继续上次的 Gemini 对话</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">企业政策</translation>
@@ -2982,6 +2986,7 @@
 <translation id="3257733480216378006">允许 <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 款扩展程序访问此网站？</translation>
 <translation id="325797067711573598">已阻止可疑下载操作</translation>
 <translation id="3261090393424563833">提高采样率</translation>
+<translation id="3261798996834477302">将底部网站取消静音</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> 的通行密钥</translation>
 <translation id="3262261769033093854">不允许网站捕获和使用您的鼠标输入</translation>
 <translation id="3262336253311870293">由于此账号是由 <ph name="DOMAIN" /> 管理，您不会被强制退出自己的 Google 账号。您的书签、历史记录、密码和其他设置将不再保持同步。不过，您之前同步的数据仍会存储在您的 Google 账号中，并可通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />进行管理。</translation>
@@ -3393,6 +3398,7 @@
 <translation id="3575224072358507281">根据 Measurement Lab 的隐私权政策 (measurementlab.net/privacy)，收集 IP 地址和网络测量结果</translation>
 <translation id="3576324189521867626">已成功安装</translation>
 <translation id="3577036603268648505">进一步保障上网安全</translation>
+<translation id="3577178956237526436">将左侧网站取消静音</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577487026101678864">已开启文件同步</translation>
 <translation id="3578230582111850125">选择文字即可问问 Gemini</translation>
@@ -3641,6 +3647,7 @@
 <translation id="374124333420280219">应用详细信息：</translation>
 <translation id="3741510433331996336">请重启设备以完成更新</translation>
 <translation id="3742235229730461951">韩语键盘布局</translation>
+<translation id="3743737928354166561">将顶部网站取消静音</translation>
 <translation id="3743842571276656710">请输入 PIN 码以与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="3744219658596020825">您的密码未能成功导入</translation>
 <translation id="3745306754941902605">厨房</translation>
@@ -4283,6 +4290,7 @@
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
 <translation id="4246980464509998944">其他评论：</translation>
 <translation id="4248401726442101648">未连接到摄像头</translation>
+<translation id="4248996886292862765">将左侧网站静音</translation>
 <translation id="4249116869350613769">省电模式</translation>
 <translation id="4249373718504745892">已禁止此网页使用您的摄像头和麦克风。</translation>
 <translation id="4249785854468467847">AI 强力赋能，重塑 Chrome 体验</translation>
@@ -4310,6 +4318,7 @@
 <translation id="4263824086525632">北极光</translation>
 <translation id="4265096510956307240">验证身份</translation>
 <translation id="4265301768135164545">您也可<ph name="BEGIN_LINK" />手动<ph name="END_LINK" />设置 eSIM 卡配置文件</translation>
+<translation id="4265517943561857930">将顶部网站取消静音</translation>
 <translation id="426564820080660648">要检查是否有更新，请使用以太网、WLAN 或移动数据。</translation>
 <translation id="426652736638196239">此 IBAN 将仅保存到这部设备上</translation>
 <translation id="4266679478228765574">移除文件夹会停止共享但不会删除其中的文件。</translation>
@@ -5132,7 +5141,6 @@
 <translation id="4884987973312178454">6 倍</translation>
 <translation id="4885692421645694729">此扩展程序无权访问其他网站</translation>
 <translation id="4887424188275796356">使用系统查看器打开</translation>
-<translation id="488785315393301722">显示详细信息</translation>
 <translation id="488862352499217187">新建文件夹</translation>
 <translation id="4888715715847020167">前往“设置”</translation>
 <translation id="4888899258150891194">CppGC 内存占用</translation>
@@ -5227,6 +5235,7 @@
 <translation id="4956593309300508411">要停止分享吗？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
+<translation id="4958931830785526368">将底部网站静音</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4959581970694896608">自定义 Gemini 的回答方式</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
@@ -5804,7 +5813,7 @@
 <translation id="5420438158931847627">确定文字和图片的清晰度</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限</translation>
 <translation id="5421048291985386320">重新登录(&amp;S)</translation>
-<translation id="542237158771780634">当设置处于开启状态时，数据会保存在您的 Google 账号中，并且可供您在所有设备上使用。当设置处于关闭状态时，数据只会保存到此设备上。</translation>
+<translation id="542237158771780634">如果开启以下设置，相关数据将保存在您的 Google 账号中，可在您的所有设备上使用。如果关闭以下设置，数据将仅保存在此设备上。</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">您下次访问时，<ph name="SITE" /> 将使用默认权限</translation>
 <translation id="5423829801105537712">基本拼写检查</translation>
@@ -6146,6 +6155,7 @@
 <translation id="5691772641933328258">无法识别指纹</translation>
 <translation id="5693255400847650006">麦克风正在使用中</translation>
 <translation id="5693806089748511108">您的技能</translation>
+<translation id="5694689722959820210">创建标签页分组</translation>
 <translation id="5695046252726616755">按 Enter 键或空格键可查看更多选项。</translation>
 <translation id="5695184138696833495">Linux Android 应用 ADB</translation>
 <translation id="5696143504434933566">举报“<ph name="EXTENSION_NAME" />”的滥用行为</translation>
@@ -8123,6 +8133,7 @@
 <translation id="7219473482981809164">我们找到了多份可供下载的个人资料。请先选择您想下载的个人资料，然后继续操作。</translation>
 <translation id="7220019174139618249">无法将密码导出到“<ph name="FOLDER" />”</translation>
 <translation id="722099540765702221">电源</translation>
+<translation id="7221301072025277667">将右侧网站取消静音</translation>
 <translation id="7221869452894271364">重新加载此页</translation>
 <translation id="7222232353993864120">邮箱</translation>
 <translation id="7222335051802562841">完成更新</translation>
@@ -8377,6 +8388,7 @@
 <translation id="7408080603962564527">他人将能看到此热点</translation>
 <translation id="740810853557944681">添加打印服务器</translation>
 <translation id="7409549334477097887">特大</translation>
+<translation id="740957773517302609">将右侧网站静音</translation>
 <translation id="7409599290172516453">近期照片</translation>
 <translation id="7409735910987429903">网站可能会发送弹出式窗口以展示广告，或者使用重定向将您引导至您可能不想访问的网站</translation>
 <translation id="7409854300652085600">书签已导入完毕。</translation>
@@ -8406,7 +8418,7 @@
 <translation id="7424818322350938336">已添加网络</translation>
 <translation id="7425037327577270384">帮我写</translation>
 <translation id="7427348830195639090">后台网页：<ph name="BACKGROUND_PAGE_URL" /></translation>
-<translation id="7427729970025360383">此资料受管理</translation>
+<translation id="7427729970025360383">此个人资料受管理</translation>
 <translation id="7427798576651127129">通过<ph name="DEVICE_NAME" />拨打电话</translation>
 <translation id="7429415133937917139">在屏幕顶部的 ChromeVox 面板中
 模拟可刷新式盲文显示屏的输出结果</translation>
@@ -8792,6 +8804,7 @@
 <translation id="7721258531237831532">贵单位要求设置个人资料</translation>
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7726288096350730168">从此设备中删除</translation>
+<translation id="7726299524691842087">将底部网站取消静音</translation>
 <translation id="7726391492136714301">查看您手机上的通知和应用</translation>
 <translation id="7727898923446098954">标签页已隐藏</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{暂停此标签页}other{暂停这些标签页}}</translation>
@@ -9225,7 +9238,7 @@
 <translation id="8045923671629973368">输入应用 ID 或网上应用店网址</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
 <translation id="8048596485169033655">正在下载主要节点标注文件…，进度为 <ph name="PERCENT" />%</translation>
-<translation id="8048728378294435881">备份您的资料，在任何设备上使用</translation>
+<translation id="8048728378294435881">备份数据，在您的任何设备上使用</translation>
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
 <translation id="8049122382261047457">使用 Google 智能镜头搜索任意图片</translation>
 <translation id="8049948037269924837">触控板反向滚动</translation>
@@ -9431,6 +9444,7 @@
 <translation id="8206267832882844324">修改备注</translation>
 <translation id="8206713788440472560">选择屏幕</translation>
 <translation id="8206745257863499010">音符</translation>
+<translation id="8206764473369122992">将左侧网站静音</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8207386708156457998">若要在特定网站或搜索引擎中进行搜索，请先在地址栏中输入相应的快捷字词，然后按您选择的键盘按键</translation>
 <translation id="8207404892907560325">选择一个通行密钥</translation>
@@ -9709,6 +9723,7 @@
 <translation id="8418675848396538775">添加“<ph name="LANGUAGE_NAME" />”</translation>
 <translation id="8419098111404128271">与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="8419144699778179708">删除历史记录，包括搜索框中的历史记录</translation>
+<translation id="8419145215916772468">将顶部网站静音</translation>
 <translation id="8420308167132684745">修改字典条目</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">缺少送纸盘</translation>
@@ -9890,6 +9905,7 @@
 <translation id="8561565784790166472">继续操作有风险，请三思</translation>
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
 <translation id="8563043098557365232">只能用于系统服务</translation>
+<translation id="8563898784671745643">将底部网站静音</translation>
 <translation id="8564220755011656606">无法使用麦克风</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />吗？</translation>
 <translation id="8566916288687510520">收到了新密码</translation>
@@ -10167,6 +10183,7 @@
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">显示“<ph name="QUERY_CLUSTER_NAME" />”的所有搜索结果</translation>
 <translation id="8767621466733104912">自动为所有用户更新 Chrome</translation>
+<translation id="8767731819450513349">将右侧网站静音</translation>
 <translation id="8768049274922835860">所有人</translation>
 <translation id="8768559850883798245">开启自动展开标签页功能</translation>
 <translation id="8769047324653576116">若要通过您的组织资料使用设备，需要向您的组织提供该设备的相关信息。
@@ -10410,7 +10427,6 @@
 <translation id="8960208913905765425">快速解答单位换算</translation>
 <translation id="8960638196855923532">您现在可以查看手机中的通知和应用</translation>
 <translation id="8962051932294470566">您一次只能分享 1 个文件。请在当前传输任务完成后重试。</translation>
-<translation id="8962083179518285172">隐藏详细信息</translation>
 <translation id="8962863356073277855">网址格式应为 https://www.example.com</translation>
 <translation id="8962918469425892674">此网站正在使用动态传感器或光传感器。</translation>
 <translation id="8963117664422609631">转到网站设置</translation>

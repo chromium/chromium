@@ -14,6 +14,7 @@
 <translation id="12739128458173458">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chromium í báðum tækjum.</translation>
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
 <translation id="1383876407941801731">Leita</translation>
+<translation id="1421604911662901100">Skráðu þig inn á þetta vefsvæði og Chromium til að fá vistuðu upplýsingarnar þínar og fleira í öll tækin þín</translation>
 <translation id="1423007117030725713">Hefja leit í nýjum flipa í Chromium.</translation>
 <translation id="1431818719585918472">Leyfa Chromium að læsa huliðsflipunum þínum.</translation>
 <translation id="1451665391191990528">Fela opna huliðsflipa þegar þú lokar Chromium</translation>
@@ -55,6 +56,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="2006345422933397527">Chromium gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
 <translation id="2025935492422922097">Chromium vinnur úr síðutitlum og vefslóðum í lokuðu rými í skýinu</translation>
 <translation id="2027881372245801507">Þó slökkt sé á tillögum stjórnar það ekki úrvinnslu Chromium á síðutitlum og vefslóðum fyrir aðra eiginleika. Þú getur stjórnað aðgangi að þessum gögnum í <ph name="BEGIN_LINK" />stillingum samstillingar<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">Skráðu þig inn á þetta vefsvæði og Chromium til að fá aðgangsorðin þín og fleira í öll tækin þín.</translation>
 <translation id="2042889939382983733">Skoða Chromium-ferilinn þinn</translation>
 <translation id="2052320862053429062">Chromium athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="2059365270911640413">Ljúktu við uppsetningu Chromium</translation>
@@ -99,6 +101,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="2832168932648876507">Leita með röddinni í Chromium.</translation>
 <translation id="2843571538056574338">Nota Chromium til sjálfvirkrar útfyllingar</translation>
 <translation id="2844923129028437362">Forðastu að afrita. Veldu Chromium sem sjálfgefinn iOS-vafra.</translation>
+<translation id="2876793692921835457">Skráðu þig inn á þetta vefsvæði og Chromium til að fá bókamerkin þín og fleira í öll tækin þín</translation>
 <translation id="2918709798697875261">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chromium.</translation>
 <translation id="2942241131342758843">Notaðu Chromium sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
@@ -225,6 +228,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="5671188105328420281">Ábendingar fyrir Chromium</translation>
 <translation id="5688047395118852662">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chromium til fulls.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
+<translation id="5714479833576517588">Skráðu þig inn á þetta vefsvæði og Chromium til að fá aðgangsorðin þín og fleira úr <ph name="DEVICE_TYPE" /></translation>
 <translation id="5731004036450828399">Þú þarft að byrja á því að búa til PIN-númer fyrir endurheimt til að gæta að öryggi aðgangslyklanna þinna.
 
         Aðgangslyklar eru vistaðir í Aðgangsorðastjórnun, sem gerir þér kleift að nota þá í Chromium í hvaða tæki sem er.</translation>
@@ -243,6 +247,7 @@ Hafðu í huga:
   • Ef þú samstillir ferilinn við Google-reikninginn þinn gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">Ljúktu fljótlegum verkefnum og uppgötvaðu leiðir til að nýta Chromium sem best:</translation>
 <translation id="5932787118589620366">Eyða vefskoðunargögnum í Chromium.</translation>
+<translation id="59347837447331606">Skráðu þig inn á þetta vefsvæði og Chromium til að fá vistaðar upplýsingar og fleira úr <ph name="DEVICE_TYPE" /></translation>
 <translation id="593808800391107017">Fáðu viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chromium greinir sjálfkrafa fyrir þig.</translation>
 <translation id="5951593919357934226">Fáðu sem mest út úr Chromium.</translation>
 <translation id="5985254578475526217">Til að fá tilkynningar frá Chromium skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
@@ -304,6 +309,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="725427773388857052">Chromium getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
 <translation id="7269362888766543920">Einhverjar viðbætur valda því að Chromium hrynur. Prófaðu að fjarlægja þær.</translation>
 <translation id="7285031092584344905">Nálgastu Chromium-aðgangsorðin þín og fleira í öðrum forritum.</translation>
+<translation id="7291896724424825868">Skráðu þig inn á þetta vefsvæði og Chromium til að fá bókamerkin þín og fleira frá <ph name="DEVICE_TYPE" /></translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Aðgangsorðið verður vistað í aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Þessi aðgangslykill verður vistaður í Aðgangsorðastjórnun fyrir <ph name="USER_EMAIL" />.</translation>

@@ -14,6 +14,7 @@
 <translation id="12739128458173458">Lai nosūtītu šo cilni uz citu ierīci, abās ierīcēs pierakstieties pārlūkā Chromium.</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
+<translation id="1421604911662901100">Pierakstieties šajā vietnē un pārlūkā Chromium, lai visās savās ierīcēs iegūtu savu saglabāto informāciju un citu saturu.</translation>
 <translation id="1423007117030725713">Meklēšana jaunā Chromium cilnē.</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
 <translation id="1451665391191990528">Paslēpiet atvērtās inkognito cilnes, kad aizverat pārlūku Chromium</translation>
@@ -55,6 +56,7 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="2006345422933397527">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
 <translation id="2025935492422922097">Chromium apstrādā lapu nosaukumus un vietrāžus URL privātā telpā mākonī.</translation>
 <translation id="2027881372245801507">Ieteikumu izslēgšana neietekmē to, kā Chromium apstrādā lapu nosaukumus un vietrāžus URL citām funkcijām. Varat pārvaldīt piekļuvi šiem datiem savos <ph name="BEGIN_LINK" />sinhronizācijas iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">Pierakstieties šajā vietnē un pārlūkā Chromium, lai visās savās ierīcēs iegūtu savas paroles un citu saturu.</translation>
 <translation id="2042889939382983733">Chromium vēstures skatīšana</translation>
 <translation id="2052320862053429062">Pārlūkā Chromium tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="2059365270911640413">Chromium iestatīšanas pabeigšana</translation>
@@ -99,6 +101,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="2832168932648876507">Meklējiet ar balsi pārlūkā Chromium.</translation>
 <translation id="2843571538056574338">Izmantojiet pārlūku Chromium automātiskajai aizpildei</translation>
 <translation id="2844923129028437362">Vairs nekādas kopēšanas. Iestatiet Chromium kā noklusējuma iOS pārlūku.</translation>
+<translation id="2876793692921835457">Pierakstieties šajā vietnē un pārlūkā Chromium, lai visās savās ierīcēs iegūtu savas grāmatzīmes un citu saturu.</translation>
 <translation id="2918709798697875261">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chromium.</translation>
 <translation id="2942241131342758843">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
@@ -225,6 +228,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus
 <translation id="5671188105328420281">Chromium padomi</translation>
 <translation id="5688047395118852662">Šajā kartītē tiek rādīti ieteikumi par to, kā pilnvērtīgi izmantot pārlūku Chromium.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
+<translation id="5714479833576517588">Pierakstieties šajā vietnē un pārlūkā Chromium, lai iegūtu savas paroles un citu saturu no ierīces <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5731004036450828399">Lai aizsargātu piekļuves atslēgas, vispirms jums būs jāizveido atkopšanas PIN.
 
         Piekļuves atslēgas tiek saglabātas Paroļu pārvaldniekā, tādējādi varat tās izmantot pārlūkā Chromium jebkurā ierīcē.</translation>
@@ -243,6 +247,7 @@ Svarīga informācija
   • Ja sinhronizēsiet vēsturi ar savu Google kontu, metrikā var būt ietverta arī informācija par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">Veiciet ātrās darbības un atklājiet veidus, kā pilnvērtīgi izmantot pārlūku Chromium.</translation>
 <translation id="5932787118589620366">Dzēst pārlūkošanas datus pārlūkā Chromium.</translation>
+<translation id="59347837447331606">Pierakstieties šajā vietnē un pārlūkā Chromium, lai iegūtu savu saglabāto informāciju un citu saturu no ierīces <ph name="DEVICE_TYPE" />.</translation>
 <translation id="593808800391107017">Saņemiet brīdinājumus par visām ar konfidencialitāti vai drošību saistītām problēmām, kas tiek automātiski noteiktas pārlūkā Chromium.</translation>
 <translation id="5951593919357934226">Izmantojiet pārlūku Chromium pilnvērtīgi.</translation>
 <translation id="5985254578475526217">Lai saņemtu paziņojumus no pārlūka Chromium, ieslēdziet paziņojumus iOS iestatījumos.</translation>
@@ -304,6 +309,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="725427773388857052">Chromium var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="7269362888766543920">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet tos.</translation>
 <translation id="7285031092584344905">Piekļūstiet savām Chromium parolēm un citiem datiem dažādās lietotnēs.</translation>
+<translation id="7291896724424825868">Pierakstieties šajā vietnē un pārlūkā Chromium, lai iegūtu grāmatzīmes un citu saturu no ierīces <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Jūsu parole tiks saglabāta paroļu pārvaldniekā kontā <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Šī piekļuves atslēga tiks saglabāta Paroļu pārvaldniekā kontam <ph name="USER_EMAIL" />.</translation>

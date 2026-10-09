@@ -391,6 +391,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5249261924633168472">Відкрити посилання в &amp;анонімному вікні Chromium</translation>
 <translation id="5276305953263010518">Завантажте додаток Chromium, щоб зберігати паролі, де б ви не були</translation>
 <translation id="5277894862589591112">Щоб застосувати зміни, перезапустіть Chromium</translation>
+<translation id="5278909220224474621">Щоб надіслати цю вкладку на інший пристрій, увійдіть в обліковий запис Chromium на обох пристроях</translation>
 <translation id="5286907366254680517">Визначено</translation>
 <translation id="5289287148052354622">Завантажити додаток Chromium</translation>
 <translation id="5294316920224716406">У режимі анонімного перегляду Chromium показуватиме попередження, перш ніж завантажити сайт через незахищене з’єднання</translation>
@@ -760,6 +761,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
 <translation id="8676101123715131330">Виконуйте пошук у Chromium будь-де</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>
+<translation id="8702213505203810093">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chromium</translation>
 <translation id="8704119203788522458">Це ваш Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8719993436687031146">Увійти в Chromium?</translation>

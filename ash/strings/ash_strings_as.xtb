@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="2086334242442703436">ইম’জি বাছনি কৰোঁতা খোলক</translation>
 <translation id="2089550919269323883">এণ্টাৰপ্ৰাইজ নীতিয়ে <ph name="VM_NAME" /> ইনষ্টল কৰাটো অৱৰোধ কৰিছে। অনুগ্ৰহ কৰি সহায়ৰ বাবে আপোনাৰ ছিষ্টেমৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ডটো হৈছে <ph name="ERROR" />।</translation>
-<translation id="2093792000875799555">Chromebookৰ বাবে Steam সম্পৰ্কীয় বাতৰি</translation>
 <translation id="209965399369889474">নেটৱৰ্কৰ সৈতে সংযুক্ত হৈ নাই</translation>
 <translation id="2107581415810719320">অন্য বুটাম <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">আপোনাৰ USB-C কে’বলে Thunderbolt সমৰ্থন নকৰে। ডিভাইচৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে।</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">আপুনি কিহৰ ওপৰত ফ’কাছ কৰিব বিচাৰে? কাৰ্যটো যোগ দিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="229397294990920565">ম’বাইল ডেটা অফ কৰি থকা হৈছে...</translation>
 <translation id="2295777434187870477">মাইক অন কৰা আছে, ট’গল কৰিলে ইনপুট মিউট হ’ব।</translation>
+<translation id="2296880470921996802">আপোনাৰ আইটি প্ৰশাসকে ক্লিপব’ৰ্ডৰ ইতিহাস অক্ষম কৰিছে</translation>
 <translation id="2302092602801625023">এই একাউণ্টটো পাৰিবাৰিক লিংকৰ দ্বাৰা পৰিচালনা কৰা হয়</translation>
 <translation id="2303600792989757991">ৱিণ্ড‘ অৱলোকন ট‘গল কৰক</translation>
 <translation id="2304702218354340897">আপুনি মুখাৱয়বৰ নিয়ন্ত্ৰণ অফ কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
@@ -1788,7 +1788,6 @@
 <translation id="6127395413317891856">আপুনি অফলাইন হৈ আছে। আপোনাৰ সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6129953537138746214">স্পেচ</translation>
 <translation id="6132714462430777655">বিদ্যালয়ৰ পঞ্জীয়ন এৰি যাবনে?</translation>
-<translation id="6136872094979134163">Chromebookৰ বাবে Steam সম্পৰ্কীয় বাতৰি পুনৰুদ্ধাৰ কৰিব পৰা নগ’ল।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে আঁতৰোৱাৰ ডায়লগ খোলক</translation>
 <translation id="6141205840878048728">আপুনি কিহৰ ওপৰত ফ’কাছ কৰিব বিচাৰে?</translation>
 <translation id="6141988275892716286">ডাউনল’ড নিশ্চিত কৰক</translation>

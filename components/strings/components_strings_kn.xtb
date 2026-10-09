@@ -667,6 +667,7 @@
 <translation id="2127747486437921899">ಇಟಾಲಿಕ್</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯನ್ನು ಹೊಂದಿಸದೇ ಇರುವ ಕಾರಣದಿಂದಾಗಿ ನೀವು ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಟೆಂಪ್ಲೆಟ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">ಪಾವತಿಗಳ ಆಟೋಫಿಲ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ಇವುಗಳನ್ನು ರ‍್ಯಾಂಡಮ್ ಆರ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆಯ್ಕೆಯನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="2134584557120247184">ವಿಮಾನ ಟಿಕೆಟ್</translation>
@@ -1363,6 +1364,7 @@
 <translation id="3289578402369490638">ವೆಬ್‌ನಾದ್ಯಂತ ಇರುವ ಇತರ ಸ್ಟೋರ್‌ಗಳಿಂದ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ಕಾರ್ಯನೀತಿಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="3295444047715739395">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3296595523896103792">ಪಾವತಿಗಳ ಆಟೋಫಿಲ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ ಎಂಬುದನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="3299098170013242198">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವುದಕ್ಕಾಗಿ Windows Hello ಆನ್ ಆಗಿದೆ</translation>
 <translation id="3299197721044635447">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳ ಕಾರಣದಿಂದಾಗಿ, ನಿರ್ವಹಿಸಲಾದ Chrome ಕಾಂಟೆಕ್ಸ್ಟ್‌ನ ಹೊರಗೆ ಕಂಟೆಂಟ್ ಅನ್ನು ಪೇಸ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ</translation>
@@ -2801,7 +2803,6 @@
 <translation id="5649053991847567735">ಸ್ವಯಂಚಾಲಿತ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="5651323159439184939">ಟ್ರಾಕ್ಟರ್ ಫೀಡ್</translation>
 <translation id="5653681867130739344">Google Wallet ನಲ್ಲಿ ಐಡೆಂಟಿಟಿ ಕಾರ್ಡ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
-<translation id="5653744563415531641">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಫಾರ್ಮ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವಂತಹ ಕೆಲಸಗಳನ್ನು ವೇಗವಾಗಿ ಮಾಡಿ. ನೀವು <ph name="ACCOUNT" /> ಗಾಗಿ <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ಮಾಡಬಹುದು.</translation>
 <translation id="5654927323611874862">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾದ ಕ್ರ್ಯಾಶ್ ವರದಿಯ ಐಡಿ:</translation>
 <translation id="5654965123204121933">URL ಅಗತ್ಯವಿರುವ ಬದಲಿ ಸ್ಟ್ರಿಂಗ್ <ph name="SEARCH_TERMS_REPLACEMENT" /> ಅನ್ನು ಒಳಗೊಂಡಿಲ್ಲ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
@@ -3253,7 +3254,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ಗೆ ಮುಕ್ತಾಯ ದಿನಾಂಕ ಮತ್ತು ಸಿವಿಸಿ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">ಪೋಷಕರ ಅನುಮೋದನೆಯ ಡೈಲಾಗ್</translation>
-<translation id="6413532517183895572">ನಿಮ್ಮ Wallet ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6415778972515849510">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಲು ಹಾಗೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, Chromium ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ಯಾವುದೇ ನಿರ್ಣಾಯಕ ವ್ಯಾಪಾರ ಅಥವಾ ವೈಯಕ್ತಿಕ ಡೇಟಾವನ್ನು ಬಾಹ್ಯವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -3760,7 +3760,6 @@
 <translation id="7308436126008021607">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</translation>
 <translation id="7310392214323165548">ಸಾಧನವನ್ನು ಶೀಘ್ರದಲ್ಲೇ ಮರುಪ್ರಾರಂಭಿಸಲಾಗುವುದು</translation>
 <translation id="7311244614769792472">ಯಾವ ಫಲಿತಾಂಶಗಳೂ ಕಂಡುಬಂದಿಲ್ಲ</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> ಕೇಳಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ Enter ಒತ್ತಿರಿ <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಈ ಸೈಟ್ ಅನ್ನು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ, ಏಕೆಂದರೆ ಇದು ನೀತಿಯನ್ನು ಉಲ್ಲಂಘಿಸಬಹುದು.</translation>
 <translation id="7315372670898739748">ಲಿಂಕ್ ಮಾಡುವಿಕೆ ವಿಫಲವಾಗಿದೆ, ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7316521168101843192">Microsoft OneDrive ನಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -4167,6 +4166,7 @@
 <translation id="7955105108888461311">ವ್ಯಕ್ತಿಗತವಾಗಿ ಕೇಳಿರಿ</translation>
 <translation id="7956713633345437162">ಮೊಬೈಲ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="7961015016161918242">ಎಂದಿಗೂ ಇಲ್ಲ</translation>
+<translation id="7961493403319780137">ಈ ಫೀಚರ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ - Gmail ನಿಂದ ದೃಢೀಕರಣ ಕೋಡ್‌ಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="7962467575542381659">ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್ ಮಷೀನ್</translation>
 <translation id="796439090588610411">ಬೆಂಬಲಿತ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈ ಇಮೇಲ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ದೃಢೀಕರಿಸುವುದನ್ನು Chrome ಇನ್ನು ಮುಂದೆ ನಿಲ್ಲಿಸುತ್ತದೆ.</translation>
 <translation id="7966803981046576691">ಕೆಲಸದ ಖಾತೆ ಪ್ರಕಾರ</translation>
@@ -4568,7 +4568,6 @@
 <translation id="8699041776323235191">HID ಸಾಧನ</translation>
 <translation id="8699985386408839112">ಎನ್ವಲಪ್ ಕಾಕು 1</translation>
 <translation id="8702965365666568344">ಮೌಂಟಿಂಗ್ ಟೇಪ್</translation>
-<translation id="8703242769654966101">Wallet ನಲ್ಲಿ Pix ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8703372953981978786">ಈ ಲಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="8705331520020532516">ಕ್ರಮ ಸಂಖ್ಯೆ</translation>

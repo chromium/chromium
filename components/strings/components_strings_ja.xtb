@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">斜体</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">お支払い情報の自動入力を有効にする設定が画面全体に表示されています。</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">表示は順不同です。既定の検索エンジンはいつでも変更できます。</translation>
 <translation id="2134584557120247184">航空券</translation>
@@ -1366,6 +1367,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3289578402369490638">ウェブ上の他のショップから</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理します</translation>
+<translation id="3296595523896103792">お支払い情報の自動入力を有効にする設定を閉じました。</translation>
 <translation id="3299098170013242198">パスワード入力で Windows Hello が有効になっています</translation>
 <translation id="3299197721044635447">組織のポリシーにより、管理対象の Chrome コンテキスト外にコンテンツを貼り付けられませんでした</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> の使用中にエラーが発生しました</translation>
@@ -2805,7 +2807,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5649053991847567735">自動ダウンロード</translation>
 <translation id="5651323159439184939">トラクター フィード</translation>
 <translation id="5653681867130739344">Google ウォレットで ID カードを安全に更新</translation>
-<translation id="5653744563415531641">情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="MANAGE_WALLET_SETTINGS_LINK" />できます。</translation>
 <translation id="5654927323611874862">アップロード済みのクラッシュ レポート ID:</translation>
 <translation id="5654965123204121933">URL に必須の置換文字列 <ph name="SEARCH_TERMS_REPLACEMENT" /> が含まれていません: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">メール</translation>
@@ -3257,7 +3258,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> の有効期限と CVC を入力</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">保護者の承認ダイアログ</translation>
-<translation id="6413532517183895572">ウォレットの設定を管理</translation>
 <translation id="6415778972515849510">Chromium には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ビジネスや個人の重要なデータは外部に保存してください。</translation>
@@ -3764,7 +3764,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7308436126008021607">バックグラウンド同期</translation>
 <translation id="7310392214323165548">間もなくデバイスが再起動します</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Tab キーを押してから Enter キーを押すと、<ph name="AI_ENGINE_NAME" /> に質問できます</translation>
 <translation id="7313107491291103073">あなたの組織ではこのサイトはポリシーに違反している可能性があるものとして報告されています。</translation>
 <translation id="7315372670898739748">リンクできませんでした。しばらくしてからもう一度お試しください</translation>
 <translation id="7316521168101843192">ファイルを Microsoft OneDrive に保存しています</translation>
@@ -4172,6 +4171,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7955105108888461311">直接リクエストする</translation>
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7961015016161918242">使用しない</translation>
+<translation id="7961493403319780137">この機能の詳細 - Gmail から確認コードを自動入力する</translation>
 <translation id="7962467575542381659">プラットフォーム マシン</translation>
 <translation id="796439090588610411">サポートされているサイトで、Chrome によるこのメールアドレスの自動確認を停止します。</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
@@ -4573,7 +4573,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="8699041776323235191">HID デバイス</translation>
 <translation id="8699985386408839112">角形 1 号封筒</translation>
 <translation id="8702965365666568344">粘着テープ</translation>
-<translation id="8703242769654966101">ウォレットで Pix を有効にする</translation>
 <translation id="8703372953981978786">このリンクは機能していません</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>

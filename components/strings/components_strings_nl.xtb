@@ -668,6 +668,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2127747486437921899">Cursief</translation>
 <translation id="2130448033692577677">De gespecificeerde templates worden misschien niet toegepast omdat het beleid DnsOverHttpsMode niet is ingesteld.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Automatisch invullen van betalingen aanzetten is op volledige hoogte geopend.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Deze worden in willekeurige volgorde getoond. Je kunt de standaardwaarde altijd wijzigen.</translation>
 <translation id="2134584557120247184">Vliegticket</translation>
@@ -1363,6 +1364,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3289578402369490638">Van andere winkels op internet</translation>
 <translation id="3293642807462928945">Meer informatie over het beleid <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Je wachtwoorden bekijken en beheren in de Chrome-instellingen</translation>
+<translation id="3296595523896103792">Automatisch invullen van betalingen aanzetten is gesloten.</translation>
 <translation id="3299098170013242198">Windows Hello staat aan om wachtwoorden in te vullen</translation>
 <translation id="3299197721044635447">Content kan niet worden geplakt buiten de beheerde Chrome-context vanwege het beleid van je organisatie</translation>
 <translation id="3299720788264079132">Er is iets misgegaan bij het gebruik van <ph name="FEATURE_NAME" /></translation>
@@ -2799,7 +2801,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5649053991847567735">Automatische downloads</translation>
 <translation id="5651323159439184939">Geperforeerd</translation>
 <translation id="5653681867130739344">Identiteitskaart beveiligd updaten in Google Wallet</translation>
-<translation id="5653744563415531641">Sla je informatie op en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt <ph name="MANAGE_WALLET_SETTINGS_LINK" /> voor <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID van geüpload crashrapport:</translation>
 <translation id="5654965123204121933">De URL bevat niet de vereiste vervangende tekenreeks <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -3250,7 +3251,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6410264514553301377">Geef de vervaldatum en CVC-code op voor <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialoogvenster voor goedkeuring van ouders</translation>
-<translation id="6413532517183895572">je Wallet-instellingen beheren</translation>
 <translation id="6415778972515849510">Chromium kan je helpen je Google-account te beschermen en je wachtwoord te wijzigen.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Zorg dat belangrijke zakelijke of persoonsgegevens extern worden opgeslagen.</translation>
@@ -3757,7 +3757,6 @@ Aanvullende informatie:
 <translation id="7308436126008021607">synchronisatie op de achtergrond</translation>
 <translation id="7310392214323165548">Het apparaat wordt zeer binnenkort opnieuw opgestart</translation>
 <translation id="7311244614769792472">Geen resultaten gevonden</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Druk op Tab en daarna op Enter om het aan <ph name="AI_ENGINE_NAME" /> te vragen</translation>
 <translation id="7313107491291103073">Je organisatie heeft deze site gemarkeerd omdat die misschien een beleid schendt.</translation>
 <translation id="7315372670898739748">Koppelen mislukt. Probeer het later opnieuw.</translation>
 <translation id="7316521168101843192">Bestand opslaan in Microsoft OneDrive</translation>
@@ -4165,6 +4164,7 @@ Aanvullende informatie:
 <translation id="7955105108888461311">Persoonlijk vragen</translation>
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7961015016161918242">Nooit</translation>
+<translation id="7961493403319780137">Meer informatie over deze functie - Verificatiecodes automatisch invullen vanuit Gmail</translation>
 <translation id="7962467575542381659">Platformapparaat</translation>
 <translation id="796439090588610411">Chrome bevestigt dit e-mailadres niet meer automatisch op ondersteunde sites.</translation>
 <translation id="7966803981046576691">Type taakaccount</translation>
@@ -4565,7 +4565,6 @@ Aanvullende informatie:
 <translation id="8699041776323235191">HID-apparaat</translation>
 <translation id="8699985386408839112">Envelop Kaku 1</translation>
 <translation id="8702965365666568344">Montagetape</translation>
-<translation id="8703242769654966101">Pix in Wallet aanzetten</translation>
 <translation id="8703372953981978786">Deze link werkt niet</translation>
 <translation id="8703575177326907206">Je verbinding met <ph name="DOMAIN" /> is niet gecodeerd.</translation>
 <translation id="8705331520020532516">Serienummer</translation>

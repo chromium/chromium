@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2086334242442703436">เปิดเครื่องมือเลือกอีโมจิ</translation>
 <translation id="2089550919269323883">นโยบายระดับองค์กรบล็อกการติดตั้ง <ph name="VM_NAME" /> โปรดติดต่อผู้ดูแลระบบเพื่อขอรับการสนับสนุน รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
-<translation id="2093792000875799555">ข่าวสารเกี่ยวกับ Steam สำหรับ Chromebook</translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
 <translation id="2107581415810719320">ปุ่มอื่นๆ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">สาย USB-C ที่ใช้ไม่รองรับ Thunderbolt และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">คุณต้องการโฟกัสสิ่งใด กด Enter เพื่อเพิ่มงาน</translation>
 <translation id="229397294990920565">กำลังปิดอินเทอร์เน็ตมือถือ...</translation>
 <translation id="2295777434187870477">ไมค์เปิดอยู่ การปิดไมค์จะปิดเสียงการป้อนข้อมูล</translation>
+<translation id="2296880470921996802">ผู้ดูแลระบบไอทีของคุณปิดใช้ประวัติคลิปบอร์ด</translation>
 <translation id="2302092602801625023">บัญชีนี้จัดการโดย Family Link</translation>
 <translation id="2303600792989757991">ภาพรวมการสลับหน้าต่าง</translation>
 <translation id="2304702218354340897">คุณแน่ใจไหมว่าต้องการปิดการควบคุมด้วยใบหน้า</translation>
@@ -1781,7 +1781,6 @@
 <translation id="6127395413317891856">คุณออฟไลน์อยู่ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">ข้ามการลงทะเบียนโรงเรียนไหม</translation>
-<translation id="6136872094979134163">ไม่สามารถดึงข้อมูลข่าวสารเกี่ยวกับ Steam สำหรับ Chromebook</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">คุณต้องการโฟกัสสิ่งใด</translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>

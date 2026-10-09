@@ -668,6 +668,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2127747486437921899">In nghiêng</translation>
 <translation id="2130448033692577677">Các mẫu bạn đã chỉ định có thể không được áp dụng do chưa đặt chính sách DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Đã mở bảng Bật tính năng tự động điền thông tin thanh toán trên toàn màn hình.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Danh sách dưới đây hiển thị theo thứ tự ngẫu nhiên. Bạn có thể thay đổi công cụ tìm kiếm mặc định bất cứ lúc nào.</translation>
 <translation id="2134584557120247184">Vé máy bay</translation>
@@ -1366,6 +1367,7 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="3289578402369490638">Từ các cửa hàng khác trên web</translation>
 <translation id="3293642807462928945">Hãy tìm hiểu thêm về chính sách <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Xem và quản lý mật khẩu của bạn trong phần cài đặt của Chrome</translation>
+<translation id="3296595523896103792">Đã đóng bảng Bật tính năng tự động điền thông tin thanh toán.</translation>
 <translation id="3299098170013242198">Windows Hello đã được kích hoạt để điền mật khẩu</translation>
 <translation id="3299197721044635447">Do các chính sách của tổ chức bạn, bạn không thể dán nội dung bên ngoài ngữ cảnh Chrome được quản lý</translation>
 <translation id="3299720788264079132">Đã xảy ra lỗi khi sử dụng <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="5649053991847567735">Tự động tải xuống</translation>
 <translation id="5651323159439184939">Tiếp giấy kiểu Tractor Feed</translation>
 <translation id="5653681867130739344">Cập nhật thẻ căn cước một cách an toàn trong Google Wallet</translation>
-<translation id="5653744563415531641">Lưu thông tin của bạn để làm mọi việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể <ph name="MANAGE_WALLET_SETTINGS_LINK" /> cho <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Mã báo cáo sự cố đã tải lên:</translation>
 <translation id="5654965123204121933">URL không có chuỗi thay thế bắt buộc <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3257,7 +3258,6 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="6410264514553301377">Nhập ngày hết hạn và CVC cho <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Hộp thoại quyết định phê duyệt của cha mẹ</translation>
-<translation id="6413532517183895572">quản lý chế độ cài đặt Wallet</translation>
 <translation id="6415778972515849510">Chromium có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Đảm bảo rằng mọi dữ liệu quan trọng của doanh nghiệp hoặc cá nhân đều được lưu trữ bên ngoài.</translation>
@@ -3764,7 +3764,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7308436126008021607">đồng bộ hoá trong nền</translation>
 <translation id="7310392214323165548">Thiết bị sẽ sớm khởi động lại</translation>
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Nhấn phím Tab rồi nhấn Enter để hỏi <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Trang web này đã bị tổ chức của bạn gắn cờ do có dấu hiệu vi phạm một chính sách.</translation>
 <translation id="7315372670898739748">Không liên kết được, hãy thử lại sau</translation>
 <translation id="7316521168101843192">Đang lưu tệp vào Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7955105108888461311">Gặp trực tiếp để hỏi</translation>
 <translation id="7956713633345437162">Dấu trang trên thiết bị di động</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
+<translation id="7961493403319780137">Tìm hiểu thêm về tính năng này – Tự động điền mã xác minh từ Gmail</translation>
 <translation id="7962467575542381659">Thiết bị trên nền tảng</translation>
 <translation id="796439090588610411">Chrome sẽ không tự động xác nhận địa chỉ email này trên các trang web được hỗ trợ nữa.</translation>
 <translation id="7966803981046576691">Loại tài khoản công việc</translation>
@@ -4573,7 +4573,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8699041776323235191">Thiết bị HID</translation>
 <translation id="8699985386408839112">Phong bì Kaku 1</translation>
 <translation id="8702965365666568344">Băng keo dán</translation>
-<translation id="8703242769654966101">Bật Pix trong Wallet</translation>
 <translation id="8703372953981978786">Đường liên kết này không hoạt động</translation>
 <translation id="8703575177326907206">Kết nối của bạn đến <ph name="DOMAIN" /> không được mã hóa.</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>

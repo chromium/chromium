@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2086334242442703436">Buka Alat Pilih Emoji</translation>
 <translation id="2089550919269323883">Penginstalan <ph name="VM_NAME" /> diblokir oleh kebijakan perusahaan. Hubungi administrator sistem Anda untuk mendapatkan dukungan. Kode error adalah <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Berita Steam untuk Chromebook</translation>
 <translation id="209965399369889474">Tidak terhubung ke jaringan</translation>
 <translation id="2107581415810719320">Tombol Lainnya <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C Anda tidak mendukung Thunderbolt. Performa perangkat mungkin dibatasi.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Apa yang ingin Anda fokuskan? Tekan enter untuk menambahkan tugas.</translation>
 <translation id="229397294990920565">Data seluler dinonaktifkan ...</translation>
 <translation id="2295777434187870477">Mikrofon aktif, mengalihkan tombol akan membisukan masukan.</translation>
+<translation id="2296880470921996802">Histori papan klip dinonaktifkan oleh admin IT Anda</translation>
 <translation id="2302092602801625023">Akun ini dikelola oleh Family Link</translation>
 <translation id="2303600792989757991">Beralih ringkasan jendela</translation>
 <translation id="2304702218354340897">Yakin ingin menonaktifkan fitur kontrol dengan wajah?</translation>
@@ -1786,7 +1786,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6127395413317891856">Anda sedang offline. Periksa koneksi dan coba lagi.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">Lewati pendaftaran sekolah?</translation>
-<translation id="6136872094979134163">Tidak dapat mengambil berita Steam untuk Chromebook.</translation>
 <translation id="6137566720514957455">Buka dialog hapus untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Apa yang ingin Anda fokuskan?</translation>
 <translation id="6141988275892716286">Konfirmasi download</translation>

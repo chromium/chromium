@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2086334242442703436">Emoji tanlagichni ochish</translation>
 <translation id="2089550919269323883">Korporativ qoidalarga binoan <ph name="VM_NAME" /> oʻrnatilishi bloklandi. Yordam uchun tizim administratoriga murojaat qiling. Xatolik kodi: <ph name="ERROR" /></translation>
-<translation id="2093792000875799555">Steam for Chromebook yangiliklari</translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
 <translation id="2107581415810719320">Boshqa tugma: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kabelingiz Thunderbolt qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Nima maqsadda fokus qilishni istaysiz? Vazifa qoʻshish uchun enter tugmasini bosing.</translation>
 <translation id="229397294990920565">Mobil internet oʻchirilmoqda...</translation>
 <translation id="2295777434187870477">Mikrofon yoniq, uni oʻchirish uchun ustiga bosing.</translation>
+<translation id="2296880470921996802">AT administratori vaqtincha xotira tarixini faolsizlantirgan</translation>
 <translation id="2302092602801625023">Ushbu hisob Family Link orqali boshqariladi</translation>
 <translation id="2303600792989757991">Ko‘rish rejimiga almashtirish</translation>
 <translation id="2304702218354340897">Yuz bilan boshqaruv faolsizlantirilsinmi?</translation>
@@ -1786,7 +1786,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6127395413317891856">Internetga ulanmagansiz. Aloqani tekshirib, qayta urining.</translation>
 <translation id="6129953537138746214">Bo‘shliq</translation>
 <translation id="6132714462430777655">Maktab uchun yozilish qoldirilsinmi?</translation>
-<translation id="6136872094979134163">Steam for Chromebook yangiliklari olinmadi.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> hisobini olib tashlash oynasini ochish</translation>
 <translation id="6141205840878048728">Nima maqsadda fokus qilishni istaysiz?</translation>
 <translation id="6141988275892716286">Yuklanishni tasdiqlang</translation>

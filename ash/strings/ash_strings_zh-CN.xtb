@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">撤销</translation>
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2089550919269323883">企业政策禁止安装“<ph name="VM_NAME" />”。请与您的系统管理员联系以寻求支持。错误代码为 <ph name="ERROR" />。</translation>
-<translation id="2093792000875799555">Chromebook 版 Steam 资讯</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2107581415810719320">其他按钮 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">您打算专注于什么任务？按 Enter 键即可添加任务。</translation>
 <translation id="229397294990920565">移动数据网络正在关闭…</translation>
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
+<translation id="2296880470921996802">剪贴板历史记录已被 IT 管理员停用</translation>
 <translation id="2302092602801625023">这个账号是通过 Family Link 管理的</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
 <translation id="2304702218354340897">确定要关闭人脸操控功能吗？</translation>
@@ -1784,7 +1784,6 @@
 <translation id="6127395413317891856">您处于离线状态。请检查连接，然后重试。</translation>
 <translation id="6129953537138746214">空格键</translation>
 <translation id="6132714462430777655">跳过学校注册？</translation>
-<translation id="6136872094979134163">无法检索 Chromebook 版 Steam 资讯。</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除账号”对话框</translation>
 <translation id="6141205840878048728">您打算专注于什么任务？</translation>
 <translation id="6141988275892716286">确认下载</translation>

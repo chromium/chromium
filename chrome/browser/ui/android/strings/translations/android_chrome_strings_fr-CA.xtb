@@ -322,6 +322,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="230115972905494466">Aucun appareil compatible trouvé</translation>
 <translation id="2305798319182970276">Supprimer votre historique en touchant un bouton</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> a besoin de votre autorisation pour accéder aux appareils d'interface humaine (HID) pour ce site.</translation>
 <translation id="2316129865977710310">Non merci</translation>
 <translation id="232137538351753795">Balayez l'écran à partir de la gauche pour revenir en arrière</translation>
 <translation id="2323763861024343754">Stockage des sites</translation>

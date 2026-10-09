@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2086334242442703436">इमोजी पिकर खोल्नुहोस्</translation>
 <translation id="2089550919269323883">इन्टरप्राइजको नीतिअनुसार <ph name="VM_NAME" /> इन्स्टल गर्न रोक लगाइएको छ। कृपया सहयोगका लागि आफ्ना सिस्टम एड्मिनलाई सम्पर्क गर्नुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो।</translation>
-<translation id="2093792000875799555">Steam को Chromebook मा चल्ने संस्करणसम्बन्धी समाचार</translation>
 <translation id="209965399369889474">नेटवर्कमा जोडिएको छैन</translation>
 <translation id="2107581415810719320">अन्य बटन <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">तपाईंको USB-C केबल Thunderbolt मा जोड्न मिल्दैन। डिभाइस राम्ररी नचल्न सक्छ।</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">तपाईं कुन कार्यमा फोकस गर्न चाहनुहुन्छ? कार्य हाल्न इन्टर की थिच्नुहोस्।</translation>
 <translation id="229397294990920565">मोबाइल डेटा अफ गरिँदै छ...</translation>
 <translation id="2295777434187870477">माइक सक्रिय छ, टगल गर्नुले माइक म्युट गर्ने छ।</translation>
+<translation id="2296880470921996802">तपाईंका IT एड्मिनले क्लिपबोर्ड हिस्ट्री अफ गर्नुभएको छ</translation>
 <translation id="2302092602801625023">यो खाता Family Link मार्फत व्यवस्थित गरिन्छ</translation>
 <translation id="2303600792989757991">सञ्झ्याल सिंहावलोकन टगल गर्नुहोस्</translation>
 <translation id="2304702218354340897">तपाईंले फेस कन्ट्रोल अफ गर्न चाहनुभएकै हो?</translation>
@@ -1786,7 +1786,6 @@
 <translation id="6127395413317891856">तपाईं अफलाइन हुनुहुन्छ। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6132714462430777655">स्कुलको इमेल ठेगाना हालेर डिभाइस दर्ता गर्ने प्रक्रिया स्किप गर्ने हो?</translation>
-<translation id="6136872094979134163">Steam को Chromebook मा चल्ने संस्करणसम्बन्धी समाचार प्राप्त गर्न सकिएन।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
 <translation id="6141205840878048728">तपाईं कुन कार्यमा फोकस गर्न चाहनुहुन्छ?</translation>
 <translation id="6141988275892716286">डाउनलोड गर्ने पुष्टि गर्नुहोस्</translation>

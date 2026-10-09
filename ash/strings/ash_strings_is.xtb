@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2086334242442703436">Opna emoji-val</translation>
 <translation id="2089550919269323883">Lokað er á uppsetningu <ph name="VM_NAME" /> vegna fyrirtækjareglu. Hafðu samband við kerfisstjórann þinn fyrir aðstoð. Villukóðinn er <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Fréttir af Steam fyrir Chromebook</translation>
 <translation id="209965399369889474">Engin nettenging</translation>
 <translation id="2107581415810719320">Annar hnappur <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-snúran styður ekki Thunderbolt. Afköst tækisins kunna að vera takmörkuð.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Hverju viltu einbeita þér að? Ýttu á Enter til að bæta verkefni við.</translation>
 <translation id="229397294990920565">Slekkur á farsímagögnum...</translation>
 <translation id="2295777434187870477">Kveikt er á hljóðnemanum, ef hnappurinn er valinn verður slökkt á hljóðinntaki.</translation>
+<translation id="2296880470921996802">Kerfisstjórinn þinn slökkti á ferli klippiborðs</translation>
 <translation id="2302092602801625023">Þessum reikningi er stjórnað með Family Link</translation>
 <translation id="2303600792989757991">Víxla gluggayfirliti</translation>
 <translation id="2304702218354340897">Ertu viss um að þú viljir slökkva á andlitsstýringu?</translation>
@@ -1788,7 +1788,6 @@ Engin tæki eru tengd.</translation>
 <translation id="6127395413317891856">Þú ert ekki á netinu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="6129953537138746214">Bil</translation>
 <translation id="6132714462430777655">Sleppa skólaskráningu?</translation>
-<translation id="6136872094979134163">Ekki tókst að sækja fréttir af Steam fyrir Chromebook.</translation>
 <translation id="6137566720514957455">Opna fjarlægingarglugga fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Hverju viltu einbeita þér að?</translation>
 <translation id="6141988275892716286">Staðfesta niðurhal</translation>

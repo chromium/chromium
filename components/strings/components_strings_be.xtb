@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Курсіў</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Акно "Уключыць аўтазапаўненне плацежных даных" адкрыта на ўсю вышыню.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Гэтыя пошукавыя сістэмы размешчаны ў выпадковым парадку. Змяніць стандартную пошукавую сістэму можна ў любы час.</translation>
 <translation id="2134584557120247184">Авіябілет</translation>
@@ -1367,6 +1368,7 @@
 <translation id="3289578402369490638">З іншых крам у інтэрнэце</translation>
 <translation id="3293642807462928945">Даведацца больш пра палітыку "<ph name="POLICY_NAME" />"</translation>
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
+<translation id="3296595523896103792">Акно "Уключыць аўтазапаўненне плацежных даных" закрыта.</translation>
 <translation id="3299098170013242198">Windows Hello выкарыстоўваецца для ўводу пароляў.</translation>
 <translation id="3299197721044635447">Правілы вашай арганізацыі не дазволілі ўставіць змесціва па-за кантэкстам пад кіраваннем Chrome</translation>
 <translation id="3299720788264079132">Пры выкарыстанні функцыі "<ph name="FEATURE_NAME" />" адбылася памылка</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">Аўтаматычнае спампоўванне</translation>
 <translation id="5651323159439184939">Папера для падачы зубчаткай</translation>
 <translation id="5653681867130739344">Бяспечнае змяненне пасведчання асобы ў Google Кашальку</translation>
-<translation id="5653744563415531641">Захавайце звесткі, каб паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Вы можаце <ph name="MANAGE_WALLET_SETTINGS_LINK" /> для ўліковага запісу <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Ідэнтыфікатар запампаванай справаздачы аб збоях:</translation>
 <translation id="5654965123204121933">URL-адрас павінен змяшчаць радок замены "<ph name="SEARCH_TERMS_REPLACEMENT" />": <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">Увядзіце тэрмін дзеяння і код CVC з карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Дыялогавае акно бацькоўскага ўхвалення</translation>
-<translation id="6413532517183895572">кіраваць наладамі Кашалька</translation>
 <translation id="6415778972515849510">Chromium можа дапамагчы абараніць ваш Уліковы запіс Google і змяніць ваш пароль.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Праверце, каб надзвычай важныя асабістыя даныя і даныя кампаніі былі захаваныя ў знешнім сховішчы.</translation>
@@ -3762,7 +3762,6 @@
 <translation id="7308436126008021607">фонавая сінхранізацыя</translation>
 <translation id="7310392214323165548">Скора прылада перазапусціцца</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Каб задаць пытанне з дапамогай функцыі "<ph name="AI_ENGINE_NAME" />", націсніце Tab і затым Увод</translation>
 <translation id="7313107491291103073">Ваша арганізацыя пазначыла, што гэты сайт, магчыма, парушае правілы.</translation>
 <translation id="7315372670898739748">Не ўдалося звязаць уліковыя запісы. Паўтарыце спробу пазней.</translation>
 <translation id="7316521168101843192">Файл захоўваецца ў Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">Спытаць асабіста</translation>
 <translation id="7956713633345437162">Мабільныя закладкі</translation>
 <translation id="7961015016161918242">Ніколі</translation>
+<translation id="7961493403319780137">Даведацца больш пра гэту функцыю – аўтазапаўненне кодаў спраўджання з Gmail</translation>
 <translation id="7962467575542381659">Машына платформы</translation>
 <translation id="796439090588610411">Chrome больш не будзе аўтаматычна пацвярджаць гэты адрас электроннай пошты на сайтах, якія падтрымліваюцца.</translation>
 <translation id="7966803981046576691">Тып уліковага запісу задання</translation>
@@ -4571,7 +4571,6 @@
 <translation id="8699041776323235191">Прылада HID</translation>
 <translation id="8699985386408839112">Канверт Kaku 1</translation>
 <translation id="8702965365666568344">Мантажная стужка</translation>
-<translation id="8703242769654966101">Уключыце Pix у Кашальку</translation>
 <translation id="8703372953981978786">Гэта спасылка не працуе</translation>
 <translation id="8703575177326907206">Падключэнне да дамена <ph name="DOMAIN" /> не шыфруецца.</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2086334242442703436">Hap zgjedhësin e emoji</translation>
 <translation id="2089550919269323883">Instalimi i <ph name="VM_NAME" /> është bllokuar nga politika e ndërmarrjes. Kontakto me administratorin e sistemit për mbështetje. Kodi i gabimit është <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Lajmet për Steam për Chromebook</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2107581415810719320">Butoni tjetër <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kablloja jote USB-C nuk mbështet Thunderbolt. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Në çfarë dëshiron të fokusohesh? Shtyp "Enter" për të shtuar detyrën.</translation>
 <translation id="229397294990920565">Të dhënat celulare po çaktivizohen...</translation>
 <translation id="2295777434187870477">Mikrofoni është aktiv. Ndryshimi i tij do ta çaktivizojë hyrjen.</translation>
+<translation id="2296880470921996802">Historiku i kujtesës së fragmenteve u çaktivizua nga administratori yt i teknologjisë së informacionit</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
 <translation id="2304702218354340897">E konfirmon që dëshiron ta çaktivizosh kontrollin me anë të fytyrës?</translation>
@@ -1786,7 +1786,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6127395413317891856">Je offline. Kontrollo lidhjen tënde dhe provo përsëri.</translation>
 <translation id="6129953537138746214">Hapësirë</translation>
 <translation id="6132714462430777655">Të kapërcehet regjistrimi për përdorimin në shkollë?</translation>
-<translation id="6136872094979134163">Lajmet për Steam për Chromebook nuk mund të merren.</translation>
 <translation id="6137566720514957455">Hap dialogun e heqjes për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Në çfarë dëshiron të fokusohesh?</translation>
 <translation id="6141988275892716286">Konfirmo shkarkimin</translation>

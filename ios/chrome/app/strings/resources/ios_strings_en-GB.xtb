@@ -114,7 +114,6 @@
 <translation id="1327794256477341646">Features that need your location won't work</translation>
 <translation id="132969855425874290">Close find and fill</translation>
 <translation id="1333455942675373522">Keyboard</translation>
-<translation id="1333669029961409292">'Check your passwords' completed!</translation>
 <translation id="1334485477792811969">Web services</translation>
 <translation id="1335767868357998043">Choose address bar position</translation>
 <translation id="1347468774581902829">Manage activity</translation>
@@ -321,7 +320,6 @@
 <translation id="1909201414196501151">Site added and pinned</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1925706052394657380">Open <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> settings in iOS</translation>
-<translation id="1929759944176590572">'Use your camera to search with Google Lens' completed!</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link received}other{{count} links received}}</translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1943478190258551035">Menu → Settings</translation>
@@ -771,7 +769,6 @@
 <translation id="340669334496430859">Last modified</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oct 2023</translation>
-<translation id="3416904994126232207">'Save a password' completed!</translation>
 <translation id="3419787211763835342">Help improve enhanced autofill</translation>
 <translation id="3422958112451181446">Press and hold to pin your favourite tool here</translation>
 <translation id="3430407169377889553">Use Gemini carefully and take control if needed. You are responsible for Gemini's actions during tasks.</translation>
@@ -1136,7 +1133,6 @@
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
 <translation id="4607887340472970274">Price tracking</translation>
-<translation id="4614482404958079763">Try a limited-time festive theme, complete with custom illustrations and animations</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4621768135601674446">Open reading mode options</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
@@ -1244,7 +1240,6 @@
 <translation id="4896467949657706481">Tabs were closed; you were signed out</translation>
 <translation id="4911042367886397055">Welcome back, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">You can securely share a copy of your password with someone in your family group. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lens</translation>
 <translation id="4917025507570489430">You can use existing browsing data when you’re signed in as <ph name="USER_EMAIL" />. Your organisation may be able to view this data.</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4930714375720679147">Turn on</translation>
@@ -1691,7 +1686,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Choose your address bar position</translation>
-<translation id="6305257382500066042">Try it now</translation>
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
 <translation id="6307792728709337290">Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome.</translation>
 <translation id="6316141353357700666">Choose the password that you want to use from the list that appears.</translation>
@@ -1734,6 +1728,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
 <translation id="6412195388778525440">Remove tab</translation>
+<translation id="6417468503703810114">Default behaviour</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
 <translation id="6420292512900923139">Trouble importing your data</translation>
 <translation id="6421038304268477484">Translated text</translation>
@@ -2085,7 +2080,6 @@ You can restart at any time.</translation>
 <translation id="7491131399623468277">Go to Settings…</translation>
 <translation id="7491161827858509164">To see files that you've downloaded before, open <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Keep editing</translation>
-<translation id="7498557042323380380">Set a seasonal look for your New Tab page</translation>
 <translation id="7500244509706269886">Autofill form</translation>
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7505402981231763928">You need to sign in to use Gemini</translation>
@@ -2146,7 +2140,6 @@ You can restart at any time.</translation>
 <translation id="7669493687462784703">Continue downloading a configuration profile from <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">You can swipe left to browse in Incognito.</translation>
 <translation id="7679915578945954324">Site addresses copied</translation>
-<translation id="76830702375944649">'Create a tab group' completed!</translation>
 <translation id="7695953765525234038">Search bar</translation>
 <translation id="7696316012653762532">Options to translate the page</translation>
 <translation id="7700527812567437847">Search screen with Google Lens</translation>
@@ -2172,6 +2165,7 @@ You can restart at any time.</translation>
 <translation id="7758789811447313947">Violet theme</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7765158879357617694">Move</translation>
+<translation id="7768507955883790804">Sites automatically follow this setting when you visit them</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7772948288262733182">Welcome back</translation>
 <translation id="777637629667389858">When you're signed in, protects you across Google services.</translation>
@@ -2445,6 +2439,7 @@ You can restart at any time.</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8577056989960190117">Autofill the expiry year <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Go Live with Gemini</translation>
+<translation id="8585841788766257444">Sites listed below follow a custom setting instead of the default</translation>
 <translation id="8587001564479545614">Create a recovery PIN</translation>
 <translation id="8588404856427128947">Off</translation>
 <translation id="8590286732816598906">Tab group, <ph name="GROUP_TITLE" />, menu.</translation>

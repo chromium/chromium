@@ -668,6 +668,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2127747486437921899">Skáletur</translation>
 <translation id="2130448033692577677">Hugsanlega er ekki hægt að nota sniðmátin sem þú tilgreindir vegna þess að reglan DnsOverHttpsMode hefur ekki verið valin.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">„Kveikja á sjálfvirkri útfyllingu greiðsluupplýsinga“ opnað í fullri hæð.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Leitarvélar birtast í handahófskenndri röð. Þú getur skipt um sjálfgefna leitarvél hvenær sem er.</translation>
 <translation id="2134584557120247184">Flugmiði</translation>
@@ -1366,6 +1367,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3289578402369490638">Úr öðrum verslunum á vefnum</translation>
 <translation id="3293642807462928945">Frekari upplýsingar um regluna „<ph name="POLICY_NAME" />“</translation>
 <translation id="3295444047715739395">Skoða og stjórna aðgangsorðunum þínum í stillingum Chrome</translation>
+<translation id="3296595523896103792">„Kveikja á sjálfvirkri útfyllingu greiðsluupplýsinga“ lokað.</translation>
 <translation id="3299098170013242198">Kveikt er á Windows Hello fyrir útfyllingu aðgangsorða</translation>
 <translation id="3299197721044635447">Ekki var hægt að líma efni utan stýrðs Chrome-samhengis vegna reglna fyrirtækisins þíns</translation>
 <translation id="3299720788264079132">Eitthvað fór úrskeiðis við notkun „<ph name="FEATURE_NAME" />“</translation>
@@ -2805,7 +2807,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5649053991847567735">Sjálfvirkt niðurhal</translation>
 <translation id="5651323159439184939">Gatapappír</translation>
 <translation id="5653681867130739344">Uppfærðu skilríki á öruggan hátt í Google-veski</translation>
-<translation id="5653744563415531641">Vistaðu upplýsingarnar þínar og komdu hlutum hraðar í verk, t.d. að fylla út eyðublöð í Google-vörum. Hægt er að <ph name="MANAGE_WALLET_SETTINGS_LINK" /> fyrir <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Auðkenni sendrar hrunskýrslu:</translation>
 <translation id="5654965123204121933">Vefslóðin inniheldur ekki nauðsynlega skiptistrenginn <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Netfang</translation>
@@ -3257,7 +3258,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6410264514553301377">Sláðu inn gildistímann og CVC-númerið fyrir <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Gluggi með samþykki foreldris</translation>
-<translation id="6413532517183895572">stjórna stillingum Veskis</translation>
 <translation id="6415778972515849510">Chromium getur hjálpað þér að vernda Google reikninginn þinn og breyta aðgangsorðinu.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Gakktu úr skugga um að mikilvægar rekstrar- eða persónuupplýsingar séu vistaðar í ytri geymslu.</translation>
@@ -3763,7 +3763,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7308436126008021607">samstillingu í bakgrunni</translation>
 <translation id="7310392214323165548">Tækið verður endurræst bráðlega</translation>
 <translation id="7311244614769792472">Engar niðurstöður fundust</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Ýttu á dálkalykilinn og svo færslulykilinn til að spyrja <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Fyrirtækið þitt hefur tilkynnt þetta vefsvæði þar sem það gæti brotið gegn reglum.</translation>
 <translation id="7315372670898739748">Ekki tókst að tengja, reyndu aftur síðar</translation>
 <translation id="7316521168101843192">Vistar skrá í Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7955105108888461311">Spyrja í eigin persónu</translation>
 <translation id="7956713633345437162">Bókamerki fartækis</translation>
 <translation id="7961015016161918242">Aldrei</translation>
+<translation id="7961493403319780137">Nánar um þennan eiginleika – Sjálfvirk útfylling staðfestingarkóða úr Gmail</translation>
 <translation id="7962467575542381659">Verkvangsvél</translation>
 <translation id="796439090588610411">Chrome mun hætta að staðfesta þetta netfang sjálfkrafa á studdum vefsvæðum.</translation>
 <translation id="7966803981046576691">Gerð vinnslureiknings</translation>
@@ -4571,7 +4571,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8699041776323235191">HID-tæki</translation>
 <translation id="8699985386408839112">Umslag: kaku 1</translation>
 <translation id="8702965365666568344">Festingarlímband</translation>
-<translation id="8703242769654966101">Virkja Pix í Veski</translation>
 <translation id="8703372953981978786">Tengillinn virkar ekki</translation>
 <translation id="8703575177326907206">Tengingin þín við <ph name="DOMAIN" /> er ekki dulkóðuð.</translation>
 <translation id="8705331520020532516">Raðnúmer</translation>

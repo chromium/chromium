@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ترچھا</translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">'ادائیگیوں کے آٹو فل کو فعال کریں' پوری اسکرین پر کھلا ہے۔</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />۔ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ان کو بے ترتیب آرڈر میں دکھایا گیا ہے۔ آپ کسی بھی وقت اپنے ڈیفالٹ سرچ انجن کو تبدیل کر سکتے ہیں۔</translation>
 <translation id="2134584557120247184">فلائیٹ کا ٹکٹ</translation>
@@ -1367,6 +1368,7 @@
 <translation id="3289578402369490638">ویب پر دوسرے اسٹورز سے</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> پالیسی کے بارے میں مزید جانیں</translation>
 <translation id="3295444047715739395">‏Chrome ترتیبات میں اپنے پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
+<translation id="3296595523896103792">'ادائیگیوں کے آٹو فل کو فعال کریں' بند ہو گیا۔</translation>
 <translation id="3299098170013242198">‏پاس ورڈز پُر کرنے کے لیے Windows Hello آن ہے</translation>
 <translation id="3299197721044635447">‏آپ کی تنظیم کی پالیسیوں کی وجہ سے منظم Chrome سیاق و سباق سے باہر مواد کو پیسٹ نہیں کیا جا سکا</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> کا استعمال کرتے وقت کچھ غلط ہو گیا</translation>
@@ -2806,7 +2808,6 @@
 <translation id="5649053991847567735">خود کار ڈاؤن لوڈز</translation>
 <translation id="5651323159439184939">ٹریکٹر فیڈ</translation>
 <translation id="5653681867130739344">‏‫Google والٹ میں اپنا شناختی کارڈ محفوظ طریقے سے اپ ڈیٹ کریں</translation>
-<translation id="5653744563415531641">‏اپنی معلومات محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے <ph name="MANAGE_WALLET_SETTINGS_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="5654927323611874862">‏اپ لوڈ کردہ کریش رپورٹ ID:</translation>
 <translation id="5654965123204121933">‏URL میں مطلوبہ متبادل اسٹرنگ <ph name="SEARCH_TERMS_REPLACEMENT" /> نہیں ہے: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ای میل</translation>
@@ -3259,7 +3260,6 @@
 <translation id="6410264514553301377">‏<ph name="CREDIT_CARD" /> کی اختتامی تاریخ اور CVC درج کریں</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">والدین کی منظوری کا ڈائیلاگ</translation>
-<translation id="6413532517183895572">اپنے والٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="6415778972515849510">‏Chromium آپ کی اپنا Google اکاؤنٹ محفوظ اور پاس ورڈ تبدیل کرنے میں مدد کر سکتا ہے۔</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">یقینی بنائیں کہ کوئی بھی اہم کاروباری یا ذاتی ڈیٹا خارجی طور پر اسٹور کیا گیا ہے۔</translation>
@@ -3765,7 +3765,6 @@
 <translation id="7308436126008021607">پس منظر کی مطابقت پذیری</translation>
 <translation id="7310392214323165548">آلہ جلدی ہی ری سٹارٹ ہو جائے گا</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
-<translation id="7311565174465466858">‏‫<ph name="TAB_KEY" /> ٹیب پھر Enter دبائیں تاکہ <ph name="AI_ENGINE_NAME" /> سے پوچھ سکیں</translation>
 <translation id="7313107491291103073">آپ کی تنظیم نے اس سائٹ کو پرچم زد کیا ہے کیونکہ یہ پالیسی کی خلاف ورزی کر سکتی ہے۔</translation>
 <translation id="7315372670898739748">لنک کرنا ناکام ہو گیا، بعد میں دوبارہ کوشش کریں</translation>
 <translation id="7316521168101843192">‏‫Microsoft OneDrive میں فائل کو محفوظ کیا جا رہا ہے</translation>
@@ -4173,6 +4172,7 @@
 <translation id="7955105108888461311">ذاتی طور پر پوچھیں</translation>
 <translation id="7956713633345437162">موبائل بُک مارکس</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
+<translation id="7961493403319780137">‏اس خصوصیت کے بارے میں مزید جانیں - Gmail سے توثیقی کوڈز کو آٹو فل کریں</translation>
 <translation id="7962467575542381659">پلیٹ فارم مشین</translation>
 <translation id="796439090588610411">‏‫Chrome تعاون یافتہ سائٹس پر اس ای میل کی خودکار طور پر تصدیق کرنا بند کر دے گا۔</translation>
 <translation id="7966803981046576691">جاب اکاؤنٹ کی قسم</translation>
@@ -4573,7 +4573,6 @@
 <translation id="8699041776323235191">‏HID آلہ</translation>
 <translation id="8699985386408839112">‏Kaku 1 لفافہ</translation>
 <translation id="8702965365666568344">ماؤنٹنگ ٹیپ</translation>
-<translation id="8703242769654966101">‏والٹ میں Pix کو فعال کریں</translation>
 <translation id="8703372953981978786">یہ لنک کام نہیں کرتا</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> سے آپ کا کنکشن مرموز نہیں کیا گیا ہے۔</translation>
 <translation id="8705331520020532516">نمبر شمار</translation>

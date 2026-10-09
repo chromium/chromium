@@ -281,6 +281,7 @@
 <translation id="1190155014618058972">맞춤 키 조합 만들기</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{컴퓨터에 저장된 파일 1개에 액세스}other{컴퓨터에 저장된 파일 #개에 액세스}}</translation>
 <translation id="1190706173655543975">Microsoft 애플리케이션 정책</translation>
+<translation id="1191683799345917508">상단 사이트 음소거</translation>
 <translation id="119330003005586565">읽은 페이지</translation>
 <translation id="1193927020065025187">이 사이트는 방해가 되는 알림을 허용하도록 사용자를 속일 수 있습니다.</translation>
 <translation id="11947597112837849">이메일 주소</translation>
@@ -433,6 +434,7 @@
 <translation id="130744661532298792">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요.</translation>
 <translation id="1308105352527684175">특정 콘텐츠에 액세스하지 못할 수 있습니다.</translation>
 <translation id="1311092170520822848">사이트에서 기기에 연결된 스마트 카드 리더 및 해당 리더에서 사용할 수 있는 스마트 카드를 제어합니다.</translation>
+<translation id="131112175593356748">일부 표시</translation>
 <translation id="131112695174432497">광고 개인 최적화에 영향을 미치는 데이터가 삭제됨</translation>
 <translation id="131188242279372879">Chrome의 향상된 보호 모드를 통해 안전하게 다운로드하세요.</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭 수정}other{브라우저 속도를 저하시키는 탭 수정}}</translation>
@@ -945,6 +947,7 @@
 <translation id="1708563369218024896">선택한 데이터 수집기가 없습니다. 데이터 수집기를 하나 이상 선택하세요.</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />(ID: <ph name="ID_PH" />)</translation>
 <translation id="1708839673480942471">앱 알림, 방해 금지 모드, 앱 배지 관리</translation>
+<translation id="1708971471914925330">왼쪽 사이트 음소거 해제</translation>
 <translation id="1708979186656821319">다운로드 완료 시 표시하지 않음</translation>
 <translation id="1709085899471866534">탭이 비활성 상태인 경우 한눈에 확인할 수 있습니다. 언제든지 설정에서 새로운 디자인을 사용 중지할 수 있습니다.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)</translation>
@@ -2325,6 +2328,7 @@
 <translation id="2756754491396884324">차단하고 그룹에서 나가시겠습니까?</translation>
 <translation id="2756936198272359372">JavaScript 사용이 허용되지 않음</translation>
 <translation id="2757161511365746634">프린터 보기</translation>
+<translation id="2757292392033317957">오른쪽 사이트 음소거 해제</translation>
 <translation id="2757338480560142065">저장하려는 비밀번호가 <ph name="WEBSITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" />에 대한 검색결과가 없습니다.</translation>
 <translation id="2762441749940182211">카메라 차단됨</translation>
@@ -2998,6 +3002,7 @@
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 확장 프로그램을 허용하시겠습니까?</translation>
 <translation id="325797067711573598">의심스러운 다운로드 차단됨</translation>
 <translation id="3261090393424563833">속도 높이기</translation>
+<translation id="3261798996834477302">하단 사이트 음소거 해제</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" />의 패스키</translation>
 <translation id="3262261769033093854">사이트에서 마우스 입력을 캡처하고 사용하도록 허용하지 않음</translation>
 <translation id="3262336253311870293"><ph name="DOMAIN" />에서 관리하는 계정이므로 Google 계정에서 로그아웃되지 않습니다. 북마크, 방문 기록, 비밀번호, 기타 설정이 더 이상 동기화되지 않습니다. 하지만 이전에 동기화된 데이터는 Google 계정에 계속 남아 있으며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
@@ -3409,6 +3414,7 @@
 <translation id="3575224072358507281">개인정보처리방침(measurementlab.net/privacy)에 따라 Measurement Lab의 IP 주소 및 네트워크 측정 결과를 수집합니다.</translation>
 <translation id="3576324189521867626">설치되었습니다.</translation>
 <translation id="3577036603268648505">온라인에서 더 안전하게</translation>
+<translation id="3577178956237526436">왼쪽 사이트 음소거 해제</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577487026101678864">파일 동기화 사용</translation>
 <translation id="3578230582111850125">텍스트를 선택하여 Gemini에게 물어보기</translation>
@@ -3657,6 +3663,7 @@
 <translation id="374124333420280219">앱 세부정보:</translation>
 <translation id="3741510433331996336">업데이트를 마치려면 기기를 다시 시작하세요</translation>
 <translation id="3742235229730461951">한국어 자판 배열</translation>
+<translation id="3743737928354166561">상단 사이트 음소거 해제</translation>
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> 기기와 페어링하려면 PIN을 입력하세요.</translation>
 <translation id="3744219658596020825">비밀번호를 가져오지 못했습니다.</translation>
 <translation id="3745306754941902605">주방</translation>
@@ -4298,6 +4305,7 @@
 <translation id="4244238649050961491">스타일러스 앱 더보기</translation>
 <translation id="4246980464509998944">추가 의견:</translation>
 <translation id="4248401726442101648">연결된 카메라가 없습니다.</translation>
+<translation id="4248996886292862765">왼쪽 사이트 음소거</translation>
 <translation id="4249116869350613769">절전 모드</translation>
 <translation id="4249373718504745892">카메라와 마이크 액세스가 차단된 페이지입니다.</translation>
 <translation id="4249785854468467847">AI로 Chrome을 변신시키세요</translation>
@@ -4325,6 +4333,7 @@
 <translation id="4263824086525632">북극광</translation>
 <translation id="4265096510956307240">본인 인증</translation>
 <translation id="4265301768135164545">eSIM 프로필을 <ph name="BEGIN_LINK" />직접<ph name="END_LINK" /> 설정할 수도 있습니다.</translation>
+<translation id="4265517943561857930">상단 사이트 음소거 해제</translation>
 <translation id="426564820080660648">업데이트를 확인하려면 이더넷, Wi-Fi 또는 모바일 데이터를 사용하세요.</translation>
 <translation id="426652736638196239">이 IBAN은 이 기기에만 저장됩니다.</translation>
 <translation id="4266679478228765574">폴더를 삭제하면 공유가 중지되지만 파일이 삭제되지는 않습니다.</translation>
@@ -5148,7 +5157,6 @@
 <translation id="4884987973312178454">6배</translation>
 <translation id="4885692421645694729">이 확장 프로그램에는 추가적인 사이트 액세스 권한이 없습니다.</translation>
 <translation id="4887424188275796356">시스템 뷰어로 열기</translation>
-<translation id="488785315393301722">세부정보 표시</translation>
 <translation id="488862352499217187">새 폴더 만들기</translation>
 <translation id="4888715715847020167">설정으로 이동</translation>
 <translation id="4888899258150891194">CppGC 메모리</translation>
@@ -5243,6 +5251,7 @@
 <translation id="4956593309300508411">공유를 중지하시겠습니까?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
+<translation id="4958931830785526368">하단 사이트 음소거</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4959581970694896608">Gemini의 대답 방식 맞춤설정</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
@@ -6165,6 +6174,7 @@
 <translation id="5691772641933328258">지문을 인식할 수 없음</translation>
 <translation id="5693255400847650006">마이크 사용 중</translation>
 <translation id="5693806089748511108">내 역량</translation>
+<translation id="5694689722959820210">탭 그룹 만들기</translation>
 <translation id="5695046252726616755">옵션을 더 보려면 Enter 또는 스페이스바를 누르세요.</translation>
 <translation id="5695184138696833495">Linux Android 앱 ADB</translation>
 <translation id="5696143504434933566">'<ph name="EXTENSION_NAME" />'의 악용사례 신고</translation>
@@ -6576,6 +6586,7 @@
 <translation id="6006484371116297560">기본</translation>
 <translation id="6007053304250788613">거울 모드에서는 디스플레이 1개만 제외할 수 있습니다.</translation>
 <translation id="6007240208646052708">사용자의 언어로 음성 검색을 이용할 수 없습니다.</translation>
+<translation id="6007858579659393165">탭에 새로운 투명 디자인이 적용되었습니다.</translation>
 <translation id="6010651352520077187">Google 번역을 사용 설정하면 사용자의 기본 언어로 사이트가 번역됩니다. 사이트를 자동으로 번역할 수도 있습니다.</translation>
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011308810877101166">추천 검색어 개선</translation>
@@ -8143,6 +8154,7 @@
 <translation id="7219473482981809164">다운로드할 수 있는 프로필이 여러 개 확인되었습니다. 계속하기 전에 다운로드할 프로필을 선택하세요.</translation>
 <translation id="7220019174139618249">'<ph name="FOLDER" />'(으)로 비밀번호를 내보낼 수 없음</translation>
 <translation id="722099540765702221">충전 전원</translation>
+<translation id="7221301072025277667">오른쪽 사이트 음소거 해제</translation>
 <translation id="7221869452894271364">페이지 새로고침</translation>
 <translation id="7222232353993864120">이메일 주소</translation>
 <translation id="7222335051802562841">업데이트 완료</translation>
@@ -8397,6 +8409,7 @@
 <translation id="7408080603962564527">다른 사용자에게 표시됩니다.</translation>
 <translation id="740810853557944681">인쇄 서버 추가</translation>
 <translation id="7409549334477097887">아주 크게</translation>
+<translation id="740957773517302609">오른쪽 사이트 음소거</translation>
 <translation id="7409599290172516453">최근 사진</translation>
 <translation id="7409735910987429903">사이트에서 팝업을 전송하여 광고를 표시하거나, 원치 않는 웹사이트로 리디렉션할 수 있습니다.</translation>
 <translation id="7409854300652085600">북마크를 가져왔습니다.</translation>
@@ -8811,6 +8824,7 @@
 <translation id="7721258531237831532">조직 프로필이 필요합니다</translation>
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7726288096350730168">이 기기에서 삭제</translation>
+<translation id="7726299524691842087">하단 사이트 음소거 해제</translation>
 <translation id="7726391492136714301">휴대전화의 알림과 앱을 봅니다.</translation>
 <translation id="7727898923446098954">탭 숨김</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{이 탭 일시중지}other{이 탭 일시중지}}</translation>
@@ -9244,7 +9258,7 @@
 <translation id="8045923671629973368">애플리케이션 ID 또는 웹 스토어 URL 입력</translation>
 <translation id="804786196054284061">최종 사용자 라이선스 계약</translation>
 <translation id="8048596485169033655">기본 노드 사이트설정 파일 다운로드 중… <ph name="PERCENT" />%</translation>
-<translation id="8048728378294435881">콘텐츠를 백업하고 어느 기기에서나 사용하세요.</translation>
+<translation id="8048728378294435881">콘텐츠를 백업하고 어느 기기에서나 사용하세요</translation>
 <translation id="8048977114738515028">이 프로필에 직접 액세스하려면 기기에 바탕화면 바로가기를 만드세요.</translation>
 <translation id="8049122382261047457">Google 렌즈로 모든 이미지 검색</translation>
 <translation id="8049948037269924837">터치패드 역방향 스크롤</translation>
@@ -9450,6 +9464,7 @@
 <translation id="8206267832882844324">메모 수정</translation>
 <translation id="8206713788440472560">화면 선택</translation>
 <translation id="8206745257863499010">음악</translation>
+<translation id="8206764473369122992">왼쪽 사이트 음소거</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8207386708156457998">특정 사이트 또는 검색엔진을 검색하려면 주소 표시줄에 바로가기를 입력한 다음 선택한 키보드 키를 입력하세요</translation>
 <translation id="8207404892907560325">패스키 선택</translation>
@@ -9461,6 +9476,7 @@
 <translation id="8212601853154459483">이 프로필은 <ph name="PROFILE_MANAGER" />에서 관리하며 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 별도의 프로필 생성이 필요합니다</translation>
 <translation id="8212792694174629011">프로필을 찾을 수 없습니다. 기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="8214489666383623925">파일 열기...</translation>
+<translation id="8214771296778317256">여기에서 원하는 탭 스타일을 선택하세요.</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" />에서 휴대전화의 기능에 액세스</translation>
 <translation id="8217212468862726597">포인터 강조표시</translation>
 <translation id="8217399928341212914">여러 파일을 다운로드하지 못하도록 계속 차단</translation>
@@ -9728,6 +9744,7 @@
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> 추가</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />'에 대한 검색결과</translation>
 <translation id="8419144699778179708">검색창에 입력한 내용을 비롯한 방문 기록 삭제</translation>
+<translation id="8419145215916772468">상단 사이트 음소거</translation>
 <translation id="8420308167132684745">사전 항목 수정</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">트레이 없음</translation>
@@ -9909,6 +9926,7 @@
 <translation id="8561565784790166472">주의해서 진행하시기 바랍니다</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8563043098557365232">시스템 서비스에만 허용됨</translation>
+<translation id="8563898784671745643">하단 사이트 음소거</translation>
 <translation id="8564220755011656606">마이크에 액세스할 수 없음</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />님을 삭제하시겠습니까?</translation>
 <translation id="8566916288687510520">새 비밀번호 수신됨</translation>
@@ -10186,6 +10204,7 @@
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />에 관한 모든 검색어 표시</translation>
 <translation id="8767621466733104912">모든 사용자의 Chrome 자동 업데이트</translation>
+<translation id="8767731819450513349">오른쪽 사이트 음소거</translation>
 <translation id="8768049274922835860">모든 사용자</translation>
 <translation id="8768559850883798245">탭 자동 펼치기 사용 설정</translation>
 <translation id="8769047324653576116">조직 프로필을 통해 기기를 사용하려면 조직에 이 기기와 관련된 정보가 필요합니다.
@@ -10429,7 +10448,6 @@
 <translation id="8960208913905765425">빠른 답변 단위 변환</translation>
 <translation id="8960638196855923532">이제 휴대전화의 알림과 앱을 확인할 수 있습니다.</translation>
 <translation id="8962051932294470566">한 번에 하나의 파일만 공유할 수 있습니다. 현재 전송이 완료되면 다시 시도해 보세요.</translation>
-<translation id="8962083179518285172">세부정보 숨기기</translation>
 <translation id="8962863356073277855">URL 형식이 https://www.example.com이어야 합니다.</translation>
 <translation id="8962918469425892674">사이트에서 모션 센서 또는 조도 센서를 사용 중입니다.</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
@@ -10704,6 +10722,7 @@
 <translation id="9154194610265714752">업데이트됨</translation>
 <translation id="915485121129452731">펜 태블릿</translation>
 <translation id="9155344700756733162">색상 선택 해제</translation>
+<translation id="9155515662479003830">언제든지 설정에서 클래식 스타일로 다시 전환할 수 있습니다.</translation>
 <translation id="9157096865782046368">0.8초</translation>
 <translation id="9157697743260533322">모든 사용자에 대해 자동 업데이트를 설정하지 못했습니다(프리플라이트 실행 오류: <ph name="ERROR_NUMBER" />).</translation>
 <translation id="9157915340203975005">프린터 덮개 열림</translation>

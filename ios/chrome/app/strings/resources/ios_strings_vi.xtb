@@ -114,7 +114,6 @@
 <translation id="1327794256477341646">Các tính năng cần dùng thông tin vị trí của bạn sẽ không hoạt động</translation>
 <translation id="132969855425874290">Đóng tính năng tìm và điền</translation>
 <translation id="1333455942675373522">Bàn phím</translation>
-<translation id="1333669029961409292">"Kiểm tra mật khẩu" hoàn tất!</translation>
 <translation id="1334485477792811969">Dịch vụ web</translation>
 <translation id="1335767868357998043">Chọn vị trí thanh địa chỉ</translation>
 <translation id="1347468774581902829">Quản lý hoạt động</translation>
@@ -321,7 +320,6 @@
 <translation id="1909201414196501151">Đã thêm và ghim trang web</translation>
 <translation id="1911619930368729126">Tải lên Google Drive</translation>
 <translation id="1925706052394657380">Mở phần cài đặt <ph name="BEGIN_BOLD" />Ứng dụng mặc định<ph name="END_BOLD" /> trong iOS</translation>
-<translation id="1929759944176590572">"Dùng camera để tìm kiếm bằng Google Ống kính" đã hoàn tất!</translation>
 <translation id="1938871630297275912">{count,plural, =1{Đã nhận đường liên kết}other{Đã nhận {count} đường liên kết}}</translation>
 <translation id="1941314575388338491">Nhấn đúp để sao chép.</translation>
 <translation id="1943478190258551035">Trình đơn → Cài đặt</translation>
@@ -558,6 +556,7 @@
 <translation id="2664621323652615289">Dừng</translation>
 <translation id="2666092431469916601">Trên cùng</translation>
 <translation id="2669454659051515572">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp đã tải xuống</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" không được phép truy cập vào camera</translation>
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Thanh toán dần</translation>
@@ -770,7 +769,6 @@
 <translation id="340669334496430859">Lần sửa đổi gần nhất</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">Ngày 25 tháng 10 năm 2023</translation>
-<translation id="3416904994126232207">"Lưu mật khẩu" đã hoàn tất!</translation>
 <translation id="3419787211763835342">Góp phần cải thiện tính năng tự động điền nâng cao</translation>
 <translation id="3422958112451181446">Nhấn và giữ để ghim công cụ bạn yêu thích tại đây</translation>
 <translation id="3430407169377889553">Hãy sử dụng Gemini một cách thận trọng và can thiệp nếu cần. Bạn chịu trách nhiệm về những hành động mà Gemini thực hiện trong các nhiệm vụ.</translation>
@@ -1135,7 +1133,6 @@
 <translation id="4601095002996233687">Quét kỹ càng để tìm nội dung tải xuống đáng ngờ.</translation>
 <translation id="4606247758155004938">Trình duyệt này do tổ chức của bạn quản lý.</translation>
 <translation id="4607887340472970274">Theo dõi giá</translation>
-<translation id="4614482404958079763">Thử giao diện lễ hội trong thời gian có hạn, có đủ cả hình minh hoạ và ảnh động tuỳ chỉnh</translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4621768135601674446">Mở các lựa chọn của Chế độ đọc</translation>
 <translation id="4627107755957573804">Cho phép các trang web và ứng dụng nâng cấp các tài khoản hiện có để sử dụng khoá truy cập</translation>
@@ -1243,7 +1240,6 @@
 <translation id="4896467949657706481">Hệ thống đã đóng các thẻ và đăng xuất bạn</translation>
 <translation id="4911042367886397055">Chào mừng bạn quay trở lại, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Bạn có thể chia sẻ bản sao mật khẩu của mình một cách an toàn với thành viên trong nhóm gia đình. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Ống kính</translation>
 <translation id="4917025507570489430">Bạn có thể sử dụng dữ liệu duyệt web hiện có khi đăng nhập bằng <ph name="USER_EMAIL" />. Tổ chức của bạn có thể xem được dữ liệu này.</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4930714375720679147">Bật</translation>
@@ -1389,6 +1385,7 @@
 <translation id="5351613737248079168">Bạn phải đăng nhập để dùng Level Up</translation>
 <translation id="5352128922772839949">Lưu tệp</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
+<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" được phép sử dụng micrô bất cứ khi nào bạn truy cập vào trang web này</translation>
 <translation id="5359436665022446585">Mở đường liên kết nhanh hơn</translation>
 <translation id="536067926684072644">Hiện dấu trang</translation>
 <translation id="5364647308446127983">{count,plural, =1{Không nhập được {count} khoá truy cập}other{Không nhập được {count} khoá truy cập}}</translation>
@@ -1689,7 +1686,6 @@
 <translation id="6301104306974789820">Nhận thông báo theo dõi giá</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Chọn vị trí thanh địa chỉ</translation>
-<translation id="6305257382500066042">Dùng thử ngay bây giờ</translation>
 <translation id="6307241780749477694">Xác minh danh tính của bạn để dùng tất cả mật khẩu trên thiết bị này</translation>
 <translation id="6307792728709337290">Lưu thẻ vào Tài khoản Google của bạn để tự động điền thông tin thẻ cho giao dịch mua này và các giao dịch mua trong tương lai trên Chrome.</translation>
 <translation id="6316141353357700666">Chọn mật khẩu bạn muốn sử dụng từ danh sách hiện ra.</translation>
@@ -1732,6 +1728,7 @@
 <translation id="6410390304316730527">Tính năng Duyệt web an toàn bảo vệ bạn trước những kẻ tấn công có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm độc hại hoặc tiết lộ thông tin cá nhân như mật khẩu, số điện thoại hoặc thẻ tín dụng. Nếu bạn tắt tính năng này, hãy cẩn thận khi duyệt các trang web lạ hoặc không có uy tín.</translation>
 <translation id="6410883413783534063">Mở các thẻ để truy cập vào nhiều trang cùng một lúc</translation>
 <translation id="6412195388778525440">Xoá thẻ</translation>
+<translation id="6417468503703810114">Chế độ mặc định</translation>
 <translation id="6418346271604475326">Đang chuẩn bị PDF</translation>
 <translation id="6420292512900923139">Đã xảy ra sự cố khi nhập dữ liệu của bạn</translation>
 <translation id="6421038304268477484">Bản dịch</translation>
@@ -2083,7 +2080,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7491131399623468277">Chuyển đến phần Cài đặt…</translation>
 <translation id="7491161827858509164">Để xem các tệp bạn đã tải xuống, hãy mở <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Tiếp tục chỉnh sửa</translation>
-<translation id="7498557042323380380">Đặt giao diện theo mùa cho trang Thẻ mới</translation>
 <translation id="7500244509706269886">Tự động điền biểu mẫu</translation>
 <translation id="750493650310597496">Đã chọn 0</translation>
 <translation id="7505402981231763928">Bạn cần đăng nhập để sử dụng Gemini</translation>
@@ -2144,7 +2140,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7669493687462784703">Tiếp tục tải hồ sơ cấu hình xuống từ <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Bạn có thể vuốt sang trái để duyệt web ở chế độ Ẩn danh.</translation>
 <translation id="7679915578945954324">Đã sao chép địa chỉ trang web</translation>
-<translation id="76830702375944649">"Tạo một nhóm thẻ" đã hoàn tất!</translation>
 <translation id="7695953765525234038">Thanh tìm kiếm</translation>
 <translation id="7696316012653762532">Các lựa chọn dịch trang</translation>
 <translation id="7700527812567437847">Tìm trên màn hình bằng Google Ống kính</translation>
@@ -2170,6 +2165,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7758789811447313947">Giao diện màu tím</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
+<translation id="7768507955883790804">Các trang web sẽ tự động tuân theo chế độ cài đặt này khi bạn truy cập</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7772948288262733182">Chào mừng bạn quay lại</translation>
 <translation id="777637629667389858">Bảo vệ bạn trên các dịch vụ của Google khi bạn đăng nhập.</translation>
@@ -2308,6 +2304,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> tài khoản</translation>
 <translation id="8161614462829037225">Mở khoá bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Chiều dài</translation>
+<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" được phép sử dụng camera bất cứ khi nào bạn truy cập vào trang web này</translation>
 <translation id="8182037667962849780">{count,plural, =1{Cho {website_1}}=2{Cho {website_1}, {website_2}}=3{Cho {website_1}, {website_2} và 1 trang web khác}other{Cho {website_1}, {website_2} và {more_count} trang web khác}}</translation>
 <translation id="8184895727539791845">Để cho phép Gemini sử dụng camera của bạn, hãy bật Camera trong phần cài đặt của iOS</translation>
 <translation id="8185076488803799132">Nhập</translation>
@@ -2442,6 +2439,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
 <translation id="8577056989960190117">Tự động điền năm hết hạn là <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Nói chuyện với Gemini bằng tính năng Live</translation>
+<translation id="8585841788766257444">Các trang web trong danh sách bên dưới tuân theo một tùy chọn cài đặt tùy chỉnh thay vì mặc định</translation>
 <translation id="8587001564479545614">Tạo mã PIN khôi phục</translation>
 <translation id="8588404856427128947">Đang tắt</translation>
 <translation id="8590286732816598906">Nhóm thẻ, <ph name="GROUP_TITLE" />, Trình đơn.</translation>
@@ -2480,6 +2478,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8680643216091361291">Chế độ <ph name="BEGIN_LINK" />Lưu giữ hoạt động<ph name="END_LINK" /> đang tắt theo mặc định. Khi chế độ này tắt, Google sẽ lưu nội dung trò chuyện của bạn trong 3 ngày. Google sử dụng nội dung trò chuyện nêu trên để đảm bảo Các ứng dụng Gemini hoạt động đúng cách, bảo vệ an toàn cho các ứng dụng này và sử dụng ý kiến phản hồi của bạn để khắc phục sự cố. Bạn có thể bật chế độ Lưu giữ hoạt động để giúp cải thiện AI của Google cho mọi người.</translation>
 <translation id="8680786875305615692">Giúp tăng cường bảo mật cho mọi người trên Web</translation>
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" không được phép truy cập vào micrô</translation>
 <translation id="8690752723634292147">Xác nhận xoá</translation>
 <translation id="8692107307702113268">Mật khẩu dài hơn 1000 ký tự</translation>
 <translation id="8692689525339542358">Bảo vệ bạn trước các trang web, tệp tải xuống và tiện ích nguy hiểm.</translation>

@@ -1130,6 +1130,17 @@ Ist diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt, wird das a
 Beim Versuch, eine deaktivierte Chrome-App zu starten, wird eine Meldung angezeigt, die dem Nutzer erklärt, warum die App nicht gestartet wurde, und ihn auffordert, sich an die IT-Abteilung zu wenden.
 
 ChromeOS M184 ist der letzte ChromeOS-Meilenstein, der Chrome-Apps unterstützt.</translation>
+<translation id="1726477280489844651">Steuert, ob <ph name="PRODUCT_NAME" /> ein Browserfenster öffnet, wenn sich der Nutzer in <ph name="MS_WIN_NAME" /> anmeldet.
+
+<ph name="PRODUCT_NAME" /> hat die Einstellung „<ph name="PRODUCT_NAME" /> mit <ph name="MS_WIN_NAME" /> starten“ aktiviert, die den Browser so registriert, dass er gestartet wird, wenn sich der Nutzer anmeldet. So ist der Browser sofort einsatzbereit. Nutzern werden möglicherweise auch Prompts angezeigt, mit denen sie aufgefordert werden, diese Einstellung zu ändern.
+
+Wenn die Richtlinie aktiviert ist, wird <ph name="PRODUCT_NAME" /> gestartet und ein Browserfenster geöffnet, wenn sich der Nutzer anmeldet. Nutzer können die Einstellung nicht ändern und werden auch nicht dazu aufgefordert.
+
+Wenn die Richtlinie deaktiviert ist, wird <ph name="PRODUCT_NAME" /> nicht gestartet, wenn sich der Nutzer anmeldet. Nutzer können die Einstellung nicht ändern und werden auch nicht dazu aufgefordert.
+
+Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Einstellung ändern.
+
+Diese Richtlinie hat keine Auswirkungen auf Versionen von <ph name="PRODUCT_NAME" />, in denen die Einstellung „<ph name="PRODUCT_NAME" /> mit <ph name="MS_WIN_NAME" /> starten“ nicht verfügbar ist.</translation>
 <translation id="1729169799290004131">Wenn die Richtlinie konfiguriert ist, wird die Bildschirmhelligkeit in % festgelegt und Funktionen zur automatischen Anpassung der Bildschirmhelligkeit werden deaktiviert. Die Bildschirmhelligkeit wird anfangs an den Richtlinienwert angepasst, aber der Nutzer kann sie später ändern.
 
       Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Bildschirms durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Bildschirmhelligkeit.
@@ -1232,6 +1243,21 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die gesamte Liste bevorzugter Sprachen beliebig anpassen.</translation>
 <translation id="1803646570632580723">Liste der im Launcher angezeigten Apps ansehen</translation>
+<translation id="180432221123109556">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen aktiviert werden.
+
+Ausführliche Informationen zu gültigen Website-URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns.
+Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig.
+
+Richtlinienausnahmen können sowohl für bestimmte Subdomains als auch für ganze Websites festgelegt werden.
+Eine nur für subdomain.beispiel.de konfigurierte Richtlinie gilt beispielsweise für subdomain.beispiel.de, ohne dass sich dies auf beispiel.de auswirkt. In einigen Fällen, in denen eine Subdomain nicht von ihrer übergeordneten Website isoliert werden kann, übernimmt sie möglicherweise die für beispiel.de konfigurierte Richtlinie. Ausnahmen werden eventuell erst dann für Frames wirksam, die in einem vorhandenen Tab geladen werden, wenn die Website in einem neuen Tab geöffnet wird. Auf <ph name="ANDROID_NAME" />-Geräten mit wenig Arbeitsspeicher werden websitespezifische Ausnahmen möglicherweise nicht erzwungen. Stattdessen wird die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“, falls konfiguriert, oder die JavaScript-Optimierungseinstellung des Profils verwendet.
+
+Um Ausnahmen zu erzwingen, kann <ph name="PRODUCT_NAME" /> Websites oder Subdomains, deren Einstellung von der Standardeinstellung abweicht, in dedizierten Prozessen platzieren. Dies kann die Arbeitsspeichernutzung erhöhen, insbesondere unter <ph name="ANDROID_NAME" /> oder wenn ein Platzhaltermuster mit vielen Subdomains übereinstimmt, da jeder übereinstimmende Ursprung separat isoliert werden kann. Isolierte Subdomains können auch nicht „document.domain“ verwenden, um auf ihre übergeordnete Website zuzugreifen.
+
+Hinweis: In Version 138 und früheren Versionen wurden Richtlinienausnahmen nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wurde nicht wirksam, auch nicht für subdomain.beispiel.de. Sie musste für beispiel.de konfiguriert werden, damit sie sowohl für beispiel.de als auch für subdomain.beispiel.de gilt.
+
+Diese Richtlinie wird Frame für Frame angewendet und nicht nur auf Grundlage der Ursprungs-URL auf oberster Ebene. Wenn also beispielsweise beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgeführt ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, sind JavaScript-Optimierungen für beispiel-eins.de aktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert. Andernfalls sind JavaScript-Optimierungen standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
+
+Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="1807539058116290184">„Zum Zoomen auseinander- und zusammenziehen“ im Kioskmodus nicht zulassen</translation>
 <translation id="1808715480127969042">Cookies auf diesen Websites blockieren</translation>
 <translation id="1810261428246410396">Verwendung von Instant Tethering erlauben.</translation>
@@ -1456,6 +1482,7 @@ Wird sie nicht konfiguriert, ist die Funktion „Zum Anrufen klicken“ standard
       Beachte, dass diese Richtlinie JavaScript blockiert, wenn der Ursprung des obersten Dokuments (normalerweise die URL der Seite, die auch in der Adressleiste angezeigt wird) mit einem der Muster übereinstimmt. Daher ist diese Richtlinie nicht geeignet, um Web‑Lieferkettenangriffe zu verhindern. Wenn du beispielsweise das Muster „https://[*.]foo.de/“ angibst, wird nicht verhindert, dass eine Seite, die unter https://beispiel.de gehostet wird, ein Script ausführt, das von https://www.foo.de/beispiel.js geladen wird. Außerdem verhindert das Muster „https://beispiel.de/“ nicht, dass ein Dokument von https://beispiel.de Scripts ausführt, wenn es nicht das übergeordnete Dokument ist, sondern als Subframe in eine Seite eingebettet ist, die auf einem anderen Ursprung gehostet wird, z. B. https://www.bar.de.</translation>
 <translation id="1942015922182679826">Löschen nicht entschlüsselbarer Passwörter aktivieren</translation>
 <translation id="1942626390957213764">Desktop-Freigabe-Hub deaktivieren</translation>
+<translation id="1943628907052340534"><ph name="PRODUCT_NAME" /> nicht öffnen, wenn sich der Nutzer in <ph name="MS_WIN_NAME" /> anmeldet</translation>
 <translation id="194407941132272412">Website-Isolierung für alle Websites deaktivieren (Nutzer kann dies ändern)</translation>
 <translation id="1945994447126139909">Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und wird in Version 88 von <ph name="PRODUCT_NAME" /> entfernt.
 
@@ -1488,7 +1515,6 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 – Anstatt „devtools://*“ zu blockieren, verwende die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“, „<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />“ oder „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="1957093168333856467">Bedienungshilfe „Bildschirmtastatur“ deaktivieren</translation>
 <translation id="1958110911685486719">Unterstützung für XFA-Formulare in PDF-Dokumenten aktiviert</translation>
-<translation id="1960059835237529462">Nutzern wird die Werbung für Bewertungen im App Store von <ph name="IOS_NAME" /> angezeigt</translation>
 <translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche aktivieren.</translation>
 <translation id="1961091374249454164">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet.
       Wenn die Richtlinie konfiguriert ist, wird eine Liste mit Erweiterungs-IDs angegeben, die von der Bereinigung der eingeschränkten verwalteten Gastsitzungen ausgenommen sind (siehe „<ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />“).
@@ -1654,17 +1680,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="205807990145127714">Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden.</translation>
 <translation id="2060153898336610735">Automatisch, basierend auf der aktuellen Sprache</translation>
-<translation id="2060316966423154087">Gibt an, ob Nutzerinnen bzw. Nutzer generative KI in <ph name="PRODUCT_NAME" /> zulassen dürfen, damit Inhalte von Formularen besser erkannt und leichter ausgefüllt werden können.
-
-„0“ = Derselbe Effekt wie „1“. Vor M153 erlaubte die Einstellung Google, relevante Daten zur Verbesserung seiner KI-Modelle zu verwenden. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterial und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe relevanter Daten (einschließlich Prompts, Eingaben, Ausgaben, Quellenmaterials und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzerinnen und -nutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion darf nicht verwendet werden.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Fehlerbehebung von Netzwerkpaketaufnahmen erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remote-Zugriff-Hosts konfigurieren</translation>
 <translation id="2062632109797189011">Veraltete window.webmasterStorageInfo API wieder aktivieren</translation>
@@ -2128,6 +2143,13 @@ Wenn du die Richtlinie verwenden musst, melde auf crbug.com einen Fehler unter A
 
 HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="2354439478396602136">App-Empfehlungen im <ph name="PRODUCT_OS_NAME" />-Launcher anzeigen</translation>
+<translation id="2355126045573728327">Wenn die Richtlinie konfiguriert ist, wird eine Liste der Paketnamen von <ph name="ANDROID_NAME" />-Anwendungen (z. B. <ph name="EXAMPLE_PACKAGE_NAME" />) angegeben, die automatisch gestartet werden, wenn sich der Nutzer in <ph name="PRODUCT_OS_NAME" /> anmeldet.
+
+Die Anwendungen müssen außerdem über <ph name="ARC_POLICY_NAME" /> so konfiguriert sein, dass ihre Installation erzwungen wird. Sie werden nach Abschluss der Installation automatisch gestartet.
+
+Derzeit wird nur die erste Anwendung in der Liste gestartet.
+
+Wenn diese Richtlinie nicht konfiguriert oder leer gelassen wird, werden bei der Anmeldung keine <ph name="ANDROID_NAME" />-Anwendungen automatisch gestartet.</translation>
 <translation id="2355876547176311490">Nicht zulassen, dass Relayserver vom Host für den Remote-Zugriff verwendet werden können</translation>
 <translation id="2358176879566587521">Diese Richtlinie wurde entfernt. Sie ist mit dieser Version von <ph name="PRODUCT_NAME" /> nicht kompatibel. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="235987002603620567">„NewBaseUrlInheritanceBehavior“ ist eine <ph name="PRODUCT_NAME" />-Funktion, die dazu führt, dass <ph name="ABOUT_BLANK_PAGE" />- und <ph name="ABOUT_SRCDOC_PAGE" />-Frames ihre grundlegenden URL-Werte fortlaufend aus Snapshots der Basis-URL des Initiators übernehmen. Weitere Informationen findest du unter https://chromestatus.com/feature/5161101671530496.
@@ -2285,6 +2307,7 @@ Diese Richtlinie ist eine vorübergehende Maßnahme zur Steuerung der Funktion u
 <translation id="2479760962196319822">Mit dieser Richtlinie wird festgelegt, ob <ph name="PRODUCT_OS_NAME" />-Nutzer Daten lokal speichern können.
       Wenn diese Richtlinie auf „False“ gesetzt ist, wird das lokale Speichern unter <ph name="PRODUCT_OS_NAME" /> blockiert. Nutzer können weder Daten lokal speichern noch auf lokale Verzeichnisse zugreifen.
       Wenn diese Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, wird das lokale Speichern unter <ph name="PRODUCT_OS_NAME" /> zugelassen. Es gibt keine Einschränkungen dafür, wo Nutzer Daten speichern oder auf welche Verzeichnisse sie zugreifen können.</translation>
+<translation id="2481931731272002134">Auf generativer KI basierende Funktionen in Autofill zulassen und KI-Modelle verbessern.</translation>
 <translation id="2482676533225429905">Natives Messaging</translation>
 <translation id="2483146640187052324">Netzwerkaktionen über alle Netzwerkverbindungen vervollständigen</translation>
 <translation id="2487495476672607707">Mit der <ph name="PRODUCT_OS_NAME" />-Dateisynchronisierung sind <ph name="GOOGLE_DRIVE_NAME" />-Dateien eines Nutzers auf <ph name="CHROMEBOOK_PLUS_NAME" />-Geräten in „Meine Ablage“ automatisch offline verfügbar (sofern genügend Speicherplatz vorhanden ist).
@@ -2608,15 +2631,6 @@ Informationen zu Einschränkungen für <ph name="PRIVATE_NETWORK_ACCESS" /> find
 <translation id="2608535066974278204">Zeitraum (in Minuten), der die Dauer des Zeitfensters für den Neustart angibt.</translation>
 <translation id="2608887839902987727">Verhindern, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
 <translation id="2608985885792348429">Standardmäßige Einstellung für die Zwischenablage</translation>
-<translation id="2613388238625781546">Der HTTP-Anfrageheader „<ph name="AL_HEADER_NAME" />“ und der JavaScript-Getter „<ph name="JS_GETTER_NAME" />“ sollen aus Datenschutzgründen reduziert werden.
-Um Tests zu erleichtern und die Kompatibilität zu gewährleisten, kannst du mit dieser Richtlinie die Funktion „<ph name="ALR_FEATURE_NAME" />“ aktivieren oder deaktivieren.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird „<ph name="ALR_FEATURE_NAME" />“ über Field Trials angewendet.
-Wenn diese Richtlinie deaktiviert ist, kann „<ph name="ALR_FEATURE_NAME" />“ nicht über Field Trials aktiviert werden.
-
-Weitere Informationen zu dieser Funktion findest du unter https://github.com/explainers-by-googlers/reduce-accept-language.
-
-HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="2613493229743687635">Mit der <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API können isolierte Web-Apps (identifiziert durch ihren Ursprung) ohne zusätzliche Nutzerberechtigung mehrere Oberflächen gleichzeitig erfassen.
       Ist die Richtlinie nicht konfiguriert, steht <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> keinen Web-Apps zur Verfügung.
 Zur Verbesserung des Datenschutzes unterstützt diese Richtlinie keine Aktualisierungen des Richtlinienwerts während einer Sitzung. Daher werden Änderungen erst wirksam, nachdem sich der Nutzer ab- und wieder angemeldet hat.
@@ -2722,6 +2736,7 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
       </translation>
 <translation id="2697717608663878828">Test für TLS Encrypted ClientHello aktivieren</translation>
 <translation id="2699836109975228367">„Mono-Audio“ auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="2701554183194485203"><ph name="ANDROID_NAME" />-Anwendungen, die bei der Anmeldung automatisch gestartet werden sollen</translation>
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="2702682139813393777">Erzwingen, dass Windows-Hosts für natives Messaging über cmd.exe gestartet werden</translation>
 <translation id="270582584528242502">Keine Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
@@ -3454,8 +3469,6 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3152135410085709340">Lokalen Dateizugriff auf „file://“-URLs auf diesen Websites im PDF-Viewer zulassen</translation>
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
-<translation id="3163167792874598128">Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, wird dem Nutzer die Werbung für App Store-Bewertungen maximal einmal pro Jahr angezeigt.
-Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewertungen nicht angezeigt.</translation>
 <translation id="3163880369487075383">Mit dieser Richtlinie wird festgelegt, ob „window.name“ für websiteübergreifende Seitenaufrufe auf oberster Ebene, die dazu führen, dass eine neue Gruppe für den Browserkontext erstellt wird, gelöscht werden kann, wenn die Variante „ClearCrossSiteCrossBrowsingContextGroupWindowName“ aktiviert ist.
 
 Die Variante „ClearCrossSiteCrossBrowsingContextGroupWindowName“ legt fest, ob „window.name“ bei websiteübergreifenden Seitenaufrufen auf oberster Ebene gelöscht wird. Solche Seitenaufrufe finden beispielsweise statt, wenn ein Nutzer über die Omnibox eine neue Website öffnet oder auf einen Link zu einer neuen Website klickt, der „target='_blank' rel='noopener'“ beinhaltet. Wenn „window.name“ in diesen Fällen gelöscht wird, wird verhindert, das Daten unbeabsichtigt über die Property „window.name“ zwischen Websites übertragen werden. Dadurch wird der Datenschutz für Nutzer verbessert. Die Richtlinie „ClearWindowNameForNewBrowsingContextGroup“ dient dazu, das vorherige Verhalten wiederherzustellen. Wenn die Variante „ClearCrossSiteCrossBrowsingContextGroupWindowName“ aktiviert ist, wird „window.name“ für entsprechende Seitenaufrufe gelöscht, sofern diese Richtlinie aktiviert oder nicht konfiguriert ist. Ist sie deaktiviert, wird „window.name“ nicht gelöscht.
@@ -3548,6 +3561,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="322359555555487980">Verfügbarkeit von Variationen auf <ph name="PRODUCT_OS_NAME" /> festlegen</translation>
 <translation id="3229163415739929305">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Metadaten zum Seitenaufbau und Modelle zum maschinellen Lernen abgerufen, die die Browsernutzung verbessern.
       Ist sie deaktiviert, funktionieren einige Funktionen eventuell nicht richtig.</translation>
+<translation id="3230956492238004242">Dynamisches Patchen von untergeordneten Modulen aktivieren</translation>
 <translation id="3231311173895401135">Unterstützung vom Browser entscheiden lassen</translation>
 <translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates konfiguriert.
 
@@ -4256,6 +4270,7 @@ Wenn weder „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />�
 Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die App „Inhaltsübertragung“ richtig funktioniert. Weitere Informationen findest du unter https://support.google.com/a/answer/6364687.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutze das mehrzeilige Textfeld unten.</translation>
+<translation id="370314752761795411"><ph name="PRODUCT_NAME" /> mit <ph name="MS_WIN_NAME" /> starten</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3712861436661566358">Profiltrennung erzwingen</translation>
 <translation id="3719826155360621982">Startseite</translation>
@@ -4740,6 +4755,7 @@ Folgendes ist zu beachten:
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
 <translation id="4030152268425532846">Umgehung der automatischen Anmeldung deaktivieren</translation>
 <translation id="4032740546145417900">Spracheingabe nicht zulassen.</translation>
+<translation id="4035252407064087455">Auf generativer KI basierende Funktionen in Autofill zulassen, ohne KI-Modelle zu verbessern.</translation>
 <translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4047633048700722778">Mit dieser Richtlinie wird die Anwendung des URL‑Filters „SafeSites“ konfiguriert. Der Filter greift auf die Google Safe Search API zurück, um URLs als pornografisch oder nicht pornografisch einzustufen.
 
@@ -4883,7 +4899,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4136603825567209889">Erfassen personenbezogener Daten aktivieren</translation>
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4140646780789794190">Weitergabe von Diagnosedaten an PluginVm deaktivieren</translation>
-<translation id="4141430435877011529">Multiregion oder der Standort der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> App. Weitere Standortinformationen zu <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> findest du unter https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">Generative KI</translation>
 <translation id="4145383150978634398">Nutzern Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="4146319954420095470">(Warnung: Diese Abhängigkeit wird bald aufgehoben. Verwende stattdessen bitte „<ph name="GLS_POLICY_NAME" />“. Wenn diese Richtlinie auf „<ph name="BLOCK_GEOLOCATION_SETTING" />“ gesetzt ist, haben <ph name="PRODUCT_OS_NAME" />-Systemdienste und Android-Apps keinen Zugriff auf Standortinformationen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortinformationen zugreifen möchte.</translation>
@@ -5170,6 +5185,7 @@ Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /
 Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es Nutzern nur, sich mit den angegebenen Bluetooth-Diensten zu verbinden. Falls die Liste jedoch leer ist, darf jeder Dienst verwendet werden. Von Bluetooth SIG reservierte UUIDs können als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> oder <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> dargestellt werden. Benutzerdefinierte UUIDs können als <ph name="BLUETOOTH_CUSTOM_UUID" /> dargestellt werden. Bei UUIDs muss die Groß- und Kleinschreibung nicht berücksichtigt werden. Wird die Richtlinie nicht konfiguriert, können Nutzer sich mit jedem Bluetooth-Dienst verbinden.</translation>
 <translation id="4332177773549877617">Ereignisse für Android-App-Installationen protokollieren</translation>
 <translation id="4333940819293342439">Häufigkeit der Erhebung von Telemetriedaten zur App-Nutzung in Millisekunden.</translation>
+<translation id="4336096948197154521"><ph name="PRODUCT_NAME" /> öffnen, wenn sich der Nutzer in <ph name="MS_WIN_NAME" /> anmeldet</translation>
 <translation id="4340121900958123942">Verfügbarkeitsstufe des <ph name="PRODUCT_OS_NAME" />-Standortbestimmungssystems festlegen.
 
 Das ist eine zusätzliche Steuerungsebene, die vor der Berechtigungsebene für Apps und Websites Vorrang hat. Ist diese Richtlinie beispielsweise auf „<ph name="GLS_BLOCKED" />“ oder „<ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />“ gesetzt, können Apps oder Websites den Standort nicht bestimmen, unabhängig von ihrer jeweiligen Berechtigung zur Standortermittlung. Ist sie aber auf „<ph name="GLS_ALLOWED" />“ gesetzt, können Apps und Websites individuell auf den Standort zugreifen, wenn sie die entsprechende Berechtigung haben.
@@ -5925,6 +5941,7 @@ Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmelde
       <ph name="PAGE_SIZE_NAME" /> sollte eines der aufgelisteten Formate oder "custom" enthalten, wenn sich die erforderliche Papiergröße nicht in der Liste befindet. Wenn der Wert "custom" angegeben wird, sollte die Property "<ph name="PAGE_SIZE_CUSTOM_SIZE" />" festgelegt werden. Sie beschreibt die gewünschte Höhe und Breite in Mikrometern. In anderen Fällen sollte die Property "<ph name="PAGE_SIZE_CUSTOM_SIZE" />" nicht verwendet werden. Richtlinien, die gegen diese Regeln verstoßen, werden ignoriert.
 
       Wenn die Seitengröße auf dem vom Nutzer gewählten Drucker nicht verfügbar ist, wird diese Richtlinie ignoriert.</translation>
+<translation id="4787894429283141328">Auf generativer KI basierende Funktionen in Autofill nicht zulassen.</translation>
 <translation id="4789450349513792856">Pop-ups auf diesen Websites blockieren</translation>
 <translation id="4790391579868456557">Notwendige und nicht notwendige Cookies in der Suche verwenden.</translation>
 <translation id="4790588245699320140">Google Assistant erlauben, auf den Bildschirmkontext zuzugreifen</translation>
@@ -6258,6 +6275,13 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
 <translation id="4947257516265472776">Strikt eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwingen</translation>
 <translation id="494924690085329212">Nach Nutzerabmeldung neu starten, wenn Android gestartet wurde.</translation>
 <translation id="4950447493143157880">Integrierten DNS-Client nie verwenden</translation>
+<translation id="4953257833692039804">Steuert, ob <ph name="PRODUCT_NAME" /> bereitgestellte Sicherheitsupdates dynamisch auf neu gestartete untergeordnete Prozesse (z. B. Renderer-Prozesse) anwendet, ohne dass ein vollständiger Browserneustart erforderlich ist.
+
+Wenn <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> deaktiviert ist, werden keine neuen Module zur Verwendung installiert.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> neue untergeordnete Prozesse mit dynamisch bereitgestellten Binärdateien für untergeordnete Module starten, sofern verfügbar.
+
+Wenn diese Richtlinie deaktiviert ist, wendet <ph name="PRODUCT_NAME" /> dynamisch bereitgestellte Binärdateien für untergeordnete Module nicht mehr sofort auf neu gestartete untergeordnete Prozesse an (einschließlich aller bereits heruntergeladenen oder lokal bereitgestellten Updates). Zum Anwenden von Updates ist dann ein vollständiger Neustart des Browsers erforderlich. Bereits ausgeführte untergeordnete Prozesse werden unverändert fortgesetzt. Mit dieser Einstellung wird das dynamische Patchen deaktiviert, ohne dass alle Komponentenupdates deaktiviert werden.</translation>
 <translation id="4953541641325278286">Keiner Website erlauben, den Inaktivitätsstatus des Nutzers zu erkennen</translation>
 <translation id="4954352279763128540">Dadurch wird dem Dialogfeld für die Kerberos-Authentifizierung eine vorausgefüllte Domain hinzugefügt.
 
@@ -6502,6 +6526,7 @@ Diese Richtlinie ist eine vorübergehende Lösung, damit genug Zeit ist, Webinha
       </translation>
 <translation id="5118635822783657217">Updates für nicht kritische Komponenten deaktivieren</translation>
 <translation id="5120168808610189805">Import der Startseite bei der ersten Ausführung aktivieren</translation>
+<translation id="5124321040285474825">Einstellungen für auf generativer KI basierende Funktionen in Autofill</translation>
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
 <translation id="5124652340668722849">Konfiguriert eine Liste von Bereitstellungsdomains (Provisioning Domains, PvDs), die <ph name="PRODUCT_NAME" /> zum dynamischen Abrufen von Proxykonfigurationen verwendet.
 
@@ -6619,6 +6644,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
           Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5182483318861266793">Ablage auf der rechten Seite des Bildschirms anzeigen</translation>
 <translation id="51859390023061147">Funktion zur vollständigen Wiederherstellung deaktivieren.</translation>
+<translation id="5188507662885416844">Dynamisches Patchen von untergeordneten Modulen deaktivieren</translation>
 <translation id="5189360528842591274">Verbindung nur zu den Bluetooth-Diensten in der Liste erlauben</translation>
 <translation id="5191007233343702012">Standardpriorisierung von Tabs verwenden</translation>
 <translation id="5191476996923842491">Standardverhalten für die Mindestverzögerung der Funktion setTimeout().</translation>
@@ -7900,7 +7926,6 @@ Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt
 <translation id="5962271004971310788">Erweiterungen, deren Ausführung im Inkognitomodus vom Nutzer erlaubt werden muss</translation>
 <translation id="5963752574792883406">Port 990 (Blockierung kann bis 01.02.2022 aufgehoben werden)</translation>
 <translation id="596523880465577341">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />“.</translation>
-<translation id="5965344524743236327">Die ID oder Nummer des <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />-Projekts, das der zu aktivierenden <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Instanz entspricht. Weitere Informationen zu Projekt-IDs findest du unter https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects.</translation>
 <translation id="5966615072639944554">Erweiterungen, die die Remote Attestation API zur Bestätigung der Nutzeridentität verwenden dürfen</translation>
 <translation id="596732417280023843">Name des Zertifikatsprofils.</translation>
 <translation id="5972475504452039694">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen und so angeben, welche Websites nicht automatisch mehrere Dateien herunterladen dürfen.
@@ -8327,7 +8352,6 @@ Wenn die Richtlinie „<ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" />“ nicht 
 <translation id="6264247808139384018">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
 
 Ist die Richtlinie deaktiviert, können Nutzer den Bildschirm nicht sperren. Sie können sich lediglich von der Nutzersitzung abmelden.</translation>
-<translation id="6265114688953151459">Die eindeutige Kennung der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Engine. Das Format muss 1–63 Zeichen umfassen und dem Muster [a-z0-9][a-z0-9-_]* entsprechen. Weitere Informationen findest du unter https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine.</translation>
 <translation id="6265892395051519509">Diesen Websites den Zugriff auf Sensoren erlauben</translation>
 <translation id="6266043141694454734">Legt fest, ob der Chrome Root Store und die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet werden</translation>
 <translation id="6266686172120601139">Adaptives Zwischenspeichern für Web Audio aktivieren</translation>
@@ -8798,6 +8822,27 @@ Der Bildschirmschoner des Nutzers zeigt die Bilder an, auf die in der Richtlinie
 Das Zeitlimit bei Inaktivität bis zum Start Bildschirmschoners und das Intervall, in dem ein Bild angezeigt wird, können jeweils mit den Richtlinien <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> und <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> geändert werden. Wenn eine dieser Richtlinien nicht konfiguriert ist, werden stattdessen die Standardwerte verwendet.</translation>
 <translation id="651248769129998376">Keine Installationsanfragen für Erweiterungen erstellen und in der Admin-Konsole hochladen</translation>
 <translation id="6513453889192806240">HTTPS-Latenz</translation>
+<translation id="6514006253468048943">Bei diesen Funktionen in <ph name="PRODUCT_NAME" /> werden generative KI-Modelle eingesetzt, um Nutzern beim Ausfüllen von Formularen im Web zu helfen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie die Struktur der Formulare, mit denen ein Nutzer interagiert, und für „Mit Gemini ausfüllen“ die Freitextabfragen, die ein Nutzer zur Suche in verbundenen Gemini-Apps eingibt, erheben und an einen Google-Server senden, auf dem ein generatives KI-Modell ausgeführt wird.
+
+Wenn die Richtlinie auf „0“ (Auf generativer KI basierende Funktionen in Autofill zulassen und KI-Modelle verbessern) gesetzt ist, dürfen die Funktionen verwendet werden und Google darf relevante Daten nutzen, um seine KI-Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+Wenn die Richtlinie auf „1“ (Auf generativer KI basierende Funktionen in Autofill zulassen, ohne KI-Modelle zu verbessern) gesetzt ist, dürfen die Funktionen verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+Wenn die Richtlinie auf „2“ (Auf generativer KI basierende Funktionen in Autofill nicht zulassen) gesetzt ist, sind die Funktionen nicht zulässig.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Zu den Funktionen der generativen KI in Autofill gehören:
+
+– Optimierte Formularbearbeitung: Verwendet KI, um die Felder eines Formulars zu identifizieren und zu klassifizieren, sodass mehr Felder ausgefüllt werden können.
+
+– Mit Gemini suchen und ausfüllen: Sucht Informationen in den Apps, die ein Nutzer mit Gemini verknüpft hat, und bietet sie zum Ausfüllen an, entweder als proaktive Vorschläge in einem Formular oder als Antwort auf eine Anfrage, die der Nutzer schreibt.
+
+Diese Richtlinie überschreibt die Richtlinie „<ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />“, die weiterhin gilt, wenn diese Richtlinie nicht konfiguriert ist. Für die Funktion „Mit Gemini suchen und ausfüllen“ muss außerdem die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ aktiviert sein.
+
+Diese Richtlinie steuert keine Autofill-Funktionen, die keine generative KI verwenden.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-Bild</translation>
 <translation id="6515520014183265350">Gib eine Liste von Ursprüngen an, die in einem eigenen Prozess ausgeführt werden.
 
@@ -10658,6 +10703,19 @@ Wenn diese Richtlinie deaktiviert ist, verwendet er den aktuellen AGG-Renderer.
 
 Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser ausgewählt.</translation>
 <translation id="7704244074621846004">Verlängerte Lebensdauer für SharedWorker aktivieren</translation>
+<translation id="7706986409083477132">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT-Compiler (Just In Time) ausführen dürfen.
+
+          Ausführliche Informationen zu gültigen Website-URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig.
+
+          Richtlinienausnahmen können sowohl für bestimmte Subdomains als auch für ganze Websites festgelegt werden. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie gilt beispielsweise für subdomain.beispiel.de, ohne dass sich dies auf beispiel.de auswirkt. In einigen Fällen, in denen eine Subdomain nicht von ihrer übergeordneten Website isoliert werden kann, übernimmt sie möglicherweise die für beispiel.de konfigurierte Richtlinie. Ausnahmen werden eventuell erst dann für Frames wirksam, die in einem vorhandenen Tab geladen werden, wenn die Website in einem neuen Tab geöffnet wird. Auf <ph name="ANDROID_NAME" />-Geräten mit wenig Arbeitsspeicher werden websitespezifische Ausnahmen möglicherweise nicht erzwungen. Stattdessen wird die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, falls konfiguriert, oder die JavaScript JIT-Einstellung des Profils verwendet.
+
+          Um Ausnahmen zu erzwingen, kann <ph name="PRODUCT_NAME" /> Websites oder Subdomains, deren Einstellung von der Standardeinstellung abweicht, in dedizierten Prozessen platzieren. Dies kann die Arbeitsspeichernutzung erhöhen, insbesondere unter <ph name="ANDROID_NAME" /> oder wenn ein Platzhaltermuster mit vielen Subdomains übereinstimmt, da jeder übereinstimmende Ursprung separat isoliert werden kann. Isolierte Subdomains können auch nicht „document.domain“ verwenden, um auf ihre übergeordnete Website zuzugreifen.
+
+          Hinweis: In Version 155 und früheren Versionen wurden Richtlinienausnahmen nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wurde nicht wirksam, auch nicht für subdomain.beispiel.de. Sie musste für beispiel.de konfiguriert werden, damit sie sowohl für beispiel.de als auch für subdomain.beispiel.de gilt.
+
+          Diese Richtlinie wird Frame für Frame angewendet und nicht nur auf Grundlage der Ursprungs-URL auf oberster Ebene. Wenn also beispielsweise beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgeführt ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, ist JavaScript JIT für beispiel-eins.de aktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder standardmäßig JavaScript JIT aktiviert. Einträge auf der Sperrliste haben eine höhere Priorität als Einträge auf der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
+
+          Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="7707869387893611318">Dadurch wird die Funktion für Ladetöne aktiviert.
 
           Diese Funktion sorgt dafür, dass die Ladetöne abgespielt werden.
@@ -12821,21 +12879,6 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS
 <translation id="9122865885571719292">Legt fest, ob und wie <ph name="PRODUCT_OS_NAME" /> bei der Anmeldung die letzte Sitzung wiederherstellt.
 Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_RESTORE_ENABLED_NAME" />“ auf „true“ gesetzt ist.</translation>
 <translation id="9123464369663964441">Nutzern erlauben, Ausnahmen hinzuzufügen, um gemischte Inhalte zuzulassen</translation>
-<translation id="9123738611041078443">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
-
-Zum Konfigurieren von <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> müssen Administratoren Folgendes angeben:
-* Die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ODER
-* Alle drei Legacy-Parameter zusammen: „<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />“, „<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />“ und „<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />“. Wenn nur eine Teilmenge der drei Parameter ohne URL angegeben wird, bleibt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
-
-Der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ muss eine gültige URL sein, die das HTTPS-Schema verwendet, auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweist und keinen Nutzernamen oder kein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt unkonfiguriert.
-
-Falls sowohl der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ als auch die Legacy-Parameter konfiguriert sind, hat der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ Vorrang.
-
-Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
-
-Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
-
-Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Anbindung, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="9124770007620653639">Daten zur Domainzuverlässigkeit nie an Google senden</translation>
 <translation id="9126331659955304300">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil zulassen</translation>
 <translation id="9126694586349976283">Verwendung der integrierten KI-APIs zulassen.</translation>
@@ -12937,25 +12980,6 @@ Standardwert ist RollbackDisabled.</translation>
 <translation id="9204863016826119209">Schlüssel für die geschäftliche Nutzung können von installierten und in dieser Richtlinie aufgeführten Android-Apps verwendet werden.</translation>
 <translation id="9206364386317031168">Websites erlauben, Netzwerkanfragen an das lokale Gerät zu senden.</translation>
 <translation id="9206472508136116830">NetBIOS-Freigabenerkennung nicht zulassen</translation>
-<translation id="9207289612253941907">Diese Richtlinie konfiguriert <ph name="PRODUCT_NAME" /> so, dass die bevorzugten Algorithmen für Schlüsselvereinbarungen (unterstützte Gruppen) in TLS 1.3 nach einer bestimmten Compliance-Regelung genehmigte Algorithmen bevorzugen.
-
-Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
-
-Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptographischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich so konfiguriert wurden, dass sie diese bevorzugen.
-
-Wird die Richtlinie auf „<ph name="CNSA2_NAME" />“ festgelegt, wird <ph name="PRODUCT_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) erforderlichen Methoden zum Schlüsselaustausch bevorzugt werden.
-
-Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die standardmäßigen Methoden für den Schlüsselaustausch.
-
-Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
-
-Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
-
-Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.
-
-Diese Richtlinie kann für den Computer und für den Nutzer festgelegt werden. Wenn diese Richtlinie für den Nutzer festgelegt ist, wirkt sie sich nur auf Netzwerkanfragen aus, die vom Nutzerprofil initiiert werden. Sie wirkt sich möglicherweise nicht auf Netzwerkanfragen aus, die von <ph name="PRODUCT_NAME" /> gestellt werden, um browserweite Hintergrundaufgaben auszuführen. Diese werden durch den Wert auf Geräteebene gesteuert. Wenn diese Richtlinie sowohl auf Computer- als auch auf Nutzerebene festgelegt ist, gilt der Wert auf Computerebene, es sei denn, die Rangfolge der Richtlinien wurde durch die Richtlinie „<ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />“ geändert.
-
-In Version 156 und niedriger gilt diese Richtlinie nur geräteweit.</translation>
 <translation id="9207596996305971030">Anmelde-/Abmeldeereignisse nicht melden</translation>
 <translation id="9208328979373108724">Ursprüngen der isolierten Web-App erlauben, Sub Apps hinzuzufügen, jedoch eine Nutzeraufforderung erfordern</translation>
 <translation id="9210647066889383361">Nutzer dürfen sich auf ihrem Gerät mit Smart Lock anmelden</translation>

@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">斜體</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">「啟用付款資料自動填入」宜家喺成個畫面上顯示。</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">以下搜尋引擎隨機排序。你可隨時變更預設。</translation>
 <translation id="2134584557120247184">機票</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">來自其他網絡商店</translation>
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
+<translation id="3296595523896103792">閂咗「啟用付款資料自動填入」。</translation>
 <translation id="3299098170013242198">Windows Hello 已開啟，以便填入密碼</translation>
 <translation id="3299197721044635447">根據你機構的政策，你無法在受管理的 Chrome 環境以外貼上內容</translation>
 <translation id="3299720788264079132">在使用「<ph name="FEATURE_NAME" />」時發生錯誤</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5651323159439184939">連續送紙</translation>
 <translation id="5653681867130739344">安全地更新「Google 錢包」中的身分證</translation>
-<translation id="5653744563415531641">儲存資料可以提升操作效率，例如在不同 Google 產品中填寫表格。你可以為 <ph name="ACCOUNT" /> <ph name="MANAGE_WALLET_SETTINGS_LINK" />。</translation>
 <translation id="5654927323611874862">已上載的當機報告 ID：</translation>
 <translation id="5654965123204121933">網址未包含所需的替換字串「<ph name="SEARCH_TERMS_REPLACEMENT" />」：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">電郵</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">家長核准對話框</translation>
-<translation id="6413532517183895572">管理「錢包」設定</translation>
 <translation id="6415778972515849510">Chromium 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">請務必將任何重要商家或個人資料儲存至外部位置。</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">背景同步處理</translation>
 <translation id="7310392214323165548">裝置即將重新啟動</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> 㩒 Tab 鍵，再㩒 Enter 鍵問 <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">你的機構已將此網站標示為可能違反政策。</translation>
 <translation id="7315372670898739748">無法連結，請稍後再試</translation>
 <translation id="7316521168101843192">正在儲存檔案至 Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">要求存取權</translation>
 <translation id="7956713633345437162">流動版書籤</translation>
 <translation id="7961015016161918242">從來沒有</translation>
+<translation id="7961493403319780137">進一步了解呢個功能 - 自動填入 Gmail 嘅驗證碼</translation>
 <translation id="7962467575542381659">平台機器</translation>
 <translation id="796439090588610411">Chrome 將停止在支援的網站上自動確認此電郵地址。</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
@@ -4571,7 +4571,6 @@
 <translation id="8699041776323235191">HID 裝置</translation>
 <translation id="8699985386408839112">Kaku 1 信封</translation>
 <translation id="8702965365666568344">固定膠帶</translation>
-<translation id="8703242769654966101">在「錢包」中啟用 Pix</translation>
 <translation id="8703372953981978786">此連結無法運作</translation>
 <translation id="8703575177326907206">您與 <ph name="DOMAIN" /> 的連線未加密。</translation>
 <translation id="8705331520020532516">序號</translation>

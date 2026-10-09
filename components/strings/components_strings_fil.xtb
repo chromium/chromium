@@ -668,6 +668,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2127747486437921899">Italic</translation>
 <translation id="2130448033692577677">Posibleng hindi mailapat ang mga template na tinukoy mo dahil hindi naitakda ang patakarang DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Binuksan nang buo ang I-enable ang Autofill ng Mga Pagbabayad.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ipinapakita ang mga ito sa random na pagkakasunod-sunod. Puwede mong palitan ang iyong default sa anumang oras.</translation>
 <translation id="2134584557120247184">Ticket sa flight</translation>
@@ -1366,6 +1367,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3289578402369490638">Mula sa iba pang store sa buong web</translation>
 <translation id="3293642807462928945">Matuto pa tungkol sa patakarang <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Tingnan at pamahalaan ang iyong mga password sa mga setting ng Chrome</translation>
+<translation id="3296595523896103792">Isinara ang I-enable ang Autofill ng Mga Pagbabayad.</translation>
 <translation id="3299098170013242198">Naka-on ang Windows Hello para sa paglalagay ng mga password</translation>
 <translation id="3299197721044635447">Hindi ma-paste ang content sa labas ng pinapamahalaang konteksto ng Chrome dahil sa mga patakaran ng iyong organisasyon</translation>
 <translation id="3299720788264079132">Nagkaproblema habang ginagamit ang <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5649053991847567735">Mga awtomatikong pag-download</translation>
 <translation id="5651323159439184939">Tractor Feed</translation>
 <translation id="5653681867130739344">Secure na i-update ang identity card sa Google Wallet</translation>
-<translation id="5653744563415531641">I-save ang iyong impormasyon at mas mabilis na magawa ang mga bagay-bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong <ph name="MANAGE_WALLET_SETTINGS_LINK" /> para sa <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID ng Na-upload na Ulat ng Pag-crash:</translation>
 <translation id="5654965123204121933">Hindi naglalaman ang URL ng nire-require na pamalit na string na <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3257,7 +3258,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6410264514553301377">Ilagay ang petsa ng pag-expire at CVC para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialog ng pag-apruba ng magulang</translation>
-<translation id="6413532517183895572">pamahalaan ang iyong mga setting ng Wallet</translation>
 <translation id="6415778972515849510">Makakatulong sa iyo ang Chromium na protektahan ang iyong Google Account at palitan ang password mo.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Tiyaking external na sino-store ang mahahalagang data ng negosyo o personal na data.</translation>
@@ -3764,7 +3764,6 @@ Mga karagdagang detalye:
 <translation id="7308436126008021607">pag-sync sa background</translation>
 <translation id="7310392214323165548">Malapit na malapit nang mag-restart ang device</translation>
 <translation id="7311244614769792472">Walang nakitang resulta</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Pindutin ang tab at pagkatapos ay ang enter para magtanong sa <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Na-flag ng iyong organisasyon ang site na ito dahil posibleng lumalabag ito sa isang patakaran.</translation>
 <translation id="7315372670898739748">Hindi na-link, subukan ulit sa ibang pagkakataon</translation>
 <translation id="7316521168101843192">Sine-save ang file sa Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Mga karagdagang detalye:
 <translation id="7955105108888461311">Magtanong nang personal</translation>
 <translation id="7956713633345437162">Mga bookmark sa mobile</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
+<translation id="7961493403319780137">Matuto pa tungkol sa feature na ito - I-autofill ang mga code sa pag-verify mula sa Gmail</translation>
 <translation id="7962467575542381659">Machine ng platform</translation>
 <translation id="796439090588610411">Ihihinto ng Chrome ang awtomatikong pagkumpirma sa email na ito sa mga sinusuportahang site.</translation>
 <translation id="7966803981046576691">Uri ng account ng trabaho</translation>
@@ -4572,7 +4572,6 @@ Mga karagdagang detalye:
 <translation id="8699041776323235191">HID device</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Mounting Tape</translation>
-<translation id="8703242769654966101">I-enable ang Pix sa Wallet</translation>
 <translation id="8703372953981978786">Hindi gumagana ang link na ito</translation>
 <translation id="8703575177326907206">Ang iyong koneksyon sa <ph name="DOMAIN" /> ay hindi naka-encrypt.</translation>
 <translation id="8705331520020532516">Serial Number</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2086334242442703436">פתיחה של בוחר אמוג'י</translation>
 <translation id="2089550919269323883">ההתקנה של <ph name="VM_NAME" /> חסומה בהתאם למדיניות הארגון. לקבלת תמיכה, יש לפנות אל האדמין. קוד השגיאה הוא <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">‏חדשות לגבי Steam ל-Chromebook</translation>
 <translation id="209965399369889474">לא מחובר לרשת</translation>
 <translation id="2107581415810719320">כפתור אחר <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏כבל ה-USB-C שחיברת לא תומך ב-Thunderbolt. יכול להיות שביצועי המכשיר יוגבלו.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">‏במה היית רוצה להתרכז? כדי להוסיף את המשימה, צריך להקיש על Enter.</translation>
 <translation id="229397294990920565">מתבצע כיבוי של הנתונים הסלולריים…</translation>
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
+<translation id="2296880470921996802">‏היסטוריית הלוח הושבתה על ידי אדמין ממחלקת ה-IT</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
 <translation id="2303600792989757991">החלפת סקירת חלון</translation>
 <translation id="2304702218354340897">בחרת להשבית את התכונה "שליטה באמצעות תנועות פנים". להמשיך?</translation>
@@ -1790,7 +1790,6 @@
 <translation id="6127395413317891856">אין חיבור לאינטרנט. יש לבדוק את החיבור ולנסות שוב.</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6132714462430777655">לדלג על ההרשמה לשימוש בית ספרי?</translation>
-<translation id="6136872094979134163">‏לא ניתן לאחזר את החדשות של Steam ל-Chromebook.</translation>
 <translation id="6137566720514957455">פתיחת תיבת דו-דיח להסרה של <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">במה היית רוצה להתרכז?</translation>
 <translation id="6141988275892716286">אישור הורדה</translation>

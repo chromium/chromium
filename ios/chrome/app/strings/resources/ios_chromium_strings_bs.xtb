@@ -14,6 +14,7 @@
 <translation id="12739128458173458">Da pošaljete ovu karticu na drugi uređaj, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="1361748954329991663">Chromium je zastario. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Storeu<ph name="END_LINK" />, moguće je da vaš uređaj više ne podržava nove verzije Chromiuma.</translation>
 <translation id="1383876407941801731">Traži</translation>
+<translation id="1421604911662901100">Prijavite se na ovu web lokaciju i u Chromium da dobijete sačuvane informacije i druge stavke na svim svojim uređajima</translation>
 <translation id="1423007117030725713">Započnite pretraživanje na novoj kartici Chromiuma.</translation>
 <translation id="1431818719585918472">Omogućite Chromiumu da zaključa vaše anonimne kartice.</translation>
 <translation id="1451665391191990528">Sakrijte otvorene anonimne kartice prilikom napuštanja Chromiuma</translation>
@@ -55,6 +56,7 @@ Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada 
 <translation id="2006345422933397527">Chromium nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2025935492422922097">Chromium obrađuje naslove stranica i URL-ove u privatnom prostoru u oblaku</translation>
 <translation id="2027881372245801507">Isključivanje prijedloga ne upravlja Chromiumovom obradom naslova stranica i URL-ova za druge funkcije. Pristupom ovim podacima možete upravljati u <ph name="BEGIN_LINK" />postavkama sinhronizacije<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">Prijavite se na ovu web lokaciju i u Chromium da dobijete lozinke i druge stavke na svim svojim uređajima</translation>
 <translation id="2042889939382983733">Pregledajte svoju historiju Chromiuma</translation>
 <translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="2059365270911640413">Završite postavljanje Chromiuma</translation>
@@ -99,6 +101,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="2832168932648876507">Pretraživanje glasovnim komandama u Chromiumu.</translation>
 <translation id="2843571538056574338">Koristite Chromium za automatsko popunjavanje</translation>
 <translation id="2844923129028437362">Izbjegnite kopiranje. Postavite Chromium kao zadani preglednik za iOS.</translation>
+<translation id="2876793692921835457">Prijavite se na ovu web lokaciju i u Chromium da dobijete oznake i druge stavke na svim svojim uređajima</translation>
 <translation id="2918709798697875261">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromiuma.</translation>
 <translation id="2942241131342758843">Koristite Chromium prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
@@ -225,6 +228,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5671188105328420281">Savjeti za Chromium</translation>
 <translation id="5688047395118852662">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
+<translation id="5714479833576517588">Prijavite se na ovu web lokaciju i u Chromium da dobijete lozinke i druge stavke koje sadržava <ph name="DEVICE_TYPE" /></translation>
 <translation id="5731004036450828399">Da zaštitite pristupne ključeve, prvo morate kreirati PIN za oporavak.
 
         Pristupni ključevi se pohranjuju na Upravitelju lozinki, što vam omogućava da ih koristite u Chromiumu na bilo kojem uređaju.</translation>
@@ -243,6 +247,7 @@ Stvari za razmatranje:
   • Ako sinhronizirate historiju s Google računom, pokazatelji mogu uključivati i informacije o URL-ovima koje ste posjetili.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">Brzo obavite zadatke i otkrijte načine da iskoristite sve prednosti Chromiuma:</translation>
 <translation id="5932787118589620366">Brisanje podataka pregledanja u Chromiumu.</translation>
+<translation id="59347837447331606">Prijavite se na ovu web lokaciju i u Chromium da dobijete sačuvane informacije i druge stavke koje sadržava <ph name="DEVICE_TYPE" /></translation>
 <translation id="593808800391107017">Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chromium automatski otkrije za vas.</translation>
 <translation id="5951593919357934226">Iskoristite sve prednosti Chromiuma.</translation>
 <translation id="5985254578475526217">Da primate obavještenja od Chromiuma, uključite obavještenja u Postavkama iOS-a.</translation>
@@ -304,6 +309,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="725427773388857052">Chromium vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
 <translation id="7269362888766543920">Neki programski dodaci uzrokuju pad aplikacije Chromium. Pokušajte ih deinstalirati.</translation>
 <translation id="7285031092584344905">Pristupajte lozinkama u Chromiumu i ostalom u drugim aplikacijama.</translation>
+<translation id="7291896724424825868">Prijavite se na ovu web lokaciju i u Chromium da dobijete oznake i druge stavke koje sadržava <ph name="DEVICE_TYPE" /></translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Vaša lozinka će se sačuvati u Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Pristupni ključ će se sačuvati na Upravitelju lozinki za <ph name="USER_EMAIL" /></translation>

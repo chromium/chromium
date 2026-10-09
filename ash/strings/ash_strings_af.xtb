@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2086334242442703436">Maak emosiekoon-kieser oop</translation>
 <translation id="2089550919269323883">Die installering van <ph name="VM_NAME" /> word deur ondernemingbeleid geblokkeer. Kontak jou stelseladministrateur vir steun. Foutkode is <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Steam vir Chromebook-nuus</translation>
 <translation id="209965399369889474">Nie aan 'n netwerk gekoppel nie</translation>
 <translation id="2107581415810719320">Ander knoppie <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Jou USB-C-kabel steun nie Thunderbolt nie. Toestelwerkverrigting kan beperk wees.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Waarop wil jy graag fokus? Druk Enter om die taak by te voeg.</translation>
 <translation id="229397294990920565">Mobiele data skakel tans af …</translation>
 <translation id="2295777434187870477">Mikrofoon is aan. Wissel om invoer te demp.</translation>
+<translation id="2296880470921996802">Knipbordgeskiedenis is deur jou IT-admin gedeaktiveer</translation>
 <translation id="2302092602801625023">Hierdie rekening word deur Family Link bestuur</translation>
 <translation id="2303600792989757991">Wissel tussen vensteroorsig</translation>
 <translation id="2304702218354340897">Is jy seker jy wil gesigbeheer afskakel?</translation>
@@ -1787,7 +1787,6 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6127395413317891856">Jy is vanlyn. Gaan jou verbinding na en probeer weer.</translation>
 <translation id="6129953537138746214">Spasie</translation>
 <translation id="6132714462430777655">Slaan skoolinskrywing oor?</translation>
-<translation id="6136872094979134163">Kon nie Steam vir Chromebook-nuus ophaal nie.</translation>
 <translation id="6137566720514957455">Maak verwyderingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Waarop wil jy graag fokus?</translation>
 <translation id="6141988275892716286">Bevestig aflaai</translation>

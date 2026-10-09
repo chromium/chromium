@@ -668,6 +668,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2127747486437921899">Dőlt</translation>
 <translation id="2130448033692577677">A megadott sablonok nem alkalmazhatók, mert nincs beállítva a DnsOverHttpsMode házirend.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">A Fizetési adatok automatikus kitöltésének engedélyezése teljes magasságban megnyitva.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">A sorrend véletlenszerű. Az alapértelmezett választását bármikor módosíthatja.</translation>
 <translation id="2134584557120247184">Repülőjegy</translation>
@@ -1364,6 +1365,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3289578402369490638">Az interneten megtalálható egyéb üzletekből</translation>
 <translation id="3293642807462928945">További információ a(z) <ph name="POLICY_NAME" /> házirendről</translation>
 <translation id="3295444047715739395">Jelszavait a Chrome-beállítások között tekintheti meg és kezelheti</translation>
+<translation id="3296595523896103792">A Fizetési adatok automatikus kitöltésének engedélyezése bezárva.</translation>
 <translation id="3299098170013242198">A Windows Hello be van kapcsolva a jelszavak kitöltéséhez</translation>
 <translation id="3299197721044635447">A szervezeti házirend miatt nem sikerült beilleszteni a tartalmat a felügyelt Chrome-kontextuson kívülre</translation>
 <translation id="3299720788264079132">Hiba történt a(z) <ph name="FEATURE_NAME" /> használata közben</translation>
@@ -2802,7 +2804,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5649053991847567735">Automatikus letöltések</translation>
 <translation id="5651323159439184939">Papírtovábbító feed</translation>
 <translation id="5653681867130739344">Személyazonosító okmány biztonságos frissítése a Google Walletben</translation>
-<translation id="5653744563415531641">Mentse el adatait, hogy gyorsabban elvégezhesse a feladatait, például az űrlapok kitöltését a Google-termékekben. <ph name="MANAGE_WALLET_SETTINGS_LINK" /> a(z) <ph name="ACCOUNT" /> fiók esetében.</translation>
 <translation id="5654927323611874862">Feltöltött hibajelentés azonosítója:</translation>
 <translation id="5654965123204121933">Az URL nem tartalmazza a kötelező <ph name="SEARCH_TERMS_REPLACEMENT" /> cserekarakterláncot: <ph name="SEARCH_URL" />.</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -3254,7 +3255,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6410264514553301377">Írja be a(z) <ph name="CREDIT_CARD" /> kártyán szereplő lejárati dátumot és CVC-t</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Szülői jóváhagyási párbeszédpanel</translation>
-<translation id="6413532517183895572">a Wallet beállításainak kezelése</translation>
 <translation id="6415778972515849510">A Chromium segíthet a Google-fiók védelmében és a jelszó módosításában.</translation>
 <translation id="6416877227920300343">„EDP” méret</translation>
 <translation id="6418199314628742460">Ügyeljen arra, hogy a fontos üzleti és személyes adatokat külső tárhelyen tárolja.</translation>
@@ -3761,7 +3761,6 @@ További részletek:
 <translation id="7308436126008021607">szinkronizálás a háttérben</translation>
 <translation id="7310392214323165548">Az eszköz hamarosan újraindul</translation>
 <translation id="7311244614769792472">Nincs találat</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Nyomja meg a Tab, majd az Enter billentyűt, hogy kérdezzen a következőtől: <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Szervezete megjelölte ezt a webhelyet, mert irányelvet sérthet.</translation>
 <translation id="7315372670898739748">Az összekapcsolás sikertelen, próbálja újra később</translation>
 <translation id="7316521168101843192">Fájl mentése a Microsoft OneDrive szolgáltatásba</translation>
@@ -4169,6 +4168,7 @@ További részletek:
 <translation id="7955105108888461311">Kérés személyesen</translation>
 <translation id="7956713633345437162">Mobilos könyvjelzők</translation>
 <translation id="7961015016161918242">Soha</translation>
+<translation id="7961493403319780137">További információ erről a funkcióról – Ellenőrző kódok automatikus kitöltése a Gmailből</translation>
 <translation id="7962467575542381659">Platform – gép</translation>
 <translation id="796439090588610411">A Chrome a továbbiakban nem fogja automatikusan megerősíteni ezt az e-mail-címet a támogatott webhelyeken.</translation>
 <translation id="7966803981046576691">Munka fióktípusa</translation>
@@ -4570,7 +4570,6 @@ További részletek:
 <translation id="8699041776323235191">HID-eszköz</translation>
 <translation id="8699985386408839112">Kaku 1 boríték</translation>
 <translation id="8702965365666568344">Ragasztószalag</translation>
-<translation id="8703242769654966101">A Pix engedélyezése a Walletben</translation>
 <translation id="8703372953981978786">Ez a link nem működik</translation>
 <translation id="8703575177326907206">A kapcsolat (<ph name="DOMAIN" />) nem titkosított.</translation>
 <translation id="8705331520020532516">Sorozatszám</translation>

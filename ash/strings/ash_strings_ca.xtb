@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2086334242442703436">Obre el selector d'emojis</translation>
 <translation id="2089550919269323883">La política de l'empresa ha bloquejat la instal·lació de <ph name="VM_NAME" />. Contacta amb l'administrador del sistema per obtenir assistència. El codi d'error és <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Novetats de Steam per a Chromebook</translation>
 <translation id="209965399369889474">No hi ha connexió de xarxa</translation>
 <translation id="2107581415810719320">Un altre botó <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">El teu cable USB-C no admet Thunderbolt. És possible que el rendiment del dispositiu es vegi limitat.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">En què et vols concentrar? Prem Retorn per afegir la tasca.</translation>
 <translation id="229397294990920565">S'estan desactivant les dades mòbils...</translation>
 <translation id="2295777434187870477">El micròfon està activat. Utilitza el commutador per silenciar l'entrada.</translation>
+<translation id="2296880470921996802">L'administrador de TI ha desactivat l'historial del porta-retalls</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
 <translation id="2304702218354340897">Confirmes que vols desactivar el control amb gestos facials?</translation>
@@ -1786,7 +1786,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6127395413317891856">No tens connexió. Comprova la connexió i torna-ho a provar.</translation>
 <translation id="6129953537138746214">Espai</translation>
 <translation id="6132714462430777655">Vols ometre la inscripció al centre educatiu?</translation>
-<translation id="6136872094979134163">No es poden recuperar les novetats de Steam per a Chromebook.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">En què et vols concentrar?</translation>
 <translation id="6141988275892716286">Confirma la baixada</translation>

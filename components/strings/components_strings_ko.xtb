@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">기울임꼴</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">결제 자동 완성 사용 설정 창이 전체 높이로 열렸습니다.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">무작위 순서로 표시됩니다. 언제든지 기본값을 변경할 수 있습니다.</translation>
 <translation id="2134584557120247184">항공권</translation>
@@ -1366,6 +1367,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3289578402369490638">웹의 다른 스토어에서 찾은 구매 옵션</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> 정책에 관해 자세히 알아보기</translation>
 <translation id="3295444047715739395">Chrome 설정에서 비밀번호를 확인하고 관리하세요.</translation>
+<translation id="3296595523896103792">결제 자동 완성 사용 설정 창이 닫혔습니다.</translation>
 <translation id="3299098170013242198">비밀번호 입력 시 Windows Hello 사용</translation>
 <translation id="3299197721044635447">조직의 정책으로 인해 관리 Chrome 컨텍스트 외부에 콘텐츠를 붙여넣을 수 없습니다.</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> 사용 중에 문제가 발생했습니다.</translation>
@@ -2805,7 +2807,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="5649053991847567735">자동 다운로드</translation>
 <translation id="5651323159439184939">트랙터 피드</translation>
 <translation id="5653681867130739344">Google 월렛에서 안전하게 신분증 업데이트하기</translation>
-<translation id="5653744563415531641">정보를 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 <ph name="MANAGE_WALLET_SETTINGS_LINK" />할 수 있습니다.</translation>
 <translation id="5654927323611874862">업로드된 비정상 종료 보고서 ID:</translation>
 <translation id="5654965123204121933">URL에 필수 대체 문자열(<ph name="SEARCH_TERMS_REPLACEMENT" />)이 없습니다. <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">이메일</translation>
@@ -3257,7 +3258,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />의 만료일과 CVC를 입력하세요.</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">부모 승인 대화상자</translation>
-<translation id="6413532517183895572">월렛 설정을 관리</translation>
 <translation id="6415778972515849510">Chromium을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">중요한 비즈니스 정보와 개인 정보는 외부에 저장해야 합니다.</translation>
@@ -3764,7 +3764,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7308436126008021607">백그라운드 동기화</translation>
 <translation id="7310392214323165548">기기가 곧 다시 시작됩니다</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Tab 키를 누른 후 Enter 키를 눌러 <ph name="AI_ENGINE_NAME" />에 질문하세요</translation>
 <translation id="7313107491291103073">정책 위반 가능성이 있는 사이트이므로 조직에서 신고했습니다.</translation>
 <translation id="7315372670898739748">연결할 수 없습니다. 나중에 다시 시도해 주세요</translation>
 <translation id="7316521168101843192">Microsoft OneDrive에 파일 저장 중</translation>
@@ -4171,6 +4170,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7955105108888461311">직접 요청</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
+<translation id="7961493403319780137">이 기능 자세히 알아보기 - Gmail의 인증 코드 자동 완성</translation>
 <translation id="7962467575542381659">플랫폼 머신</translation>
 <translation id="796439090588610411">Chrome이 지원되는 사이트에서 더 이상 이 이메일을 자동으로 확인하지 않습니다.</translation>
 <translation id="7966803981046576691">작업 계정 유형</translation>
@@ -4571,7 +4571,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8699041776323235191">HID 기기</translation>
 <translation id="8699985386408839112">봉투 Kaku 1</translation>
 <translation id="8702965365666568344">마운팅 테이프</translation>
-<translation id="8703242769654966101">월렛에서 Pix 사용 설정</translation>
 <translation id="8703372953981978786">링크가 작동하지 않음</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />로의 연결은 암호화되지 않습니다.</translation>
 <translation id="8705331520020532516">일련번호</translation>

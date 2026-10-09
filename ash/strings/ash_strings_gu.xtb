@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2086334242442703436">ઇમોજી પિકર ખોલો</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" />નું ઇન્સ્ટૉલેશન એન્ટરપ્રાઇઝ પૉલિસી. વડે બ્લૉક કરવામાં આવ્યું છે. કૃપા કરીને સપોર્ટ માટે તમારા સિસ્ટમ ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો. ભૂલનો કોડ <ph name="ERROR" /> છે.</translation>
-<translation id="2093792000875799555">Chromebook NewsSteam for Chromebook ન્યૂઝ</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
 <translation id="2107581415810719320">અન્ય બટન <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">તમારો USB-C કેબલ Thunderboltને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">તમારે શેના પર ફોકસ કરવું છે? કાર્ય ઉમેરવા માટે Enter દબાવો.</translation>
 <translation id="229397294990920565">મોબાઇલ ડેટા બંધ થઈ રહ્યો છે…</translation>
 <translation id="2295777434187870477">માઇક્રોફોન ચાલુ છે, ટૉગલ કરવાથી ઇનપુટ મ્યૂટ થશે.</translation>
+<translation id="2296880470921996802">તમારા IT ઍડમિન દ્વારા ક્લિપબોર્ડનો ઇતિહાસ બંધ કરવામાં આવ્યો</translation>
 <translation id="2302092602801625023">આ એકાઉન્ટ Family Link દ્વારા મેનેજ થાય છે</translation>
 <translation id="2303600792989757991">ટોગલ વિન્ડો વિહંગાવલોકન</translation>
 <translation id="2304702218354340897">શું તમે ખરેખર ફેસ કન્ટ્રોલ બંધ કરવા માગો છો?</translation>
@@ -1788,7 +1788,6 @@
 <translation id="6127395413317891856">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">સ્કૂલમાં પ્રવેશની પ્રક્રિયા છોડી દઈએ?</translation>
-<translation id="6136872094979134163">Steam for Chromebook ન્યૂઝ પાછા મેળવી શકતા નથી.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> માટે કાઢી નાખવાનો સંવાદ ખોલો</translation>
 <translation id="6141205840878048728">તમારે શેના પર ફોકસ કરવું છે?</translation>
 <translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>

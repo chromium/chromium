@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2086334242442703436">Aprire il selettore di emoji</translation>
 <translation id="2089550919269323883">La possibilità di installare <ph name="VM_NAME" /> è bloccata dalla policy aziendale. Contatta l'amministratore di sistema per ricevere assistenza. Il codice di errore è <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Notizie su Steam per Chromebook</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
 <translation id="2107581415810719320">Pulsante Altro <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Il cavo USB-C non supporta Thunderbolt. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Su cosa ti piacerebbe concentrati? Premi Invio per aggiungere l'attività.</translation>
 <translation id="229397294990920565">Disattivazione dei dati mobili…</translation>
 <translation id="2295777434187870477">L'audio del microfono è attivo: la disattivazione impedirà l'ingresso audio.</translation>
+<translation id="2296880470921996802">La Cronologia appunti è stata disattivata dall'amministratore IT</translation>
 <translation id="2302092602801625023">Questo account è gestito da Family Link</translation>
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2304702218354340897">Disattivare i controlli con il volto?</translation>
@@ -1783,7 +1783,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="6127395413317891856">Sei offline. Controlla la connessione e riprova.</translation>
 <translation id="6129953537138746214">BARRA SPAZIATRICE</translation>
 <translation id="6132714462430777655">Vuoi saltare la registrazione per uso scolastico?</translation>
-<translation id="6136872094979134163">Impossibile recuperare le notizie su Steam per Chromebook.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Su cosa ti piacerebbe concentrati?</translation>
 <translation id="6141988275892716286">Conferma download</translation>

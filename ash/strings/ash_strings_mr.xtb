@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2086334242442703436">इमोजी पिकर उघडा</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> इंस्टॉल करत आहे, एंटरप्राइझ धोरणाद्वारे ब्लॉक केले आहे. कृपया सपोर्टसाठी तुमच्या सिस्टीम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. <ph name="ERROR" /> हा एरर कोड आहे.</translation>
-<translation id="2093792000875799555">Chromebook साठी Steam शी संबंधित बातम्या</translation>
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
 <translation id="2107581415810719320">इतर बटण <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">तुमची USB-C केबल ही थंडरबोल्टला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">तुम्हाला कोणत्या गोष्टीवर फोकस करायचा आहे? टास्क जोडण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="229397294990920565">मोबाइल डेटा बंद करत आहे...</translation>
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
+<translation id="2296880470921996802">तुमच्या आयटी ॲडमिनने क्लिपबोर्ड इतिहास बंद केला आहे</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
 <translation id="2304702218354340897">तुम्हाला चेहरा नियंत्रण नक्की बंद करायचे आहे का?</translation>
@@ -1786,7 +1786,6 @@
 <translation id="6127395413317891856">तुम्‍ही ऑफलाइन आहात. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6129953537138746214">स्पेस</translation>
 <translation id="6132714462430777655">शाळेशी संबंधित नोंदणी वगळायची आहे का?</translation>
-<translation id="6136872094979134163">Chromebook साठी Steam शी संबंधित बातम्या परत मिळवता आल्या नाहीत.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> साठी काढून टाकणे डायलॉग उघडा</translation>
 <translation id="6141205840878048728">तुम्हाला कोणत्या गोष्टीवर फोकस करायचा आहे?</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>

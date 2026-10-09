@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">დახრილი</translation>
 <translation id="2130448033692577677">თქვენ მიერ მითითებული შაბლონების მისადაგება შეიძლება ვერ მოხერხდეს „DnsOverHttpsMode“ წესების განუსაზღვრელობის გამო.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">გადახდების ავტომატური შევსების ჩართვა გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">მიმდევრობა შემთხვევითია. ნაგულისხმევის შეცვლას ნებისმიერ დროს შეძლებთ.</translation>
 <translation id="2134584557120247184">ავიაბილეთი</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">სხვა მაღაზიებიდან ვებში</translation>
 <translation id="3293642807462928945">შეიტყვეთ მეტი „<ph name="POLICY_NAME" />“ წესების შესახებ</translation>
 <translation id="3295444047715739395">იხილეთ თქვენი პაროლები და მართეთ ისინი Chrome-ის პარამეტრებიდან</translation>
+<translation id="3296595523896103792">გადახდების ავტომატური შევსების ჩართვა დახურულია.</translation>
 <translation id="3299098170013242198">Windows Hello ჩართულია პაროლების შესავსებად</translation>
 <translation id="3299197721044635447">კონტენტის ჩასმა მართული Chrome-ის კონტექსტის გარეთ ვერ მოხერხდა თქვენი ორგანიზაციის წესების გამო</translation>
 <translation id="3299720788264079132">ფუნქციის „<ph name="FEATURE_NAME" />“ გამოყენებისას წარმოიქმნა შეფერხება</translation>
@@ -2805,7 +2807,6 @@
 <translation id="5649053991847567735">ავტომატური ჩამოტვირთვები</translation>
 <translation id="5651323159439184939">ქაღალდის მიწოდება ჯაჭვური მოწყობილობით</translation>
 <translation id="5653681867130739344">პირადობის მოწმობის უსაფრთხოდ განახლება Google საფულეში</translation>
-<translation id="5653744563415531641">შეინახეთ თქვენი ინფორმაცია და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. თქვენ შეგიძლიათ <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ანგარიშისთვის <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ავარიულად გათიშვის ატვირთული ანგარიშის ID:</translation>
 <translation id="5654965123204121933">URL არ შეიცავს ჩანაცვლების საჭირო ფრაზას <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ელფოსტა</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377">შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">მშობლის მიერ დადასტურების დიალოგი</translation>
-<translation id="6413532517183895572">თქვენი საფულის პარამეტრების მართვა</translation>
 <translation id="6415778972515849510">Chromium-ს შეუძლია დაგეხმაროთ თქვენი Google ანგარიშის დაცვასა და პაროლის შეცვლაში.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">დარწმუნდით, რომ ბიზნესის ან პერსონალური მნიშვნელოვანი მონაცემები ინახება გარე საცავში.</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">ფონური სინქრონიზაცია</translation>
 <translation id="7310392214323165548">მოწყობილობა ძალიან მალე გადაიტვირთება</translation>
 <translation id="7311244614769792472">შედეგები ვერ მოიძებნა</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> დააჭირეთ Tab-ს, შემდეგ კი Enter-ს, რომ ჰკითხოთ <ph name="AI_ENGINE_NAME" />-ს</translation>
 <translation id="7313107491291103073">თქვენმა ორგანიზაციამ დროშით მონიშნა ეს საიტი, რადგან ის, შესაძლოა, წესებს არღვევდეს.</translation>
 <translation id="7315372670898739748">დაკავშირება ვერ მოხერხდა, ცადეთ მოგვიანებით</translation>
 <translation id="7316521168101843192">ფაილი ინახება Microsoft OneDrive-ში</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">პირადად კითხვა</translation>
 <translation id="7956713633345437162">მობილური სანიშნეები</translation>
 <translation id="7961015016161918242">არასოდეს</translation>
+<translation id="7961493403319780137">შეიტყვეთ მეტი ამ ფუნქციის შესახებ — დამადასტურებელი კოდების ავტომატური შევსება Gmail-იდან</translation>
 <translation id="7962467575542381659">პლატფორმის მოწყობილობა</translation>
 <translation id="796439090588610411">Chrome შეწყვეტს ამ ელფოსტის ავტომატურად დადასტურებას მხარდაჭერილ საიტებზე.</translation>
 <translation id="7966803981046576691">დავალების ანგარიშის ტიპი</translation>
@@ -4571,7 +4571,6 @@
 <translation id="8699041776323235191">HID მოწყობილობა</translation>
 <translation id="8699985386408839112">კონვერტი Kaku 1</translation>
 <translation id="8702965365666568344">სამონტაჟო ლენტი</translation>
-<translation id="8703242769654966101">Pix-ის აქტივაცია საფულეში</translation>
 <translation id="8703372953981978786">ეს ბმული არ მუშაობს</translation>
 <translation id="8703575177326907206">თქვენი კავშირი <ph name="DOMAIN" />-თან არ არის დაშიფრული.</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>

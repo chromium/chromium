@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Курзив</translation>
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Дијалог Омогућите аутоматско попуњавање за плаћања отворен је на целом екрану.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Приказују се насумичним редоследом. Увек можете да промените подразумевани избор.</translation>
 <translation id="2134584557120247184">Авионска карта</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">Из других продавница широм веба</translation>
 <translation id="3293642807462928945">Сазнајте више о смерницама <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте лозинке и управљајте њима у подешавањима Chrome-а</translation>
+<translation id="3296595523896103792">Дијалог Омогућите аутоматско попуњавање за плаћања је затворен.</translation>
 <translation id="3299098170013242198">Windows Hello је укључен за попуњавање лозинки</translation>
 <translation id="3299197721044635447">Због смерница организације није успело налепљивање садржаја ван контекста Chrome-а којим се управља</translation>
 <translation id="3299720788264079132">Дошло је до грешке док сте користили <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@
 <translation id="5649053991847567735">Аутоматска преузимања</translation>
 <translation id="5651323159439184939">Фид механизма за штампање</translation>
 <translation id="5653681867130739344">Безбедно ажурирајте личну карту у Google новчанику</translation>
-<translation id="5653744563415531641">Сачувајте информације и брже обављајте ствари, попут попуњавања образаца у Google производима. Можете да <ph name="MANAGE_WALLET_SETTINGS_LINK" /> за налог <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ИД отпремљеног извештаја о отказивању:</translation>
 <translation id="5654965123204121933">URL не садржи обавезан стринг за замену <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Имејл</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">Унесите датум истека и CVC за картицу <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Дијалог за одобрење родитеља</translation>
-<translation id="6413532517183895572">управљате подешавањима Новчаника</translation>
 <translation id="6415778972515849510">Chromium може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Уверите се да су сви важни пословни или лични подаци сачувани на другом месту.</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">синхронизација у позадини</translation>
 <translation id="7310392214323165548">Уређај ће се рестартовати веома брзо</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Притисните Tab, па Enter да бисте упитали <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Ваша организација је означила овај сајт јер можда крши смернице.</translation>
 <translation id="7315372670898739748">Повезивање није успело. Пробајте поново касније</translation>
 <translation id="7316521168101843192">Фајл се чува на Microsoft OneDrive-у</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">Затражи лично</translation>
 <translation id="7956713633345437162">Мобилни обележивачи</translation>
 <translation id="7961015016161918242">Никад</translation>
+<translation id="7961493403319780137">Сазнајте више о овој функцији – Аутоматско попуњавање верификационих кодова из Gmail-а</translation>
 <translation id="7962467575542381659">Машина платформе</translation>
 <translation id="796439090588610411">Chrome ће престати аутоматски да потврђује овај имејл на подржаним сајтовима.</translation>
 <translation id="7966803981046576691">Тип налога задатка</translation>
@@ -4572,7 +4572,6 @@
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8699985386408839112">Коверта Kaku 1</translation>
 <translation id="8702965365666568344">Трака за монтирање</translation>
-<translation id="8703242769654966101">Омогућите Pix у Новчанику</translation>
 <translation id="8703372953981978786">Овај линк не ради</translation>
 <translation id="8703575177326907206">Ваша веза са доменом <ph name="DOMAIN" /> није шифрована.</translation>
 <translation id="8705331520020532516">Серијски број</translation>

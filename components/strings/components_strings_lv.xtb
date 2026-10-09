@@ -668,6 +668,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2127747486437921899">Slīpraksts</translation>
 <translation id="2130448033692577677">Norādītās veidnes, iespējams, netiks lietotas, jo nav iestatīta politika DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Logs “Iespējot maksājumu informācijas automātisko aizpildi” ir atvērta pilnā augstumā.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Meklētājprogrammas tiek rādītas nejaušā secībā. Jebkurā brīdī varat mainīt noklusējuma meklētājprogrammu.</translation>
 <translation id="2134584557120247184">Lidojuma biļete</translation>
@@ -1366,6 +1367,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3289578402369490638">No citiem veikaliem tīmeklī</translation>
 <translation id="3293642807462928945">Uzzināt vairāk par politiku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Skatiet un pārvaldiet savas paroles Chrome iestatījumos.</translation>
+<translation id="3296595523896103792">Logs “Iespējot maksājumu informācijas automātisko aizpildi” ir aizvērts.</translation>
 <translation id="3299098170013242198">Paroļu aizpildei ir ieslēgta funkcija Windows Hello.</translation>
 <translation id="3299197721044635447">Saturu nevarēja ielīmēt ārpus pārvaldītā Chrome konteksta jūsu organizācijas politiku dēļ.</translation>
 <translation id="3299720788264079132">Izmantojot funkciju <ph name="FEATURE_NAME" />, radās problēma.</translation>
@@ -2803,7 +2805,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5649053991847567735">Automātiskās lejupielādes</translation>
 <translation id="5651323159439184939">Vilces padeve</translation>
 <translation id="5653681867130739344">Identifikācijas kartes droša atjaunināšana Google makā</translation>
-<translation id="5653744563415531641">Saglabājiet savu informāciju un ātrāk paveiciet darbus, piemēram, aizpildiet veidlapas Google produktos. Varat <ph name="MANAGE_WALLET_SETTINGS_LINK" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Augšupielādētā avārijas pārskata ID:</translation>
 <translation id="5654965123204121933">Vietrādī URL nav iekļauta obligātā aizstāšanas virkne <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-pasts</translation>
@@ -3255,7 +3256,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6410264514553301377">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> derīguma termiņu un CVC.</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Vecāku apstiprinājuma dialoglodziņš</translation>
-<translation id="6413532517183895572">pārvaldīt lietotnes Maks iestatījumus</translation>
 <translation id="6415778972515849510">Chromium var palīdzēt jums aizsargāt jūsu Google kontu un nomainīt paroli.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Noteikti saglabājiet visus svarīgos uzņēmuma vai personas datus ārēji.</translation>
@@ -3762,7 +3762,6 @@ Papildu informācija:
 <translation id="7308436126008021607">sinhronizācija fonā</translation>
 <translation id="7310392214323165548">Ierīce ļoti drīz tiks restartēta</translation>
 <translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter, lai uzdotu jautājumu: <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Jūsu organizācija ir atzīmējusi šo vietni kā nepiemērotu, jo ar to, iespējams, tiek pārkāpta politika.</translation>
 <translation id="7315372670898739748">Neizdevās saistīt. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7316521168101843192">Notiek faila saglabāšana pakalpojumā Microsoft OneDrive</translation>
@@ -4170,6 +4169,7 @@ Papildu informācija:
 <translation id="7955105108888461311">Jautāt personiski</translation>
 <translation id="7956713633345437162">Mobilās grāmatzīmes</translation>
 <translation id="7961015016161918242">Nekad</translation>
+<translation id="7961493403319780137">Uzzināt vairāk par šo funkciju — automātiskā verifikācijas kodu aizpilde no Gmail</translation>
 <translation id="7962467575542381659">Platformas ierīce</translation>
 <translation id="796439090588610411">Pārlūkā Chrome tiks pārtraukta šīs e-pasta adreses automātiska apstiprināšana atbalstītajās vietnēs.</translation>
 <translation id="7966803981046576691">Darba konta veids</translation>
@@ -4571,7 +4571,6 @@ Papildu informācija:
 <translation id="8699041776323235191">HID ierīce</translation>
 <translation id="8699985386408839112">Aploksne Kaku 1</translation>
 <translation id="8702965365666568344">Montāžas lente</translation>
-<translation id="8703242769654966101">Iespējot Pix lietotnē Maks</translation>
 <translation id="8703372953981978786">Šī saite nedarbojas</translation>
 <translation id="8703575177326907206">Jūsu savienojums ar <ph name="DOMAIN" /> nav kodēts.</translation>
 <translation id="8705331520020532516">Sērijas numurs</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2086334242442703436">Buksan ang Picker ng Emoji</translation>
 <translation id="2089550919269323883">Na-block ng patakaran ng enterprise ang pag-install ng <ph name="VM_NAME" />. Makipag-ugnayan sa iyong administrator ng system para sa suporta. Ang code ng error ay <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Balita tungkol sa Steam para sa Chromebook</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
 <translation id="2107581415810719320">Iba pang Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Hindi sinusuportahan ng iyong USB-C cable ang Thunderbolt. Posibleng maging limitado ang performance ng device.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Sa anong gawain mo gustong mag-focus? Pindutin ang enter para idagdag ang gawain.</translation>
 <translation id="229397294990920565">Ino-off ang mobile data...</translation>
 <translation id="2295777434187870477">Naka-on ang mikropono, mamu-mute ang input kapag nag-toggle.</translation>
+<translation id="2296880470921996802">Na-disable ng iyong IT admin ang history ng clipboard</translation>
 <translation id="2302092602801625023">Pinapamahalaan ng Family Link ang account na ito</translation>
 <translation id="2303600792989757991">I-toggle ang window ng pangkalahatang-ideya</translation>
 <translation id="2304702218354340897">Sigurado ka bang gusto mong i-off ang pagkontrol gamit ang mukha?</translation>
@@ -1788,7 +1788,6 @@ Walang nakakonektang device.</translation>
 <translation id="6127395413317891856">Offline ka. Suriin ang iyong koneksyon at subukan ulit.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">Laktawan ang pag-enroll para sa paaralan?</translation>
-<translation id="6136872094979134163">Hindi nakuha ang balita tungkol sa Steam para sa Chromebook.</translation>
 <translation id="6137566720514957455">Buksan ang alisin ang dialog para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Sa anong gawain mo gustong mag-focus?</translation>
 <translation id="6141988275892716286">Kumpirmahin ang pag-download</translation>

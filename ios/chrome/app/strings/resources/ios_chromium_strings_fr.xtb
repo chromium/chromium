@@ -14,6 +14,7 @@
 <translation id="12739128458173458">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chromium sur les deux appareils.</translation>
 <translation id="1361748954329991663">Version de Chromium obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chromium.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
+<translation id="1421604911662901100">Connectez-vous à ce site et à Chromium pour accéder à vos informations enregistrées et bien plus sur tous vos appareils</translation>
 <translation id="1423007117030725713">Lancer une recherche dans un nouvel onglet Chromium.</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="1451665391191990528">Masquer les onglets de navigation privée ouverts quand vous quittez Chromium</translation>
@@ -55,6 +56,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="2006345422933397527">Chromium n'est pas parvenu à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
 <translation id="2025935492422922097">Chromium traite les titres des pages et les URL dans un espace privé dans le cloud</translation>
 <translation id="2027881372245801507">La désactivation des suggestions ne contrôle pas le traitement des titres des pages ni des URL par Chromium pour d'autres fonctionnalités. Vous pouvez gérer l'accès à ces données dans vos <ph name="BEGIN_LINK" />paramètres de synchronisation<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">Connectez-vous à ce site et à Chromium pour accéder à vos mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="2042889939382983733">Afficher votre historique Chromium</translation>
 <translation id="2052320862053429062">Chromium vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="2059365270911640413">Terminer la configuration de Chromium</translation>
@@ -99,6 +101,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="2832168932648876507">Effectuez une recherche vocale dans Chromium.</translation>
 <translation id="2843571538056574338">Utiliser Chromium pour la saisie automatique</translation>
 <translation id="2844923129028437362">Fini les copier-coller. Définissez Chromium comme navigateur par défaut pour iOS.</translation>
+<translation id="2876793692921835457">Connectez-vous à ce site et à Chromium pour accéder à vos favoris et bien plus sur tous vos appareils</translation>
 <translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
@@ -225,6 +228,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="5671188105328420281">Astuces Chromium</translation>
 <translation id="5688047395118852662">Cette fiche vous propose des suggestions pour profiter pleinement de Chromium.</translation>
 <translation id="5700709190537129682">Chromium ne parvient pas à vérifier vos mots de passe</translation>
+<translation id="5714479833576517588">Connectez-vous à ce site et à Chromium pour accéder à vos mots de passe et bien plus sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="5731004036450828399">Pour protéger vos clés d'accès, vous devez d'abord créer un code de récupération.
 
         Les clés d'accès sont enregistrées dans le Gestionnaire de mots de passe, ce qui vous permet de les utiliser dans Chromium sur n'importe quel appareil.</translation>
@@ -243,6 +247,7 @@ Points à prendre en compte :
   • Si vous synchronisez votre historique avec votre compte Google, les métriques peuvent aussi inclure des informations sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">Effectuez des tâches rapides et découvrez comment profiter pleinement de Chromium :</translation>
 <translation id="5932787118589620366">Supprimez les données de navigation dans Chromium.</translation>
+<translation id="59347837447331606">Connectez-vous à ce site et à Chromium pour accéder à vos informations enregistrées et bien plus sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="593808800391107017">Recevez des alertes concernant les problèmes de confidentialité ou de sécurité que Chromium détecte automatiquement pour vous.</translation>
 <translation id="5951593919357934226">Profitez pleinement de Chromium.</translation>
 <translation id="5985254578475526217">Pour recevoir des notifications de Chromium, activez-les dans les réglages iOS.</translation>
@@ -304,6 +309,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="7269362888766543920">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez essayer de les désinstaller.</translation>
 <translation id="7285031092584344905">Accéder à vos mots de passe Chromium et plus dans d'autres applis.</translation>
+<translation id="7291896724424825868">Connectez-vous à ce site et à Chromium pour accéder à vos favoris et bien plus sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe pour <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">La clé d'accès sera enregistrée dans le Gestionnaire de mots de passe pour <ph name="USER_EMAIL" /></translation>

@@ -2273,6 +2273,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2731971182069536520">Da próxima vez que reiniciar o dispositivo, o administrador irá efetuar uma atualização única que elimina os seus dados locais.</translation>
 <translation id="2733248615007838252">A opção Gosto envia feedback a indicar que gosta destes resultados.</translation>
 <translation id="27349076983469322">Fundo claro</translation>
+<translation id="2735081931800992557">Ler e apresentar ficheiros PDF</translation>
 <translation id="2735712963799620190">Programação</translation>
 <translation id="2737363922397526254">Reduzir...</translation>
 <translation id="2737719817922589807">Marcadores e listas</translation>
@@ -3692,6 +3693,7 @@ Quer pará-lo?</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3771721161825963003">Mostrar separadores na vertical</translation>
 <translation id="3771851622616482156">A sua sessão neste site será terminada, incluindo em separadores abertos</translation>
+<translation id="3772951945682043324">Nenhum separador fechado recentemente</translation>
 <translation id="3774059845329307709">Número de série</translation>
 <translation id="3774166835015494435">Notificações e fotos recentes</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
@@ -5146,7 +5148,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Esta extensão não tem acesso adicional a sites</translation>
 <translation id="4887424188275796356">Abrir com o System Viewer</translation>
-<translation id="488785315393301722">Mostrar Detalhes</translation>
 <translation id="488862352499217187">Criar nova pasta</translation>
 <translation id="4888715715847020167">aceda às definições</translation>
 <translation id="4888899258150891194">Memória do CppGC</translation>
@@ -6577,6 +6578,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6006484371116297560">Clássico</translation>
 <translation id="6007053304250788613">Só é possível excluir um ecrã no modo de espelho</translation>
 <translation id="6007240208646052708">A pesquisa por voz não está disponível no seu idioma.</translation>
+<translation id="6007858579659393165">Os separadores têm um novo aspeto transparente</translation>
 <translation id="6010651352520077187">Quando ativado, o Google Tradutor sugere a tradução de sites para o seu idioma preferido. Também pode traduzir sites automaticamente.</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011308810877101166">Melhorar sugestões de pesquisa</translation>
@@ -7076,6 +7078,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6406708970972405507">Definições - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Com autorização para guardar dados no seu dispositivo</translation>
 <translation id="6408118934673775994">Ler e alterar os seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
 <translation id="6410390304316730527">A Navegação Segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
@@ -7669,6 +7672,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6845231585063669905">A a Z</translation>
 <translation id="6846178040388691741">A extensão "<ph name="EXTENSION_NAME" />" quer imprimir o ficheiro <ph name="FILE_NAME" /> com a impressora <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Reposição de segurança</translation>
+<translation id="6846861364742126526">Use o microfone para conversar com o Gemini. Os seus dados não são usados para melhorar os modelos de IA generativa.</translation>
 <translation id="6847125920277401289">Liberte espaço para continuar</translation>
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6850925512806464982">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores, e este vai ser eliminado de todos os dispositivos</translation>
@@ -9467,6 +9471,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8212601853154459483">Este perfil é gerido por <ph name="PROFILE_MANAGER" /> e requer que crie um perfil separado para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Não foram encontrados perfis. Experimente ler o código QR com a câmara do dispositivo ou introduza o código de ativação facultado pelo seu operador.</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>
+<translation id="8214771296778317256">Escolha o seu estilo de separador preferido aqui</translation>
 <translation id="8215129063232901118">Aceda às capacidades do seu telemóvel a partir do seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8217212468862726597">Realçar ponteiro</translation>
 <translation id="8217399928341212914">Continuar a bloquear transferências automáticas de vários ficheiros</translation>
@@ -10438,7 +10443,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8960208913905765425">Conversão de unidades das Respostas rápidas</translation>
 <translation id="8960638196855923532">Agora, pode ver as notificações e as apps do seu telemóvel</translation>
 <translation id="8962051932294470566">Só pode partilhar um ficheiro de cada vez. Tente novamente quando a transferência atual estiver concluída.</translation>
-<translation id="8962083179518285172">Ocultar Detalhes</translation>
 <translation id="8962863356073277855">O formato do URL deve ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este site está a utilizar sensores de movimento ou de luz.</translation>
 <translation id="8963117664422609631">Aceda às definições do site</translation>
@@ -10713,6 +10717,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="915485121129452731">Tablet com caneta</translation>
 <translation id="9155344700756733162">Desmarcar cor</translation>
+<translation id="9155515662479003830">Pode sempre voltar ao estilo clássico nas definições</translation>
 <translation id="9157096865782046368">0,8 segundos</translation>
 <translation id="9157697743260533322">Falha ao configurar atualizações automáticas para todos os utilizadores (erro de inicialização da verificação prévia: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">A porta da impressora está aberta.</translation>

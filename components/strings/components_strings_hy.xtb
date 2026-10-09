@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Շեղ</translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Միացնել վճարումների ինքնալրացումը պատուհանը բացված է ամբողջությամբ։</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />։ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ցուցադրվում են պատահական հերթականությամբ։ Ցանկացած ժամանակ կարող եք փոխել ձեր կանխադրվածը։</translation>
 <translation id="2134584557120247184">Ավիատոմս</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">Այլ խանութներից համացանցում</translation>
 <translation id="3293642807462928945">Իմանալ ավելին <ph name="POLICY_NAME" /> կանոնի մասին</translation>
 <translation id="3295444047715739395">Դիտեք և կառավարեք ձեր գաղտնաբառերը Chrome-ի կարգավորումներում</translation>
+<translation id="3296595523896103792">Միացնել վճարումների ինքնալրացումը պատուհանը փակվեց։</translation>
 <translation id="3299098170013242198">Windows Hello-ն միացված է գաղտնաբառեր լրացնելու համար</translation>
 <translation id="3299197721044635447">Ձեր կազմակերպության կանոնների պատճառով բովանդակությունը չհաջողվեց տեղադրել Chrome-ի կառավարվող համատեքստից դուրս</translation>
 <translation id="3299720788264079132">«<ph name="FEATURE_NAME" />» գործառույթն օգտագործելիս սխալ առաջացավ</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">Ավտոմատ ներբեռնումներ</translation>
 <translation id="5651323159439184939">Պերֆորացված թուղթ</translation>
 <translation id="5653681867130739344">Ապահով կերպով թարմացրեք նույնականացման քարտը Google Wallet-ում</translation>
-<translation id="5653744563415531641">Պահեք ձեր տեղեկությունները, որպեսզի ավելի արագ կատարեք տարբեր գործողություններ, օրինակ՝ լրացնեք ձևերը Google-ի պրոդուկտներում։ Դուք կարող եք <ph name="MANAGE_WALLET_SETTINGS_LINK" /> <ph name="ACCOUNT" /> հաշվի համար։</translation>
 <translation id="5654927323611874862">Խափանման մասին թարմացված հաշվետվության ID՝</translation>
 <translation id="5654965123204121933">URL-ը չի ներառում <ph name="SEARCH_TERMS_REPLACEMENT" /> պահանջվող փոխարինման տողը՝ <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի սպառման ամսաթիվը և CVC կոդը</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Ծնողի հաստատման պատուհան</translation>
-<translation id="6413532517183895572">կառավարել Wallet-ի կարգավորումները</translation>
 <translation id="6415778972515849510">Chromium-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Համոզվեք, որ ցանկացած կարևոր բիզնես կամ անձնական տվյալներ պահվում են դրսում։</translation>
@@ -3762,7 +3762,6 @@
 <translation id="7308436126008021607">ֆոնային համաժամացում</translation>
 <translation id="7310392214323165548">Սարքը շուտով կվերագործարկվի</translation>
 <translation id="7311244614769792472">Ոչինչ չի գտնվել</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Սեղմեք Tab ստեղնը և մուտքագրեք՝ <ph name="AI_ENGINE_NAME" />ին հարցնելու համար</translation>
 <translation id="7313107491291103073">Ձեր կազմակերպությունը նշել է այս կայքը, քանի որ այն հավանաբար խախտում է կանոնները։</translation>
 <translation id="7315372670898739748">Չհաջողվեց կապել, փորձեք ավելի ուշ</translation>
 <translation id="7316521168101843192">Ֆայլը պահվում է Microsoft OneDrive-ում</translation>
@@ -4170,6 +4169,7 @@
 <translation id="7955105108888461311">Հարցնել անձամբ</translation>
 <translation id="7956713633345437162">Բջջային էջանիշներ</translation>
 <translation id="7961015016161918242">Երբեք</translation>
+<translation id="7961493403319780137">Իմանալ ավելին այս գործառույթի մասին – Ավտոմատ լրացնել հաստատման կոդերը Gmail-ից</translation>
 <translation id="7962467575542381659">Հարթակի սարք</translation>
 <translation id="796439090588610411">Chrome-ը այլևս ավտոմատ կերպով չի հաստատի այս էլ․ հասցեն աջակցվող կայքերում։</translation>
 <translation id="7966803981046576691">Առաջադրանքի հաշվի տեսակը</translation>
@@ -4570,7 +4570,6 @@
 <translation id="8699041776323235191">HID սարք</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Մոնտաժային ժապավեն</translation>
-<translation id="8703242769654966101">Միացնել Pix-ը Wallet-ում</translation>
 <translation id="8703372953981978786">Այս հղումը չի աշխատում</translation>
 <translation id="8703575177326907206">Ձեր կապակցումը <ph name="DOMAIN" />-ին գաղտնագրված չէ:</translation>
 <translation id="8705331520020532516">Սերիական համարը</translation>

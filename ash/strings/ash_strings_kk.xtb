@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2086334242442703436">Эмоджи таңдағышты ашу</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> орнатуға кәсіпорын саясаты бойынша тыйым салынды. Көмек алу үшін жүйе әкімшісіне хабарласыңыз. Қате коды – <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Chromebook-қа арналған Steam жаңалықтары</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2107581415810719320">Басқа <ph name="BUTTON_NUMBER" />-түйме</translation>
 <translation id="2107914222138020205">USB-C кабелі Thunderbolt стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Не нәрсеге зейін қойғыңыз келеді? Тапсырма қосу үшін Enter пернесін басыңыз.</translation>
 <translation id="229397294990920565">Мобильдік интернет өшірілуде...</translation>
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
+<translation id="2296880470921996802">Буфер тарихын әкімшіңіз өшірді.</translation>
 <translation id="2302092602801625023">Бұл аккаунт Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
 <translation id="2304702218354340897">Бетпен басқару функциясын расымен де өшіру қажет пе?</translation>
@@ -1786,7 +1786,6 @@
 <translation id="6127395413317891856">Офлайн режимдесіз. Қосылымды тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="6129953537138746214">Бос орын</translation>
 <translation id="6132714462430777655">Мектепке тіркелуді өткізіп жіберу керек пе?</translation>
-<translation id="6136872094979134163">Chromebook-қа арналған Steam жаңалықтарын алу мүмкін емес.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
 <translation id="6141205840878048728">Не нәрсеге зейін қойғыңыз келеді?</translation>
 <translation id="6141988275892716286">Жүктеп алуды растау</translation>

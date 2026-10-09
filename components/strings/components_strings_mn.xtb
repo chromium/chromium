@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Налуу</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode удирдамжийг тохируулаагүй байгаа учраас таны тодорхойлсон загваруудыг хэрэгжүүлэхгүй байж болзошгүй.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Төлбөрийг автоматаар бөглөхийг идэвхжүүлэх сонголтыг бүтэн өндрөөр нээсэн.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Эдгээрийг санамсаргүй дарааллаар харуулдаг. Та өгөгдмөлөө хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="2134584557120247184">Нислэгийн тасалбар</translation>
@@ -1367,6 +1368,7 @@
 <translation id="3289578402369490638">Веб дээрх бусад дэлгүүрээс</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> удирдамжийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="3295444047715739395">Chrome-н тохиргоо дээрээс нууц үгсээ харах, удирдах</translation>
+<translation id="3296595523896103792">Төлбөрийг автоматаар бөглөхийг идэвхжүүлэхийг хаасан.</translation>
 <translation id="3299098170013242198">Windows Hello-г нууц үг бөглөхөд асаасан байна</translation>
 <translation id="3299197721044635447">Байгууллагын тань бодлогын улмаас контентыг удирдлагатай Chrome-н хам сэдвээс гадуур буулгах боломжгүй байна</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />-г ашиглах үед ямар нэг алдаа гарлаа</translation>
@@ -2806,7 +2808,6 @@
 <translation id="5649053991847567735">Автоматаар татаж  авах файл</translation>
 <translation id="5651323159439184939">Цоолбортой урт цаас</translation>
 <translation id="5653681867130739344">Google Wallet-д биеийн байцаалтыг аюулгүй шинэчлээрэй</translation>
-<translation id="5653744563415531641">Мэдээллээ хадгалаад, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлсийг илүү хурдан хийгээрэй. Та <ph name="ACCOUNT" />-н <ph name="MANAGE_WALLET_SETTINGS_LINK" /> боломжтой.</translation>
 <translation id="5654927323611874862">Байршуулсан гэмтлийн тайлангийн ID:</translation>
 <translation id="5654965123204121933">URL нь шаардлагатай <ph name="SEARCH_TERMS_REPLACEMENT" /> солих мөрийг оруулаагүй: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-н дуусах огноо, карт баталгаажуулалтын кодыг оруулна уу</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Эцэг эхийн зөвшөөрлийн харилцах цонх</translation>
-<translation id="6413532517183895572">Wallet-н тохиргоогоо удирдах</translation>
 <translation id="6415778972515849510">Chromium танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Бизнес, хувийн чухал өгөгдлийг гадна хадгалсан эсэхийг нягтална уу.</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">ард синк хийх</translation>
 <translation id="7310392214323165548">Төхөөрөмжийг тун удахгүй дахин эхлүүлнэ</translation>
 <translation id="7311244614769792472">Илэрц олдсонгүй</translation>
-<translation id="7311565174465466858"><ph name="AI_ENGINE_NAME" />-с асуухын тулд таб, дараа нь enter дээр дарна уу <ph name="TAB_KEY" /></translation>
 <translation id="7313107491291103073">Энэ сайт бодлогыг зөрчиж магадгүй тул танай байгууллага үүнийг дарцагласан.</translation>
 <translation id="7315372670898739748">Холбож чадсангүй. Дараа дахин оролдоно уу</translation>
 <translation id="7316521168101843192">Microsoft OneDrive-т файл хадгалж байна</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">Өөрийн биеэр асуух</translation>
 <translation id="7956713633345437162">Гар утасны хавчуурга</translation>
 <translation id="7961015016161918242">Хэзээ ч</translation>
+<translation id="7961493403319780137">Gmail-с баталгаажуулах кодыг автоматаар бөглөх энэ онцлогийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="7962467575542381659">Платформын төхөөрөмж</translation>
 <translation id="796439090588610411">Chrome дэмжигдсэн сайтууд дээр энэ имэйлийг автоматаар баталгаажуулахаа болино.</translation>
 <translation id="7966803981046576691">Ажилтай холбоотой бүртгэлийн төрөл</translation>
@@ -4571,7 +4571,6 @@
 <translation id="8699041776323235191">HID төхөөрөмж</translation>
 <translation id="8699985386408839112">Каку дугтуй 1</translation>
 <translation id="8702965365666568344">Тогтоогч тууз</translation>
-<translation id="8703242769654966101">Wallet-д Pix-г идэвхжүүлнэ үү</translation>
 <translation id="8703372953981978786">Энэ холбоос ажиллахгүй байна</translation>
 <translation id="8703575177326907206">Таны <ph name="DOMAIN" /> руу холбогдох холболтыг шифрлээгүй байна.</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>

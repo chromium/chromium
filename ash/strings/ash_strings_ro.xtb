@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2086334242442703436">Deschide selectorul de emoji</translation>
 <translation id="2089550919269323883">Instalarea <ph name="VM_NAME" /> este blocată de politica de companie. Contactează administratorul de sistem pentru asistență. Codul de eroare este <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Știri despre Steam pentru Chromebook</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2107581415810719320">Alt buton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cablul USB-C nu acceptă Thunderbolt. Este posibil ca performanța dispozitivului să fie limitată.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Pe ce dorești să te concentrezi? Apasă pe Enter pentru a adăuga activitatea.</translation>
 <translation id="229397294990920565">Datele mobile se dezactivează...</translation>
 <translation id="2295777434187870477">Microfonul este activat. Comutarea îl va dezactiva.</translation>
+<translation id="2296880470921996802">Istoricul clipboardului a fost dezactivat de administratorul IT</translation>
 <translation id="2302092602801625023">Acest cont este gestionat de Family Link</translation>
 <translation id="2303600792989757991">Activați/Dezactivați prezentarea ferestrei</translation>
 <translation id="2304702218354340897">Sigur dorești să dezactivezi comenzile faciale?</translation>
@@ -1788,7 +1788,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6127395413317891856">Ești offline. Verifică-ți conexiunea și încearcă din nou.</translation>
 <translation id="6129953537138746214">Spațiu</translation>
 <translation id="6132714462430777655">Omiți înscrierea la școală?</translation>
-<translation id="6136872094979134163">Nu se pot prelua știrile despre Steam pentru Chromebook.</translation>
 <translation id="6137566720514957455">Deschide fereastra de dialog Elimină pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Pe ce dorești să te concentrezi?</translation>
 <translation id="6141988275892716286">Confirmă descărcarea</translation>

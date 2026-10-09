@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2086334242442703436">Отвори го избирачот на емоџија</translation>
 <translation id="2089550919269323883">Правило на претпријатието го блокира инсталирањето на <ph name="VM_NAME" />. Контактирајте со системскиот администратор за поддршка. Кодот за грешка е <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Вести за „Steam за Chromebook“</translation>
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2107581415810719320">Друго копче <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Вашиот USB-C не поддржува Thunderbolt. Изведбата на уредот може да биде ограничена.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">На што би сакале да се концентрирате? Притиснете го копчето Enter за да ја додадете задачата.</translation>
 <translation id="229397294990920565">Мобилниот интернет се исклучува...</translation>
 <translation id="2295777434187870477">Микрофонот е вклучен. Ако смените, ќе се исклучи звукот на влезот.</translation>
+<translation id="2296880470921996802">IT-администраторот ја оневозможи историјата на привремената меморија</translation>
 <translation id="2302092602801625023">Оваа сметка е управувана од Family Link</translation>
 <translation id="2303600792989757991">Префрли преглед во прозорец</translation>
 <translation id="2304702218354340897">Дали сигурно сакате да ја исклучите „Контролата со лик“?</translation>
@@ -1789,7 +1789,6 @@
 <translation id="6127395413317891856">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="6129953537138746214">Празно место</translation>
 <translation id="6132714462430777655">Да се прескокне регистрирањето училиште?</translation>
-<translation id="6136872094979134163">Не може да се преземат вестите за „Steam за Chromebook“.</translation>
 <translation id="6137566720514957455">Отвори го дијалогот за отстранување за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">На што би сакале да се концентрирате?</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>

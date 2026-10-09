@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2086334242442703436">Åpne emojivelgeren</translation>
 <translation id="2089550919269323883">Installering av <ph name="VM_NAME" /> er blokkert av bedriftsregler. Kontakt systemadministratoren din for å få hjelp. Feilkoden er <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Nyheter om Steam for Chromebook</translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2107581415810719320">Annen knapp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabelen din støtter ikke Thunderbolt. Enhetens ytelse kan være begrenset.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Hva vil du fokusere på? Trykk på Enter for å legge til gjøremålet.</translation>
 <translation id="229397294990920565">Mobildata slås av …</translation>
 <translation id="2295777434187870477">Mikrofonen er på. Hvis du slår den av, kuttes lyden for innenheten.</translation>
+<translation id="2296880470921996802">IT-administratoren din har deaktivert utklippstavleloggen</translation>
 <translation id="2302092602801625023">Denne kontoen er administrert av Family Link</translation>
 <translation id="2303600792989757991">Vis eller skjul vindusoversikten</translation>
 <translation id="2304702218354340897">Er du sikker på at du vil slå av ansiktskontroll?</translation>
@@ -1786,7 +1786,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6127395413317891856">Du er uten nett. Kontroller tilkoblingen, og prøv igjen.</translation>
 <translation id="6129953537138746214">Mellomrom</translation>
 <translation id="6132714462430777655">Vil du hoppe over skoleregistreringen?</translation>
-<translation id="6136872094979134163">Kan ikke hente nyheter om Steam for Chromebook.</translation>
 <translation id="6137566720514957455">Åpne dialogboksen for fjerning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Hva vil du fokusere på?</translation>
 <translation id="6141988275892716286">Bekreft nedlastingen</translation>

@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ઇટાલિક</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode પૉલિસી સેટ ન કરી હોવાને કારણે તમે ઉલ્લેખ કરેલા નમૂનાને કદાચ લાગુ કરવામાં આવશે નહીં.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">'ચુકવણીઓ ઑટોમૅટિક રીતે ભરવાની સુવિધા ચાલુ કરો' બોટમ શીટને સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">આને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે. તમારું ડિફૉલ્ટ શોધ એન્જિન કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="2134584557120247184">ફ્લાઇટની ટિકિટ</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">સમગ્ર વેબ પર અન્ય સ્ટોરમાંથી</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> પૉલિસી વિશે વધુ જાણો</translation>
 <translation id="3295444047715739395">Chrome સેટિંગમાં તમારા પાસવર્ડ જુઓ અને તેને મેનેજ કરો</translation>
+<translation id="3296595523896103792">'ચુકવણીઓ ઑટોમૅટિક રીતે ભરવાની સુવિધા ચાલુ કરો' બોટમ શીટ બંધ છે.</translation>
 <translation id="3299098170013242198">પાસવર્ડ ભરવા માટે Windows Hello ચાલુ છે</translation>
 <translation id="3299197721044635447">તમારી સંસ્થાની પૉલિસીઓને કારણે મેનેજ કરેલા Chrome સંદર્ભની બહાર કન્ટેન્ટ પેસ્ટ કરી શકાયું નથી</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />નો ઉપયોગ કરવા દરમિયાન કંઈક ખોટું થયું</translation>
@@ -2805,7 +2807,6 @@
 <translation id="5649053991847567735">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
 <translation id="5651323159439184939">ટ્રેક્ટર ફીડ</translation>
 <translation id="5653681867130739344">Google Walletમાં ઓળખ કાર્ડ સુરક્ષિત રીતે અપડેટ કરો</translation>
-<translation id="5653744563415531641">તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="ACCOUNT" /> માટે <ph name="MANAGE_WALLET_SETTINGS_LINK" /> કરી શકો છો.</translation>
 <translation id="5654927323611874862">અપલોડ કરેલા ક્રૅશ રિપોર્ટનું ID:</translation>
 <translation id="5654965123204121933">આ URLમાં બદલવાની આવશ્યક <ph name="SEARCH_TERMS_REPLACEMENT" /> સ્ટ્રિંગ શામેલ નથી: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ઇમેઇલ</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> માટે સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">માતાપિતાની મંજૂરીનો સંવાદ</translation>
-<translation id="6413532517183895572">તમારા Walletના સેટિંગ મેનેજ કરો</translation>
 <translation id="6415778972515849510">Chromium તમારા Google એકાઉન્ટને સુરક્ષિત કરવામાં અને તમારો પાસવર્ડ બદલવામાં તમારી સહાય કરી શકે છે.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ખાતરી કરો કે કોઈપણ મહત્ત્વપૂર્ણ વ્યાવસાયિક અથવા વ્યક્તિગત ડેટા બહાર સ્ટોર થયેલો છે.</translation>
@@ -3764,7 +3764,6 @@
 <translation id="7308436126008021607">બૅકગ્રાઉન્ડ સિંક</translation>
 <translation id="7310392214323165548">ડિવાઇસ ટૂંક સમયમાં ફરી શરૂ થશે</translation>
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" />ને પૂછવા માટે Tab અને પછી Enter કી દબાવો</translation>
 <translation id="7313107491291103073">તમારી સંસ્થાએ આ સાઇટને ચિહ્નિત કરી છે કારણ કે તે પૉલિસીનું ઉલ્લંઘન કરી શકે છે.</translation>
 <translation id="7315372670898739748">લિંક કરવાનું નિષ્ફળ થયું, પછીથી ફરી પ્રયાસ કરો</translation>
 <translation id="7316521168101843192">ફાઇલને Microsoft OneDriveમાં સાચવી રહ્યાં છીએ</translation>
@@ -4172,6 +4171,7 @@
 <translation id="7955105108888461311">રૂબરૂ પૂછો</translation>
 <translation id="7956713633345437162">મોબાઇલ બુકમાર્ક</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
+<translation id="7961493403319780137">આ સુવિધા વિશે વધુ જાણો - Gmailમાંથી ચકાસણી કોડ ઑટોમૅટિક રીતે ભરવાની સુવિધા</translation>
 <translation id="7962467575542381659">પ્લૅટફૉર્મ મશીન</translation>
 <translation id="796439090588610411">Chrome સપોર્ટેડ સાઇટ પર આ ઇમેઇલ ઍડ્રેસને ઑટોમૅટિક રીતે કન્ફર્મ કરવાનું બંધ કરશે.</translation>
 <translation id="7966803981046576691">જોબ એકાઉન્ટનો પ્રકાર</translation>
@@ -4572,7 +4572,6 @@
 <translation id="8699041776323235191">HID ડિવાઇસ</translation>
 <translation id="8699985386408839112">એન્વલપ કાકૂ 1</translation>
 <translation id="8702965365666568344">માઉન્ટિંગ ટેપ</translation>
-<translation id="8703242769654966101">Walletમાં Pix ચાલુ કરો</translation>
 <translation id="8703372953981978786">આ લિંક કામ કરતી નથી</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> સાથેનું તમારું કનેક્શન એન્ક્રિપ્ટેડ નથી.</translation>
 <translation id="8705331520020532516">અનુક્રમ નંબર</translation>

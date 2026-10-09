@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">इटालिक</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode नीति निर्धारण नगरिएकाले तपाईंले तोक्नुभएका टेम्प्लेटहरू लागू नहुन सक्छन्।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">"भुक्तानीसम्बन्धी जानकारी स्वतः भर्ने सुविधा अन गर्नुहोस्" पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">यिनीहरू क्रमरहित रूपमा देखाइएका छन्। तपाईं जुनसुकै बेला आफ्नो डिफल्ट रोजाइ बदल्न सक्नुहुन्छ।</translation>
 <translation id="2134584557120247184">उडानको टिकट</translation>
@@ -1363,6 +1364,7 @@
 <translation id="3289578402369490638">वेबमा उपलब्ध अन्य स्टोरहरूबाट प्राप्त जानकारी</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीतिका बारेमा थप जान्नुहोस्</translation>
 <translation id="3295444047715739395">Chrome ब्राउजरका सेटिङमा गई आफ्ना पासवर्डहरू हेर्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="3296595523896103792">"भुक्तानीसम्बन्धी जानकारी स्वतः भर्ने सुविधा अन गर्नुहोस्" बन्द गरिएको छ।</translation>
 <translation id="3299098170013242198">पासवर्डहरू हाल्नका निम्ति Windows Hello अन छ</translation>
 <translation id="3299197721044635447">तपाईंको सङ्गठनका नीतिहरूका कारण व्यवस्थापन गरिएको Chrome कन्टेक्स्टबाहिर सामग्री पेस्ट गर्न सकिएन।</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> प्रयोग गर्ने क्रममा कुनै समस्या आयो</translation>
@@ -2803,7 +2805,6 @@
 <translation id="5649053991847567735">स्वचालित डाउनलोडहरू</translation>
 <translation id="5651323159439184939">ट्र्याक्टर फिड</translation>
 <translation id="5653681867130739344">Google Wallet मा परिचयपत्रसम्बन्धी जानकारी सुरक्षित रूपमा अपडेट गर्नुहोस्</translation>
-<translation id="5653744563415531641">आफ्नो जानकारी सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="ACCOUNT" /> का लागि <ph name="MANAGE_WALLET_SETTINGS_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="5654927323611874862">अपलोड गरिएको क्र्यास रिपोर्टको ID:</translation>
 <translation id="5654965123204121933">URL मा बदल्नु पर्ने स्ट्रिङ <ph name="SEARCH_TERMS_REPLACEMENT" /> समावेश हुँदैन: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">इमेल</translation>
@@ -3255,7 +3256,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> को म्याद सकिने मिति र CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">अभिभावकको अनुमति लिने डायलग</translation>
-<translation id="6413532517183895572">Wallet सम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="6415778972515849510">Chromium ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">अति महत्त्वपूर्ण प्रकृतिका सबै व्यावसायिक वा व्यक्तिगत जानकारी बाह्य रूपमा सेभ गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -3761,7 +3761,6 @@
 <translation id="7308436126008021607">ब्याकग्राउन्डमा सिंक गर्ने सुविधा</translation>
 <translation id="7310392214323165548">डिभाइस चाँडै रिस्टार्ट हुने छ</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> मा प्रश्न सोध्न ट्याब अनि इन्टर थिच्नुहोस्</translation>
 <translation id="7313107491291103073">यो साइटले कुनै नीतिको उल्लङ्घन गर्न सक्ने भएकाले तपाईंको सङ्गठनले यो साइट फ्ल्याग गरेको छ।</translation>
 <translation id="7315372670898739748">लिंक गर्न सकिएन, पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7316521168101843192">यो फाइल Microsoft OneDrive मा सेभ गरिँदै छ</translation>
@@ -4169,6 +4168,7 @@
 <translation id="7955105108888461311">व्यक्तिगत रूपमा अनुरोध गर्नुहोस्</translation>
 <translation id="7956713633345437162">मोबाइल बुकमार्कहरू</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
+<translation id="7961493403319780137">यो सुविधाका बारेमा थप जान्नुहोस् - Gmail बाट पुष्टि कोडहरू स्वतः भर्ने सुविधा</translation>
 <translation id="7962467575542381659">प्लेटफर्म मेसिन</translation>
 <translation id="796439090588610411">Chrome ले यो इमेल पुष्टि गर्न मिल्ने साइटहरूमा यो इमेल स्वतः पुष्टि गर्न छाड्ने छ।</translation>
 <translation id="7966803981046576691">कार्य खाताको प्रकार</translation>
@@ -4569,7 +4569,6 @@
 <translation id="8699041776323235191">HID यन्त्र</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">माउन्टिङ टेप</translation>
-<translation id="8703242769654966101">Wallet मा Pix अन गर्नुहोस्</translation>
 <translation id="8703372953981978786">यो लिंकले काम गर्दैन</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> सँग तपाईंको जडान गुप्तलिखित छैन।</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>

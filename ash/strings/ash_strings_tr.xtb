@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2086334242442703436">Emoji Seçiciyi Aç</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> öğesinin yüklenmesi, kurumsal politika tarafından engellendi. Destek almak için lütfen sistem yöneticinizle iletişime geçin. Hata kodu <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Chromebook Haberleri için Steam</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2107581415810719320">Diğer Düğme <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kablonuz Thunderbolt'u desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Hangi göreve odaklanmak istersiniz? Görevi eklemek için Enter tuşuna basın.</translation>
 <translation id="229397294990920565">Mobil veriler kapanıyor...</translation>
 <translation id="2295777434187870477">Mikrofon açık, düğmeye basılırsa girişin sesi kapatılacak.</translation>
+<translation id="2296880470921996802">Pano geçmişi, BT yöneticiniz tarafından devre dışı bırakıldı</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
 <translation id="2304702218354340897">Yüzle kumanda özelliğini kapatmak istediğinizden emin misiniz?</translation>
@@ -1786,7 +1786,6 @@ Bağlı cihaz yok.</translation>
 <translation id="6127395413317891856">İnternete bağlı değilsiniz. Bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="6129953537138746214">Boşluk</translation>
 <translation id="6132714462430777655">Okula kayıt atlansın mı?</translation>
-<translation id="6136872094979134163">Chromebook için Steam haberleri alınamıyor.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> için kaldırma iletişim kutusunu aç</translation>
 <translation id="6141205840878048728">Hangi göreve odaklanmak istersiniz?</translation>
 <translation id="6141988275892716286">İndirme işlemini onaylayın</translation>

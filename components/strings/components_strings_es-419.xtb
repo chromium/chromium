@@ -668,6 +668,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2127747486437921899">Cursiva</translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">La hoja para habilitar la función Autocompletar en los pagos está totalmente abierta.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Las opciones se muestran en orden aleatorio. Puedes cambiar la opción predeterminada en cualquier momento.</translation>
 <translation id="2134584557120247184">Boleto de avión</translation>
@@ -1367,6 +1368,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3289578402369490638">De otras tiendas de la Web</translation>
 <translation id="3293642807462928945">Más información sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta y administra tus contraseñas en la configuración de Chrome</translation>
+<translation id="3296595523896103792">Se cerró la hoja para habilitar la función Autocompletar en los pagos.</translation>
 <translation id="3299098170013242198">Se activó Windows Hello para completar contraseñas</translation>
 <translation id="3299197721044635447">No se pudo pegar el contenido fuera del contexto de Chrome administrado debido a las políticas de tu organización</translation>
 <translation id="3299720788264079132">Se produjo un error al utilizar <ph name="FEATURE_NAME" /></translation>
@@ -2806,7 +2808,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5651323159439184939">Alimentación por tracción</translation>
 <translation id="5653681867130739344">Actualizar el documento de identidad de forma segura en la Billetera de Google</translation>
-<translation id="5653744563415531641">Guarda tu información y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="MANAGE_WALLET_SETTINGS_LINK" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID del informe de fallas subido:</translation>
 <translation id="5654965123204121933">La URL no incluye la cadena de reemplazo obligatoria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Correo</translation>
@@ -3258,7 +3259,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6410264514553301377">Ingresar la fecha de vencimiento y el CVC para <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Diálogo de aprobación parental</translation>
-<translation id="6413532517183895572">administrar la configuración de la Billetera</translation>
 <translation id="6415778972515849510">Chromium puede ayudarte a proteger tu Cuenta de Google y cambiar tu contraseña.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Asegúrate de que los datos personales o comerciales importantes se almacenen de forma externa.</translation>
@@ -3765,7 +3765,6 @@ Detalles adicionales:
 <translation id="7308436126008021607">sincronización en segundo plano</translation>
 <translation id="7310392214323165548">El dispositivo se reiniciará en breve</translation>
 <translation id="7311244614769792472">No se encontraron resultados</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Presiona Tab y, luego, Intro para preguntarle a <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Tu organización marcó este sitio porque podría incumplir una política.</translation>
 <translation id="7315372670898739748">No se pudo realizar la vinculación. Vuelve a intentarlo más tarde.</translation>
 <translation id="7316521168101843192">Guardando el archivo en Microsoft OneDrive</translation>
@@ -4173,6 +4172,7 @@ Detalles adicionales:
 <translation id="7955105108888461311">Preguntar en persona</translation>
 <translation id="7956713633345437162">Favoritos del dispositivo</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7961493403319780137">Más información sobre esta función: Autocompletar códigos de verificación de Gmail</translation>
 <translation id="7962467575542381659">Máquina de la plataforma</translation>
 <translation id="796439090588610411">Chrome dejará de confirmar automáticamente este correo electrónico en los sitios compatibles.</translation>
 <translation id="7966803981046576691">Tipo de cuenta para el trabajo</translation>
@@ -4574,7 +4574,6 @@ Detalles adicionales:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Sobre Kaku n.º 1</translation>
 <translation id="8702965365666568344">Cinta de montaje</translation>
-<translation id="8703242769654966101">Habilitar Pix en la Billetera</translation>
 <translation id="8703372953981978786">Este vínculo no funciona</translation>
 <translation id="8703575177326907206">Tu conexión a <ph name="DOMAIN" /> no está cifrada.</translation>
 <translation id="8705331520020532516">Número de serie</translation>

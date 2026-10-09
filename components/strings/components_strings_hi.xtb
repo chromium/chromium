@@ -2807,7 +2807,6 @@
 <translation id="5649053991847567735">अपने-आप होने वाले डाउनलोड</translation>
 <translation id="5651323159439184939">ट्रैक्टर फ़ीड</translation>
 <translation id="5653681867130739344">Google Wallet में आइडेंटिटी कार्ड की जानकारी सुरक्षित तरीके से अपडेट करें</translation>
-<translation id="5653744563415531641">अपनी जानकारी सेव करें और Google के सभी प्रॉडक्ट पर, फ़ॉर्म भरने जैसे काम तेज़ी से करें. <ph name="ACCOUNT" /> के लिए यह काम किया जा सकता है: <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">क्रैश रिपोर्ट का आईडी अपलोड किया गया:</translation>
 <translation id="5654965123204121933">यूआरएल में ज़रूरी रिप्लेसमेंट स्ट्रिंग <ph name="SEARCH_TERMS_REPLACEMENT" /> शामिल नहीं है: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ईमेल</translation>
@@ -3259,7 +3258,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> का समाप्ति तारीख और CVC डालें</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">माता-पिता की अनुमति से जुड़ा डायलॉग बॉक्स</translation>
-<translation id="6413532517183895572">Wallet की सेटिंग मैनेज करें</translation>
 <translation id="6415778972515849510">क्रोमियम से आप अपने Google खाते की सुरक्षा कर सकते हैं और अपना पासवर्ड बदल सकते हैं.</translation>
 <translation id="6416877227920300343">ईडीपी</translation>
 <translation id="6418199314628742460">पक्का करें कि कारोबार से जुड़ा या निजी अहम डेटा, बाहरी फ़ाइलों में सेव किया गया हो.</translation>
@@ -3766,7 +3764,6 @@
 <translation id="7308436126008021607">बैकग्राउंड सिंक</translation>
 <translation id="7310392214323165548">डिवाइस जल्द ही रीस्टार्ट होगा</translation>
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> में सवाल पूछने के लिए, पहले tab और फिर enter दबाएं</translation>
 <translation id="7313107491291103073">आपके संगठन ने इस साइट को फ़्लैग किया है, क्योंकि यह किसी नीति का उल्लंघन कर सकती है.</translation>
 <translation id="7315372670898739748">खाता लिंक नहीं किया जा सका. कुछ देर बाद कोशिश करें</translation>
 <translation id="7316521168101843192">फ़ाइल को Microsoft OneDrive में सेव किया जा रहा है</translation>
@@ -4576,7 +4573,6 @@
 <translation id="8699041776323235191">एचआईडी डिवाइस</translation>
 <translation id="8699985386408839112">काकू 1 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8702965365666568344">माउंटिंग टेप</translation>
-<translation id="8703242769654966101">Wallet में Pix का इस्तेमाल शुरू करें</translation>
 <translation id="8703372953981978786">यह लिंक काम नहीं करता</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> से आपके कनेक्शन को सुरक्षित नहीं किया गया है.</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>

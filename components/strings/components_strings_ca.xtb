@@ -668,6 +668,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2127747486437921899">Cursiva</translation>
 <translation id="2130448033692577677">Pot ser que les plantilles que has especificat no s'apliquin perquè la política DnsOverHttpsMode no s'ha establert.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">L'opció Activa l'emplenament automàtic de pagaments s'ha obert a alçada completa.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" />.</translation>
 <translation id="2132825047782982803">Es mostren en ordre aleatori. Pots canviar el motor de cerca predeterminat en qualsevol moment.</translation>
 <translation id="2134584557120247184">Bitllet d'avió</translation>
@@ -1366,6 +1367,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3289578402369490638">D'altres botigues de tot el web</translation>
 <translation id="3293642807462928945">Més informació sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta i gestiona les teves contrasenyes a la configuració de Chrome</translation>
+<translation id="3296595523896103792">S'ha tancat l'opció Activa l'emplenament automàtic de pagaments.</translation>
 <translation id="3299098170013242198">Windows Hello està activat per emplenar contrasenyes</translation>
 <translation id="3299197721044635447">El contingut no s'ha pogut enganxar fora del context de Chrome gestionat a causa de les polítiques de la teva organització</translation>
 <translation id="3299720788264079132">Hi ha hagut un error en utilitzar <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5649053991847567735">Baixades automàtiques</translation>
 <translation id="5651323159439184939">Alimentació per tracció</translation>
 <translation id="5653681867130739344">Actualitza el document d'identitat de manera segura a Google Wallet</translation>
-<translation id="5653744563415531641">Desa la informació i enllesteix més ràpidament les tasques, com ara emplenar formularis en tots els productes de Google. Pots <ph name="MANAGE_WALLET_SETTINGS_LINK" /> per a <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Identificador de l'informe de bloqueig penjat:</translation>
 <translation id="5654965123204121933">L'URL no inclou la cadena de substitució necessària<ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Adreça electrònica</translation>
@@ -3257,7 +3258,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6410264514553301377">Introdueix la data de caducitat i el CVC de la targeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Quadre de diàleg d'aprovació parental</translation>
-<translation id="6413532517183895572">gestionar la configuració de Wallet</translation>
 <translation id="6415778972515849510">Chromium et pot ajudar a protegir el Compte de Google i a canviar la contrasenya.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Assegura't que totes les dades empresarials o personals essencials s'emmagatzemin externament.</translation>
@@ -3764,7 +3764,6 @@ Detalls addicionals:
 <translation id="7308436126008021607">sincronització en segon pla</translation>
 <translation id="7310392214323165548">El dispositiu es reiniciarà aviat</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Prem Tab i, a continuació, Retorn per fer preguntes al <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">La teva organització ha marcat aquest lloc web perquè podria infringir una política.</translation>
 <translation id="7315372670898739748">No s'ha pogut fer l'enllaç. Torna-ho a provar més tard.</translation>
 <translation id="7316521168101843192">S'està desant el fitxer a Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Detalls addicionals:
 <translation id="7955105108888461311">Pregunta en persona</translation>
 <translation id="7956713633345437162">Adreces d'interès per a mòbils</translation>
 <translation id="7961015016161918242">Mai</translation>
+<translation id="7961493403319780137">Més informació sobre aquesta funció - Emplena automàticament els codis de verificació de Gmail</translation>
 <translation id="7962467575542381659">Màquina de la plataforma</translation>
 <translation id="796439090588610411">Chrome deixarà de confirmar automàticament aquesta adreça electrònica en llocs web compatibles.</translation>
 <translation id="7966803981046576691">Tipus de compte de treball</translation>
@@ -4572,7 +4572,6 @@ Detalls addicionals:
 <translation id="8699041776323235191">Dispositiu d'interfície humana</translation>
 <translation id="8699985386408839112">Sobre Kaku 1</translation>
 <translation id="8702965365666568344">Cinta de muntatge</translation>
-<translation id="8703242769654966101">Activa Pix a Wallet</translation>
 <translation id="8703372953981978786">Aquest enllaç no funciona</translation>
 <translation id="8703575177326907206">La teva connexió a <ph name="DOMAIN" /> no està xifrada.</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>

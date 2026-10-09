@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2086334242442703436">Բացել էմոջիների ընտրիչը</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" />-ի տեղադրումն արգելափակված է կազմակերպության կանոններով։ Աջակցման համար դիմեք համակարգի ադմինիստրատորին։ Սխալի կոդ՝ <ph name="ERROR" />։</translation>
-<translation id="2093792000875799555">Steam Chromebook-ի համար․ նորություններ</translation>
 <translation id="209965399369889474">Սարքը միացած չէ ցանցին</translation>
 <translation id="2107581415810719320">Այլ կոճակ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C մալուխը չի աջակցում Thunderbolt միջերես։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Ինչի՞ վրա եք ուզում կենտրոնանալ։ Սեղմեք Enter՝ առաջադրանքն ավելացնելու համար։</translation>
 <translation id="229397294990920565">Բջջային ինտերնետն անջատվում է…</translation>
 <translation id="2295777434187870477">Խոսափողը միացված է։ Անջատելու համար սեղմեք այս կոճակը։</translation>
+<translation id="2296880470921996802">Ձեր ՏՏ ադմինիստրատորն անջատել է սեղմատախտակի պատմությունը</translation>
 <translation id="2302092602801625023">Այս հաշիվը կառավարվում է Family Link-ի կողմից</translation>
 <translation id="2303600792989757991">Փոխարկել պատուհանի համատեսքը</translation>
 <translation id="2304702218354340897">Իսկապե՞ս ուզում եք անջատել դեմքով կառավարումը</translation>
@@ -1788,7 +1788,6 @@
 <translation id="6127395413317891856">Դուք միացած չեք համացանցին։ Ստուգեք կապը և նորից փորձեք:</translation>
 <translation id="6129953537138746214">Բացատ</translation>
 <translation id="6132714462430777655">Բաց թողնե՞լ գրանցումն ուսումնական հաստատության հաշվում</translation>
-<translation id="6136872094979134163">Չհաջողվեց առբերել «Steam Chromebook-ի համար» տարբերակի նորությունները</translation>
 <translation id="6137566720514957455">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի հեռացման երկխոսության պատուհանը</translation>
 <translation id="6141205840878048728">Ինչի՞ վրա եք ուզում կենտրոնանալ</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>

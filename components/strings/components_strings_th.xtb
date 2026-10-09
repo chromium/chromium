@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ตัวเอียง</translation>
 <translation id="2130448033692577677">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากไม่มีการตั้งค่านโยบาย DnsOverHttpsMode ไว้</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">เปิด "เปิดใช้การป้อนข้อความอัตโนมัติในการชำระเงิน" แบบเต็มความสูงแล้ว</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" /> <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">เครื่องมือค้นหาเหล่านี้แสดงแบบสุ่มลำดับ คุณเปลี่ยนค่าเริ่มต้นได้ทุกเมื่อ</translation>
 <translation id="2134584557120247184">ตั๋วเครื่องบิน</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">จากร้านค้าอื่นๆ ทั่วอินเทอร์เน็ต</translation>
 <translation id="3293642807462928945">ดูข้อมูลเพิ่มเติมเกี่ยวกับนโยบาย <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
+<translation id="3296595523896103792">ปิด "การเปิดใช้การป้อนข้อความอัตโนมัติในการชำระเงิน" แล้ว</translation>
 <translation id="3299098170013242198">Windows Hello เปิดอยู่สำหรับการป้อนรหัสผ่าน</translation>
 <translation id="3299197721044635447">วางเนื้อหานอกบริบทของ Chrome ที่มีการจัดการไม่ได้เนื่องจากนโยบายขององค์กร</translation>
 <translation id="3299720788264079132">เกิดข้อผิดพลาดขณะใช้<ph name="FEATURE_NAME" /></translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">การดาวน์โหลดโดยอัตโนมัติ</translation>
 <translation id="5651323159439184939">ถาดป้อนกระดาษด้วยเฟืองขับด้านหลัง</translation>
 <translation id="5653681867130739344">อัปเดตบัตรประจำตัวใน Google Wallet อย่างปลอดภัย</translation>
-<translation id="5653744563415531641">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถ<ph name="MANAGE_WALLET_SETTINGS_LINK" /> สำหรับ <ph name="ACCOUNT" /> ได้</translation>
 <translation id="5654927323611874862">รหัสรายงานข้อขัดข้องที่อัปโหลด:</translation>
 <translation id="5654965123204121933">URL ไม่มีสตริงการแทนที่ <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">อีเมล</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">ป้อนวันหมดอายุและ CVC ของ <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">กล่องโต้ตอบการอนุมัติจากผู้ปกครอง</translation>
-<translation id="6413532517183895572">จัดการการตั้งค่า Wallet</translation>
 <translation id="6415778972515849510">Chromium ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ตรวจสอบว่าข้อมูลธุรกิจหรือข้อมูลส่วนตัวที่สำคัญจัดเก็บไว้ภายนอก</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">การซิงค์ในเบื้องหลัง</translation>
 <translation id="7310392214323165548">อุปกรณ์จะรีสตาร์ทเร็วๆ นี้</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> กด Tab แล้วกด Enter เพื่อถาม<ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">องค์กรของคุณแจ้งว่าเว็บไซต์นี้อาจละเมิดนโยบาย</translation>
 <translation id="7315372670898739748">ลิงก์ไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="7316521168101843192">กำลังบันทึกไฟล์ไปยัง Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">ถามด้วยตนเอง</translation>
 <translation id="7956713633345437162">บุ๊กมาร์กบนมือถือ</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
+<translation id="7961493403319780137">ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์นี้ - ป้อนรหัสยืนยันจาก Gmail โดยอัตโนมัติ</translation>
 <translation id="7962467575542381659">เครื่องที่ใช้แพลตฟอร์ม</translation>
 <translation id="796439090588610411">Chrome จะหยุดยืนยันอีเมลนี้โดยอัตโนมัติในเว็บไซต์ที่รองรับ</translation>
 <translation id="7966803981046576691">ประเภทบัญชีของงาน</translation>
@@ -4572,7 +4572,6 @@
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">เทปสําหรับติดยึด</translation>
-<translation id="8703242769654966101">เปิดใช้ Pix ใน Wallet</translation>
 <translation id="8703372953981978786">ลิงก์นี้ใช้ไม่ได้</translation>
 <translation id="8703575177326907206">การเชื่อมต่อของคุณไปยัง <ph name="DOMAIN" /> ไม่ได้รับการเข้ารหัส</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>

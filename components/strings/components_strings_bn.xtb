@@ -669,6 +669,7 @@
 <translation id="2127747486437921899">তির্যক টেক্সট</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">পেমেন্ট অটোফিল চালু করার সুবিধা সম্পূর্ণ স্ক্রিন জুড়ে খোলা আছে।</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">এগুলি র‍্যান্ডম অর্ডারে দেখা যায়। আপনি যেকোনও সময় আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="2134584557120247184">ফ্লাইটের টিকিট</translation>
@@ -1367,6 +1368,7 @@
 <translation id="3289578402369490638">ওয়েব জুড়ে অন্যান্য স্টোর থেকে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতি সম্পর্কে আরও জানুন</translation>
 <translation id="3295444047715739395">Chrome সেটিংস থেকে আপনার পাসওয়ার্ড দেখুন ও ম্যানেজ করুন</translation>
+<translation id="3296595523896103792">পেমেন্ট অটোফিল চালু করার সুবিধা বন্ধ করা হয়েছে।</translation>
 <translation id="3299098170013242198">পাসওয়ার্ড পূরণ করার জন্য Windows Hello চালু করা আছে</translation>
 <translation id="3299197721044635447">আপনার সংস্থার নীতির কারণে ম্যানেজ করা Chrome এনভায়রনমেন্টের বাইরে কন্টেন্ট পেস্ট করা যাবে না</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ব্যবহার করার সময় কোনও সমস্যা হয়েছে</translation>
@@ -2806,7 +2808,6 @@
 <translation id="5649053991847567735">অটোমেটিক ডাউনলোডগুলি</translation>
 <translation id="5651323159439184939">ট্র্যাকটর ফিড</translation>
 <translation id="5653681867130739344">Google Wallet-এ আইডি কার্ডের তথ্য নিরাপদে আপডেট করুন</translation>
-<translation id="5653744563415531641">আপনার তথ্য সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="ACCOUNT" />-এর জন্য <ph name="MANAGE_WALLET_SETTINGS_LINK" /> করতে পারবেন।</translation>
 <translation id="5654927323611874862">আপলোড করা ক্র্যাশ রিপোর্টের আইডি:</translation>
 <translation id="5654965123204121933">URL-এ প্রয়োজনীয় রিপ্লেসমেন্ট স্ট্রিং অন্তর্ভুক্ত করা হয় না <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377">Enter the expiration date and CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">অভিভাবক অনুমতি সম্পর্কিত ডায়ালগ</translation>
-<translation id="6413532517183895572">আপনার Wallet সেটিংস ম্যানেজ করুন</translation>
 <translation id="6415778972515849510">আপনার পাসওয়ার্ড পরিবর্তন করে Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chromium সাহায্য করতে পারবে।</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">কোনও গুরুত্বপূর্ণ ব্যবসা সম্পর্কিত বা ব্যক্তিগত ডেটা বাইরে সেভ করা হয়েছে কিনা ভালো করে দেখে নিন।</translation>
@@ -3764,7 +3764,6 @@
 <translation id="7308436126008021607">ব্যাকগ্রাউন্ড সিঙ্ক</translation>
 <translation id="7310392214323165548">ডিভাইস খুব শীঘ্রই রিস্টার্ট হবে</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" />-কে জিজ্ঞাসা করতে প্রথমে Tab ও তারপরে Enter 'কী' প্রেস করুন</translation>
 <translation id="7313107491291103073">আপনার সংস্থা এই সাইটকে ফ্ল্যাগ করেছে কারণ এটি কোনও নীতি লঙ্ঘন করতে পারে।</translation>
 <translation id="7315372670898739748">লিঙ্ক করা যায়নি, পরে আবার চেষ্টা করুন</translation>
 <translation id="7316521168101843192">Microsoft OneDrive-এ ফাইল সেভ করা হচ্ছে</translation>
@@ -4172,6 +4171,7 @@
 <translation id="7955105108888461311">ব্যক্তিগতভাবে অ্যাক্সেস চান</translation>
 <translation id="7956713633345437162">মোবাইল বুকমার্ক</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
+<translation id="7961493403319780137">এই ফিচার সম্পর্কে আরও জানুন - Gmail থেকে যাচাইকরণ কোড অটোফিল করুন</translation>
 <translation id="7962467575542381659">প্ল্যাটফর্ম মেশিন</translation>
 <translation id="796439090588610411">কাজ করে এমন সাইটে Chrome আর অটোমেটিক এই ইমেল কনফার্ম করবে না।</translation>
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
@@ -4572,7 +4572,6 @@
 <translation id="8699041776323235191">HID ডিভাইস</translation>
 <translation id="8699985386408839112">এনভেলপ কাকু ১</translation>
 <translation id="8702965365666568344">মাউন্টিং টেপ</translation>
-<translation id="8703242769654966101">Wallet-এ Pix চালু করুন</translation>
 <translation id="8703372953981978786">এই লিঙ্ক কাজ করছে না</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />-এ আপনার কানেকশন এনক্রিপ্ট হয় নি৷</translation>
 <translation id="8705331520020532516">ক্রমিক সংখ্যা</translation>

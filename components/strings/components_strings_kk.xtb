@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Көлбеу</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode саясаты орнатылмағандықтан, сіз көрсеткен үлгілер қолданылмауы мүмкін.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">"Төлемдерді автотолтыру функциясы қосу" беті толық ашылды.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Бұлар кездейсоқ ретпен көрсетілген. Әдепкі іздеу жүйесін кез келген уақытта өзгертуге болады.</translation>
 <translation id="2134584557120247184">Әуе билеті</translation>
@@ -1365,6 +1366,7 @@
 <translation id="3289578402369490638">Интернеттегі басқа дүкендерден</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
+<translation id="3296595523896103792">"Төлемдерді автотолтыру функциясын қосу" беті жабылды.</translation>
 <translation id="3299098170013242198">Құпия сөздерді толтыру үшін Windows Hello қосулы.</translation>
 <translation id="3299197721044635447">Ұйымыңыздың саясаттарына сәйкес, контентті басқарылатын Chrome контексінен тыс жерге қою мүмкін емес.</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> функциясын пайдаланған кезде бірдеңе дұрыс болмады.</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">Автоматты жүктеулер</translation>
 <translation id="5651323159439184939">Үздіксіз беру</translation>
 <translation id="5653681867130739344">Жеке куәлікті Google Wallet-те қауіпсіз жаңартыңыз</translation>
-<translation id="5653744563415531641">Ақпаратыңызды сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="ACCOUNT" /> аккаунтына арналған <ph name="MANAGE_WALLET_SETTINGS_LINK" /> аласыз.</translation>
 <translation id="5654927323611874862">Жүктеп салынған жаңылыс туралы есеп идентификаторы:</translation>
 <translation id="5654965123204121933">URL мекенжайында қажетті <ph name="SEARCH_TERMS_REPLACEMENT" /> ауыстыру жолы жоқ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Электрондық пошта</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> картасының жарамдылық мерзімін және CVC кодын енгізіңіз</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Ата-ана мақұлдауының диалогтік терезесі</translation>
-<translation id="6413532517183895572">Wallet параметрлерін басқара</translation>
 <translation id="6415778972515849510">Chromium браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Маңызды жеке немесе жұмыс деректерін басқа жерге сақтап алыңыз.</translation>
@@ -3762,7 +3762,6 @@
 <translation id="7308436126008021607">фондық синхрондау</translation>
 <translation id="7310392214323165548">Құрылғы сәлден соң өшіп, қайта қосылады.</translation>
 <translation id="7311244614769792472">Ешбір нәтиже табылмады</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> қызметінен сұрау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="7313107491291103073">Ұйымыңыз бұл сайтты саясатқа қайшы деп белгіледі.</translation>
 <translation id="7315372670898739748">Байланыстыру сәтсіз аяқталды. Кейінірек қайталап көріңіз.</translation>
 <translation id="7316521168101843192">Файл Microsoft OneDrive қызметіне сақталып жатыр.</translation>
@@ -4170,6 +4169,7 @@
 <translation id="7955105108888461311">Жеке сұрау</translation>
 <translation id="7956713633345437162">Ұялы бетбелгілер</translation>
 <translation id="7961015016161918242">Ешқашан</translation>
+<translation id="7961493403319780137">Бұл функция туралы толық ақпарат – Gmail-дегі растау кодтарын автоматты түрде толтыру</translation>
 <translation id="7962467575542381659">Платформа компьютері</translation>
 <translation id="796439090588610411">Chrome қолдау көрсетілетін сайттарда осы электрондық мекенжайды автоматты түрде растамайтын болады.</translation>
 <translation id="7966803981046576691">Тапсырмадағы аккаунттың түрі</translation>
@@ -4570,7 +4570,6 @@
 <translation id="8699041776323235191">HID құрылғысы</translation>
 <translation id="8699985386408839112">Kaku 1 хатқалтасы</translation>
 <translation id="8702965365666568344">Монтаж таспасы</translation>
-<translation id="8703242769654966101">Wallet-те Pix-ті қосу</translation>
 <translation id="8703372953981978786">Бұл сілтеме жұмыс істемейді</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> доменімен байланысыңыз шифрланбаған.</translation>
 <translation id="8705331520020532516">Сериялық нөмір</translation>

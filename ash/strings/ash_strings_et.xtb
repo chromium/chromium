@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2086334242442703436">Emotikonide valija avamine</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> installimine on ettevõttepoliitikaga blokeeritud. Toe saamiseks võtke ühendust oma süsteemiadministraatoriga. Veakood on <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Versiooni Steam Chromebookile uudised</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
 <translation id="2107581415810719320">Teine nupp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Teie USB-C-kaabel ei toeta Thunderbolti. Seadme toimivus võib olla piiratud.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Millele soovite keskenduda? Ülesande lisamiseks vajutage sisestusklahvi.</translation>
 <translation id="229397294990920565">Mobiilne andmeside lülitatakse välja …</translation>
 <translation id="2295777434187870477">Mikrofon on sees, lülitamisel sisend vaigistatakse.</translation>
+<translation id="2296880470921996802">Teie IT-administraator on lõikelaua ajaloo keelanud.</translation>
 <translation id="2302092602801625023">Kontot haldab Family Link</translation>
 <translation id="2303600792989757991">Akna ülevaate sisse- ja väljalülitamine</translation>
 <translation id="2304702218354340897">Kas soovite kindlasti näoga juhtimise välja lülitada?</translation>
@@ -1787,7 +1787,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6127395413317891856">Võrguühendus puudub. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="6129953537138746214">Tühikuklahv</translation>
 <translation id="6132714462430777655">Kas jätta koolis kasutamiseks registreerimine vahele?</translation>
-<translation id="6136872094979134163">Versiooni Steam Chromebookile jaoks ei saa uudiseid hankida.</translation>
 <translation id="6137566720514957455">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> eemaldamise dialoogi avamine</translation>
 <translation id="6141205840878048728">Millele soovite keskenduda?</translation>
 <translation id="6141988275892716286">Allalaadimise kinnitamine</translation>

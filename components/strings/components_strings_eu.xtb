@@ -2801,7 +2801,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5649053991847567735">Deskarga automatikoak</translation>
 <translation id="5651323159439184939">Aitzinamendu traktorea</translation>
 <translation id="5653681867130739344">Eguneratu nortasun-agiria modu seguruan Google Wallet-en</translation>
-<translation id="5653744563415531641">Gorde informazioa gauzak bizkorrago egiteko, hala nola Google-ren produktuetan inprimakiak betetzeko. <ph name="ACCOUNT" /> kontuaren <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ahal dituzu.</translation>
 <translation id="5654927323611874862">Kargatutako hutsegite-txostenarenidentifikatzailea:</translation>
 <translation id="5654965123204121933">URLak ez dauka beharrezko ordezko <ph name="SEARCH_TERMS_REPLACEMENT" /> katea: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
@@ -3252,7 +3251,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6410264514553301377">Idatzi <ph name="CREDIT_CARD" /> txartelaren iraungitze-data eta CVCa</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Gurasoen onespen-leihoa</translation>
-<translation id="6413532517183895572">Wallet-eko ezarpenak kudeatu</translation>
 <translation id="6415778972515849510">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chromium-ek.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Ziurtatu enpresaren datu edo datu pertsonal garrantzitsuenak beste toki batean gordeta daudela.</translation>
@@ -3758,7 +3756,6 @@ Xehetasun gehiago:
 <translation id="7308436126008021607">atzeko planoko sinkronizazioa</translation>
 <translation id="7310392214323165548">Gailua laster berrabiaraziko da</translation>
 <translation id="7311244614769792472">Ez da aurkitu emaitzarik</translation>
-<translation id="7311565174465466858"><ph name="AI_ENGINE_NAME" /> eginbideari galdetzeko, sakatu tabuladorea <ph name="TAB_KEY" /> eta, ondoren, Sartu</translation>
 <translation id="7313107491291103073">Webguneak agian gidalerro bat urratzen duela salatu du zure erakundeak.</translation>
 <translation id="7315372670898739748">Ezin izan da lotu. Saiatu berriro geroago.</translation>
 <translation id="7316521168101843192">Fitxategia Microsoft OneDrive-n gordetzen</translation>
@@ -4566,7 +4563,6 @@ Xehetasun gehiago:
 <translation id="8699041776323235191">HID gailua</translation>
 <translation id="8699985386408839112">Kaku gutun-azala 1</translation>
 <translation id="8702965365666568344">Oratzeko zinta</translation>
-<translation id="8703242769654966101">Gaitu Pix Wallet-en</translation>
 <translation id="8703372953981978786">Esteka honek ez du funtzionatzen</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeinuarekiko duzun konexioa ez dago enkriptatuta.</translation>
 <translation id="8705331520020532516">Serie-zenbakia</translation>

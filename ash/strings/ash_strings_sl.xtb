@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2086334242442703436">Odpiranje izbirnika emodžijev</translation>
 <translation id="2089550919269323883">Nameščanje aplikacije <ph name="VM_NAME" /> blokira pravilnik podjetja. Za podporo se obrnite na skrbnika sistema. Koda napake je <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Novice o aplikaciji Steam za Chromebook</translation>
 <translation id="209965399369889474">Ni povezave z omrežjem</translation>
 <translation id="2107581415810719320">Drug gumb <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C ne podpira protokola Thunderbolt. Delovanje naprave bo morda omejeno.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Na kaj se želite osredotočiti? Pritisnite tipko Enter, če želite dodati opravilo.</translation>
 <translation id="229397294990920565">Prenos podatkov v mobilnem omrežju se izklaplja …</translation>
 <translation id="2295777434187870477">Mikrofon je vklopljen; če ga preklopite, bo izklopljen vhodni zvok.</translation>
+<translation id="2296880470921996802">Skrbnik za IT je onemogočil zgodovino odložišča</translation>
 <translation id="2302092602801625023">Ta račun upravlja Family Link</translation>
 <translation id="2303600792989757991">Preklop pregleda okna</translation>
 <translation id="2304702218354340897">Ali ste prepričani, da želite izklopiti upravljanje z obrazom?</translation>
@@ -1792,7 +1792,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6127395413317891856">Nimate vzpostavljene povezave. Preverite povezavo in poskusite znova.</translation>
 <translation id="6129953537138746214">Preslednica</translation>
 <translation id="6132714462430777655">Želite preskočiti vpis v šolo?</translation>
-<translation id="6136872094979134163">Ni mogoče pridobiti novic o aplikaciji Steam za Chromebook.</translation>
 <translation id="6137566720514957455">Odpri pogovorno okno za odstranjevanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na kaj se želite osredotočiti?</translation>
 <translation id="6141988275892716286">Potrdi prenos</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2086334242442703436">Abrir selector de emojis</translation>
 <translation id="2089550919269323883">Non se pode instalar <ph name="VM_NAME" /> porque é unha acción bloqueada pola política da empresa. Ponte en contacto coa persoa que administra o sistema para obter axuda. O código de erro é <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Noticias sobre Steam para Chromebook</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
 <translation id="2107581415810719320">Outro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O teu cable USB-C non é compatible con Thunderbolt. O rendemento do dispositivo podería verse limitado.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">En que tarefa queres concentrarte? Preme Introducir para engadila.</translation>
 <translation id="229397294990920565">Os datos móbiles están desactivándose...</translation>
 <translation id="2295777434187870477">O micrófono está activado. Utiliza o botón para silencialo.</translation>
+<translation id="2296880470921996802">A persoa responsable de informática desactivou o historial do portapapeis</translation>
 <translation id="2302092602801625023">Esta conta está xestionada por Family Link</translation>
 <translation id="2303600792989757991">Alternar vista xeral da ventá</translation>
 <translation id="2304702218354340897">Seguro que queres desactivar o control facial?</translation>
@@ -1787,7 +1787,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6127395413317891856">Estás sen conexión. Comproba a túa conexión e téntao de novo.</translation>
 <translation id="6129953537138746214">Espazo</translation>
 <translation id="6132714462430777655">Queres omitir a inscrición do centro educativo?</translation>
-<translation id="6136872094979134163">Non se poden recuperar as noticias de Steam para Chromebook.</translation>
 <translation id="6137566720514957455">Abrir cadro de diálogo de eliminación para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">En que tarefa queres concentrarte?</translation>
 <translation id="6141988275892716286">Confirma a descarga</translation>

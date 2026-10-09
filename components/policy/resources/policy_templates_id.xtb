@@ -1588,7 +1588,6 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
 - Daripada memblokir devtools://*, gunakan salah satu kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, atau <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Nonaktifkan keyboard virtual aksesibilitas</translation>
 <translation id="1958110911685486719">Dukungan Formulir PDF XFA diaktifkan</translation>
-<translation id="1960059835237529462">Memungkinkan pengguna melihat pop-up Rating App Store <ph name="IOS_NAME" /></translation>
 <translation id="1960416154405676350">Aktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
       Menyetel kebijakan akan menentukan daftar ID ekstensi yang dikecualikan dari prosedur pembersihan sesi tamu terkelola yang dibatasi (lihat <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
@@ -1756,17 +1755,6 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
 <translation id="2057317273526988987">Izinkan akses ke daftar URL</translation>
 <translation id="205807990145127714">Data telemetri yang akan dilaporkan saat peristiwa perubahan kekuatan sinyal terjadi.</translation>
 <translation id="2060153898336610735">Otomatis berdasarkan bahasa saat ini</translation>
-<translation id="2060316966423154087">Menentukan apakah pengguna dapat mengizinkan <ph name="PRODUCT_NAME" /> menggunakan AI Generatif untuk memahami formulir dengan lebih baik dan membantunya mengisi lebih banyak kolom.
-
-0 = Memiliki efek yang sama dengan 1. Sebelum M153, setelan ini mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan data yang relevan (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Mengizinkan debug untuk rekaman paket jaringan</translation>
 <translation id="2061810934846663491">Mengonfigurasi nama domain wajib untuk host akses jarak jauh</translation>
 <translation id="2062632109797189011">Mengaktifkan kembali window.webkitStorageInfo API yang sudah tidak digunakan lagi</translation>
@@ -2772,15 +2760,6 @@ Lihat https://wicg.github.io/private-network-access/ untuk melihat batasan <ph n
 <translation id="2608535066974278204">Jangka waktu (menit) yang menentukan lamanya interval peluncuran kembali.</translation>
 <translation id="2608887839902987727">Cegah autentikasi captive portal mengabaikan setelan proxy</translation>
 <translation id="2608985885792348429">Setelan papan klip default</translation>
-<translation id="2613388238625781546">Header permintaan HTTP <ph name="AL_HEADER_NAME" /> dan pengambil <ph name="JS_GETTER_NAME" /> JavaScript direncanakan untuk dikurangi karena alasan privasi.
-Untuk memudahkan pengujian dan memastikan kompatibilitas, kebijakan ini memungkinkan Anda mengaktifkan atau menonaktifkan fitur <ph name="ALR_FEATURE_NAME" />.
-
-Jika kebijakan ini disetel ke aktif atau tidak disetel, <ph name="ALR_FEATURE_NAME" /> akan diterapkan melalui uji coba lapangan.
-Jika kebijakan ini disetel ke nonaktif, uji coba lapangan tidak akan dapat mengaktifkan <ph name="ALR_FEATURE_NAME" />.
-
-Untuk mengetahui informasi selengkapnya tentang fitur ini, buka: https://github.com/explainers-by-googlers/reduce-accept-language.
-
-CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada kebijakan ini saat browser berjalan.</translation>
 <translation id="2613493229743687635"><ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API memungkinkan aplikasi web terisolasi (yang diidentifikasi berdasarkan asalnya) untuk merekam beberapa platform sekaligus tanpa izin pengguna tambahan.
       Jika kebijakan ini tidak disetel, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> tidak tersedia untuk semua aplikasi web.
 Untuk meningkatkan privasi, kebijakan ini tidak akan mendukung pembaruan nilai kebijakan di tengah sesi. Oleh karena itu, perubahan hanya akan berlaku setelah pengguna logout dan login lagi.
@@ -3156,25 +3135,6 @@ Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation
 <translation id="2890645751406497668">Otomatis berikan izin ke situs ini untuk terhubung ke perangkat USB dengan ID produk dan vendor yang ditentukan.</translation>
 <translation id="2893546967669465276">Mengirim log sistem ke server pengelolaan</translation>
 <translation id="2893660462311365527">Interval pengumpulan telemetri jaringan dalam milidetik.</translation>
-<translation id="2894720693512285641">Kebijakan ini mengonfigurasi <ph name="PRODUCT_NAME" /> untuk mengurutkan cipher enkripsi pilihannya di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui berdasarkan skema kepatuhan tertentu.
-
-Menyetel kebijakan ini tidak menjamin bahwa algoritma tertentu akan digunakan.
-
-Kebijakan ini dibuat bagi operator server, yang ingin mendukung klien dengan maupun tanpa persyaratan kepatuhan, agar dapat membedakan kedua klien tersebut. Kebijakan ini hanya menggunakan algoritma non-default tertentu dengan peningkatan kekuatan kriptografi untuk klien yang secara eksplisit dikonfigurasi agar memilih algoritma.
-
-Menyetel kebijakan ke '<ph name="CNSA_NAME" />' akan mengonfigurasi <ph name="PRODUCT_NAME" /> untuk memilih cipher yang diperlukan agar mematuhi Commercial National Security Algorithm Suite versi 1.0 dan 2.0 (CNSA 1.0 dan 2.0).
-
-Jika kebijakan ini tidak disetel atau disetel ke '<ph name="DEFAULT_NAME" />', <ph name="PRODUCT_NAME" /> akan dikonfigurasi untuk menggunakan cipher defaultnya.
-
-Setelan kebijakan ini tidak diperlukan untuk keamanan. Kriptografi default yang digunakan oleh <ph name="PRODUCT_NAME" /> sudah cukup kuat untuk menahan serangan brute force bahkan dengan daya sebesar Matahari.
-
-Jika kebijakan ini disetel, <ph name="PRODUCT_NAME" /> akan menjadi lebih lambat saat mengakses situs.
-
-Kebijakan ini hanya memengaruhi TLS 1.3 dan QUIC; kebijakan ini tidak memengaruhi TLS versi sebelumnya.
-
-Kebijakan ini dapat disetel untuk perangkat dan pengguna. Jika disetel untuk pengguna, kebijakan ini hanya memengaruhi permintaan jaringan yang dipicu oleh profil pengguna, dan mungkin tidak memengaruhi permintaan jaringan yang dibuat oleh <ph name="PRODUCT_NAME" /> untuk menjalankan tugas latar belakang di seluruh browser; hal tersebut dikontrol oleh nilai di tingkat perangkat. Jika kebijakan ini disetel di tingkat perangkat dan tingkat pengguna, nilai di tingkat perangkat akan berlaku, kecuali jika urutan prioritas kebijakan telah diubah oleh kebijakan <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
-
-Untuk versi 156 dan yang lebih lama, kebijakan ini hanya berlaku di seluruh perangkat.</translation>
 <translation id="2894914342151915910">Sembunyikan peringatan saat Chrome berjalan di sistem yang tidak didukung</translation>
 <translation id="2895444724612647239">Otomatis memberikan izin ke situs untuk terhubung ke semua perangkat HID.</translation>
 <translation id="2896434627453256512">Menyetel kebijakan akan mengaktifkan fitur jendela bayangan.
@@ -3662,8 +3622,6 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, menu aksesibilitas me
 <translation id="3152135410085709340">Mengizinkan akses file lokal ke URL file:// di situs ini di Penampil PDF</translation>
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
 <translation id="3159375329008977062">Pengguna diaktifkan untuk mengekspor/mengimpor container Crostini melalui UI</translation>
-<translation id="3163167792874598128">Jika kebijakan disetel ke Aktif atau tidak disetel, pop-up Rating App Store dapat ditampilkan kepada pengguna, paling banyak setahun sekali.
-Jika kebijakan disetel ke Nonaktif, pop-up Rating App Store tidak akan ditampilkan kepada pengguna.</translation>
 <translation id="3163880369487075383">Kebijakan ini mengontrol apakah window.name dapat dihapus untuk navigasi tingkat atas
 lintas situs yang mengakibatkan dibuatnya grup konteks penjelajahan baru saat variasi ClearCrossSiteCrossBrowsingContextGroupWindowName
 diaktifkan.
@@ -5138,7 +5096,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4136603825567209889">Aktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="4138655880188755661">Batas Waktu</translation>
 <translation id="4140646780789794190">Nonaktifkan berbagi data diagnostik ke PluginVm</translation>
-<translation id="4141430435877011529">Multi-region atau lokasi aplikasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Pelajari lebih lanjut lokasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">AI Generatif</translation>
 <translation id="4145383150978634398">Sediakan Mode Desktop Terpadu untuk pengguna</translation>
 <translation id="4146319954420095470">(Peringatan! Dependensi ini akan segera dihentikan. Sebagai gantinya, mulai gunakan <ph name="GLS_POLICY_NAME" />) Jika kebijakan ini disetel ke <ph name="BLOCK_GEOLOCATION_SETTING" />, layanan sistem <ph name="PRODUCT_OS_NAME" /> dan aplikasi Android tidak dapat mengakses informasi lokasi. Jika kebijakan ini disetel ke nilai lain atau tidak disetel, pengguna akan dimintai izin saat aplikasi Android ingin mengakses informasi lokasi.</translation>
@@ -8271,7 +8228,6 @@ Mulai <ph name="PRODUCT_NAME" /> 147, kebijakan ini tidak akan digunakan lagi. A
 <translation id="5962271004971310788">Ekstensi yang harus diizinkan berjalan dalam mode Samaran oleh pengguna agar dapat menavigasi dalam mode Samaran</translation>
 <translation id="5963752574792883406">port 990 (blokir dapat dibatalkan hingga 01/02/2022)</translation>
 <translation id="596523880465577341">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />'.</translation>
-<translation id="5965344524743236327">ID atau nomor project <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> yang sesuai dengan instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yang akan diaktifkan. Pelajari lebih lanjut project ID di https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects.</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
 <translation id="596732417280023843">Nama profil sertifikat.</translation>
 <translation id="5972475504452039694">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan mendownload beberapa file secara otomatis.
@@ -8735,7 +8691,6 @@ Jika kebijakan <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> tidak disetel ata
 <translation id="6264247808139384018">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang melakukan autentikasi dengan sandi akan dapat mengunci layar.
 
 Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengunci layar. (Pengguna hanya dapat logout dari sesi pengguna).</translation>
-<translation id="6265114688953151459">ID unik mesin <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Formatnya harus terdiri dari 1—63 karakter yang cocok dengan pola [a-z0-9][a-z0-9-_]*. Pelajari lebih lanjut di https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine.</translation>
 <translation id="6265892395051519509">Mengizinkan akses ke sensor di situs ini</translation>
 <translation id="6266043141694454734">Menentukan apakah Chrome Root Store dan pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
 <translation id="6266686172120601139">Mengaktifkan buffering adaptif untuk Web Audio</translation>
@@ -13504,21 +13459,6 @@ tetapi dapat digunakan sebagai petunjuk untuk membuat jalur. Sertifikat harus di
 <translation id="9122865885571719292">Mengontrol apakah dan bagaimana <ph name="PRODUCT_OS_NAME" /> akan memulihkan sesi terakhir saat login.
 Kebijakan ini hanya berlaku jika kebijakan <ph name="FULL_RESTORE_ENABLED_NAME" /> disetel ke benar (true).</translation>
 <translation id="9123464369663964441">Izinkan pengguna menambahkan pengecualian untuk mengizinkan konten campuran</translation>
-<translation id="9123738611041078443">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />.
-
-Untuk mengonfigurasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, administrator harus memberikan:
-* URL aplikasi web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />), ATAU
-* Ketiga parameter lama secara bersamaan: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, dan <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Jika hanya menentukan sebagian dari ketiga parameter ini tanpa URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
-
-Parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> harus berupa URL valid yang menggunakan skema https, mengarah ke domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, dan tidak menyertakan nama pengguna atau sandi. Jika tidak memenuhi persyaratan ini, kebijakan akan diabaikan dan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
-
-Jika parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> dan parameter lama dikonfigurasi, parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> akan diprioritaskan.
-
-Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> akan dikonfigurasi untuk pengguna yang login dengan akun terkelola atau browser terkelola.
-
-Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
-
-Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Jangan pernah mengirimkan data keandalan domain ke Google</translation>
 <translation id="9126331659955304300">Izinkan pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
 <translation id="9126694586349976283">Izinkan penggunaan API AI bawaan.</translation>
@@ -13620,25 +13560,6 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="9204863016826119209">Kunci perusahaan dapat digunakan oleh aplikasi Android yang diinstal dan dicantumkan dalam kebijakan ini.</translation>
 <translation id="9206364386317031168">Mengizinkan situs membuat permintaan jaringan ke perangkat lokal.</translation>
 <translation id="9206472508136116830">Jangan izinkan deteksi berbagi file NetBIOS</translation>
-<translation id="9207289612253941907">Kebijakan ini mengonfigurasi <ph name="PRODUCT_NAME" /> untuk mengurutkan algoritma perjanjian kunci pilihannya (grup yang didukung) di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui berdasarkan skema kepatuhan tertentu.
-
-Menyetel kebijakan ini tidak menjamin bahwa algoritma tertentu akan digunakan.
-
-Kebijakan ini dibuat bagi operator server, yang ingin mendukung klien dengan maupun tanpa persyaratan kepatuhan, agar dapat membedakan kedua klien tersebut. Kebijakan ini hanya menggunakan algoritma non-default tertentu dengan peningkatan kekuatan kriptografi untuk klien yang secara eksplisit dikonfigurasi agar memilih algoritma.
-
-Menyetel kebijakan ke '<ph name="CNSA2_NAME" />' akan mengonfigurasi <ph name="PRODUCT_NAME" /> untuk memilih metode pertukaran kunci yang diperlukan agar sesuai dengan Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
-
-Jika kebijakan ini tidak disetel, atau disetel ke '<ph name="DEFAULT_NAME" />', <ph name="PRODUCT_NAME" /> akan dikonfigurasi untuk menggunakan metode pertukaran kunci defaultnya.
-
-Menyetel kebijakan ini tidak diperlukan untuk keamanan. Kriptografi default yang digunakan oleh <ph name="PRODUCT_NAME" /> sudah cukup kuat untuk menahan serangan brute force bahkan dengan daya sebesar Matahari.
-
-Jika kebijakan ini disetel, <ph name="PRODUCT_NAME" /> akan menjadi lebih lambat saat mengakses situs.
-
-Kebijakan ini hanya memengaruhi TLS 1.3 dan QUIC; kebijakan ini tidak memengaruhi TLS versi sebelumnya.
-
-Kebijakan ini dapat disetel untuk perangkat dan pengguna. Jika disetel untuk pengguna, kebijakan ini hanya memengaruhi permintaan jaringan yang dipicu oleh profil pengguna, dan mungkin tidak memengaruhi permintaan jaringan yang dibuat oleh <ph name="PRODUCT_NAME" /> untuk menjalankan tugas latar belakang di seluruh browser; hal tersebut dikontrol oleh nilai di tingkat perangkat. Jika kebijakan ini disetel di tingkat perangkat dan tingkat pengguna, nilai di tingkat perangkat akan berlaku, kecuali jika urutan prioritas kebijakan telah diubah oleh kebijakan <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
-
-Untuk versi 156 dan yang lebih lama, kebijakan ini hanya berlaku di seluruh perangkat.</translation>
 <translation id="9207596996305971030">Jangan laporkan peristiwa login/logout</translation>
 <translation id="9208328979373108724">Izinkan origin Aplikasi Web Terisolasi menambahkan Sub Apps, tetapi tetap memerlukan konfirmasi dari pengguna</translation>
 <translation id="9210647066889383361">Izinkan pengguna login ke perangkat dengan Smart Lock</translation>

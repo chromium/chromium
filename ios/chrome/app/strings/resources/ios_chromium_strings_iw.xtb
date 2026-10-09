@@ -14,6 +14,7 @@
 <translation id="12739128458173458">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chromium בשני המכשירים.</translation>
 <translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
+<translation id="1421604911662901100">‏כדי שהמידע השמור ונתונים נוספים יופיעו בכל המכשירים שלך, צריך להיכנס לאתר הזה ול-Chromium</translation>
 <translation id="1423007117030725713">‏חיפוש בכרטיסיית Chromium חדשה.</translation>
 <translation id="1431818719585918472">‏הכרטיסיות במצב אנונימי יינעלו באמצעות Chromium.</translation>
 <translation id="1451665391191990528">‏הסתרת הכרטיסיות הפרטיות הפתוחות כשסוגרים את Chromium</translation>
@@ -55,6 +56,7 @@
 <translation id="2006345422933397527">‏Chromium לא הצליח לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2025935492422922097">‏‫Chromium מעבד את כותרות הדפים וכתובות ה-URL במרחב הפרטי בענן</translation>
 <translation id="2027881372245801507">‏השבתת ההצעות לא משפיעה על עיבוד כותרות הדפים וכתובות ה-URL של Chromium בתכונות אחרות. אפשר לשנות את הרשאות הגישה לנתונים האלה ב<ph name="BEGIN_LINK" />הגדרות הסנכרון<ph name="END_LINK" />.</translation>
+<translation id="2036929290919363111">‏כדי שהסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך, צריך להיכנס לאתר הזה ול-Chromium</translation>
 <translation id="2042889939382983733">‏הצגת ההיסטוריה ב-Chromium</translation>
 <translation id="2052320862053429062">‏Chromium בודק מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
 <translation id="2059365270911640413">‏לא סיימת להגדיר את Chromium</translation>
@@ -99,6 +101,7 @@
 <translation id="2832168932648876507">‏חיפוש קולי ב-Chromium.</translation>
 <translation id="2843571538056574338">‏שימוש ב-Chromium למילוי אוטומטי</translation>
 <translation id="2844923129028437362">‏לא צריך יותר להעתיק כתובות. אפשר פשוט להגדיר את Chromium כדפדפן ברירת המחדל ב-iOS.</translation>
+<translation id="2876793692921835457">‏כדי שהסימניות ונתונים נוספים יופיעו בכל המכשירים שלך, צריך להיכנס לאתר הזה ול-Chromium</translation>
 <translation id="2918709798697875261">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chromium.</translation>
 <translation id="2942241131342758843">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
@@ -225,6 +228,7 @@
 <translation id="5671188105328420281">‏טיפים ל-Chromium</translation>
 <translation id="5688047395118852662">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
+<translation id="5714479833576517588">‏רוצה לקבל את הסיסמאות ונתונים נוספים מתוך <ph name="DEVICE_TYPE" />? צריך להיכנס לאתר הזה ול-Chromium</translation>
 <translation id="5731004036450828399">‏כדי לשמור על בטיחות מפתחות הגישה, צריך ליצור קוד אימות לשחזור.
 
         מפתחות הגישה נשמרים במנהל הסיסמאות, כך שניתן להשתמש בהם ב-Chromium בכל מכשיר.</translation>
@@ -243,6 +247,7 @@
   • אם הפעלת סנכרון של ההיסטוריה עם חשבון Google, יכול להיות שהמדדים יכללו פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
 <translation id="5908771460212301718">‏עכשיו אפשר להשלים משימות קצרות ולגלות דרכים לנצל את הפוטנציאל של Chromium:</translation>
 <translation id="5932787118589620366">‏מחיקה של נתוני הגלישה ב-Chromium.</translation>
+<translation id="59347837447331606">‏כדי לקבל גישה למידע השמור ולנתונים נוספים מתוך <ph name="DEVICE_TYPE" />, צריך להיכנס לאתר הזה ול-Chromium</translation>
 <translation id="593808800391107017">‏אפשר לקבל התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chromium מזהה באופן אוטומטי.</translation>
 <translation id="5951593919357934226">‏ליהנות מכל מה ש-Chromium מציע.</translation>
 <translation id="5985254578475526217">‏כדי לקבל התראות מ-Chromium, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
@@ -304,6 +309,7 @@
 <translation id="725427773388857052">‏Chromium יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="7269362888766543920">‏תוספים מסוימים גורמים ל-Chromium לקרוס. כדאי להסיר אותם.</translation>
 <translation id="7285031092584344905">‏גישה לסיסמאות ולעוד אפשרויות ב-Chromium מאפליקציות נוספות.</translation>
+<translation id="7291896724424825868">‏רוצה לקבל את הסימניות ונתונים נוספים מתוך <ph name="DEVICE_TYPE" />? צריך להיכנס לאתר הזה ול-Chromium</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">הסיסמה תישמר במנהל הסיסמאות עבור <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">מפתח הגישה יישמר במנהל הסיסמאות בחשבון <ph name="USER_EMAIL" /></translation>

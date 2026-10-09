@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2086334242442703436">絵文字選択ツールを開く</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> のインストールは会社のポリシーによりブロックされています。サポートが必要な場合は、システム管理者にお問い合わせください。エラーコード: <ph name="ERROR" />。</translation>
-<translation id="2093792000875799555">Chromebook 向け Steam のニュース</translation>
 <translation id="209965399369889474">ネットワークに接続されていません</translation>
 <translation id="2107581415810719320">他のボタン <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">何の作業に集中しますか？Enter キーを押してタスクを追加してください。</translation>
 <translation id="229397294990920565">モバイルデータ通信は無効になっています...</translation>
 <translation id="2295777434187870477">マイクはオンです。切り替えるとミュートになります。</translation>
+<translation id="2296880470921996802">クリップボードの履歴は IT 管理者によって無効にされています</translation>
 <translation id="2302092602801625023">このアカウントはファミリー リンクによって管理されています</translation>
 <translation id="2303600792989757991">ウィンドウ切り替えの概要</translation>
 <translation id="2304702218354340897">フェイスナビをオフにしてもよろしいですか？</translation>
@@ -1786,7 +1786,6 @@
 <translation id="6127395413317891856">オフラインです。接続を確認してから、もう一度お試しください。</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">教育機関の登録をスキップしますか？</translation>
-<translation id="6136872094979134163">Chromebook 向け Steam のニュースを取得できません。</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> の削除ダイアログを開きます</translation>
 <translation id="6141205840878048728">何の作業に集中しますか？</translation>
 <translation id="6141988275892716286">ダウンロードの確認</translation>

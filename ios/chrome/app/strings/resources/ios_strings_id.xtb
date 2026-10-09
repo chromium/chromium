@@ -114,7 +114,6 @@
 <translation id="1327794256477341646">Fitur yang memerlukan lokasi Anda tidak akan berfungsi</translation>
 <translation id="132969855425874290">Tutup temukan dan isi</translation>
 <translation id="1333455942675373522">Keyboard</translation>
-<translation id="1333669029961409292">"Periksa sandi Anda" selesai.</translation>
 <translation id="1334485477792811969">Layanan web</translation>
 <translation id="1335767868357998043">Pilih Posisi Kolom URL</translation>
 <translation id="1347468774581902829">Kelola aktivitas</translation>
@@ -321,7 +320,6 @@
 <translation id="1909201414196501151">Situs ditambahkan dan disematkan</translation>
 <translation id="1911619930368729126">Upload ke Google Drive</translation>
 <translation id="1925706052394657380">Buka setelan <ph name="BEGIN_BOLD" />Aplikasi Default<ph name="END_BOLD" /> di iOS</translation>
-<translation id="1929759944176590572">"Gunakan kamera untuk menelusuri dengan Google Lens" selesai.</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link diterima}other{{count} link diterima}}</translation>
 <translation id="1941314575388338491">Ketuk dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Setelan</translation>
@@ -558,6 +556,7 @@
 <translation id="2664621323652615289">Hentikan</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" tidak diizinkan mengakses kamera Anda</translation>
 <translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Bayar dengan Cicilan</translation>
@@ -770,7 +769,6 @@
 <translation id="340669334496430859">Terakhir Diubah</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oktober 2023</translation>
-<translation id="3416904994126232207">"Simpan sandi" selesai.</translation>
 <translation id="3419787211763835342">Bantu tingkatkan kualitas isi otomatis yang ditingkatkan</translation>
 <translation id="3422958112451181446">Tekan lama untuk menyematkan alat favorit Anda di sini</translation>
 <translation id="3430407169377889553">Gunakan Gemini dengan hati-hati dan ambil kendali jika diperlukan. Segala tindakan Gemini selama mengerjakan tugas menjadi tanggung jawab Anda.</translation>
@@ -1135,7 +1133,6 @@
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
 <translation id="4606247758155004938">Browser dikelola oleh organisasi Anda.</translation>
 <translation id="4607887340472970274">Pemantauan Harga</translation>
-<translation id="4614482404958079763">Coba tema meriah berbatas waktu, lengkap dengan ilustrasi dan animasi kustom</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4621768135601674446">Buka opsi Mode baca</translation>
 <translation id="4627107755957573804">Izinkan situs dan aplikasi mengupgrade akun yang ada untuk menggunakan kunci sandi</translation>
@@ -1243,7 +1240,6 @@
 <translation id="4896467949657706481">Tab ditutup; Anda telah logout</translation>
 <translation id="4911042367886397055">Selamat datang kembali, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Anda dapat membagikan salinan sandi Anda dengan aman kepada seseorang dalam grup keluarga Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lensa</translation>
 <translation id="4917025507570489430">Anda dapat menggunakan data penjelajahan yang ada saat Anda login sebagai <ph name="USER_EMAIL" />. Organisasi Anda mungkin dapat melihat data ini.</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4930714375720679147">Aktifkan</translation>
@@ -1389,6 +1385,7 @@
 <translation id="5351613737248079168">Anda harus login untuk menggunakan Level Up</translation>
 <translation id="5352128922772839949">Simpan file</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
+<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" diizinkan mengakses mikrofon Anda setiap kali Anda mengunjungi situs ini</translation>
 <translation id="5359436665022446585">Cara lebih baik membuka link</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
 <translation id="5364647308446127983">{count,plural, =1{Tidak dapat mengimpor {count} kunci sandi}other{Tidak dapat mengimpor {count} kunci sandi}}</translation>
@@ -1689,7 +1686,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6301104306974789820">Dapatkan notifikasi pemantauan harga</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Pilih posisi kolom URL Anda</translation>
-<translation id="6305257382500066042">Coba sekarang</translation>
 <translation id="6307241780749477694">Verifikasi diri Anda untuk mendapatkan semua sandi di perangkat ini</translation>
 <translation id="6307792728709337290">Simpan kartu di Akun Google Anda guna mengisi otomatis kartu tersebut untuk pembelian ini dan pembelian mendatang yang dilakukan di Chrome.</translation>
 <translation id="6316141353357700666">Pilih sandi yang ingin Anda gunakan dari daftar yang muncul.</translation>
@@ -1732,6 +1728,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6410390304316730527">Safe Browsing akan melindungi Anda dari penyerang yang dapat mengelabui Anda agar melakukan sesuatu yang berbahaya, misalnya menginstal software berbahaya atau mengungkap informasi pribadi seperti sandi, nomor telepon, atau kartu kredit. Jika dinonaktifkan, harap berhati-hati saat mengakses situs tidak dikenal atau tidak tepercaya.</translation>
 <translation id="6410883413783534063">Buka tab untuk mengunjungi halaman yang berbeda secara bersamaan</translation>
 <translation id="6412195388778525440">Hapus tab</translation>
+<translation id="6417468503703810114">Perilaku default</translation>
 <translation id="6418346271604475326">Menyiapkan PDF</translation>
 <translation id="6420292512900923139">Terjadi masalah saat mengimpor data Anda</translation>
 <translation id="6421038304268477484">Teks terjemahan</translation>
@@ -2083,7 +2080,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7491131399623468277">Buka Setelan…</translation>
 <translation id="7491161827858509164">Untuk melihat file yang telah Anda download sebelumnya, buka <ph name="BEGIN_LINK" />File<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Lanjut mengedit</translation>
-<translation id="7498557042323380380">Berikan tampilan musiman untuk Halaman Tab Baru Anda</translation>
 <translation id="7500244509706269886">Isi otomatis formulir</translation>
 <translation id="750493650310597496">Tak ada yang dipilih</translation>
 <translation id="7505402981231763928">Anda harus login untuk menggunakan Gemini</translation>
@@ -2144,7 +2140,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7669493687462784703">Lanjutkan mendownload profil konfigurasi dari <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Anda dapat menggeser ke kiri untuk menjelajah dalam mode Samaran.</translation>
 <translation id="7679915578945954324">Alamat situs disalin</translation>
-<translation id="76830702375944649">"Buat grup tab" selesai.</translation>
 <translation id="7695953765525234038">Kotak penelusuran</translation>
 <translation id="7696316012653762532">Opsi untuk menerjemahkan halaman</translation>
 <translation id="7700527812567437847">Telusuri layar dengan Google Lens</translation>
@@ -2170,6 +2165,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7758789811447313947">Tema violet</translation>
 <translation id="7759809451544302770">Opsional</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
+<translation id="7768507955883790804">Situs akan otomatis mengikuti setelan ini saat Anda mengunjunginya</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
 <translation id="7772948288262733182">Selamat datang kembali</translation>
 <translation id="777637629667389858">Jika login, Anda akan dilindungi di berbagai layanan Google.</translation>
@@ -2308,6 +2304,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> akun</translation>
 <translation id="8161614462829037225">Buka kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Panjang</translation>
+<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" diizinkan mengakses kamera Anda setiap kali Anda mengunjungi situs ini</translation>
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2}, dan 1 lainnya}other{Untuk {website_1}, {website_2}, dan {more_count} lainnya}}</translation>
 <translation id="8184895727539791845">Untuk mengizinkan Gemini menggunakan kamera, aktifkan Kamera di setelan iOS</translation>
 <translation id="8185076488803799132">Impor</translation>
@@ -2442,6 +2439,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8577056989960190117">Isi otomatis tahun habis masa berlaku <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Berbicara Live dengan Gemini</translation>
+<translation id="8585841788766257444">Situs yang tercantum di bawah mengikuti setelan khusus, bukan default</translation>
 <translation id="8587001564479545614">Buat PIN pemulihan</translation>
 <translation id="8588404856427128947">Nonaktif</translation>
 <translation id="8590286732816598906">Grup tab, <ph name="GROUP_TITLE" />, Menu.</translation>
@@ -2480,6 +2478,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8680643216091361291">Setelan <ph name="BEGIN_LINK" />Simpan Aktivitas<ph name="END_LINK" /> Anda dinonaktifkan secara default. Jika setelan ini dinonaktifkan, Google akan menyimpan percakapan Anda selama 3 hari. Kami menggunakannya untuk memastikan Aplikasi Gemini berfungsi dengan benar, membantu menjaganya tetap aman, dan menggunakan masukan Anda untuk memperbaiki masalah. Anda dapat mengaktifkan setelan Simpan Aktivitas untuk membantu meningkatkan kualitas AI Google bagi semua orang.</translation>
 <translation id="8680786875305615692">Bantu tingkatkan keamanan di Web untuk semuanya</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" tidak diizinkan mengakses mikrofon Anda</translation>
 <translation id="8690752723634292147">Konfirmasi penghapusan</translation>
 <translation id="8692107307702113268">Sandi berisi lebih dari 1.000 karakter</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan dari situs, download, dan ekstensi berbahaya.</translation>

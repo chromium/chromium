@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">復原</translation>
 <translation id="2086334242442703436">開啟表情符號挑選器</translation>
 <translation id="2089550919269323883">根據企業政策，你無法安裝「<ph name="VM_NAME" />」。如需支援服務，請與系統管理員聯絡。錯誤代碼：<ph name="ERROR" />。</translation>
-<translation id="2093792000875799555">Chromebook 版 Steam 最新消息</translation>
 <translation id="209965399369889474">未連上網路</translation>
 <translation id="2107581415810719320">其他按鈕：<ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">你的 USB-C 連接線不支援 Thunderbolt。裝置效能可能會因此受到限制。</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">你想專心處理什麼？按下 Enter 鍵即可新增工作。</translation>
 <translation id="229397294990920565">正在關閉行動數據...</translation>
 <translation id="2295777434187870477">麥克風已開啟；使用切換鈕可將麥克風設為靜音。</translation>
+<translation id="2296880470921996802">IT 管理員已停用剪貼簿記錄</translation>
 <translation id="2302092602801625023">這個帳戶是由 Family Link 所管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2304702218354340897">確定要關閉人臉操控功能嗎？</translation>
@@ -1783,7 +1783,6 @@
 <translation id="6127395413317891856">目前已離線，請檢查連線狀態，然後再試一次。</translation>
 <translation id="6129953537138746214">空格鍵</translation>
 <translation id="6132714462430777655">要略過學校註冊程序嗎？</translation>
-<translation id="6136872094979134163">無法擷取 Chromebook 版 Steam 最新消息。</translation>
 <translation id="6137566720514957455">開啟移除 <ph name="USER_EMAIL_ADDRESS" /> 的對話方塊</translation>
 <translation id="6141205840878048728">你想專心處理什麼？</translation>
 <translation id="6141988275892716286">確認下載</translation>

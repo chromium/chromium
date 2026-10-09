@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2086334242442703436">Emoji-kiezer openen</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> installeren wordt geblokkeerd door het bedrijfsbeleid. Neem contact op met je systeembeheerder voor support. De foutcode is <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Nieuws over Steam voor Chromebook</translation>
 <translation id="209965399369889474">Niet verbonden met netwerk</translation>
 <translation id="2107581415810719320">Andere knop <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Je USB-C-kabel biedt geen ondersteuning voor Thunderbolt. De prestaties van het apparaat kunnen beperkt zijn.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Waarop wil je je focussen? Druk op Enter om de taak toe te voegen.</translation>
 <translation id="229397294990920565">Mobiele data uitzetten…</translation>
 <translation id="2295777434187870477">Microfoon staat aan. Als je deze uitzet, wordt geen geluid waargenomen.</translation>
+<translation id="2296880470921996802">Klembordgeschiedenis is uitgezet door je IT-beheerder</translation>
 <translation id="2302092602801625023">Dit account wordt beheerd door Family Link</translation>
 <translation id="2303600792989757991">Overzicht aan/uit</translation>
 <translation id="2304702218354340897">Weet je zeker dat je gezichtsbediening wilt uitzetten?</translation>
@@ -1786,7 +1786,6 @@ Geen apparaten verbonden.</translation>
 <translation id="6127395413317891856">Je bent offline. Check de verbinding en probeer het opnieuw.</translation>
 <translation id="6129953537138746214">Spatiebalk</translation>
 <translation id="6132714462430777655">Schoolinschrijving overslaan?</translation>
-<translation id="6136872094979134163">Kan nieuws over Steam voor Chromebook niet ophalen.</translation>
 <translation id="6137566720514957455">Dialoogvenster 'Account verwijderen' openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Waarop wil je je focussen?</translation>
 <translation id="6141988275892716286">Download bevestigen</translation>

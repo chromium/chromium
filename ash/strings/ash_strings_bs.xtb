@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Vrati</translation>
 <translation id="2086334242442703436">Otvaranje izbornika emoji sličica</translation>
 <translation id="2089550919269323883">Instaliranje aplikacije <ph name="VM_NAME" /> je blokirano u skladu s pravilom preduzeća. Obratite se administratoru sistema za podršku. Kȏd greške je <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Novosti o Steamu za Chromebook</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2107581415810719320">Drugo dugme <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Performanse uređaja su možda ograničene.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Na šta se želite fokusirati? Dodavanje zadatka pritiskanjem Entera.</translation>
 <translation id="229397294990920565">Isključivanje prenosa podataka na mobilnoj mreži...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen. Deaktiviranjem će se isključiti unos govora.</translation>
+<translation id="2296880470921996802">Historiju međumemorije je onemogućio IT administrator</translation>
 <translation id="2302092602801625023">Ovim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključivanje/isključivanje pregleda prozora</translation>
 <translation id="2304702218354340897">Jeste li sigurni da želite isključiti upravljanje licem?</translation>
@@ -1790,7 +1790,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6127395413317891856">Offline ste. Provjerite vezu i pokušajte ponovo.</translation>
 <translation id="6129953537138746214">Tipka za razmak</translation>
 <translation id="6132714462430777655">Preskočiti školsku prijavu?</translation>
-<translation id="6136872094979134163">Nije moguće preuzeti novosti o Steamu za Chromebook.</translation>
 <translation id="6137566720514957455">Otvaranje dijaloškog okvira za uklanjanje korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na šta se želite fokusirati?</translation>
 <translation id="6141988275892716286">Potvrdite lozinku</translation>

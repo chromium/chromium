@@ -668,6 +668,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2127747486437921899">Kurzíva</translation>
 <translation id="2130448033692577677">Špecifikované šablóny nemusia byť uplatnené, pretože nebolo nastavené pravidlo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3×7</translation>
+<translation id="2131006834960167560">Povolenie automatického dopĺňania platieb je otvorené na celú výšku.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Zobrazujú sa v náhodnom poradí. Predvolenú možnosť môžete kedykoľvek zmeniť.</translation>
 <translation id="2134584557120247184">Letenka</translation>
@@ -1363,6 +1364,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3289578402369490638">Z iných obchodov na internete</translation>
 <translation id="3293642807462928945">Ďalšie informácie o pravidle <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Čítanie a správa hesiel v nastaveniach Chromu</translation>
+<translation id="3296595523896103792">Povolenie automatického dopĺňania platieb je zatvorené.</translation>
 <translation id="3299098170013242198">Funkcia Windows Hello je zapnutá na vypĺňanie hesiel</translation>
 <translation id="3299197721044635447">Obsah sa pre pravidlá vašej organizácie nepodarilo prilepiť mimo spravovaného kontextu Chromu</translation>
 <translation id="3299720788264079132">Pri používaní funkcie <ph name="FEATURE_NAME" /> sa niečo pokazilo</translation>
@@ -2801,7 +2803,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5649053991847567735">Automatické sťahovanie</translation>
 <translation id="5651323159439184939">Podávanie ťahačom</translation>
 <translation id="5653681867130739344">Bezpečne si aktualizujte doklad totožnosti v Peňaženke Google</translation>
-<translation id="5653744563415531641">Uložte si údaje, aby ste ich mohli používať rýchlejšie, napríklad pri vypĺňaní formulárov v službách Googlu. Môžete <ph name="MANAGE_WALLET_SETTINGS_LINK" /> pre účet <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Nahraný identifikátor prehľadu zrútenia:</translation>
 <translation id="5654965123204121933">Webová adresa nezahŕňa povinný náhradný reťazec <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -3252,7 +3253,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6410264514553301377">Zadajte dátum vypršania platnosti a kód CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4×8</translation>
 <translation id="6412543105195503444">Dialógové okno schválenia rodičom</translation>
-<translation id="6413532517183895572">spravovať nastavenia Peňaženky</translation>
 <translation id="6415778972515849510">Chromium vám pomôže ochrániť účet Google a zmeniť heslo.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Uistite sa, že všetky dôležité firemné alebo osobné údaje sú uložené externe.</translation>
@@ -3759,7 +3759,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7308436126008021607">synchronizácia na pozadí</translation>
 <translation id="7310392214323165548">Zariadenie sa čoskoro reštartuje</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Ak chcete položiť otázku nástroju <ph name="AI_ENGINE_NAME" />, stlačte Tab a potom Enter</translation>
 <translation id="7313107491291103073">Vaša organizácia nahlásila tento web, pretože možno porušuje pravidlá.</translation>
 <translation id="7315372670898739748">Prepojenie sa nepodarilo, skúste to neskôr</translation>
 <translation id="7316521168101843192">Súbor sa ukladá do služby Microsoft OneDrive</translation>
@@ -4167,6 +4166,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7955105108888461311">Požiadať osobne</translation>
 <translation id="7956713633345437162">Mobilné záložky</translation>
 <translation id="7961015016161918242">Nikdy</translation>
+<translation id="7961493403319780137">Ďalšie informácie o tejto funkcii – automatické dopĺňanie overovacích kódov z Gmailu</translation>
 <translation id="7962467575542381659">Počítač platformy</translation>
 <translation id="796439090588610411">Chrome prestane tento e‑mail automaticky potvrdzovať na podporovaných weboch.</translation>
 <translation id="7966803981046576691">Typ účtu úlohy</translation>
@@ -4568,7 +4568,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8699041776323235191">Zariadenie HID</translation>
 <translation id="8699985386408839112">Obálka Kaku 1</translation>
 <translation id="8702965365666568344">Lepiaca páska</translation>
-<translation id="8703242769654966101">Povoliť Pix v Peňaženke</translation>
 <translation id="8703372953981978786">Tento odkaz nefunguje</translation>
 <translation id="8703575177326907206">Vaše pripojenie k doméne <ph name="DOMAIN" /> sa nešifruje.</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>

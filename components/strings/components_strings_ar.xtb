@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">مائل</translation>
 <translation id="2130448033692577677">‏قد لا يتم تطبيق النماذج التي حدّدتها بسبب عدم ضبط سياسة DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">تم فتح نافذة "تفعيل الملء التلقائي لبيانات الدفع" بطول الشاشة.</translation>
 <translation id="2131511685263818470">‫<ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">تظهر محركات البحث هذه بترتيب عشوائي. ويمكنك تغيير خيارك التلقائي في أي وقت.</translation>
 <translation id="2134584557120247184">تذكرة الرحلة الجوية</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">من متاجر أخرى على الويب</translation>
 <translation id="3293642807462928945">مزيد من المعلومات عن سياسة <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏عرض كلمات المرور وإدارتها في إعدادات متصفِّح Chrome</translation>
+<translation id="3296595523896103792">تم إغلاق نافذة "تفعيل الملء التلقائي لبيانات الدفع".</translation>
 <translation id="3299098170013242198">‏تم تفعيل ميزة Windows Hello لملء كلمات المرور.</translation>
 <translation id="3299197721044635447">‏تعذَّر لصق المحتوى خارج سياق Chrome المُدار بسبب سياسات مؤسستك</translation>
 <translation id="3299720788264079132">حدث خطأ أثناء استخدام ميزة "<ph name="FEATURE_NAME" />".</translation>
@@ -2805,7 +2807,6 @@
 <translation id="5649053991847567735">عمليات التنزيل التلقائية</translation>
 <translation id="5651323159439184939">إدخال الورق عن طريق جرّار</translation>
 <translation id="5653681867130739344">‏تعديل معلومات بطاقة الهوية بأمان في "محفظة Google"</translation>
-<translation id="5653744563415531641">‏يمكنك حفظ معلوماتك لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. يمكنك <ph name="MANAGE_WALLET_SETTINGS_LINK" /> لحساب <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">مُعرّف تقرير الأعطال الذي تم تحميله:</translation>
 <translation id="5654965123204121933">‏لا يتضمّن عنوان URL سلسلة الاستبدال المطلوبة <ph name="SEARCH_TERMS_REPLACEMENT" />‏: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377">‏أدخِل تاريخ انتهاء الصلاحية ورمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">مربّع حوار موافقة أحد الوالدَين</translation>
-<translation id="6413532517183895572">‏إدارة إعدادات "محفظة Google"</translation>
 <translation id="6415778972515849510">‏يمكن أن يساعدك Chromium على حماية حسابك على Google وتغيير كلمة المرور.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">يُرجى التأكّد من أنّ البيانات الشخصية أو المتعلّقة بالعمل تم تخزينها خارج الجهاز.</translation>
@@ -3764,7 +3764,6 @@
 <translation id="7308436126008021607">المزامنة في الخلفية</translation>
 <translation id="7310392214323165548">ستتم إعادة تشغيل الجهاز قريبًا.</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
-<translation id="7311565174465466858">‏<ph name="TAB_KEY" /> يُرجى الضغط على مفتاح Tab ثم مفتاح Enter لطرح سؤال في "<ph name="AI_ENGINE_NAME" />"</translation>
 <translation id="7313107491291103073">وضعت مؤسستك علامة على هذا الموقع الإلكتروني لأنّه قد ينتهك إحدى السياسات.</translation>
 <translation id="7315372670898739748">تعذّر الربط. يُرجى إعادة المحاولة لاحقًا</translation>
 <translation id="7316521168101843192">‏جارٍ حفظ الملف في Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@
 <translation id="7955105108888461311">الطلب شخصيًا</translation>
 <translation id="7956713633345437162">الإشارات المرجعية للجوّال</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
+<translation id="7961493403319780137">‏مزيد من المعلومات حول هذه الميزة - "الملء التلقائي لرموز التحقّق من Gmail"</translation>
 <translation id="7962467575542381659">جهاز النظام الأساسي</translation>
 <translation id="796439090588610411">‏سيتوقف Chrome عن تأكيد هذا البريد الإلكتروني تلقائيًا على المواقع الإلكترونية المتوافقة.</translation>
 <translation id="7966803981046576691">نوع حساب المهمة</translation>
@@ -4575,7 +4575,6 @@
 <translation id="8699041776323235191">‏جهاز HID</translation>
 <translation id="8699985386408839112">‏ظرف Kaku 1</translation>
 <translation id="8702965365666568344">شريط تثبيت</translation>
-<translation id="8703242769654966101">‏تفعيل Pix في "محفظة Google"</translation>
 <translation id="8703372953981978786">هذا الرابط لا يعمل</translation>
 <translation id="8703575177326907206">الاتصال بالموقع <ph name="DOMAIN" /> غير محميّ بنظام ترميز.</translation>
 <translation id="8705331520020532516">الرقم التسلسلي</translation>

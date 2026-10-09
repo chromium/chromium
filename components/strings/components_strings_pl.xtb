@@ -668,6 +668,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2127747486437921899">Kursywa</translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Włączanie autouzupełniania płatności jest otwarte na całą wysokość.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Pokazujemy je w kolejności losowej. Opcję domyślną możesz w każdej chwili zmienić.</translation>
 <translation id="2134584557120247184">Bilet lotniczy</translation>
@@ -1366,6 +1367,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3289578402369490638">Z innych sklepów w internecie</translation>
 <translation id="3293642807462928945">Więcej informacji o zasadzie <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Wyświetl hasła i zarządzaj nimi w ustawieniach Chrome</translation>
+<translation id="3296595523896103792">Okno włączania autouzupełniania danych do płatności zostało zamknięte.</translation>
 <translation id="3299098170013242198">Funkcja Windows Hello jest włączona w celu wypełniania haseł</translation>
 <translation id="3299197721044635447">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się wkleić treści poza zarządzanym kontekstem Chrome</translation>
 <translation id="3299720788264079132">Podczas korzystania z funkcji <ph name="FEATURE_NAME" /> coś poszło nie tak</translation>
@@ -2805,7 +2807,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5649053991847567735">Pobieranie automatyczne</translation>
 <translation id="5651323159439184939">Perforowany papier traktorowy</translation>
 <translation id="5653681867130739344">Bezpiecznie zaktualizuj dowód tożsamości w Portfelu Google</translation>
-<translation id="5653744563415531641">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Możesz <ph name="MANAGE_WALLET_SETTINGS_LINK" /> na koncie <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Identyfikator przesłanego raportu o awarii:</translation>
 <translation id="5654965123204121933">URL nie zawiera wymaganego zastępczego ciągu znaków <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -3257,7 +3258,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6410264514553301377">Wpisz datę ważności i kod CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Okno z prośbą o zgodę rodzica</translation>
-<translation id="6413532517183895572">zarządzać ustawieniami Portfela</translation>
 <translation id="6415778972515849510">Chromium może Ci pomóc w zabezpieczeniu Twojego konta Google i zmianie hasła.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Zadbaj o to, aby wszystkie ważne dane firmowe i osobiste były przechowywane zewnętrznie.</translation>
@@ -3764,7 +3764,6 @@ Dodatkowe informacje:
 <translation id="7308436126008021607">synchronizacja w tle</translation>
 <translation id="7310392214323165548">Urządzenie wkrótce uruchomi się ponownie</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Naciśnij Tab, a następnie Enter, aby zapytać <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Twoja organizacja oznaczyła tę witrynę, ponieważ może ona naruszać zasady.</translation>
 <translation id="7315372670898739748">Nie udało się połączyć. Spróbuj ponownie później.</translation>
 <translation id="7316521168101843192">Zapisuję plik w Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Dodatkowe informacje:
 <translation id="7955105108888461311">Poproś osobiście</translation>
 <translation id="7956713633345437162">Zakładki na komórce</translation>
 <translation id="7961015016161918242">Nigdy</translation>
+<translation id="7961493403319780137">Więcej informacji o tej funkcji – autouzupełnianie kodów weryfikacyjnych z Gmaila</translation>
 <translation id="7962467575542381659">Platforma – urządzenie</translation>
 <translation id="796439090588610411">Chrome przestanie automatycznie potwierdzać ten adres e-mail na obsługiwanych stronach.</translation>
 <translation id="7966803981046576691">Rodzaj konta zadania</translation>
@@ -4572,7 +4572,6 @@ Dodatkowe informacje:
 <translation id="8699041776323235191">Urządzenie HID</translation>
 <translation id="8699985386408839112">Koperta Kaku 1</translation>
 <translation id="8702965365666568344">Taśma montażowa</translation>
-<translation id="8703242769654966101">Włącz Pix w Portfelu</translation>
 <translation id="8703372953981978786">Ten link nie działa</translation>
 <translation id="8703575177326907206">Połączenie z witryną <ph name="DOMAIN" /> nie jest szyfrowane.</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>

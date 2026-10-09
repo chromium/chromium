@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2086334242442703436">Otwórz selektor emotikonów</translation>
 <translation id="2089550919269323883">Instalowanie elementu <ph name="VM_NAME" /> zostało zablokowane przez zasady przedsiębiorstwa. Aby uzyskać pomoc, skontaktuj się z administratorem systemu. Kod błędu: <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Aktualności na temat Steam na Chromebooki</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2107581415810719320">Inny przycisk <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Twój kabel USB-C nie obsługuje standardu Thunderbolt. Wydajność urządzenia może być ograniczona.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Na czym chcesz się skupić? Aby dodać zadanie, naciśnij Enter.</translation>
 <translation id="229397294990920565">Wyłączam mobilną transmisję danych…</translation>
 <translation id="2295777434187870477">Mikrofon jest włączony. Przełączając go, wyciszysz odbierane dźwięki.</translation>
+<translation id="2296880470921996802">Historia schowka została wyłączona przez administratora IT</translation>
 <translation id="2302092602801625023">To konto jest zarządzane przez Family Link</translation>
 <translation id="2303600792989757991">Przełącz widok ogólny okna</translation>
 <translation id="2304702218354340897">Czy na pewno chcesz wyłączyć sterowanie za pomocą twarzy?</translation>
@@ -1790,7 +1790,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6127395413317891856">Jesteś offline. Sprawdź połączenie i spróbuj jeszcze raz.</translation>
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6132714462430777655">Pominąć rejestrację w szkole?</translation>
-<translation id="6136872094979134163">Nie udało się pobrać wiadomości z aplikacji Steam na Chromebooki.</translation>
 <translation id="6137566720514957455">Otwórz okno usuwania konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na czym chcesz się skupić?</translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>

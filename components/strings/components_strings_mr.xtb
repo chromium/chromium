@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">तिरपे</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode धोरण सेट केले नसल्यामुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">पेमेंट ऑटोफिल सुरू करा हे पूर्ण उंचीवर उघडले आहे.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ही रँडम क्रमाने दाखवली आहेत. तुम्ही तुमचे डीफॉल्ट शोध इंजीन कधीही बदलू शकता.</translation>
 <translation id="2134584557120247184">फ्लाइटचे तिकीट</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3289578402369490638">संपूर्ण वेबवरील इतर स्टोअरमधून</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> धोरणांबद्दल अधिक जाणून घ्या</translation>
 <translation id="3295444047715739395">Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पहा आणि व्‍यवस्‍थापित करा</translation>
+<translation id="3296595523896103792">पेमेंट ऑटोफिल सुरू करा बंद केले आहे.</translation>
 <translation id="3299098170013242198">पासवर्ड एंटर करण्यासाठी Windows Hello सुरू आहे</translation>
 <translation id="3299197721044635447">तुमच्या संस्थेच्या धोरणांमुळे व्यवस्थापित Chrome संदर्भाबाहेर आशय पेस्ट करता आला नाही</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> वापरताना काहीतरी चुकले</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">स्वयंचलित डाउनलोड</translation>
 <translation id="5651323159439184939">ट्रॅक्टर फीड</translation>
 <translation id="5653681867130739344">Google Wallet मध्ये ओळखपत्र सुरक्षितपणे अपडेट करा</translation>
-<translation id="5653744563415531641">तुमची माहिती सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी <ph name="MANAGE_WALLET_SETTINGS_LINK" /> करू शकता.</translation>
 <translation id="5654927323611874862">अपलोड केलेल्या क्रॅश अहवालाचा आयडी:</translation>
 <translation id="5654965123204121933">URL मध्ये आवश्यक बदली स्ट्रिंग समाविष्ट नाही <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ई-मेल</translation>
@@ -3257,7 +3258,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> साठी कालबाह्यता तारीख आणि CVC प्रविष्‍ट करा</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">पालकांच्या मंजुरीशी संबंधित डायलॉग</translation>
-<translation id="6413532517183895572">तुमची Wallet सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6415778972515849510">तुमच्या Google खात्याचे संरक्षण करण्यात आणि तुमचा पासवर्ड बदलण्यात Chromium तुम्हाला मदत करू शकते.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">कोणताही महत्त्वाचा व्यवसायासंबंधित किंवा वैयक्तिक डेटा बाह्यरीत्या स्टोअर केल्याची खात्री करा.</translation>
@@ -3764,7 +3764,6 @@
 <translation id="7308436126008021607">बॅकग्राउंड सिंक</translation>
 <translation id="7310392214323165548">डिव्हाइस लवकरच रीस्टार्ट होईल</translation>
 <translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> विचारण्यासाठी टॅब आणि त्यानंतर एंटर दाबा <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">ही साइट धोरणाचे उल्लंघन करू शकत असल्यामुळे तुमच्या संस्थेने ती फ्लॅग केली आहे.</translation>
 <translation id="7315372670898739748">लिंक करता आले नाही, नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="7316521168101843192">Microsoft OneDrive वर फाइल सेव्ह करत आहे</translation>
@@ -4172,6 +4171,7 @@
 <translation id="7955105108888461311">प्रत्यक्ष मंजुरी घ्या</translation>
 <translation id="7956713633345437162">Mobile बुकमार्क</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
+<translation id="7961493403319780137">या वैशिष्ट्याबद्दल अधिक जाणून घ्या - Gmail मधील पडताळणी कोड ऑटोफिल करा</translation>
 <translation id="7962467575542381659">प्लॅटफॉर्म मशीन</translation>
 <translation id="796439090588610411">Chrome हे सपोर्ट असलेल्या साइटवर हा ईमेल आपोआप कन्फर्म करणे थांबवेल.</translation>
 <translation id="7966803981046576691">जॉब खाते प्रकार</translation>
@@ -4572,7 +4572,6 @@
 <translation id="8699041776323235191">HID डिव्हाइस</translation>
 <translation id="8699985386408839112">एन्व्हलप काकू १</translation>
 <translation id="8702965365666568344">माउंटिंग टेप</translation>
-<translation id="8703242769654966101">Wallet मध्ये Pix सुरू करा</translation>
 <translation id="8703372953981978786">ही लिंक काम करत नाही</translation>
 <translation id="8703575177326907206">तुमचे <ph name="DOMAIN" /> चे कनेक्शन एंक्रिप्ट केलेले नाही.</translation>
 <translation id="8705331520020532516">सिरीअल नंबर</translation>

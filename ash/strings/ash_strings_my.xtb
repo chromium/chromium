@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2086334242442703436">‘အီမိုဂျီရွေးချယ်စနစ်’ ဖွင့်ရန်</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> ထည့်သွင်းခြင်းကို လုပ်ငန်းမူဝါဒက ပိတ်ထားသည်။ အကူအညီအတွက် သင်၏ စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။ အမှားကုဒ်မှာ <ph name="ERROR" /> ဖြစ်သည်။</translation>
-<translation id="2093792000875799555">Chromebook အတွက် Steam သတင်း</translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2107581415810719320">အခြားခလုတ် <ph name="BUTTON_NUMBER" /> ခု</translation>
 <translation id="2107914222138020205">သင့် USB-C ကေဘယ်သည် Thunderbolt ကို မပံ့ပိုးပါ။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">သင်ဘာကို ပြလိုပါသလဲ။ လုပ်ဆောင်စရာ ထည့်ရန်အတွက် ‘Enter ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="229397294990920565">မိုဘိုင်းဒေတာကို ပိတ်နေပါသည်...</translation>
 <translation id="2295777434187870477">မိုက်ဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံတိတ်သွားပါမည်။</translation>
+<translation id="2296880470921996802">ကလစ်ဘုတ်မှတ်တမ်းကို သင်၏ IT စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="2302092602801625023">ဤအကောင့်ကို Family Link က ကြီးကြပ်ထားသည်</translation>
 <translation id="2303600792989757991">ဝင်ဒိုး ခြုံငုံမြင်ရပုံ ကစားကြည့်ခြင်း</translation>
 <translation id="2304702218354340897">အမူအရာဖြင့် ထိန်းချုပ်ခြင်းကို ပိတ်လိုပါသလား။</translation>
@@ -1786,7 +1786,6 @@
 <translation id="6127395413317891856">သင် အော့ဖ်လိုင်းဖြစ်နေသည်။ ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6129953537138746214">နေရာခြား</translation>
 <translation id="6132714462430777655">ကျောင်းအပ်နှံမှုကို ကျော်မလား။</translation>
-<translation id="6136872094979134163">Chromebook အတွက် Steam သတင်းကို ပြန်ယူ၍ မရလိုက်ပါ။</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> အတွက် ဖယ်ရှားမှုဒိုင်ယာလော့ခ် ဖွင့်မည်</translation>
 <translation id="6141205840878048728">သင်ဘာကို ပြလိုပါသလဲ။</translation>
 <translation id="6141988275892716286">ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>

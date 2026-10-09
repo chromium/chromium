@@ -668,6 +668,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2127747486437921899">Kursiv</translation>
 <translation id="2130448033692577677">Det går inte att tillämpa de angivna mallarna eftersom principen DnsOverHttpsMode inte har ställts in.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131006834960167560">Aktivering av autofyll för betalningar har öppnats över hela skärmen.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Dessa visas i slumpmässig ordning. Du kan när som helst ändra standardinställningen.</translation>
 <translation id="2134584557120247184">Flygbiljett</translation>
@@ -1366,6 +1367,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3289578402369490638">Från andra butiker på webben</translation>
 <translation id="3293642807462928945">Läs mer om principen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visa och hantera dina lösenord i inställningarna för Chrome</translation>
+<translation id="3296595523896103792">Aktivering av autofyll för betalningar har stängts.</translation>
 <translation id="3299098170013242198">Windows Hello är aktiverat för att fylla i lösenord</translation>
 <translation id="3299197721044635447">Det gick inte att klistra in innehållet utanför det hanterade Chrome-sammanhanget på grund av organisationens policyer</translation>
 <translation id="3299720788264079132">Något gick fel när <ph name="FEATURE_NAME" /> skulle användas</translation>
@@ -2805,7 +2807,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5649053991847567735">Automatiska nedladdningar</translation>
 <translation id="5651323159439184939">Traktormatning</translation>
 <translation id="5653681867130739344">Uppdatera id-kortet säkert i Google Wallet</translation>
-<translation id="5653744563415531641">Spara dina uppgifter så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan <ph name="MANAGE_WALLET_SETTINGS_LINK" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Uppladdat kraschrapport-id:</translation>
 <translation id="5654965123204121933">Webbadressen innehåller inte den obligatoriska ersättningssträngen <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-post</translation>
@@ -3257,7 +3258,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4 x 8</translation>
 <translation id="6412543105195503444">Dialogruta för föräldragodkännande</translation>
-<translation id="6413532517183895572">hantera dina Wallet-inställningar</translation>
 <translation id="6415778972515849510">Du kan skydda Google-kontot genom att byta lösenord.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Se till att alla viktiga företags- och personuppgifter lagras externt.</translation>
@@ -3764,7 +3764,6 @@ Mer information.
 <translation id="7308436126008021607">synkronisering i bakgrunden</translation>
 <translation id="7310392214323165548">Enheten startas om inom kort</translation>
 <translation id="7311244614769792472">Inga resultat hittades</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Tryck på Tabb och sedan på Retur för att fråga <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Organisationen har flaggat den här webbplatsen eftersom den kan bryta mot en policy.</translation>
 <translation id="7315372670898739748">Länkningen misslyckades. Försök igen senare.</translation>
 <translation id="7316521168101843192">Sparar filen i Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Mer information.
 <translation id="7955105108888461311">Fråga själv</translation>
 <translation id="7956713633345437162">Bokmärken i mobilen</translation>
 <translation id="7961015016161918242">Aldrig</translation>
+<translation id="7961493403319780137">Läs mer om funktionen för att autofylla verifieringskoder från Gmail</translation>
 <translation id="7962467575542381659">Plattformsdator</translation>
 <translation id="796439090588610411">Chrome slutar att automatiskt bekräfta den här e-postadressen på webbplatser som stöds.</translation>
 <translation id="7966803981046576691">Kontotyp för utskriften</translation>
@@ -4573,7 +4573,6 @@ Mer information:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8699985386408839112">Kaku 1-kuvert</translation>
 <translation id="8702965365666568344">Monteringstejp</translation>
-<translation id="8703242769654966101">Aktivera Pix i Wallet</translation>
 <translation id="8703372953981978786">Den här länken fungerar inte</translation>
 <translation id="8703575177326907206">Din anslutning till <ph name="DOMAIN" /> är inte krypterad.</translation>
 <translation id="8705331520020532516">Serienummer</translation>

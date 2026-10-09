@@ -2811,7 +2811,6 @@
 <translation id="5649053991847567735">ទាញយកស្វ័យប្រវត្តិ</translation>
 <translation id="5651323159439184939">ចោះរន្ធសងខាង</translation>
 <translation id="5653681867130739344">ធ្វើបច្ចុប្បន្នភាពអត្តសញ្ញាណប័ណ្ណដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
-<translation id="5653744563415531641">រក្សាទុក​ព័ត៌មាន​របស់អ្នក និង​បំពេញ​កិច្ចការ​បានកាន់តែ​លឿន ដូចជា​ការបំពេញ​ទម្រង់បែបបទ​នៅលើ​ផលិតផល Google ជាដើម។ អ្នកអាច<ph name="MANAGE_WALLET_SETTINGS_LINK" />សម្រាប់ <ph name="ACCOUNT" />។</translation>
 <translation id="5654927323611874862">លេខសម្គាល់របាយការណ៍អំពីការគាំងដែលបានបង្ហោះ៖</translation>
 <translation id="5654965123204121933">URL មិនរួមបញ្ចូលជួរអក្សរជំនួសដែលបានតម្រូវ <ph name="SEARCH_TERMS_REPLACEMENT" />៖ <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">អ៊ីម៉េល</translation>
@@ -3263,7 +3262,6 @@
 <translation id="6410264514553301377">បញ្ចូល​កាលបរិច្ឆេទ​ផុត​កំណត់​ និង​ CVC សម្រាប់ <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">ប្រអប់​នៃ​ការអនុញ្ញាតពី​មាតាបិតា</translation>
-<translation id="6413532517183895572">គ្រប់គ្រង​ការកំណត់ Wallet របស់អ្នក</translation>
 <translation id="6415778972515849510">Chromium អាច​ជួយ​អ្នក​ក្នុងការការពារ​គណនី Google និង​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក​។</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ត្រូវ​ប្រាកដថា ទិន្នន័យ​ផ្ទាល់ខ្លួន ឬ​អាជីវកម្ម​សំខាន់​ត្រូវបាន​រក្សាទុក​នៅ​ខាងក្រៅ។</translation>
@@ -3769,7 +3767,6 @@
 <translation id="7308436126008021607">សមកាលកម្ម​ផ្ទៃខាងក្រោយ</translation>
 <translation id="7310392214323165548">ឧបករណ៍នឹងចាប់ផ្ដើមឡើងវិញឆាប់ៗនេះ</translation>
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> ចុច tab បន្ទាប់មក enter ដើម្បីសួរ <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">ស្ថាប័ន​របស់អ្នក​បាន​សម្គាល់​គេហទំព័រនេះ ដោយសារ​វាអាច​បំពាន​គោលការណ៍។</translation>
 <translation id="7315372670898739748">ការភ្ជាប់មិនបានសម្រេចទេ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="7316521168101843192">កំពុងរក្សាទុកឯកសារទៅ Microsoft OneDrive</translation>
@@ -4580,7 +4577,6 @@
 <translation id="8699041776323235191">ឧបករណ៍ HID</translation>
 <translation id="8699985386408839112">ស្រោមសំបុត្រ Kaku 1</translation>
 <translation id="8702965365666568344">ស្កុតសម្រាប់បិទភ្ជាប់</translation>
-<translation id="8703242769654966101">បើក Pix នៅក្នុង Wallet</translation>
 <translation id="8703372953981978786">តំណនេះ​មិនដំណើរការ​ទេ</translation>
 <translation id="8703575177326907206">ការភ្ជាប់របស់អ្នកទៅ <ph name="DOMAIN" /> មិនត្រូវបានអ៊ីនគ្រីបទេ។</translation>
 <translation id="8705331520020532516">លេខសេរ៊ី</translation>

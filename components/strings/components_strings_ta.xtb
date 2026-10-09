@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">இட்டாலிக்</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode கொள்கை அமைக்கப்படாததால் நீங்கள் குறிப்பிட்ட டெம்ப்ளேட்கள் பொருந்தாமல் போகக்கூடும்.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">பேமெண்ட்டுகளுக்கான தானாக நிரப்புதல் அம்சத்தை ஆன் செய்வதற்கான பக்கம் முழுத் திரையில் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">இவை ரேண்டமாகக் காட்டப்படுகின்றன. இயல்பு விருப்பத்தை எப்போது வேண்டுமானாலும் மாற்றலாம்.</translation>
 <translation id="2134584557120247184">விமான டிக்கெட்</translation>
@@ -1363,6 +1364,7 @@
 <translation id="3289578402369490638">இணையம் முழுவதும் உள்ள பிற ஸ்டோர்களில் இருந்து</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> கொள்கை குறித்து மேலும் அறிக</translation>
 <translation id="3295444047715739395">Chrome அமைப்புகளில் உங்கள் கடவுச்சொற்களைப் பார்த்தல் &amp; நிர்வகித்தல்</translation>
+<translation id="3296595523896103792">பேமெண்ட்டுகளுக்கான தானாக நிரப்புதல் அம்சத்தை ஆன் செய்வதற்கான கீழ்ப்புறச் சீட்டு மூடப்பட்டது.</translation>
 <translation id="3299098170013242198">Windows Hello இயக்கத்தில் உள்ளதால் கடவுச்சொற்கள் நிரப்பப்படும்</translation>
 <translation id="3299197721044635447">உங்கள் நிறுவனத்தின் கொள்கைகள் காரணமாக நிர்வகிக்கப்படும் Chrome சூழலுக்கு வெளியே உள்ளடக்கத்தை ஒட்ட முடியவில்லை</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> அம்சத்தைப் பயன்படுத்தும்போது ஏதோ தவறாகிவிட்டது</translation>
@@ -2801,7 +2803,6 @@
 <translation id="5649053991847567735">தன்னியக்கப் பதிவிறக்கங்கள்</translation>
 <translation id="5651323159439184939">டிராக்டர் ஃபீடு</translation>
 <translation id="5653681867130739344">Google Walletடில் ஐடி கார்டைப் பாதுகாப்பாக மாற்றுங்கள்</translation>
-<translation id="5653744563415531641">உங்கள் தகவல்களைச் சேமித்து Google தயாரிப்புகள் எல்லாவற்றிலும் படிவங்களை நிரப்புவது போன்ற செயல்களை விரைவாக மேற்கொள்ளலாம். <ph name="ACCOUNT" /> கணக்குக்கு <ph name="MANAGE_WALLET_SETTINGS_LINK" />.</translation>
 <translation id="5654927323611874862">பதிவேற்றப்பட்ட சிதைவு அறிக்கை ஐடி:</translation>
 <translation id="5654965123204121933">தேவைப்படும் மாற்று வார்த்தைகள் (<ph name="SEARCH_TERMS_REPLACEMENT" />) URLலில் இல்லை: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
@@ -3252,7 +3253,6 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />க்கான காலாவதித் தேதியையும் CVC எண்ணையும் உள்ளிடவும்</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">பெற்றோர் ஒப்புதலுக்கான தகவல் பெட்டி</translation>
-<translation id="6413532517183895572">உங்கள் Wallet அமைப்புகளை நிர்வகியுங்கள்</translation>
 <translation id="6415778972515849510">உங்கள் Google கணக்கைப் பாதுகாக்கவும் கடவுச்சொல்லை மாற்றவும் Chromium உதவும்.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">முக்கியமான பிசினஸ் அல்லது தனிப்பட்ட தரவை வேறு எங்கேனும் சேமிப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
@@ -3759,7 +3759,6 @@
 <translation id="7308436126008021607">பின்னணி ஒத்திசைவு</translation>
 <translation id="7310392214323165548">சாதனம் விரைவில் மீண்டும் தொடங்கும்</translation>
 <translation id="7311244614769792472">முடிவுகள் எதுவுமில்லை</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Tab பட்டனை அழுத்திவிட்டு <ph name="AI_ENGINE_NAME" /> இடம் கேட்க Enter அழுத்தவும்</translation>
 <translation id="7313107491291103073">இந்தத் தளம் கொள்கையை மீறக்கூடும் என்பதால் உங்கள் நிறுவனம் இதைக் கொடியிட்டுள்ளது.</translation>
 <translation id="7315372670898739748">இணைக்க முடியவில்லை, பிறகு முயலவும்</translation>
 <translation id="7316521168101843192">Microsoft OneDriveவில் ஃபைலைச் சேமிக்கிறது</translation>
@@ -4167,6 +4166,7 @@
 <translation id="7955105108888461311">நேரடியாகக் கேட்கவும்</translation>
 <translation id="7956713633345437162">மொபைல் புக்மார்க்குகள்</translation>
 <translation id="7961015016161918242">எப்போதும் இல்லை</translation>
+<translation id="7961493403319780137">இந்த அம்சம் குறித்து மேலும் தெரிந்துகொள்ளலாம் - Gmailலில் இருந்து வரும் தானாக நிரப்பக்கூடிய சரிபார்ப்புக் குறியீடுகள்</translation>
 <translation id="7962467575542381659">பிளாட்ஃபார்ம் இயந்திரம்</translation>
 <translation id="796439090588610411">ஆதரிக்கப்படும் தளங்களில் இந்த ஈமெயில் முகவரியைத் தானாகவே உறுதிப்படுத்துவதை Chrome இனி நிறுத்திவிடும்.</translation>
 <translation id="7966803981046576691">பணிக் கணக்கு வகை</translation>
@@ -4567,7 +4567,6 @@
 <translation id="8699041776323235191">HID சாதனம்</translation>
 <translation id="8699985386408839112">என்வெலப் காகு 1</translation>
 <translation id="8702965365666568344">மவுண்ட்டிங் டேப்</translation>
-<translation id="8703242769654966101">Walletடில் Pixஐ ஆன் செய்</translation>
 <translation id="8703372953981978786">இந்த இணைப்பு வேலை செய்யவில்லை</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> க்கான உங்கள் இணைப்பு என்க்ரிப்ட் செய்யப்படவில்லை.</translation>
 <translation id="8705331520020532516">வரிசை எண்</translation>

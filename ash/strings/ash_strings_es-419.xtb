@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2086334242442703436">Abrir el selector de emojis</translation>
 <translation id="2089550919269323883">La política empresarial bloqueó la instalación de <ph name="VM_NAME" />. Comunícate con el administrador del sistema para obtener asistencia. El código de error es <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Noticias sobre Steam para Chromebook</translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
 <translation id="2107581415810719320">Otro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Tu cable USB-C no admite Thunderbolt. El rendimiento del dispositivo puede verse limitado.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">¿En qué te gustaría concentrarte? Presiona Intro para agregar la tarea.</translation>
 <translation id="229397294990920565">Desactivando los datos móviles…</translation>
 <translation id="2295777434187870477">El micrófono está activado. Si lo seleccionas, se silenciará.</translation>
+<translation id="2296880470921996802">Tu administrador de TI inhabilitó el historial del portapapeles</translation>
 <translation id="2302092602801625023">Esta cuenta está administrada por Family Link</translation>
 <translation id="2303600792989757991">Activar vista general de ventanas</translation>
 <translation id="2304702218354340897">¿Confirmas que quieres desactivar el control con gestos faciales?</translation>
@@ -1787,7 +1787,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6127395413317891856">No tienes conexión. Verifica la conexión y vuelve a intentarlo.</translation>
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6132714462430777655">¿Deseas omitir la inscripción escolar?</translation>
-<translation id="6136872094979134163">No se pueden recuperar las noticias de Steam para Chromebook.</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">¿En qué te gustaría concentrarte?</translation>
 <translation id="6141988275892716286">Confirmar la descarga</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2086334242442703436">Эможи сонгогчийг нээх</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" />-г суулгахыг байгууллагын бодлогоор блоклосон. Тусламж авах бол системийн администратортайгаа холбогдоно уу. Алдааны код нь <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Steam for Chromebook-н мэдээ</translation>
 <translation id="209965399369889474">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="2107581415810719320">Бусад <ph name="BUTTON_NUMBER" /> товч</translation>
 <translation id="2107914222138020205">Таны USB-C кабель Thunderbolt-г дэмждэггүй. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Та юунд төвлөрөхийг хүсэж байна вэ? Ажил нэмэхийн тулд enter дээр дарна уу.</translation>
 <translation id="229397294990920565">Мобайл датаг унтрааж байна...</translation>
 <translation id="2295777434187870477">Микрофон асаалттай байна. Унтраах нь оролтын дууг хаана.</translation>
+<translation id="2296880470921996802">Түр санах ойн түүхийг танай IT админ идэвхгүй болгосон</translation>
 <translation id="2302092602801625023">Энэ бүртгэлийг Family Link-р удирддаг</translation>
 <translation id="2303600792989757991">Цонхыг тоймлож харах</translation>
 <translation id="2304702218354340897">Царайн хяналтыг унтраахдаа итгэлтэй байна уу?</translation>
@@ -1787,7 +1787,6 @@
 <translation id="6127395413317891856">Та офлайн байна. Холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6132714462430777655">Сургуулийн элсэлтийг алгасах уу?</translation>
-<translation id="6136872094979134163">Steam for Chromebook-н мэдээг сэргээж чадсангүй.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
 <translation id="6141205840878048728">Та юунд төвлөрөхийг хүсэж байна вэ?</translation>
 <translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>

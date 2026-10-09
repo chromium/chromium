@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2086334242442703436">Atvērt emocijzīmju atlasītāju</translation>
 <translation id="2089550919269323883">Virtuālās mašīnas <ph name="VM_NAME" /> instalēšana tika bloķēta saskaņā ar uzņēmuma politiku. Lai saņemtu atbalstu, lūdzu, sazinieties ar sistēmas administratoru. Kļūdas kods ir <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Jaunumi saistībā ar Steam Chromebook datoriem</translation>
 <translation id="209965399369889474">Nav savienojuma ar tīklu</translation>
 <translation id="2107581415810719320">Cita poga <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Jūsu USB-C vads neatbalsta Thunderbolt. Ierīces veiktspēja var būt ierobežota.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Kam vēlaties lietot fokusa režīmu? Lai pievienotu uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="229397294990920565">Notiek mobilo datu savienojuma izslēgšana...</translation>
 <translation id="2295777434187870477">Mikrofons ir ieslēgts. Pārslēdzot iestatījumu, tiks izslēgta ievade.</translation>
+<translation id="2296880470921996802">Jūsu IT administrators atspējoja starpliktuves vēsturi.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
 <translation id="2304702218354340897">Vai tiešām vēlaties izslēgt sejas kontroli?</translation>
@@ -1790,7 +1790,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6127395413317891856">Jūs esat bezsaistē. Pārbaudiet savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="6129953537138746214">Starpināšanas taustiņš</translation>
 <translation id="6132714462430777655">Vai izlaist skolas ierīces reģistrēšanu?</translation>
-<translation id="6136872094979134163">Nevar izgūt jaunumus saistībā ar Steam Chromebook datoriem.</translation>
 <translation id="6137566720514957455">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> noņemšanas dialoglodziņu</translation>
 <translation id="6141205840878048728">Kam vēlaties lietot fokusa režīmu?</translation>
 <translation id="6141988275892716286">Lejupielādes apstiprināšana</translation>

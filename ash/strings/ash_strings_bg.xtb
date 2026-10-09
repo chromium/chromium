@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2086334242442703436">Отваряне на инструмента за избор на емоджи</translation>
 <translation id="2089550919269323883">Инсталирането на <ph name="VM_NAME" /> е блокирано от корпоративно правило. Свържете се със системния си администратор за поддръжка. Кодът на грешката е <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Новини за Steam за Chromebook</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2107581415810719320">Друг бутон: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C кабелът ви не поддържа Thunderbolt. Ефективността на устройството може да е ограничена.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Над какво искате да се концентрирате? Натиснете Enter, за да добавите задача.</translation>
 <translation id="229397294990920565">Мобилните данни се изключват…</translation>
 <translation id="2295777434187870477">Микрофонът е включен. Превключването ще го заглуши.</translation>
+<translation id="2296880470921996802">Историята на буферната памет бе деактивирана от системния ви администратор</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
 <translation id="2304702218354340897">Наистина ли искате да изключите функцията за управление с лице?</translation>
@@ -1787,7 +1787,6 @@
 <translation id="6127395413317891856">Офлайн сте. Проверете връзката си и опитайте отново.</translation>
 <translation id="6129953537138746214">Интервал</translation>
 <translation id="6132714462430777655">Да се пропусне ли регистрирането в учебно заведение?</translation>
-<translation id="6136872094979134163">Новините за Steam за Chromebook не могат да бъдат извлечени.</translation>
 <translation id="6137566720514957455">Отваряне на диалоговия прозорец за премахване на профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Над какво искате да се концентрирате?</translation>
 <translation id="6141988275892716286">Потвърждаване на изтеглянето</translation>

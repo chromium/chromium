@@ -114,7 +114,6 @@
 <translation id="1327794256477341646">Las funciones que necesiten la ubicación no se podrán utilizar</translation>
 <translation id="132969855425874290">Cerrar Buscar y rellenar</translation>
 <translation id="1333455942675373522">Teclado</translation>
-<translation id="1333669029961409292">"Comprueba tus contraseñas" completado</translation>
 <translation id="1334485477792811969">Servicios web</translation>
 <translation id="1335767868357998043">Elige la posición de la barra de direcciones</translation>
 <translation id="1347468774581902829">Gestionar actividad</translation>
@@ -321,7 +320,6 @@
 <translation id="1909201414196501151">Sitio añadido y fijado</translation>
 <translation id="1911619930368729126">Subir a Google Drive</translation>
 <translation id="1925706052394657380">Abre los ajustes de <ph name="BEGIN_BOLD" />aplicaciones predeterminadas<ph name="END_BOLD" /> en iOS</translation>
-<translation id="1929759944176590572">¡Has realizado una búsqueda de Google Lens con la cámara!</translation>
 <translation id="1938871630297275912">{count,plural, =1{Enlace recibido}other{{count} enlaces recibidos}}</translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
@@ -558,6 +556,7 @@
 <translation id="2664621323652615289">Detener</translation>
 <translation id="2666092431469916601">Arriba</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu cámara</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagar a plazos</translation>
@@ -770,7 +769,6 @@
 <translation id="340669334496430859">Última modificación</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 oct 2023</translation>
-<translation id="3416904994126232207">¡Has guardado una contraseña!</translation>
 <translation id="3419787211763835342">Ayuda a optimizar Autocompletar mejorado</translation>
 <translation id="3422958112451181446">Mantén pulsado para fijar aquí tu herramienta favorita</translation>
 <translation id="3430407169377889553">Usa Gemini con precaución y toma el control cuando sea necesario. Eres responsable de las acciones de Gemini durante las tareas.</translation>
@@ -1135,7 +1133,6 @@
 <translation id="4601095002996233687">Análisis exhaustivos para detectar descargas sospechosas.</translation>
 <translation id="4606247758155004938">Tu navegador lo gestiona tu organización.</translation>
 <translation id="4607887340472970274">Seguimiento de precios</translation>
-<translation id="4614482404958079763">Prueba un tema festivo por tiempo limitado, con ilustraciones y animaciones personalizadas</translation>
 <translation id="4619564267100705184">Demostrar mi identidad</translation>
 <translation id="4621768135601674446">Abrir opciones del modo Lectura</translation>
 <translation id="4627107755957573804">Permite que los sitios y las apps actualicen las cuentas para usar llaves de acceso</translation>
@@ -1243,7 +1240,6 @@
 <translation id="4896467949657706481">Se han cerrado las pestañas y se ha cerrado tu sesión</translation>
 <translation id="4911042367886397055">¡Hola de nuevo, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Puedes compartir de forma segura una copia de tu contraseña con un miembro de tu grupo familiar. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lente</translation>
 <translation id="4917025507570489430">Puedes usar los datos de navegación actuales al iniciar sesión como <ph name="USER_EMAIL" />. Es posible que tu organización vea estos datos.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4930714375720679147">Activar</translation>
@@ -1389,6 +1385,7 @@
 <translation id="5351613737248079168">Debes iniciar sesión para usar Level Up</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
+<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" puede usar tu micrófono siempre que visites este sitio</translation>
 <translation id="5359436665022446585">Abre enlaces más fácilmente</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5364647308446127983">{count,plural, =1{No se ha podido importar {count} llave de acceso}other{No se han podido importar {count} llaves de acceso}}</translation>
@@ -1689,7 +1686,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6301104306974789820">Recibe notificaciones de seguimiento de precios</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Elige la posición de la barra</translation>
-<translation id="6305257382500066042">Probar ahora</translation>
 <translation id="6307241780749477694">Verifica que eres tú para acceder a todas tus contraseñas en este dispositivo</translation>
 <translation id="6307792728709337290">Guarda tu tarjeta en tu cuenta de Google para autocompletarla en esta compra y en las que hagas en Chrome en el futuro.</translation>
 <translation id="6316141353357700666">Elige la contraseña que quieras usar de la lista que aparece.</translation>
@@ -1732,6 +1728,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6410390304316730527">La función Navegación segura te protege frente a atacantes que pueden intentar engañarte para que realices alguna acción peligrosa, como instalar malware o revelar información personal, incluidas contraseñas, números de teléfono o tarjetas de crédito. Si desactivas esta función, debes tener cuidado al navegar por sitios desconocidos o que no sean de confianza.</translation>
 <translation id="6410883413783534063">Abre pestañas para visitar varias páginas al mismo tiempo</translation>
 <translation id="6412195388778525440">Quitar pestaña</translation>
+<translation id="6417468503703810114">Comportamiento predeterminado</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6420292512900923139">No se pueden importar tus datos</translation>
 <translation id="6421038304268477484">Texto traducido</translation>
@@ -2083,7 +2080,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7491131399623468277">Ir a Ajustes…</translation>
 <translation id="7491161827858509164">Para ver los archivos que has descargado anteriormente, abre <ph name="BEGIN_LINK" />Archivos<ph name="END_LINK" />.</translation>
 <translation id="7498234416455752244">Seguir editando</translation>
-<translation id="7498557042323380380">Dale un toque estacional a tu página Nueva pestaña</translation>
 <translation id="7500244509706269886">Autocompletar formulario</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
 <translation id="7505402981231763928">Debes iniciar sesión para usar Gemini</translation>
@@ -2144,7 +2140,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7669493687462784703">¿Seguir descargando un perfil de configuración de <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Puedes deslizar hacia la izquierda para navegar en Incógnito.</translation>
 <translation id="7679915578945954324">Direcciones de sitios copiadas</translation>
-<translation id="76830702375944649">¡Has creado un grupo de pestañas!</translation>
 <translation id="7695953765525234038">Barra de búsqueda</translation>
 <translation id="7696316012653762532">Opciones para traducir la página</translation>
 <translation id="7700527812567437847">Buscar en la pantalla con Google Lens</translation>
@@ -2170,6 +2165,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7765158879357617694">Mover</translation>
+<translation id="7768507955883790804">Los sitios usan esta opción automáticamente cuando los visitas</translation>
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7772948288262733182">Te damos la bienvenida de nuevo</translation>
 <translation id="777637629667389858">Cuando inicias sesión, te protege en los servicios de Google.</translation>
@@ -2308,6 +2304,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
 <translation id="8161614462829037225">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Longitud</translation>
+<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" puede usar tu cámara siempre que visites este sitio</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
 <translation id="8184895727539791845">Para permitir que Gemini use tu cámara, actívala en los ajustes de iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
@@ -2442,6 +2439,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar el año de caducidad: <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Usa Gemini Live</translation>
+<translation id="8585841788766257444">Los sitios indicados a continuación tienen una configuración personalizada en lugar de la predeterminada</translation>
 <translation id="8587001564479545614">Crea un PIN de recuperación</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grupo de pestañas, <ph name="GROUP_TITLE" />, menú.</translation>
@@ -2480,6 +2478,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8680643216091361291">El ajuste <ph name="BEGIN_LINK" />Guardar actividad<ph name="END_LINK" /> está desactivado de forma predeterminada. Cuando está desactivado, Google guarda tus conversaciones durante 3 días y las usa para que las aplicaciones de Gemini funcionen correctamente, para proteger su seguridad y para solucionar problemas a partir de tus opiniones. Puedes activar el ajuste Guardar actividad y ayudar a mejorar la IA de Google para todos los usuarios.</translation>
 <translation id="8680786875305615692">Ayuda a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
 <translation id="8692107307702113268">La contraseña contiene más de 1000 caracteres</translation>
 <translation id="8692689525339542358">Protégete frente a sitios, descargas y extensiones peligrosos.</translation>

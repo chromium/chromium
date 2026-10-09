@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2086334242442703436">បើកផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
 <translation id="2089550919269323883">ការដំឡើង <ph name="VM_NAME" /> ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​សហគ្រាស។ សូម​ទាក់ទង​ទៅអ្នកគ្រប់គ្រងប្រព័ន្ធ​របស់អ្នក ដើម្បី​ទទួលបាន​ជំនួយ។ លេខ​កូដ​បញ្ហាគឺ <ph name="ERROR" />។</translation>
-<translation id="2093792000875799555">ព័ត៌មាន​អំពី Steam សម្រាប់ Chromebook</translation>
 <translation id="209965399369889474">មិនបាន​ភ្ជាប់ទៅ​បណ្ដាញ​ទេ</translation>
 <translation id="2107581415810719320">ប៊ូតុង​ផ្សេងទៀត <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ Thunderbolt បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
@@ -1787,7 +1786,6 @@
 <translation id="6127395413317891856">អ្នកគ្មានអ៊ីនធឺណិតទេ។ សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="6129953537138746214">ដកឃ្លា</translation>
 <translation id="6132714462430777655">រំលង​ការចុះឈ្មោះ​ចូលរៀន​ឬ?</translation>
-<translation id="6136872094979134163">មិនអាច​ទាញយក​ព័ត៌មាន​អំពី Steam សម្រាប់ Chromebook បានទេ។</translation>
 <translation id="6137566720514957455">បើក "ប្រអប់លុប​គណនី" សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">តើអ្នកចង់ផ្ដោតអារម្មណ៍លើអ្វី?</translation>
 <translation id="6141988275892716286">បញ្ជាក់​ការទាញយក</translation>

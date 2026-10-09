@@ -668,6 +668,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2127747486437921899">Kursief</translation>
 <translation id="2130448033692577677">Die template wat jy gespesifiseer het, kan dalk nie toegepas word die omdat die DnsOverHttpsMode-beleid nie gestel is nie.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Aktiveer Outovul vir Betalings is teen volle hoogte oopgemaak.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Dit word in ewekansige volgorde gewys. Jy kan enige tyd jou verstek verander.</translation>
 <translation id="2134584557120247184">Vlugkaartjie</translation>
@@ -1366,6 +1367,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3289578402369490638">Vanaf ander winkels regoor die web</translation>
 <translation id="3293642807462928945">Kom meer te wete oor <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="3295444047715739395">Bekyk en bestuur jou wagwoorde in Chrome-instellings</translation>
+<translation id="3296595523896103792">Aktiveer Outovul vir Betalings is toegemaak.</translation>
 <translation id="3299098170013242198">Windows Hello is aan om wagwoorde in te vul</translation>
 <translation id="3299197721044635447">Inhoud kon weens jou organisasie se beleide nie buite die bestuurde Chrome-konteks geplak word nie</translation>
 <translation id="3299720788264079132">Iets het skeefgeloop terwyl <ph name="FEATURE_NAME" /> gebruik is</translation>
@@ -2805,7 +2807,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5649053991847567735">Outomatiese aflaaie</translation>
 <translation id="5651323159439184939">Kettingpapiertoevoer</translation>
 <translation id="5653681867130739344">Dateer ID-kaart veilig in Google Wallet op</translation>
-<translation id="5653744563415531641">Stoor jou inligting en kry dinge vinniger gedoen, soos om vorms in Google-produkte in te vul. Jy kan <ph name="MANAGE_WALLET_SETTINGS_LINK" /> vir <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Het omvalverslag-ID opgelaai:</translation>
 <translation id="5654965123204121933">URL sluit nie vereiste vervangingstring <ph name="SEARCH_TERMS_REPLACEMENT" /> in nie: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-pos</translation>
@@ -3257,7 +3258,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6410264514553301377">Voer die vervaldatum en CVC vir <ph name="CREDIT_CARD" /> in</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialoog vir ouergoedkeuring</translation>
-<translation id="6413532517183895572">jou Wallet-instellings bestuur</translation>
 <translation id="6415778972515849510">Chromium kan jou help om jou Google-rekening te beskerm en jou wagwoord te verander.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Maak seker dat enige kritieke besigheid- of persoonlike data ekstern geberg word.</translation>
@@ -3763,7 +3763,6 @@ Bykomende besonderhede:
 <translation id="7308436126008021607">agtergrondsinkronisering</translation>
 <translation id="7310392214323165548">Toestel sal binnekort herbegin</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Druk Tab en dan Enter om <ph name="AI_ENGINE_NAME" /> te vra</translation>
 <translation id="7313107491291103073">Jou organisasie het hierdie werf gevlag omdat dit dalk ’n beleid kan oortree.</translation>
 <translation id="7315372670898739748">Koppel het misluk, probeer later weer</translation>
 <translation id="7316521168101843192">Stoor tans lêer na Microsoft OneDrive</translation>
@@ -4171,6 +4170,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7955105108888461311">Vra persoonlik</translation>
 <translation id="7956713633345437162">Mobiele boekmerke</translation>
 <translation id="7961015016161918242">Nooit</translation>
+<translation id="7961493403319780137">Kry meer inligting oor hierdie kenmerk – Outovul verifikasiekodes vanaf Gmail</translation>
 <translation id="7962467575542381659">Platformmasjien</translation>
 <translation id="796439090588610411">Chrome sal ophou om hierdie e-posadres outomaties op gesteunde werwe te bevestig.</translation>
 <translation id="7966803981046576691">Taakrekeningsoort</translation>
@@ -4571,7 +4571,6 @@ Bykomende besonderhede:
 <translation id="8699041776323235191">HID-toestel</translation>
 <translation id="8699985386408839112">Koevert Kaku 1</translation>
 <translation id="8702965365666568344">Monteerband</translation>
-<translation id="8703242769654966101">Aktiveer Pix in Wallet</translation>
 <translation id="8703372953981978786">Hierdie skakel werk nie</translation>
 <translation id="8703575177326907206">Jou verbinding aan <ph name="DOMAIN" /> is nie geënkripteer nie.</translation>
 <translation id="8705331520020532516">Reeksnommer</translation>

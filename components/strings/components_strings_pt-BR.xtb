@@ -59,7 +59,7 @@
 <translation id="1090629319939036170">Menu de RV</translation>
 <translation id="1091463901118115503">Continuar lendo</translation>
 <translation id="1091779689406092804">capturas de tela</translation>
-<translation id="1095093219235104018">Encontrar e preencher com o Gemini</translation>
+<translation id="1095093219235104018">Encontre e preencha com o Gemini</translation>
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
 <translation id="1099928364755383720">picture-in-picture automático</translation>
 <translation id="1100782917270858593">Botão "Retomar jornada". Pressione Enter para retomar a jornada e ver as atividades relevantes no seu histórico do Chrome</translation>
@@ -668,6 +668,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2127747486437921899">Itálico</translation>
 <translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">A opção Ativar o Preenchimento Automático de Pagamentos está aberta no tamanho máximo.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Eles aparecem em ordem aleatória. Você pode mudar o mecanismo padrão quando quiser.</translation>
 <translation id="2134584557120247184">Passagem aérea</translation>
@@ -1366,6 +1367,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3289578402369490638">De outras lojas em toda a Web</translation>
 <translation id="3293642807462928945">Saiba mais sobre a política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e gerencie suas senhas nas configurações do Chrome</translation>
+<translation id="3296595523896103792">A opção Ativar o Preenchimento Automático de Pagamentos foi fechada.</translation>
 <translation id="3299098170013242198">O Windows Hello está ativado para preencher senhas</translation>
 <translation id="3299197721044635447">Não foi possível colar o conteúdo fora do contexto gerenciado do Chrome devido às políticas da sua organização</translation>
 <translation id="3299720788264079132">Ocorreu um erro ao usar o <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5649053991847567735">Downloads automáticos</translation>
 <translation id="5651323159439184939">Alimentação com trator</translation>
 <translation id="5653681867130739344">Atualizar documento de identidade com segurança na Carteira do Google</translation>
-<translation id="5653744563415531641">Salve suas informações e agilize ações como o preenchimento de formulários em produtos do Google. Você pode <ph name="MANAGE_WALLET_SETTINGS_LINK" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Código do relatório de erros enviado:</translation>
 <translation id="5654965123204121933">O URL não inclui a string de substituição <ph name="SEARCH_TERMS_REPLACEMENT" /> necessária: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -3257,7 +3258,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6410264514553301377">Digite a data de validade e o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Caixa de diálogo de aprovação do site principal</translation>
-<translation id="6413532517183895572">gerenciar as configurações da Carteira</translation>
 <translation id="6415778972515849510">No Chromium, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Verifique se todos os dados pessoais ou empresariais importantes estão armazenados externamente.</translation>
@@ -3764,7 +3764,6 @@ Mais detalhes:
 <translation id="7308436126008021607">sincronização em segundo plano</translation>
 <translation id="7310392214323165548">O dispositivo será reiniciado em breve</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Pressione Tab e depois Enter para perguntar ao <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Sua organização sinalizou este site porque ele pode violar uma política.</translation>
 <translation id="7315372670898739748">Falha ao vincular. Tente de novo mais tarde</translation>
 <translation id="7316521168101843192">Salvando arquivo no Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Mais detalhes:
 <translation id="7955105108888461311">Perguntar diretamente</translation>
 <translation id="7956713633345437162">Dispositivos móveis</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7961493403319780137">Saiba mais sobre esse recurso: preencher códigos de verificação do Gmail automaticamente</translation>
 <translation id="7962467575542381659">Computador da plataforma</translation>
 <translation id="796439090588610411">O Chrome vai parar de confirmar automaticamente este e-mail em sites compatíveis.</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
@@ -4573,7 +4573,6 @@ Mais detalhes:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Fita dupla face</translation>
-<translation id="8703242769654966101">Ativar o Pix na Carteira</translation>
 <translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8703575177326907206">Sua conexão com <ph name="DOMAIN" /> não está criptografada.</translation>
 <translation id="8705331520020532516">Número de série</translation>

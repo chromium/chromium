@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2086334242442703436">Abrir seletor de emojis</translation>
 <translation id="2089550919269323883">A instalação do <ph name="VM_NAME" /> está bloqueada pela política da empresa. Entre em contato com o administrador do sistema para receber suporte. O código de erro é <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Notícias sobre o Steam para Chromebook</translation>
 <translation id="209965399369889474">Sem conexão com a rede</translation>
 <translation id="2107581415810719320">Outro botão <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O cabo USB-C não oferece suporte a Thunderbolt. O desempenho do dispositivo pode ser limitado.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Em que você quer focar? Pressione a tecla Enter para adicionar a tarefa.</translation>
 <translation id="229397294990920565">Desativando dados móveis…</translation>
 <translation id="2295777434187870477">O microfone está ativado. Desativá-lo silenciará a entrada.</translation>
+<translation id="2296880470921996802">O histórico da área de transferência foi desativado pelo admin de TI</translation>
 <translation id="2302092602801625023">Esta conta é gerenciada pelo Family Link</translation>
 <translation id="2303600792989757991">Visão geral da janela de alternância</translation>
 <translation id="2304702218354340897">Você quer mesmo desativar o controle facial?</translation>
@@ -1788,7 +1788,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6127395413317891856">Você está off-line. Verifique sua conexão e tente de novo.</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6132714462430777655">Pular registro escolar?</translation>
-<translation id="6136872094979134163">Não foi possível recuperar as notícias do Steam para Chromebook.</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo para a remoção de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Em que você quer focar?</translation>
 <translation id="6141988275892716286">Confirmar download</translation>

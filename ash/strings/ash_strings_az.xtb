@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2086334242442703436">Emoji Seçicisini açın</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> quraşdırılır, müəssisə siyasətinə əsasən bloklanıb. Dəstək üçün sistem administratoru ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Chromebook üçün Steam xəbərləri</translation>
 <translation id="209965399369889474">Şəbəkəyə qoşulmayıb</translation>
 <translation id="2107581415810719320">Digər düymə <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kabeliniz Thunderbolt'u dəstəkləmir. Cihazın performansı məhdud ola bilər.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Nəyi fokuslamaq istərdiniz? Tapşırığı əlavə etmək üçün "enter" üstünə basın.</translation>
 <translation id="229397294990920565">Mobil data deaktiv edilir...</translation>
 <translation id="2295777434187870477">Mikrofon aktivdir, dəyişdirdikdə daxiletmə səssiz ediləcək.</translation>
+<translation id="2296880470921996802">Mübadilə buferi tarixçəsi İT admininiz tərəfindən deaktiv edilib</translation>
 <translation id="2302092602801625023">Bu hesab Family Link tərəfindən idarə olunur</translation>
 <translation id="2303600792989757991">Pəncərə ümumi görünüşünə keçirin</translation>
 <translation id="2304702218354340897">Mimika ilə idarəetməni söndürmək istədiyinizə əminsiniz?</translation>
@@ -1786,7 +1786,6 @@ Cihaz qoşulmayıb.</translation>
 <translation id="6127395413317891856">Oflaynsınız. Bağlantını yoxlayıb, yenidən cəhd edin.</translation>
 <translation id="6129953537138746214">Boşluq</translation>
 <translation id="6132714462430777655">Məktəb qeydiyyatı keçilsin?</translation>
-<translation id="6136872094979134163">Chromebook üçün Steam xəbərlərini əldə etmək olmur.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> üçün silinmə dialoqunu açın</translation>
 <translation id="6141205840878048728">Nəyi fokuslamaq istərdiniz?</translation>
 <translation id="6141988275892716286">Endirməni təsdiq edin</translation>

@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">ሰያፍ</translation>
 <translation id="2130448033692577677">የDnsOverHttpsMode መመሪያው ባለመዋቀሩ ምክንያት እርስዎ የገለጿቸው ቅንብር ደንቦች ላይተገበሩ ይችላሉ።</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">የክፍያዎች ራስ-ሙላን አንቃ በሙሉ ቁመት ተከፍቷል።</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />። <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">እነዚህ በዘፈቀደ ቅደም ተከተል ይታያሉ። ነባሪዎን በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="2134584557120247184">የበረራ ቲኬት</translation>
@@ -1365,6 +1366,7 @@
 <translation id="3289578402369490638">በድሩ ላይ ካሉ ሌሎች መደብሮች</translation>
 <translation id="3293642807462928945">ስለ<ph name="POLICY_NAME" /> መመሪያው ተጨማሪ ይወቁ</translation>
 <translation id="3295444047715739395">በChrome ቅንብሮች ውስጥ የእርስዎን የይለፍ ቃላት ይመልከቱ እና ያስተዳድሩ</translation>
+<translation id="3296595523896103792">የክፍያዎች ራስ-ሙላን አንቃ ተዘግቷል።</translation>
 <translation id="3299098170013242198">Windows Hello የይለፍ ቃላትን ለመሙላት በርቷል</translation>
 <translation id="3299197721044635447">በድርጅትዎ መመሪያዎች ምክንያት ይዘት ከሚተዳደረው የChrome ዓውድ ውጭ መለጠፍ አልተቻለም</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />ን በመጠቀም ላይ ሳለ የሆነ ስህተት ተከስቷል</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">ራስ-ሰር ውርዶች</translation>
 <translation id="5651323159439184939">ትራክተር ምግብ</translation>
 <translation id="5653681867130739344">የመታወቂያ ካርድን ደኅንነቱ በተጠበቀ ሁኔታ በGoogle Wallet ውስጥ ያዘምኑ</translation>
-<translation id="5653744563415531641">መረጃዎን ያስቀምጡ እና በመላው የGoogle ምርቶች ላይ እንደ ቅጾችን መሙላት ያሉ ነገሮችን በፍጥነት ያከናውኑ። ለ<ph name="ACCOUNT" /> <ph name="MANAGE_WALLET_SETTINGS_LINK" /> ይችላሉ።</translation>
 <translation id="5654927323611874862">የተሰቀለ የስንክል ሪፖርት መታወቂያ፦</translation>
 <translation id="5654965123204121933">ዩአርኤል ተፈላጊ ምትክ ሕብረቁምፊ<ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /> አያካትትም</translation>
 <translation id="5659593005791499971">ኢሜይል</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">የ<ph name="CREDIT_CARD" /> የአገልግሎት ማብቂያ ቀን እና ሲቪሲ ያስገቡ</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">የወላጅ ማጽደቅ መገናኛ</translation>
-<translation id="6413532517183895572">የWallet ቅንብሮችዎን ያስተዳድሩ</translation>
 <translation id="6415778972515849510">Chromium የGoogle መለያዎን እንዲጠብቁ እና የይለፍ ቃልዎን እንዲቀይሩት ያግዘዎታል።</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ማንኛውም ወሳኝ የንግድ ወይም ግላዊ ውሂብ በውጭ መከማቸቱን ያረጋግጡ።</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">የዳራ ስምረት</translation>
 <translation id="7310392214323165548">መሣሪያው በጣም በቅርቡ እንደገና ይጀምራል</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" />ን ለመጠየቅ ትርን ከዚያም አስገባ ላይ ይጫኑ</translation>
 <translation id="7313107491291103073">ድርጅትዎ ይህንን ጣቢያ መመሪያ ሊጥስ እንደሚችል ተጠቁሟል።</translation>
 <translation id="7315372670898739748">ማገናኘት አልተሳካም፣ ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="7316521168101843192">ፋይል ወደ Microsoft OneDrive በማስቀመጥ ላይ</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">በአካል ጠይቅ</translation>
 <translation id="7956713633345437162">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
+<translation id="7961493403319780137">ስለዚህ ባህሪ የበለጠ ይወቁ - ከGmail የማረጋገጫ ኮዶችን በራስ-ይሙሉ</translation>
 <translation id="7962467575542381659">የመሠረተ ሥርዓት ማሽን</translation>
 <translation id="796439090588610411">Chrome ይህን ኢሜይል በሚደገፉ ጣቢያዎች ላይ በራስ-ሰር ማረጋገጥ ያቆማል።</translation>
 <translation id="7966803981046576691">የስራ መለያ ዓይነት</translation>
@@ -4572,7 +4572,6 @@
 <translation id="8699041776323235191">የHID መሣሪያ</translation>
 <translation id="8699985386408839112">ካኩ 1 ፖስታ</translation>
 <translation id="8702965365666568344">ማፈናጠጫ ቴፕ</translation>
-<translation id="8703242769654966101">Wallet ውስጥ Pix ያንቁ</translation>
 <translation id="8703372953981978786">ይህ አገናኝ አይሠራም</translation>
 <translation id="8703575177326907206">ከ<ph name="DOMAIN" /> ጋር ያለዎት ግንኙነት አልተመሰጠረም</translation>
 <translation id="8705331520020532516">መለያ ቁጥር</translation>

@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Italique</translation>
 <translation id="2130448033692577677">Les modèles que vous avez indiqués pourraient ne pas être appliqués si la politique DnsOverHttpsMode n'est pas définie.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131006834960167560">La zone de contenu Activer le remplissage automatique des paiements est ouverte à pleine hauteur.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ceux-ci sont présentés dans un ordre aléatoire. Vous pouvez modifier votre moteur de recherche par défaut à tout moment.</translation>
 <translation id="2134584557120247184">Billet d'avion</translation>
@@ -1366,6 +1367,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3289578402369490638">Dans d'autres boutiques en ligne</translation>
 <translation id="3293642807462928945">En savoir plus sur la politique <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Affichez et gérez vos mots de passe dans les paramètres de Chrome</translation>
+<translation id="3296595523896103792">La zone de contenu Activer le remplissage automatique des paiements est fermée.</translation>
 <translation id="3299098170013242198">Windows Hello est activé pour remplir les mots de passe</translation>
 <translation id="3299197721044635447">Impossible de coller le contenu en dehors de l'environnement Chrome géré en raison des politiques de votre organisation</translation>
 <translation id="3299720788264079132">un problème est survenu lors de l'utilisation du <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5651323159439184939">Entraîneur d'alimentation</translation>
 <translation id="5653681867130739344">Mettre à jour la carte d'identité en toute sécurité dans Google Portefeuille</translation>
-<translation id="5653744563415531641">Enregistrez vos informations et effectuez des tâches plus rapidement, comme remplir des formulaires dans les produits Google. Vous pouvez <ph name="MANAGE_WALLET_SETTINGS_LINK" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Identifiant de rapport de plantage téléversé :</translation>
 <translation id="5654965123204121933">L'URL n'inclut pas la chaîne de remplacement requise (<ph name="SEARCH_TERMS_REPLACEMENT" />) : <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Courriel</translation>
@@ -3257,7 +3258,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4 x 8</translation>
 <translation id="6412543105195503444">Boîte de dialogue d'approbation parentale</translation>
-<translation id="6413532517183895572">gérer vos paramètres Portefeuille</translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Assurez-vous que toutes les données professionnelles ou personnelles critiques sont stockées en externe.</translation>
@@ -3763,7 +3763,6 @@ Détails supplémentaires :
 <translation id="7308436126008021607">Synchronisation en arrière-plan</translation>
 <translation id="7310392214323165548">L'appareil va redémarrer sous peu</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Appuyez sur Tabulation, puis sur Entrée pour poser une question au <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Votre organisation a signalé ce site, car il pourrait enfreindre une politique.</translation>
 <translation id="7315372670898739748">Échec de l'association, réessayez plus tard</translation>
 <translation id="7316521168101843192">Enregistrement du fichier sur Microsoft OneDrive en cours…</translation>
@@ -4171,6 +4170,7 @@ Détails supplémentaires :
 <translation id="7955105108888461311">Demander en personne</translation>
 <translation id="7956713633345437162">Favoris d'appareil mobile</translation>
 <translation id="7961015016161918242">Jamais</translation>
+<translation id="7961493403319780137">En savoir plus sur cette fonctionnalité – Remplissage automatique des codes de validation à partir de Gmail</translation>
 <translation id="7962467575542381659">Appareil de la plateforme</translation>
 <translation id="796439090588610411">Chrome ne confirmera plus automatiquement cette adresse courriel sur les sites compatibles.</translation>
 <translation id="7966803981046576691">Type de compte de travail</translation>
@@ -4571,7 +4571,6 @@ Détails supplémentaires :
 <translation id="8699041776323235191">Appareil HID</translation>
 <translation id="8699985386408839112">Enveloppe Kaku nᵒ 1</translation>
 <translation id="8702965365666568344">Ruban de montage</translation>
-<translation id="8703242769654966101">Activer Pix dans Portefeuille</translation>
 <translation id="8703372953981978786">Ce lien ne fonctionne pas</translation>
 <translation id="8703575177326907206">Votre connexion à <ph name="DOMAIN" /> n'est pas chiffrée.</translation>
 <translation id="8705331520020532516">Numéro de série</translation>

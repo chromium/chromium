@@ -235,7 +235,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="3124332159330678621">Tarayıcınıza yeni bir görünüm kazandırmak için Chrome'u özelleştirin</translation>
 <translation id="3125851611828811913">Chrome simge durumuna küçültülmüş olsa bile her yerden arama yapın ve soru sorun. Chrome'un arka planda çalışmasına izin verir.</translation>
 <translation id="3130333203120345554">Yeni arama</translation>
-<translation id="3135560418014806498">Chrome Profili Ekle</translation>
+<translation id="3135560418014806498">Chrome Profili Ekleyin</translation>
 <translation id="3137969841538672700">Aramak için sürükleyin</translation>
 <translation id="3140883423282498090">Yaptığınız değişiklikler Google Chrome'u yeniden başlattığınızda geçerli olacak.</translation>
 <translation id="3149510190863420837">Chrome Uygulamaları</translation>
@@ -826,7 +826,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8712767363896337380">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> zaten oturum açmış durumda. Göz atma işlemlerinizi ayrı tutmak için Chrome'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın. Ayrıca, <ph name="DEVICE" /> içindeki okuma listenize ve diğer öğelere de erişebilirsiniz.</translation>
-<translation id="8718062187489036808">Chrome Oturumunu Kapat</translation>
+<translation id="8718062187489036808">Chrome Oturumunuzu Kapatın</translation>
 <translation id="873133009373065397">Google Chrome, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
 <translation id="8747073452963259673">arama alanının sol alt köşesi: sol %<ph name="LEFT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="8748735421235723888">Chrome, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chrome hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir. <ph name="BEGIN_LINK" />Bellek Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>

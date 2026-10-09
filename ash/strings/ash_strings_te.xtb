@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2086334242442703436">ఎమోజి పికర్‌ను తెరవండి</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> ఇన్‌స్టాల్ చేయడాన్ని ఎంటర్‌ప్రైజ్ పాలసీ బ్లాక్ చేసింది. దయచేసి సపోర్ట్ కోసం సిస్టమ్ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Chromebook కోసం Steam వార్తలు</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2107581415810719320">వేరే బటన్ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">మీ USB-C కేబుల్ Thunderboltను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు? టాస్క్‌ను జోడించడానికి ఎంటర్‌ను నొక్కండి.</translation>
 <translation id="229397294990920565">మొబైల్ డేటా ఆఫ్ చేయబడుతోంది...</translation>
 <translation id="2295777434187870477">మైక్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఇన్‌పుట్ మ్యూట్ అవుతుంది.</translation>
+<translation id="2296880470921996802">క్లిప్‌బోర్డ్ హిస్టరీని మీ IT అడ్మిన్ డిజేబుల్ చేశారు</translation>
 <translation id="2302092602801625023">ఈ ఖాతా Family Link ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="2303600792989757991">విండో స్థూలదృష్టిని టోగుల్ చేయి</translation>
 <translation id="2304702218354340897">మీరు ఖచ్చితంగా ఫేస్ కంట్రోల్‌ను ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
@@ -1787,7 +1787,6 @@
 <translation id="6127395413317891856">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6129953537138746214">స్పేస్</translation>
 <translation id="6132714462430777655">స్కూల్ ఎన్‌రోల్‌మెంట్‌ను స్కిప్ చేయాలా?</translation>
-<translation id="6136872094979134163">Chromebook కోసం Steam వార్తలను తిరిగి పొందడం సాధ్యం కాలేదు.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141205840878048728">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు?</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>

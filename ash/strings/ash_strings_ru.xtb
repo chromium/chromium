@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2086334242442703436">Открыть окно выбора эмодзи</translation>
 <translation id="2089550919269323883">Установка <ph name="VM_NAME" /> невозможна из-за корпоративных правил. Обратитесь за помощью к системному администратору. Код ошибки: <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Новости Steam для Chromebook</translation>
 <translation id="209965399369889474">Нет подключения к сети</translation>
 <translation id="2107581415810719320">Другая кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Кабель USB-C не поддерживает интерфейс Thunderbolt. Производительность устройства может быть ограничена.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">На чем вы хотите сфокусироваться? Нажмите Ввод, чтобы добавить задачу.</translation>
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
+<translation id="2296880470921996802">История буфера обмена отключена системным администратором.</translation>
 <translation id="2302092602801625023">Аккаунт находится под управлением Family Link</translation>
 <translation id="2303600792989757991">Переключить режим обзора</translation>
 <translation id="2304702218354340897">Вы уверены, что хотите отключить управление мимикой?</translation>
@@ -1792,7 +1792,6 @@
 <translation id="6127395413317891856">Нет интернета. Проверьте подключение и повторите попытку.</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6132714462430777655">Пропустить регистрацию в учебном заведении?</translation>
-<translation id="6136872094979134163">Не удалось получить новости Steam для Chromebook.</translation>
 <translation id="6137566720514957455">Открыть диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">На чем вы хотите сфокусироваться?</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>

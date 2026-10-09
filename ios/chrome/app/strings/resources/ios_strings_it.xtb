@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1004615467759797184">Personalizza la pagina Nuova scheda</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} passkey}other{{count} passkey}}</translation>
 <translation id="1005023885865154304">Apri le impostazioni di Compila automaticamente le password</translation>
 <translation id="1005230401424685968">AAAA</translation>
@@ -113,7 +114,6 @@
 <translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
 <translation id="132969855425874290">Chiudi Trova e compila</translation>
 <translation id="1333455942675373522">Tastiera</translation>
-<translation id="1333669029961409292">Azione completata: "Controlla le tue password".</translation>
 <translation id="1334485477792811969">Servizi web</translation>
 <translation id="1335767868357998043">Scegli la posizione della barra degli indirizzi</translation>
 <translation id="1347468774581902829">Gestisci attività</translation>
@@ -320,7 +320,6 @@
 <translation id="1909201414196501151">Sito aggiunto e fissato</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1925706052394657380">Apri le impostazioni <ph name="BEGIN_BOLD" />App predefinite<ph name="END_BOLD" /> in iOS</translation>
-<translation id="1929759944176590572">Azione completata: "Usa la fotocamera per fare ricerche con Google Lens".</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link ricevuto}other{{count} link ricevuti}}</translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
 <translation id="1943478190258551035">Menu → Impostazioni</translation>
@@ -557,6 +556,7 @@
 <translation id="2664621323652615289">Interrompi</translation>
 <translation id="2666092431469916601">In alto</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
+<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" non può accedere alla fotocamera</translation>
 <translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Paga a rate</translation>
@@ -769,7 +769,6 @@
 <translation id="340669334496430859">Ultima modifica</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ott 2023</translation>
-<translation id="3416904994126232207">Azione completata: "Salva una password".</translation>
 <translation id="3419787211763835342">Contribuisci a migliorare la compilazione automatica avanzata</translation>
 <translation id="3422958112451181446">Tieni premuto per fissare qui il tuo strumento preferito</translation>
 <translation id="3430407169377889553">Usa Gemini con prudenza e intervieni se necessario. Sei responsabile delle azioni di Gemini durante le attività.</translation>
@@ -1134,7 +1133,6 @@
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4606247758155004938">Il tuo browser è gestito dalla tua organizzazione.</translation>
 <translation id="4607887340472970274">Monitoraggio del prezzo</translation>
-<translation id="4614482404958079763">Prova un tema festivo temporaneo, completo di illustrazioni e animazioni personalizzate</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4621768135601674446">Apri le opzioni della modalità Lettura</translation>
 <translation id="4627107755957573804">Consenti a siti e app di fare l'upgrade degli account esistenti per utilizzare le passkey</translation>
@@ -1242,7 +1240,6 @@
 <translation id="4896467949657706481">Le schede sono state chiuse; il tuo account è stato disconnesso</translation>
 <translation id="4911042367886397055">Siamo felici di rivederti, <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Puoi condividere in sicurezza una copia della tua password con un membro del tuo gruppo Famiglia. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">Lente</translation>
 <translation id="4917025507570489430">Puoi usare i dati di navigazione esistenti quando hai eseguito l'accesso come <ph name="USER_EMAIL" />. La tua organizzazione potrebbe essere in grado di visualizzare questi dati.</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4930714375720679147">Attiva</translation>
@@ -1388,6 +1385,7 @@
 <translation id="5351613737248079168">Devi aver eseguito l'accesso per usare Level Up</translation>
 <translation id="5352128922772839949">Salva file</translation>
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
+<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" può usare il microfono ogni volta che visiti questo sito</translation>
 <translation id="5359436665022446585">Apertura dei link migliorata</translation>
 <translation id="536067926684072644">Mostra i preferiti</translation>
 <translation id="5364647308446127983">{count,plural, =1{Impossibile importare {count} passkey}other{Impossibile importare {count} passkey}}</translation>
@@ -1688,11 +1686,11 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Scegli la posizione della barra degli indirizzi</translation>
-<translation id="6305257382500066042">Prova ora</translation>
 <translation id="6307241780749477694">Verifica la tua identità per accedere a tutte le tue password su questo dispositivo</translation>
 <translation id="6307792728709337290">Salva la carta nel tuo Account Google per la compilazione automatica per questo acquisto e per acquisti futuri effettuati su Chrome.</translation>
 <translation id="6316141353357700666">Scegli la password che vuoi utilizzare dall'elenco visualizzato.</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
+<translation id="6324054713176642683">Scegli tra i temi, i colori oppure carica una foto.</translation>
 <translation id="6327249202318869726">Gemini è disattivato per il tuo account. Contatta l'amministratore per ulteriori informazioni.</translation>
 <translation id="6331836477476466332">Un browser più sicuro e potente per te</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -1730,6 +1728,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6410390304316730527">La Navigazione sicura ti protegge da attaccanti che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
 <translation id="6410883413783534063">Apri più schede per visitare pagine diverse contemporaneamente</translation>
 <translation id="6412195388778525440">Rimuovi scheda</translation>
+<translation id="6417468503703810114">Comportamento predefinito</translation>
 <translation id="6418346271604475326">Preparazione del PDF</translation>
 <translation id="6420292512900923139">Si è verificato un problema durante l'importazione dei dati</translation>
 <translation id="6421038304268477484">Testo tradotto</translation>
@@ -2081,7 +2080,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7491131399623468277">Vai alle Impostazioni…</translation>
 <translation id="7491161827858509164">Per visualizzare i file scaricati in precedenza, apri <ph name="BEGIN_LINK" />File<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Continua modifica</translation>
-<translation id="7498557042323380380">Imposta un aspetto stagionale per la pagina Nuova scheda</translation>
 <translation id="7500244509706269886">Compila automaticamente il modulo</translation>
 <translation id="750493650310597496">0 selezionati</translation>
 <translation id="7505402981231763928">Devi accedere per usare Gemini</translation>
@@ -2142,7 +2140,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7669493687462784703">Vuoi continuare a scaricare un profilo di configurazione da <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Puoi scorrere verso sinistra per navigare in incognito.</translation>
 <translation id="7679915578945954324">Indirizzi dei siti copiati</translation>
-<translation id="76830702375944649">Azione completata: "Crea un gruppo di schede"</translation>
 <translation id="7695953765525234038">Barra di ricerca</translation>
 <translation id="7696316012653762532">Opzioni per tradurre la pagina</translation>
 <translation id="7700527812567437847">Cerca sullo schermo con Google Lens</translation>
@@ -2168,6 +2165,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7758789811447313947">Tema viola</translation>
 <translation id="7759809451544302770">Facoltativo</translation>
 <translation id="7765158879357617694">Sposta</translation>
+<translation id="7768507955883790804">I siti seguiranno automaticamente questa impostazione quando li visiti</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
 <translation id="7772948288262733182">Ti diamo il bentornato</translation>
 <translation id="777637629667389858">Se hai eseguito l'accesso, ti protegge nei servizi Google.</translation>
@@ -2306,6 +2304,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> account</translation>
 <translation id="8161614462829037225">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lunghezza</translation>
+<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" può usare la fotocamera ogni volta che visiti questo sito</translation>
 <translation id="8182037667962849780">{count,plural, =1{Per {website_1}}=2{Per {website_1}, {website_2}}=3{Per {website_1}, {website_2} e 1 altro}other{Per {website_1}, {website_2} e altri {more_count}}}</translation>
 <translation id="8184895727539791845">Per consentire a Gemini di usare la fotocamera, attiva l'autorizzazione Fotocamera nelle impostazioni di iOS</translation>
 <translation id="8185076488803799132">Importa</translation>
@@ -2361,7 +2360,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8325455175867928593">Nascondi "Recensioni basate sui tuoi interessi"</translation>
 <translation id="8333459276976141586">Live userà il microfono. Tocca il pulsante Live per attivare il microfono. Per disattivare il microfono, tocca il pulsante di interruzione o chiudi Gemini.</translation>
 <translation id="833647236762414178">Crea, salva e gestisci le tue password e passkey in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
+<translation id="8343993175958086504">Fai il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Completa 1 altra attività per salire di livello}other{Completa {count} altre attività per salire di livello}}</translation>
 <translation id="8348530355586151720">Tocca il menu con tre puntini</translation>
 <translation id="8349305172487531364">Barra dei preferiti</translation>
@@ -2440,6 +2439,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8571213806525832805">Ultime 4 settimane</translation>
 <translation id="8577056989960190117">Compila automaticamente l'anno di scadenza <ph name="YEAR" /></translation>
 <translation id="8582026929965253036">Usa Live con Gemini</translation>
+<translation id="8585841788766257444">I siti elencati di seguito seguono un'impostazione personalizzata anziché quella predefinita</translation>
 <translation id="8587001564479545614">Crea PIN di recupero</translation>
 <translation id="8588404856427128947">Non attiva</translation>
 <translation id="8590286732816598906">Gruppo di schede, <ph name="GROUP_TITLE" />, Menu.</translation>
@@ -2478,6 +2478,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8680643216091361291">L'impostazione <ph name="BEGIN_LINK" />Salva l'attività<ph name="END_LINK" /> è disattivata per impostazione predefinita. Se è disattivata, Google salva le tue chat per 3 giorni. Le utilizza per far funzionare correttamente le app Gemini, mantenerle sicure e usare il tuo feedback per risolvere i problemi. Puoi attivare l'impostazione Salva l'attività per contribuire a migliorare la qualità di Google AI per tutti.</translation>
 <translation id="8680786875305615692">Contribuisci a migliorare la sicurezza sul web per tutti</translation>
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
+<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" non può accedere al microfono</translation>
 <translation id="8690752723634292147">Conferma eliminazione</translation>
 <translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
 <translation id="8692689525339542358">Ricevi protezione da estensioni, download e siti pericolosi.</translation>

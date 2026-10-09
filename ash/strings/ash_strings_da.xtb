@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2086334242442703436">Åbn emojivælger</translation>
 <translation id="2089550919269323883">Installation af <ph name="VM_NAME" /> er blokeret af virksomhedspolitikken. Kontakt din systemadministrator for at få support. Fejlkoden er <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Nyheder om Steam til Chromebook</translation>
 <translation id="209965399369889474">Der er ingen netværksforbindelse</translation>
 <translation id="2107581415810719320">Anden knap <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Dit USB-C-kabel understøtter ikke Thunderbolt. Enhedens ydeevne kan være begrænset.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Hvad vil du gerne fokusere på? Tryk på Enter for at tilføje opgaven.</translation>
 <translation id="229397294990920565">Mobildata deaktiveres...</translation>
 <translation id="2295777434187870477">Mikrofonen er slået til. Hvis du skifter indstilling, kan andre ikke høre dig.</translation>
+<translation id="2296880470921996802">Historik for udklipsholder er deaktiveret af din it-administrator</translation>
 <translation id="2302092602801625023">Denne konto administreres af Family Link</translation>
 <translation id="2303600792989757991">Skift vinduesoversigt</translation>
 <translation id="2304702218354340897">Er du sikker på, at du vil deaktivere ansigtsstyring?</translation>
@@ -1788,7 +1788,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6127395413317891856">Du er offline. Tjek din forbindelse, og prøv igen.</translation>
 <translation id="6129953537138746214">Mellemrum</translation>
 <translation id="6132714462430777655">Vil du springe skoleindskrivning over?</translation>
-<translation id="6136872094979134163">Nyhederne om Steam til Chromebook kunne ikke hentes.</translation>
 <translation id="6137566720514957455">Åbn dialogboksen til fjernelse for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Hvad vil du gerne fokusere på?</translation>
 <translation id="6141988275892716286">Bekræft download</translation>

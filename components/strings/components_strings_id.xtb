@@ -669,6 +669,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2127747486437921899">Miring</translation>
 <translation id="2130448033692577677">Template yang telah Anda tentukan mungkin tidak diterapkan karena kebijakan DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Aktifkan Isi Otomatis Pembayaran terbuka sepenuhnya.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Diurutkan acak. Pilihan default dapat diubah kapan saja.</translation>
 <translation id="2134584557120247184">Tiket penerbangan</translation>
@@ -1367,6 +1368,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3289578402369490638">Dari toko lain di web</translation>
 <translation id="3293642807462928945">Pelajari lebih lanjut tentang kebijakan <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Lihat dan kelola sandi Anda di setelan Chrome</translation>
+<translation id="3296595523896103792">Aktifkan Isi Otomatis Pembayaran ditutup.</translation>
 <translation id="3299098170013242198">Windows Hello aktif untuk mengisi sandi</translation>
 <translation id="3299197721044635447">Konten tidak dapat ditempel di luar konteks Chrome terkelola karena kebijakan organisasi Anda</translation>
 <translation id="3299720788264079132">Terjadi error saat menggunakan <ph name="FEATURE_NAME" /></translation>
@@ -2805,7 +2807,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5649053991847567735">Download otomatis</translation>
 <translation id="5651323159439184939">Tractor Feed</translation>
 <translation id="5653681867130739344">Perbarui kartu identitas dengan aman di Google Wallet</translation>
-<translation id="5653744563415531641">Simpan info Anda dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat <ph name="MANAGE_WALLET_SETTINGS_LINK" /> untuk <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID Laporan Kerusakan yang Diupload:</translation>
 <translation id="5654965123204121933">URL tidak menyertakan string pengganti yang diperlukan <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3257,7 +3258,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6410264514553301377">Masukkan tanggal kedaluwarsa dan CVC <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialog persetujuan orang tua</translation>
-<translation id="6413532517183895572">kelola setelan Wallet Anda</translation>
 <translation id="6415778972515849510">Chromium dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Pastikan data pribadi atau bisnis penting disimpan secara eksternal.</translation>
@@ -3762,7 +3762,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7308436126008021607">sinkronisasi latar belakang</translation>
 <translation id="7310392214323165548">Perangkat akan segera dimulai ulang</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Tekan tab, lalu enter untuk bertanya kepada <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Organisasi Anda telah menandai situs ini karena mungkin melanggar kebijakan.</translation>
 <translation id="7315372670898739748">Penautan gagal, coba lagi nanti</translation>
 <translation id="7316521168101843192">Menyimpan file ke Microsoft OneDrive</translation>
@@ -4170,6 +4169,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7955105108888461311">Tanya secara langsung</translation>
 <translation id="7956713633345437162">Bookmark seluler</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
+<translation id="7961493403319780137">Pelajari lebih lanjut fitur ini - Isi otomatis kode verifikasi dari Gmail</translation>
 <translation id="7962467575542381659">Perangkat platform</translation>
 <translation id="796439090588610411">Chrome akan berhenti mengonfirmasi email ini secara otomatis di situs yang didukung.</translation>
 <translation id="7966803981046576691">Jenis akun tugas</translation>
@@ -4568,7 +4568,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8699041776323235191">Perangkat HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Plester Pemasangan</translation>
-<translation id="8703242769654966101">Aktifkan Pix di Wallet</translation>
 <translation id="8703372953981978786">Link ini tidak berfungsi</translation>
 <translation id="8703575177326907206">Sambungan ke <ph name="DOMAIN" /> tidak dienkripsi.</translation>
 <translation id="8705331520020532516">Nomor Seri</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2086334242442703436">Быйтыкча тандагычты ачуу</translation>
 <translation id="2089550919269323883"><ph name="VM_NAME" /> орнотуу ишкана саясаты тарабынан бөгөттөлдү. Колдоо үчүн системдик администраторуңузга кайрылыңыз. Ката коду: <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Chromebook үчүн Steam жаңылыктары</translation>
 <translation id="209965399369889474">Тармакка туташпай турат</translation>
 <translation id="2107581415810719320">Башка баскыч <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C кабелиңиз Thunderbolt түзмөгүн колдоого албайт. Түзмөктүн майнаптуулугу чектелиши мүмкүн.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Кайсы жасалчу иштин үстүнөн иштейсиз? Ишти кошуу үчүн Enter баскычын басыңыз.</translation>
 <translation id="229397294990920565">Мобилдик Интернет өчүрүлүүдө...</translation>
 <translation id="2295777434187870477">Микрофон күйүк, өчүрүү менен микрофондун үнү басылат.</translation>
+<translation id="2296880470921996802">Алмашуу буферинин таржымалы IT администраторуңуз тарабынан өчүрүлгөн</translation>
 <translation id="2302092602801625023">Бул аккаунт Family Link аркылуу башкарылат</translation>
 <translation id="2303600792989757991">Терезеге ыкчам көз чаптырууга которуу</translation>
 <translation id="2304702218354340897">Жүз менен көзөмөлдөөнү өчүрөсүзбү?</translation>
@@ -1786,7 +1786,6 @@
 <translation id="6127395413317891856">Офлайн режиминдесиз. Байланышты текшерип, кайталап көрүңүз.</translation>
 <translation id="6129953537138746214">Боштук</translation>
 <translation id="6132714462430777655">Окуу жайын каттоодон чыгасызбы?</translation>
-<translation id="6136872094979134163">Chromebook үчүн Steam жаңылыктары алынбай жатат.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтун өчүрүү диалогун ачуу</translation>
 <translation id="6141205840878048728">Кайсы жасалчу иштин үстүнөн иштейсиз?</translation>
 <translation id="6141988275892716286">Жүктөп алууну ырастаңыз</translation>

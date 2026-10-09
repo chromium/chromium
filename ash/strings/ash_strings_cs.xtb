@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2086334242442703436">Otevřít výběr smajlíků</translation>
 <translation id="2089550919269323883">Instalace aplikace <ph name="VM_NAME" /> je blokována podnikovými zásadami. Požádejte o pomoc svého systémového administrátora. Kód chyby je <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Zprávy o Steamu pro Chromebook</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2107581415810719320">Jiné tlačítko <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Váš kabel USB-C nepodporuje rozhraní Thunderbolt. Výkon zařízení může být omezen.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Na co se chcete soustředit? Úkol přidáte stisknutím klávesy Enter.</translation>
 <translation id="229397294990920565">Vypínání mobilních dat…</translation>
 <translation id="2295777434187870477">Mikrofon je zapnutý, přepnutím ho ztlumíte.</translation>
+<translation id="2296880470921996802">Administrátor IT historii schránky zakázal</translation>
 <translation id="2302092602801625023">Tento účet spravuje služba Family Link</translation>
 <translation id="2303600792989757991">Přepnutí přehledu okna</translation>
 <translation id="2304702218354340897">Opravdu chcete ovládání obličejem vypnout?</translation>
@@ -1790,7 +1790,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6127395413317891856">Jste offline. Zkontrolujte připojení a zkuste to znovu.</translation>
 <translation id="6129953537138746214">Mezerník</translation>
 <translation id="6132714462430777655">Přeskočit registraci do školy?</translation>
-<translation id="6136872094979134163">Zprávy o Steamu pro Chromebook se nepodařilo načíst.</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na co se chcete soustředit?</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>

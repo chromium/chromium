@@ -668,6 +668,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2127747486437921899">Ležeče</translation>
 <translation id="2130448033692577677">Navedenih predlog morda ne bo mogoče uporabiti, ker pravilnik DnsOverHttpsMode policy ni nastavljen.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Omogočanje samodejnega izpolnjevanja plačil je odprto pri polni višini.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ti so prikazani naključno. Privzetega lahko kadar koli spremenite.</translation>
 <translation id="2134584557120247184">Letalska vozovnica</translation>
@@ -1366,6 +1367,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3289578402369490638">Iz drugih trgovin v spletu</translation>
 <translation id="3293642807462928945">Preberite več o pravilniku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Ogled in upravljanje gesel v nastavitvah v Chromu</translation>
+<translation id="3296595523896103792">Omogočanje samodejnega izpolnjevanja plačil je zaprto.</translation>
 <translation id="3299098170013242198">Funkcija Windows Hello je vklopljena za izpolnjevanje gesel.</translation>
 <translation id="3299197721044635447">Vsebine ni bilo mogoče prilepiti zunaj upravljanega konteksta Chroma zaradi pravilnikov vaše organizacije</translation>
 <translation id="3299720788264079132">Pri uporabi funkcije <ph name="FEATURE_NAME" /> je prišlo do napake</translation>
@@ -2805,7 +2807,6 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="5649053991847567735">Samodejni prenosi</translation>
 <translation id="5651323159439184939">Tractor Feed</translation>
 <translation id="5653681867130739344">Varno posodobite osebno izkaznico v Google Denarnici</translation>
-<translation id="5653744563415531641">Shranite podatke in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. Lahko <ph name="MANAGE_WALLET_SETTINGS_LINK" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Naloženi ID poročila o zrušitvah:</translation>
 <translation id="5654965123204121933">URL ne vsebuje obveznega nadomestnega niza <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-pošta</translation>
@@ -3257,7 +3258,6 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="6410264514553301377">Vnesite datum poteka veljavnosti in kodo CVC za kartico <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Pogovorno okno za odobritev staršev</translation>
-<translation id="6413532517183895572">upravljate nastavitve Denarnice</translation>
 <translation id="6415778972515849510">Chromium vam lahko pomaga zaščititi račun za Google in spremeniti geslo.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Vse pomembne poslovne ali osebne podatke shranite na zunanji napravi.</translation>
@@ -3764,7 +3764,6 @@ Dodatne podrobnosti:
 <translation id="7308436126008021607">sinhronizacija v ozadju</translation>
 <translation id="7310392214323165548">Naprava se bo kmalu znova zagnala</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Pritisnite tabulatorko in nato Enter, če želite vprašati <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Vaša organizacija je označila to spletno mesto, ker morda krši pravilnik.</translation>
 <translation id="7315372670898739748">Povezovanje ni uspelo. Poskusite znova pozneje.</translation>
 <translation id="7316521168101843192">Shranjevanje datoteke v storitvi Microsoft OneDrive</translation>
@@ -4172,6 +4171,7 @@ Dodatne podrobnosti:
 <translation id="7955105108888461311">Vprašajte osebno</translation>
 <translation id="7956713633345437162">Mobilni zaznamki</translation>
 <translation id="7961015016161918242">Nikoli</translation>
+<translation id="7961493403319780137">Preberite več o tej funkciji – samodejno izpolnjevanje kod za preverjanje iz Gmaila</translation>
 <translation id="7962467575542381659">Računalnik v okolju</translation>
 <translation id="796439090588610411">Chrome ne bo več samodejno potrjeval tega e-poštnega naslova na podprtih spletnih mestih.</translation>
 <translation id="7966803981046576691">Vrsta računa za opravilo</translation>
@@ -4572,7 +4572,6 @@ Dodatne podrobnosti:
 <translation id="8699041776323235191">Naprava HID</translation>
 <translation id="8699985386408839112">Kuverta Kaku 1</translation>
 <translation id="8702965365666568344">Mounting Tape</translation>
-<translation id="8703242769654966101">Omogoči Pix v Denarnici</translation>
 <translation id="8703372953981978786">Ta povezava ne deluje</translation>
 <translation id="8703575177326907206">Vaša povezava z <ph name="DOMAIN" /> ni kodirana.</translation>
 <translation id="8705331520020532516">Serijska številka</translation>

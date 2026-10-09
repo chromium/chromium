@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">斜体</translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">“启用支付信息自动填充”底部动作条已以最大高度显示。</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">以下搜索引擎按随机顺序显示。您可随时更改默认搜索引擎。</translation>
 <translation id="2134584557120247184">机票</translation>
@@ -1364,6 +1365,7 @@
 <translation id="3289578402369490638">来自网络上的其他商店</translation>
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
+<translation id="3296595523896103792">“启用支付信息自动填充”底部动作条已关闭。</translation>
 <translation id="3299098170013242198">已开启 Windows Hello 作为填充密码时的验证机制</translation>
 <translation id="3299197721044635447">受您所在组织的政策限制，无法将内容粘贴到受管理的 Chrome 环境之外</translation>
 <translation id="3299720788264079132">使用“<ph name="FEATURE_NAME" />”功能时出了点问题</translation>
@@ -2801,7 +2803,6 @@
 <translation id="5649053991847567735">自动下载项</translation>
 <translation id="5651323159439184939">牵引送纸</translation>
 <translation id="5653681867130739344">更新 Google 钱包中的身份证件信息</translation>
-<translation id="5653744563415531641">保存信息可以提升效率，例如在不同 Google 产品中快速填写表单。您可以为 <ph name="ACCOUNT" /> <ph name="MANAGE_WALLET_SETTINGS_LINK" />。</translation>
 <translation id="5654927323611874862">已上传的崩溃报告 ID：</translation>
 <translation id="5654965123204121933">下述网址未包含必需的替换字符串“<ph name="SEARCH_TERMS_REPLACEMENT" />”：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">邮箱</translation>
@@ -3252,7 +3253,6 @@
 <translation id="6410264514553301377">请输入“<ph name="CREDIT_CARD" />”的到期日期和银行卡验证码 (CVC)</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">家长批准对话框</translation>
-<translation id="6413532517183895572">管理 Google 钱包设置</translation>
 <translation id="6415778972515849510">Chromium 可以帮助您保护您的 Google 账号和更改密码。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">请确保将所有关键业务数据或个人数据均存储在外部。</translation>
@@ -3759,7 +3759,6 @@
 <translation id="7308436126008021607">后台同步</translation>
 <translation id="7310392214323165548">设备很快就会重启</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> 依次按 Tab 键和 Enter 键即可询问 <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">您的组织已标记此网站，因为它可能违反了政策。</translation>
 <translation id="7315372670898739748">关联失败，请稍后再试</translation>
 <translation id="7316521168101843192">正在将文件保存到 Microsoft OneDrive</translation>
@@ -4167,6 +4166,7 @@
 <translation id="7955105108888461311">当面请求</translation>
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7961015016161918242">一律不</translation>
+<translation id="7961493403319780137">详细了解此功能 - 自动填充 Gmail 中的验证码</translation>
 <translation id="7962467575542381659">平台设备</translation>
 <translation id="796439090588610411">Chrome 将停止在支持的网站上自动确认此邮箱。</translation>
 <translation id="7966803981046576691">工作账号类型</translation>
@@ -4568,7 +4568,6 @@
 <translation id="8699041776323235191">HID 设备</translation>
 <translation id="8699985386408839112">Kaku 1 信封</translation>
 <translation id="8702965365666568344">固定胶带</translation>
-<translation id="8703242769654966101">在 Google 钱包中启用 Pix</translation>
 <translation id="8703372953981978786">此链接无效</translation>
 <translation id="8703575177326907206">您与 <ph name="DOMAIN" /> 的连接未加密。</translation>
 <translation id="8705331520020532516">序列号</translation>

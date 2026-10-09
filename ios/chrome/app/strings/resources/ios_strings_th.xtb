@@ -114,7 +114,6 @@
 <translation id="1327794256477341646">ฟีเจอร์ที่ต้องใช้ตำแหน่งของคุณจะไม่ทำงาน</translation>
 <translation id="132969855425874290">ปิดการค้นหาและเติม</translation>
 <translation id="1333455942675373522">แป้นพิมพ์</translation>
-<translation id="1333669029961409292">"ตรวจสอบรหัสผ่าน" เสร็จสมบูรณ์แล้ว</translation>
 <translation id="1334485477792811969">เว็บเซอร์วิส</translation>
 <translation id="1335767868357998043">เลือกตำแหน่งของแถบที่อยู่</translation>
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
@@ -321,7 +320,6 @@
 <translation id="1909201414196501151">เพิ่มและปักหมุดเว็บไซต์แล้ว</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
 <translation id="1925706052394657380">เปิดการตั้งค่า<ph name="BEGIN_BOLD" />แอปเริ่มต้น<ph name="END_BOLD" />ใน iOS</translation>
-<translation id="1929759944176590572">"ใช้กล้องเพื่อค้นหาด้วย Google Lens" เสร็จแล้ว</translation>
 <translation id="1938871630297275912">{count,plural, =1{ได้รับลิงก์แล้ว}other{ได้รับลิงก์ {count} รายการแล้ว}}</translation>
 <translation id="1941314575388338491">แตะสองครั้งเพื่อคัดลอก</translation>
 <translation id="1943478190258551035">เมนู → การตั้งค่า</translation>
@@ -558,6 +556,7 @@
 <translation id="2664621323652615289">หยุด</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
+<translation id="2671316366021598595">ไม่อนุญาตให้ "<ph name="SITE_DOMAIN" />" เข้าถึงกล้อง</translation>
 <translation id="2671423594960767771">แชร์กลุ่ม</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">จ่ายแบบผ่อนชำระ</translation>
@@ -770,7 +769,6 @@
 <translation id="340669334496430859">แก้ไขล่าสุด</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ต.ค. 2023</translation>
-<translation id="3416904994126232207">"บันทึกรหัสผ่าน" เสร็จแล้ว</translation>
 <translation id="3419787211763835342">ช่วยปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
 <translation id="3422958112451181446">กดค้างไว้เพื่อปักหมุดเครื่องมือโปรดที่นี่</translation>
 <translation id="3430407169377889553">โปรดใช้ Gemini อย่างระมัดระวังและเข้าควบคุมหากจำเป็น คุณเป็นผู้รับผิดชอบต่อการดำเนินการของ Gemini ระหว่างการทำงาน</translation>
@@ -1135,7 +1133,6 @@
 <translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4606247758155004938">องค์กรของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
 <translation id="4607887340472970274">การติดตามราคา</translation>
-<translation id="4614482404958079763">ลองใช้ธีมเทศกาลแบบจำกัดเวลา ซึ่งมาพร้อมภาพและภาพเคลื่อนไหวที่กำหนดเอง</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
 <translation id="4621768135601674446">เปิดตัวเลือกโหมดการอ่าน</translation>
 <translation id="4627107755957573804">อนุญาตให้เว็บไซต์และแอปอัปเกรดบัญชีที่มีอยู่เพื่อใช้พาสคีย์</translation>
@@ -1243,7 +1240,6 @@
 <translation id="4896467949657706481">ปิดแท็บแล้ว คุณออกจากระบบแล้ว</translation>
 <translation id="4911042367886397055">ยินดีต้อนรับกลับมา คุณ <ph name="USER_NAME" /></translation>
 <translation id="4913626501929406101">คุณแชร์สำเนารหัสผ่านกับคนในกลุ่มครอบครัวได้อย่างปลอดภัย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="4916679969857390442">เลนส์</translation>
 <translation id="4917025507570489430">คุณใช้ข้อมูลการท่องเว็บที่มีอยู่ได้เมื่อลงชื่อเข้าใช้บัญชี <ph name="USER_EMAIL" /> โปรดทราบว่าองค์กรของคุณอาจดูข้อมูลนี้ได้</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
 <translation id="4930714375720679147">เปิด</translation>
@@ -1389,6 +1385,7 @@
 <translation id="5351613737248079168">คุณต้องลงชื่อเข้าใช้เพื่อใช้ Level Up</translation>
 <translation id="5352128922772839949">บันทึกไฟล์</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
+<translation id="5355871759168485600">อนุญาตให้ "<ph name="SITE_DOMAIN" />" ใช้ไมโครโฟนทุกครั้งที่คุณเข้าชมเว็บไซต์นี้</translation>
 <translation id="5359436665022446585">เปิดลิงก์ได้ดียิ่งขึ้น</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
 <translation id="5364647308446127983">{count,plural, =1{นำเข้าพาสคีย์ {count} รายการไม่ได้}other{นำเข้าพาสคีย์ {count} รายการไม่ได้}}</translation>
@@ -1689,7 +1686,6 @@
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">เลือกตำแหน่งของแถบที่อยู่</translation>
-<translation id="6305257382500066042">ลองใช้เลย</translation>
 <translation id="6307241780749477694">โปรดยืนยันว่าเป็นคุณเพื่อรับรหัสผ่านทั้งหมดในอุปกรณ์นี้</translation>
 <translation id="6307792728709337290">บันทึกบัตรไว้ในบัญชี Google เพื่อป้อนข้อความอัตโนมัติสำหรับการซื้อใน Chrome ครั้งนี้และในอนาคต</translation>
 <translation id="6316141353357700666">เลือกรหัสผ่านที่ต้องการใช้จากรายการที่ปรากฏ</translation>
@@ -1732,6 +1728,7 @@
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
 <translation id="6410883413783534063">เปิดหลายแท็บเพื่อไปยังหน้าต่างๆ พร้อมกัน</translation>
 <translation id="6412195388778525440">นำแท็บออก</translation>
+<translation id="6417468503703810114">พฤติกรรมเริ่มต้น</translation>
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
 <translation id="6420292512900923139">พบปัญหาในการนำเข้าข้อมูล</translation>
 <translation id="6421038304268477484">ข้อความที่แปล</translation>
@@ -2083,7 +2080,6 @@
 <translation id="7491131399623468277">ไปที่การตั้งค่า…</translation>
 <translation id="7491161827858509164">หากต้องการดูไฟล์ที่คุณดาวน์โหลดไว้ก่อนหน้านี้ ให้เปิด<ph name="BEGIN_LINK" />ไฟล์<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">แก้ไขต่อ</translation>
-<translation id="7498557042323380380">ตั้งค่ารูปแบบตามฤดูกาลสำหรับหน้าแท็บใหม่</translation>
 <translation id="7500244509706269886">ป้อนข้อความอัตโนมัติในแบบฟอร์ม</translation>
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
 <translation id="7505402981231763928">คุณต้องลงชื่อเข้าใช้เพื่อใช้ Gemini</translation>
@@ -2144,7 +2140,6 @@
 <translation id="7669493687462784703">ดาวน์โหลดโปรไฟล์การกำหนดค่าจาก <ph name="WEBSITE" /> ต่อไหม</translation>
 <translation id="7673346542062368520">คุณสามารถปัดไปทางซ้ายเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="7679915578945954324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
-<translation id="76830702375944649">"สร้างกลุ่มแท็บ" เสร็จแล้ว</translation>
 <translation id="7695953765525234038">แถบค้นหา</translation>
 <translation id="7696316012653762532">ตัวเลือกในการแปลหน้าเว็บ</translation>
 <translation id="7700527812567437847">ค้นหาบนหน้าจอด้วย Google Lens</translation>
@@ -2170,6 +2165,7 @@
 <translation id="7758789811447313947">ธีมสีม่วง</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7765158879357617694">ย้าย</translation>
+<translation id="7768507955883790804">เว็บไซต์จะดำเนินการตามการตั้งค่านี้โดยอัตโนมัติเมื่อคุณเข้าชม</translation>
 <translation id="7772032839648071052">ยืนยันพาสเฟรส</translation>
 <translation id="7772948288262733182">ยินดีต้อนรับกลับมาอีกครั้ง</translation>
 <translation id="777637629667389858">เมื่อลงชื่อเข้าใช้ ฟีเจอร์จะปกป้องคุณในบริการต่างๆ ของ Google</translation>
@@ -2308,6 +2304,7 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> บัญชี</translation>
 <translation id="8161614462829037225">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">ความยาว</translation>
+<translation id="8181328232274170248">อนุญาตให้ "<ph name="SITE_DOMAIN" />" ใช้กล้องทุกครั้งที่คุณเข้าชมเว็บไซต์นี้</translation>
 <translation id="8182037667962849780">{count,plural, =1{สำหรับ {website_1}}=2{สำหรับ {website_1}, {website_2}}=3{สำหรับ {website_1}, {website_2} และอีก 1 เว็บไซต์}other{สำหรับ {website_1}, {website_2} และอีก {more_count} เว็บไซต์}}</translation>
 <translation id="8184895727539791845">หากต้องการอนุญาตให้ Gemini ใช้กล้อง ให้เปิดใช้กล้องในการตั้งค่า iOS</translation>
 <translation id="8185076488803799132">นำเข้า</translation>
@@ -2442,6 +2439,7 @@
 <translation id="8571213806525832805">4 สัปดาห์ที่ผ่านมา</translation>
 <translation id="8577056989960190117">ป้อนปีที่หมดอายุเป็น <ph name="YEAR" /> โดยอัตโนมัติ</translation>
 <translation id="8582026929965253036">ใช้ฟีเจอร์ Live กับ Gemini</translation>
+<translation id="8585841788766257444">เว็บไซต์ที่แสดงอยู่ด้านล่างใช้การตั้งค่าที่กำหนดเองแทนที่จะเป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="8587001564479545614">สร้าง PIN สำหรับการกู้คืน</translation>
 <translation id="8588404856427128947">ปิด</translation>
 <translation id="8590286732816598906">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, เมนู</translation>
@@ -2480,6 +2478,7 @@
 <translation id="8680643216091361291">การตั้งค่า<ph name="BEGIN_LINK" />เก็บกิจกรรมไว้<ph name="END_LINK" />จะปิดอยู่โดยค่าเริ่มต้น เมื่อการตั้งค่าดังกล่าวปิดอยู่ Google จะบันทึกแชทของคุณไว้เป็นเวลา 3 วัน โดยจะใช้ข้อมูลดังกล่าวเพื่อให้แอป Gemini ทำงานได้อย่างถูกต้อง ช่วยรักษาความปลอดภัย และใช้ความคิดเห็นของคุณเพื่อแก้ไขปัญหา คุณสามารถเปิด "เก็บกิจกรรมไว้" เพื่อช่วยปรับปรุง Google AI สำหรับทุกคนได้</translation>
 <translation id="8680786875305615692">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตให้กับทุกคน</translation>
 <translation id="8680787084697685621">รายละเอียดการลงชื่อเข้าใช้บัญชีเก่าเกินไป</translation>
+<translation id="868648444055742370">ไม่อนุญาตให้ "<ph name="SITE_DOMAIN" />" เข้าถึงไมโครโฟน</translation>
 <translation id="8690752723634292147">ยืนยันการลบ</translation>
 <translation id="8692107307702113268">รหัสผ่านมีอักขระเกิน 1,000 ตัว</translation>
 <translation id="8692689525339542358">รับการปกป้องให้พ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>

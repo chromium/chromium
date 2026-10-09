@@ -668,6 +668,7 @@
 <translation id="2127747486437921899">Курсив</translation>
 <translation id="2130448033692577677">Указанные вами шаблоны нельзя применить, поскольку правило DnsOverHttpsMode не настроено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Окно "Включить автозаполнение платежных данных" развернуто.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" />.</translation>
 <translation id="2132825047782982803">Варианты расположены в случайном порядке. Вы в любой момент можете изменить выбор.</translation>
 <translation id="2134584557120247184">Авиабилет</translation>
@@ -1365,6 +1366,7 @@
 <translation id="3289578402369490638">Из других магазинов в интернете</translation>
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
+<translation id="3296595523896103792">Окно "Включить автозаполнение платежных данных" закрыто.</translation>
 <translation id="3299098170013242198">Windows Hello используется, чтобы указывать пароли</translation>
 <translation id="3299197721044635447">Не удалось вставить содержимое за пределами управляемого контекста Chrome. Это не разрешено правилами вашей организации.</translation>
 <translation id="3299720788264079132">Что-то пошло не так при использовании функции "<ph name="FEATURE_NAME" />".</translation>
@@ -2804,7 +2806,6 @@
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5651323159439184939">Автоподатчик</translation>
 <translation id="5653681867130739344">Безопасно обновляйте сведения удостоверения личности в Google Кошельке</translation>
-<translation id="5653744563415531641">Сохраните информацию, чтобы быстрее выполнять действия, например заполнять формы в продуктах Google. Вы можете <ph name="MANAGE_WALLET_SETTINGS_LINK" /> для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Идентификатор загруженного отчета о сбое:</translation>
 <translation id="5654965123204121933">URL должен содержать строку <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" />.</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
@@ -3256,7 +3257,6 @@
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Диалоговое окно одобрения родителями</translation>
-<translation id="6413532517183895572">изменить настройки Кошелька</translation>
 <translation id="6415778972515849510">Защитите свой аккаунт Google и смените пароль с помощью Chromium.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Убедитесь, что все важные рабочие или личные данные хранятся где-то ещё.</translation>
@@ -3763,7 +3763,6 @@
 <translation id="7308436126008021607">фоновая синхронизация</translation>
 <translation id="7310392214323165548">Скоро устройство будет перезагружено</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
-<translation id="7311565174465466858"><ph name="TAB_KEY" /> Чтобы задать вопрос сервису "<ph name="AI_ENGINE_NAME" />", нажмите Tab, а затем Ввод</translation>
 <translation id="7313107491291103073">Возможно, он нарушает правила.</translation>
 <translation id="7315372670898739748">Не удалось связать аккаунты. Повторите попытку позже.</translation>
 <translation id="7316521168101843192">Сохранение файла в Microsoft OneDrive…</translation>
@@ -4171,6 +4170,7 @@
 <translation id="7955105108888461311">Попросить лично</translation>
 <translation id="7956713633345437162">Мобильные закладки</translation>
 <translation id="7961015016161918242">Никогда</translation>
+<translation id="7961493403319780137">Подробнее об этой функции — Автозаполнение кодов подтверждения из Gmail</translation>
 <translation id="7962467575542381659">Устройство платформы</translation>
 <translation id="796439090588610411">Chrome больше не будет автоматически подтверждать этот адрес электронной почты на поддерживаемых сайтах.</translation>
 <translation id="7966803981046576691">Тип аккаунта, в котором выполняется задание</translation>
@@ -4571,7 +4571,6 @@
 <translation id="8699041776323235191">HID-устройство</translation>
 <translation id="8699985386408839112">Конверт Kaku 1</translation>
 <translation id="8702965365666568344">Монтажная лента</translation>
-<translation id="8703242769654966101">Добавить Pix в Кошелек</translation>
 <translation id="8703372953981978786">Ссылка не работает</translation>
 <translation id="8703575177326907206">Соединение с <ph name="DOMAIN" /> не зашифровано.</translation>
 <translation id="8705331520020532516">Серийный номер</translation>

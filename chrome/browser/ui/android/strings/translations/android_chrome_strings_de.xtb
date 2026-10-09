@@ -776,6 +776,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter Tab zum Aufzeichnen</translation>
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>
 <translation id="414128724510021958">Desktopwebsites werden standardmäßig angefordert</translation>
+<translation id="4150837143272125910">Ein Update wurde heruntergeladen</translation>
 <translation id="4162867837470729563">Die Liste der Freigabeoptionen ist vollständig geöffnet.</translation>
 <translation id="4164642020717536140">Schnell und sicher im Web surfen</translation>
 <translation id="4165077084524712774">Weitere Tools</translation>
@@ -1242,6 +1243,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6039379616847168523">Zum nächsten Tab wechseln</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="604124094241169006">Automatisch</translation>
+<translation id="6041959688070413372">Verbindung zwischen Suchdiensten und Google Workspace-Apps wie Google Drive verwalten</translation>
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="6047066316630165190">Tab-Wechsler im Raster öffnen</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> konnte aufgrund eines unbekannten Fehlers nicht heruntergeladen werden.</translation>
@@ -1402,6 +1404,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6565959834589222080">WLAN wird verwendet, wenn es verfügbar ist</translation>
 <translation id="657177046675873214">Um auf all deinen Geräten auf deine Lesezeichen zugreifen zu können, musst du in den Einstellungen die Option „Lesezeichen“ aktivieren</translation>
 <translation id="6573096386450695060">Immer zulassen</translation>
+<translation id="657480975869429144">Eine neue Chrome-Version ist verfügbar</translation>
 <translation id="658099107946526506">Private Browsersitzung mit einer PIN schützen, um unerwünschten Zugriff zu verhindern</translation>
 <translation id="6583199322650523874">Aktuelle Seite als Lesezeichen speichern</translation>
 <translation id="6588043302623806746">Sicheres DNS verwenden</translation>

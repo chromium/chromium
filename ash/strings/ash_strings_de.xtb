@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2086334242442703436">Emoji-Auswahl öffnen</translation>
 <translation id="2089550919269323883">Die Installation von <ph name="VM_NAME" /> wird durch eine Unternehmensrichtlinie blockiert. Wende dich an deinen Systemadministrator. Fehlercode: <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Neuigkeiten zu Steam for Chromebook</translation>
 <translation id="209965399369889474">Keine Netzwerkverbindung</translation>
 <translation id="2107581415810719320">Andere Taste <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Dein USB-C-Kabel bietet keine Unterstützung für Thunderbolt. Dies kann die Geräteleistung beeinträchtigen.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Worauf möchtest du dich konzentrieren? Drücke die Eingabetaste, um die Aufgabe hinzuzufügen.</translation>
 <translation id="229397294990920565">Mobile Daten werden deaktiviert…</translation>
 <translation id="2295777434187870477">Mikrofon ist an. Du kannst es hier stummschalten.</translation>
+<translation id="2296880470921996802">Der Verlauf der Zwischenablage wurde von deinem IT-Administrator deaktiviert</translation>
 <translation id="2302092602801625023">Dieses Konto wird über Family Link verwaltet</translation>
 <translation id="2303600792989757991">Fensterübersicht umschalten</translation>
 <translation id="2304702218354340897">Möchtest du die Mimik-Steuerung wirklich deaktivieren?</translation>
@@ -1786,7 +1786,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6127395413317891856">Du bist offline. Prüfe deine Verbindung und versuche es dann noch einmal.</translation>
 <translation id="6129953537138746214">Leertaste</translation>
 <translation id="6132714462430777655">Registrierung bei einer Bildungseinrichtung überspringen?</translation>
-<translation id="6136872094979134163">Neuigkeiten zu Steam for Chromebook können nicht abgerufen werden.</translation>
 <translation id="6137566720514957455">Dialog „Entfernen“ für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="6141205840878048728">Worauf möchtest du dich konzentrieren?</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>

@@ -372,7 +372,6 @@
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2086334242442703436">Avaa emojien valitsin</translation>
 <translation id="2089550919269323883">Yrityskäytäntö estää sovelluksen <ph name="VM_NAME" /> asennuksen. Pyydä tukea järjestelmänvalvojalta. Virhekoodi on <ph name="ERROR" />.</translation>
-<translation id="2093792000875799555">Steam for Chromebook ‑uutiset</translation>
 <translation id="209965399369889474">Ei verkkoyhteyttä</translation>
 <translation id="2107581415810719320">Muu painike <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-johto ei tue Thunderboltia. Laitteen toiminta voi olla rajoitettua.</translation>
@@ -422,6 +421,7 @@
 <translation id="2293443480080733021">Mihin asiaan haluaisit keskittyä? Lisää tehtävä painamalla Enter.</translation>
 <translation id="229397294990920565">Mobiilidataa laitetaan pois päältä…</translation>
 <translation id="2295777434187870477">Mikrofoni on päällä, asetuksen vaihtaminen mykistää äänitulon.</translation>
+<translation id="2296880470921996802">IT-järjestelmänvalvoja on poistanut leikepöydän historian käytöstä</translation>
 <translation id="2302092602801625023">Tiliä ylläpidetään Family Linkissä</translation>
 <translation id="2303600792989757991">Vaihda ikkunan yleiskatsausta</translation>
 <translation id="2304702218354340897">Haluatko varmasti laittaa kasvo-ohjauksen pois päältä?</translation>
@@ -1786,7 +1786,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6127395413317891856">Olet offline-tilassa. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="6129953537138746214">Välilyönti</translation>
 <translation id="6132714462430777655">Ohitetaanko kouluun rekisteröityminen?</translation>
-<translation id="6136872094979134163">Steam for Chromebook -uutisten noutaminen epäonnistui.</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Mihin asiaan haluaisit keskittyä?</translation>
 <translation id="6141988275892716286">Vahvista lataus</translation>
