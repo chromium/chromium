@@ -1843,6 +1843,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_FILTER_BY_CLIENT" desc="Text used in the client filter button and in the header of client filter sheet." translateable="false">
         Filter by device
       </message>
+      <message name="IDS_HISTORY_ACTOR_FILTER_CHIP_TEXT" desc="Text used in the actor filter chip when no option is selected." translateable="false">
+        Who browsed
+      </message>
+      <message name="IDS_HISTORY_ACTOR_FILTER_SHEET_HEADER" desc="Text used in the header of the actor filter sheet." translateable="false">
+        Filter by who browsed
+      </message>
+      <message name="IDS_HISTORY_ACTOR_FILTER_USER" desc="Label of the item in the actor filter sheet, short for the longer phrase 'Browsing history that YOU performed.'. " translateable="false">
+        You
+      </message>
+      <message name="IDS_HISTORY_ACTOR_FILTER_ACTOR" desc="Label of the item in the actor filter sheet, when selected restricts the history results to entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user." translateable="false">
+        Gemini
+      </message>
       <message name="IDS_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate users about the app history filter.">
         Search by app, date, and more.
       </message>

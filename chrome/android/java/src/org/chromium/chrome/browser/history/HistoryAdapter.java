@@ -28,6 +28,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
+import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.history.HistoryProvider.ClientInfo;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
@@ -93,6 +94,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // Client IDs of the device currently chosen for client filtering. If empty, ignored when
     // querying history.
     private List<String> mClientIds = Collections.emptyList();
+    private @ActorFilter String mActorFilter = ActorFilter.ANY;
     private boolean mDisableScrollToLoadForTest;
 
     // Whether we show the source app for each entry. We show it in BrApp in full history UI, but
@@ -150,7 +152,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     private void executeQuery() {
-        mHistoryProvider.queryHistory(mQueryText, new QueryOptions(mAppId, mHostName, mClientIds));
+        mHistoryProvider.queryHistory(
+                mQueryText,
+                new QueryOptions(
+                        mAppId,
+                        mHostName,
+                        mClientIds,
+                        !mActorFilter.equals(ActorFilter.ACTOR),
+                        !mActorFilter.equals(ActorFilter.USER)));
     }
 
     /** Starts loading the first set of browsing history items. */
@@ -242,6 +251,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mManager.showAppFilter()) setAppId(null);
         if (mManager.showHostFilter()) setHostName(null);
         if (mManager.showClientFilter()) setClientIds(Collections.emptyList());
+        if (mManager.showActorFilter()) setActorFilter(ActorFilter.ANY);
         mShowSourceApp = mManager.showAppFilter();
 
         // Re-initialize the data in the adapter.
@@ -590,6 +600,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         search(mQueryText);
     }
 
+    void updateActorFilter(@Nullable FilterItem actorInfo) {
+        setActorFilter(actorInfo == null ? ActorFilter.ANY : actorInfo.getId());
+        search(mQueryText);
+    }
+
     @EnsuresNonNull("mPrivacyDisclaimerTextView")
     ViewGroup getPrivacyDisclaimerContainer(@Nullable ViewGroup parent) {
         Context context = mManager.getContext();
@@ -765,6 +780,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mClientIds = clientIds;
     }
 
+    /**
+     * @param actorFilter The {@link ActorFilter} determining which visit sources are included when
+     *     querying history.
+     */
+    public void setActorFilter(@ActorFilter String actorFilter) {
+        mActorFilter = actorFilter;
+    }
+
     public void setIsLargeFormFactorDevice(boolean isLargeFormFactorDevice) {
         mIsLargeFormFactorDevice = isLargeFormFactorDevice;
     }
@@ -859,6 +882,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     List<String> getClientIdsForTest() {
         return mClientIds;
+    }
+
+    @ActorFilter
+    String getActorFilterForTest() {
+        return mActorFilter;
     }
 
     public void toggleCluster(HistoryItem item) {

@@ -436,6 +436,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String BROWSING_HISTORY_ACTOR_INTEGRATION_M3 =
             "BrowsingHistoryActorIntegrationM3";
+    public static final String BROWSING_HISTORY_FILTER_BY_ACTOR = "BrowsingHistoryFilterByActor";
     public static final String BROWSING_HISTORY_FILTER_BY_DEVICE = "BrowsingHistoryFilterByDevice";
     public static final String BROWSING_HISTORY_FILTER_BY_DOMAIN = "BrowsingHistoryFilterByDomain";
     public static final String CACHE_IS_GOOGLE_SIGNED = "CacheIsGoogleSigned";
@@ -1762,6 +1763,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryActorIntegrationM3 =
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_ACTOR_INTEGRATION_M3, false);
+    public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByActor =
+            newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_ACTOR, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByDevice =
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_DEVICE, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByDomain =

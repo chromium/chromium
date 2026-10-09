@@ -37,6 +37,12 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_marginEnd="8dp" />
 
+    <org.chromium.components.browser_ui.widget.chips.ChipView
+        android:id="@+id/actor_history_filter_chip"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="8dp" />
+
   </LinearLayout>
 
 </HorizontalScrollView>

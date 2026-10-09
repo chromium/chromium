@@ -18,11 +18,13 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -240,5 +242,35 @@ public class HistoryFilterChipUnitTest {
         unboundChip.bindView(
                 mContainer, mActivity, SupplierUtils.of(mBottomSheetController), mHideSoftKeyboard);
         assertFalse(unboundChip.getChipViewForTesting().isEnabled());
+    }
+
+    @Test
+    public void testSeparateChipTextAndSheetHeader() {
+        HistoryFilterChip actorChip =
+                new HistoryFilterChip(
+                        R.id.actor_history_filter_chip,
+                        /* chipTextResId= */ R.string.history_actor_filter_chip_text,
+                        /* sheetHeaderResId= */ R.string.history_actor_filter_sheet_header,
+                        /* canShow= */ true,
+                        mOnSelectionChanged,
+                        /* onSheetOpened= */ null);
+        actorChip.bindView(
+                mContainer, mActivity, SupplierUtils.of(mBottomSheetController), mHideSoftKeyboard);
+        actorChip.setItems(List.of(ITEM_1, ITEM_2));
+
+        ChipView chipView = actorChip.getChipViewForTesting();
+        assertEquals(
+                mActivity.getString(R.string.history_actor_filter_chip_text),
+                chipView.getPrimaryTextView().getText().toString());
+
+        ArgumentCaptor<FilterSheetContent> sheetCaptor =
+                ArgumentCaptor.forClass(FilterSheetContent.class);
+        chipView.performClick();
+        verify(mBottomSheetController).requestShowContent(sheetCaptor.capture(), eq(true));
+        TextView sheetHeader =
+                (TextView) ((ViewGroup) sheetCaptor.getValue().getToolbarView()).getChildAt(1);
+        assertEquals(
+                mActivity.getString(R.string.history_actor_filter_sheet_header),
+                sheetHeader.getText().toString());
     }
 }

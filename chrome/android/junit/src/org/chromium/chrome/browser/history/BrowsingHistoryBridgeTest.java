@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -192,23 +192,31 @@ public class BrowsingHistoryBridgeTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_ACTOR_INTEGRATION_M3)
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_ACTOR_INTEGRATION_M3)
     public void testQueryHistoryWithOptions() {
-        QueryOptions options =
-                new QueryOptions(
-                        "org.chromium.app", "example.com", List.of("client_123", "client_456"));
-        mBrowsingHistoryBridge.queryHistory("search query", options);
+        // Test all combinations of `includeUserVisits` and `includeActorVisits` bits.
+        boolean[] vals = {true, true, false, false, true};
+        for (int i = 0; i + 1 < vals.length; i++) {
+            QueryOptions options =
+                    new QueryOptions(
+                            "org.chromium.app",
+                            "example.com",
+                            List.of("client_123", "client_456"),
+                            vals[i],
+                            vals[i + 1]);
+            mBrowsingHistoryBridge.queryHistory("search query", options);
 
-        verify(mNativeMocks)
-                .queryHistory(
-                        anyLong(),
-                        any(),
-                        eq("search query"),
-                        eq("org.chromium.app"),
-                        eq("example.com"),
-                        eq(List.of("client_123", "client_456")),
-                        eq(/* includeUserVisits= */ true),
-                        eq(/* includeActorVisits= */ false));
+            verify(mNativeMocks)
+                    .queryHistory(
+                            anyLong(),
+                            any(),
+                            eq("search query"),
+                            eq("org.chromium.app"),
+                            eq("example.com"),
+                            eq(List.of("client_123", "client_456")),
+                            eq(vals[i]),
+                            eq(vals[i + 1]));
+        }
     }
 
     @Test

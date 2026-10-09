@@ -23,19 +23,31 @@ public class QueryOptions {
     public final List<String> clientIds;
     // Whether to include visits with a source other than SOURCE_ACTOR.
     public final boolean includeUserVisits;
-    // Whether to include GLIC actor visits with SOURCE_ACTOR.
+    // Whether to include visits with SOURCE_ACTOR.
     public final boolean includeActorVisits;
 
     public QueryOptions() {
-        this(null, null, Collections.emptyList());
+        this(
+                /* appId= */ null,
+                /* hostName= */ null,
+                Collections.emptyList(),
+                /* includeUserVisits= */ true,
+                /* includeActorVisits= */ true);
     }
 
-    public QueryOptions(@Nullable String appId, @Nullable String hostName, List<String> clientIds) {
+    public QueryOptions(
+            @Nullable String appId,
+            @Nullable String hostName,
+            List<String> clientIds,
+            boolean includeUserVisits,
+            boolean includeActorVisits) {
         this.appId = appId;
         this.hostName = hostName;
         this.clientIds = List.copyOf(clientIds);
-        this.includeUserVisits = true;
-        this.includeActorVisits = ChromeFeatureList.sBrowsingHistoryActorIntegrationM3.isEnabled();
+        this.includeUserVisits = includeUserVisits;
+        this.includeActorVisits =
+                includeActorVisits
+                        && ChromeFeatureList.sBrowsingHistoryActorIntegrationM3.isEnabled();
     }
 
     @Override

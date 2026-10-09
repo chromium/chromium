@@ -244,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kXsurfaceMetricsReporting,
     &finds::features::kChromeFinds,
     &history::kBrowsingHistoryActorIntegrationM3,
+    &history::kBrowsingHistoryFilterByActor,
     &history::kBrowsingHistoryFilterByDevice,
     &history::kBrowsingHistoryFilterByDomain,
     &history::kOrganicRepeatableQueries,

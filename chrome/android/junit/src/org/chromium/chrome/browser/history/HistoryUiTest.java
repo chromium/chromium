@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
+import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -127,6 +128,7 @@ import java.util.function.Supplier;
 @DisableFeatures({
     ChromeFeatureList.APP_SPECIFIC_HISTORY,
     ChromeFeatureList.ANDROID_DESKTOP_HISTORY_LAYOUT,
+    ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN
 })
@@ -940,6 +942,43 @@ public class HistoryUiTest {
     @Test
     public void testSearch_ClientFilterDisabled() {
         Assert.assertFalse(mContentManager.showClientFilter());
+    }
+
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR)
+    @Test
+    public void testSearch_ActorFilterSheet() {
+        HistoryFilterChip actorFilter = mContentManager.getActorFilterForTesting();
+        actorFilter.setFilterSheetForTesting(mAppFilterSheet);
+
+        performMenuAction(R.id.search_menu_id);
+
+        // The actor filter has a fixed set of options and is visible right away.
+        List<FilterItem> actors = actorFilter.getItemsForTesting();
+        Assert.assertEquals(2, actors.size());
+        Assert.assertEquals(ActorFilter.USER, actors.get(0).getId());
+        Assert.assertEquals(ActorFilter.ACTOR, actors.get(1).getId());
+        Assert.assertTrue(actorFilter.isVisible());
+
+        actorFilter.getChipViewForTesting().performClick();
+        verify(mAppFilterSheet).openSheet(eq(null));
+
+        actorFilter.onItemSelected(actors.get(0));
+        Assert.assertEquals(actors.get(0), actorFilter.getSelectedItemForTesting());
+        Assert.assertEquals(ActorFilter.USER, mAdapter.getActorFilterForTest());
+
+        actorFilter.onItemSelected(actors.get(1));
+        Assert.assertEquals(actors.get(1), actorFilter.getSelectedItemForTesting());
+        Assert.assertEquals(ActorFilter.ACTOR, mAdapter.getActorFilterForTest());
+
+        actorFilter.onItemSelected(null);
+        Assert.assertNull(actorFilter.getSelectedItemForTesting());
+        Assert.assertEquals(ActorFilter.ANY, mAdapter.getActorFilterForTest());
+    }
+
+    @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR)
+    @Test
+    public void testSearch_ActorFilterDisabled() {
+        Assert.assertFalse(mContentManager.showActorFilter());
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)

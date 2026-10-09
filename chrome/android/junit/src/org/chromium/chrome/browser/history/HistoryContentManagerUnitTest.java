@@ -194,6 +194,7 @@ public class HistoryContentManagerUnitTest {
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Features.EnableFeatures({
         ChromeFeatureList.APP_SPECIFIC_HISTORY,
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR,
         ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN,
         ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE
     })
@@ -214,6 +215,7 @@ public class HistoryContentManagerUnitTest {
         assertFalse(pageInfoContentManager.showAppFilter());
         assertFalse(pageInfoContentManager.showHostFilter());
         assertFalse(pageInfoContentManager.showClientFilter());
+        assertFalse(pageInfoContentManager.showActorFilter());
         assertFalse(pageInfoContentManager.hasFilterList());
         assertEquals("www.example.com", pageInfoContentManager.getAdapter().getHostNameForTest());
         assertFalse(pageInfoContentManager.getAdapter().hasListHeader());
@@ -233,6 +235,12 @@ public class HistoryContentManagerUnitTest {
                 View.GONE,
                 pageInfoContentManager
                         .getClientFilterForTesting()
+                        .getChipViewForTesting()
+                        .getVisibility());
+        assertEquals(
+                View.GONE,
+                pageInfoContentManager
+                        .getActorFilterForTesting()
                         .getChipViewForTesting()
                         .getVisibility());
     }

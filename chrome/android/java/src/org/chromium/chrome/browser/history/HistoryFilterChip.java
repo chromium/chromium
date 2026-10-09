@@ -36,7 +36,8 @@ class HistoryFilterChip {
     private static final int MIN_ITEMS_TO_SHOW = 2;
 
     private final @IdRes int mChipViewId;
-    private final @StringRes int mTitleResId;
+    private final @StringRes int mChipTextResId;
+    private final @StringRes int mSheetHeaderResId;
     private final boolean mCanShow;
     private final Callback<@Nullable FilterItem> mOnSelectionChanged;
     private final @Nullable Runnable mOnSheetOpened;
@@ -49,12 +50,29 @@ class HistoryFilterChip {
 
     HistoryFilterChip(
             @IdRes int chipViewId,
-            @StringRes int titleResId,
+            @StringRes int chipTextResId,
+            boolean canShow,
+            Callback<@Nullable FilterItem> onSelectionChanged,
+            @Nullable Runnable onSheetOpened) {
+        this(
+                chipViewId,
+                /* chipTextResId= */ chipTextResId,
+                /* sheetHeaderResId= */ chipTextResId,
+                canShow,
+                onSelectionChanged,
+                onSheetOpened);
+    }
+
+    HistoryFilterChip(
+            @IdRes int chipViewId,
+            @StringRes int chipTextResId,
+            @StringRes int sheetHeaderResId,
             boolean canShow,
             Callback<@Nullable FilterItem> onSelectionChanged,
             @Nullable Runnable onSheetOpened) {
         mChipViewId = chipViewId;
-        mTitleResId = titleResId;
+        mChipTextResId = chipTextResId;
+        mSheetHeaderResId = sheetHeaderResId;
         mCanShow = canShow;
         mOnSelectionChanged = onSelectionChanged;
         mOnSheetOpened = onSheetOpened;
@@ -75,7 +93,7 @@ class HistoryFilterChip {
         assert hideSoftKeyboard != null;
         mChipView.setOnClickListener(
                 _ -> openSheet(activity, bottomSheetControllerSupplier, hideSoftKeyboard));
-        mChipView.getPrimaryTextView().setText(mTitleResId);
+        mChipView.getPrimaryTextView().setText(mChipTextResId);
         mChipView.addDropdownIcon();
         setChipEnabled(mEnabled);
         updateChipView();
@@ -135,7 +153,7 @@ class HistoryFilterChip {
                             bottomSheetControllerSupplier.get(),
                             this::onItemSelected,
                             mItems,
-                            mTitleResId);
+                            mSheetHeaderResId);
         }
         mFilterSheet.openSheet(mSelectedItem);
         if (mOnSheetOpened != null) {
@@ -155,7 +173,7 @@ class HistoryFilterChip {
     private void updateChipView() {
         if (mChipView == null) return;
         if (mSelectedItem == null) {
-            mChipView.getPrimaryTextView().setText(mTitleResId);
+            mChipView.getPrimaryTextView().setText(mChipTextResId);
             mChipView.setSelected(false);
             mChipView.setIcon(ChipView.INVALID_ICON_ID, false);
         } else {
