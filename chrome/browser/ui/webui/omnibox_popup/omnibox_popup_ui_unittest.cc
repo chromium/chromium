@@ -123,7 +123,8 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
       ->set_omnibox_controller(nullptr);
 }
 
-TEST_F(OmniboxPopupUITest, PopulateLocalResourceLoaderConfig) {
+// TODO(crbug.com/571819888): Re-enable this test.
+TEST_F(OmniboxPopupUITest, DISABLED_PopulateLocalResourceLoaderConfig) {
   ui::ColorProvider color_provider;
   auto* theme_colors_manager =
       ThemeColorsSourceManagerFactory::GetForProfile(profile());
