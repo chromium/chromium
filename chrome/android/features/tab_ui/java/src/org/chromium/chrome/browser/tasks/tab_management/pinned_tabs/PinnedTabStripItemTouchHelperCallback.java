@@ -130,8 +130,12 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
 
         mSelectedTabIndex = destinationIndex;
         @TabId int currentTabId = model.get(TabProperties.TAB_ID);
-        tabModel.moveTab(currentTabId, destinationIndex);
+        // TabModel#moveTab commits pending closures and reorders the grid, both of which re-sync
+        // the strip. Commit first and move the strip before the tab so each re-sync is a no-op;
+        // otherwise the dragged item is removed and re-added, detaching it mid-drag.
+        tabModel.commitAllTabClosures();
         mModel.move(fromPosition, destinationIndex);
+        tabModel.moveTab(currentTabId, destinationIndex);
         return true;
     }
 

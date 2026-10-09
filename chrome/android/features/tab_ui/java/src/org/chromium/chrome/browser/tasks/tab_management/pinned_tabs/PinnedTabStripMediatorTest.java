@@ -8,17 +8,24 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus.SELECTED_CARD_ZOOM_OUT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 
 import android.util.Size;
 import android.view.View;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -31,6 +38,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -49,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -60,12 +69,17 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
 /** Unit tests for {@link PinnedTabStripMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        instrumentedPackages = {
+            "androidx.recyclerview.widget.RecyclerView" // required to mock final
+        })
 public class PinnedTabStripMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -92,6 +106,7 @@ public class PinnedTabStripMediatorTest {
     @Mock private Runnable mOnTabGroupCreation;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabActionListener mContextClickListener;
+    @Mock private OnLongPressTabItemEventListener mOnLongPress;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -422,6 +437,40 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
+    public void testStripDrag_draggedSharedModelZoomsOutOnDrop() {
+        ListItem itemA = createTabListItem(1, true);
+        ListItem itemB = createTabListItem(2, true);
+        mTabListModel.add(itemA);
+        mTabListModel.add(itemB);
+        mTabListModel.add(createTabListItem(3, false));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
+        mMediator.onScrolled();
+        // TabModel#moveTab synchronously reorders the grid, which re-syncs the strip.
+        doAnswer(
+                        invocation -> {
+                            mTabListModel.move(0, 1);
+                            return null;
+                        })
+                .when(mTabModel)
+                .moveTab(1, 1);
+        PinnedTabStripItemTouchHelperCallback callback =
+                new PinnedTabStripItemTouchHelperCallback(
+                        mActivity,
+                        mTabModelSupplier,
+                        mPinnedTabsModelList,
+                        () -> null,
+                        mOnLongPress);
+        ViewHolder holderA = createViewHolder(itemA.model, 0);
+
+        callback.onSelectedChanged(holderA, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertTrue(callback.onMove(null, holderA, createViewHolder(itemB.model, 1)));
+        callback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        assertSame(itemA, mPinnedTabsModelList.get(1));
+        assertEquals(SELECTED_CARD_ZOOM_OUT, itemA.model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
     public void testTabPinned_updatePinnedBar() {
         mMediator.onScrolled(); // Initial state.
         mTabModelObserverCaptor.getValue().didChangePinState(mTab1);
@@ -535,5 +584,12 @@ public class PinnedTabStripMediatorTest {
                                 TabListModel.CardProperties.ModelType.TAB)
                         .build();
         return new ListItem(0, model);
+    }
+
+    private ViewHolder createViewHolder(PropertyModel model, int position) {
+        ViewHolder holder = spy(new ViewHolder(new View(mActivity), /* binder= */ null));
+        when(holder.getBindingAdapterPosition()).thenReturn(position);
+        holder.model = model;
+        return holder;
     }
 }

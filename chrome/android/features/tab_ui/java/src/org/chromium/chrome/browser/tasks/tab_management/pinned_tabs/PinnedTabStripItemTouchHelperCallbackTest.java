@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -117,10 +118,24 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
 
     @Test
     public void testOnMove() {
-        assertTrue(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+        // Ordering matters: closures are committed, then the strip moves, then the tab moves.
+        doAnswer(
+                        invocation -> {
+                            verify(mTabModel).commitAllTabClosures();
+                            return null;
+                        })
+                .when(mTabListModel)
+                .move(POSITION1, POSITION2);
+        doAnswer(
+                        invocation -> {
+                            verify(mTabListModel).move(POSITION1, POSITION2);
+                            return null;
+                        })
+                .when(mTabModel)
+                .moveTab(TAB_ID1, POSITION2);
 
+        assertTrue(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
         verify(mTabModel).moveTab(TAB_ID1, POSITION2);
-        verify(mTabListModel).move(POSITION1, POSITION2);
     }
 
     @Test
@@ -134,11 +149,13 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
 
         when(mMockViewHolder2.getBindingAdapterPosition()).thenReturn(POSITION1);
         assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+        verifyNoMove();
     }
 
     @Test
     public void testOnMove_InvalidViewHolder() {
         assertFalse(mCallback.onMove(null, mViewHolder, mMockViewHolder2));
+        verifyNoMove();
     }
 
     @Test
@@ -192,6 +209,7 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         when(mMockViewHolder1.getBindingAdapterPosition()).thenReturn(POSITION1);
         when(mMockViewHolder2.getBindingAdapterPosition()).thenReturn(10);
         assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+        verifyNoMove();
     }
 
     @Test
@@ -217,6 +235,11 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         mCallback.onChildDraw(mCanvas, mRecyclerView, mViewHolder, threshold, 1f, 0, true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mOnLongPressListener, never()).onLongPressEvent(anyInt(), any());
+    }
+
+    private void verifyNoMove() {
+        verify(mTabListModel, never()).move(anyInt(), anyInt());
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 
     private ViewHolder prepareMockViewHolder(int tabId, View itemView, int position) {
