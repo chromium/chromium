@@ -1436,8 +1436,8 @@ class CORE_EXPORT LocalFrameView final
       pending_scroll_marker_selection_updates_;
 
   // This is a callback requested when a same document navigation was committed.
-  // We only record this once (if RecordSameDocumentPresentationTimeOnce is
-  // enabled). We do this within the lifecycle before the commit step.
+  // We only record this once. We do this within the lifecycle before the commit
+  // step.
   base::OnceCallback<void(const viz::FrameTimingDetails&)>
       same_document_presentation_time_callback_;
 

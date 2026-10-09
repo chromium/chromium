@@ -5299,10 +5299,6 @@
       name: "RecheckParentDuringNodeVectorInsertion",
       status: "stable",
     },
-    {
-      name: "RecordSameDocumentPresentationTimeOnce",
-      status: "stable",
-    },
     // If enabled, both Accept-Language HTTP header and JavaScript getter will
     // be reduced.
     {

@@ -1307,15 +1307,10 @@ bool LocalFrameView::RecordNaturalDimensions() {
 
 void LocalFrameView::RequestSameDocumentNavigationPresentationTime(
     base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) {
-  if (RuntimeEnabledFeatures::RecordSameDocumentPresentationTimeOnceEnabled(
-          GetFrame().DomWindow())) {
-    GetFrame()
-        .LocalFrameRoot()
-        .View()
-        ->same_document_presentation_time_callback_ = std::move(callback);
-  } else if (auto* frame_widget = GetFrame().GetWidgetForLocalRoot()) {
-    frame_widget->NotifyPresentationTime(std::move(callback));
-  }
+  GetFrame()
+      .LocalFrameRoot()
+      .View()
+      ->same_document_presentation_time_callback_ = std::move(callback);
 }
 
 bool LocalFrameView::HasRunningAnchorTransformAnimation() const {
