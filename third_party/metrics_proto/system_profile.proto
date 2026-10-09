@@ -1175,6 +1175,7 @@ message SystemProfileProto {
 
   repeated AntiVirusProduct antivirus_product = 23;
 
+  // Next Tag: 72
   enum ComponentId {
     option features.enum_type = CLOSED;
 
@@ -1261,6 +1262,8 @@ message SystemProfileProto {
     FINGERPRINTING_PROTECTION_FILTER_RULES = 67;
     TRANSLATE_KIT = 68;
     DYNAMIC_RENDERER_PATCH_WINDOWS = 69;
+    MODEL_MANIFEST = 70;
+    GEOLOCATION_PERMISSION_PREDICTIONS_MODEL = 71;
   }
 
   // Information about what Chrome components are registered and at which
