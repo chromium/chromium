@@ -132,6 +132,7 @@
             identityManager:IdentityManagerFactory::GetForProfile(self.profile)
                     tracker:_tracker
                  entryPoint:_entryPoint
+               firstRunType:_firstRunType
           completionHandler:_completion];
   _mediator.sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
@@ -243,7 +244,11 @@
   _viewController = nil;
 }
 
-- (void)dismissGeminiFlow {
+- (void)dismissGeminiFlowForLinkClick {
+  if (_firstRunType == GeminiFirstRunType::kLive) {
+    _liveFREOutcome = IOSGeminiLiveFREOutcome::kLinkClick;
+    [self logLiveFREOutcome];
+  }
   [_geminiHandler dismissGeminiFlowWithCompletion:nil];
 }
 

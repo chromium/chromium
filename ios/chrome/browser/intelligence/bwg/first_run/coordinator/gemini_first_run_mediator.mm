@@ -78,6 +78,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   // The entry point the mediator was initialized from.
   gemini::EntryPoint _entryPoint;
+
+  // The type of First Run flow.
+  GeminiFirstRunType _firstRunType;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
@@ -88,6 +91,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
+                       firstRunType:(GeminiFirstRunType)firstRunType
                   completionHandler:(void (^)(BOOL success))completion {
   self = [super init];
   if (self) {
@@ -97,6 +101,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
     _authService = authService;
     _tracker = tracker;
     _entryPoint = entryPoint;
+    _firstRunType = firstRunType;
     _FRECompletion = completion;
     _identityManager = identityManager;
     _geminiOverlayPreparationStartTime = base::TimeTicks::Now();
@@ -286,7 +291,11 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Handles tap on a consent link action.
 - (void)didTapConsentLinkWithAction:(NSString*)actionString {
-  RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kLinkClick);
+  if (_firstRunType == GeminiFirstRunType::kLive) {
+    RecordLiveFREConsentLinkClick();
+  } else {
+    RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kLinkClick);
+  }
   if ([actionString isEqualToString:kGeminiFirstFootnoteLinkAction]) {
     [self openNewTabWithURL:GURL(kFirstFootnoteLinkURL)];
   } else if ([actionString isEqualToString:kGeminiSecondFootnoteLinkAction]) {
@@ -319,11 +328,11 @@ const CGFloat kPromoMaxImpressionCount = 3;
   }
 }
 
-// Open a new tab page given a URL.
+// Opens a new tab page given a URL.
 - (void)openNewTabWithURL:(const GURL&)URL {
+  [_delegate dismissGeminiFlowForLinkClick];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [self.sceneHandler openURLInNewTab:command];
-  [_delegate dismissGeminiFlow];
 }
 
 // Returns the currently active WebState's Gemini tab helper.

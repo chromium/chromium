@@ -13,8 +13,8 @@
 // Dismisses the Gemini consent UI.
 - (void)dismissGeminiConsentUIWithCompletion:(ProceduralBlock)completion;
 
-// Dismisses the Gemini flow.
-- (void)dismissGeminiFlow;
+// Dismisses the Gemini flow when the user taps a consent link.
+- (void)dismissGeminiFlowForLinkClick;
 
 @end
 

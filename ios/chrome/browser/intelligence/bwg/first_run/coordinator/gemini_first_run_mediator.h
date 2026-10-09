@@ -47,6 +47,7 @@ class IdentityManager;
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
+                       firstRunType:(GeminiFirstRunType)firstRunType
                   completionHandler:(void (^)(BOOL success))completion;
 
 // Returns the consent configuration for the given First Run type.

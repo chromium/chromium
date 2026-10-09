@@ -8,6 +8,8 @@
 
 #import <memory>
 
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -15,6 +17,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/first_run/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/first_run/ui/gemini_first_run_step.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -94,8 +97,10 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  GeminiFirstRunMediator* CreateMediator(gemini::EntryPoint entry_point,
-                                         void (^completion)(BOOL success)) {
+  GeminiFirstRunMediator* CreateMediator(
+      gemini::EntryPoint entry_point,
+      void (^completion)(BOOL success),
+      GeminiFirstRunType first_run_type = GeminiFirstRunType::kNewUser) {
     PrefService* prefs = profile_->GetPrefs();
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(profile_.get());
@@ -112,6 +117,7 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
                                   profile_.get())
                       tracker:tracker
                    entryPoint:entry_point
+                 firstRunType:first_run_type
             completionHandler:completion];
     mediator.delegate = mock_delegate_;
     mediator.sceneHandler = mock_scene_handler_;
@@ -277,19 +283,50 @@ TEST_F(GeminiFirstRunMediatorTest, TestDidRefuseLiveOnboarding) {
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
-// Tests didTapConsentLinkWithAction: dismisses the flow and opens a URL for
-// a valid action, and does nothing for an unknown action.
+// Tests that didTapConsentLinkWithAction: dismisses the flow and opens a URL
+// for a valid action, and does nothing for an unknown action.
 TEST_F(GeminiFirstRunMediatorTest, TestDidTapConsentLinkWithAction) {
-  OCMExpect([mock_delegate_ dismissGeminiFlow]);
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  OCMExpect([mock_delegate_ dismissGeminiFlowForLinkClick]);
   OCMExpect([mock_scene_handler_ openURLInNewTab:[OCMArg isNotNil]]);
   [mediator_ didTapConsentLinkWithAction:kGeminiFirstFootnoteLinkAction];
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+  histogram_tester.ExpectUniqueSample(kFirstRunConsentActionHistogram,
+                                      IOSGeminiFirstRunAction::kLinkClick, 1);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("MobileGeminiFREConsentLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MobileGeminiLiveFREConsentLinkClick"));
 
   // Verify unknown action does not dismiss the flow or open a new tab.
-  OCMReject([mock_delegate_ dismissGeminiFlow]);
+  OCMReject([mock_delegate_ dismissGeminiFlowForLinkClick]);
   OCMReject([mock_scene_handler_ openURLInNewTab:[OCMArg any]]);
   [mediator_ didTapConsentLinkWithAction:@"unknownAction"];
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that didTapConsentLinkWithAction: for Live FRE links records the Live
+// link click action and does not record the standard FRE consent action.
+TEST_F(GeminiFirstRunMediatorTest, TestDidTapLiveConsentLinkWithAction) {
+  GeminiFirstRunMediator* live_mediator = CreateMediator(
+      gemini::EntryPoint::OverflowMenu, nil, GeminiFirstRunType::kLive);
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  OCMExpect([mock_delegate_ dismissGeminiFlowForLinkClick]);
+  OCMExpect([mock_scene_handler_ openURLInNewTab:[OCMArg isNotNil]]);
+  [live_mediator
+      didTapConsentLinkWithAction:kGeminiLivePrivacyNoticeLinkAction];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+  histogram_tester.ExpectTotalCount(kFirstRunConsentActionHistogram, 0);
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("MobileGeminiFREConsentLinkClick"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiLiveFREConsentLinkClick"));
+  [live_mediator disconnect];
 }

@@ -20517,6 +20517,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiLiveFREConsentLinkClick">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user clicks any link on the Live Gemini FRE consent
+    screen. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiLiveOSMicPromptAllowed">
   <owner>tarekmakkouk@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>

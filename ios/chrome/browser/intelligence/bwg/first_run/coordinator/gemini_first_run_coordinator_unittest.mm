@@ -447,3 +447,33 @@ TEST_F(GeminiFirstRunCoordinatorTest, TestPresentationControllerDidDismiss) {
       IOSGeminiLiveFREOutcome::kDismissedOnConsent, 1);
   [coordinator_ stop];
 }
+
+// Tests that dismissGeminiFlowForLinkClick for kLive flow logs kLinkClick
+// outcome.
+TEST_F(GeminiFirstRunCoordinatorTest,
+       TestDismissGeminiFlowForLinkClickLogsLinkClickOutcomeForLive) {
+  base::HistogramTester histogram_tester;
+  base_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_ = std::make_unique<ScopedKeyWindow>();
+  [scoped_window_->Get() setRootViewController:base_view_controller_];
+  [scoped_window_->Get() makeKeyAndVisible];
+
+  coordinator_ = [[GeminiFirstRunCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                  fromEntryPoint:gemini::EntryPoint::AIHub
+                    firstRunType:GeminiFirstRunType::kLive
+               completionHandler:nil];
+  coordinator_.animatedPresentation = NO;
+  [coordinator_ start];
+
+  OCMExpect(
+      [mock_gemini_handler_ dismissGeminiFlowWithCompletion:[OCMArg any]]);
+  [(id<GeminiFirstRunMediatorDelegate>)
+          coordinator_ dismissGeminiFlowForLinkClick];
+
+  histogram_tester.ExpectUniqueSample(kGeminiLiveFREOutcomeHistogram,
+                                      IOSGeminiLiveFREOutcome::kLinkClick, 1);
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+  [coordinator_ stop];
+}

@@ -1125,6 +1125,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dismissed on Consent Screen"/>
   <int value="2" label="Denied OS Mic Permission"/>
   <int value="3" label="Denied Chrome Mic Permission"/>
+  <int value="4" label="Link Clicked on Consent Screen"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiLiveFREOutcome) -->

@@ -128,12 +128,16 @@ enum class IOSGeminiLiveFREOutcome {
   kDismissedOnConsent = 1,
   kDeniedOSMicPermission = 2,
   kDeniedChromeMicPermission = 3,
-  kMaxValue = kDeniedChromeMicPermission,
+  kLinkClick = 4,
+  kMaxValue = kLinkClick,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiLiveFREOutcome)
 
 // Records the final outcome of the Gemini Live FRE flow.
 void RecordLiveFREOutcome(IOSGeminiLiveFREOutcome outcome);
+
+// Records that the user clicked a link on the Gemini Live FRE consent screen.
+void RecordLiveFREConsentLinkClick();
 
 // Records that the user tapped the Live button to switch to Live mode.
 void RecordLiveButtonTapped();

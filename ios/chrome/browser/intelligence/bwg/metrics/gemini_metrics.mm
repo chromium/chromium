@@ -292,6 +292,11 @@ void RecordLiveFREOutcome(IOSGeminiLiveFREOutcome outcome) {
   base::UmaHistogramEnumeration(kGeminiLiveFREOutcomeHistogram, outcome);
 }
 
+void RecordLiveFREConsentLinkClick() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiLiveFREConsentLinkClick"));
+}
+
 void RecordLiveButtonTapped() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiLiveButtonTapped"));
 }
