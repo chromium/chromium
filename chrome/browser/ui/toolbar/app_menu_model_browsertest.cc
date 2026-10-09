@@ -49,6 +49,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
@@ -696,10 +698,15 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelTest,
 class ContextualTasksAskGoogleEnabledTest : public AppMenuModelTest {
  public:
   ContextualTasksAskGoogleEnabledTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        contextual_tasks::kContextualTasksUpdatedEntryPoints,
-        {{"ContextualTasksContextMenuShowAskGoogle", "true"},
-         {"ContextualTasksContextMenuSubmenu", "false"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {lens::features::kLensSidePanelUnification, {}},
+         {contextual_tasks::kContextualTasksUpdatedEntryPoints,
+          {{"ContextualTasksContextMenuShowAskGoogle", "true"},
+           {"ContextualTasksContextMenuSubmenu", "false"}}}},
+        {omnibox::kAimServerEligibilityEnabled});
   }
   ~ContextualTasksAskGoogleEnabledTest() override = default;
 
@@ -747,10 +754,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksAskGoogleEnabledTest,
 class ContextualTasksAskGoogleSubmenuTest : public AppMenuModelTest {
  public:
   ContextualTasksAskGoogleSubmenuTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        contextual_tasks::kContextualTasksUpdatedEntryPoints,
-        {{"ContextualTasksContextMenuShowAskGoogle", "true"},
-         {"ContextualTasksContextMenuSubmenu", "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {lens::features::kLensSidePanelUnification, {}},
+         {contextual_tasks::kContextualTasksUpdatedEntryPoints,
+          {{"ContextualTasksContextMenuShowAskGoogle", "true"},
+           {"ContextualTasksContextMenuSubmenu", "true"}}}},
+        {omnibox::kAimServerEligibilityEnabled});
   }
   ~ContextualTasksAskGoogleSubmenuTest() override = default;
 

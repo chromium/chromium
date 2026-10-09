@@ -15,6 +15,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
@@ -159,6 +160,37 @@ bool IsTabSharingEligible(Profile* profile) {
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   return aim_service && aim_service->IsAimEligible() &&
          aim_service->IsFuseboxEligible();
+}
+
+bool AreContextualTasksUpdatedEntryPointsEnabled(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(kContextualTasksUpdatedEntryPoints)) {
+    return false;
+  }
+  if (!profile) {
+    return false;
+  }
+  auto* eligibility_manager =
+      ContextualTasksEligibilityManager::GetForProfile(profile);
+  auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
+  return eligibility_manager && eligibility_manager->IsSidePanelAvailable() &&
+         aim_service && aim_service->IsAimEligible();
+}
+
+bool ShouldShowAskGoogleContextMenu(Profile* profile) {
+  return AreContextualTasksUpdatedEntryPointsEnabled(profile) &&
+         kContextualTasksContextMenuShowAskGoogle.Get();
+}
+
+bool ShouldRouteAskGoogleToOmnibox(Profile* profile) {
+  return AreContextualTasksUpdatedEntryPointsEnabled(profile) &&
+         kContextualTasksContextMenuRouteAskGoogleToOmnibox.Get();
+}
+
+bool ShouldUseContextualTasksContextMenuSubmenu(Profile* profile) {
+  // Check ShouldShowAskGoogleContextMenu so that the submenu is not used if
+  // there is only one subitem.
+  return ShouldShowAskGoogleContextMenu(profile) &&
+         kContextualTasksContextMenuSubmenu.Get();
 }
 
 bool CanShareTabContext(Profile* profile) {

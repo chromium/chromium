@@ -118,6 +118,7 @@ source_set("impl") {
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/glic",

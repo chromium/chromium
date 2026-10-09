@@ -3725,9 +3725,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     controller->OpenLensOverlay(
                         lens::LensOverlayInvocationSource::
                             kContentAreaContextMenuPage,
-                        /*should_show_csb=*/!base::FeatureList::IsEnabled(
-                            contextual_tasks::
-                                kContextualTasksUpdatedEntryPoints));
+                        /*should_show_csb=*/!contextual_tasks::
+                            AreContextualTasksUpdatedEntryPointsEnabled(
+                                bwi ? bwi->GetProfile() : nullptr));
                     return;
                   }
                 }

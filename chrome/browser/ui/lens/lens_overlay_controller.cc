@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -1393,8 +1394,9 @@ bool LensOverlayController::CoBrowsePanelWithLensOverlayEnabled() const {
 }
 
 bool LensOverlayController::ShouldHideNonBlockingPrivacyNotice() const {
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksUpdatedEntryPoints) &&
+  Profile* const profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(profile) &&
       (invocation_source_ ==
            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
        invocation_source_ == lens::LensOverlayInvocationSource::kAppMenu ||

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -94,8 +95,8 @@ void LensOverlayHomeworkPageActionController::HandlePageActionEvent(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksUpdatedEntryPoints)) {
+  if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
+          tab_->GetBrowserWindowInterface()->GetProfile())) {
     chrome::ExecAskGoogleAboutThisPage(
         tab_->GetBrowserWindowInterface(),
         lens::LensOverlayInvocationSource::kHomeworkActionChip,

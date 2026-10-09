@@ -25,6 +25,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -2349,11 +2350,11 @@ void AppMenuModel::Build() {
     const gfx::VectorIcon& search_spark_icon =
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                           : omnibox::kSearchSparkOldIcon;
+    Profile* const profile = browser_->GetProfile();
     const bool show_ask_google =
-        contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get();
+        contextual_tasks::ShouldShowAskGoogleContextMenu(profile);
     const bool use_submenu =
-        contextual_tasks::kContextualTasksContextMenuSubmenu.Get() &&
-        show_ask_google;
+        contextual_tasks::ShouldUseContextualTasksContextMenuSubmenu(profile);
     ui::SimpleMenuModel* target_model = this;
     if (use_submenu) {
       sub_menus_.push_back(std::make_unique<ui::SimpleMenuModel>(this));

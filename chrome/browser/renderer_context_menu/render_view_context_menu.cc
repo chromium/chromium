@@ -52,6 +52,7 @@
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -3304,11 +3305,11 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
       return;
     }
 
-    // Check both params so that the submenu is not used if there is only one
-    // subitem.
+    Profile* const profile = GetProfile();
+    const bool show_ask_google =
+        contextual_tasks::ShouldShowAskGoogleContextMenu(profile);
     const bool use_submenu =
-        contextual_tasks::kContextualTasksContextMenuSubmenu.Get() &&
-        contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get();
+        contextual_tasks::ShouldUseContextualTasksContextMenuSubmenu(profile);
     ui::SimpleMenuModel* target_model =
         use_submenu ? &contextual_tasks_submenu_model_ : &menu_model_;
 
@@ -3317,7 +3318,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
                                           : omnibox::kSearchSparkOldIcon,
         ui::kColorMenuIcon, kTabMenuIconSize);
 
-    if (contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get()) {
+    if (show_ask_google) {
       target_model->AddItemWithStringIdAndIcon(
           IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE,
           IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE, ask_google_icon);
@@ -5504,8 +5505,8 @@ void RenderViewContextMenu::ExecRegionSearch(
       CHECK(controller);
       controller->OpenLensOverlay(
           lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
-          /*should_show_csb=*/!base::FeatureList::IsEnabled(
-              contextual_tasks::kContextualTasksUpdatedEntryPoints));
+          /*should_show_csb=*/!contextual_tasks::
+              AreContextualTasksUpdatedEntryPointsEnabled(GetProfile()));
       return;
     }
   }

@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -56,13 +57,13 @@ bool IsVisualSelectionType(lens::LensOverlaySelectionType selection_type) {
 }
 
 bool IsSelectedRegionOnlyInvocationSource(
+    Profile* profile,
     std::optional<lens::LensOverlayInvocationSource> invocation_source) {
   if (invocation_source ==
       lens::LensOverlayInvocationSource::kOmniboxPopupButton) {
     return true;
   }
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksUpdatedEntryPoints)) {
+  if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(profile)) {
     return invocation_source ==
                lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
            invocation_source == lens::LensOverlayInvocationSource::kAppMenu ||
@@ -246,7 +247,7 @@ void LensQueryFlowRouter::StartQueryFlow(
     };
 
     if (IsSelectedRegionOnlyInvocationSource(
-            lens_search_controller_->invocation_source())) {
+            profile(), lens_search_controller_->invocation_source())) {
       context_upload_mode_ = ContextUploadMode::kSelectedRegionOnly;
       // For region-only uploads, page context is not uploaded, but page context
       // eligibility is evaluated to ensure protected pages are blocked.
@@ -1002,7 +1003,7 @@ bool LensQueryFlowRouter::ShouldPopulateFullPageContext() const {
   if (context_upload_mode_ == ContextUploadMode::kSelectedRegionOnly ||
       (lens_search_controller_ &&
        IsSelectedRegionOnlyInvocationSource(
-           lens_search_controller_->invocation_source()))) {
+           profile(), lens_search_controller_->invocation_source()))) {
     return false;
   }
   const bool can_add_page_content_to_query =

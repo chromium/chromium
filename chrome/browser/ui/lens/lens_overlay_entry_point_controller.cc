@@ -10,6 +10,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -309,8 +310,9 @@ void LensOverlayEntryPointController::InvokeAction(
   } else {
     search_controller->OpenLensOverlay(
         lens::LensOverlayInvocationSource::kToolbar,
-        /*should_show_csb=*/!base::FeatureList::IsEnabled(
-            contextual_tasks::kContextualTasksUpdatedEntryPoints));
+        /*should_show_csb=*/!contextual_tasks::
+            AreContextualTasksUpdatedEntryPointsEnabled(
+                active_tab->GetBrowserWindowInterface()->GetProfile()));
   }
 }
 

@@ -50,6 +50,7 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #endif
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -889,10 +890,10 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                 browser_window_interface_);
             controller && controller->IsEnabled()) {
           const bool show_ask_google =
-              contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get();
+              contextual_tasks::ShouldShowAskGoogleContextMenu(profile);
           const bool use_submenu =
-              contextual_tasks::kContextualTasksContextMenuSubmenu.Get() &&
-              show_ask_google;
+              contextual_tasks::ShouldUseContextualTasksContextMenuSubmenu(
+                  profile);
           auto add_items = [show_ask_google](AppMenuBuilder& target) {
             if (show_ask_google) {
               target.AddAction(

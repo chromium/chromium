@@ -122,6 +122,7 @@
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_testing_utils.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -4839,7 +4840,7 @@ class ContextualTasksContextMenuAskGoogleBrowserTest
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
-        {});
+        {omnibox::kAimServerEligibilityEnabled});
   }
 
  protected:
@@ -4904,7 +4905,7 @@ class ContextualTasksContextMenuSubmenuBrowserTest
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "true"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
-        {});
+        {omnibox::kAimServerEligibilityEnabled});
   }
 
  protected:

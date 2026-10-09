@@ -77,6 +77,21 @@ void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
 // for the given profile (checking AIM and Fusebox eligibility).
 bool IsTabSharingEligible(Profile* profile);
 
+// Returns true if contextual tasks updated entry points are enabled for the
+// given profile. Checks the feature flag, whether the contextual tasks side
+// panel is available, and AIM eligibility.
+bool AreContextualTasksUpdatedEntryPointsEnabled(Profile* profile);
+
+// Returns true if the "Ask Google..." context menu item should be shown.
+bool ShouldShowAskGoogleContextMenu(Profile* profile);
+
+// Returns true if "Ask Google..." entry points should be routed to the omnibox.
+bool ShouldRouteAskGoogleToOmnibox(Profile* profile);
+
+// Returns true if the contextual tasks context menu items should be grouped
+// into a submenu.
+bool ShouldUseContextualTasksContextMenuSubmenu(Profile* profile);
+
 // Returns true if tab sharing is eligible and context sharing is enabled for
 // the given profile.
 bool CanShareTabContext(Profile* profile);

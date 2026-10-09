@@ -57,6 +57,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -98,7 +99,11 @@ class TestingContextualTasksUiService
             contextual_tasks_service,
             identity_manager,
             aim_eligibility_service,
-            /*eligibility_manager=*/nullptr,
+            std::make_unique<
+                contextual_tasks::ContextualTasksEligibilityManager>(
+                profile->GetPrefs(),
+                identity_manager,
+                aim_eligibility_service),
             std::unique_ptr<
                 contextual_tasks::ContextualTasksCookieSynchronizer>()),
         profile_(profile),
@@ -1166,7 +1171,7 @@ class LensSearchControllerStartZeroStateSessionTest
                               contextual_tasks::
                                   kContextualTasksForceEntryPointEligibility,
                               lens::features::kLensSidePanelUnification},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
   }
 
   bool IsContextualTasksSidePanelOpen() {
