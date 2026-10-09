@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 
@@ -76,7 +75,6 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Before
     public void setUp() {
-        OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
         TabLoadingService.setInstanceForTesting(mTabLoadingService);
         mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
@@ -461,7 +459,7 @@ public class FuseboxAttachmentModelListUnitTest {
     public void testMaxAttachments() {
         when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("pretokenized-token", "uploaded-token");
-        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
+        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
             FuseboxAttachment attachment = createTestAttachment("pretokenized");
             assertTrue(mFuseboxAttachmentModelList.add(attachment));
         }

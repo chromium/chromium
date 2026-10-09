@@ -847,9 +847,6 @@ import java.util.function.Supplier;
         int maxAllowedTabs = tabIds.size() + mModelList.getRemainingAttachments();
         intent.putExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
 
-        boolean isSingleContextMode = !OmniboxFeatures.sMultiattachmentFusebox.getValue();
-        intent.putExtra(ChromeItemPickerExtras.EXTRA_IS_SINGLE_CONTEXT_MODE, isSingleContextMode);
-
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
     }

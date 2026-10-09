@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -45,12 +44,10 @@ import java.util.function.Predicate;
 public class FuseboxAttachmentModelList
         implements ContextUploadObserver, Iterable<FuseboxAttachment> {
 
+    /** The maximum number of attachments that can be attached at once. */
+    public static final int MAX_ATTACHMENTS = 10;
+
     private final ModelList mModelList = new ModelList();
-
-    public static int getMaxAttachments() {
-        return OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
-    }
-
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
     private final ObserverList<FuseboxAttachmentChangeListener> mAttachmentChangeListeners =
             new ObserverList<>();
@@ -447,7 +444,7 @@ public class FuseboxAttachmentModelList
      * if needed.
      */
     public int getRemainingAttachments() {
-        return getMaxAttachments() - size();
+        return MAX_ATTACHMENTS - size();
     }
 
     private void notifyAttachmentUploadFailed() {

@@ -233,9 +233,6 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_GUIDED_TOUR,
                     FeatureState.DISABLED_IN_PROD);
 
-    public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
-            newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
-
     public static final BooleanCachedFeatureParam sRedirectComposeplateButton =
             newBooleanParam(sOmniboxMultimodalInput, "redirect_composeplate_button", false);
 

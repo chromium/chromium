@@ -315,7 +315,6 @@ public class FuseboxMediatorUnitTest {
 
     @Before
     public void setUp() {
-        OmniboxFeatures.sMultiattachmentFusebox.setForTesting(/* overrideValue= */ true);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
 
@@ -1489,7 +1488,7 @@ public class FuseboxMediatorUnitTest {
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertEquals(
-                FuseboxAttachmentModelList.getMaxAttachments(),
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
                 intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
     }
 
@@ -1511,7 +1510,7 @@ public class FuseboxMediatorUnitTest {
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertEquals(
-                FuseboxAttachmentModelList.getMaxAttachments(),
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
                 intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
     }
 
@@ -1971,7 +1970,7 @@ public class FuseboxMediatorUnitTest {
         assertNotNull(
                 intent.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS));
         assertEquals(
-                FuseboxAttachmentModelList.getMaxAttachments(),
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1));
     }
 
@@ -1994,7 +1993,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(preselectedIds.contains(tab1.getId()));
         assertTrue(preselectedIds.contains(tab2.getId()));
         assertEquals(
-                FuseboxAttachmentModelList.getMaxAttachments(),
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1));
     }
 
@@ -2012,7 +2011,7 @@ public class FuseboxMediatorUnitTest {
         int allowedSelectionCount =
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1);
         // The image and file attachments should count against the max, the tab should not.
-        assertEquals(FuseboxAttachmentModelList.getMaxAttachments() - 2, allowedSelectionCount);
+        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS - 2, allowedSelectionCount);
     }
 
     @Test
@@ -2029,7 +2028,7 @@ public class FuseboxMediatorUnitTest {
         int allowedSelectionCount =
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1);
         // The image and file attachments should count against the max, the tab should not.
-        assertEquals(FuseboxAttachmentModelList.getMaxAttachments() - 2, allowedSelectionCount);
+        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS - 2, allowedSelectionCount);
     }
 
     @Test
