@@ -1909,6 +1909,78 @@ TEST_F(ContextHubServiceTest, GroupTabs_MESError) {
             "later.");
 }
 
+TEST_F(ContextHubServiceTest, ReplaceTabGroups_ReplacesExisting) {
+  TabGroupEntry old_group;
+  old_group.label = "Old";
+  old_group.tab_ids = {1, 2};
+  base::test::TestFuture<void> seed_future;
+  service_.ReplaceTabGroups({old_group}, seed_future.GetCallback());
+  ASSERT_TRUE(seed_future.Wait());
+
+  TabGroupEntry group_a;
+  group_a.label = "A";
+  group_a.tab_ids = {3, 4};
+  group_a.tabs = {{3, "Tab 3", GURL("https://example3.com")},
+                  {4, "Tab 4", GURL("https://example4.com")}};
+  TabGroupEntry group_b;
+  group_b.label = "B";
+  group_b.tab_ids = {5};
+  base::test::TestFuture<void> replace_future;
+  service_.ReplaceTabGroups({group_a, group_b}, replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service_.GetTabGroups(stored_groups_future.GetCallback());
+  EXPECT_THAT(
+      stored_groups_future.Get(),
+      ElementsAre(
+          FieldsAre(testing::Ne(""), "A", ElementsAre(3, 4),
+                    ElementsAre(FieldsAre(3, "Tab 3", _, _, _),
+                                FieldsAre(4, "Tab 4", _, _, _)),
+                    testing::Ne(base::Time()), testing::Ne(base::Time())),
+          FieldsAre(testing::Ne(""), "B", ElementsAre(5), IsEmpty(),
+                    testing::Ne(base::Time()), testing::Ne(base::Time()))));
+}
+
+TEST_F(ContextHubServiceTest, ReplaceTabGroups_EmptyClearsStore) {
+  TabGroupEntry group;
+  group.label = "Group";
+  group.tab_ids = {1, 2};
+  base::test::TestFuture<void> seed_future;
+  service_.ReplaceTabGroups({group}, seed_future.GetCallback());
+  ASSERT_TRUE(seed_future.Wait());
+
+  base::test::TestFuture<void> replace_future;
+  service_.ReplaceTabGroups({}, replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service_.GetTabGroups(stored_groups_future.GetCallback());
+  EXPECT_TRUE(stored_groups_future.Get().empty());
+}
+
+TEST_F(ContextHubServiceTest, ReplaceTabGroups_NullStore) {
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      /*tab_group_store=*/nullptr,
+      /*context_hub_backend=*/nullptr,
+      /*auto_todos_store=*/nullptr);
+
+  TabGroupEntry group;
+  group.label = "Group";
+  group.tab_ids = {1, 2};
+  base::test::TestFuture<void> replace_future;
+  service.ReplaceTabGroups({group}, replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service.GetTabGroups(stored_groups_future.GetCallback());
+  EXPECT_TRUE(stored_groups_future.Get().empty());
+}
+
 TEST_F(ContextHubServiceTest, AddAndGetTabGroupChatHistory) {
   service_.AddTabGroupChatHistoryTurn(
       optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "User message");

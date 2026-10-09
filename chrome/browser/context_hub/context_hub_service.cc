@@ -1245,6 +1245,25 @@ void ContextHubService::DeleteAllTabGroups(base::OnceClosure callback) {
   }
 }
 
+void ContextHubService::ReplaceTabGroups(std::vector<TabGroupEntry> groups,
+                                         base::OnceClosure callback) {
+  if (!tab_group_store_) {
+    std::move(callback).Run();
+    return;
+  }
+  tab_group_store_->DeleteAllGroups(base::BindOnce(
+      [](base::WeakPtr<ContextHubService> self,
+         std::vector<TabGroupEntry> groups, base::OnceClosure callback) {
+        if (!self || !self->tab_group_store_) {
+          std::move(callback).Run();
+          return;
+        }
+        self->tab_group_store_->AddAllGroups(std::move(groups),
+                                             std::move(callback));
+      },
+      weak_factory_.GetWeakPtr(), std::move(groups), std::move(callback)));
+}
+
 void ContextHubService::ConfirmAllTabGroups(
     ConfirmAllTabGroupsCallback callback) {
   if (!tab_group_store_) {
@@ -1578,17 +1597,7 @@ void ContextHubService::HandleTabGroupModelExecutionResult(
     }
   }
 
-  if (tab_group_store_) {
-    tab_group_store_->DeleteAllGroups(base::BindOnce(
-        [](base::WeakPtr<ContextHubService> self,
-           std::vector<TabGroupEntry> groups) {
-          if (self && self->tab_group_store_) {
-            self->tab_group_store_->AddAllGroups(std::move(groups),
-                                                 base::DoNothing());
-          }
-        },
-        weak_factory_.GetWeakPtr(), groups));
-  }
+  ReplaceTabGroups(groups, base::DoNothing());
 
   std::vector<TabData> ungrouped_tabs;
   for (context_hub::TabData& tab : tabs) {

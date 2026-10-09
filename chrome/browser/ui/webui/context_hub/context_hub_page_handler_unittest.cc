@@ -89,6 +89,10 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
 
@@ -1112,9 +1116,9 @@ TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_Success) {
       {GURL("https://mail.google.com/mail/u/0/#inbox/abc"), "ABC Subject"}};
   todo.data = std::move(fp_data);
 
-  base::test::TestFuture<bool> update_future;
-  handler_->UpdateAutoTodo(std::move(todo), update_future.GetCallback());
-  EXPECT_TRUE(update_future.Get());
+  base::test::TestFuture<bool> replace_future;
+  handler_->UpdateAutoTodo(std::move(todo), replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Get());
 
   base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
   service->GetAutoTodos(get_future.GetCallback());
@@ -1150,9 +1154,9 @@ TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_ThirdParty_Success) {
   tp_data.group_type = ThirdPartyData::GroupType::kUnfinishedAction;
   todo.data = std::move(tp_data);
 
-  base::test::TestFuture<bool> update_future;
-  handler_->UpdateAutoTodo(std::move(todo), update_future.GetCallback());
-  EXPECT_TRUE(update_future.Get());
+  base::test::TestFuture<bool> replace_future;
+  handler_->UpdateAutoTodo(std::move(todo), replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Get());
 
   base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
   service->GetAutoTodos(get_future.GetCallback());
@@ -1350,10 +1354,10 @@ TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_IncludesDismissedTodos) {
         dismissed_notify_future.SetValue(updated_todos);
       });
 
-  base::test::TestFuture<bool> update_future;
+  base::test::TestFuture<bool> replace_future;
   handler_->UpdateAutoTodo(std::move(dismissed_entry),
-                           update_future.GetCallback());
-  EXPECT_TRUE(update_future.Get());
+                           replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Get());
 
   auto updated_todos = dismissed_notify_future.Take();
   ASSERT_EQ(updated_todos.size(), 1u);
@@ -1510,10 +1514,10 @@ TEST_F(ContextHubPageHandlerTest, MemoryBankEntryDeltaNotifications) {
   annotations->note = "Updated Note";
   annotations->collection = "Updated Collection";
 
-  base::test::TestFuture<bool> update_future;
+  base::test::TestFuture<bool> replace_future;
   handler_->UpdateMemoryBankEntryAnnotations(id, std::move(annotations),
-                                             update_future.GetCallback());
-  EXPECT_TRUE(update_future.Get());
+                                             replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Get());
 
   auto [updated_id, updated_annotations] = update_notify_future.Take();
   EXPECT_EQ(updated_id, id);
@@ -1899,6 +1903,94 @@ TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_NoGroups) {
   EXPECT_TRUE(groups.empty());
   EXPECT_TRUE(ungrouped_tabs.empty());
   EXPECT_TRUE(chat_history.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, ReplaceTabGroups_ReplacesStoredGroups) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  TabGroupEntry old_group;
+  old_group.label = "Old";
+  old_group.tab_ids = {1, 2};
+  base::test::TestFuture<void> seed_future;
+  service->ReplaceTabGroups({old_group}, seed_future.GetCallback());
+  ASSERT_TRUE(seed_future.Wait());
+
+  std::vector<browser::context_hub::mojom::TabGroupPtr> groups;
+  groups.push_back(browser::context_hub::mojom::TabGroup::New());
+  groups.back()->label = "A";
+  groups.back()->tabs.push_back(browser::context_hub::mojom::TabInfo::New(
+      3, "Tab 3", GURL("https://example3.com")));
+  groups.back()->tabs.push_back(browser::context_hub::mojom::TabInfo::New(
+      4, "Tab 4", GURL("https://example4.com")));
+  groups.push_back(browser::context_hub::mojom::TabGroup::New());
+  groups.back()->label = "B";
+  groups.back()->tabs.push_back(browser::context_hub::mojom::TabInfo::New(
+      5, "Tab 5", GURL("https://example5.com")));
+
+  base::test::TestFuture<void> replace_future;
+  handler_->ReplaceTabGroups(std::move(groups), replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_future;
+  service->GetTabGroups(stored_future.GetCallback());
+  EXPECT_THAT(
+      stored_future.Get(),
+      ElementsAre(
+          AllOf(Field(&TabGroupEntry::label, "A"),
+                Field(&TabGroupEntry::tab_ids, ElementsAre(3, 4)),
+                Field(&TabGroupEntry::tabs,
+                      ElementsAre(
+                          FieldsAre(3, "Tab 3", GURL("https://example3.com"), _,
+                                    _),
+                          FieldsAre(4, "Tab 4", GURL("https://example4.com"), _,
+                                    _)))),
+          AllOf(Field(&TabGroupEntry::label, "B"),
+                Field(&TabGroupEntry::tab_ids, ElementsAre(5)))));
+}
+
+TEST_F(ContextHubPageHandlerTest, ReplaceTabGroups_DropsEmptyGroups) {
+  std::vector<browser::context_hub::mojom::TabGroupPtr> groups;
+  groups.push_back(browser::context_hub::mojom::TabGroup::New());
+  groups.back()->label = "Empty";
+  groups.push_back(browser::context_hub::mojom::TabGroup::New());
+  groups.back()->label = "Kept";
+  groups.back()->tabs.push_back(browser::context_hub::mojom::TabInfo::New(
+      1, "Tab 1", GURL("https://example1.com")));
+
+  base::test::TestFuture<void> replace_future;
+  handler_->ReplaceTabGroups(std::move(groups), replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_future;
+  service->GetTabGroups(stored_future.GetCallback());
+  EXPECT_THAT(stored_future.Get(),
+              ElementsAre(Field(&TabGroupEntry::label, "Kept")));
+}
+
+TEST_F(ContextHubPageHandlerTest, ReplaceTabGroups_EmptyClearsStore) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  TabGroupEntry group;
+  group.label = "Group";
+  group.tab_ids = {1, 2};
+  base::test::TestFuture<void> seed_future;
+  service->ReplaceTabGroups({group}, seed_future.GetCallback());
+  ASSERT_TRUE(seed_future.Wait());
+
+  base::test::TestFuture<void> replace_future;
+  handler_->ReplaceTabGroups({}, replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_future;
+  service->GetTabGroups(stored_future.GetCallback());
+  EXPECT_THAT(stored_future.Get(), IsEmpty());
 }
 
 TEST_F(ContextHubPageHandlerTest, GenerateTabBasedTodos) {
@@ -2514,10 +2606,10 @@ TEST_F(ContextHubPageHandlerTest, UpdateMemoryBankEntryAnnotations_Success) {
   new_annotations->collection = "New Collection";
   new_annotations->tags = std::vector<std::string>{"new_tag1", "new_tag2"};
 
-  base::test::TestFuture<bool> update_future;
+  base::test::TestFuture<bool> replace_future;
   handler_->UpdateMemoryBankEntryAnnotations(id, std::move(new_annotations),
-                                             update_future.GetCallback());
-  EXPECT_TRUE(update_future.Get());
+                                             replace_future.GetCallback());
+  EXPECT_TRUE(replace_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> updated_entries_future;
   service->GetAllEntries(updated_entries_future.GetCallback());
@@ -2535,10 +2627,10 @@ TEST_F(ContextHubPageHandlerTest, UpdateMemoryBankEntryAnnotations_NotFound) {
       browser::context_hub::mojom::MemoryBankEntryAnnotations::New();
   new_annotations->note = "Note";
 
-  base::test::TestFuture<bool> update_future;
+  base::test::TestFuture<bool> replace_future;
   handler_->UpdateMemoryBankEntryAnnotations(999999, std::move(new_annotations),
-                                             update_future.GetCallback());
-  EXPECT_FALSE(update_future.Get());
+                                             replace_future.GetCallback());
+  EXPECT_FALSE(replace_future.Get());
 }
 
 TEST_F(ContextHubPageHandlerTest, ExecuteSmartSearch_Success) {

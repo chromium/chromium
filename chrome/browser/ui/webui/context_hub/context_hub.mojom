@@ -559,6 +559,12 @@ interface PageHandler {
   [RuntimeFeature=kAutoTabGroups]
   ClearTabGroups() => ();
 
+  // Replaces the stored (unconfirmed) tab group suggestions with `groups`,
+  // e.g. after the user renamed, dismissed or rearranged suggested groups.
+  // Groups without tabs are dropped.
+  [RuntimeFeature=kAutoTabGroups]
+  ReplaceTabGroups(array<TabGroup> groups) => ();
+
   // Clears stored tab group chat history.
   [RuntimeFeature=kAutoTabGroups]
   ClearTabGroupChatHistory() => ();

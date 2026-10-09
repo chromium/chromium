@@ -326,6 +326,9 @@ class ContextHubService : public KeyedService,
   void GetTabGroups(GetTabGroupsCallback callback) const;
   // Deletes all stored tab groups.
   void DeleteAllTabGroups(base::OnceClosure callback);
+  // Replaces all stored (unconfirmed) tab groups with `groups`.
+  void ReplaceTabGroups(std::vector<TabGroupEntry> groups,
+                        base::OnceClosure callback);
 
   using MemoryBankChatCallback =
       base::OnceCallback<void(std::optional<std::string> response,

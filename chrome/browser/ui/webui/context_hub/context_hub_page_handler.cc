@@ -649,6 +649,35 @@ void ContextHubPageHandler::ClearTabGroups(ClearTabGroupsCallback callback) {
   service->DeleteAllTabGroups(std::move(callback));
 }
 
+void ContextHubPageHandler::ReplaceTabGroups(
+    std::vector<browser::context_hub::mojom::TabGroupPtr> groups,
+    ReplaceTabGroupsCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run();
+    return;
+  }
+
+  std::vector<context_hub::TabGroupEntry> entries;
+  entries.reserve(groups.size());
+  for (auto& group : groups) {
+    if (group->tabs.empty()) {
+      continue;
+    }
+    context_hub::TabGroupEntry entry;
+    entry.label = std::move(group->label);
+    for (auto& tab : group->tabs) {
+      entry.tab_ids.push_back(tab->id);
+      entry.tabs.push_back({.id = tab->id,
+                            .title = std::move(tab->title),
+                            .url = std::move(tab->url)});
+    }
+    entries.push_back(std::move(entry));
+  }
+  service->ReplaceTabGroups(std::move(entries), std::move(callback));
+}
+
 void ContextHubPageHandler::ClearTabGroupChatHistory(
     ClearTabGroupChatHistoryCallback callback) {
   context_hub::ContextHubService* service =
