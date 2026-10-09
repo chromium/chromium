@@ -1453,6 +1453,40 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
   for kind in module.structs:
     _AssertStructIsValid(kind)
 
+  # During translation, `module.kinds` and `module.values` are populated with
+  # PRIMITIVES, imported kinds/values (via `_Import`), and nullable wrapper
+  # kinds (via `MakeNullableKind` in `_Kind`) for symbol resolution. Once
+  # translation completes, those extra entries are no longer needed and would
+  # otherwise bloat the serialized .mojom-module pickle.
+  #
+  # Keep only non-nullable entries that are:
+  # - Definitions belonging to `module` itself (`v.module is module`), which are
+  #   needed when downstream modules `_Import()` this module and when
+  #   `_MojomPickler` canonicalizes duplicate Kind/NamedValue instances.
+  # - `MapKind` entries in `module.kinds` (which have `module = None`), because
+  #   `mojom_cpp_generator.py` scans `module.kinds` for `IsMapKind` to determine
+  #   whether map traits headers are needed.
+  #
+  # Nullable wrapper kinds (`v.is_nullable`) can also be safely pruned:
+  # - When a module references a nullable type defined in the same module (e.g.
+  #   `MyStruct?`), `MakeNullableKind()` copies `nullable_kind.module =
+  #   self.module`, so `v.module is module` is True for the wrapper. Pruning it
+  #   prevents `_Import()` from copying `'?x:...'` entries into downstream
+  #   modules (`_LookupKind()` only resolves `'x:...'` specs anyway, and
+  #   `_Kind()` always strips leading `'?'` before lookup).
+  # - `_MojomPickler.reducer_override()` strips leading `'?'` and looks up the
+  #   non-nullable base spec in `canon_mod.kinds`.
+  # - When `_Kind()` resolves a nullable map (`?m[...][...]`), it always
+  #   resolves and registers the non-nullable `MapKind` (`m[...][...]`) in
+  #   `module.kinds` first, which has the exact same `key_kind` and `value_kind`
+  #   inspected by `mojom_cpp_generator.py`.
+  module.kinds = {
+    k: v
+    for k, v in module.kinds.items()
+    if not v.is_nullable and (v.module is module or mojom.IsMapKind(v))
+  }
+  module.values = {k: v for k, v in module.values.items() if v.module is module}
+
   return module
 
 
