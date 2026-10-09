@@ -5323,6 +5323,29 @@
             ]
         }
     ],
+    "CustomizeChromeJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "nJLJ12m7C0ugnJ3q1cK0VCq4ZXpB",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "CustomizeChromeJourney",
+                        "HappinessTrackingSurveysForCustomizeChromeJourney"
+                    ]
+                }
+            ]
+        }
+    ],
     "D3D11VideoDecoderUseSharedHandle": [
         {
             "platforms": [
@@ -14763,6 +14786,29 @@
             ]
         }
     ],
+    "ReadAnythingJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "rmkq5NvrA0ugnJ3q1cK0SNirMLq1",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForReadAnythingJourney",
+                        "ReadAnythingJourney"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingMenuShuffleExperiment": [
         {
             "platforms": [
@@ -16926,6 +16972,29 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabHoverCardImages"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabSearchJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "AD85aHvUu0ugnJ3q1cK0UCSRt6XZ",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForTabSearchJourney",
+                        "TabSearchJourney"
                     ]
                 }
             ]
