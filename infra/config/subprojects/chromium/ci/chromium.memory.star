@@ -184,6 +184,7 @@ linux_memory_builder(
                 ci_only = True,
             ),
             "components_unittests": targets.mixin(
+                enable_rts_filtering = True,
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927
                 swarming = targets.swarming(

@@ -383,6 +383,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "enable_rts_filtering": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
