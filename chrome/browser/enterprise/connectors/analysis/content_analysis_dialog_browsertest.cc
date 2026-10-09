@@ -1666,7 +1666,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCopyJustificationBrowserTest,
           }),
       enterprise_connectors::DeepScanAccessPoint::COPY);
 
-  auto* controller = enterprise_connectors::ContentAnalysisDialogDelegate::
+  auto* controller = enterprise_connectors::ContentAnalysisDialogController::
       ShowForCopyJustification(
           browser()->GetTabStripModel()->GetActiveWebContents(),
           base::WrapUnique(delegate));
@@ -1721,7 +1721,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCopyJustificationBrowserTest,
           }),
       enterprise_connectors::DeepScanAccessPoint::COPY);
 
-  auto* controller = enterprise_connectors::ContentAnalysisDialogDelegate::
+  auto* controller = enterprise_connectors::ContentAnalysisDialogController::
       ShowForCopyJustification(
           browser()->GetTabStripModel()->GetActiveWebContents(),
           base::WrapUnique(delegate));
@@ -1754,7 +1754,7 @@ class ContentAnalysisDialogCopyJustificationUiTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     delegate_ = std::make_unique<MockDelegate>();
     delegate_->SetBypassRequiresJustification(true);
-    ContentAnalysisDialogDelegate::ShowForCopyJustification(
+    ContentAnalysisDialogController::ShowForCopyJustification(
         browser()->GetTabStripModel()->GetActiveWebContents(),
         std::move(delegate_));
   }

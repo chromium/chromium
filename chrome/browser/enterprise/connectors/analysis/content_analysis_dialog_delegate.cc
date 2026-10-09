@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -48,19 +47,6 @@ constexpr int kMessageAndIconRowTrailingPadding = 48;
 constexpr int kSideIconBetweenChildSpacing = 16;
 
 }  // namespace
-
-// static
-ContentAnalysisDialogController*
-ContentAnalysisDialogDelegate::ShowForCopyJustification(
-    content::WebContents* web_contents,
-    std::unique_ptr<ContentAnalysisDelegateBase> delegate) {
-  CHECK(web_contents, base::NotFatalUntil::M161);
-  CHECK(delegate, base::NotFatalUntil::M161);
-  return new ContentAnalysisDialogController(
-      std::move(delegate), /*is_cloud=*/true, web_contents,
-      DeepScanAccessPoint::COPY, /*files_count=*/0,
-      FinalContentAnalysisResult::WARNING);
-}
 
 ContentAnalysisDialogDelegate::ContentAnalysisDialogDelegate(
     ContentAnalysisDelegateBase* delegate,

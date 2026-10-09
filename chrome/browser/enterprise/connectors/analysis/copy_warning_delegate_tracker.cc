@@ -40,7 +40,7 @@ void CopyWarningDelegateTracker::BypassAndClear(
   auto* tracker = FromWebContents(web_contents);
   if (tracker && tracker->delegate_) {
     if (tracker->delegate_->BypassRequiresJustification()) {
-      ContentAnalysisDialogDelegate::ShowForCopyJustification(
+      ContentAnalysisDialogController::ShowForCopyJustification(
           web_contents, base::WrapUnique(tracker->delegate_.get()));
       tracker->delegate_ = nullptr;
       // Do not delete the delegate here, it is now owned by the dialog.

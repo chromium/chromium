@@ -60,6 +60,19 @@ base::TimeDelta ContentAnalysisDialogController::ShowDialogDelay() {
 }
 
 // static
+ContentAnalysisDialogController*
+ContentAnalysisDialogController::ShowForCopyJustification(
+    content::WebContents* web_contents,
+    std::unique_ptr<ContentAnalysisDelegateBase> delegate) {
+  CHECK(web_contents, base::NotFatalUntil::M161);
+  CHECK(delegate, base::NotFatalUntil::M161);
+  return new ContentAnalysisDialogController(
+      std::move(delegate), /*is_cloud=*/true, web_contents,
+      DeepScanAccessPoint::COPY, /*files_count=*/0,
+      FinalContentAnalysisResult::WARNING);
+}
+
+// static
 ContentAnalysisDialogControllerBase*
 ContentAnalysisDialogControllerBase::Create(
     std::unique_ptr<ContentAnalysisDelegateBase> delegate,

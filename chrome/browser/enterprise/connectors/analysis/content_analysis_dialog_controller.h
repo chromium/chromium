@@ -88,6 +88,14 @@ class ContentAnalysisDialogController
   static base::TimeDelta GetSuccessDialogTimeout();
   static base::TimeDelta ShowDialogDelay();
 
+  // Shows a specialized version of the dialog strictly for collecting a bypass
+  // justification after a user clicks "Copy anyway" on a warning toast.
+  // Ownership of the delegate is transferred to the dialog, the return value is
+  // used for testing.
+  static ContentAnalysisDialogController* ShowForCopyJustification(
+      content::WebContents* web_contents,
+      std::unique_ptr<ContentAnalysisDelegateBase> delegate);
+
   ContentAnalysisDialogController(
       std::unique_ptr<ContentAnalysisDelegateBase> delegate,
       bool is_cloud,
