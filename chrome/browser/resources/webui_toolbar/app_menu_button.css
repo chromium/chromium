@@ -77,3 +77,7 @@ toolbar-chip-button[has-label] {
   --toolbar-chip-ink-drop-ripple-color: transparent;
 }
 
+:host([collapsed]) #text {
+  display: none;
+}
+

@@ -10,15 +10,15 @@ export function getHtml(this: AppMenuButtonElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button" class="${this.getHighlightClass_()}"
     ?is-menu-open="${this.state.isContextMenuVisible}"
-    ?has-label="${!!this.state.labelText}"
-    ?outset-focus-ring="${!!this.state.labelText}"
+    ?has-label="${this.shouldShowLabel_()}"
+    ?outset-focus-ring="${this.shouldShowLabel_()}"
     @pointerdown="${this.onPointerdown_}" @click="${this.onClick_}"
     @focusin="${this.onFocusin_}" @focusout="${this.onFocusout_}"
     .ariaLabel="${this.state.accessibilityText}" .ariaHasPopup="${'menu'}"
     .ariaExpanded="${this.state.isContextMenuVisible ? 'true' : 'false'}"
     .tooltip="${this.getTooltip_()}">
   ${this.state.labelText ? html`
-    <span>${this.state.labelText}</span>
+    <span id="text">${this.state.labelText}</span>
   ` : ''}
   <cr-icon id="icon"
       icon="${this.glowUpActive ? this.getAnimatedIcon_() :

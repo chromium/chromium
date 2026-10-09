@@ -410,6 +410,8 @@ if (!is_android) {
       "pinned_action_test_accessor.h",
       "test_support/app_menu_test_accessor.cc",
       "test_support/app_menu_test_accessor.h",
+      "test_support/glic_button_test_accessor.cc",
+      "test_support/glic_button_test_accessor.h",
       "webui_test_utils.cc",
       "webui_test_utils.h",
     ]
@@ -586,6 +588,7 @@ if (!is_android && !is_chromeos_device) {
         "toolbar_view_interactive_uitest.cc",
         "webui_and_views_toolbar_interactive_uitest_base.cc",
         "webui_and_views_toolbar_interactive_uitest_base.h",
+        "webui_glic_control_interactive_uitest.cc",
         "webui_home_control_interactive_uitest.cc",
         "webui_home_control_test_base.cc",
         "webui_home_control_test_base.h",

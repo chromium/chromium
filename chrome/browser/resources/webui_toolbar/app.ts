@@ -403,6 +403,10 @@ export class ToolbarAppElement extends AppElementBase {
       hasInitialStateKey(ToolbarStateKey.FORWARD_BUTTON_ENABLED);
   private omniboxResizingPrioritizationEnabled_: boolean =
       loadTimeData.getBoolean('omniboxResizingPrioritizationEnabled');
+  private toolbarAppMenuLabelResizingEnabled_: boolean =
+      loadTimeData.getBoolean('toolbarAppMenuLabelResizingEnabled');
+  private toolbarGlicButtonResizingEnabled_: boolean =
+      loadTimeData.getBoolean('toolbarGlicButtonResizingEnabled');
   protected accessor webUIToolbarFullyEnabled_: boolean =
       loadTimeData.getBoolean('webUIToolbarFullyEnabled');
   protected accessor toolbarState_: ToolbarState = {
@@ -1021,9 +1025,18 @@ export class ToolbarAppElement extends AppElementBase {
         this.shadowRoot.querySelector<LocationBarElement>('#location-bar')!;
 
     const buttons = [
+      (this.toolbarAppMenuLabelResizingEnabled_ &&
+       this.toolbarState_.appMenuControlState.labelText) ?
+          this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+              '#app-menu') :
+          null,
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#avatar'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
           '#split-tabs'),
+      this.toolbarGlicButtonResizingEnabled_ ?
+          this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+              '#glic-button') :
+          null,
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#forward'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#home'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(

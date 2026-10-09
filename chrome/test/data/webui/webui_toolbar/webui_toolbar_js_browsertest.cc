@@ -156,3 +156,7 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PerformanceInterventionButton) {
   RunTest("webui_toolbar/performance_intervention_button_test.js",
           "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, GlicButton) {
+  RunTest("webui_toolbar/glic_button_test.js", "mocha.run();");
+}

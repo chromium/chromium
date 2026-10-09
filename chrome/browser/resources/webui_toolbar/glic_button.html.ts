@@ -10,13 +10,14 @@ export function getHtml(this: GlicButtonElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
-    ?has-label="${!!this.getLabel_()}"
+    ?has-label="${this.shouldShowLabel_()}"
     ?is-menu-open="${this.state.open || this.state.isContextMenuVisible}"
     .disabled="${!this.enabled}" .tooltip="${this.getTooltip_()}"
     .ariaLabel="${this.getAriaLabel_()}"
     .ariaExpanded="${this.state.open ? 'true' : 'false'}"
-    .ariaHasPopup="${'dialog'}" @click="${this.onClick_}"
-    @contextmenu="${this.onContextmenu_}">
+    .ariaHasPopup="${'dialog'}"
+    @pointerdown="${this.highlightTracker.onPointerdown}"
+    @click="${this.onClick_}" @contextmenu="${this.onContextmenu_}">
   ${this.state.open ? html`
     <cr-icon slot="prefix-icon" id="icon" icon="webui-toolbar:glic_button">
     </cr-icon>

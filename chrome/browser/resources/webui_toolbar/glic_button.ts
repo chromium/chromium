@@ -9,11 +9,13 @@ import './icons.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
 import type {GlicButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {CollapsibleLabelButtonMixin} from './collapsible_label_button.js';
 import {getCss} from './glic_button.css.js';
 import {getHtml} from './glic_button.html.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
@@ -24,7 +26,8 @@ export interface GlicButtonElement {
   };
 }
 
-const GlicButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const GlicButtonElementBase =
+    HelpBubbleAnchorMixin(CollapsibleLabelButtonMixin(CrLitElement));
 
 export class GlicButtonElement extends GlicButtonElementBase {
   static get is() {
@@ -41,6 +44,7 @@ export class GlicButtonElement extends GlicButtonElementBase {
 
   static override get properties() {
     return {
+      ...super.properties,
       enabled: {type: Boolean},
       state: {type: Object},
       label: {type: String},
@@ -56,10 +60,30 @@ export class GlicButtonElement extends GlicButtonElementBase {
   };
   accessor label: string = loadTimeData.getString('glicButtonLabel');
 
+  highlightTracker: HighlightTracker = new HighlightTracker();
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    const oldState = changedProperties.get('state');
+    const stateNeedsLayout = changedProperties.has('state') &&
+        (!oldState || oldState.shouldShow !== this.state.shouldShow ||
+         oldState.nudgeLabel !== this.state.nudgeLabel);
+    if (stateNeedsLayout || changedProperties.has('label')) {
+      this.fire('request-layout');
+    }
+  }
 
   override focus() {
     this.$.button.focus();
+  }
+
+  override shouldBeShown(): boolean {
+    return this.state.shouldShow;
+  }
+
+  protected override hasLabel_(): boolean {
+    return !!this.getLabel_();
   }
 
   protected getLabel_(): string {
@@ -72,12 +96,17 @@ export class GlicButtonElement extends GlicButtonElementBase {
   }
 
   protected getAriaLabel_(): string {
-    return loadTimeData.getString('glicButtonAccName');
+    if (this.state.open) {
+      return loadTimeData.getString('glicButtonTooltipClose');
+    }
+    return this.getLabel_() || loadTimeData.getString('glicButtonAccName');
   }
 
-  protected onClick_() {
-    TrackedElementManager.getInstance().notifyElementActivated(this);
-    this.browserProxy_.toolbarUIHandler.onGlicButtonClicked();
+  protected onClick_(e: PointerEvent) {
+    if (!this.highlightTracker.shouldSkipClick(e)) {
+      TrackedElementManager.getInstance().notifyElementActivated(this);
+      this.browserProxy_.toolbarUIHandler.onGlicButtonClicked();
+    }
   }
 
   protected onContextmenu_(e: MouseEvent) {

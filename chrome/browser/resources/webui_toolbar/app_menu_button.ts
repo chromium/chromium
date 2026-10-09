@@ -20,12 +20,14 @@ import {getCss} from './app_menu_button.css.js';
 import {getHtml} from './app_menu_button.html.js';
 import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import type {FocusRequestHandle} from './browser_proxy.js';
+import {CollapsibleLabelButtonMixin} from './collapsible_label_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 // Matches the 250ms animation in icons.ts and Views BrowserAppMenuButton.
 const APP_MENU_GLOW_UP_DURATION_MS = 250;
 
-const AppMenuButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const AppMenuButtonElementBase =
+    HelpBubbleAnchorMixin(CollapsibleLabelButtonMixin(CrLitElement));
 
 export interface AppMenuButtonElement {
   $: {
@@ -48,6 +50,7 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
 
   static override get properties() {
     return {
+      ...super.properties,
       state: {type: Object},
       glowUpEnabled: {type: Boolean},
       glowUpActive: {
@@ -112,15 +115,21 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
       this.toggleAttribute(
           'window-is-maximized-or-fullscreen',
           this.state.windowIsMaximizedOrFullscreen);
-      this.toggleAttribute('has-label', !!this.state.labelText);
 
       const oldState = changedProperties.get('state');
+      if (!oldState || oldState.labelText !== this.state.labelText) {
+        this.fire('request-layout');
+      }
       const oldShowing = oldState ? oldState.isContextMenuVisible : false;
       const newShowing = this.state.isContextMenuVisible;
       if (oldShowing !== newShowing) {
         this.onContextMenuVisibleChanged_();
       }
     }
+  }
+
+  protected override hasLabel_(): boolean {
+    return !!this.state.labelText;
   }
 
   private computeGlowUpActive_(changedProperties: PropertyValues<this>):

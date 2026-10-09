@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "battery_saver_button_test.ts",
     "content_setting_icon_test.ts",
     "cr_lazy_iconset_test.ts",
+    "glic_button_test.ts",
     "icon_from_table_test.ts",
     "iph_test.ts",
     "location_bar_focus_test.ts",

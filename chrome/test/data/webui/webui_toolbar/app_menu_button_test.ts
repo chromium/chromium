@@ -554,4 +554,61 @@ suite('AppMenuButtonTest', function() {
       (window as any).clearTimeout = originalClearTimeout;
     }
   });
+
+  test('ResponsiveControl Collapse and Expand', async function() {
+    appMenuButton.state = {
+      iconType: AppMenuIconType.kNone,
+      severity: AppMenuSeverity.kLow,
+      labelText: 'Update',
+      accessibilityText: 'App Menu',
+      tooltip: 'App Menu',
+      isContextMenuVisible: false,
+      windowIsMaximizedOrFullscreen: false,
+    };
+    await microtasksFinished();
+
+    const text = appMenuButton.shadowRoot.querySelector<HTMLElement>('#text');
+    assertTrue(!!text);
+    assertTrue(appMenuButton.shouldBeShown());
+    assertTrue(appMenuButton.hasAttribute('has-label'));
+    assertFalse(appMenuButton.hasAttribute('collapsed'));
+    assertEquals('block', window.getComputedStyle(text).display);
+    const expandedWidth = appMenuButton.$.button.getBoundingClientRect().width;
+
+    // 1. Collapse via setToMinWidth(): label is hidden, button stays visible
+    // and never reports items to add to the overflow menu.
+    appMenuButton.setToMinWidth();
+    await microtasksFinished();
+
+    assertTrue(appMenuButton.hasAttribute('collapsed'));
+    assertFalse(appMenuButton.hasAttribute('has-label'));
+    assertEquals('none', window.getComputedStyle(text).display);
+    assertEquals(0, appMenuButton.controlsToAddToOverflowMenu().length);
+    const collapsedWidth = appMenuButton.$.button.getBoundingClientRect().width;
+    assertTrue(collapsedWidth < expandedWidth);
+
+    // 2. Expand when insufficient space: stays collapsed.
+    let availableWidth = -10;
+    Object.defineProperty(appMenuButton, 'getRootNode', {
+      value: () => ({host: {getAvailableWidth: () => availableWidth}}),
+      configurable: true,
+    });
+    appMenuButton.expandUpToPreferredWidth();
+    await microtasksFinished();
+
+    assertTrue(appMenuButton.hasAttribute('collapsed'));
+    assertFalse(appMenuButton.hasAttribute('has-label'));
+    assertEquals('none', window.getComputedStyle(text).display);
+
+    // 3. Expand when sufficient space: label returns.
+    availableWidth = 1000;
+    appMenuButton.expandUpToPreferredWidth();
+    await microtasksFinished();
+
+    assertFalse(appMenuButton.hasAttribute('collapsed'));
+    assertTrue(appMenuButton.hasAttribute('has-label'));
+    assertEquals('block', window.getComputedStyle(text).display);
+    assertEquals(
+        expandedWidth, appMenuButton.$.button.getBoundingClientRect().width);
+  });
 });

@@ -27,6 +27,7 @@ build_webui("build") {
     "battery_saver_button.html.ts",
     "battery_saver_button.ts",
     "browser_proxy.ts",
+    "collapsible_label_button.ts",
     "content_setting_icon.html.ts",
     "content_setting_icon.ts",
     "content_settings_icons.html.ts",

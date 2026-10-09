@@ -47,3 +47,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+:host([collapsed]) #text {
+  display: none;
+}

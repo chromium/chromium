@@ -288,6 +288,12 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean(
       "omniboxResizingPrioritizationEnabled",
       base::FeatureList::IsEnabled(features::kOmniboxResizingPrioritization));
+  source->AddBoolean(
+      "toolbarAppMenuLabelResizingEnabled",
+      base::FeatureList::IsEnabled(features::kToolbarAppMenuLabelResizing));
+  source->AddBoolean(
+      "toolbarGlicButtonResizingEnabled",
+      base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing));
   source->AddBoolean("webUIToolbarFullyEnabled",
                      features::IsWebUIToolbarFullyEnabled());
 

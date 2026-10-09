@@ -167,6 +167,9 @@ function createMockToolbarState() {
       isContextMenuVisible: false,
       nudgeLabel: null as string | null,
     },
+    overflowButtonControlState: {
+      isContextMenuVisible: false,
+    },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],
   };
@@ -234,6 +237,8 @@ suite('ToolbarAppTest', () => {
       enableBackForwardButtons: true,
       enablePinnedToolbarActions: true,
       enableAvatarButton: true,
+      toolbarAppMenuLabelResizingEnabled: true,
+      toolbarGlicButtonResizingEnabled: true,
       splitTabsIndicatorWidth: 10,
       splitTabsIndicatorHeight: 10,
       splitTabsIndicatorSpacing: 10,
@@ -997,5 +1002,128 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
     assertEquals(
         '3px', window.getComputedStyle(appMenuButton).marginInlineStart);
+  });
+
+  test('GlicButtonResponsivePriorityAndNoOverflowButton', async () => {
+    loadTimeData.overrideValues({
+      enableAppMenuButton: true,
+      enableGlicButton: true,
+      toolbarAppMenuLabelResizingEnabled: true,
+      toolbarGlicButtonResizingEnabled: true,
+      webUIToolbarFullyEnabled: true,
+      glicButtonLabel: 'Gemini',
+      glicButtonTooltip: 'Gemini',
+      glicButtonTooltipClose: 'Close Gemini',
+      glicButtonAccName: 'Gemini',
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+
+    const state = createMockToolbarState();
+    state.appMenuControlState.labelText = 'Update';
+    state.glicButtonState.shouldShow = true;
+    state.backForwardControlState.forwardButtonState.shouldBeShown = false;
+    state.homeControlState.shouldBeShown = false;
+    browserProxy.fireToolbarStateListener([], state);
+    await microtasksFinished();
+
+    // 1. Verify priority order in getResponsiveControls() places app-menu first
+    // among buttons, and glic-button before forward/home/battery-saver/media.
+    const controls = app.getResponsiveControls();
+    const controlIds = controls.map(c => c.id);
+    assertEquals(
+        [
+          'location-bar',
+          'app-menu',
+          'avatar',
+          'split-tabs',
+          'glic-button',
+          'forward',
+          'home',
+          'pinnedToolbarActions',
+        ].join(','),
+        controlIds.join(','));
+
+    // 2. Simulate constrained width where app-menu's label fits, higher
+    // priority controls fit, lower priority controls are not shown, and only
+    // Glic's expanded label overflows. Verify that app-menu expands first,
+    // Glic's label collapses, and #overflow button does NOT appear.
+    const appMenuButton = app.shadowRoot.querySelector('#app-menu')!;
+    const glicButton = app.shadowRoot.querySelector('#glic-button')!;
+    const overflowButton = app.shadowRoot.querySelector('#overflow')!;
+    assertTrue(!!appMenuButton);
+    assertTrue(!!glicButton);
+    assertTrue(!!overflowButton);
+
+    app.getAvailableWidth = () =>
+        glicButton.hasAttribute('has-label') ? -10 : 100;
+    (app as any).layoutResponsiveControls();
+    await microtasksFinished();
+
+    assertFalse(appMenuButton.hasAttribute('collapsed'));
+    assertTrue(
+        appMenuButton.hasAttribute('has-label'),
+        'Higher-priority App Menu label should stay expanded');
+    assertTrue(glicButton.hasAttribute('collapsed'));
+    assertFalse(
+        glicButton.hasAttribute('has-label'),
+        'Glic button label should collapse when space is insufficient');
+    assertTrue(
+        overflowButton.hasAttribute('hidden'),
+        'Collapsing Glic label alone must not cause #overflow button to appear');
+    assertEquals(0, app.getOverflowedMenuItems().length);
+
+    // 3. Restore available width and verify Glic label expands again.
+    app.getAvailableWidth = () => 1000;
+    (app as any).layoutResponsiveControls();
+    await microtasksFinished();
+
+    assertFalse(glicButton.hasAttribute('collapsed'));
+    assertTrue(
+        glicButton.hasAttribute('has-label'),
+        'Glic button label should expand when space is available');
+    assertTrue(overflowButton.hasAttribute('hidden'));
+
+    // 4. When App Menu has no labelText, it cannot shrink or overflow and
+    // should be excluded from getResponsiveControls().
+    const stateWithoutAppMenuLabel = createMockToolbarState();
+    stateWithoutAppMenuLabel.appMenuControlState.labelText = null;
+    stateWithoutAppMenuLabel.glicButtonState.shouldShow = true;
+    browserProxy.fireToolbarStateListener([], stateWithoutAppMenuLabel);
+    await microtasksFinished();
+
+    assertFalse(
+        app.getResponsiveControls().some(c => c.id === 'app-menu'),
+        'App menu without a label should not be in getResponsiveControls()');
+  });
+
+  test('GlicButtonResizingDisabledFlag', async () => {
+    loadTimeData.overrideValues({
+      enableAppMenuButton: true,
+      enableGlicButton: true,
+      toolbarAppMenuLabelResizingEnabled: false,
+      toolbarGlicButtonResizingEnabled: false,
+      glicButtonLabel: 'Gemini',
+      glicButtonTooltip: 'Gemini',
+      glicButtonTooltipClose: 'Close Gemini',
+      glicButtonAccName: 'Gemini',
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    const state = createMockToolbarState();
+    state.appMenuControlState.labelText = 'Update';
+    state.glicButtonState.shouldShow = true;
+    browserProxy.fireToolbarStateListener([], state);
+    await microtasksFinished();
+
+    const controlIds = app.getResponsiveControls().map(c => c.id);
+    assertFalse(
+        controlIds.includes('app-menu'),
+        'App menu button should be excluded from responsive controls when resizing flag is disabled');
+    assertFalse(
+        controlIds.includes('glic-button'),
+        'Glic button should be excluded from responsive controls when resizing flag is disabled');
   });
 });
