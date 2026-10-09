@@ -117,10 +117,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   int width() const { return Size().width(); }
   int height() const { return Size().height(); }
 
-  // Partial CanvasResourceProvider::Delegate implementation
-  scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-  GetAnimatedImageFrameIndexes(uint32_t id) const override;
-
   virtual void PageVisibilityChanged();
 
   bool IsWebGL() const;

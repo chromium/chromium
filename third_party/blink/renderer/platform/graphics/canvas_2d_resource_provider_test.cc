@@ -247,7 +247,7 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest, SharedImageResourceRecycling) {
 
   MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   auto new_resource = provider->ProduceCanvasResource();
   EXPECT_NE(resource, new_resource);
   if (base::FeatureList::IsEnabled(
@@ -262,7 +262,7 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest, SharedImageResourceRecycling) {
   EnsureResourceRecycled(std::move(resource));
 
   recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   auto resource_again = provider->ProduceCanvasResource();
   EXPECT_EQ(resource_ptr, resource_again);
   if (base::FeatureList::IsEnabled(
@@ -281,7 +281,7 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest, UnusedResources) {
   auto resource = provider->ProduceCanvasResource();
   MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   auto new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
 
@@ -320,7 +320,7 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest,
   auto resource = provider->ProduceCanvasResource();
   MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   auto new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
   if (base::FeatureList::IsEnabled(
@@ -349,7 +349,7 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest,
   auto resource = provider->ProduceCanvasResource();
   MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   auto new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
   if (base::FeatureList::IsEnabled(
@@ -375,11 +375,11 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   resource = provider->ProduceCanvasResource();
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
   if (base::FeatureList::IsEnabled(
@@ -434,7 +434,7 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   // Resource updated after draw.
   MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
   recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   new_image = provider->Snapshot();
   EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
@@ -442,7 +442,7 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   auto original_shared_image = image->GetSharedImage();
   image.reset();
   recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  provider->RasterRecord(recorder.ReleaseMainRecording());
+  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 

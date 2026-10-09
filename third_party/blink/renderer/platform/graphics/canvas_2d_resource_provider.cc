@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/tiles/software_image_decode_cache.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -538,22 +539,17 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
-void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
+void Canvas2DResourceProvider::RasterRecord(
+    cc::PaintRecord last_recording,
+    cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
     if (!skia_canvas_) {
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
           GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
     }
-    cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
-    if (delegate_) {
-      // base::Unretained(this) is safe here because the callback will only be
-      // invoked during the scope of skia_canvas_->drawPicture().
-      custom_callback = base::BindRepeating(
-          &Canvas2DResourceProvider::ApplyAnimatedImageFrameIndexesForId,
-          base::Unretained(this));
-    }
-    skia_canvas_->drawPicture(std::move(last_recording), custom_callback);
+    skia_canvas_->drawPicture(std::move(last_recording),
+                              std::move(custom_callback));
     return;
   }
 
@@ -563,15 +559,6 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
 
   EnsureResourceReadyForDraw();
   EnsureWriteAccess();
-
-  cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
-  if (delegate_) {
-    // base::Unretained(this) is safe here because the callback will only be
-    // invoked during the scope of RasterCHROMIUM() below.
-    custom_callback = base::BindRepeating(
-        &Canvas2DResourceProvider::ApplyAnimatedImageFrameIndexesForId,
-        base::Unretained(this));
-  }
 
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
@@ -1069,13 +1056,6 @@ SkSurfaceProps Canvas2DResourceProvider::GetSkSurfaceProps() const {
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
-void Canvas2DResourceProvider::ApplyAnimatedImageFrameIndexesForId(
-    SkCanvas* canvas,
-    uint32_t id) {
-  CHECK(delegate_);
-  SetAnimatedImageFrameIndexes(delegate_->GetAnimatedImageFrameIndexes(id));
-}
-
 void Canvas2DResourceProvider::ClearAtCreation() {
   DCHECK(IsValid());
   MemoryManagedPaintRecorder recorder(Size(), nullptr);
@@ -1085,7 +1065,7 @@ void Canvas2DResourceProvider::ClearAtCreation() {
     recorder.getRecordingCanvas().clear(SkColors::kTransparent);
   }
 
-  RasterRecord(recorder.ReleaseMainRecording());
+  RasterRecord(recorder.ReleaseMainRecording(), {});
 }
 
 }  // namespace blink

@@ -276,9 +276,6 @@ class MODULES_EXPORT BaseRenderingContext2D
                            const DrawElementImageOptions* options,
                            ExceptionState& exception_state);
 
-  scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-  GetAnimatedImageFrameIndexMap(uint32_t id) const override;
-
   void Trace(Visitor*) const override;
 
   // Implementing methods from CanvasRenderingContext
@@ -410,6 +407,11 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
+  // Returns a map of frame indexes to be used by
+  // PlaybackImageProvider::GetRasterContent, indexed by `id` (one map per
+  // ElementImage drawn into the canvas via drawElementImage()).
+  scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+  GetAnimatedImageFrameIndexMap(uint32_t id) const;
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
   Canvas2DColorParams color_params_;

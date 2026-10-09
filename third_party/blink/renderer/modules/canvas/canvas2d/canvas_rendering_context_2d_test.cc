@@ -35,6 +35,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
 #include "cc/test/paint_op_matchers.h"
 #include "components/viz/common/resources/release_callback.h"
@@ -641,7 +642,11 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProvider {
     return SkSurfaces::Raster(info);
   }
 
-  MOCK_METHOD((void), RasterRecord, (cc::PaintRecord last_recording));
+  MOCK_METHOD((void),
+              RasterRecord,
+              (cc::PaintRecord last_recording,
+               cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback),
+              (override));
 
   MOCK_METHOD((scoped_refptr<StaticBitmapImage>),
               Snapshot,
@@ -1391,7 +1396,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
   // `WritePixels` is called.
   InSequence s;
-  EXPECT_CALL(*provider, RasterRecord(RecordedOpsAre(PaintOpIs<DrawRectOp>())))
+  EXPECT_CALL(*provider,
+              RasterRecord(RecordedOpsAre(PaintOpIs<DrawRectOp>()), _))
       .Times(1);
   EXPECT_CALL(*provider, WritePixels).Times(1);
 

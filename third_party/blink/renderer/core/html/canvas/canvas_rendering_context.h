@@ -265,10 +265,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void LangAttributeChanged() {}
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual int LayerCount() const { return 0; }
-  virtual scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-  GetAnimatedImageFrameIndexMap(uint32_t id) const {
-    return nullptr;
-  }
   virtual void DisableAccelerationForCanvas2D() { NOTREACHED(); }
 
   virtual const std::optional<cc::PaintRecord>& GetLastRecording() {

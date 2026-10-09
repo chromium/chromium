@@ -154,15 +154,6 @@ bool CanvasRenderingContextHost::IsPaintable() const {
          IsValidImageSize();
 }
 
-
-scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-CanvasRenderingContextHost::GetAnimatedImageFrameIndexes(uint32_t id) const {
-  if (auto* context = RenderingContext()) {
-    return context->GetAnimatedImageFrameIndexMap(id);
-  }
-  return nullptr;
-}
-
 bool CanvasRenderingContextHost::IsWebGL() const {
   return RenderingContext() && RenderingContext()->IsWebGL();
 }

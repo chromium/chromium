@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/raster/playback_image_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -110,17 +111,6 @@ class PLATFORM_EXPORT CanvasResourceProviderDelegate
   virtual ~CanvasResourceProviderDelegate() = default;
 
   virtual void NotifyGpuContextLost() = 0;
-  // This is used to apply a map of frame indexes to be used by
-  // PlaybackImageProvider::GetRasterContent. When the delegate is a
-  // CanvasRenderingContextHost, it is treated as an index into an array
-  // of maps, one per ElementImage which has been drawn into the canvas by
-  // a call to drawElementImage(). This is only used by canvas2d; webgl and
-  // webgpu canvases don't need this because they rasterize each ElementImage
-  // as a stand-alone PaintOpBuffer.
-  virtual scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-  GetAnimatedImageFrameIndexes(uint32_t id) const {
-    return nullptr;
-  }
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
@@ -229,7 +219,9 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void SetResourceRecyclingEnabled(bool value);
 
-  virtual void RasterRecord(cc::PaintRecord last_recording);
+  virtual void RasterRecord(
+      cc::PaintRecord last_recording,
+      cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback);
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGraphite() const;
   void RecordingCleared();
@@ -272,8 +264,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void EndWriteAccess();
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-
-  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
 
   SkSurface* GetSkSurface() const;
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
