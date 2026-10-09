@@ -147,6 +147,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                            AlwaysTranslateCheckboxAndCloseButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateCheckboxAndDoneButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
+                           AlwaysTranslateControlsTrackSourceLanguage);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceResetButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetResetButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, LazyViewInitialization);
@@ -303,6 +305,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   raw_ptr<views::Checkbox> always_translate_checkbox_ = nullptr;
   raw_ptr<views::Checkbox> advanced_always_translate_checkbox_ = nullptr;
+  raw_ptr<views::View> choose_language_button_ = nullptr;
   raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
 
   raw_ptr<views::LabelButton> advanced_reset_button_source_ = nullptr;

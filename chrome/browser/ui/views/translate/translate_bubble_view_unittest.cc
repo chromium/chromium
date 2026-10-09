@@ -274,7 +274,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 
   void PressButton(TranslateBubbleView::ButtonID id) {
     views::Button* button =
-        static_cast<views::Button*>(bubble_->GetViewByID(id));
+        id == TranslateBubbleView::BUTTON_ID_ALWAYS_TRANSLATE
+            ? bubble_->GetAlwaysTranslateCheckbox()
+            : static_cast<views::Button*>(bubble_->GetViewByID(id));
     views::test::ButtonTestApi(button).NotifyClick(
         ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                      ui::DomCode::ENTER, ui::EF_NONE));
@@ -450,7 +452,43 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndDoneButton) {
   EXPECT_EQ(1, mock_model_->set_always_translate_called_count_);
 }
 
+TEST_F(TranslateBubbleViewTest, AlwaysTranslateControlsTrackSourceLanguage) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+  mock_model_->source_language_index_ = 0;
+  mock_model_->SetShouldShowAlwaysTranslateShortcut(false);
+  CreateAndShowBubble();
+
+  ASSERT_TRUE(bubble_->always_translate_checkbox_);
+  ASSERT_TRUE(bubble_->choose_language_button_);
+  EXPECT_FALSE(bubble_->always_translate_checkbox_->GetVisible());
+  EXPECT_TRUE(bubble_->choose_language_button_->GetVisible());
+
+  mock_model_->should_always_translate_ = true;
+  mock_model_->SetShouldShowAlwaysTranslateShortcut(true);
+  bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
+  ASSERT_TRUE(bubble_->advanced_always_translate_checkbox_);
+  EXPECT_FALSE(bubble_->advanced_always_translate_checkbox_->GetVisible());
+  bubble_->source_language_combobox_->SetSelectedIndex(1);
+  bubble_->SourceLanguageChanged();
+  EXPECT_TRUE(bubble_->always_translate_checkbox_->GetVisible());
+  EXPECT_TRUE(bubble_->advanced_always_translate_checkbox_->GetVisible());
+  EXPECT_TRUE(bubble_->advanced_always_translate_checkbox_->GetChecked());
+  EXPECT_FALSE(bubble_->choose_language_button_->GetVisible());
+
+  mock_model_->SetShouldShowAlwaysTranslateShortcut(false);
+  bubble_->source_language_combobox_->SetSelectedIndex(0);
+  bubble_->SourceLanguageChanged();
+  EXPECT_FALSE(bubble_->always_translate_checkbox_->GetVisible());
+  EXPECT_FALSE(bubble_->advanced_always_translate_checkbox_->GetVisible());
+  EXPECT_FALSE(bubble_->advanced_always_translate_checkbox_->GetChecked());
+  EXPECT_TRUE(bubble_->choose_language_button_->GetVisible());
+  PressButton(TranslateBubbleView::BUTTON_ID_DONE);
+  EXPECT_FALSE(mock_model_->should_always_translate_);
+}
+
 TEST_F(TranslateBubbleViewTest, SourceResetButton) {
+  mock_model_->should_always_translate_ = true;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
 
@@ -458,16 +496,20 @@ TEST_F(TranslateBubbleViewTest, SourceResetButton) {
   // disabled.
   EXPECT_FALSE(bubble_->advanced_reset_button_source_->GetEnabled());
 
-  // Change the language selection. The reset button should be enabled.
-  bubble_->source_language_combobox_->SetSelectedIndex(10);
+  // Select Unknown. The checkbox is hidden and the reset button is enabled.
+  bubble_->source_language_combobox_->SetSelectedIndex(0);
   bubble_->SourceLanguageChanged();
-  EXPECT_EQ(10u, bubble_->source_language_combobox_->GetSelectedIndex());
+  EXPECT_EQ(0u, bubble_->source_language_combobox_->GetSelectedIndex());
   EXPECT_TRUE(bubble_->advanced_reset_button_source_->GetEnabled());
+  EXPECT_FALSE(bubble_->advanced_always_translate_checkbox_->GetVisible());
+  EXPECT_FALSE(bubble_->advanced_always_translate_checkbox_->GetChecked());
 
-  // Press the reset button. Language should change back to initial selection.
+  // Reset restores the original language and its always-translate setting.
   PressButton(TranslateBubbleView::BUTTON_ID_RESET);
   EXPECT_EQ(1u, bubble_->source_language_combobox_->GetSelectedIndex());
   EXPECT_FALSE(bubble_->advanced_reset_button_source_->GetEnabled());
+  EXPECT_TRUE(bubble_->advanced_always_translate_checkbox_->GetVisible());
+  EXPECT_TRUE(bubble_->advanced_always_translate_checkbox_->GetChecked());
 }
 
 TEST_F(TranslateBubbleViewTest, TargetResetButton) {
