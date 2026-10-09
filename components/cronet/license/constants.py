@@ -137,10 +137,6 @@ POST_PROCESS_OPERATION = {
         # TODO(b/360316861): Fix upstream by setting an explicit version to QUICHE.
         Mapper("Version", "git", None)
     ),
-    # TODO(b/360316861): Fix this upstream in Chromium.
-    "third_party/quic_trace/README.chromium": create_license_post_processing(
-        Mapper("Version", "git", "caa0a6eaba816ecb737f9a70782b7c80b8ac8dbc")
-    ),
     "third_party/metrics_proto/README.chromium": create_license_post_processing(
         Mapper("URL", "This is the canonical public repository", "Piper")
     ),
