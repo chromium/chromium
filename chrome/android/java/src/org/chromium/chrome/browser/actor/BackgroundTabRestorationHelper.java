@@ -221,9 +221,9 @@ public final class BackgroundTabRestorationHelper {
                     pool.removeTabById(tabId);
                     continue;
                 }
-                assert pool.getLiveTab(tabId) == null;
                 BackgroundPoolTab backgroundTab = pool.loadTabByOriginalId(tabId);
                 if (backgroundTab != null) {
+                    backgroundTab.prepareForForeground(selector);
                     Tab restoredTab = backgroundTab.attachTab(model, model.getCount());
                     if (restoredTab != null) {
                         restoredTabs.add(restoredTab);

@@ -153,8 +153,6 @@ public class BackgroundTabPoolTest {
                 new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, /* taskId= */ null);
         mPool.addLiveTab(liveTab);
 
-        assertThrows(AssertionError.class, () -> mPool.loadTabByOriginalId(TAB_ID_1));
-
         BackgroundPoolTab loaded = mPool.loadTabByPlaceholderId(PLACEHOLDER_ID);
         assertNotNull(loaded);
         assertSame(liveTab, loaded);
@@ -170,16 +168,26 @@ public class BackgroundTabPoolTest {
     }
 
     @Test
-    public void testLoadTabByOriginalId_whenLiveTab_throwsAssertion() {
+    public void testLoadTabByOriginalId_whenLiveTab_returnsLiveTab() {
         Tab tab = createMockTab(TAB_ID_1);
         TabState tabState = createMockTabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
 
         LiveBackgroundTab liveTab =
-                new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, /* taskId= */ null);
+                new LiveBackgroundTab(mPool, tab, Tab.INVALID_TAB_ID, /* taskId= */ null);
         mPool.addLiveTab(liveTab);
 
-        assertThrows(AssertionError.class, () -> mPool.loadTabByOriginalId(TAB_ID_1));
+        BackgroundPoolTab loaded = mPool.loadTabByOriginalId(TAB_ID_1);
+        assertNotNull(loaded);
+        assertSame(liveTab, loaded);
+        assertTrue(loaded instanceof LiveBackgroundTab);
+
+        loaded.attachTab(mTabModel, 0);
+        assertNull(mPool.getLiveTab(TAB_ID_1));
+        assertTrue(mPool.isEmpty());
+
+        ShadowLooper.idleMainLooper();
+        verify(mOnEmptyCallback).run();
     }
 
     @Test
@@ -664,8 +672,9 @@ public class BackgroundTabPoolTest {
         mPool.addLiveTab(
                 new LiveBackgroundTab(mPool, tab2, Tab.INVALID_TAB_ID, /* taskId= */ null));
 
-        // Live entries are excluded from claimTabIdsWithoutPlaceholders.
-        assertTrue(mPool.claimTabIdsWithoutPlaceholders().isEmpty());
+        // Live entries without placeholders are returned by claimTabIdsWithoutPlaceholders.
+        assertEquals(Set.of(TAB_ID_2), mPool.claimTabIdsWithoutPlaceholders());
+        assertEquals(Collections.emptySet(), mPool.claimTabIdsWithoutPlaceholders());
         assertEquals(Set.of(TAB_ID_1, TAB_ID_2), mPool.getAllTabIds());
 
         // Persist to TabCache across pool lifecycle

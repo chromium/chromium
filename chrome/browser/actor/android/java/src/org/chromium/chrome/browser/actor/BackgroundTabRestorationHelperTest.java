@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -577,6 +576,8 @@ public class BackgroundTabRestorationHelperTest {
         assertEquals(restoredTab2, restoredTabs.get(1));
         verify(mBackgroundTabPool).loadTabByOriginalId(1);
         verify(mBackgroundTabPool).loadTabByOriginalId(2);
+        verify(coldTab1).prepareForForeground(mTabModelSelector);
+        verify(coldTab2).prepareForForeground(mTabModelSelector);
         verify(coldTab1).attachTab(mNormalTabModel, 0);
         verify(coldTab2).attachTab(mNormalTabModel, 1);
         verify(mBackgroundTabPool).cleanupPostRestore();
@@ -632,21 +633,28 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testRestoreRemainingBackgroundTabs_assertsNoLiveTabs() {
+    public void testRestoreRemainingBackgroundTabs_withLiveTab() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         when(mNormalTabModel.getTabById(5)).thenReturn(null);
         LiveBackgroundTab liveTab = mock(LiveBackgroundTab.class);
-        when(mBackgroundTabPool.getLiveTab(5)).thenReturn(liveTab);
+        Tab restoredTab = mock(Tab.class);
+        when(restoredTab.getId()).thenReturn(5);
+        when(mBackgroundTabPool.loadTabByOriginalId(5)).thenReturn(liveTab);
+        when(mNormalTabModel.getCount()).thenReturn(0);
+        when(liveTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab);
 
-        Set<Integer> tabIds = Set.of(5);
-        assertThrows(
-                AssertionError.class,
-                () ->
-                        BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
-                                TabOrchestratorType.TABBED,
-                                mTabModelSelector,
-                                tabIds,
-                                /* isAuthoritativeStore= */ true));
+        List<Tab> restoredTabs =
+                BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        Set.of(5),
+                        /* isAuthoritativeStore= */ true);
+
+        assertEquals(1, restoredTabs.size());
+        assertEquals(restoredTab, restoredTabs.get(0));
+        verify(liveTab).prepareForForeground(mTabModelSelector);
+        verify(liveTab).attachTab(mNormalTabModel, 0);
+        verify(mBackgroundTabPool).cleanupPostRestore();
     }
 
     @Test
