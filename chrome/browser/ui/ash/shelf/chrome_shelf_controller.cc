@@ -715,16 +715,19 @@ std::u16string ChromeShelfController::GetAppMenuTitle(
   return l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
 }
 
-std::u16string ChromeShelfController::GetAppMenuInactiveTabTooltip(
+std::u16string ChromeShelfController::GetAppMenuWindowTitle(
     const ash::BrowserDelegate& browser) const {
-  // Use the same window title as the application menu entry for the window.
   const std::optional<std::string> window_title =
       browser.GetUserDefinedWindowTitle();
-  return l10n_util::GetStringFUTF16(
-      IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP,
-      window_title.has_value()
-          ? base::UTF8ToUTF16(*window_title)
-          : GetAppMenuTitle(browser.GetActiveWebContents()));
+  return window_title.has_value()
+             ? base::UTF8ToUTF16(*window_title)
+             : GetAppMenuTitle(browser.GetActiveWebContents());
+}
+
+std::u16string ChromeShelfController::GetAppMenuInactiveTabTooltip(
+    const ash::BrowserDelegate& browser) const {
+  return l10n_util::GetStringFUTF16(IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP,
+                                    GetAppMenuWindowTitle(browser));
 }
 
 BrowserShortcutShelfItemController*

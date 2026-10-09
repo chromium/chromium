@@ -15,7 +15,6 @@
 #include "ash/wm/window_animations.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -294,7 +293,6 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
       base::RecordAction(base::UserMetricsAction(
           "Shelf_BrowserShortcutShelfItem_ShowWindows"));
       app_menu_items.emplace_back(browser, std::nullopt);
-      auto* tab = browser->GetActiveWebContents();
       const gfx::Image& icon =
           ui::ResourceBundle::GetSharedInstance().GetImageNamed(
               (browser->IsOffTheRecord() &&
@@ -302,16 +300,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
                   ? IDR_ASH_SHELF_LIST_INCOGNITO_BROWSER
                   : IDR_ASH_SHELF_LIST_BROWSER);
 
-      // Set the title of the app menu item to the browser window title if the
-      // user set one on the window. Otherwise, use the title defined in
-      // ChromeShelfController.
-      std::optional<std::string> browser_title =
-          browser->GetUserDefinedWindowTitle();
-      std::u16string item_title = browser_title.has_value()
-                                      ? base::UTF8ToUTF16(*browser_title)
-                                      : controller->GetAppMenuTitle(tab);
-
-      items.push_back({static_cast<int>(app_menu_items.size() - 1), item_title,
+      items.push_back({static_cast<int>(app_menu_items.size() - 1),
+                       controller->GetAppMenuWindowTitle(*browser),
                        icon.AsImageSkia()});
     } else {
       base::RecordAction(

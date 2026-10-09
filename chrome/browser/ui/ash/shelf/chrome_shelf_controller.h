@@ -201,6 +201,12 @@ class ChromeShelfController
   // Returns "New Tab" if |web_contents| is null or has not loaded.
   std::u16string GetAppMenuTitle(content::WebContents* web_contents) const;
 
+  // Get the title for the application menu entry for the window of |browser|.
+  // Returns the title the user gave the window, if any; otherwise the title for
+  // its active tab, as returned by GetAppMenuTitle().
+  std::u16string GetAppMenuWindowTitle(
+      const ash::BrowserDelegate& browser) const;
+
   // Get the tooltip for the application menu entry for an inactive tab of
   // |browser|, which names the window of |browser|.
   std::u16string GetAppMenuInactiveTabTooltip(
