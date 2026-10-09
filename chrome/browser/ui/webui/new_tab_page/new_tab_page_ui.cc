@@ -738,6 +738,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_composebox::IsNtpComposeboxEnabled(profile));
   source->AddBoolean("composeboxContextMenuTooltipsEnabled",
                      omnibox::IsContextMenuTooltipsInComposeboxEnabled());
+  source->AddBoolean("composeboxFaviconSkeletonLoaderEnabled",
+                     omnibox::IsFaviconSkeletonLoaderInComposeboxEnabled());
   source->AddBoolean("composeboxShowZps", true);
   source->AddBoolean("composeboxShowTypedSuggest",
                      ntp_composebox::kShowComposeboxTypedSuggest.Get());
