@@ -3569,15 +3569,12 @@ test("unit_tests") {
   }
 
   if (is_mac) {
-    sources += [
-      "../../testing/gtest_mac_unittest.mm",
-      "../app_shim/app_shim_controller_unittest.mm",
-    ]
+    sources += [ "../../testing/gtest_mac_unittest.mm" ]
 
     data_deps += [ "//chrome:chrome_framework" ]
 
     deps += [
-      "//chrome/app_shim",
+      "//chrome/app_shim:unit_tests",
       "//chrome/browser/apps/app_shim:unit_tests",
       "//chrome/browser/mac:unit_tests",
       "//chrome/browser/renderer_host:unit_tests",

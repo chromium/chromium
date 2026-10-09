@@ -122,3 +122,17 @@ source_set("browser_tests") {
     "//content/test:test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_shim_controller_unittest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app_shim",
+    "//chrome/common:app_mode_app_support",
+    "//chrome/common:constants",
+    "//components/variations",
+    "//testing/gtest",
+  ]
+}
