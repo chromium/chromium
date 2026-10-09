@@ -122,6 +122,17 @@ void RegisterInfoBars() {
   }
 #endif
 
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE)) {
+    auto spec = InfoBarSpec::Builder(
+                    InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE)
+                    .SetMessageText(l10n_util::GetStringUTF16(
+                        IDS_FILE_SELECTION_DIALOG_INFOBAR))
+                    .SetScope(InfoBarScope::kTab)
+                    .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
   if (IsInfoBarMigrated(InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE)) {
     auto spec =
         InfoBarSpec::Builder(InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE)

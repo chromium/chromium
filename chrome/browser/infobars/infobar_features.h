@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedCollectedCookies);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedDefaultBrowser);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedDevToolsConfirm);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedDevToolsSharedProcess);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedFileAccessDisabled);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedGoogleApiKeys);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedIncognitoConnectability);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);

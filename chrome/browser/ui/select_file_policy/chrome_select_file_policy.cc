@@ -17,9 +17,12 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/window_android.h"
 #else
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 ChromeSelectFilePolicy::ChromeSelectFilePolicy(
@@ -55,6 +58,20 @@ void ChromeSelectFilePolicy::SelectFileDenied() {
           l10n_util::GetStringUTF8(IDS_FILE_SELECTION_DIALOG_INFOBAR));
     }
 #else
+    if (infobars::IsInfoBarMigrated(
+            infobars::InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE)) {
+      tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(source_contents_);
+      auto* browser_infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process);
+      if (tab && browser_infobar_manager) {
+        browser_infobar_manager->Show(
+            tab,
+            infobars::InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE);
+      }
+      return;
+    }
+
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(source_contents_);
     if (infobar_manager) {

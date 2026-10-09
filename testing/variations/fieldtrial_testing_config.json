@@ -3487,6 +3487,7 @@
                         "MigratedDefaultBrowser": "true",
                         "MigratedDevToolsConfirm": "true",
                         "MigratedDevToolsSharedProcess": "true",
+                        "MigratedFileAccessDisabled": "true",
                         "MigratedGoogleApiKeys": "true",
                         "MigratedInstallationError": "true",
                         "MigratedInstallerDownloader": "true",
