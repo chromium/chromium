@@ -787,11 +787,47 @@ TEST_F(InstallableIconFetcherTest,
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);
 
+  const GURL kCandidate16("https://www.example.com/icon-16.png");
+  const GURL kCandidate32("https://www.example.com/icon-32.png");
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  // Neither 16px nor 32px meets min_size (48px).
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kCandidate16, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(16, 16)},
+      /*is_default_icon=*/false));
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kCandidate32, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(32, 32)},
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  // Since neither is big enough, no download should be attempted and the fetch
+  // should end immediately without a downloaded icon.
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate32));
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate16));
+
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+}
+
+TEST_F(InstallableIconFetcherTest,
+       FaviconFallbackDownloadsMinSizeCandidateWhenNoIdealCandidate) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
   const GURL kCandidate48("https://www.example.com/icon-48.png");
   const GURL kCandidate96("https://www.example.com/icon-96.png");
 
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
-  // Neither 48px nor 96px is "big enough" (ideal_size is 144px).
+  // Neither 48px nor 96px meets ideal_size (144px), but both meet min_size
+  // (48px).
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       kCandidate48, blink::mojom::FaviconIconType::kFavicon,
       std::vector<gfx::Size>{gfx::Size(48, 48)},
@@ -809,12 +845,102 @@ TEST_F(InstallableIconFetcherTest,
                                  /*prefer_maskable=*/false,
                                  /*fetch_favicon=*/true, future.GetCallback());
 
-  // Since neither is big enough, no download should be attempted and the fetch
-  // should end immediately without a downloaded icon.
+  // In the second pass, the first candidate meeting min_size (48px) is
+  // downloaded.
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kCandidate48));
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate96));
-  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate48));
 
-  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+  SkBitmap bitmap = CreateTestBitmap(48, 48);
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kCandidate48, 200, {bitmap}, {gfx::Size(48, 48)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data.primary_icon_fetched());
+  EXPECT_EQ(page_data.primary_icon_url(), kCandidate48);
+}
+
+TEST_F(InstallableIconFetcherTest,
+       FaviconFallbackDownloadsDefaultUnsizedFaviconWhenNoIdealCandidate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kDefaultFaviconUrl("https://www.example.com/favicon.ico");
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kDefaultFaviconUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>(), /*is_default_icon=*/true));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(
+      web_contents_tester()->HasPendingDownloadImage(kDefaultFaviconUrl));
+
+  SkBitmap bitmap16 = CreateTestBitmap(16, 16);
+  SkBitmap bitmap32 = CreateTestBitmap(32, 32);
+  SkBitmap bitmap48 = CreateTestBitmap(48, 48);
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kDefaultFaviconUrl, 200, {bitmap16, bitmap32, bitmap48},
+      {gfx::Size(16, 16), gfx::Size(32, 32), gfx::Size(48, 48)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data.primary_icon_fetched());
+  EXPECT_EQ(page_data.primary_icon_url(), kDefaultFaviconUrl);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(page_data.primary_icon()->width(), 48);
+  EXPECT_EQ(page_data.primary_icon()->height(), 48);
+}
+
+TEST_F(InstallableIconFetcherTest,
+       FaviconFallbackPrefersIdealCandidateOverEarlierUnsizedFavicon) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kUnsizedFaviconUrl("https://www.example.com/favicon.ico");
+  const GURL kTouchIconUrl("https://www.example.com/apple-touch-icon.png");
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  // Unsized favicon.ico appears first in document order before a 152x152
+  // apple-touch-icon.
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kUnsizedFaviconUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>(), /*is_default_icon=*/false));
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kTouchIconUrl, blink::mojom::FaviconIconType::kTouchIcon,
+      std::vector<gfx::Size>{gfx::Size(152, 152)},
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  // The first pass selects the 152x152 touch icon (>= ideal_size 144px) rather
+  // than the earlier unsized favicon.ico.
+  EXPECT_FALSE(
+      web_contents_tester()->HasPendingDownloadImage(kUnsizedFaviconUrl));
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kTouchIconUrl));
+
+  SkBitmap bitmap = CreateTestBitmap(152, 152);
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kTouchIconUrl, 200, {bitmap}, {gfx::Size(152, 152)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data.primary_icon_fetched());
+  EXPECT_EQ(page_data.primary_icon_url(), kTouchIconUrl);
 }
 
 TEST_F(InstallableIconFetcherTest, RootFaviconFallbackDownloadsIcon) {

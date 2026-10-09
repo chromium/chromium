@@ -160,9 +160,14 @@ bool IsIconSvg(const GURL& icon_url) {
 }
 
 bool IsCandidateBigEnough(const blink::mojom::FaviconURL& favicon_url,
-                          int ideal_size) {
+                          int min_required_size,
+                          bool allow_unsized_favicon) {
   if (favicon_url.icon_type == blink::mojom::FaviconIconType::kInvalid ||
-      !favicon_url.icon_url.is_valid() || favicon_url.is_default_icon) {
+      !favicon_url.icon_url.is_valid()) {
+    return false;
+  }
+
+  if (favicon_url.is_default_icon && !allow_unsized_favicon) {
     return false;
   }
 
@@ -174,17 +179,14 @@ bool IsCandidateBigEnough(const blink::mojom::FaviconURL& favicon_url,
     if (size.IsEmpty()) {
       return true;
     }
-    if (size.width() >= ideal_size && size.height() >= ideal_size) {
+    if (size.width() >= min_required_size &&
+        size.height() >= min_required_size) {
       return true;
     }
   }
 
-  if (favicon_url.icon_sizes.empty() &&
-      (favicon_url.icon_type == blink::mojom::FaviconIconType::kTouchIcon ||
-       favicon_url.icon_type ==
-           blink::mojom::FaviconIconType::kTouchPrecomposedIcon)) {
-    constexpr int kEstimatedTouchIconSize = 180;
-    return kEstimatedTouchIconSize >= ideal_size;
+  if (allow_unsized_favicon && favicon_url.icon_sizes.empty()) {
+    return true;
   }
 
   return false;
@@ -333,22 +335,32 @@ void InstallableIconFetcher::FetchFaviconFromCandidates() {
   const int max_size =
       std::max(InstallableEvaluator::kMaximumIconSizeInPx, ideal_size);
 
-  for (const auto& favicon_url : web_contents_->GetFaviconURLs()) {
-    if (!IsCandidateBigEnough(*favicon_url, ideal_size)) {
-      continue;
-    }
+  auto try_download = [&](int min_required_size, bool allow_unsized_favicon) {
+    for (const auto& favicon_url : web_contents_->GetFaviconURLs()) {
+      if (!IsCandidateBigEnough(*favicon_url, min_required_size,
+                                allow_unsized_favicon)) {
+        continue;
+      }
 
-    bool can_download_icon = content::ManifestIconDownloader::Download(
-        web_contents_.get(), favicon_url->icon_url, ideal_size, min_size,
-        max_size,
-        base::BindOnce(&InstallableIconFetcher::OnFaviconCandidateDownloaded,
-                       weak_ptr_factory_.GetWeakPtr(), favicon_url->icon_url),
-        /*square_only=*/true,
-        /*initiator_frame_routing_id=*/content::GlobalRenderFrameHostId(),
-        /*suppress_warnings=*/true);
-    if (can_download_icon) {
-      return;
+      if (content::ManifestIconDownloader::Download(
+              web_contents_.get(), favicon_url->icon_url, ideal_size, min_size,
+              max_size,
+              base::BindOnce(
+                  &InstallableIconFetcher::OnFaviconCandidateDownloaded,
+                  weak_ptr_factory_.GetWeakPtr(), favicon_url->icon_url),
+              /*square_only=*/true,
+              /*initiator_frame_routing_id=*/content::GlobalRenderFrameHostId(),
+              /*suppress_warnings=*/true)) {
+        return true;
+      }
     }
+    return false;
+  };
+
+  if (try_download(ideal_size, /*allow_unsized_favicon=*/false) ||
+      try_download(min_size, /*allow_unsized_favicon=*/false) ||
+      try_download(min_size, /*allow_unsized_favicon=*/true)) {
+    return;
   }
 
   // No big enough candidate was found.
