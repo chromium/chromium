@@ -12,6 +12,7 @@ import org.chromium.components.autofill.payments.WalletReminderNoticeInteraction
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -71,6 +72,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
+        if (BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden.isEnabled()
+                && mBottomSheetController.getCurrentSheetContent() != mBottomSheetContent) {
+            return;
+        }
         boolean dismissedByUser =
                 reason == StateChangeReason.SWIPE
                         || reason == StateChangeReason.BACK_PRESS

@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.autofill.wallet_reminder_notice;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.wallet_reminder_notice.AutofillWalletReminderNoticeBottomSheetMediator.HISTOGRAM_INTERACTION;
 
@@ -21,11 +26,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.autofill.payments.WalletReminderNoticeInteraction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -37,6 +45,7 @@ public class AutofillWalletReminderNoticeBottomSheetMediatorTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private BottomSheetContent mOtherBottomSheetContent;
 
     private PropertyModel mModel;
     private AutofillWalletReminderNoticeBottomSheetMediator mMediator;
@@ -125,6 +134,7 @@ public class AutofillWalletReminderNoticeBottomSheetMediatorTest {
                         BottomSheetController.StateChangeReason.TAP_SCRIM,
                         BottomSheetController.StateChangeReason.BACK_PRESS)) {
             BottomSheetController controller = mock(BottomSheetController.class);
+            when(controller.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
             var histogramWatcher =
                     HistogramWatcher.newSingleRecordWatcher(
                             HISTOGRAM_INTERACTION, WalletReminderNoticeInteraction.DISMISSED);
@@ -152,6 +162,7 @@ public class AutofillWalletReminderNoticeBottomSheetMediatorTest {
     public void testOnSheetClosed_noneOrSystemReason_doesNotLogDismissed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_INTERACTION).build();
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
 
         mMediator.onSheetClosed(BottomSheetController.StateChangeReason.NONE);
 
@@ -169,6 +180,7 @@ public class AutofillWalletReminderNoticeBottomSheetMediatorTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_INTERACTION, WalletReminderNoticeInteraction.ACKNOWLEDGED_CTA);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
 
         mMediator.onGotItClicked();
         mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
@@ -181,10 +193,43 @@ public class AutofillWalletReminderNoticeBottomSheetMediatorTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_INTERACTION, WalletReminderNoticeInteraction.CLICKED_LINK);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
 
         mMediator.onLegalMessageLinkClicked();
         mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testOnSheetClosed_otherSheetContent_ignoresCallback() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_INTERACTION).build();
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherBottomSheetContent);
+
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+
+        histogramWatcher.assertExpected();
+        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());
+        verify(mBottomSheetController, never()).removeObserver(any());
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testOnSheetClosed_deferContentSwapDisabled_destroysMediator() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_INTERACTION, WalletReminderNoticeInteraction.DISMISSED);
+
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+
+        histogramWatcher.assertExpected();
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(false),
+                        eq(BottomSheetController.StateChangeReason.NONE));
+        verify(mBottomSheetController).removeObserver(mMediator);
     }
 }
