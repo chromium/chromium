@@ -170,10 +170,9 @@ suite('RecentTabsDelegateTest', () => {
 
     // Second: tabGroup (250n)
     assertDeepEquals([tabGroup.title], items[1]!.title);
-    assertEquals(2, items[1]!.description?.length);
-    assertDeepEquals({text: '3 tabs'}, items[1]!.description?.[0]);
+    assertEquals(1, items[1]!.description?.length);
     assertDeepEquals(
-        {text: tabGroup.lastActiveElapsedText}, items[1]!.description?.[1]);
+        {text: tabGroup.lastActiveElapsedText}, items[1]!.description?.[0]);
     assertEquals(undefined, items[1]!.prefixIcon);
     assertEquals(tabGroup, items[1]!.data);
 
@@ -185,6 +184,34 @@ suite('RecentTabsDelegateTest', () => {
     assertDeepEquals([googleTab.title], items[3]!.title);
     assertEquals(googleTab, items[3]!.data);
   });
+
+  test(
+      'uses tab count as title when recently closed tab group has no title',
+      async () => {
+        const tabGroup: RecentlyClosedTabGroup = createRecentlyClosedTabGroup({
+          sessionId: 10,
+          id: {high: 0n, low: 10n},
+          title: '',
+          tabCount: 3,
+          lastActiveTime: {internalValue: 250n},
+          lastActiveElapsedText: '3m ago',
+        });
+
+        const profileDataWithGroup: ProfileData = {
+          ...mockProfileData,
+          recentlyClosedTabs: [],
+          recentlyClosedTabGroups: [tabGroup],
+        };
+        mockPageHandler.setResultFor(
+            'getProfileData',
+            Promise.resolve({profileData: profileDataWithGroup}));
+
+        const items = await delegate.getItems();
+        assertEquals(1, items.length);
+        assertDeepEquals(['3 tabs'], items[0]!.title);
+        assertEquals(1, items[0]!.description?.length);
+        assertDeepEquals({text: '3m ago'}, items[0]!.description?.[0]);
+      });
 
   test(
       'filters out tabs belonging to a recently closed tab group', async () => {
@@ -387,6 +414,7 @@ suite('RecentTabsDelegateTest', () => {
           title: 'Reading List',
           tabCount: 1,
           lastActiveTime: {internalValue: 500n},
+          lastActiveElapsedText: '5m ago',
         });
 
         const profileData: ProfileData = {
@@ -402,7 +430,7 @@ suite('RecentTabsDelegateTest', () => {
 
         const items = await delegate.getItems();
         assertEquals(1, items.length);
-        assertDeepEquals({text: '1 tab'}, items[0]!.description?.[0]);
+        assertDeepEquals({text: '5m ago'}, items[0]!.description?.[0]);
 
         delegate.onItemClick(items[0]!);
 
