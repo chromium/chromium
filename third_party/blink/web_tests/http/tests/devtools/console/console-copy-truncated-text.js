@@ -193,7 +193,7 @@ import * as Console from 'devtools/panels/console/console.js';
     // Clear any existing ranges to avoid using them as the query.
     window.getSelection().removeAllRanges();
     TestRunner.addSniffer(consoleView, 'searchFinishedForTests', onSearch);
-    consoleView.searchableView().searchInputElement.value = query;
+    consoleView.searchableView().contentElement.querySelector('#search-input-field').value = query;
     consoleView.searchableView().showSearchField();
     TestRunner.addResult('Searching for text: ' + query);
 

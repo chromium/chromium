@@ -53,7 +53,7 @@ import * as Console from 'devtools/panels/console/console.js';
 
     function testFindLastMessage(next) {
       TestRunner.addSniffer(consoleView, 'searchFinishedForTests', callback);
-      consoleView.searchableView().searchInputElement.value = 'LAST MESSAGE';
+      consoleView.searchableView().contentElement.querySelector('#search-input-field').value = 'LAST MESSAGE';
       consoleView.searchableView().showSearchField();
 
       function callback() {
