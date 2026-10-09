@@ -39,6 +39,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_process_host.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#endif
+
 using testing::_;
 
 class DevToolsUIBindingsTest : public testing::Test {};
@@ -180,19 +187,37 @@ TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
 
 TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
        ClearExtensionsAPIOnNavigatingAway) {
-  bindings()->RegisterExtensionsAPIForTesting("http://example.test", "script");
-  EXPECT_EQ(bindings()->GetExtensionsAPIForTesting().size(), 1u);
-
-  // Navigate to a valid DevTools URL first.
+  // Navigate to a valid local DevTools URL first.
   GURL devtools_url("devtools://devtools/bundled/devtools_app.html");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              devtools_url);
+  bindings()->RegisterExtensionsAPIForTesting("http://example.test", "script");
   EXPECT_EQ(bindings()->GetExtensionsAPIForTesting().size(), 1u);
 
   // Navigate away to a non-DevTools URL.
   GURL print_url("https://example.test");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              print_url);
+  EXPECT_TRUE(bindings()->GetExtensionsAPIForTesting().empty());
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       RestrictsExtensionsAPIForRemoteFrontend) {
+  GURL local_url("devtools://devtools/bundled/devtools_app.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             local_url);
+  bindings()->RegisterExtensionsAPIForTesting("chrome-extension://abc", "x");
+  EXPECT_EQ(bindings()->GetExtensionsAPIForTesting().size(), 1u);
+
+  // Navigating from a local frontend to a remote frontend clears registered
+  // extension APIs, and subsequent registrations on the remote frontend are
+  // ignored.
+  GURL remote_url("devtools://devtools/remote/serve_rev/@12345/inspector.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             remote_url);
+  EXPECT_TRUE(bindings()->GetExtensionsAPIForTesting().empty());
+
+  bindings()->RegisterExtensionsAPIForTesting("chrome-extension://abc", "x");
   EXPECT_TRUE(bindings()->GetExtensionsAPIForTesting().empty());
 }
 
@@ -1257,3 +1282,88 @@ TEST_F(DevToolsUIBindingsHostConfigTest, SetChromeFlag) {
   ASSERT_TRUE(final_protocol_monitor);
   EXPECT_FALSE(final_protocol_monitor->FindBool("enabled").value_or(true));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+class DevToolsUIBindingsExtensionsTest : public testing::Test {
+ public:
+  void SetUp() override {
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    bindings_ = std::make_unique<testing::NiceMock<TestDevToolsUIBindings>>(
+        web_contents_);
+    EXPECT_CALL(*bindings_, CallClientMethodImpl(_, _, _, _, _, _))
+        .Times(testing::AnyNumber());
+
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder("Test DevTools Extension")
+            .SetManifestKey("devtools_page", "devtools.html")
+            .Build();
+    ASSERT_TRUE(extension);
+    extension_ = extension;
+    extensions::ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<testing::NiceMock<TestDevToolsUIBindings>> bindings_;
+  scoped_refptr<const extensions::Extension> extension_;
+};
+
+TEST_F(DevToolsUIBindingsExtensionsTest, DoesNotAddExtensionsToRemoteFrontend) {
+  EXPECT_CALL(*bindings_, CallClientMethodImpl(
+                              "DevToolsAPI", "setOriginsForbiddenForExtensions",
+                              _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(*bindings_,
+              CallClientMethodImpl("DevToolsAPI", "addExtensions", _, _, _, _))
+      .Times(0);
+
+  GURL remote_url("devtools://devtools/remote/serve_rev/@12345/inspector.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents_,
+                                                             remote_url);
+
+  static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(bindings_.get())
+      ->LoadCompleted();
+
+  EXPECT_FALSE(
+      content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
+          web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+          extension_->url()));
+}
+
+TEST_F(DevToolsUIBindingsExtensionsTest, AddsExtensionsToLocalFrontend) {
+  EXPECT_CALL(*bindings_, CallClientMethodImpl(
+                              "DevToolsAPI", "setOriginsForbiddenForExtensions",
+                              _, _, _, _))
+      .Times(1);
+  base::Value captured_extensions;
+  EXPECT_CALL(*bindings_,
+              CallClientMethodImpl("DevToolsAPI", "addExtensions", _, _, _, _))
+      .WillOnce([&](const std::string& object_name,
+                    const std::string& method_name, base::Value arg1,
+                    base::Value arg2, base::Value arg3,
+                    base::OnceCallback<void(base::Value)> completion_callback) {
+        captured_extensions = std::move(arg1);
+      });
+
+  GURL local_url("devtools://devtools/bundled/devtools_app.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents_,
+                                                             local_url);
+
+  static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(bindings_.get())
+      ->LoadCompleted();
+
+  ASSERT_TRUE(captured_extensions.is_list());
+  ASSERT_EQ(captured_extensions.GetList().size(), 1u);
+  const base::DictValue* ext_info =
+      captured_extensions.GetList()[0].GetIfDict();
+  ASSERT_TRUE(ext_info);
+  EXPECT_EQ(*ext_info->FindString("name"), "Test DevTools Extension");
+  EXPECT_TRUE(content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
+      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      extension_->url()));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

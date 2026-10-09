@@ -2927,6 +2927,11 @@ void DevToolsUIBindings::OnPermissionDialogResult(
 }
 
 void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
+  // Remote frontends are untrusted: do not expose the installed extension
+  // inventory/policies or grant extension origins to their process.
+  if (!is_local_frontend_) {
+    return;
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_->GetOriginalProfile());
@@ -3032,6 +3037,9 @@ void DevToolsUIBindings::OnShutdown(extensions::ExtensionRegistry* registry) {
 
 void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,
                                                const std::string& script) {
+  if (!is_local_frontend_) {
+    return;
+  }
   extensions_api_[origin + "/"] = script;
 }
 
@@ -3268,7 +3276,7 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
     return;
   }
 
-  if (!frontend_host_) {
+  if (!frontend_host_ || !is_local_frontend_) {
     return;
   }
 
@@ -3294,6 +3302,7 @@ void DevToolsUIBindings::PrimaryPageChanged() {
   is_local_frontend_ =
       IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL());
   if (!is_local_frontend_) {
+    extensions_api_.clear();
     SetDevicesUpdatesEnabled(false);
   }
 }
