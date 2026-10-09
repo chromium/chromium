@@ -2177,11 +2177,6 @@ public class CustomTabsConnection {
                 .processFile(session, uri, purpose, extras);
     }
 
-    public void setCustomTabIsInForeground(
-            @Nullable SessionHolder session, boolean isInForeground) {
-        mClientManager.setCustomTabIsInForeground(session, isInForeground);
-    }
-
     public boolean isEngagementSignalsApiAvailable(
             CustomTabsSessionToken sessionToken, Bundle extras) {
         return isEngagementSignalsApiAvailableInternal(SessionHolder.of(sessionToken));

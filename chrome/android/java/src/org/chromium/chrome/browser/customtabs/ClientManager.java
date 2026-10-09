@@ -26,7 +26,6 @@ import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -110,35 +109,6 @@ class ClientManager {
         @VisibleForTesting int SESSION_NO_WARMUP_NOT_CALLED = 3;
         @VisibleForTesting int SESSION_WARMUP = 4;
         @VisibleForTesting int NUM_ENTRIES = 5;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // Values for the "CustomTabs.SessionDisconnectStatus" UMA histogram. Append-only.
-    @IntDef({
-        SessionDisconnectStatus.UNKNOWN,
-        SessionDisconnectStatus.CT_FOREGROUND,
-        SessionDisconnectStatus.CT_FOREGROUND_KEEP_ALIVE,
-        SessionDisconnectStatus.CT_BACKGROUND,
-        SessionDisconnectStatus.CT_BACKGROUND_KEEP_ALIVE,
-        SessionDisconnectStatus.LOW_MEMORY_CT_FOREGROUND,
-        SessionDisconnectStatus.LOW_MEMORY_CT_FOREGROUND_KEEP_ALIVE,
-        SessionDisconnectStatus.LOW_MEMORY_CT_BACKGROUND,
-        SessionDisconnectStatus.LOW_MEMORY_CT_BACKGROUND_KEEP_ALIVE,
-        SessionDisconnectStatus.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface SessionDisconnectStatus {
-        @VisibleForTesting int UNKNOWN = 0;
-        @VisibleForTesting int CT_FOREGROUND = 1;
-        @VisibleForTesting int CT_FOREGROUND_KEEP_ALIVE = 2;
-        @VisibleForTesting int CT_BACKGROUND = 3;
-        @VisibleForTesting int CT_BACKGROUND_KEEP_ALIVE = 4;
-        @VisibleForTesting int LOW_MEMORY_CT_FOREGROUND = 5;
-        @VisibleForTesting int LOW_MEMORY_CT_FOREGROUND_KEEP_ALIVE = 6;
-        @VisibleForTesting int LOW_MEMORY_CT_BACKGROUND = 7;
-        @VisibleForTesting int LOW_MEMORY_CT_BACKGROUND_KEEP_ALIVE = 8;
-        @VisibleForTesting int NUM_ENTRIES = 9;
     }
 
     /** To be called when a client gets disconnected. */
@@ -228,8 +198,6 @@ class ClientManager {
         private boolean mAllowParallelRequest;
         private boolean mAllowResourcePrefetch;
         private boolean mShouldGetPageLoadMetrics;
-        private boolean mCustomTabIsInForeground;
-        private boolean mWasSessionDisconnectStatusLogged;
         private @Nullable Supplier<Boolean> mEngagementSignalsAvailableSupplier;
         private final @Nullable EngagementSignalsHandler mEngagementSignalsHandler;
 
@@ -404,7 +372,6 @@ class ClientManager {
         if (mSessionParams.containsKey(session)) {
             SessionParams params = mSessionParams.get(session);
             params.setCallback(callbackWrapper);
-            params.mWasSessionDisconnectStatusLogged = false;
         } else {
             SessionParams params =
                     new SessionParams(
@@ -953,7 +920,6 @@ class ClientManager {
         callOnSession(
                 session,
                 params -> {
-                    logConnectionClosed(params);
                     mSessionParams.remove(session);
                     if (params.serviceConnection != null) {
                         params.serviceConnection.cleanup(ContextUtils.getApplicationContext());
@@ -972,8 +938,6 @@ class ClientManager {
     public synchronized void cleanupSession(SessionHolder session) {
         if (session.hasId() && mSessionParams.containsKey(session)) {
             SessionParams params = mSessionParams.get(session);
-            // Logging as soon as we know a session has been disconnected.
-            logConnectionClosed(params);
             // Leave session parameters, so client might update callback later.
             // The session will be completely removed when system runs low on memory.
             // {@see #cleanupUnusedSessions}
@@ -993,13 +957,6 @@ class ClientManager {
                 cleanupSessionInternal(session);
             }
         }
-    }
-
-    public void setCustomTabIsInForeground(
-            @Nullable SessionHolder session, boolean isInForeground) {
-        callOnSession(
-                session,
-                (SessionParams params) -> params.mCustomTabIsInForeground = isInForeground);
     }
 
     public void setEngagementSignalsCallbackForSession(
@@ -1025,38 +982,6 @@ class ClientManager {
     public @Nullable EngagementSignalsHandler getEngagementSignalsHandlerForSession(
             @Nullable SessionHolder session) {
         return callOnSession(session, null, SessionParams::getEngagementSignalsHandler);
-    }
-
-    private void logConnectionClosed(SessionParams sessionParams) {
-        if (sessionParams.mWasSessionDisconnectStatusLogged) return;
-
-        boolean isCustomTabInForeground = sessionParams.mCustomTabIsInForeground;
-        boolean isKeepAlive = sessionParams.getKeepAliveConnection() != null;
-        boolean isLowMemory = SysUtils.isCurrentlyLowMemory();
-
-        @SessionDisconnectStatus int status = SessionDisconnectStatus.UNKNOWN;
-        if (isLowMemory && isCustomTabInForeground && isKeepAlive) {
-            status = SessionDisconnectStatus.LOW_MEMORY_CT_FOREGROUND_KEEP_ALIVE;
-        } else if (isLowMemory && isCustomTabInForeground && !isKeepAlive) {
-            status = SessionDisconnectStatus.LOW_MEMORY_CT_FOREGROUND;
-        } else if (isLowMemory && !isCustomTabInForeground && isKeepAlive) {
-            status = SessionDisconnectStatus.LOW_MEMORY_CT_BACKGROUND_KEEP_ALIVE;
-        } else if (isLowMemory && !isCustomTabInForeground && !isKeepAlive) {
-            status = SessionDisconnectStatus.LOW_MEMORY_CT_BACKGROUND;
-        } else if (isCustomTabInForeground && !isKeepAlive) {
-            status = SessionDisconnectStatus.CT_FOREGROUND;
-        } else if (isCustomTabInForeground && isKeepAlive) {
-            status = SessionDisconnectStatus.CT_FOREGROUND_KEEP_ALIVE;
-        } else if (!isCustomTabInForeground && !isKeepAlive) {
-            status = SessionDisconnectStatus.CT_BACKGROUND;
-        } else if (!isCustomTabInForeground && isKeepAlive) {
-            status = SessionDisconnectStatus.CT_BACKGROUND_KEEP_ALIVE;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.SessionDisconnectStatus", status, SessionDisconnectStatus.NUM_ENTRIES);
-
-        sessionParams.mWasSessionDisconnectStatusLogged = true;
     }
 
     private interface SessionParamsCallback<T> {

@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -35,8 +34,7 @@ import java.util.function.Supplier;
 
 /** Handles recording User Metrics for Custom Tab Activity. */
 @NullMarked
-public class CustomTabActivityLifecycleUmaTracker
-        implements PauseResumeWithNativeObserver, StartStopWithNativeObserver {
+public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNativeObserver {
     /**
      * Identifier used for last CCT client App. Used as suffix for histogram
      * "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch".
@@ -135,18 +133,6 @@ public class CustomTabActivityLifecycleUmaTracker
 
     @Override
     public void onPauseWithNative() {}
-
-    @Override
-    public void onStartWithNative() {
-        CustomTabsConnection.getInstance()
-                .setCustomTabIsInForeground(mIntentDataProvider.getSession(), true);
-    }
-
-    @Override
-    public void onStopWithNative() {
-        CustomTabsConnection.getInstance()
-                .setCustomTabIsInForeground(mIntentDataProvider.getSession(), false);
-    }
 
     /**
      * Update shared preferences and record histogram when a retainable CCT session is launched back
