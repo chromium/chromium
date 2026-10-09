@@ -90,6 +90,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/test:test_support",
     "//third_party/ocmock",
   ]
 }

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -241,9 +242,9 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  NSString* test_email = @"test@gmail.com";
+  NSString* testEmail = @"test@gmail.com";
   [view_controller setIsServerWalletItem:YES];
-  [view_controller setUserEmail:test_email];
+  [view_controller setUserEmail:testEmail];
   [view_controller loadModel];
 
   TableViewLinkHeaderFooterItem* footer =
@@ -460,15 +461,81 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
               footerView.accessibilityIdentifier);
 }
 
-// Tests that setting legal messages after the view is already loaded does not
-// mutate or reload the footer for the active session.
+// Tests that setting the Wallet footer inputs after the view is loaded, but
+// before it is on screen, updates the footer without requiring `loadModel` or
+// `setEditItems:`. This mirrors the mediator, which loads the view before
+// setting these inputs.
 TEST_F(AutofillAIEntityEditTableViewControllerTest,
-       TestSetLegalMessagesAfterViewLoadedDoesNotMutateFooter) {
+       TestSetWalletInputsAfterViewLoadedUpdatesFooter) {
   AutofillAIEntityEditTableViewController* view_controller =
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
   [view_controller loadViewIfNeeded];
+  ASSERT_FALSE(view_controller.view.window);
+
+  NSString* testEmail = @"test@gmail.com";
+  [view_controller setIsServerWalletItem:YES];
+  [view_controller setUserEmail:testEmail];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterText(testEmail),
+              footerItem.text);
+  ASSERT_EQ(1U, footerItem.urls.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), footerItem.urls[0].gurl);
+}
+
+// Tests that setting legal messages after the view is loaded, but before it is
+// on screen, updates the footer without requiring `loadModel` or
+// `setEditItems:`.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestSetLegalMessagesAfterViewLoadedUpdatesFooter) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  [view_controller loadViewIfNeeded];
+  ASSERT_FALSE(view_controller.view.window);
+
+  AutofillLegalMessageLine* line = [[AutofillLegalMessageLine alloc] init];
+  line.messageText = @"Privacy Policy";
+  line.linkRanges = @[ [NSValue valueWithRange:NSMakeRange(0, 14)] ];
+  line.linkURLs = {GURL("https://policies.google.com/privacy")};
+
+  [view_controller setLegalMessages:@[ line ]];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  NSString* expectedText =
+      [NSString stringWithFormat:@"%@\n\nBEGIN_LINKPrivacy PolicyEND_LINK",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER)];
+  EXPECT_NSEQ(expectedText, footerItem.text);
+  ASSERT_EQ(1U, footerItem.urls.count);
+  EXPECT_EQ(GURL("https://policies.google.com/privacy"),
+            footerItem.urls[0].gurl);
+
+  UIView* footerView = [view_controller tableView:view_controller.tableView
+                           viewForFooterInSection:1];
+  ASSERT_TRUE([footerView isKindOfClass:[TableViewLinkHeaderFooterView class]]);
+  EXPECT_NSEQ(kAutofillAISaveEntityLegalDisclosureId,
+              footerView.accessibilityIdentifier);
+}
+
+// Tests that setting legal messages while the view is on screen does not
+// mutate the footer, so disclosures never appear mid-session.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestSetLegalMessagesWhileVisibleDoesNotMutateFooter) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  ScopedKeyWindow scopedWindow;
+  [scopedWindow.Get() addSubview:view_controller.view];
+  ASSERT_TRUE(view_controller.view.window);
 
   AutofillLegalMessageLine* line = [[AutofillLegalMessageLine alloc] init];
   line.messageText = @"Privacy Policy";
@@ -482,12 +549,9 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
           [view_controller.tableViewModel footerForSectionIndex:1]);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER),
               footerItem.text);
-  ASSERT_EQ(0U, footerItem.urls.count);
+  EXPECT_EQ(0U, footerItem.urls.count);
 
-  UIView* footerView = [view_controller tableView:view_controller.tableView
-                           viewForFooterInSection:1];
-  ASSERT_TRUE([footerView isKindOfClass:[TableViewLinkHeaderFooterView class]]);
-  EXPECT_EQ(nil, footerView.accessibilityIdentifier);
+  [view_controller.view removeFromSuperview];
 }
 
 // Tests that tapping a link in the footer notifies the delegate.

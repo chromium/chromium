@@ -260,21 +260,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (_titleText.length > 0) {
     [self setTitle:_titleText];
   }
+  [self reloadFooterIfNotVisible];
 }
 
 - (void)setUserEmail:(NSString*)userEmail {
   _userEmail = [userEmail copy];
+  [self reloadFooterIfNotVisible];
 }
 
 // Sets the legal messages to be displayed in the footer.
-// Note: This does not dynamically reload the footer if the view is already
-// loaded, intentionally preventing legal disclosures from jarringly appearing
-// mid-session (e.g. while the user is typing or scrolling). Re-entering the
-// view (e.g. closing and tapping "+Add" again) creates a brand new
-// `UIViewController` instance, so the updated legal messages will be cleanly
-// rendered during the next presentation's initial `loadModel`.
+// Note: Like the other footer inputs, this does not reload the footer once the
+// view is on screen, intentionally preventing legal disclosures from jarringly
+// appearing mid-session (e.g. while the user is typing or scrolling).
+// Re-entering the view (e.g. closing and tapping "+Add" again) creates a brand
+// new `UIViewController` instance, so the updated legal messages will be
+// cleanly rendered during the next presentation.
 - (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
   _legalMessages = [legalMessages copy];
+  [self reloadFooterIfNotVisible];
 }
 
 - (void)updateItem:(TableViewItem*)item {
@@ -850,12 +853,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return autofill::GetSaveEntityToWalletFooterText(_userEmail);
 }
 
-// Creates and configures the footer item based on current model data.
-// TODO(crbug.com/560036149): Dynamically reload the table view footer. Any
-// property contributing to `createFooterItem`, such as `_isServerWalletItem`,
-// `_userEmail` and `_legalMessages`, must ensure the footer reflects its
-// updated state. Such a change must preserve the deliberate behavior documented
-// on `setLegalMessages:`, which keeps disclosures from appearing mid-session.
+// Rebuilds the footer so it reflects the latest footer inputs, without touching
+// the attributes section. This keeps the footer correct regardless of the order
+// in which the mediator calls the consumer setters. Skipped before the view is
+// loaded, since `loadModel` builds the footer from the latest inputs anyway,
+// and once the view is on screen, so that the footer (notably the legal
+// disclosures) never changes under the user mid-session.
+- (void)reloadFooterIfNotVisible {
+  if (!self.isViewLoaded || self.view.window) {
+    return;
+  }
+
+  TableViewModel* model = self.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:SectionIdentifierFooter]) {
+    return;
+  }
+
+  [model setFooter:[self createFooterItem]
+      forSectionWithIdentifier:SectionIdentifierFooter];
+  NSInteger footerSectionIndex =
+      [model sectionForSectionIdentifier:SectionIdentifierFooter];
+  [self.tableView
+        reloadSections:[NSIndexSet indexSetWithIndex:footerSectionIndex]
+      withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// Creates and configures the footer item based on current model data. Any
+// setter of a property contributing to it, such as `_isServerWalletItem`,
+// `_userEmail` and `_legalMessages`, must call `reloadFooterIfNotVisible`.
 - (TableViewLinkHeaderFooterItem*)createFooterItem {
   // `urls` must be filled in the same order the links appear in the text, so
   // the storage notice is built before the disclosure legal messages.
