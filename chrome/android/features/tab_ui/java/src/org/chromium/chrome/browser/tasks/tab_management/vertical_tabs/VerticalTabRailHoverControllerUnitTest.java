@@ -53,6 +53,8 @@ public class VerticalTabRailHoverControllerUnitTest {
     private static final int RAIL_WIDTH = 200;
     private static final int RAIL_HEIGHT = 500;
     private static final float INSIDE_X = 100f;
+    // Within the collapsed rail width.
+    private static final float COLLAPSED_PART_X = 40f;
     private static final float OUTSIDE_X = 500f;
     private static final float Y = 250f;
 
@@ -129,6 +131,100 @@ public class VerticalTabRailHoverControllerUnitTest {
     }
 
     @Test
+    public void testHoverDuringCollapseAnimation_DoesNotExpand() {
+        // The collapse button was clicked: the rail animates to collapsed.
+        when(mCollapseController.getEffectiveRailCollapseState())
+                .thenReturn(RailCollapseState.COLLAPSED);
+        mHoverController.setInTransition(true);
+
+        // The pointer moves quickly towards the web contents across the shrinking rail.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, INSIDE_X + 1, Y);
+        verify(mCollapseController, never()).setHovering(true);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+        verify(mCollapseController, never()).setHovering(true);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverAfterCollapseAnimation_Expands() {
+        when(mCollapseController.getEffectiveRailCollapseState())
+                .thenReturn(RailCollapseState.COLLAPSED);
+        mHoverController.setInTransition(true);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, COLLAPSED_PART_X, Y);
+        verify(mCollapseController, never()).setHovering(true);
+
+        // The collapse animation ends: the next hover over the rail expands it, e.g. when the
+        // pointer moves down from the collapse button.
+        mHoverController.setInTransition(false);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, COLLAPSED_PART_X, Y + 1);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+        verify(mCollapseController).setHovering(true);
+    }
+
+    @Test
+    public void testHoverOverCollapsedRail_ExpandsAfterDelay() {
+        when(mCollapseController.getEffectiveRailCollapseState())
+                .thenReturn(RailCollapseState.COLLAPSED);
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, COLLAPSED_PART_X, Y);
+        // Further moves do not restart the delay.
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS - 1);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, COLLAPSED_PART_X, Y + 1);
+        verify(mCollapseController, never()).setHovering(true);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+
+        idleMainLooper(1);
+        verify(mCollapseController).setHovering(true);
+    }
+
+    @Test
+    public void testQuickPassOverCollapsedRail_DoesNotExpand() {
+        when(mCollapseController.getEffectiveRailCollapseState())
+                .thenReturn(RailCollapseState.COLLAPSED);
+
+        // The pointer moves from outside the window across the rail to the web contents.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, COLLAPSED_PART_X, Y);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(true);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverOverCollapsedRail_OntoCollapseButton_CancelsExpand() {
+        when(mCollapseController.getEffectiveRailCollapseState())
+                .thenReturn(RailCollapseState.COLLAPSED);
+        View collapseButton = mRailLayout.getCollapseButton();
+        int[] location = new int[2];
+        collapseButton.getLocationOnScreen(location);
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, COLLAPSED_PART_X, Y);
+        dispatchMouseHover(
+                MotionEvent.ACTION_HOVER_MOVE,
+                location[0] + collapseButton.getWidth() / 2f,
+                location[1] + collapseButton.getHeight() / 2f);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(true);
+    }
+
+    @Test
+    public void testHoverDuringExpandAnimation_Expands() {
+        // The rail animates to expanded for hovering, not to collapsed.
+        when(mCollapseController.getEffectiveRailCollapseState())
+                .thenReturn(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mHoverController.setInTransition(true);
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, INSIDE_X, Y);
+
+        verify(mCollapseController).setHovering(true);
+    }
+
+    @Test
     public void testHoverMoveOutsideRail_Ignored() {
         dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, OUTSIDE_X, Y);
 
@@ -155,6 +251,72 @@ public class VerticalTabRailHoverControllerUnitTest {
 
         verify(mCollapseController, never()).setHovering(anyBoolean());
         assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverExitInsideRail_NoPressFollows_StopsHovering() {
+        hoverInsideRail();
+
+        // The pointer leaves the window straight from the rail: the HOVER_EXIT carries the last
+        // position inside the rail, and no other event follows.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS - 1);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        idleMainLooper(1);
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverExitInsideRail_MousePressFollows_KeepsHovering() {
+        hoverInsideRail();
+
+        // A mouse button press sends a HOVER_EXIT, then a touch ACTION_DOWN.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        dispatchMouseTouch(MotionEvent.ACTION_DOWN, INSIDE_X, Y);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverExitInsideRail_HoverBackOverRail_KeepsHovering() {
+        hoverInsideRail();
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        clearInvocations(mCollapseController);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverExitInsideRail_ContextMenuShowing_WaitsForDismissal() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+
+        // The menu popup covers the pointer: its dismissal decides, not the exit check.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDestroy_CancelsHoverExitTimeout() {
+        hoverInsideRail();
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+
+        mHoverController.destroy();
+        idleMainLooper(VerticalTabRailHoverController.HOVER_DEBOUNCE_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
     }
 
     @Test

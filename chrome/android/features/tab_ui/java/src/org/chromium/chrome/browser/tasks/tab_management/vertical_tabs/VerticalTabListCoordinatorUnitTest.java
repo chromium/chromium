@@ -1866,6 +1866,8 @@ public class VerticalTabListCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 50f, 50f, 0);
         hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverEnter);
+        ShadowLooper.idleMainLooper(
+                VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getCollapseController().getEffectiveRailCollapseState());
@@ -1913,6 +1915,8 @@ public class VerticalTabListCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 50f, 300f, 0);
         hoverMoveOffButton.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverMoveOffButton);
+        ShadowLooper.idleMainLooper(
+                VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getCollapseController().getEffectiveRailCollapseState());
@@ -5155,6 +5159,8 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverEnter);
         hoverEnter.recycle();
+        ShadowLooper.idleMainLooper(
+                VerticalTabRailHoverController.HOVER_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getCollapseController().getEffectiveRailCollapseState());

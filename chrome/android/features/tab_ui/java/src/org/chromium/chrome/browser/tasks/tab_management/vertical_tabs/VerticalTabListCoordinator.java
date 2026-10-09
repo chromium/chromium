@@ -1040,6 +1040,7 @@ public class VerticalTabListCoordinator {
      */
     void setInTransition(boolean inTransition) {
         mPinnedTabsRecyclerView.setInTransition(inTransition);
+        mRailHoverController.setInTransition(inTransition);
     }
 
     /**
