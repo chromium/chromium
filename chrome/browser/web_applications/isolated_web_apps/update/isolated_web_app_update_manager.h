@@ -98,6 +98,9 @@ struct IsolatedWebAppUpdateOptions {
   std::optional<IwaVersion> pinned_version;
 };
 
+using IwaBundleIdToUpdateOptionsMap =
+    base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>;
+
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
 // installation of Isolated Web App updates.
 class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
@@ -322,9 +325,8 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // the app is not an Isolated Web App.
   bool MaybeQueueUpdateDiscoverAndPrepareTask(
       const WebApp* web_app,
-      const base::flat_map<web_package::SignedWebBundleId,
-                           IsolatedWebAppUpdateOptions>&
-          id_to_update_options_map);
+      const IwaBundleIdToUpdateOptionsMap& id_to_update_options_map,
+      bool update_manifest_check_only);
 
   void MaybeScheduleUpdateDiscoveryCheck();
   void MaybeResetScheduledUpdateDiscoveryCheck();
@@ -332,11 +334,6 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   void CreateUpdateApplyWaiter(
       const IsolatedWebAppUrlInfo& url_info,
       base::OnceClosure on_update_apply_task_created = base::DoNothing());
-
-  void PrioritizeUpdateAndWaitImpl(
-      const webapps::AppId& app_id,
-      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)>
-          callback);
 
   void OnUpdateDiscoverAndPrepareTaskCompleted(
       std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task,
