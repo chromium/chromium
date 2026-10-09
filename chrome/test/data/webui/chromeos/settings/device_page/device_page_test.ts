@@ -61,15 +61,6 @@ suite('<settings-device-page>', () => {
   });
 
 
-  /**
-   * Set enableSpatialAudioToggle feature flag to true for tests.
-   */
-  function setEnableSpatialAudioToggleEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableSpatialAudioToggle: isEnabled,
-    });
-  }
-
   test('device page', async () => {
     const provider = new FakeInputDeviceSettingsProvider();
     setInputDeviceSettingsProviderForTesting(provider);
@@ -1425,7 +1416,6 @@ suite('<settings-device-page>', () => {
     };
 
     setup(async () => {
-      setEnableSpatialAudioToggleEnabled(true);
       await init();
 
       // FakeAudioConfig must be set before audio subpage is loaded.

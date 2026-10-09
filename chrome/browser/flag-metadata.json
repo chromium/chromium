@@ -9079,11 +9079,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "show-spatial-audio-toggle",
-    "owners": ["eddyhsu@chromium.org", "chromeos-audio@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "show-tab-list-animations",
     "owners": [ "dregalo@google.com", "gurmeetk@google.com", "desiatyrikov@google.com" ],
     "expiry_milestone": 150

@@ -8354,11 +8354,6 @@ inline constexpr char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
     "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
     "loopback";
 
-inline constexpr char kShowSpatialAudioToggleName[] =
-    "Enable a setting toggle for spatial audio";
-inline constexpr char kShowSpatialAudioToggleDescription[] =
-    "Enable a setting toggle for spatial audio.";
-
 inline constexpr char kSingleCaCertVerificationPhase2Name[] =
     "Use single CA cert for EAP networks if provided phase 2";
 inline constexpr char kSingleCaCertVerificationPhase2Description[] =

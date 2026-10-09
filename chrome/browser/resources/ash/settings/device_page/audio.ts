@@ -234,9 +234,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         activeOutputDevice.spatialAudioState === AudioEffectState.kEnabled;
     this.isSpatialAudioSupported_ = activeOutputDevice !== undefined &&
         activeOutputDevice.spatialAudioState !== AudioEffectState.kNotSupported;
-    this.showSpatialAudio =
-        (this.isSpatialAudioSupported_ &&
-         loadTimeData.getBoolean('enableSpatialAudioToggle'));
+    this.showSpatialAudio = this.isSpatialAudioSupported_;
   }
 
   getIsOutputMutedForTest(): boolean {

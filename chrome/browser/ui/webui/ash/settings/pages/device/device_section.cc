@@ -519,10 +519,6 @@ bool IsShowForceRespectUiGainsToggleEnabled() {
   return base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle);
 }
 
-bool IsShowSpatialAudioToggleEnabled() {
-  return base::FeatureList::IsEnabled(ash::features::kShowSpatialAudioToggle);
-}
-
 void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   webui::LocalizedString keyboard_strings[] = {
       {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
@@ -1610,9 +1606,6 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("enableForceRespectUiGainsToggle",
                           IsShowForceRespectUiGainsToggleEnabled());
-
-  html_source->AddBoolean("enableSpatialAudioToggle",
-                          IsShowSpatialAudioToggleEnabled());
 
   html_source->AddBoolean(
       "enableAudioFocusSetting",
