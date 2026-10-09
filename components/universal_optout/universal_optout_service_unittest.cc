@@ -132,6 +132,22 @@ TEST_F(UniversalOptOutServiceTest, EligibleWhenInTargetLocation) {
   EXPECT_EQ(history.FindBool(day_key), true);
 }
 
+TEST_F(UniversalOptOutServiceTest, ForceEligibleParamOverridesLocation) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{base::test::FeatureRefAndParams(
+          features::kUniversalOptOut,
+          {{"target_locations", "us-tx"}, {"force_eligible", "true"}})},
+      /*disabled_features=*/{});
+
+  SetGeoLevel1("us-ny");
+  auto service = CreateService();
+
+  EXPECT_TRUE(service->IsEligible());
+  // The underlying location-based eligibility is unaffected.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kUniversalOptOutEligible));
+}
+
 TEST_F(UniversalOptOutServiceTest, IneligibleWhenNotInTargetLocation) {
   EnableFeatureWithTargetLocations("us-tx");
 

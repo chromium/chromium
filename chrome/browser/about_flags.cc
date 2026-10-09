@@ -457,6 +457,12 @@ const FeatureEntry::FeatureVariation kScrollbarModeVariations[] = {
     {"device (follow OS setting)", kScrollbarModeDevice, nullptr},
     {"classic (always show)", kScrollbarModeClassic, nullptr}};
 
+const FeatureEntry::FeatureParam kUniversalOptOutForceEligible[] = {
+    {"force_eligible", "true"}};
+
+const FeatureEntry::FeatureVariation kUniversalOptOutVariations[] = {
+    {"with forced eligibility", kUniversalOptOutForceEligible, nullptr}};
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 const FeatureEntry::FeatureParam kDefaultBrowserPromptSurfaces_Infobar[] = {
     {"prompt_surface", "infobar"}};
@@ -13762,6 +13768,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableWalletDirectOffersDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletDirectOffers)},
+
+    {"universal-opt-out", flag_descriptions::kUniversalOptOutName,
+     flag_descriptions::kUniversalOptOutDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         universal_optout::features::kUniversalOptOut,
+         kUniversalOptOutVariations,
+         "UniversalOptOut")},
 
     {"universal-opt-out-settings",
      flag_descriptions::kUniversalOptOutSettingsName,

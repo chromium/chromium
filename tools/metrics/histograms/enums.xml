@@ -7960,6 +7960,7 @@ from previous Chrome versions.
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2110507629" label="ButterOnDesktopFollowup:disabled"/>
   <int value="-2109981927" label="ReadAloudTapToSeek:disabled"/>
+  <int value="-2109811216" label="UniversalOptOut:disabled"/>
   <int value="-2109523292" label="InfobarRefresh:enabled"/>
   <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
   <int value="-2108836417" label="ArcvmSwapoutKeyboardShortcut:enabled"/>
@@ -14205,6 +14206,7 @@ from previous Chrome versions.
   <int value="-234966279" label="PointerEvent:disabled"/>
   <int value="-234687894"
       label="NonValidatingReloadOnRefreshContentV2:disabled"/>
+  <int value="-234628621" label="UniversalOptOut:enabled"/>
   <int value="-234231190" label="SharingDeviceRegistration:enabled"/>
   <int value="-233585203" label="RustyJpegFeature:enabled"/>
   <int value="-233334129" label="BiometricTouchToFill:disabled"/>

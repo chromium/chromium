@@ -59,6 +59,9 @@ bool IsUniversalOptOutEnabled() {
 const base::FeatureParam<std::string> kTargetLocations{&kUniversalOptOut,
                                                        "target_locations", ""};
 
+const base::FeatureParam<bool> kForceEligible{&kUniversalOptOut,
+                                              "force_eligible", false};
+
 const base::FeatureParam<base::TimeDelta> kEligibilityWindow{
     &kUniversalOptOut, "eligibility_window", base::Days(30)};
 

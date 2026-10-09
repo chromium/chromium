@@ -164,6 +164,10 @@ void UniversalOptOutService::OnVariationsServiceDestroyed() {
 }
 
 bool UniversalOptOutService::IsEligible() const {
+  if (features::kForceEligible.Get()) {
+    return true;
+  }
+
   signin::Tribool capability = GetAccountCapabilityEligibility();
   // If the capability is known, use it. Otherwise, fall back to location
   // history.

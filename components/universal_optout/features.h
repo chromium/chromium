@@ -49,6 +49,11 @@ bool IsUniversalOptOutEnabled();
 // (e.g., "us-fl,us-tx").
 extern const base::FeatureParam<std::string> kTargetLocations;
 
+// If true, the user is always considered eligible, bypassing the account
+// capability and location history checks. Intended for manual testing via
+// chrome://flags.
+extern const base::FeatureParam<bool> kForceEligible;
+
 // Number of days in the sliding window used to determine eligibility.
 extern const base::FeatureParam<base::TimeDelta> kEligibilityWindow;
 
