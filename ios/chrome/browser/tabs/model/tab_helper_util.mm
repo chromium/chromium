@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
+#import "ios/chrome/browser/payments/model/web_payments_metrics_recorder.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_controller_factory_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
@@ -174,6 +175,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // When a web state is presented by the BVC, AttachTabHelpers is called to
   // attach all tab helpers. (the method is idempotent, so it is okay to call it
   // multiple times for the same WebState).
+
+  // Created first so that policy deciders attached below cannot hide requests
+  // from WebPaymentsMetricsRecorder on a short circuit cancellation.
+  attacher.CreateWhen<WebPaymentsMetricsRecorder>(
+      attacher.IsForStandardNavigation());
 
   attacher.Create<OverlayRequestQueue>();
   attacher.Create<VoiceSearchNavigationTabHelper>();

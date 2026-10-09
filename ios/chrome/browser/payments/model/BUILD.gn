@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "web_payments_metrics_recorder.h",
+    "web_payments_metrics_recorder.mm",
+  ]
+  public_deps = [ "//ios/web/public" ]
+  deps = [
+    "//base",
+    "//components/payments/core",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "web_payments_metrics_recorder_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/payments/core",
+    "//components/ukm:test_support",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/web/public",
+    "//ios/web/public/test/fakes",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}
