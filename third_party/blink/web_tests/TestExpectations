@@ -3070,7 +3070,6 @@ crbug.com/431039949 [ Mac14 ] external/wpt/picture-in-picture/disable-picture-in
 crbug.com/431040247 external/wpt/pointerevents/pointerevent_pointerrawupdate_coalesced_events_attributes.https.html?touch [ Timeout ]
 crbug.com/431033202 [ Mac14 ] external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]
 crbug.com/431038530 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-no-storage-access.sub.https.window.html [ Crash ]
-crbug.com/431034515 external/wpt/subresource-integrity/integrity-policy/style.https.html?reporting=true [ Skip Timeout ]
 crbug.com/431040244 [ Mac14 ] external/wpt/webrtc-identity/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/431038531 [ Mac14 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wss [ Skip Timeout ]
 crbug.com/431039951 [ Mac14 ] external/wpt/webxr/navigator_xr_sameObject.https.html [ Timeout ]
