@@ -25,7 +25,6 @@ static_library("people") {
   public_deps = [
     "//ash",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/auth",
     "//chrome/browser/ui/webui/ash/settings/pages/people/mojom",

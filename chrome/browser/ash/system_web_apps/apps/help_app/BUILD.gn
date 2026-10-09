@@ -19,7 +19,6 @@ static_library("help_app") {
   public_deps = [
     "//ash/webui/help_app_ui",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/experiences/system_web_apps/types",

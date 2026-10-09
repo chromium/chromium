@@ -14,8 +14,6 @@ static_library("dlp_internals") {
     "dlp_internals_ui.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":mojo_bindings",
     "//ash/constants",

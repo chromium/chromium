@@ -14,8 +14,6 @@ static_library("event_based_logs") {
     "event_observer_base.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":utils",
     "//base",

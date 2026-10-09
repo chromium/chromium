@@ -12,8 +12,6 @@ source_set("system_web_apps") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chromeos/ash/components/browser_delegate",
@@ -75,8 +73,6 @@ source_set("impl") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":system_web_apps",

@@ -10,8 +10,6 @@ static_library("graduation") {
     "graduation_manager_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
