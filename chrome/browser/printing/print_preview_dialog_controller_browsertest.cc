@@ -92,13 +92,15 @@ std::u16string GetExpectedPrefix() {
 std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
 GetTrackedTags() {
   std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>> tags;
-  // Filter WebUI Omnibox out from the tracked tags so that the tests don't
-  // fail when WebUI Omnibox is in the background.
+  // Filter WebUI Omnibox and WebUI Toolbar out from the tracked tags so that
+  // the tests don't fail when they are in the background.
   std::ranges::copy_if(
       task_manager::WebContentsTagsManager::GetInstance()->tracked_tags(),
       std::back_inserter(tags), [](const auto& tag) {
-        return tag->web_contents()->GetVisibleURL().host() !=
-               chrome::kChromeUIOmniboxPopupHost;
+        const std::string_view host =
+            tag->web_contents()->GetVisibleURL().host();
+        return host != chrome::kChromeUIOmniboxPopupHost &&
+               host != chrome::kChromeUIWebUIToolbarHost;
       });
   return tags;
 }

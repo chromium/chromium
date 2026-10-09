@@ -5177,6 +5177,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_OMNIBOX" desc="A row in the task manager for the WebUI Omnibox.">
         Omnibox
       </message>
+      <message name="IDS_TASK_MANAGER_WEBUI_TOOLBAR" desc="A row in the task manager for the WebUI Toolbar.">
+        Toolbar
+      </message>
       <message name="IDS_UTILITY_PROCESS_FILE_UTILITY_NAME" desc="The name of the utility process used for various Chrome specific file operations.">
           Chrome File Utilities
       </message>

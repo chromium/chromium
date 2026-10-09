@@ -60,8 +60,9 @@ class DevToolsTagTest : public InProcessBrowserTest {
     size_t count = 0;
     for (const auto& tag :
          WebContentsTagsManager::GetInstance()->tracked_tags()) {
-      if (tag->web_contents()->GetVisibleURL().host() !=
-          chrome::kChromeUIOmniboxPopupHost) {
+      const std::string_view host = tag->web_contents()->GetVisibleURL().host();
+      if (host != chrome::kChromeUIOmniboxPopupHost &&
+          host != chrome::kChromeUIWebUIToolbarHost) {
         count++;
       }
     }

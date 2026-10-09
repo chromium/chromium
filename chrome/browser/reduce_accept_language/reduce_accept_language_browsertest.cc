@@ -1657,15 +1657,18 @@ class ReduceAcceptLanguageCountBrowserTest
 
   // Samples recorded for kLargeLanguages: 1 during initial profile setup,
   // twice more when SetPrefsAcceptLanguage() syncs the preference to the
-  // renderer and network services, and 1 per WebUI omnibox popup WebContents.
+  // renderer and network services, and 1 per WebUI omnibox popup or WebUI
+  // toolbar WebContents.
   // The number of popups depends on platform defaults and AIM eligibility.
   size_t ExpectedAcceptLanguageCountSamples() const {
-    return 3 +
-           std::ranges::count_if(content::GetAllWebContents(),
-                                 [](content::WebContents* contents) {
-                                   return contents->GetVisibleURL().host() ==
-                                          chrome::kChromeUIOmniboxPopupHost;
-                                 });
+    return 3 + std::ranges::count_if(
+                   content::GetAllWebContents(),
+                   [](content::WebContents* contents) {
+                     const std::string_view host =
+                         contents->GetVisibleURL().host();
+                     return host == chrome::kChromeUIOmniboxPopupHost ||
+                            host == chrome::kChromeUIWebUIToolbarHost;
+                   });
   }
 };
 
