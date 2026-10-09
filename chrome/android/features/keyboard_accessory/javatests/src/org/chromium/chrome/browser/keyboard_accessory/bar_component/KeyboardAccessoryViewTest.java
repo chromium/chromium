@@ -28,7 +28,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewElement.initialSettleTimeOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
@@ -72,8 +74,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewFinder;
+import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -930,9 +931,10 @@ public class KeyboardAccessoryViewTest {
                             .set(new BarItem[] {createSheetOpener(/* atMemoryEnabled= */ true)});
                 });
 
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_at_memory));
+        ViewPresence<View> bubble =
+                waitForHelpBubble(withText(R.string.iph_keyboard_accessory_at_memory));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_at_memory)).perform(click());
+        bubble.click();
 
         assertThat(tracker.wasDismissed(), is(true));
     }
@@ -1210,17 +1212,13 @@ public class KeyboardAccessoryViewTest {
         return mActivityTestRule.getActivity().getResources().getDimensionPixelSize(res);
     }
 
-    private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
-        return ViewFinder.waitForView(
-                        View.class,
-                        mActivityTestRule.getActivity(),
-                        matcher,
-                        ViewElement.initialSettleTimeOption(500))
-                .onView();
+    private ViewPresence<View> waitForHelpBubble(Matcher<View> matcher) {
+        return waitForView(
+                View.class, mActivityTestRule.getActivity(), matcher, initialSettleTimeOption(500));
     }
 
     private ViewInteraction onActivityViewWaiting(Matcher<View> matcher) {
-        return ViewFinder.waitForView(mActivityTestRule.getActivity(), matcher).onView();
+        return waitForView(mActivityTestRule.getActivity(), matcher).onView();
     }
 
     private void rotateActivityToLandscape() {

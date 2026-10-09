@@ -6,12 +6,9 @@ package org.chromium.chrome.browser.read_later;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
@@ -19,16 +16,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.RootSpec.anyRoot;
+import static org.chromium.base.test.transit.ViewElement.rootSpecOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
 
-import android.view.View;
-
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,7 +61,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for showing IPH bubbles for read later. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -160,7 +154,8 @@ public class ReadLaterContextMenuTest {
                 R.id.contextmenu_copy_link_address);
 
         onView(withId(R.id.menu_button_wrapper)).check(matches(withHighlight(true)));
-        waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
+        waitForView(
+                withText(R.string.reading_list_save_pages_for_later), rootSpecOption(anyRoot()));
     }
 
     @Test
@@ -224,12 +219,5 @@ public class ReadLaterContextMenuTest {
                     }
                     return false;
                 });
-    }
-
-    private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
-        View mainDecorView = mActivityTestRule.getActivity().getWindow().getDecorView();
-        return onView(isRoot())
-                .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
-                .check(ViewUtils.isEventuallyVisible(matcher));
     }
 }
