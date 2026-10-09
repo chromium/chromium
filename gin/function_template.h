@@ -18,9 +18,11 @@
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 #include "gin/public/wrappable_pointer_tags.h"
-#include "gin/wrappable.h"
 #include "v8/include/cppgc/allocation.h"
+#include "v8/include/cppgc/garbage-collected.h"
 #include "v8/include/cppgc/macros.h"
+#include "v8/include/cppgc/visitor.h"
+#include "v8/include/v8-cpp-heap-external.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-template.h"
@@ -50,7 +52,7 @@ struct CallbackParamTraits<const T*> {
 // kSignatureId provides a unique memory address for each function signature.
 // This identifier is stored in CallbackHolderBase and used for runtime type
 // checks before casting to a specific CallbackHolder in DispatchToCallbackImpl.
-// This allows all gin callbacks to share a single WrappablePointerTag tag,
+// This allows all gin callbacks to share a single NonWrappablePointerTag tag,
 // avoiding the need to register unique tags for every possible signature.
 template <typename Sig>
 inline constexpr int kSignatureId = 0;
@@ -58,24 +60,23 @@ inline constexpr int kSignatureId = 0;
 // CallbackHolder and CallbackHolderBase are used to pass a
 // base::RepeatingCallback from CreateFunctionTemplate through v8 (via
 // v8::FunctionTemplate) to DispatchToCallback, where it is invoked.
-
-// This simple base class is used so that we can share a single object template
-// among every CallbackHolder instance.
-class GIN_EXPORT CallbackHolderBase : public Wrappable<CallbackHolderBase> {
+class GIN_EXPORT CallbackHolderBase
+    : public cppgc::GarbageCollected<CallbackHolderBase> {
  public:
-  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
-                                               kCallbackHolderBase};
-
   CallbackHolderBase(const CallbackHolderBase&) = delete;
   CallbackHolderBase& operator=(const CallbackHolderBase&) = delete;
+  virtual ~CallbackHolderBase();
 
-  const WrapperInfo* wrapper_info() const override;
+  v8::Local<v8::CppHeapExternal> GetHandle(v8::Isolate* isolate);
+  static CallbackHolderBase* FromV8(v8::Isolate* isolate,
+                                    v8::Local<v8::Data> data);
+
+  virtual void Trace(cppgc::Visitor* visitor) const {}
 
   uintptr_t type_identifier() const { return type_identifier_; }
 
  protected:
   explicit CallbackHolderBase(const uintptr_t type_identifier);
-  ~CallbackHolderBase() override;
 
  private:
   uintptr_t type_identifier_;
@@ -240,8 +241,8 @@ struct Dispatcher {};
 template <typename ReturnType, typename... ArgTypes>
 struct Dispatcher<ReturnType(ArgTypes...)> {
   static void DispatchToCallbackImpl(Arguments* args) {
-    CallbackHolderBase* holder_base = nullptr;
-    CHECK(args->GetData(&holder_base));
+    CallbackHolderBase* holder_base =
+        CallbackHolderBase::FromV8(args->isolate(), args->GetData());
     CHECK(holder_base);
 
     typedef CallbackHolder<ReturnType(ArgTypes...)> HolderT;
@@ -303,9 +304,10 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
       std::move(invoker_options));
 
   v8::Local<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(
-      isolate, &internal::Dispatcher<Sig>::DispatchToCallback,
-      ConvertToV8(isolate, holder).ToLocalChecked(), v8::Local<v8::Signature>(),
-      0, v8::ConstructorBehavior::kThrow);
+      isolate, nullptr, v8::Local<v8::Value>(), v8::Local<v8::Signature>(), 0,
+      v8::ConstructorBehavior::kThrow);
+  tmpl->SetCallHandler(&internal::Dispatcher<Sig>::DispatchToCallback,
+                       holder->GetHandle(isolate));
   return tmpl;
 }
 
@@ -325,8 +327,11 @@ CreateDataPropertyCallback(v8::Isolate* isolate,
   HolderT* holder = cppgc::MakeGarbageCollected<HolderT>(
       isolate->GetCppHeap()->GetAllocationHandle(), std::move(callback),
       std::move(invoker_options));
+  v8::Local<v8::Data> data = holder->GetHandle(isolate);
+  // TODO(567169217): Remove reinterpret_cast once
+  // v8::Template::SetLazyDataProperty accepts v8::Local<v8::Data>.
   return {&internal::Dispatcher<Sig>::DispatchToCallbackForProperty,
-          ConvertToV8(isolate, holder).ToLocalChecked()};
+          *reinterpret_cast<v8::Local<v8::Value>*>(&data)};
 }
 
 }  // namespace gin

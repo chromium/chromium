@@ -65,7 +65,6 @@ enum WrappablePointerTag : uint16_t {
   kAPIBindingJSUtil,             // extensions::APIBindingJSUtil
   kAutomationPosition,           // ui::AutomationPosition
   kBenchmarkingBindings,         // BenchmarkingBindings
-  kCallbackHolderBase,           // gin::internal::CallbackHolderBase
   kChromePluginPlaceholder,      // ChromePluginPlaceholder
   kChromeSetting,                // extensions::ChromeSetting
   kContentSetting,               // extensions::ContentSetting
@@ -126,9 +125,11 @@ enum NonWrappablePointerTag : uint16_t {
   kFirstNonWrappablePointerTag =
       static_cast<uint16_t>(kGinNonWrappableTagRange.first),
   // keep-sorted start case=no
-  kGinPerContextData = kFirstNonWrappablePointerTag,  // gin::PerContextData
+  kCallbackHolderBase =
+      kFirstNonWrappablePointerTag,  // gin::internal::CallbackHolderBase
+  kGinPerContextData,                // gin::PerContextData
   // keep-sorted end
-  kLastNonWrappablePointerTag = kGinPerContextData,
+  kLastNonWrappablePointerTag,
 };
 
 static_assert(

@@ -39,6 +39,11 @@ class GIN_EXPORT Arguments {
     return ConvertFromV8(isolate(), data.As<v8::Value>(), out);
   }
 
+  v8::Local<v8::Data> GetData() const {
+    return is_for_property_ ? info_for_property_->DataV2()
+                            : info_for_function_->DataV2();
+  }
+
   template<typename T>
   bool GetNext(T* out) {
     if (is_for_property_ || next_ >= info_for_function_->Length()) {
