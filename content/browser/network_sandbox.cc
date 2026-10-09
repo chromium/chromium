@@ -86,7 +86,9 @@ SandboxGrantResult MaybeDeleteOldData(
     return SandboxGrantResult::kSuccess;
 
   // Check old path exists, and is a directory.
-  CHECK(base::DirectoryExists(old_path), base::NotFatalUntil::M159);
+  // TODO(crbug.com/571050903): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(base::DirectoryExists(old_path));
 
   base::FilePath old_file_path = old_path.Append(*filename);
 
