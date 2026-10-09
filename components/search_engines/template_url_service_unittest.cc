@@ -1281,7 +1281,11 @@ TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, CrashesOnInvalidIds) {
                  unknown_id}) {
     // Include the ID being tested in failure messages from this iteration.
     SCOPED_TRACE(id);
-    EXPECT_CHECK_DEATH(SetDse(id));
+    // SetUserSelectedDefaultSearchProviderByPrepopulateId uses
+    // NOTREACHED(base::NotFatalUntil::M165), which is not fatal in official
+    // non-DCHECK builds. Switch this back to EXPECT_CHECK_DEATH once M165 is
+    // reached and the check becomes fatal.
+    EXPECT_DCHECK_DEATH_WITH(SetDse(id), "Check failed");
   }
 }
 

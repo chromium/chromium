@@ -1398,6 +1398,9 @@ void TemplateURLService::SetUserSelectedDefaultSearchProviderByPrepopulateId(
   if (!data) {
     // Failing here would indicate a coding error or that something attempted to
     // call WebUI APIs with an invalid prepopulated ID.
+    // Note: If making this fatal or removing base::NotFatalUntil::M165, update
+    // TemplateURLServiceSetDseByPrepopulateIdTest.CrashesOnInvalidIds to use
+    // EXPECT_CHECK_DEATH.
     NOTREACHED(base::NotFatalUntil::M165);
     return;
   }
