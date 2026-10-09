@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.window.layout.WindowMetrics;
@@ -89,6 +90,7 @@ class FuseboxPopup {
     private final DynamicRectProvider mDynamicRectProvider;
     private final @Nullable InsetObserver mInsetObserver;
     private final int mInitialScrollPaddingBottom;
+    private final @Px int mRowVerticalMarginPx;
     private @PopupState int mCurrentState = PopupState.HIDDEN;
     private boolean mIsFirstShow = true;
     private @Nullable Integer mPreviousAccessibilityImportance;
@@ -169,6 +171,16 @@ class FuseboxPopup {
             // Row highlights span the full width, so keep them inside the rounded corners.
             ListMenuUtils.clipContentViewOutline(mScrollView, R.attr.popupBgCornerRadius);
         }
+        // TODO(crbug.com/568855804): Clean up after a variation is chosen. Only the carousel +
+        // accordion variation pins the current tab below the attachments, and only it spaces out
+        // its list rows.
+        mRowVerticalMarginPx =
+                currentTabPlacement == CurrentTabPlacement.BELOW_ATTACHMENTS
+                        ? mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.fusebox_bottom_sheet_item_vertical_margin)
+                        : 0;
 
         ViewStub stub = contentView.findViewById(R.id.fusebox_attachments_stub);
         stub.setLayoutResource(
@@ -299,6 +311,25 @@ class FuseboxPopup {
                                 mToolsDivider,
                                 mModelsDivider);
         mHeaders = List.of(mRecentTabsHeader, mToolsHeader, mModelsHeader);
+
+        for (View row : mListAttachmentButtons) {
+            applyRowSpacing(row);
+        }
+        applyRowSpacing(mMoreOptionsButton);
+    }
+
+    /**
+     * Applies the vertical margin around a list row. No-op unless the current tab is placed {@link
+     * CurrentTabPlacement#BELOW_ATTACHMENTS}.
+     *
+     * @param row A row inflated from {@code fusebox_list_item}.
+     */
+    void applyRowSpacing(View row) {
+        if (mRowVerticalMarginPx == 0) return;
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) row.getLayoutParams();
+        params.topMargin = mRowVerticalMarginPx;
+        params.bottomMargin = mRowVerticalMarginPx;
+        row.setLayoutParams(params);
     }
 
     void destroy() {

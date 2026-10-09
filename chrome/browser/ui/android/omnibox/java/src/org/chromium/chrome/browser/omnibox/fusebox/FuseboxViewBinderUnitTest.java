@@ -285,6 +285,12 @@ public class FuseboxViewBinderUnitTest {
         assertEquals(expectedSizePx, params.height);
     }
 
+    private static void assertVerticalMargins(View row, int expectedMarginPx) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) row.getLayoutParams();
+        assertEquals(expectedMarginPx, params.topMargin);
+        assertEquals(expectedMarginPx, params.bottomMargin);
+    }
+
     @Test
     public void plusButtonVisible_setsVisibility() {
         mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
@@ -1219,6 +1225,57 @@ public class FuseboxViewBinderUnitTest {
         for (View row : viewHolder.popup.mListAttachmentButtons) {
             assertIconSize(row, rowSize);
         }
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void rowSpacing_currentTabBelowAttachments_appliesToRowsOnly() {
+        PropertyModel model = createBottomSheetModel();
+        FuseboxViewHolder viewHolder =
+                createViewHolder(
+                        /* isBottomSheet= */ true,
+                        /* useCarousel= */ true,
+                        /* useScrollableCarousel= */ false,
+                        CurrentTabPlacement.BELOW_ATTACHMENTS);
+        addModelButton(model, viewHolder);
+        int margin =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_item_vertical_margin);
+
+        for (View row : viewHolder.popup.mListAttachmentButtons) {
+            assertVerticalMargins(row, margin);
+        }
+        assertVerticalMargins(viewHolder.popup.mMoreOptionsButton, margin);
+        assertVerticalMargins(getDynamicButton(viewHolder.popup, 0), margin);
+        for (View tile : viewHolder.popup.mCarouselTiles) {
+            assertVerticalMargins(tile, 0);
+        }
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void rowSpacing_currentTabAboveAttachments_notApplied() {
+        PropertyModel model = createBottomSheetModel();
+        FuseboxViewHolder viewHolder =
+                createViewHolder(
+                        /* isBottomSheet= */ true,
+                        /* useCarousel= */ false,
+                        /* useScrollableCarousel= */ false,
+                        CurrentTabPlacement.ABOVE_ATTACHMENTS);
+        addModelButton(model, viewHolder);
+        assertVerticalMargins(viewHolder.popup.mMoreOptionsButton, 0);
+        assertVerticalMargins(getDynamicButton(viewHolder.popup, 0), 0);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void rowSpacing_currentTabWithAttachments_notApplied() {
+        FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
+        addModelButton(createBottomSheetModel(), viewHolder);
+        assertVerticalMargins(viewHolder.popup.mMoreOptionsButton, 0);
+        assertVerticalMargins(getDynamicButton(viewHolder.popup, 0), 0);
     }
 
     @Test

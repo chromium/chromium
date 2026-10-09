@@ -350,6 +350,7 @@ class FuseboxViewBinder {
                                         R.layout.fusebox_list_item,
                                         group,
                                         /* attachToRoot= */ false);
+                view.popup.applyRowSpacing(buttonView);
                 group.addView(buttonView, startIndex + i);
             }
             bindDynamicButton(
