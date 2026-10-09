@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSett
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings;
+import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
@@ -82,8 +83,10 @@ import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -470,6 +473,35 @@ public class SettingsFragmentRegistryTest {
                 "chrome://settings/clearBrowsingData",
                 SettingsFragmentRegistry.createUrlForFragment(
                         ClearBrowsingDataFragment.class, args));
+    }
+
+    @Test
+    public void testCreateUrlForFragment_toolbarLeavesArgsOut() {
+        assertEquals(
+                "chrome://settings/toolbar",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        AdaptiveToolbarSettingsFragment.class, createToolbarUiStateArgs()));
+    }
+
+    /** Regression test for https://crbug.com/571411602. */
+    @Test
+    public void testUrlPreservesArgs_toolbarArgsAreOptional() {
+        // None of the arguments is carried by the URL, but they are optional, so the URL can
+        // replace the Intent rather than falling back to opening the settings root.
+        assertTrue(
+                SettingsFragmentRegistry.urlPreservesArgs(
+                        "chrome://settings/toolbar", createToolbarUiStateArgs()));
+    }
+
+    @Test
+    public void testResolveToolbar_ignoresQuery() {
+        SettingsFragmentRegistry.Resolution resolution =
+                resolve(
+                        "chrome://settings/toolbar?can_show_ui=true&preference_selection=1"
+                                + "&auto_button_caption=2");
+        assertNull(resolution.redirectUrl);
+        assertEquals(AdaptiveToolbarSettingsFragment.class, resolution.fragmentClass);
+        assertTrue(resolution.args.isEmpty());
     }
 
     @Test
@@ -964,6 +996,21 @@ public class SettingsFragmentRegistryTest {
     /** Resolves a URL for the cases that do not depend on browser state. */
     private static SettingsFragmentRegistry.Resolution resolve(String url) {
         return SettingsFragmentRegistry.resolve(url, mock(Profile.class));
+    }
+
+    /**
+     * Returns arguments of the types the toolbar shortcut's "Edit shortcut" menu passes. The values
+     * are arbitrary.
+     */
+    private static Bundle createToolbarUiStateArgs() {
+        Bundle args = new Bundle();
+        args.putBoolean(AdaptiveToolbarSettingsFragment.ARG_UI_STATE_CAN_SHOW_UI, true);
+        args.putIntegerArrayList(
+                AdaptiveToolbarSettingsFragment.ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES,
+                new ArrayList<>(List.of(1, 2)));
+        args.putInt(AdaptiveToolbarSettingsFragment.ARG_UI_STATE_PREFERENCE_SELECTION, 1);
+        args.putInt(AdaptiveToolbarSettingsFragment.ARG_UI_STATE_AUTO_BUTTON_CAPTION, 2);
+        return args;
     }
 
     private static void assertRedirects(String url, String expectedRedirectUrl) {
