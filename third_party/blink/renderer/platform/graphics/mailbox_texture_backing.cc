@@ -35,7 +35,7 @@ MailboxTextureBacking::MailboxTextureBacking(
 }
 
 MailboxTextureBacking::~MailboxTextureBacking() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(thread_checker_.CalledOnValidThread());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   // Update the sync token for MailboxRef.
   ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
@@ -54,14 +54,16 @@ gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
 
 void MailboxTextureBacking::Bind(scoped_refptr<cc::TextureBackingContext>) {
   // TODO(paint-dev): Do we need to support this for html-in-canvas?
+  CHECK(thread_checker_.CalledOnValidThread());
 }
 
 void MailboxTextureBacking::Unbind() {
   // TODO(paint-dev): Do we need to support this for html-in-canvas?
+  CHECK(thread_checker_.CalledOnValidThread());
 }
 
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(thread_checker_.CalledOnValidThread());
   // TODO(jochin): Consider doing some caching and using discardable memory.
   sk_sp<SkData> image_pixels =
       TryAllocateSkData(sk_image_info_.computeMinByteSize());
@@ -87,7 +89,7 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        size_t dst_row_bytes,
                                        int src_x,
                                        int src_y) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(thread_checker_.CalledOnValidThread());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   return ri->ReadbackImagePixels(GetMailbox(), shared_image_->size(), dst_info,
                                  static_cast<GLuint>(dst_row_bytes), src_x,

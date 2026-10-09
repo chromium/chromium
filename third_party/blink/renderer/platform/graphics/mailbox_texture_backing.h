@@ -54,7 +54,7 @@ class MailboxTextureBacking : public TextureBacking {
   std::unique_ptr<gpu::RasterScopedAccess> scoped_access_;
   const SkImageInfo sk_image_info_;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  THREAD_CHECKER(thread_checker_);
+  base::ThreadCheckerImpl thread_checker_;
 };
 
 }  // namespace blink

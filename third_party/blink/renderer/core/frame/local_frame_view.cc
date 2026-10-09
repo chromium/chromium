@@ -232,8 +232,14 @@ std::optional<cc::PaintRecord> GetCanvasSnapshot(DOMNodeId id) {
     if (!nested_layout_obj) {
       return cc::PaintRecord();
     }
-    if (scoped_refptr<StaticBitmapImage> snapshot =
-            nested_canvas->Snapshot(kBackBuffer)) {
+    scoped_refptr<StaticBitmapImage> snapshot =
+        nested_canvas->Snapshot(kBackBuffer);
+    if (snapshot) {
+      // GraphicsContext cannot handle gpu resource serialization.
+      snapshot = snapshot->MakeUnaccelerated();
+    }
+    if (snapshot) {
+      DCHECK(!snapshot->IsTextureBacked());
       PaintRecordBuilder builder;
       gfx::RectF dest_rect(
           gfx::SizeF(nested_layout_obj->PhysicalContentBoxRect().size));
