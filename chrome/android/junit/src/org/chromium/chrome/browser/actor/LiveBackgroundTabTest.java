@@ -92,7 +92,13 @@ public class LiveBackgroundTabTest {
 
     @Test
     public void testAttachTab_attachesAndRemovesFromPool() {
-        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool,
+                        mTab,
+                        PLACEHOLDER_TAB_ID,
+                        TASK_ID,
+                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2);
 
@@ -106,7 +112,13 @@ public class LiveBackgroundTabTest {
 
     @Test
     public void testAttachTab_withPlaceholderState_destroysContentsStateAndTransfersMetadata() {
-        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool,
+                        mTab,
+                        PLACEHOLDER_TAB_ID,
+                        TASK_ID,
+                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         Token placeholderGroupToken = new Token(3L, 4L);
         TabState placeholderState = new TabState();
@@ -131,7 +143,13 @@ public class LiveBackgroundTabTest {
 
     @Test
     public void testAttachTab_withPlaceholderInModel_removesPlaceholder() {
-        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool,
+                        mTab,
+                        PLACEHOLDER_TAB_ID,
+                        TASK_ID,
+                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
 
@@ -214,7 +232,13 @@ public class LiveBackgroundTabTest {
     @Test
     public void testTabDestruction_evictsFromPool() {
         ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
-        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool,
+                        mTab,
+                        PLACEHOLDER_TAB_ID,
+                        TASK_ID,
+                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         verify(mTab).addObserver(captor.capture());
         TabObserver observer = captor.getValue();
@@ -227,7 +251,13 @@ public class LiveBackgroundTabTest {
     @Test
     public void testAttachToForeground_unregistersDestructionObserver() {
         ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
-        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool,
+                        mTab,
+                        PLACEHOLDER_TAB_ID,
+                        TASK_ID,
+                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         verify(mTab).addObserver(captor.capture());
         TabObserver observer = captor.getValue();
