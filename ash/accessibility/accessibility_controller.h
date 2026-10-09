@@ -276,6 +276,7 @@ class ASH_EXPORT AccessibilityController
   Feature& flash_notifications() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
+  Feature& hover_text() const;
   Feature& large_cursor() const;
   Feature& live_caption() const;
   Feature& mono_audio() const;
@@ -335,6 +336,8 @@ class ASH_EXPORT AccessibilityController
 
   bool IsFocusHighlightSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForFocusHighlight();
+
+  bool IsHoverTextSettingVisibleInTray();
 
   bool IsFullScreenMagnifierSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForFullScreenMagnifier();

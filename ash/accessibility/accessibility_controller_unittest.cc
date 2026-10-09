@@ -378,6 +378,73 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs()->FindPreference(prefs::kAccessibilityFlashNotificationsColor));
   EXPECT_TRUE(prefs()->FindPreference(
       prefs::kAccessibilityAlwaysShowScrollbarsEnabled));
+  EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityHoverTextEnabled));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityHoverTextFollowKeyboardFocus));
+  EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityHoverTextFontScale));
+  EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityHoverTextFontStyle));
+  EXPECT_TRUE(
+      prefs()->FindPreference(prefs::kAccessibilityHoverTextFocusRingEnabled));
+  EXPECT_TRUE(
+      prefs()->FindPreference(prefs::kAccessibilityHoverTextTtsEnabled));
+}
+
+TEST_F(AccessibilityControllerTest, SetHoverTextEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kAccessibilityHoverText);
+  EXPECT_FALSE(controller()->hover_text().enabled());
+
+  TestAccessibilityObserver observer;
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller()->hover_text().SetEnabled(true);
+  EXPECT_TRUE(controller()->hover_text().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosHoverText", 0);
+
+  controller()->hover_text().SetEnabled(false);
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosHoverText", 1);
+}
+
+TEST_F(AccessibilityControllerTest, HoverTextConflictsWithChromeVox) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kAccessibilityHoverText);
+  EXPECT_FALSE(controller()->spoken_feedback().enabled());
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_TRUE(controller()->IsHoverTextSettingVisibleInTray());
+
+  // Direction 1: Enabling ChromeVox while Hover Text is on disables Hover Text
+  // and hides it in the tray; disabling ChromeVox restores Hover Text.
+  controller()->hover_text().SetEnabled(true);
+  EXPECT_TRUE(controller()->hover_text().enabled());
+  EXPECT_TRUE(controller()->IsHoverTextSettingVisibleInTray());
+
+  controller()->spoken_feedback().SetEnabled(true);
+  EXPECT_TRUE(controller()->spoken_feedback().enabled());
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_FALSE(controller()->IsHoverTextSettingVisibleInTray());
+
+  controller()->spoken_feedback().SetEnabled(false);
+  EXPECT_FALSE(controller()->spoken_feedback().enabled());
+  EXPECT_TRUE(controller()->hover_text().enabled());
+  EXPECT_TRUE(controller()->IsHoverTextSettingVisibleInTray());
+
+  // Direction 2: Attempting to enable Hover Text while ChromeVox is already on
+  // keeps Hover Text disabled while ChromeVox remains active.
+  controller()->hover_text().SetEnabled(false);
+  controller()->spoken_feedback().SetEnabled(true);
+  EXPECT_TRUE(controller()->spoken_feedback().enabled());
+  EXPECT_FALSE(controller()->hover_text().enabled());
+
+  controller()->hover_text().SetEnabled(true);
+  EXPECT_TRUE(controller()->spoken_feedback().enabled());
+  EXPECT_FALSE(controller()->hover_text().enabled());
+  EXPECT_FALSE(controller()->IsHoverTextSettingVisibleInTray());
+
+  controller()->spoken_feedback().SetEnabled(false);
+  controller()->hover_text().SetEnabled(false);
 }
 
 TEST_F(AccessibilityControllerTest, SetAlwaysShowScrollbarEnabled) {

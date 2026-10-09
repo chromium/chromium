@@ -224,6 +224,10 @@ const FeatureData kFeatures[] = {
      /*toggleable_in_quicksettings=*/true},
     {FeatureType::kDisableTouchpad, prefs::kAccessibilityDisableTrackpadEnabled,
      nullptr, 0, /*toggleable_in_quicksettings=*/false},
+    {FeatureType::kHoverText, prefs::kAccessibilityHoverTextEnabled, nullptr,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HOVER_TEXT,
+     /*toggleable_in_quicksettings=*/true,
+     /*conflicting_feature=*/FeatureType::kSpokenFeedback},
 };
 
 // An array describing the confirmation dialogs for the features which have
@@ -272,6 +276,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityDictationLocaleOfflineNudge,
     prefs::kAccessibilityFocusHighlightEnabled,
     prefs::kAccessibilityHighContrastEnabled,
+    prefs::kAccessibilityHoverTextEnabled,
     prefs::kAccessibilityLargeCursorEnabled,
     prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
@@ -1040,6 +1045,9 @@ void AccessibilityController::Feature::LogDurationMetric() {
     case FeatureType::kHighContrast:
       feature_duration_metric += "CrosHighContrast";
       break;
+    case FeatureType::kHoverText:
+      feature_duration_metric += "CrosHoverText";
+      break;
     case FeatureType::kLargeCursor:
       feature_duration_metric += "CrosLargeCursor";
       break;
@@ -1215,6 +1223,7 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAccessibilityDictationEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityFloatingMenuEnabled,
                                 false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityHoverTextEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMonoAudioEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMouseKeysEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityShortcutsEnabled, true);
@@ -1517,6 +1526,18 @@ void AccessibilityController::RegisterProfilePrefs(
       kDefaultFaceGazePrecisionClickSpeedFactor,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
+  // TODO(b/568813139): Make Hover Text prefs syncable before launch.
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityHoverTextFollowKeyboardFocus, false);
+  registry->RegisterDoublePref(prefs::kAccessibilityHoverTextFontScale, 2.0);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityHoverTextFontStyle,
+      static_cast<int>(HoverTextFontStyle::kSystemSans));
+  registry->RegisterBooleanPref(prefs::kAccessibilityHoverTextFocusRingEnabled,
+                                true);
+  registry->RegisterBooleanPref(prefs::kAccessibilityHoverTextTtsEnabled,
+                                false);
+
   registry->RegisterBooleanPref(
       prefs::kAccessibilityMagnifierFollowsChromeVox, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -1668,6 +1689,10 @@ AccessibilityController::Feature& AccessibilityController::floating_menu()
   return GetFeature(FeatureType::kFloatingMenu);
 }
 
+AccessibilityController::Feature& AccessibilityController::hover_text() const {
+  return GetFeature(FeatureType::kHoverText);
+}
+
 AccessibilityController::FeatureWithDialog&
 AccessibilityController::fullscreen_magnifier() const {
   return static_cast<FeatureWithDialog&>(
@@ -1799,6 +1824,11 @@ bool AccessibilityController::IsFocusHighlightSettingVisibleInTray() {
 
 bool AccessibilityController::IsEnterpriseIconVisibleForFocusHighlight() {
   return focus_highlight().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityController::IsHoverTextSettingVisibleInTray() {
+  return ::features::IsAccessibilityHoverTextEnabled() &&
+         hover_text().IsVisibleInTray();
 }
 
 bool AccessibilityController::IsFullScreenMagnifierSettingVisibleInTray() {
@@ -3874,8 +3904,9 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       }
 
       // ChromeVox focus highlighting overrides the other focus highlighting,
-      // and ChromeVox conflicts with sticky keys.
+      // and ChromeVox conflicts with Hover Text and sticky keys.
       focus_highlight().UpdateFromPref();
+      hover_text().UpdateFromPref();
       sticky_keys().UpdateFromPref();
       break;
     case FeatureType::kReducedAnimations:
@@ -3975,6 +4006,8 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kFlashNotifications:
       UpdateFlashNotificationsFromPrefs();
+      break;
+    case FeatureType::kHoverText:
       break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:

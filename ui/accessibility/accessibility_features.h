@@ -230,6 +230,10 @@ AX_BASE_EXPORT bool IsAccessibilityChromeVoxJapaneseBrailleEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityGoogleTtsAutomaticReconnect);
 AX_BASE_EXPORT bool IsAccessibilityGoogleTtsAutomaticReconnectEnabled();
 
+// Controls whether the ChromeOS Hover Text accessibility feature is available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityHoverText);
+AX_BASE_EXPORT bool IsAccessibilityHoverTextEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

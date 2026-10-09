@@ -1544,6 +1544,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
     <variant name="Autoclick"/>
+    <variant name="HoverText"/>
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>
     <variant name="SpokenFeedback"/>
@@ -1647,6 +1648,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CursorColor"/>
     <variant name="DisableTouchpad"/>
     <variant name="FlashNotifications"/>
+    <variant name="HoverText"/>
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>
     <variant name="MouseKeys"/>

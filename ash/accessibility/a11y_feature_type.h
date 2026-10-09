@@ -27,6 +27,7 @@ enum class A11yFeatureType {
   kFocusHighlight,
   kFullscreenMagnifier,
   kHighContrast,
+  kHoverText,
   kLargeCursor,
   kLiveCaption,
   kMonoAudio,

@@ -988,6 +988,30 @@ inline constexpr char kAccessibilityFaceGazeCursorControlEnabledSentinel[] =
 inline constexpr char kAccessibilityFaceGazeActionsEnabledSentinel[] =
     "settings.a11y.face_gaze.actions_enabled_sentinel";
 
+// A boolean pref which determines whether Hover Text is enabled.
+inline constexpr char kAccessibilityHoverTextEnabled[] =
+    "settings.a11y.hover_text.enabled";
+// A boolean pref which determines whether Hover Text follows keyboard focus
+// (Tab / arrow key navigation) in addition to pointer and touch hover.
+inline constexpr char kAccessibilityHoverTextFollowKeyboardFocus[] =
+    "settings.a11y.hover_text.follow_keyboard_focus";
+// A double pref which determines the text magnification scale factor for the
+// Hover Text bubble.
+inline constexpr char kAccessibilityHoverTextFontScale[] =
+    "settings.a11y.hover_text.scale";
+// An integer pref which determines the font style for the Hover Text bubble.
+// Maps to ash::HoverTextFontStyle.
+inline constexpr char kAccessibilityHoverTextFontStyle[] =
+    "settings.a11y.hover_text.font_style";
+// A boolean pref which determines whether a highlight focus ring is drawn
+// around the hovered element when Hover Text is active.
+inline constexpr char kAccessibilityHoverTextFocusRingEnabled[] =
+    "settings.a11y.hover_text.highlight_enabled";
+// A boolean pref which determines whether Hover Text speaks hovered text aloud
+// using ChromeOS Text-to-Speech (TTS).
+inline constexpr char kAccessibilityHoverTextTtsEnabled[] =
+    "settings.a11y.hover_text.tts_enabled";
+
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 inline constexpr char kShouldAlwaysShowAccessibilityMenu[] =

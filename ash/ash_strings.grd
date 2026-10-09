@@ -1305,6 +1305,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE" desc="The label used in the accessibility menu of the system tray to toggle on/off the FaceGaze feature.">
         Face control
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HOVER_TEXT" translateable="false" desc="The label used in the accessibility menu of the system tray to toggle on/off the Hover Text feature.">
+        Hover text
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION" desc="The label used in the accessibility menu of the system tray to toggle on/off the color correction feature.">
         Color correction
       </message>
