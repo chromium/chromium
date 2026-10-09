@@ -90,9 +90,12 @@ class ContextualSearchCueTabStateTest
   ContextualSearchCueTabStateTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeatures(
-        {contextual_cueing::kContextualCueingV2,
-         contextual_cueing::kContextualCueingV2MultiSource},
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {contextual_cueing::kContextualCueingV2, {}},
+            {contextual_cueing::kContextualCueingV2MultiSource,
+             {{"ContextualCueingV2MultiSourceAnnotationTimeout", "3s"}}},
+        },
         {});
   }
 

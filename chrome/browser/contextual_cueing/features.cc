@@ -96,7 +96,7 @@ const base::FeatureParam<bool> kUsePrivateAi(&kContextualCueingV2,
 const base::FeatureParam<base::TimeDelta> kAnnotationTimeout(
     &kContextualCueingV2MultiSource,
     "ContextualCueingV2MultiSourceAnnotationTimeout",
-    base::Seconds(3));
+    base::Seconds(300));
 
 // UCB scorer hyperparameters. Defaults are a reasonable starting point;
 // tune via Finch once multi-source experiments are running.

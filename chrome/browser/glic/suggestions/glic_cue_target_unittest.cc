@@ -416,7 +416,8 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
             {contextual_cueing::kContextualCueingV2,
              {{"ContextualCueingV2EduClassifierThreshold", "0.7"},
               {"ContextualCueingV2ShoppingClassifierThreshold", "0.6"}}},
-            {contextual_cueing::kContextualCueingV2MultiSource, {}},
+            {contextual_cueing::kContextualCueingV2MultiSource,
+             {{"ContextualCueingV2MultiSourceAnnotationTimeout", "3s"}}},
         },
         {});
   }
@@ -652,7 +653,7 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheMiss_Timeout) {
 
   EXPECT_FALSE(callback_ran);
 
-  // Fast-forward past the 3-second default timeout.
+  // Fast-forward past the 3-second timeout.
   task_environment()->FastForwardBy(base::Seconds(4));
 
   EXPECT_TRUE(callback_ran);

@@ -936,7 +936,8 @@ class IndigoContextualCueingV2BrowserTest : public IndigoBrowserTest {
          {blink::features::kImageReplacement, {}},
          {contextual_cueing::kContextualCueingV2,
           {{contextual_cueing::kDisableCueBackoff.name, "true"}}},
-         {contextual_cueing::kContextualCueingV2MultiSource, {}},
+         {contextual_cueing::kContextualCueingV2MultiSource,
+          {{contextual_cueing::kAnnotationTimeout.name, "3s"}}},
          {features::kIndigoContextualCueingV2, {}}},
         /*disabled_features=*/{
             contextual_cueing::kContextualCueingV2EnforceAgeRestriction});
