@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
@@ -30,7 +29,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -42,7 +40,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/content_extraction/content/browser/inner_text.h"
-#include "components/history_embeddings/content/history_embeddings_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -189,76 +186,6 @@ void GetInnerTextForModelPrototyping(
           base::BindOnce(&OnGetInnerTextForModelPrototyping,
                          std::move(continue_callback)),
           nullptr));
-}
-
-void OnHistorySearchCompleted(
-    AiDataKeyedService::AiDataCallback ai_data_callback,
-    std::vector<history_embeddings::SearchResult> search_results) {
-  AiDataKeyedService::AiData data =
-      std::make_optional<AiDataKeyedService::BrowserData>();
-  for (const auto& search_result : search_results) {
-    // Skip search result if empty;
-    if (search_result.scored_url_rows.empty()) {
-      continue;
-    }
-
-    auto* history_result = data->add_history_query_result();
-    auto* query = history_result->mutable_query();
-    query->set_query(search_result.query);
-    query->set_num_history_visits(search_result.count);
-    if (search_result.time_range_start) {
-      query->mutable_history_search_time_range()
-          ->mutable_start_time()
-          ->set_seconds((int64_t)(search_result.time_range_start
-                                      ->InSecondsFSinceUnixEpoch()));
-    }
-    for (auto& scored_url_row : search_result.scored_url_rows) {
-      optimization_guide::proto::HistoryVisitItem* visit_item =
-          history_result->mutable_history_data()->add_visit_item();
-      visit_item->set_page_title(base::UTF16ToUTF8(scored_url_row.row.title()));
-      visit_item->set_page_url(scored_url_row.row.url().spec());
-      visit_item->mutable_visit_time()->set_seconds(static_cast<int64_t>(
-          scored_url_row.scored_url.visit_time.InSecondsFSinceUnixEpoch()));
-      for (const std::string& passage :
-           scored_url_row.url_data.passages.passages()) {
-        visit_item->add_passages(passage);
-      }
-    }
-  }
-
-  std::move(ai_data_callback).Run(data);
-}
-
-void GetHistoryQueryResultForModelPrototyping(
-    content::WebContents* web_contents,
-    const optimization_guide::proto::HistoryQuerySpecifiers& history_specifiers,
-    AiDataKeyedService::AiDataCallback continue_callback) {
-  history_embeddings::HistoryEmbeddingsService* history_embeddings_service =
-      HistoryEmbeddingsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-
-  const auto history_search_callback =
-      base::BarrierCallback<history_embeddings::SearchResult>(
-          history_specifiers.history_queries_size(),
-          base::BindOnce(&OnHistorySearchCompleted,
-                         std::move(continue_callback)));
-
-  for (const auto& history_query : history_specifiers.history_queries()) {
-    // Skip empty queries by returning an empty result.
-    if (history_query.query().empty()) {
-      history_search_callback.Run(history_embeddings::SearchResult());
-      continue;
-    }
-
-    history_embeddings_service->Search(
-        /*previous_search_result=*/nullptr, history_query.query(),
-        base::Time::FromSecondsSinceUnixEpoch(
-            (double)(history_query.history_search_time_range()
-                         .start_time()
-                         .seconds())),
-        history_query.num_history_visits(),
-        /*skip_answering=*/true, /*url_id_filter=*/{}, history_search_callback);
-  }
 }
 
 // Fills an AiData proto with information from RequestAXTreeSnapshot. If no
@@ -641,15 +568,6 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
   if (page_context_specifier.tab_screenshot()) {
     GetTabScreenshotForModelPrototyping(web_contents,
                                         concurrent.CreateCallback());
-  }
-
-  if (specifiers.browser_data_collection_specifier()
-          .has_history_query_specifiers()) {
-    GetHistoryQueryResultForModelPrototyping(
-        web_contents,
-        specifiers.browser_data_collection_specifier()
-            .history_query_specifiers(),
-        concurrent.CreateCallback());
   }
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/385777825): generalize this logic and support other
