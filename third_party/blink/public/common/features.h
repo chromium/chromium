@@ -521,14 +521,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOffscreenCanvasPropagateVisibility);
 // Discard WebGL back buffer when page visibility is hidden.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebGLDiscardBackBuffer);
 
-// When enabled, forces ICC profile parsing to use skcms instead of the Rust
-// moxcms parser. Acts as a kill-switch for the Rust ICC parser.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceSkcmsICCParsing);
-
-// When enabled, forces EXIF parsing to use the C++ SkExif parser instead of
-// the Rust parser. Acts as a kill-switch for the Rust EXIF parser.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceSkExifCppParsing);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFrameMetadataObserver);
 
 // If enabled, shared workers will be frozen when all their clients are in the

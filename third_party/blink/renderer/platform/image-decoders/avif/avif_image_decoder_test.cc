@@ -14,7 +14,6 @@
 #include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
@@ -25,7 +24,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
 #include "ui/gfx/color_space.h"
 
 #define FIXME_SUPPORT_ICC_PROFILE_NO_TRANSFORM 0
@@ -1527,19 +1525,6 @@ TEST(StaticAVIFTests, ZeroVersionIccProfileDecodesWithRustIcc) {
   // declares an invalid profile version of 0.0, as emitted by some image
   // export pipelines found in the wild. The Rust ICC parser (moxcms) used
   // to reject such files, but now accepts them and treats them as v2 profiles.
-  //
-  // Force the Rust parser to match the production configuration: in content
-  // processes, content/common/skia_utils.cc calls ForceSkcms() with the
-  // value of blink::features::kForceSkcmsICCParsing, which is disabled by
-  // default. That initialization does not run in blink_platform_unittests,
-  // so this process is still at Skia's compiled-in default of forcing skcms
-  // (which would accept the profile and hide the failure mode this test
-  // covers). Restore that default, true, on exit; ForceSkcms() has no
-  // corresponding getter with which to capture the prior value.
-  SkCodecs::ICCProfileChromium::ForceSkcms(false);
-  base::ScopedClosureRunner restore_skcms(
-      base::BindOnce([] { SkCodecs::ICCProfileChromium::ForceSkcms(true); }));
-
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(ReadFileToSharedBuffer(
                        "/images/resources/avif/red-icc-version-zero.avif"),

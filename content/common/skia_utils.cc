@@ -5,7 +5,6 @@
 #include "content/common/skia_utils.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -15,10 +14,7 @@
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkGraphics.h"
-#include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
-#include "third_party/skia/include/private/chromium/SkExifChromium.h"
 
 namespace content {
 namespace {
@@ -31,37 +27,17 @@ constexpr size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
 
 bool g_skia_initialized = false;
 
-void ConfigureSkiaKillSwitches() {
-  // Configure the ICC profile parser kill-switch early, before any image
-  // decoding occurs. When the feature is enabled, this forces skcms to be
-  // used instead of the Rust-based ICC parser.
-  // TODO(crbug.com/463653726): Remove this once the feature is validated in
-  // Stable.
-  SkCodecs::ICCProfileChromium::ForceSkcms(
-      base::FeatureList::IsEnabled(blink::features::kForceSkcmsICCParsing));
-
-  // Configure the EXIF parser kill-switch early, before any image decoding
-  // occurs. When the feature is enabled, this forces the C++ SkExif parser to
-  // be used instead of the Rust-based EXIF parser.
-  // TODO(crbug.com/463653726): Remove this once the feature is validated in
-  // Stable.
-  SkExif::ForceSkExif(
-      base::FeatureList::IsEnabled(blink::features::kForceSkExifCppParsing));
-
-  g_skia_initialized = true;
-}
-
 }  // namespace
 
 void InitializeSkiaLite() {
-  ConfigureSkiaKillSwitches();
+  g_skia_initialized = true;
   InitSkiaEventTracer();
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
 }
 
 void InitializeSkia() {
-  ConfigureSkiaKillSwitches();
+  g_skia_initialized = true;
 
   // Make sure that any switches used here are propagated to the renderer and
   // GPU processes.

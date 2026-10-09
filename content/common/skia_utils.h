@@ -10,13 +10,12 @@
 namespace content {
 
 // Full Skia initialization for processes that do heavy Skia work (renderer,
-// GPU, in-process-GPU browser). Configures kill-switches, font caches, etc.
+// GPU, in-process-GPU browser). Configures font caches and diagnostics.
 void InitializeSkia();
 
 // Lightweight Skia initialization for processes that don't need full Skia setup
-// but still need kill-switches and diagnostics (e.g. browser process with
-// out-of-process GPU). Configures ICC/EXIF kill-switches, event tracing, and
-// memory dump providers.
+// but still need diagnostics (e.g. browser process with out-of-process GPU).
+// Configures event tracing and memory dump providers.
 void InitializeSkiaLite();
 
 // Returns whether one of the InitializeSkia* functions above has run in this
