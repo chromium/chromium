@@ -51,11 +51,12 @@ class IOSPasskeyClient {
   virtual void SetIOSPasskeyClientCommandsHandler(
       id<IOSPasskeyClientCommands> handler) = 0;
 
-  // Fetches the keys for the provided purpose and calls the callback with the
-  // fetched keys as input.
-  virtual void FetchKeys(ReauthenticatePurpose purpose,
-                         PasskeyUserVerificationStatus user_verification_status,
-                         FetchKeysCallback callback) = 0;
+  // Fetches the trusted vault keys for the provided `purpose` and calls
+  // `callback` with the fetched keys as input.
+  virtual void FetchTrustedVaultKeys(
+      ReauthenticatePurpose purpose,
+      PasskeyUserVerificationStatus user_verification_status,
+      FetchTrustedVaultKeysCallback callback) = 0;
 
   // Fetches the device authorization keys, which are needed to decrypt
   // passkeys stored in the `security_domain_encrypted` format, and calls

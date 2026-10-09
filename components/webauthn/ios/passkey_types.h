@@ -75,12 +75,13 @@ enum class PasskeyUserVerificationStatus {
 using SharedKey = std::vector<uint8_t>;
 using SharedKeyList = std::vector<SharedKey>;
 
-// Callback to be called once keys are fetched.
+// Callback to be called once trusted vault keys are fetched by
+// `PasskeyKeychainProvider`.
 using KeysFetchedCallback = base::OnceCallback<void(SharedKeyList, NSError*)>;
 
-// Callback to be called once keys are fetched, including user verification
-// completion status.
-using FetchKeysCallback =
+// Callback to be called once trusted vault keys are fetched, including user
+// verification completion status.
+using FetchTrustedVaultKeysCallback =
     base::OnceCallback<void(SharedKeyList, bool did_complete_uv)>;
 
 }  // namespace webauthn

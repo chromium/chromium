@@ -179,10 +179,10 @@ id<IOSPasskeyClientCommands> IOSChromePasskeyClient::GetCommandHandler() const {
   return command_handler_;
 }
 
-void IOSChromePasskeyClient::FetchKeys(
+void IOSChromePasskeyClient::FetchTrustedVaultKeys(
     webauthn::ReauthenticatePurpose purpose,
     webauthn::PasskeyUserVerificationStatus user_verification_status,
-    webauthn::FetchKeysCallback callback) {
+    webauthn::FetchTrustedVaultKeysCallback callback) {
   IOSChromePasskeyClientBridgeDelegate* delegate =
       base::apple::ObjCCast<IOSChromePasskeyClientBridgeDelegate>(
           GetPasskeyKeychainProviderBridge().delegate);
@@ -196,7 +196,7 @@ void IOSChromePasskeyClient::FetchKeys(
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       [](id<IOSPasskeyClientCommands> handler,
          IOSChromePasskeyClientBridgeDelegate* delegate,
-         webauthn::FetchKeysCallback inner_callback,
+         webauthn::FetchTrustedVaultKeysCallback inner_callback,
          webauthn::SharedKeyList trusted_vault_keys, NSError* error) {
         bool did_complete_uv =
             [delegate userVerificationStatus] ==

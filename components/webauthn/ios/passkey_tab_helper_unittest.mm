@@ -90,8 +90,7 @@ constexpr std::string_view kDeviceAuthorizationKey =
     "device_authorization_key_0123456";
 
 // A `security_domain_encrypted` value with a P-256 private key, encrypted with
-// the trusted vault key returned by `FakeIOSPasskeyClient::FetchKeys()` and
-// with `kDeviceAuthorizationKey`.
+// a zeroed 32-byte trusted vault key and `kDeviceAuthorizationKey`.
 constexpr auto kSecurityDomainEncrypted = base::span_from_cstring(
     "\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x20\x3d\x25\xa3"
     "\x1c\x98\xe9\x38\x26\xd4\x6f\x9a\xe8\x99\xcd\x89\x52\x50\x90\x53"
@@ -831,7 +830,7 @@ TEST_F(PasskeyTabHelperTest, HandleRegistrationDefersWhenGpmDisabled) {
       BuildRegistrationRequestParams({}));
 
   EXPECT_FALSE(client_->DidShowCreationBottomSheet());
-  EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
 }
 
 // Tests that automatic passkey upgrade is allowed for a valid, recent login.
@@ -1153,7 +1152,7 @@ TEST_F(PasskeyTabHelperTest, ConditionalCreateUpgradePrefDisabled) {
   passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
 
   EXPECT_FALSE(client_->DidShowCreationBottomSheet());
-  EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
 }
 
 // Tests that a conditional create request in off-the-record mode defers to the
@@ -1193,7 +1192,7 @@ TEST_F(PasskeyTabHelperTest, ConditionalCreateOffTheRecordDefersToRenderer) {
 
   EXPECT_FALSE(client_->DidShowInterstitial());
   EXPECT_FALSE(client_->DidShowCreationBottomSheet());
-  EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(frame->GetLastJavaScriptCall().find(kDeferToRendererJsCall),
             std::u16string::npos);
   histogram_tester_.ExpectTotalCount(
@@ -1282,7 +1281,7 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
   // Trigger start of creation.
   passkey_tab_helper()->StartPasskeyCreation(kFakeRequestId,
                                              /*did_complete_uv=*/false);
-  EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
   EXPECT_TRUE(client_->DidOnPasskeyCreated());
 
   // Verify that ResolveAttestationRequest was called on the subframe with the
@@ -1331,7 +1330,7 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationWithExcludedCredential) {
                                              /*did_complete_uv=*/false);
 
   // Verify that keys were NOT fetched.
-  EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
   EXPECT_FALSE(client_->DidOnPasskeyCreated());
 
   // Verify that rejectPasskeyRequest was called on the frame with the correct
@@ -1874,7 +1873,7 @@ TEST_F(PasskeyTabHelperTest,
   passkey_tab_helper()->StartPasskeyAssertion(kFakeRequestId,
                                               passkey.credential_id(),
                                               /*did_complete_uv=*/false);
-  EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
 
   // Verify that resolveAssertionRequest was called on the frame.
   web::FakeWebFramesManager* frames_manager =
@@ -1948,7 +1947,7 @@ TEST_F(PasskeyTabHelperTest,
   HandleGetRequestAndStartAssertion(kCredentialId);
 
   EXPECT_FALSE(client_->DidFetchDeviceAuthorizationKeys());
-  EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kDeferToRendererJsCall),
             std::u16string::npos);
 }
@@ -1972,7 +1971,7 @@ TEST_F(PasskeyTabHelperDeviceAuthorizationTest,
   HandleGetRequestAndStartAssertion(kCredentialId);
 
   EXPECT_TRUE(client_->DidFetchDeviceAuthorizationKeys());
-  EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kResolveAssertionRequestJsCall),
             std::u16string::npos);
 }
@@ -1990,7 +1989,7 @@ TEST_F(PasskeyTabHelperDeviceAuthorizationTest,
   HandleGetRequestAndStartAssertion(kCredentialId);
 
   EXPECT_TRUE(client_->DidFetchDeviceAuthorizationKeys());
-  EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kDeferToRendererJsCall),
             std::u16string::npos);
 }
@@ -2006,7 +2005,7 @@ TEST_F(PasskeyTabHelperDeviceAuthorizationTest,
   HandleGetRequestAndStartAssertion(kCredentialId);
 
   EXPECT_TRUE(client_->DidFetchDeviceAuthorizationKeys());
-  EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kDeferToRendererJsCall),
             std::u16string::npos);
 }
@@ -2024,7 +2023,7 @@ TEST_F(PasskeyTabHelperDeviceAuthorizationTest,
   HandleGetRequestAndStartAssertion(kCredentialId);
 
   EXPECT_TRUE(client_->DidFetchDeviceAuthorizationKeys());
-  EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kDeferToRendererJsCall),
             std::u16string::npos);
 }
@@ -2038,7 +2037,7 @@ TEST_F(PasskeyTabHelperDeviceAuthorizationTest,
   HandleGetRequestAndStartAssertion(passkey.credential_id());
 
   EXPECT_FALSE(client_->DidFetchDeviceAuthorizationKeys());
-  EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
   EXPECT_NE(GetLastJavaScriptCall().find(kResolveAssertionRequestJsCall),
             std::u16string::npos);
 }

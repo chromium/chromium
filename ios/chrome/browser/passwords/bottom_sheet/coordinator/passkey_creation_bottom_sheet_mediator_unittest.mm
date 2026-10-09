@@ -128,7 +128,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
 
   [mediator_ createPasskey];
 
-  EXPECT_TRUE(fake_client_->DidFetchKeys());
+  EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
   [(OCMockObject*)mock_reauth_module_ verify];
 }
 
@@ -173,13 +173,13 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
   // Verify reauth was attempted.
   [(OCMockObject*)mock_reauth_module_ verify];
   // Client should not have fetched keys yet.
-  EXPECT_FALSE(fake_client_->DidFetchKeys());
+  EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
 
   // Trigger success.
   completionHandler(ReauthenticationResult::kSuccess);
 
   // Now client should have fetched keys.
-  EXPECT_TRUE(fake_client_->DidFetchKeys());
+  EXPECT_TRUE(fake_client_->DidFetchTrustedVaultKeys());
 }
 
 // Tests that createPasskey handles reauth failure correctly.
@@ -218,7 +218,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthFailure) {
 
   // Verify reauth was attempted.
   [(OCMockObject*)mock_reauth_module_ verify];
-  EXPECT_FALSE(fake_client_->DidFetchKeys());
+  EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
 
   // Expect dismissal on failure (as per current implementation logic in
   // mediator).
@@ -230,7 +230,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthFailure) {
   // Verify dismissal.
   [(OCMockObject*)mock_delegate_ verify];
   // Verify client did NOT fetch keys.
-  EXPECT_FALSE(fake_client_->DidFetchKeys());
+  EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
 }
 
 // Tests that createPasskey defers to the renderer and dismisses passkey
@@ -265,7 +265,7 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthNotPossible) {
   // Verify dismissal.
   [(OCMockObject*)mock_delegate_ verify];
   // Verify client did NOT fetch keys.
-  EXPECT_FALSE(fake_client_->DidFetchKeys());
+  EXPECT_FALSE(fake_client_->DidFetchTrustedVaultKeys());
 
   // Verify that the request was deferred to the renderer.
   web::WebFramesManager* frames_manager =

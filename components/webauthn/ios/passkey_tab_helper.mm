@@ -822,10 +822,11 @@ void PasskeyTabHelper::StartPasskeyCreation(std::string request_id,
   PasskeyUserVerificationStatus status =
       DetermineUserVerificationStatus(params, did_complete_uv);
 
-  client_->FetchKeys(ReauthenticatePurpose::kEncrypt, status,
-                     base::BindOnce(&PasskeyTabHelper::CompletePasskeyCreation,
-                                    this->AsWeakPtr(), std::move(params),
-                                    std::move(client_data_json)));
+  client_->FetchTrustedVaultKeys(
+      ReauthenticatePurpose::kEncrypt, status,
+      base::BindOnce(&PasskeyTabHelper::CompletePasskeyCreation,
+                     this->AsWeakPtr(), std::move(params),
+                     std::move(client_data_json)));
 }
 
 std::optional<std::pair<std::string, PasskeyRequestParams::RequestType>>
@@ -1101,7 +1102,7 @@ void PasskeyTabHelper::FetchTrustedVaultKeysForAssertion(
   PasskeyUserVerificationStatus status =
       DetermineUserVerificationStatus(params, did_complete_uv);
 
-  client_->FetchKeys(
+  client_->FetchTrustedVaultKeys(
       ReauthenticatePurpose::kDecrypt, status,
       base::BindOnce(&PasskeyTabHelper::CompletePasskeyAssertion,
                      this->AsWeakPtr(), std::move(params), std::move(passkey),

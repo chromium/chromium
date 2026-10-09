@@ -18,9 +18,10 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   // IOSPasskeyClient:
   void SetIOSPasskeyClientCommandsHandler(
       id<IOSPasskeyClientCommands> handler) override;
-  void FetchKeys(ReauthenticatePurpose purpose,
-                 PasskeyUserVerificationStatus user_verification_status,
-                 FetchKeysCallback callback) override;
+  void FetchTrustedVaultKeys(
+      ReauthenticatePurpose purpose,
+      PasskeyUserVerificationStatus user_verification_status,
+      FetchTrustedVaultKeysCallback callback) override;
   void FetchDeviceAuthorizationKeys(
       FetchDeviceAuthKeysCallback callback) override;
   void ShowSuggestionBottomSheet(RequestInfo request_info) override;
@@ -39,7 +40,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   void SetAutomaticPasskeyUpgradeEnabled(bool enabled);
   void SetBiometricsEnabled(bool enabled);
   bool DidShowCreationBottomSheet() const;
-  bool DidFetchKeys() const;
+  bool DidFetchTrustedVaultKeys() const;
   bool DidFetchDeviceAuthorizationKeys() const;
   void SetDeviceAuthFetchResult(DeviceAuthFetchResult result);
   bool DidShowInterstitial() const;
@@ -50,7 +51,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
  private:
   bool show_creation_bottom_sheet_called_ = false;
   bool show_suggestion_bottom_sheet_called_ = false;
-  bool fetch_keys_called_ = false;
+  bool fetch_trusted_vault_keys_called_ = false;
   bool fetch_device_authorization_keys_called_ = false;
   DeviceAuthFetchResult device_auth_fetch_result_;
   bool show_interstitial_called_ = false;
