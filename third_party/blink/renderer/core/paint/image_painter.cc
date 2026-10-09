@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_image_animations.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -77,6 +78,13 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
 
   if (area_element->ImageElement() != layout_image_.GetNode())
     return;
+
+  // Don't paint or force style computation for <area> elements inside
+  // a display-locked subtree.
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(
+          area_element, /*inclusive_check=*/true)) {
+    return;
+  }
 
   // We use EnsureComputedStyle() instead of GetComputedStyle() here because
   // <area> is used and its style applied even if it has display:none. The style
