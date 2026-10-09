@@ -256,7 +256,17 @@ public class ListMenuHost
                                 mView.getContext(),
                                 mView,
                                 new ColorDrawable(Color.TRANSPARENT),
-                                () -> contentView,
+                                (context) -> {
+                                    assert ContextUtils.activityFromContext(context) == null
+                                                    || ContextUtils.activityFromContext(
+                                                                    contentView.getContext())
+                                                            == null
+                                                    || ContextUtils.isSameActivity(
+                                                            contentView.getContext(), context)
+                                            : "Popup contentView context is not from the same"
+                                                    + " Activity as popup context.";
+                                    return contentView;
+                                },
                                 mDelegate.getRectProvider(mView))
                         .setDismissOnScreenSizeChange(true)
                         .setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor)
@@ -348,9 +358,20 @@ public class ListMenuHost
                                 mView.getContext(),
                                 rootView,
                                 new ColorDrawable(Color.TRANSPARENT),
-                                () -> contentView,
+                                (context) -> {
+                                    assert ContextUtils.activityFromContext(context) == null
+                                                    || ContextUtils.activityFromContext(
+                                                                    contentView.getContext())
+                                                            == null
+                                                    || ContextUtils.isSameActivity(
+                                                            contentView.getContext(), context)
+                                            : "Popup contentView context is not from the same"
+                                                    + " Activity as popup context.";
+                                    return contentView;
+                                },
                                 new RectProvider(
                                         FlyoutController.calculateFlyoutAnchorRect(view, rootView)))
+                        .setDismissOnScreenSizeChange(true)
                         .setVerticalOverlapAnchor(true)
                         .setHorizontalOverlapAnchor(false)
                         .setMaxWidth(mMenuMaxWidth)
