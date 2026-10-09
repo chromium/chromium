@@ -206,7 +206,6 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
   tab_subscriptions_.push_back(tab_->RegisterDidInsert(
       base::BindRepeating(&ContextualCueingController::OnTabInserted,
                           weak_ptr_factory_.GetWeakPtr())));
-  ObserveTabList();
 }
 
 ContextualCueingController::~ContextualCueingController() {
@@ -424,7 +423,9 @@ void ContextualCueingController::OnTabDetached(
 }
 
 void ContextualCueingController::OnTabInserted(tabs::TabInterface* tab) {
-  ObserveTabList();
+  // Detaching the tab hides a cue that depends on other tabs, so the tab can
+  // only arrive here without dependencies.
+  CHECK(dependencies_.empty());
   if (active_cue_data_) {
     ObserveSidePanel();
   }
@@ -1115,14 +1116,6 @@ void ContextualCueingController::ShowCue(
   RecordCueShownToPrivateInsights(tab_->GetProfile(), cue_id, cue_type, cue,
                                   tab_, tabs_to_show, background_tabs, cuj);
 
-  dependencies_.clear();
-  for (const auto& handle : tabs_to_show) {
-    if (handle.Get() && handle.Get() != tab_ && handle.Get()->GetContents()) {
-      dependencies_.insert(
-          sessions::SessionTabHelper::IdForTab(handle.Get()->GetContents()));
-    }
-  }
-
   cue_hidden_time_ = base::TimeTicks();
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
@@ -1138,6 +1131,21 @@ void ContextualCueingController::ShowCue(
     CUEING_LOG("Not attempting to show cue: no page action controller.");
     RecordContextualCueingDecision(ContextualCueingDecision::kNoActiveTab);
     return;
+  }
+
+  dependencies_.clear();
+  for (const auto& handle : tabs_to_show) {
+    if (handle.Get() && handle.Get() != tab_ && handle.Get()->GetContents()) {
+      dependencies_.insert(
+          sessions::SessionTabHelper::IdForTab(handle.Get()->GetContents()));
+    }
+  }
+  // The cue has to go away when a tab it depends on is closed, so watch the
+  // tab list for as long as there are such tabs.
+  if (dependencies_.empty()) {
+    tab_list_observation_.Reset();
+  } else {
+    ObserveTabList();
   }
 
   ObserveSidePanel();
@@ -1546,6 +1554,7 @@ void ContextualCueingController::HideCue() {
 #if !BUILDFLAG(IS_ANDROID)
   active_cue_data_.reset();
   dependencies_.clear();
+  tab_list_observation_.Reset();
   current_anchored_message_priority_ = std::nullopt;
   page_actions::PageActionController* page_action_controller =
       tab_->GetTabFeatures()->page_action_controller();

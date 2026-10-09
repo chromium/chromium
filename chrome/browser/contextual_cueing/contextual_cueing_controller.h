@@ -280,6 +280,10 @@ class ContextualCueingController
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   std::set<SessionID> dependencies_;
   std::optional<ActiveCueData> active_cue_data_;
+  // Watches the window's tab list only while a shown cue depends on other
+  // tabs (`dependencies_`), so that closing one of them hides the cue. Every
+  // tab has a controller, so observing the list unconditionally would make
+  // each tab insertion notify every other tab.
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
   raw_ptr<ContextualCueingService> contextual_cueing_service_;
