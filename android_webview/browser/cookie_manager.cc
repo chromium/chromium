@@ -195,6 +195,7 @@ CookieManager::CookieManager(AwBrowserContext* const parent_context)
       cookie_store_client_thread_("CookieMonsterClient"),
       cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {
+  TRACE_EVENT("android_webview", "CookieManager::CookieManager");
   // Apps can specify a list of Profiles (BrowserContexts) to be initialized at
   // startup, meaning this can be called after thread restrictions are applied.
   base::ScopedAllowBlocking scoped_allow_blocking;

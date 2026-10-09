@@ -156,28 +156,40 @@ AwBrowserContext::AwBrowserContext(std::string name,
       this, profile_metrics::BrowserProfileType::kRegular);
 
   if (!IsDefaultBrowserContext()) {
+    TRACE_EVENT("android_webview", "AwBrowserContext::CreateCookieManager");
     cookie_manager_ = std::make_unique<CookieManager>(this);
   }
 
-  http_cache_manager_ = std::make_unique<AwHttpCacheManager>(this);
+  {
+    TRACE_EVENT("android_webview", "AwBrowserContext::CreateHttpCacheManager");
+    http_cache_manager_ = std::make_unique<AwHttpCacheManager>(this);
+  }
 
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
   CreateUserPrefService();
 
-  if (base::FeatureList::IsEnabled(features::kWebViewMigrateVisitedLinks)) {
-    partitioned_visitedlink_writer_ =
-        std::make_unique<visitedlink::PartitionedVisitedLinkWriter>(
-            this, this,
-            /*use_constant_salt=*/true);
-    partitioned_visitedlink_writer_->Init();
-  } else {
-    visitedlink_writer_ =
-        std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
-    visitedlink_writer_->Init();
+  {
+    TRACE_EVENT("android_webview", "AwBrowserContext::CreateVisitedLinkWriter");
+    if (base::FeatureList::IsEnabled(features::kWebViewMigrateVisitedLinks)) {
+      partitioned_visitedlink_writer_ =
+          std::make_unique<visitedlink::PartitionedVisitedLinkWriter>(
+              this, this,
+              /*use_constant_salt=*/true);
+      partitioned_visitedlink_writer_->Init();
+    } else {
+      visitedlink_writer_ =
+          std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
+      visitedlink_writer_->Init();
+    }
   }
 
-  EnsureResourceContextInitialized();
+  {
+    TRACE_EVENT("android_webview",
+                "AwBrowserContext::EnsureResourceContextInitialized");
+    EnsureResourceContextInitialized();
+  }
+
   {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "Android.WebView.AwBrowserContext.CreateAwPrefetchManager.Duration");
@@ -185,11 +197,16 @@ AwBrowserContext::AwBrowserContext(std::string name,
                 "AwBrowserContext::CreateAwPrefetchManager");
     prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
   }
-  preconnector_ = std::make_unique<AwPreconnector>(this);
+
+  {
+    TRACE_EVENT("android_webview", "AwBrowserContext::CreatePreconnector");
+    preconnector_ = std::make_unique<AwPreconnector>(this);
+  }
 
   // This should be initialized as soon as possible when creating the profile,
   // in order to load the database from disk.
   {
+    TRACE_EVENT("android_webview", "AwBrowserContext::CreateOriginTrials");
     SCOPED_UMA_HISTOGRAM_TIMER(
         "Android.WebView.AwBrowserContext.GetDefaultStoragePartition."
         "Duration");
@@ -201,15 +218,21 @@ AwBrowserContext::AwBrowserContext(std::string name,
             std::make_unique<blink::TrialTokenValidator>());
   }
 
-  content_restriction_manager_client_ =
-      AwContentRestrictionManagerClient::Create();
-  content_restriction_blocked_navigation_tracker_ =
-      std::make_unique<AwContentRestrictionBlockedNavigationTracker>();
+  {
+    TRACE_EVENT("android_webview",
+                "AwBrowserContext::CreateContentRestrictionClients");
+    content_restriction_manager_client_ =
+        AwContentRestrictionManagerClient::Create();
+    content_restriction_blocked_navigation_tracker_ =
+        std::make_unique<AwContentRestrictionBlockedNavigationTracker>();
+  }
   cross_origin_allow_list_matcher_ =
       std::make_unique<origin_matcher::OriginMatcher>();
 
   if (auto* pm_registry =
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    TRACE_EVENT("android_webview",
+                "AwBrowserContext::NotifyPerformanceManagerRegistry");
     pm_registry->NotifyBrowserContextAdded(this);
   }
 }
