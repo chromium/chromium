@@ -5111,9 +5111,6 @@ crbug.com/1201225 external/wpt/pointerevents/pointerlock/pointerevent_pointerraw
 crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pass ]
 
 
-# Sheriff 2021-05-03
-crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Timeout ]
-
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
