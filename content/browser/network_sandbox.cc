@@ -187,9 +187,10 @@ SandboxGrantResult MaybeCopyData(const base::FilePath& old_path,
 SandboxGrantResult CleanUpOldData(
     network::mojom::NetworkContextParams* params) {
   // Never delete old data unless the checkpoint file exists.
-  CHECK(base::PathExists(params->file_paths->data_directory.path().Append(
-            kCheckpointFileName)),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/571386676): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(base::PathExists(
+      params->file_paths->data_directory.path().Append(kCheckpointFileName)));
 
   SandboxGrantResult last_error = SandboxGrantResult::kSuccess;
   SandboxGrantResult result = MaybeDeleteOldData(
