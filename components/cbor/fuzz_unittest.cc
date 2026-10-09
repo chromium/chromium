@@ -10,11 +10,10 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/cbor/cbor_buildflags.h"
+#include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -22,133 +21,6 @@
 namespace cbor {
 
 namespace {
-using ::testing::Eq;
-
-bool MatchCborValue(const Value& actual,
-                    const Value& expected,
-                    testing::MatchResultListener* listener,
-                    std::string_view path = "") {
-  const auto path_prefix = [&path] {
-    return path.empty() ? "" : std::string(path) + ": ";
-  };
-  if (actual.type() != expected.type()) {
-    *listener << path_prefix() << "type mismatch: actual is "
-              << static_cast<int>(actual.type()) << ", expected is "
-              << static_cast<int>(expected.type());
-    return false;
-  }
-  switch (actual.type()) {
-    case Value::Type::UNSIGNED:
-    case Value::Type::NEGATIVE:
-      if (actual.GetInteger() != expected.GetInteger()) {
-        *listener << path_prefix() << "integer mismatch: actual is "
-                  << actual.GetInteger() << ", expected is "
-                  << expected.GetInteger();
-        return false;
-      }
-      return true;
-    case Value::Type::BYTE_STRING:
-      if (actual.GetBytestring() != expected.GetBytestring()) {
-        *listener << path_prefix() << "bytestring mismatch: actual is "
-                  << base::HexEncode(actual.GetBytestring()) << ", expected is "
-                  << base::HexEncode(expected.GetBytestring());
-        return false;
-      }
-      return true;
-    case Value::Type::STRING:
-      if (actual.GetString() != expected.GetString()) {
-        *listener << path_prefix() << "string mismatch: actual is \""
-                  << actual.GetString() << "\", expected is \""
-                  << expected.GetString() << "\"";
-        return false;
-      }
-      return true;
-    case Value::Type::INVALID_UTF8:
-      if (actual.GetInvalidUTF8() != expected.GetInvalidUTF8()) {
-        *listener << path_prefix() << "invalid UTF-8 mismatch: actual is "
-                  << base::HexEncode(actual.GetInvalidUTF8())
-                  << ", expected is "
-                  << base::HexEncode(expected.GetInvalidUTF8());
-        return false;
-      }
-      return true;
-    case Value::Type::SIMPLE_VALUE:
-      if (actual.GetSimpleValue() != expected.GetSimpleValue()) {
-        *listener << path_prefix() << "simple value mismatch: actual is "
-                  << static_cast<int>(actual.GetSimpleValue())
-                  << ", expected is "
-                  << static_cast<int>(expected.GetSimpleValue());
-        return false;
-      }
-      return true;
-    case Value::Type::ARRAY: {
-      const auto& actual_arr = actual.GetArray();
-      const auto& expected_arr = expected.GetArray();
-      if (actual_arr.size() != expected_arr.size()) {
-        *listener << path_prefix() << "array size mismatch: actual size is "
-                  << actual_arr.size() << ", expected size is "
-                  << expected_arr.size();
-        return false;
-      }
-      for (size_t i = 0; i < actual_arr.size(); ++i) {
-        if (!MatchCborValue(
-                actual_arr[i], expected_arr[i], listener,
-                std::string(path) + "[" + base::NumberToString(i) + "]")) {
-          return false;
-        }
-      }
-      return true;
-    }
-    case Value::Type::MAP: {
-      const auto& actual_map = actual.GetMap();
-      const auto& expected_map = expected.GetMap();
-      if (actual_map.size() != expected_map.size()) {
-        *listener << path_prefix() << "map size mismatch: actual size is "
-                  << actual_map.size() << ", expected size is "
-                  << expected_map.size();
-        return false;
-      }
-      auto actual_it = actual_map.begin();
-      auto expected_it = expected_map.begin();
-      for (size_t i = 0; actual_it != actual_map.end();
-           ++actual_it, ++expected_it, ++i) {
-        if (!MatchCborValue(
-                actual_it->first, expected_it->first, listener,
-                std::string(path) + ".key[" + base::NumberToString(i) + "]") ||
-            !MatchCborValue(
-                actual_it->second, expected_it->second, listener,
-                std::string(path) + ".val[" + base::NumberToString(i) + "]")) {
-          return false;
-        }
-      }
-      return true;
-    }
-    default:
-      *listener << path_prefix() << "unsupported major type "
-                << static_cast<int>(actual.type())
-                << " (neither parser should have produced this)";
-      return false;
-  }
-}
-
-MATCHER_P(CborValueEqImpl, expected_ref, "") {
-  const std::optional<Value>& expected = expected_ref.get();
-  if (arg.has_value() != expected.has_value()) {
-    *result_listener << "has_value() mismatch: actual is "
-                     << (arg.has_value() ? "value" : "std::nullopt")
-                     << ", expected is "
-                     << (expected.has_value() ? "value" : "std::nullopt");
-    return false;
-  }
-  if (!arg.has_value()) {
-    return true;
-  }
-  return MatchCborValue(*arg, *expected, result_listener);
-}
-
-inline auto CborValueEq(const std::optional<Value>& expected) {
-  return CborValueEqImpl(std::cref(expected));
-}
 
 std::optional<Value> ParseAndCompare(
     const base::span<const uint8_t> input,
@@ -174,7 +46,11 @@ std::optional<Value> ParseAndCompare(
   fill_config(rust_config, true, &rust_error);
   std::optional<Value> rust_cbor = Reader::Read(input, rust_config);
 
-  EXPECT_THAT(rust_cbor, CborValueEq(cpp_cbor));
+  const auto format_cbor = [](const std::optional<Value>& cbor) {
+    return cbor.has_value() ? WriteDiagnostic(*cbor) : "std::nullopt";
+  };
+  EXPECT_EQ(rust_cbor, cpp_cbor) << "rust: " << format_cbor(rust_cbor)
+                                 << ", cpp: " << format_cbor(cpp_cbor);
   if (cpp_cbor.has_value() && rust_cbor.has_value()) {
     Writer::Config cpp_writer_config;
     cpp_writer_config.use_rust = false;
@@ -190,7 +66,7 @@ std::optional<Value> ParseAndCompare(
         Writer::Write(*cpp_cbor, cpp_writer_config);
     std::optional<std::vector<uint8_t>> rust_out =
         Writer::Write(*rust_cbor, rust_writer_config);
-    EXPECT_THAT(rust_out, Eq(cpp_out));
+    EXPECT_EQ(rust_out, cpp_out);
   } else {
     // Both parsers correctly rejected the invalid input. Check that the error
     // codes align perfectly.
@@ -346,7 +222,7 @@ void ReadAndWriteIsIdempotentAndDoesNotCrash(
     ASSERT_TRUE(serialized_cbor.has_value());
     // This can only be reached if the input was canonical, which means that it
     // must exactly match the re-serialized output.
-    EXPECT_THAT(*serialized_cbor, Eq(input));
+    EXPECT_EQ(*serialized_cbor, input);
   }
 }
 

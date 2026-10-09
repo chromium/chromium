@@ -4,6 +4,7 @@
 
 #include "components/cbor/values.h"
 
+#include <limits>
 #include <ostream>
 #include <string_view>
 #include <tuple>
@@ -17,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "components/cbor/diagnostic_writer.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cbor {
@@ -220,6 +222,38 @@ Value::MapValue& Value::GetMap() {
 
 const Value::BinaryValue& Value::GetInvalidUTF8() const {
   return std::get<InvalidUTF8>(data_).bytes;
+}
+
+bool operator==(const Value& lhs, const Value& rhs) {
+  return lhs.data_ == rhs.data_;
+}
+
+std::ostream& operator<<(std::ostream& out, const Value& value) {
+  return out << WriteDiagnostic(
+             value,
+             /*rough_max_output_bytes=*/std::numeric_limits<size_t>::max());
+}
+
+std::ostream& operator<<(std::ostream& out, Value::Type type) {
+  switch (type) {
+    case Value::Type::UNSIGNED:
+      return out << "UNSIGNED";
+    case Value::Type::NEGATIVE:
+      return out << "NEGATIVE";
+    case Value::Type::BYTE_STRING:
+      return out << "BYTE_STRING";
+    case Value::Type::STRING:
+      return out << "STRING";
+    case Value::Type::ARRAY:
+      return out << "ARRAY";
+    case Value::Type::MAP:
+      return out << "MAP";
+    case Value::Type::SIMPLE_VALUE:
+      return out << "SIMPLE_VALUE";
+    case Value::Type::INVALID_UTF8:
+      return out << "INVALID_UTF8";
+  }
+  return out << "Invalid Type (" << std::to_underlying(type) << ")";
 }
 
 }  // namespace cbor

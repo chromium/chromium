@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <string>
 #include <string_view>
 #include <variant>
@@ -60,16 +61,22 @@ class CBOR_EXPORT Value {
 
   struct Null final {
     constexpr explicit Null() = default;
+
+    friend bool operator==(const Null&, const Null&) { return true; }
   };
   static constexpr Null null;
 
   struct Undefined final {
     constexpr explicit Undefined() = default;
+
+    friend bool operator==(const Undefined&, const Undefined&) { return true; }
   };
   static constexpr Undefined undefined;
 
   struct InvalidUTF8 final {
     BinaryValue bytes;
+
+    friend bool operator==(const InvalidUTF8&, const InvalidUTF8&) = default;
   };
 
   // Returns a Value with Type::INVALID_UTF8. This factory method lets tests
@@ -164,6 +171,8 @@ class CBOR_EXPORT Value {
     return std::visit(std::forward<Visitor>(visitor), data_);
   }
 
+  CBOR_EXPORT friend bool operator==(const Value&, const Value&);
+
  private:
   friend class Reader;
 
@@ -188,6 +197,10 @@ class CBOR_EXPORT Value {
 
   Storage data_;
 };
+
+// Stream operators so for pretty-printing in tests.
+CBOR_EXPORT std::ostream& operator<<(std::ostream&, const Value&);
+CBOR_EXPORT std::ostream& operator<<(std::ostream&, Value::Type);
 
 }  // namespace cbor
 
