@@ -27,6 +27,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.android_webview.AwContentRestrictionManagerBridge;
+import org.chromium.android_webview.ContentRestrictionFailureFallbackReason;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.ManifestMetadataMockApplicationContext;
@@ -310,4 +311,54 @@ public class AwContentRestrictionManagerBridgeTest {
         }
     }
 
+    @Test
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordFailureFallbackReason_invalidUrl() {
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ContentRestriction.FailureFallbackReason",
+                        ContentRestrictionFailureFallbackReason.INVALID_URL)) {
+            mBridge.requestContentClassification(
+                    TEST_NAVIGATION_ID, /* url= */ null, TEST_MIME_TYPE, mMockCallback);
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordFailureFallbackReason_aconfigFlaggedApiDelegateMissing() {
+        AwContentRestrictionManagerBridge.setDelegateForTesting(null);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ContentRestriction.FailureFallbackReason",
+                        ContentRestrictionFailureFallbackReason
+                                .ACONFIG_FLAGGED_API_DELEGATE_MISSING)) {
+            mBridge.requestContentClassification(
+                    TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordFailureFallbackReason_classificationError() {
+        Promise<Boolean> promise = new Promise<>();
+        when(mFlaggedApiDelegate.requestContentRestrictionClassification(
+                        /* uri= */ Mockito.any(),
+                        /* requestBody= */ Mockito.eq(null),
+                        /* mimeType= */ Mockito.eq(TEST_MIME_TYPE),
+                        /* executor= */ Mockito.any()))
+                .thenReturn(promise);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ContentRestriction.FailureFallbackReason",
+                        ContentRestrictionFailureFallbackReason.CLASSIFICATION_ERROR)) {
+            mBridge.requestContentClassification(
+                    TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
+            promise.reject(new Exception("Mock Platform Exception"));
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        }
+    }
 }

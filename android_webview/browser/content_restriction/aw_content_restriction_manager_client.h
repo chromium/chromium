@@ -26,6 +26,20 @@ inline constexpr char kContentRestrictionEnabled[] =
     "android_webview.content_restriction_enabled";
 }  // namespace prefs
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
+// LINT.IfChange(ContentRestrictionFailureFallbackReason)
+enum class ContentRestrictionFailureFallbackReason {
+  kTimeout = 0,
+  kInvalidUrl = 1,
+  kAconfigFlaggedApiDelegateMissing = 2,
+  kClassificationError = 3,
+  kMaxValue = kClassificationError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ContentRestrictionFailureFallbackReason)
+
 // Client implementation for managing interactions with the
 // `ContentRestrictionManager` system service via the
 // `AwContentRestrictionManagerBridge`.

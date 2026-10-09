@@ -128,12 +128,20 @@ public class AwContentRestrictionManagerBridge {
             JniOnceCallback<Boolean> callback) {
         @Nullable Uri uri = parseUrl(url);
         if (uri == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.WebView.ContentRestriction.FailureFallbackReason",
+                    ContentRestrictionFailureFallbackReason.INVALID_URL,
+                    ContentRestrictionFailureFallbackReason.MAX_VALUE + 1);
             callback.onResult(true);
             return;
         }
         @Nullable AconfigFlaggedApiDelegate delegate = getDelegate();
         if (delegate == null) {
             Log.w(TAG, "Unable to retrieve the AconfigFlaggedApiDelegate instance.");
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.WebView.ContentRestriction.FailureFallbackReason",
+                    ContentRestrictionFailureFallbackReason.ACONFIG_FLAGGED_API_DELEGATE_MISSING,
+                    ContentRestrictionFailureFallbackReason.MAX_VALUE + 1);
             callback.onResult(true);
             return;
         }
@@ -153,6 +161,10 @@ public class AwContentRestrictionManagerBridge {
                     if (error != null) {
                         Log.w(TAG, "Failed to classify content", error);
                     }
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Android.WebView.ContentRestriction.FailureFallbackReason",
+                            ContentRestrictionFailureFallbackReason.CLASSIFICATION_ERROR,
+                            ContentRestrictionFailureFallbackReason.MAX_VALUE + 1);
                     callback.onResult(true);
                 });
 

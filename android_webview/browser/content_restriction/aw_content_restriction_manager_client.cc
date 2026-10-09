@@ -102,6 +102,8 @@ void AwContentRestrictionManagerClient::ClassificationRequestTracker::
   base::UmaHistogramTimes(
       "Android.WebView.ContentRestriction.ClassificationRequestLatencyMs",
       latency);
+  base::UmaHistogramBoolean("Android.WebView.ContentRestriction.Timeout",
+                            false);
 
   ContentClassificationCallback callback = std::move(it->second.callback);
   pending_requests_.erase(it);
@@ -115,6 +117,11 @@ void AwContentRestrictionManagerClient::ClassificationRequestTracker::OnTimeout(
     // Should be rare, but we return regardless.
     return;
   }
+
+  base::UmaHistogramBoolean("Android.WebView.ContentRestriction.Timeout", true);
+  base::UmaHistogramEnumeration(
+      "Android.WebView.ContentRestriction.FailureFallbackReason",
+      ContentRestrictionFailureFallbackReason::kTimeout);
 
   // The platform enforces its own timeouts so we should rarely get here. This
   // is only triggered when the platform is non-responsive, so we conservatively

@@ -1190,6 +1190,17 @@ chromium-metrics-reviews@google.com.
       label="Icons, Addresses, Names, Emails, and Telephone numbers"/>
 </enum>
 
+<!-- LINT.IfChange(ContentRestrictionFailureFallbackReason) -->
+
+<enum name="ContentRestrictionFailureFallbackReason">
+  <int value="0" label="Timeout"/>
+  <int value="1" label="Invalid URL"/>
+  <int value="2" label="Missing AconfigFlaggedApi delegate"/>
+  <int value="3" label="Classification error"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/content_restriction/aw_content_restriction_manager_client.h:ContentRestrictionFailureFallbackReason) -->
+
 <enum name="CpuAbiBitnessSupport">
   <int value="0" label="Neither"/>
   <int value="1" label="32-bit only"/>
