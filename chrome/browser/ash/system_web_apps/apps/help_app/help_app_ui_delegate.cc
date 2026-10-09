@@ -10,6 +10,7 @@
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -24,13 +25,13 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -181,15 +182,18 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
     return std::nullopt;
   }
 
+  const AccountId& account_id =
+      CHECK_DEREF(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+          .GetAccountId();
   // We specify a different page transition here because the common
   // `ui::PAGE_TRANSITION_LINK` can be intercepted by URL capturing logic.
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_FROM_API);
-  // This method is initiated by the Help app renderer process via Mojo.
-  params.is_renderer_initiated = true;
-  // The `Navigate` implementation requires renderer-initiated navigations to
-  // specify an initiator origin. Set this to chrome-untrusted://help-app.
-  params.initiator_origin = url::Origin::Create(origin_url);
-  Navigate(&params);
+  // Specify `initiating_origin` because this method is initiated by the Help
+  // app renderer process via Mojo.
+  BrowserController::GetInstance()->OpenUrl(
+      account_id, url,
+      {.transition = ui::PAGE_TRANSITION_FROM_API,
+       .initiating_origin = url::Origin::Create(origin_url)});
 
   return std::nullopt;
 }

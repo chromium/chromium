@@ -20,10 +20,11 @@ source_set("events") {
     ":event_router",
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/navigator",
     "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//components/user_manager",
     "//extensions/browser",
     "//url",
   ]

@@ -44,6 +44,9 @@ class BrowserControllerImpl : public BrowserController,
                               webapps::AppId app_id,
                               BrowserType browser_type,
                               const GURL& url) override;
+  content::WebContents* OpenUrl(const AccountId& account_id,
+                                const GURL& url,
+                                const OpenUrlParams& params) override;
   BrowserDelegate* NewTabWithPostData(const AccountId& account_id,
                                       const GURL& url,
                                       base::span<const uint8_t> post_data,

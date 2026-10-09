@@ -7,13 +7,14 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/features/feature_provider.h"
 #include "ui/base/page_transition_types.h"
@@ -29,10 +30,13 @@ constexpr char kKeyboardDiagnosticsUrl[] =
 namespace cx_events = ::chromeos::api::os_events;
 
 void OpenDiagnosticsKeyboardPage(content::BrowserContext* browser_context) {
-  NavigateParams navigate_params(Profile::FromBrowserContext(browser_context),
-                                 GURL(kKeyboardDiagnosticsUrl),
-                                 ui::PAGE_TRANSITION_FIRST);
-  Navigate(&navigate_params);
+  const AccountId& account_id =
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+                      browser_context))
+          .GetAccountId();
+  ash::BrowserController::GetInstance()->OpenUrl(
+      account_id, GURL(kKeyboardDiagnosticsUrl),
+      {.transition = ui::PAGE_TRANSITION_FIRST});
 }
 
 std::string GetFeatureName(cx_events::EventCategory category) {

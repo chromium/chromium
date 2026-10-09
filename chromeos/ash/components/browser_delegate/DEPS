@@ -5,6 +5,7 @@ include_rules = [
   "+components/tabs",
   "+components/webapps",
   "+ui/base/page_transition_types.h",
+  "+ui/base/window_open_disposition.h",
   "+ui/gfx/geometry",
   "+ui/views/controls/webview",
 ]

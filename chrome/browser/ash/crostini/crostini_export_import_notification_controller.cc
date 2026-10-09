@@ -15,15 +15,12 @@
 #include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -226,12 +223,12 @@ void CrostiniExportImportNotificationController::SetStatusFailedWithMessageUI(
     case Status::FAILED_ARCHITECTURE_MISMATCH:
       delegate_->SetCallback(base::BindRepeating(
           [](Profile* profile) {
-            NavigateParams params(
-                profile, GURL(ash::external_urls::kLinuxExportImportHelpURL),
-                ui::PAGE_TRANSITION_LINK);
-            params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-            params.window_action = NavigateParams::WindowAction::kShowWindow;
-            Navigate(&params);
+            auto* user =
+                ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+                    profile);
+            ash::BrowserController::GetInstance()->OpenUrl(
+                CHECK_DEREF(user).GetAccountId(),
+                GURL(ash::external_urls::kLinuxExportImportHelpURL), {});
           },
           profile_));
       break;

@@ -12,22 +12,26 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/chromeos/extensions/telemetry/api/common",
-  "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
-  "+chrome/browser/ui/navigator/browser_navigator.h",
-  "+chrome/browser/ui/navigator/browser_navigator_params.h",
-  "+chrome/browser/ui/tabs/tab_enums.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
-  "+chrome/browser/ui/web_applications/test",
   "+chrome/common",
-  "+chrome/test",
 
   "+ash/system/diagnostics/mojom/input.mojom.h",
 ]
 
 specific_include_rules = {
    'event_manager_browsertest\\.cc': [
+      '+chrome/browser/profiles/profile.h',
+      '+chrome/browser/ui/browser_window/public/browser_window_interface.h',
+      '+chrome/browser/ui/navigator/browser_navigator.h',
+      '+chrome/browser/ui/navigator/browser_navigator_params.h',
+      '+chrome/browser/ui/tabs/tab_enums.h',
+      '+chrome/browser/ui/tabs/tab_strip_model.h',
+      '+chrome/browser/ui/web_applications/test',
       '+chrome/browser/web_applications/test/web_app_install_test_utils.h',
+      '+chrome/test',
+   ],
+   'events_api_browsertest\\.cc': [
+      '+chrome/browser/profiles/profile.h',
+      '+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h',
+      '+chrome/browser/ui/tabs/tab_strip_model.h',
    ],
 }

@@ -31,8 +31,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
-  "+chrome/browser/ui/navigator/browser_navigator.h",
-  "+chrome/browser/ui/navigator/browser_navigator_params.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_install_info.h",

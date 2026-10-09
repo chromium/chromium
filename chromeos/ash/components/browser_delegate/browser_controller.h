@@ -18,8 +18,11 @@
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
 #include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/simple_web_view.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class AccountId;
 class BrowserWindowInterface;
@@ -31,10 +34,6 @@ class Window;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace views {
 class SimpleWebViewDialogDelegate;
@@ -137,6 +136,25 @@ class BrowserController {
     int32_t restore_id;
   };
 
+  // See OpenUrl below.
+  struct OpenUrlParams {
+    // Where to open the URL, e.g. in a new foreground tab (default), in a new
+    // window (`NEW_WINDOW`), or in an incognito window (`OFF_THE_RECORD`).
+    WindowOpenDisposition disposition =
+        WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    // The page transition type. Web apps can capture navigations whose
+    // transition is `PAGE_TRANSITION_LINK` (the default) without qualifiers;
+    // add a qualifier such as `PAGE_TRANSITION_FROM_API` to prevent that.
+    ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
+    // Whether the call is a direct result of a user action, such as a click.
+    // If true, the opened page is treated in some respects as if the user had
+    // interacted with it. For example, it may autoplay media.
+    bool user_activation = false;
+    // If set, the navigation is treated as renderer-initiated, with this
+    // origin as its initiator. Otherwise, it is browser-initiated.
+    std::optional<url::Origin> initiating_origin;
+  };
+
   // See ForEachBrowser below.
   enum class BrowserOrder {
     kAscendingCreationTime,
@@ -197,6 +215,16 @@ class BrowserController {
                                       webapps::AppId app_id,
                                       BrowserType browser_type,
                                       const GURL& url = GURL()) = 0;
+
+  // Opens `url` in a browser of the user identified by `account_id` according
+  // to `params`, creating or reusing a browser window as appropriate and
+  // showing it.
+  // Returns the WebContents that `url` was opened in, or nullptr if there is
+  // none, e.g. because no browser window could be created or because `url` is
+  // handled by a system web app, which is launched asynchronously.
+  virtual content::WebContents* OpenUrl(const AccountId& account_id,
+                                        const GURL& url,
+                                        const OpenUrlParams& params) = 0;
 
   // Makes a POST request in a new tab in the last active tabbed browser. If no
   // such browser exists, a new one is created. Returns nullptr if the creation
