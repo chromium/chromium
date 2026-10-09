@@ -2997,7 +2997,9 @@ void StoragePartitionImpl::DataDeletionHelper::OnTaskComplete(
 }
 
 void StoragePartitionImpl::DataDeletionHelper::RecordUnfinishedSubTasks() {
-  CHECK(!pending_tasks_.empty(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/571708559): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!pending_tasks_.empty());
   for (TracingDataType task : pending_tasks_) {
     base::UmaHistogramEnumeration(
         "History.ClearBrowsingData.Duration.SlowTasks180sStoragePartition",
