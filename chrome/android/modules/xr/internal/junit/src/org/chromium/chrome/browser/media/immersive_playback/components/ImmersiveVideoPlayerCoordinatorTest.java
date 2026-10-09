@@ -5,19 +5,23 @@
 package org.chromium.chrome.browser.media.immersive_playback.components;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -37,12 +41,25 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 
 /** Tests for {@link ImmersiveVideoPlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveVideoPlayerCoordinatorTest {
+    /** {@link XrSurfaceEntityView} is abstract; this provides the holder to production code. */
+    private static class TestSurfaceEntityView extends XrSurfaceEntityView {
+        private final XrSurfaceEntityHolder mHolder;
+
+        TestSurfaceEntityView(Context context, XrSurfaceEntityHolder holder) {
+            super(context);
+            mHolder = holder;
+        }
+
+        @Override
+        public XrSurfaceEntityHolder getHolder() {
+            return mHolder;
+        }
+    }
+
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private XrSceneCoreSessionManager mSessionManager;
     @Mock private CompositorView mCompositorView;
-    @Mock private XrSurfaceEntityView mSurfaceEntityView;
     @Mock private XrSurfaceEntityHolder mHolder;
     @Mock private XrInteractableComponent mInteractableComponent;
     @Mock private ImmersiveVideoPlayerCoordinator.Delegate mDelegate;
@@ -51,16 +68,19 @@ public class ImmersiveVideoPlayerCoordinatorTest {
     @Mock private XrPanelEntityHolder mMainPanelEntity;
 
     private Activity mActivity;
+    private XrSurfaceEntityView mSurfaceEntityView;
     private ImmersiveVideoPlayerCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mSurfaceEntityView = new TestSurfaceEntityView(mActivity, mHolder);
+        // Attach the view so that requestFocus() can take effect.
+        mActivity.setContentView(mSurfaceEntityView);
 
         when(mCompositorView.getView()).thenReturn(mSurfaceEntityView);
-        when(mSurfaceEntityView.getHolder()).thenReturn(mHolder);
         when(mHolder.getInteractableComponent()).thenReturn(mInteractableComponent);
         when(mHolder.getResizableComponent()).thenReturn(mResizableComponent);
         when(mHolder.getMovableComponent()).thenReturn(mMovableComponent);
@@ -107,29 +127,30 @@ public class ImmersiveVideoPlayerCoordinatorTest {
 
     @Test
     public void testShow_SetsAccessibilityPropertiesAndDelegate() {
+        assertFalse(mSurfaceEntityView.isFocused());
+
         mCoordinator.show();
 
-        verify(mSurfaceEntityView).setFocusable(true);
-        verify(mSurfaceEntityView).setFocusableInTouchMode(true);
-        verify(mSurfaceEntityView)
-                .setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        verify(mSurfaceEntityView)
-                .setContentDescription(
-                        mActivity.getString(
-                                org.chromium.chrome.R.string.accessibility_video_player));
-        verify(mSurfaceEntityView).setBackgroundColor(android.graphics.Color.TRANSPARENT);
-        verify(mSurfaceEntityView).setAccessibilityDelegate(any());
-        verify(mSurfaceEntityView).requestFocus();
+        assertTrue(mSurfaceEntityView.isFocusable());
+        assertTrue(mSurfaceEntityView.isFocusableInTouchMode());
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_YES,
+                mSurfaceEntityView.getImportantForAccessibility());
+        assertEquals(
+                mActivity.getString(org.chromium.chrome.R.string.accessibility_video_player),
+                mSurfaceEntityView.getContentDescription());
+        assertEquals(
+                Color.TRANSPARENT, ((ColorDrawable) mSurfaceEntityView.getBackground()).getColor());
+        assertNotNull(mSurfaceEntityView.getAccessibilityDelegate());
+        assertTrue(mSurfaceEntityView.isFocused());
     }
 
     @Test
     public void testAccessibilityClick_NotifiesDelegate() {
         mCoordinator.show();
 
-        ArgumentCaptor<View.AccessibilityDelegate> delegateCaptor =
-                ArgumentCaptor.forClass(View.AccessibilityDelegate.class);
-        verify(mSurfaceEntityView).setAccessibilityDelegate(delegateCaptor.capture());
-        View.AccessibilityDelegate accessibilityDelegate = delegateCaptor.getValue();
+        View.AccessibilityDelegate accessibilityDelegate =
+                mSurfaceEntityView.getAccessibilityDelegate();
         assertNotNull(accessibilityDelegate);
 
         AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfo.obtain();

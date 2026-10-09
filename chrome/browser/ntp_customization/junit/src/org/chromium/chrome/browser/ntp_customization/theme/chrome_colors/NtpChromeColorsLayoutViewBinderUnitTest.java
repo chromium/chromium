@@ -4,20 +4,29 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.junit.Before;
@@ -27,166 +36,177 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.ButtonCompat;
 
 /** Unit tests for {@link NtpChromeColorsLayoutViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpChromeColorsLayoutViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mLayoutView;
-    @Mock private View mBackButton;
-    @Mock private ButtonCompat mSaveButton;
-    @Mock private EditText mBackgroundColorInput;
-    @Mock private EditText mPrimaryColorInput;
-    @Mock private ImageView mBackgroundColorCircleView;
-    @Mock private ImageView mPrimaryColorCircleView;
-    @Mock private View mCustomColorPickerContainer;
-    @Mock private NtpChromeColorGridRecyclerView mRecyclerView;
-    @Mock private FrameLayout mRecyclerViewContainer;
-    @Mock private LayoutManager mLayoutManager;
     @Mock private NtpChromeColorsAdapter mAdapter;
-    @Mock private GradientDrawable mGradientDrawable;
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private TextWatcher mTextWatcher;
-    @Mock private MaterialSwitchWithText mDailyRefreshSwitch;
     @Mock private OnCheckedChangeListener mOnCheckedChangeListener;
 
+    private View mLayoutView;
+    private NtpChromeColorGridRecyclerView mRecyclerView;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mLayoutView =
+                LayoutInflater.from(activity)
+                        .inflate(
+                                R.layout.ntp_customization_chrome_colors_bottom_sheet_layout,
+                                /* root= */ null);
+        mRecyclerView = mLayoutView.findViewById(R.id.chrome_colors_recycler_view);
+
         mModel = new PropertyModel(NtpChromeColorsProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 mModel, mLayoutView, NtpChromeColorsLayoutViewBinder::bind);
-
-        when(mLayoutView.findViewById(R.id.back_button)).thenReturn(mBackButton);
-        when(mLayoutView.findViewById(R.id.save_color_button)).thenReturn(mSaveButton);
-        when(mLayoutView.findViewById(R.id.background_color_input))
-                .thenReturn(mBackgroundColorInput);
-        when(mLayoutView.findViewById(R.id.primary_color_input)).thenReturn(mPrimaryColorInput);
-        when(mLayoutView.findViewById(R.id.background_color_circle))
-                .thenReturn(mBackgroundColorCircleView);
-        when(mLayoutView.findViewById(R.id.primary_color_circle))
-                .thenReturn(mPrimaryColorCircleView);
-        when(mLayoutView.findViewById(R.id.custom_color_picker_container))
-                .thenReturn(mCustomColorPickerContainer);
-        when(mLayoutView.findViewById(R.id.chrome_colors_recycler_view)).thenReturn(mRecyclerView);
-        when(mLayoutView.findViewById(R.id.chrome_colors_recycler_view_container))
-                .thenReturn(mRecyclerViewContainer);
-        when(mLayoutView.findViewById(R.id.chrome_colors_switch_button))
-                .thenReturn(mDailyRefreshSwitch);
-
-        when(mBackgroundColorCircleView.getBackground()).thenReturn(mGradientDrawable);
-        when(mPrimaryColorCircleView.getBackground()).thenReturn(mGradientDrawable);
-        when(mGradientDrawable.mutate()).thenReturn(mGradientDrawable);
     }
 
     @Test
     public void testSetBackClickListener() {
+        View backButton = mLayoutView.findViewById(R.id.back_button);
         mModel.set(NtpChromeColorsProperties.BACK_BUTTON_CLICK_LISTENER, mOnClickListener);
-        verify(mBackButton).setOnClickListener(eq(mOnClickListener));
+        assertEquals(mOnClickListener, shadowOf(backButton).getOnClickListener());
     }
 
     @Test
     public void testSetSaveClickListener() {
+        View saveButton = mLayoutView.findViewById(R.id.save_color_button);
         mModel.set(NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER, mOnClickListener);
-        verify(mSaveButton).setOnClickListener(eq(mOnClickListener));
+        assertEquals(mOnClickListener, shadowOf(saveButton).getOnClickListener());
     }
 
     @Test
     public void testSetBackgroundColorInputWatcher() {
+        EditText input = mLayoutView.findViewById(R.id.background_color_input);
         mModel.set(NtpChromeColorsProperties.BACKGROUND_COLOR_INPUT_TEXT_WATCHER, mTextWatcher);
-        verify(mBackgroundColorInput).addTextChangedListener(eq(mTextWatcher));
+        input.setText("FF0000");
+        verify(mTextWatcher).afterTextChanged(any());
     }
 
     @Test
     public void testSetPrimaryColorInputWatcher() {
+        EditText input = mLayoutView.findViewById(R.id.primary_color_input);
         mModel.set(NtpChromeColorsProperties.PRIMARY_COLOR_INPUT_TEXT_WATCHER, mTextWatcher);
-        verify(mPrimaryColorInput).addTextChangedListener(eq(mTextWatcher));
+        input.setText("FF0000");
+        verify(mTextWatcher).afterTextChanged(any());
     }
 
     @Test
     public void testSetBackgroundColorCircle() {
+        ImageView circle = mLayoutView.findViewById(R.id.background_color_circle);
+        assertNotEquals(View.VISIBLE, circle.getVisibility());
+
         mModel.set(NtpChromeColorsProperties.BACKGROUND_COLOR_CIRCLE_VIEW_COLOR, Color.BLUE);
 
-        verify(mGradientDrawable).setColor(Color.BLUE);
-        verify(mBackgroundColorCircleView).setVisibility(View.VISIBLE);
+        assertEquals(Color.BLUE, getCircleColor(circle));
+        assertEquals(View.VISIBLE, circle.getVisibility());
     }
 
     @Test
     public void testSetPrimaryColorCircle() {
+        ImageView circle = mLayoutView.findViewById(R.id.primary_color_circle);
+        assertNotEquals(View.VISIBLE, circle.getVisibility());
+
         mModel.set(NtpChromeColorsProperties.PRIMARY_COLOR_CIRCLE_VIEW_COLOR, Color.RED);
 
-        verify(mGradientDrawable).setColor(Color.RED);
-        verify(mPrimaryColorCircleView).setVisibility(View.VISIBLE);
+        assertEquals(Color.RED, getCircleColor(circle));
+        assertEquals(View.VISIBLE, circle.getVisibility());
     }
 
     @Test
     public void testSetCustomColorPickerContainerVisibility() {
-        mModel.set(NtpChromeColorsProperties.CUSTOM_COLOR_PICKER_CONTAINER_VISIBILITY, View.GONE);
-        verify(mCustomColorPickerContainer).setVisibility(View.GONE);
-
+        View container = mLayoutView.findViewById(R.id.custom_color_picker_container);
         mModel.set(
                 NtpChromeColorsProperties.CUSTOM_COLOR_PICKER_CONTAINER_VISIBILITY, View.VISIBLE);
-        verify(mCustomColorPickerContainer).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, container.getVisibility());
+
+        mModel.set(NtpChromeColorsProperties.CUSTOM_COLOR_PICKER_CONTAINER_VISIBILITY, View.GONE);
+        assertEquals(View.GONE, container.getVisibility());
     }
 
     @Test
     public void testSetRecyclerViewLayoutManager() {
-        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER, mLayoutManager);
-        verify(mRecyclerView).setLayoutManager(eq(mLayoutManager));
+        LayoutManager layoutManager =
+                new GridLayoutManager(mLayoutView.getContext(), /* spanCount= */ 1);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER, layoutManager);
+        assertEquals(layoutManager, mRecyclerView.getLayoutManager());
     }
 
     @Test
     public void testSetRecyclerViewAdapter() {
         mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER, mAdapter);
-        verify(mRecyclerView).setAdapter(eq(mAdapter));
+        assertEquals(mAdapter, mRecyclerView.getAdapter());
     }
 
     @Test
     public void testSetRecyclerViewItemWidth() {
-        int itemWidth = 10;
-        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, itemWidth);
-        verify(mRecyclerView).setItemWidth(eq(itemWidth));
+        GridLayoutManager layoutManager = setUpGrid(/* spacing= */ 0, /* maxItemCount= */ 100);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, 10);
+
+        measureRecyclerView(/* width= */ 95);
+
+        // 95 / (10 + 0) = 9 columns.
+        assertEquals(9, layoutManager.getSpanCount());
+        assertEquals(90, mRecyclerView.getMeasuredWidth());
     }
 
     @Test
     public void testSetRecyclerViewSpacing() {
-        int spacing = 20;
-        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_SPACING, spacing);
-        verify(mRecyclerView).setSpacing(eq(spacing));
+        GridLayoutManager layoutManager = setUpGrid(/* spacing= */ 20, /* maxItemCount= */ 100);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, 10);
+
+        measureRecyclerView(/* width= */ 95);
+
+        // 95 / (10 + 20) = 3 columns.
+        assertEquals(3, layoutManager.getSpanCount());
+        assertEquals(90, mRecyclerView.getMeasuredWidth());
     }
 
     @Test
     public void testSetRecyclerViewMaxItemCount() {
-        int maxItemCount = 10;
-        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_MAX_ITEM_COUNT, maxItemCount);
-        verify(mRecyclerView).setMaxItemCount(eq(maxItemCount));
+        GridLayoutManager layoutManager = setUpGrid(/* spacing= */ 0, /* maxItemCount= */ 4);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, 10);
+
+        measureRecyclerView(/* width= */ 95);
+
+        // 9 columns would fit, but the max item count caps it to 4.
+        assertEquals(4, layoutManager.getSpanCount());
+        assertEquals(40, mRecyclerView.getMeasuredWidth());
     }
 
     @Test
     public void testSetDailyRefreshSwitchChecked() {
+        MaterialSwitchWithText dailyRefreshSwitch =
+                mLayoutView.findViewById(R.id.chrome_colors_switch_button);
         mModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, true);
-        verify(mDailyRefreshSwitch).setCheckedWithoutAnimation(eq(true));
+        assertTrue(dailyRefreshSwitch.isChecked());
 
         mModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, false);
-        verify(mDailyRefreshSwitch).setCheckedWithoutAnimation(eq(false));
+        assertFalse(dailyRefreshSwitch.isChecked());
     }
 
     @Test
     public void testSetDailyRefreshSwitchOnCheckedChangeListener() {
+        MaterialSwitchWithText dailyRefreshSwitch =
+                mLayoutView.findViewById(R.id.chrome_colors_switch_button);
         mModel.set(
                 NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 mOnCheckedChangeListener);
-        verify(mDailyRefreshSwitch).setOnCheckedChangeListener(eq(mOnCheckedChangeListener));
+        dailyRefreshSwitch.setChecked(true);
+        verify(mOnCheckedChangeListener).onCheckedChanged(any(), eq(true));
     }
 
     @Test
@@ -200,5 +220,25 @@ public class NtpChromeColorsLayoutViewBinderUnitTest {
         // Verifies the setSelectedPosition() will be called again for the same index value.
         mModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, index);
         verify(mAdapter, times(2)).setSelectedPosition(eq(index), eq(false));
+    }
+
+    private GridLayoutManager setUpGrid(int spacing, int maxItemCount) {
+        GridLayoutManager layoutManager =
+                new GridLayoutManager(mLayoutView.getContext(), /* spanCount= */ 1);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER, layoutManager);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_SPACING, spacing);
+        mModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_MAX_ITEM_COUNT, maxItemCount);
+        return layoutManager;
+    }
+
+    private void measureRecyclerView(int width) {
+        mRecyclerView.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+    }
+
+    private static int getCircleColor(ImageView circle) {
+        ColorStateList color = ((GradientDrawable) circle.getBackground()).getColor();
+        return color.getDefaultColor();
     }
 }
