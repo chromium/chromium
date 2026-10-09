@@ -7,14 +7,14 @@
 #include <array>
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -1186,21 +1186,19 @@ static_assert(GetNumDataTypes() == 64,
               "integration-checklist/");
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
 
-const DataTypeInfo& GetDataTypeInfo(DataType type) {
-  static const base::NoDestructor<
-      absl::flat_hash_map<DataType, const DataTypeInfo*>>
-      type_to_info([] {
-        absl::flat_hash_map<DataType, const DataTypeInfo*> map;
-        for (const auto& info : kDataTypeInfoTable) {
-          map.emplace(info.type, &info);
-        }
-        return map;
-      }());
+constexpr const DataTypeInfo& GetDataTypeInfo(DataType type) {
+  static constexpr auto kTypeToInfo = [] {
+    std::array<const DataTypeInfo*, GetNumDataTypes()> table{};
+    for (const DataTypeInfo& info : kDataTypeInfoTable) {
+      CHECK(!table[info.type]);
+      table[info.type] = &info;
+    }
+    return table;
+  }();
 
-  auto it = type_to_info->find(type);
-  CHECK(it != type_to_info->end())
-      << "Unknown data type: " << static_cast<int>(type);
-  return *it->second;
+  const size_t index = static_cast<size_t>(type);
+  CHECK_LT(index, kTypeToInfo.size()) << "Unknown data type: " << index;
+  return *kTypeToInfo[index];
 }
 
 }  // namespace
@@ -1403,19 +1401,15 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
 }
 
 DataType GetDataTypeFromSpecificsFieldNumber(int field_number) {
-  static const base::NoDestructor<absl::flat_hash_map<int, DataType>>
-      field_number_to_type([] {
-        absl::flat_hash_map<int, DataType> map;
-        for (const auto& info : kDataTypeInfoTable) {
-          if (info.specifics_field_number != -1) {
-            map.emplace(info.specifics_field_number, info.type);
-          }
-        }
-        return map;
-      }());
+  static constexpr auto kFieldNumberToType =
+      []<size_t... I>(std::index_sequence<I...>) {
+        return base::MakeFixedFlatMap<int, DataType>(
+            {{kDataTypeInfoTable[I].specifics_field_number,
+              kDataTypeInfoTable[I].type}...});
+      }(std::make_index_sequence<GetNumDataTypes()>());
 
-  auto it = field_number_to_type->find(field_number);
-  return (it != field_number_to_type->end()) ? it->second : UNSPECIFIED;
+  auto it = kFieldNumberToType.find(field_number);
+  return (it != kFieldNumberToType.end()) ? it->second : UNSPECIFIED;
 }
 
 int GetSpecificsFieldNumberFromDataType(DataType data_type) {
