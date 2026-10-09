@@ -305,10 +305,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kShaderCache"/>
   <int value="7" label="kPluginPrivate"/>
   <int value="8" label="(obsolete) kConversions"/>
-  <int value="9" label="kAggregationService"/>
+  <int value="9" label="kAggregationService (deprecated)"/>
   <int value="10" label="kSharedStorage"/>
   <int value="11" label="kGpuCache"/>
-  <int value="12" label="kPrivateAggregation"/>
+  <int value="12" label="kPrivateAggregation (deprecated)"/>
   <int value="13" label="kInterestGroups (deprecated)"/>
   <int value="14" label="kCdmStorage"/>
   <int value="15" label="kDeviceBoundSessions"/>
