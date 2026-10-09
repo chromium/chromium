@@ -82,6 +82,15 @@ source_set("gtest_main") {
   deps = [ "//third_party/googletest:gtest_main" ]
 }
 
+if (is_apple && gtest_include_objc_support) {
+  # Tests for gtest_mac.h. Linked into //chrome/test:unit_tests on Mac.
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "../gtest_mac_unittest.mm" ]
+    deps = [ ":gtest" ]
+  }
+}
+
 if (is_ios) {
   # These headers are needed in some non test targets for iOS code coverage. So
   # can not be testonly.
