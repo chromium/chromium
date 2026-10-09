@@ -31,7 +31,7 @@ class InstallableEvaluator {
   ~InstallableEvaluator();
 
   // Maximum dimension size in pixels for icons.
-  static const int kMaximumIconSizeInPx =
+  static constexpr int kMaximumIconSizeInPx =
 #if BUILDFLAG(IS_ANDROID)
       std::numeric_limits<int>::max();
 #else
