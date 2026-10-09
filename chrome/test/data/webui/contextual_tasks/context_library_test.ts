@@ -214,4 +214,45 @@ suite('ContextLibraryTest', () => {
           mojoGlobal.bindInterface = originalBindInterface;
         }
       });
+
+  test('Dark mode reflects attribute and updates border color', async () => {
+    app.tabs = [createTab(1, 'https://www.google.com')];
+    await microtasksFinished();
+
+    const item = app.$.faviconGroup.shadowRoot.querySelector<HTMLElement>(
+        '.favicon-item');
+    assertTrue(!!item);
+
+    assertFalse(app.darkMode);
+    assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('rgb(240, 242, 245)', getComputedStyle(item).borderColor);
+
+    app.darkMode = true;
+    await microtasksFinished();
+    assertTrue(app.hasAttribute('dark-mode'));
+    assertEquals('rgb(78, 80, 89)', getComputedStyle(item).borderColor);
+
+    app.darkMode = false;
+    await microtasksFinished();
+    assertFalse(app.hasAttribute('dark-mode'));
+  });
+
+  test('Initializes darkMode from cs=1 URL query param', async () => {
+    const originalUrl = window.location.href;
+    let darkApp;
+    try {
+      window.history.replaceState({}, '', '?cs=1');
+      darkApp = document.createElement('context-library');
+      document.body.appendChild(darkApp);
+      await microtasksFinished();
+
+      assertTrue(darkApp.darkMode);
+      assertTrue(darkApp.hasAttribute('dark-mode'));
+    } finally {
+      if (darkApp && darkApp.parentNode) {
+        darkApp.remove();
+      }
+      window.history.replaceState({}, '', originalUrl);
+    }
+  });
 });

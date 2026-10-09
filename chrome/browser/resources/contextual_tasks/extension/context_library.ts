@@ -36,11 +36,16 @@ export class ContextLibraryElement extends CrLitElement {
     return {
       tabs: {type: Array},
       submittedTabIds: {type: Object},
+      darkMode: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor tabs: TabInfo[] = [];
   accessor submittedTabIds: Set<number> = new Set();
+  accessor darkMode: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;
   private messageListener_: ((event: MessageEvent) => void)|null = null;
@@ -48,6 +53,7 @@ export class ContextLibraryElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.darkMode = this.isDarkModeEnabled_();
     this.resizeObserver_ = new ResizeObserver(() => {
       window.requestResize?.();
     });
@@ -93,6 +99,11 @@ export class ContextLibraryElement extends CrLitElement {
     // TODO(crbug.com/): Forward to the browser and call `onTabLoaded` with the
     // resolved favicon data URL. Until then the group falls back to
     // getFaviconForPageURL().
+  }
+
+  protected isDarkModeEnabled_(): boolean {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('cs') === '1';
   }
 }
 

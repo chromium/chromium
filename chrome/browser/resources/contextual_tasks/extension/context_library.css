@@ -19,11 +19,14 @@
 }
 
 #faviconGroup {
-  --composebox-favicon-border-color: var(--color-favicons-border, #f2f2f2);
+  --composebox-favicon-border-color:
+      var(--color-override-favicons-border, rgb(240, 242, 245));
+  --composebox-favicon-skeleton-color:
+      var(--color-override-favicon-skeleton, var(--color-sys-surface-variant,
+          var(--cr-fallback-color-surface-variant, #e1e3e1)));
 }
 
-@media (prefers-color-scheme: dark) {
-  #faviconGroup {
-    --composebox-favicon-border-color: var(--color-favicons-border, #1f1f1f);
-  }
+:host([dark-mode]) #faviconGroup {
+  --composebox-favicon-border-color:
+      var(--color-override-favicons-border, rgb(78, 80, 89));
 }
