@@ -16,6 +16,10 @@
 @protocol ComposeboxMenuViewControllerDelegate
 
 // Called when the menu requests closing.
+- (void)composeboxMenuViewControllerDidChangeMenuPage:
+    (ComposeboxMenuViewController*)composeboxMenuViewController;
+
+// Called when the menu requests closing.
 - (void)composeboxMenuViewControllerDidRequestClose:
     (ComposeboxMenuViewController*)composeboxMenuViewController;
 
@@ -23,13 +27,22 @@
 
 // View controller for the composebox menu.
 @interface ComposeboxMenuViewController
-    : UIViewController <ComposeboxMenuConsumer>
+    : UINavigationController <ComposeboxMenuConsumer>
 
 // The mutator for this menu UI.
 @property(nonatomic, weak) id<ComposeboxMenuMutator> mutator;
 
 // The delegate for this menu UI.
-@property(nonatomic, weak) id<ComposeboxMenuViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<ComposeboxMenuViewControllerDelegate>
+    menuDelegate;
+
+@end
+
+// Represents a page of the composebox menu.
+@interface ComposeboxMenuPageViewController : UIViewController
+
+// The collection view displaying the composebox menu.
+@property(nonatomic, readonly) UICollectionView* collectionView;
 
 @end
 

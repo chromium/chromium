@@ -296,6 +296,7 @@ struct MenuItemAvailability {
       return driveSymbol;
     }
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
+    case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kUnknown:
       return nil;
   }
@@ -341,6 +342,7 @@ struct MenuItemAvailability {
     case ComposeboxMenuItemType::kAttachmentDrive:
       return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION);
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
+    case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kUnknown:
       return nil;
   }
@@ -401,6 +403,7 @@ struct MenuItemAvailability {
     case ComposeboxMenuItemType::kModelFlash:
       return MenuItemAvailability(_inputState, ComposeboxModelOption::kFlash);
     case ComposeboxMenuItemType::kUnknown:
+    case ComposeboxMenuItemType::kMoreOptionsSubmenu:
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
       return MenuItemAvailability();
   }

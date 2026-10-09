@@ -28,10 +28,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@interface ComposeboxMenuViewController (Testing)
-@property(nonatomic, readonly) UICollectionView* collectionView;
-@end
-
 namespace {
 
 // iPhone 16 screen width in points.
@@ -42,6 +38,11 @@ const CGFloat kIPhoneSEScreenWidth = 375.0f;
 const CGFloat kTestViewHeight = 600.0f;
 
 using ComposeboxMenuViewControllerTest = PlatformTest;
+
+UICollectionView* CollectionViewForMenu(ComposeboxMenuViewController* menu) {
+  return [(ComposeboxMenuPageViewController*)
+              menu.topViewController collectionView];
+}
 
 // Helper to create a dummy UIImage for testing.
 UIImage* CreateTestImage() {
@@ -92,9 +93,9 @@ TEST_F(ComposeboxMenuViewControllerTest, TestSharedTabsCellConfiguration) {
 
   [viewController setUIInputState:inputState];
   [viewController.view layoutIfNeeded];
-  [viewController.collectionView layoutIfNeeded];
+  [CollectionViewForMenu(viewController) layoutIfNeeded];
 
-  UICollectionView* collectionView = viewController.collectionView;
+  UICollectionView* collectionView = CollectionViewForMenu(viewController);
   ASSERT_NE(collectionView, nil);
   ASSERT_EQ(collectionView.numberOfSections, 2);
   ASSERT_EQ([collectionView numberOfItemsInSection:1], 1);
@@ -162,7 +163,7 @@ TEST_F(ComposeboxMenuViewControllerTest,
   [viewController setUIInputState:inputState];
   [viewController.view layoutIfNeeded];
 
-  UICollectionView* collectionView = viewController.collectionView;
+  UICollectionView* collectionView = CollectionViewForMenu(viewController);
   ASSERT_NE(collectionView, nil);
   ASSERT_GE(collectionView.numberOfSections, 1);
   EXPECT_EQ([collectionView numberOfItemsInSection:0], 5);
@@ -207,7 +208,7 @@ TEST_F(ComposeboxMenuViewControllerTest,
   [viewController setUIInputState:inputState];
   [viewController.view layoutIfNeeded];
 
-  UICollectionView* collectionView = viewController.collectionView;
+  UICollectionView* collectionView = CollectionViewForMenu(viewController);
   ASSERT_NE(collectionView, nil);
   ASSERT_GE(collectionView.numberOfSections, 1);
   EXPECT_EQ([collectionView numberOfItemsInSection:0], 6);
@@ -261,7 +262,7 @@ TEST_F(ComposeboxMenuViewControllerTest,
   [viewController setUIInputState:inputState];
   [viewController.view layoutIfNeeded];
 
-  UICollectionView* collectionView = viewController.collectionView;
+  UICollectionView* collectionView = CollectionViewForMenu(viewController);
   ASSERT_NE(collectionView, nil);
   ASSERT_GE(collectionView.numberOfSections, 1);
   EXPECT_EQ([collectionView numberOfItemsInSection:0], 6);
@@ -310,9 +311,9 @@ TEST_F(ComposeboxMenuViewControllerTest,
 
   [viewController setUIInputState:inputState];
   [viewController.view layoutIfNeeded];
-  [viewController.collectionView layoutIfNeeded];
+  [CollectionViewForMenu(viewController) layoutIfNeeded];
 
-  UICollectionView* collectionView = viewController.collectionView;
+  UICollectionView* collectionView = CollectionViewForMenu(viewController);
   ASSERT_NE(collectionView, nil);
   ASSERT_GE(collectionView.numberOfSections, 1);
   ASSERT_EQ([collectionView numberOfItemsInSection:0], 6);

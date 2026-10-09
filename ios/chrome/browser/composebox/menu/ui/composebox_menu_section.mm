@@ -11,11 +11,22 @@
 - (instancetype)initWithTitle:(NSString*)title
                         items:(NSArray<ComposeboxMenuItem*>*)items
                    identifier:(ComposeboxMenuSectionIdentifier)identifier {
+  return [self initWithTitle:title
+                         items:items
+                    identifier:identifier
+      showAsHorizontalCarousel:NO];
+}
+
+- (instancetype)initWithTitle:(NSString*)title
+                        items:(NSArray<ComposeboxMenuItem*>*)items
+                   identifier:(ComposeboxMenuSectionIdentifier)identifier
+     showAsHorizontalCarousel:(BOOL)showAsHorizontalCarousel {
   self = [super init];
   if (self) {
     _title = [title copy];
     _items = [items copy];
     _identifier = identifier;
+    _showAsHorizontalCarousel = showAsHorizontalCarousel;
   }
   return self;
 }

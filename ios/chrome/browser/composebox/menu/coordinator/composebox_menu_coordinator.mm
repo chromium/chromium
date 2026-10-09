@@ -58,6 +58,9 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 /// conflicting with system behavior.
 CGFloat const kSheetTopPadding = 40.0f;
 
+/// The corner radius of the sheet presentation.
+CGFloat const kSheetPresentationCornerRadius = 38.0f;
+
 }  // namespace
 
 @interface ComposeboxMenuCoordinator () <
@@ -581,12 +584,14 @@ CGFloat const kSheetTopPadding = 40.0f;
 // Sets up the bottom sheet menu UI.
 - (void)setUpBottomSheetMenuViewController {
   _viewController = [[ComposeboxMenuViewController alloc] init];
-  _viewController.delegate = self;
+  _viewController.menuDelegate = self;
 
   _viewController.sheetPresentationController.prefersGrabberVisible = YES;
   _viewController.sheetPresentationController.delegate = self;
   _viewController.sheetPresentationController
       .prefersEdgeAttachedInCompactHeight = YES;
+  _viewController.sheetPresentationController.preferredCornerRadius =
+      kSheetPresentationCornerRadius;
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
     _viewController.sheetPresentationController
@@ -642,6 +647,13 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxMenuViewControllerDidRequestClose:
     (ComposeboxMenuViewController*)composeboxMenuViewController {
   [self requestMenuDismissal];
+}
+
+- (void)composeboxMenuViewControllerDidChangeMenuPage:
+    (ComposeboxMenuViewController*)composeboxMenuViewController {
+  [_viewController.sheetPresentationController animateChanges:^{
+    [_viewController.sheetPresentationController invalidateDetents];
+  }];
 }
 
 #pragma mark - ComposeboxInputStateManagerDelegate

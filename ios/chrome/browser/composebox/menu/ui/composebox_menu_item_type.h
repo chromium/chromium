@@ -26,6 +26,7 @@ enum class ComposeboxMenuItemType {
   kAttachmentFiles,
   kAttachmentDrive,
   kAttachmentSharedTabs,
+  kMoreOptionsSubmenu,
 };
 
 // Maps a model option to its corresponding menu item type.

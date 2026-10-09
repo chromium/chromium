@@ -51,6 +51,9 @@
 // The title of the model section.
 @property(nonatomic, readonly, copy) NSString* modelSectionHeader;
 
+// The title of the more options section.
+@property(nonatomic, readonly, copy) NSString* moreOptionsSectionHeader;
+
 // Creates a new instance with local fallback strings and icons.
 + (instancetype)localFallbackUIConfig;
 

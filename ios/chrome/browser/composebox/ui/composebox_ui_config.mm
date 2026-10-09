@@ -170,6 +170,10 @@
   return l10n_util::GetNSStringF(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3");
 }
 
+- (NSString*)moreOptionsSectionHeader {
+  return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MORE_OPTIONS_MENU_TITLE);
+}
+
 - (NSString*)toolsSectionHeader {
   if (_toolsSectionHeader.length > 0) {
     return _toolsSectionHeader;

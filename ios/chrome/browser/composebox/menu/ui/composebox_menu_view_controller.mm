@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -47,6 +49,9 @@ const CGFloat kCollectionViewTopPadding = 20.0f;
 
 // Spacing between attachment items.
 const CGFloat kAttachmentItemSpacing = 6.0f;
+
+// The estimated navigation item spacing.
+const CGFloat kEstimatedNavigationItemSpacing = 56.0;
 
 // Minimum width for attachment items to prevent them from becoming taller than
 // wide. When items would be narrower than this, the section scrolls
@@ -93,50 +98,124 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 }  // namespace
 
+enum class ComposeboxMenuPageType {
+  kFullMenu = 0,
+  kMainPage = 1,
+  kSecondaryPage = 2,
+};
+@class ComposeboxMenuPageViewController;
 
-@interface ComposeboxMenuViewController () <UICollectionViewDelegate>
+// Delegate for the menu page view controller.
+@protocol ComposeboxMenuPageViewControllerDelegate <NSObject>
+// Called when the menu requests the secondary page.
+- (void)composeboxMenuPageViewControllerDidRequestSecondaryMenu:
+    (ComposeboxMenuPageViewController*)composeboxMenuPageViewController;
+
+@end
+
+@interface ComposeboxMenuPageViewController () <ComposeboxMenuConsumer,
+                                                UICollectionViewDelegate>
+
+// The mutator for this menu UI.
+@property(nonatomic, weak) id<ComposeboxMenuMutator> mutator;
+
+// The delegate of the menu page.
+@property(nonatomic, weak) id<ComposeboxMenuPageViewControllerDelegate>
+    delegate;
+
+// The type of the page, influencing the visible options.
+@property(nonatomic, readonly) ComposeboxMenuPageType menuPageType;
+
+// Creates a new instance of this type.
+- (instancetype)initWithPageType:(ComposeboxMenuPageType)menuPageType;
+
+// The height necessary to fit the content without scrolling.
+- (CGFloat)contentHeightToFit;
+
+@end
+
+@interface ComposeboxMenuViewController () <
+    UINavigationControllerDelegate,
+    ComposeboxMenuPageViewControllerDelegate>
 @end
 
 @implementation ComposeboxMenuViewController {
-  // The collection view displaying the composebox menu.
-  UICollectionView* _collectionView;
-  // The diffable data source for the collection view.
-  UICollectionViewDiffableDataSource<NSNumber*, ComposeboxMenuItem*>*
-      _dataSource;
-  // The sections to display in the collection view.
-  NSArray<ComposeboxMenuSection*>* _sections;
-  // The UI input state for the composebox.
-  ComposeboxUIInputState* _inputState;
+  // The menu pages displayed by the controller.
+  ComposeboxMenuPageViewController* _mainMenuVC;
+  ComposeboxMenuPageViewController* _secondaryMenuVC;
 }
 
-- (UICollectionView*)collectionView {
-  return _collectionView;
+- (instancetype)init {
+  ComposeboxMenuPageType pageType = IsPlusButtonMenuMoreOptionsSubmenu()
+                                        ? ComposeboxMenuPageType::kMainPage
+                                        : ComposeboxMenuPageType::kFullMenu;
+  ComposeboxMenuPageViewController* mainMenuVC =
+      [[ComposeboxMenuPageViewController alloc] initWithPageType:pageType];
+  self = [super initWithRootViewController:mainMenuVC];
+  if (self) {
+    _mainMenuVC = mainMenuVC;
+    _mainMenuVC.delegate = self;
+    _secondaryMenuVC = [[ComposeboxMenuPageViewController alloc]
+        initWithPageType:ComposeboxMenuPageType::kSecondaryPage];
+    _secondaryMenuVC.delegate = self;
+    self.delegate = self;
+  }
+
+  return self;
 }
 
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  self.view.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-
-  [self setUpCollectionView];
-  [self setUpDataSource];
-  [self applySnapshot];
+- (void)viewWillAppear:(BOOL)animated {
+  [_mainMenuVC.view layoutIfNeeded];
+  [self.menuDelegate composeboxMenuViewControllerDidChangeMenuPage:self];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
+#pragma mark - UINavigationControllerDelegate
 
-  __weak __typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf focusFirstMenuItem];
-  });
+- (void)navigationController:(UINavigationController*)navigationController
+      willShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  [self.menuDelegate composeboxMenuViewControllerDidChangeMenuPage:self];
+}
+
+#pragma mark - ComposeboxMenuPageViewControllerDelegate
+
+- (void)composeboxMenuPageViewControllerDidRequestSecondaryMenu:
+    (ComposeboxMenuPageViewController*)composeboxMenuPageViewController {
+  [self pushViewController:_secondaryMenuVC animated:YES];
+  [_secondaryMenuVC.view layoutIfNeeded];
+  [self.menuDelegate composeboxMenuViewControllerDidChangeMenuPage:self];
+}
+
+- (void)setUIInputState:(ComposeboxUIInputState*)state {
+  [_mainMenuVC setUIInputState:state];
+  [_secondaryMenuVC setUIInputState:state];
+}
+
+- (void)setMutator:(id<ComposeboxMenuMutator>)mutator {
+  _mutator = mutator;
+  _mainMenuVC.mutator = mutator;
+  _secondaryMenuVC.mutator = mutator;
 }
 
 - (CGSize)preferredContentSize {
+  ComposeboxMenuPageViewController* topViewController =
+      base::apple::ObjCCast<ComposeboxMenuPageViewController>(
+          self.topViewController);
   CGSize size = super.preferredContentSize;
-  [self.view layoutIfNeeded];
-  size.height =
-      _collectionView.contentSize.height + _collectionView.contentInset.top;
+
+  // The secondary menu page displays navigation items on top, so the safe area
+  // needs to be taken into account.
+  // As the VC might not yet be in the hierarchy by the time this is called,
+  // use an estimated value and the size of the view controller.
+  if (topViewController.menuPageType ==
+      ComposeboxMenuPageType::kSecondaryPage) {
+    CGFloat extraTopPadding = topViewController.view.superview
+                                  ? topViewController.view.safeAreaInsets.top
+                                  : kEstimatedNavigationItemSpacing;
+    size.height = topViewController.contentHeightToFit + extraTopPadding;
+  } else {
+    size.height = topViewController.contentHeightToFit;
+  }
 
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return size;
@@ -159,6 +238,68 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   return size;
 }
 
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  [self.menuDelegate composeboxMenuViewControllerDidRequestClose:self];
+}
+
+@end
+
+@implementation ComposeboxMenuPageViewController {
+  // The diffable data source for the collection view.
+  UICollectionViewDiffableDataSource<NSNumber*, ComposeboxMenuItem*>*
+      _dataSource;
+  // The sections to display in the collection view.
+  NSArray<ComposeboxMenuSection*>* _sections;
+  // The UI input state for the composebox.
+  ComposeboxUIInputState* _inputState;
+}
+
+- (instancetype)initWithPageType:(ComposeboxMenuPageType)menuPageType {
+  self = [super init];
+  if (self) {
+    _menuPageType = menuPageType;
+  }
+
+  return self;
+}
+
+- (CGFloat)contentHeightToFit {
+  return _collectionView.contentSize.height + _collectionView.contentInset.top;
+}
+
+#pragma mark - UIKit
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+
+  [self setUpCollectionView];
+  [self setUpDataSource];
+  [self applySnapshot];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf focusFirstMenuItem];
+  });
+}
+
 - (void)computeSections {
   CHECK(_inputState);
   NSMutableArray<ComposeboxMenuSection*>* sections =
@@ -174,6 +315,9 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   }
   if (ComposeboxMenuSection* modelsSection = [self modelsSection]) {
     [sections addObject:modelsSection];
+  }
+  if (ComposeboxMenuSection* moreOptionsSection = [self moreOptionsSection]) {
+    [sections addObject:moreOptionsSection];
   }
 
   _sections = sections;
@@ -195,7 +339,12 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
       UIEdgeInsetsMake(kCollectionViewTopPadding, 0, 0, 0);
 
   [self.view addSubview:_collectionView];
-  AddSameConstraints(_collectionView, self.view);
+
+  if (_menuPageType == ComposeboxMenuPageType::kSecondaryPage) {
+    AddSameConstraints(_collectionView, self.view.safeAreaLayoutGuide);
+  } else {
+    AddSameConstraints(_collectionView, self.view);
+  }
 }
 
 - (UICollectionViewLayout*)createLayout {
@@ -222,7 +371,10 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     identifier = _sections[sectionIndex].identifier;
   }
 
-  if (identifier == ComposeboxMenuSectionIdentifier::kAttachments) {
+  BOOL useCarousel =
+      identifier == ComposeboxMenuSectionIdentifier::kAttachments &&
+      _menuPageType != ComposeboxMenuPageType::kSecondaryPage;
+  if (useCarousel) {
     CGFloat itemsCount = 1.0;
     if (sectionIndex < (NSInteger)_sections.count) {
       itemsCount = MAX(1.0, (CGFloat)_sections[sectionIndex].items.count);
@@ -305,6 +457,12 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 #pragma mark - Private
 
+// Whether the layout is split in two pages.
+- (BOOL)isSplitPageLayout {
+  return _menuPageType == ComposeboxMenuPageType::kMainPage ||
+         _menuPageType == ComposeboxMenuPageType::kSecondaryPage;
+}
+
 // Focuses the first item in the menu for accessibility.
 - (void)focusFirstMenuItem {
   if (_collectionView.numberOfSections > 0 &&
@@ -360,9 +518,17 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
            disabled:[_inputState isAttachmentDisabled:
                                      ComposeboxAttachmentOption::kFile]];
 
+  if (_menuPageType == ComposeboxMenuPageType::kMainPage) {
+    return @[ galleryItem, cameraItem, tabsItem ];
+  }
+
   NSMutableArray* attachmentItems =
-      [NSMutableArray arrayWithObjects:currentTabItem, tabsItem, galleryItem,
-                                       cameraItem, filesItem, nil];
+      _menuPageType == ComposeboxMenuPageType::kSecondaryPage
+          ? [NSMutableArray arrayWithObjects:filesItem, nil]
+          : [NSMutableArray arrayWithObjects:currentTabItem, tabsItem,
+                                             galleryItem, cameraItem, filesItem,
+                                             nil];
+
   if (IsComposeboxDriveOptionEnabled()) {
     UIImage* driveSymbol =
         SymbolWithPointSize(SymbolFolder, kSymbolActionPointSize);
@@ -389,6 +555,13 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
   ComposeboxMenuItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
   if (!item || item.disabled) {
+    return;
+  }
+
+  // Ignore taps on already selected models.
+  if (item.type == ComposeboxMenuItemType::kMoreOptionsSubmenu) {
+    [self.delegate
+        composeboxMenuPageViewControllerDidRequestSecondaryMenu:self];
     return;
   }
 
@@ -459,7 +632,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                 cellProvider:^UICollectionViewCell*(
                     UICollectionView* collectionView, NSIndexPath* indexPath,
                     ComposeboxMenuItem* item) {
-                  if ([item isAttachmentType]) {
+                  if ([weakSelf showHorizontalCarouselAtIndexPath:indexPath]) {
                     return [collectionView
                         dequeueConfiguredReusableCellWithRegistration:
                             attachmentCellRegistration
@@ -519,6 +692,10 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 }
 
 #pragma mark - Private Configuration Helpers
+// Whether to show a horizontal carousel for the section at index path.
+- (BOOL)showHorizontalCarouselAtIndexPath:(NSIndexPath*)indexPath {
+  return _sections[indexPath.section].showAsHorizontalCarousel;
+}
 
 - (void)configureListCell:(ComposeboxMenuListCell*)cell
               atIndexPath:(NSIndexPath*)indexPath
@@ -610,8 +787,6 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
       AccessibilityIdentifierForMenuItemType(item.type);
 }
 
-#pragma mark - Private Sections Configuration
-
 // Returns the shared tabs section if available.
 - (ComposeboxMenuSection*)attachmentsSection {
   NSMutableArray<ComposeboxMenuItem*>* attachmentsItems =
@@ -631,14 +806,24 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     return nil;
   }
 
+  BOOL showAsHorizontalCarousel =
+      _menuPageType == ComposeboxMenuPageType::kFullMenu ||
+      _menuPageType == ComposeboxMenuPageType::kMainPage;
+
   return [[ComposeboxMenuSection alloc]
-      initWithTitle:nil
-              items:attachmentsItems
-         identifier:ComposeboxMenuSectionIdentifier::kAttachments];
+                 initWithTitle:nil
+                         items:attachmentsItems
+                    identifier:ComposeboxMenuSectionIdentifier::kAttachments
+      showAsHorizontalCarousel:showAsHorizontalCarousel];
 }
 
 // Returns the shared tabs section if available.
 - (ComposeboxMenuSection*)sharedTabsSection {
+  if (_menuPageType != ComposeboxMenuPageType::kFullMenu &&
+      _menuPageType != ComposeboxMenuPageType::kMainPage) {
+    return nil;
+  }
+
   if (_inputState.sharedTabs.count == 0) {
     return nil;
   }
@@ -673,12 +858,20 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 // Returns the tools section if there are tools available.
 - (ComposeboxMenuSection*)toolsSection {
+  if (_menuPageType != ComposeboxMenuPageType::kFullMenu &&
+      _menuPageType != ComposeboxMenuPageType::kSecondaryPage) {
+    return nil;
+  }
   NSMutableArray<ComposeboxMenuItem*>* toolsItems =
       [[NSMutableArray alloc] init];
 
   ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
   for (ComposeboxMode mode : ComposeboxModeSet::All()) {
     if (mode == ComposeboxMode::kRegularSearch) {
+      continue;
+    }
+    // AIM is shown in a separate section.
+    if (mode == ComposeboxMode::kAIM && [self isSplitPageLayout]) {
       continue;
     }
     if (![_inputState isToolHidden:mode]) {
@@ -703,6 +896,11 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 // Returns the models section if there are models available.
 - (ComposeboxMenuSection*)modelsSection {
+  if (_menuPageType != ComposeboxMenuPageType::kFullMenu &&
+      _menuPageType != ComposeboxMenuPageType::kSecondaryPage) {
+    return nil;
+  }
+
   NSMutableArray<ComposeboxMenuItem*>* modelsItems =
       [[NSMutableArray alloc] init];
 
@@ -732,20 +930,57 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
          identifier:ComposeboxMenuSectionIdentifier::kModels];
 }
 
-#pragma mark - UIResponder
+- (ComposeboxMenuSection*)moreOptionsSection {
+  if (_menuPageType != ComposeboxMenuPageType::kMainPage) {
+    return nil;
+  }
 
-// To always be able to register key commands via -keyCommands, the VC must be
-// able to become first responder.
-- (BOOL)canBecomeFirstResponder {
-  return YES;
-}
+  NSMutableArray<ComposeboxMenuItem*>* moreOptionsItems =
+      [[NSMutableArray alloc] init];
 
-- (NSArray*)keyCommands {
-  return @[ UIKeyCommand.cr_close ];
-}
+  if (![_inputState
+          isAttachmentHidden:ComposeboxAttachmentOption::kCurrentTab]) {
+    UIImage* icon =
+        ResizeImage(_inputState.currentTabFavicon,
+                    CGSizeMake(kSymbolActionPointSize, kSymbolActionPointSize),
+                    ProjectionMode::kAspectFill);
+    if (!icon) {
+      icon = SymbolWithPointSize(SymbolGlobe, kSymbolActionPointSize);
+    }
 
-- (void)keyCommand_close {
-  [self.delegate composeboxMenuViewControllerDidRequestClose:self];
+    ComposeboxMenuItem* currentTabItem = [[ComposeboxMenuItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION)
+                image:icon
+                 type:ComposeboxMenuItemType::kCurrentTab
+             disabled:[_inputState
+                          isAttachmentDisabled:ComposeboxAttachmentOption::
+                                                   kCurrentTab]];
+    [moreOptionsItems addObject:currentTabItem];
+  }
+
+  ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
+  if (![_inputState isToolHidden:ComposeboxMode::kAIM]) {
+    [moreOptionsItems
+        addObject:[[ComposeboxMenuItem alloc]
+                      initWithTitle:[uiConfig
+                                        menuLabelForTool:ComposeboxMode::kAIM]
+                              image:[uiConfig iconForTool:ComposeboxMode::kAIM]
+                               type:MenuItemTypeForTool(ComposeboxMode::kAIM)
+                           disabled:NO]];
+  }
+
+  ComposeboxMenuItem* moreOptionsItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:uiConfig.moreOptionsSectionHeader
+              image:SymbolWithPointSize(SymbolGlobe,
+                                        kSharedTabFaviconSymbolSize)
+               type:ComposeboxMenuItemType::kMoreOptionsSubmenu];
+  [moreOptionsItems addObject:moreOptionsItem];
+
+  return [[ComposeboxMenuSection alloc]
+      initWithTitle:nil
+              items:moreOptionsItems
+         identifier:ComposeboxMenuSectionIdentifier::kMoreOptionsSubmenu];
 }
 
 @end
