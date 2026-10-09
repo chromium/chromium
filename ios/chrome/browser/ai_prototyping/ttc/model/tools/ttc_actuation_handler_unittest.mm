@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
 
 #import <memory>
+#import <string>
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/values.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
@@ -37,6 +39,10 @@
 #import "testing/platform_test.h"
 
 namespace {
+
+base::DictValue CreateUrlArgs(const std::string& url) {
+  return base::DictValue().Set("url", url);
+}
 
 class TTCActuationHandlerTest : public PlatformTest {
  public:
@@ -172,12 +178,10 @@ TEST_F(TTCActuationHandlerTest, TestCreateTaskWithIncognitoWebState) {
 // Tests dispatching an actuation request when the task has gone away.
 TEST_F(TTCActuationHandlerTest, TestDispatchActuationRequestTaskWentAway) {
   TTCActuationHandler* handler = CreateHandler();
-  auto requestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_123"];
-  ASSERT_TRUE(requestResult.has_value());
-  TTCActuationRequest* request = requestResult.value();
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_123");
+  ASSERT_TRUE(request_result.has_value());
+  TTCActuationRequest* request = request_result.value();
 
   base::test::TestFuture<TTCActuationResponse*> future;
   [handler
@@ -224,26 +228,22 @@ TEST_F(TTCActuationHandlerTest,
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
   ASSERT_FALSE(task_id.is_null());
 
-  auto requestResult1 = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_1"];
-  auto requestResult2 = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_2"];
-  ASSERT_TRUE(requestResult1.has_value());
-  ASSERT_TRUE(requestResult2.has_value());
+  auto request_result_1 = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_1");
+  auto request_result_2 = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_2");
+  ASSERT_TRUE(request_result_1.has_value());
+  ASSERT_TRUE(request_result_2.has_value());
 
   base::test::TestFuture<TTCActuationResponse*> future1;
   [handler
-      dispatchActuationRequest:requestResult1.value()
+      dispatchActuationRequest:request_result_1.value()
                      forTaskID:task_id
                completionBlock:base::CallbackToBlock(future1.GetCallback())];
 
   base::test::TestFuture<TTCActuationResponse*> future2;
   [handler
-      dispatchActuationRequest:requestResult2.value()
+      dispatchActuationRequest:request_result_2.value()
                      forTaskID:task_id
                completionBlock:base::CallbackToBlock(future2.GetCallback())];
 
@@ -293,12 +293,10 @@ TEST_F(TTCActuationHandlerTest, TestDispatchActuationRequestSuccess) {
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
   ASSERT_FALSE(task_id.is_null());
 
-  auto requestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_ok"];
-  ASSERT_TRUE(requestResult.has_value());
-  TTCActuationRequest* request = requestResult.value();
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"), "call_ok");
+  ASSERT_TRUE(request_result.has_value());
+  TTCActuationRequest* request = request_result.value();
 
   base::test::TestFuture<TTCActuationResponse*> future;
   [handler
@@ -321,40 +319,36 @@ TEST_F(TTCActuationHandlerTest,
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
   ASSERT_FALSE(task_id.is_null());
 
-  auto firstRequestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com/1"}
-                                  callID:@"call_seq_1"];
-  ASSERT_TRUE(firstRequestResult.has_value());
+  auto first_request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/1"), "call_seq_1");
+  ASSERT_TRUE(first_request_result.has_value());
 
-  base::test::TestFuture<TTCActuationResponse*> firstFuture;
-  [handler dispatchActuationRequest:firstRequestResult.value()
+  base::test::TestFuture<TTCActuationResponse*> first_future;
+  [handler dispatchActuationRequest:first_request_result.value()
                           forTaskID:task_id
                     completionBlock:base::CallbackToBlock(
-                                        firstFuture.GetCallback())];
+                                        first_future.GetCallback())];
 
-  TTCActuationResponse* firstResponse = firstFuture.Get();
-  ASSERT_NE(firstResponse, nil);
-  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, firstResponse.resultCode);
-  EXPECT_NSEQ(firstResponse.callID, @"call_seq_1");
+  TTCActuationResponse* first_response = first_future.Get();
+  ASSERT_NE(first_response, nil);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, first_response.resultCode);
+  EXPECT_NSEQ(first_response.callID, @"call_seq_1");
 
   // Dispatch a second actuation using the exact same task ID.
-  auto secondRequestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com/2"}
-                                  callID:@"call_seq_2"];
-  ASSERT_TRUE(secondRequestResult.has_value());
+  auto second_request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/2"), "call_seq_2");
+  ASSERT_TRUE(second_request_result.has_value());
 
-  base::test::TestFuture<TTCActuationResponse*> secondFuture;
-  [handler dispatchActuationRequest:secondRequestResult.value()
+  base::test::TestFuture<TTCActuationResponse*> second_future;
+  [handler dispatchActuationRequest:second_request_result.value()
                           forTaskID:task_id
                     completionBlock:base::CallbackToBlock(
-                                        secondFuture.GetCallback())];
+                                        second_future.GetCallback())];
 
-  TTCActuationResponse* secondResponse = secondFuture.Get();
-  ASSERT_NE(secondResponse, nil);
-  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, secondResponse.resultCode);
-  EXPECT_NSEQ(secondResponse.callID, @"call_seq_2");
+  TTCActuationResponse* second_response = second_future.Get();
+  ASSERT_NE(second_response, nil);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, second_response.resultCode);
+  EXPECT_NSEQ(second_response.callID, @"call_seq_2");
 
   [handler disconnect];
 }
@@ -369,15 +363,14 @@ TEST_F(TTCActuationHandlerTest, TestStopTask) {
   [handler stopTask:task_id
          withReason:actor::ActorTaskStoppedReason::kTaskComplete];
 
-  auto requestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_after_stop"];
-  ASSERT_TRUE(requestResult.has_value());
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"),
+      "call_after_stop");
+  ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<TTCActuationResponse*> future;
   [handler
-      dispatchActuationRequest:requestResult.value()
+      dispatchActuationRequest:request_result.value()
                      forTaskID:task_id
                completionBlock:base::CallbackToBlock(future.GetCallback())];
 
@@ -396,15 +389,14 @@ TEST_F(TTCActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
   ASSERT_FALSE(task_id.is_null());
 
-  auto requestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_inflight_stop"];
-  ASSERT_TRUE(requestResult.has_value());
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"),
+      "call_inflight_stop");
+  ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<TTCActuationResponse*> future;
   [handler
-      dispatchActuationRequest:requestResult.value()
+      dispatchActuationRequest:request_result.value()
                      forTaskID:task_id
                completionBlock:base::CallbackToBlock(future.GetCallback())];
 
@@ -489,15 +481,14 @@ TEST_F(TTCActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
   EXPECT_TRUE(post_disconnect_id.is_null());
 
   // Attempting to dispatch to disconnected handler or closed task fails.
-  auto requestResult =
-      [TTCToolValidator createActuationRequestWithToolName:@"go_back"
-                                                 arguments:@{}
-                                                    callID:@"call_disc"];
-  ASSERT_TRUE(requestResult.has_value());
+  base::DictValue empty_args;
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolGoBack, empty_args, "call_disc");
+  ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<TTCActuationResponse*> future;
   [handler
-      dispatchActuationRequest:requestResult.value()
+      dispatchActuationRequest:request_result.value()
                      forTaskID:task_id
                completionBlock:base::CallbackToBlock(future.GetCallback())];
 
@@ -514,15 +505,14 @@ TEST_F(TTCActuationHandlerTest,
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"TTC Task"];
   ASSERT_FALSE(task_id.is_null());
 
-  auto requestResult = [TTCToolValidator
-      createActuationRequestWithToolName:@"open_url"
-                               arguments:@{@"url" : @"https://example.com"}
-                                  callID:@"call_inflight_disconnect"];
-  ASSERT_TRUE(requestResult.has_value());
+  auto request_result = TtcToolValidator::CreateActuationRequest(
+      ttc::kToolOpenUrl, CreateUrlArgs("https://example.com"),
+      "call_inflight_disconnect");
+  ASSERT_TRUE(request_result.has_value());
 
   base::test::TestFuture<TTCActuationResponse*> future;
   [handler
-      dispatchActuationRequest:requestResult.value()
+      dispatchActuationRequest:request_result.value()
                      forTaskID:task_id
                completionBlock:base::CallbackToBlock(future.GetCallback())];
 

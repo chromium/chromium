@@ -5,48 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_TOOL_DEFINITIONS_H_
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_TOOL_DEFINITIONS_H_
 
-#import <Foundation/Foundation.h>
+#import <vector>
 
-#import <string_view>
+#import "components/ttc/app/public/tool_types.h"
 
 namespace ttc {
 
 // Canonical navigation and browsing tool names matching Desktop Chrome's
 // tools.mojom contract. Listed in strict alphabetical order.
-inline constexpr std::string_view kToolGoBack = "go_back";
-inline constexpr std::string_view kToolGoForward = "go_forward";
-inline constexpr std::string_view kToolOpenUrl = "open_url";
+inline constexpr char kToolGoBack[] = "go_back";
+inline constexpr char kToolGoForward[] = "go_forward";
+inline constexpr char kToolOpenUrl[] = "open_url";
 
-// Returns the array of function declaration dictionaries matching the
-// backend's FunctionDeclaration schema for the default navigation toolset.
-//
-// @return An array of dictionaries conforming to the FunctionDeclaration
-//         format.
-NSArray<NSDictionary*>* GetDefaultToolDeclarations();
-
-// Returns the function declaration for a specific tool by canonical name.
-//
-// @param tool_name Canonical name of the tool (e.g. `kToolOpenUrl`).
-// @return The declaration dictionary matching the tool schema, or nil if
-//         `tool_name` is unrecognized or empty.
-NSDictionary* GetToolDeclarationByName(NSString* tool_name);
-
-// Serializes a `toolResponse` frame acknowledging a `toolCall` back to the
-// backend. Matches the `toolResponse.functionResponses` envelope expected by
-// the streaming backend API.
-//
-// @param call_id Unique identifier of the tool call from the backend.
-//                Must not be empty.
-// @param tool_name Canonical name of the executed tool. Must not be empty.
-// @param response_dict Output payload of the tool execution. Nested under
-//                      @{"output": response_dict}. May be nil (treated as
-//                      empty).
-// @return Serialized UTF-8 JSON NSData representing the toolResponse frame,
-//         or nil if `call_id` or `tool_name` is empty or if serialization
-//         fails.
-NSData* CreateToolResponsePayload(NSString* call_id,
-                                  NSString* tool_name,
-                                  NSDictionary* response_dict);
+// Returns the vector of `ToolDefinition` declarations for the default
+// navigation toolset.
+std::vector<ToolDefinition> GetDefaultToolDefinitions();
 
 }  // namespace ttc
 

@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_validator.h"
 
+#import <optional>
 #import <string>
 #import <utility>
 
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
@@ -16,36 +18,36 @@
 namespace {
 
 // Tool call dictionary and argument keys.
-NSString* const kNameKey = @"name";
-NSString* const kIdKey = @"id";
-NSString* const kArgsKey = @"args";
-NSString* const kUrlKey = @"url";
-NSString* const kNewTabKey = @"new_tab";
+constexpr char kNameKey[] = "name";
+constexpr char kIdKey[] = "id";
+constexpr char kArgsKey[] = "args";
+constexpr char kUrlKey[] = "url";
+constexpr char kNewTabKey[] = "new_tab";
 
 // Task update strings.
 NSString* const kSingleToolTaskUpdate = @"Executing TTC tool";
 NSString* const kBatchToolTaskUpdate = @"Executing TTC tools";
 
-NSString* ToNSString(std::string_view str) {
-  return base::SysUTF8ToNSString(str);
-}
-
-// Converts a boolean-like Obj-C object into an optional bool.
-std::optional<bool> ParseBooleanValue(id value) {
-  if (!value) {
-    return std::nullopt;
+// Converts a boolean-like `base::Value` into an optional bool.
+std::optional<bool> ParseBooleanValue(const base::Value& value) {
+  if (value.is_bool()) {
+    return value.GetBool();
   }
-  if ([value isKindOfClass:[NSNumber class]]) {
-    return [(NSNumber*)value boolValue];
-  }
-  if ([value isKindOfClass:[NSString class]]) {
-    NSString* str = [(NSString*)value lowercaseString];
-    if ([str isEqualToString:@"true"] || [str isEqualToString:@"yes"] ||
-        [str isEqualToString:@"1"]) {
+  if (value.is_int()) {
+    if (value.GetInt() == 1) {
       return true;
     }
-    if ([str isEqualToString:@"false"] || [str isEqualToString:@"no"] ||
-        [str isEqualToString:@"0"]) {
+    if (value.GetInt() == 0) {
+      return false;
+    }
+    return std::nullopt;
+  }
+  if (value.is_string()) {
+    const std::string lower = base::ToLowerASCII(value.GetString());
+    if (lower == "true" || lower == "yes" || lower == "1") {
+      return true;
+    }
+    if (lower == "false" || lower == "no" || lower == "0") {
       return false;
     }
   }
@@ -53,22 +55,23 @@ std::optional<bool> ParseBooleanValue(id value) {
 }
 
 // Constructs an `optimization_guide::proto::Action` for a validated tool call.
-optimization_guide::proto::Action BuildActionProto(NSString* name,
-                                                   NSDictionary* arguments) {
+optimization_guide::proto::Action BuildActionProto(
+    const std::string& name,
+    const base::DictValue& arguments) {
   optimization_guide::proto::Action action;
-  if ([name isEqualToString:ToNSString(ttc::kToolOpenUrl)]) {
-    NSString* urlString = arguments[kUrlKey];
-    GURL gurl(base::SysNSStringToUTF8(urlString));
+  if (name == ttc::kToolOpenUrl) {
+    const std::string* url_string = arguments.FindString(kUrlKey);
+    GURL gurl(url_string ? *url_string : std::string());
     action.mutable_navigate()->set_url(gurl.spec());
-  } else if ([name isEqualToString:ToNSString(ttc::kToolGoBack)]) {
+  } else if (name == ttc::kToolGoBack) {
     action.mutable_back();
-  } else if ([name isEqualToString:ToNSString(ttc::kToolGoForward)]) {
+  } else if (name == ttc::kToolGoForward) {
     action.mutable_forward();
   }
   return action;
 }
 
-// Serializes a protobuf action to NSData.
+// Serializes a protobuf action to `NSData`.
 NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
   std::string serialized;
   action.SerializeToString(&serialized);
@@ -77,108 +80,110 @@ NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
 
 }  // namespace
 
-@implementation TTCToolValidator
-
-#pragma mark - Public
-
-+ (base::expected<void, NSString*>)validateToolName:(NSString*)name
-                                          arguments:(NSDictionary*)arguments
-                                             callID:(NSString*)callID {
-  if (!name || ![name isKindOfClass:[NSString class]] || [name length] == 0 ||
-      !callID || ![callID isKindOfClass:[NSString class]] ||
-      [callID length] == 0) {
-    return base::unexpected(ToNSString(ttc::kErrorMessageInvalidToolCall));
-  }
-  if (arguments && ![arguments isKindOfClass:[NSDictionary class]]) {
-    return base::unexpected(ToNSString(ttc::kErrorMessageInvalidArguments));
+// static
+base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
+    const std::string& name,
+    const base::DictValue& arguments,
+    const std::string& call_id) {
+  if (name.empty() || call_id.empty()) {
+    return base::unexpected(ttc::kErrorMessageInvalidToolCall);
   }
 
-  if ([name isEqualToString:ToNSString(ttc::kToolGoBack)] ||
-      [name isEqualToString:ToNSString(ttc::kToolGoForward)]) {
+  if (name == ttc::kToolGoBack || name == ttc::kToolGoForward) {
     return base::ok();
   }
 
-  if ([name isEqualToString:ToNSString(ttc::kToolOpenUrl)]) {
-    id urlValue = arguments ? arguments[kUrlKey] : nil;
-    if (!urlValue || ![urlValue isKindOfClass:[NSString class]] ||
-        [urlValue length] == 0) {
-      return base::unexpected(ToNSString(ttc::kErrorMessageInvalidArguments));
+  if (name == ttc::kToolOpenUrl) {
+    const std::string* url_value = arguments.FindString(kUrlKey);
+    if (!url_value || url_value->empty()) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
     }
 
-    std::string urlString = base::SysNSStringToUTF8(urlValue);
-    GURL gurl(urlString);
+    GURL gurl(*url_value);
     if (!gurl.is_valid() || !gurl.SchemeIsHTTPOrHTTPS()) {
-      return base::unexpected(ToNSString(ttc::kErrorMessageInvalidUrl));
+      return base::unexpected(ttc::kErrorMessageInvalidUrl);
     }
 
-    id newTabValue = arguments ? arguments[kNewTabKey] : nil;
-    if (newTabValue) {
-      auto parsedBool = ParseBooleanValue(newTabValue);
-      if (!parsedBool.has_value() || *parsedBool) {
-        return base::unexpected(
-            ToNSString(ttc::kErrorMessageNewTabUnsupported));
+    const base::Value* new_tab_value = arguments.Find(kNewTabKey);
+    if (new_tab_value) {
+      std::optional<bool> parsed_bool = ParseBooleanValue(*new_tab_value);
+      if (!parsed_bool.has_value() || *parsed_bool) {
+        return base::unexpected(ttc::kErrorMessageNewTabUnsupported);
       }
     }
 
     return base::ok();
   }
 
-  return base::unexpected(ToNSString(ttc::kErrorMessageUnknownTool));
+  return base::unexpected(ttc::kErrorMessageUnknownTool);
 }
 
-+ (base::expected<TTCActuationRequest*, NSString*>)
-    createActuationRequestWithToolName:(NSString*)name
-                             arguments:(NSDictionary*)arguments
-                                callID:(NSString*)callID {
-  auto validation = [self validateToolName:name
-                                 arguments:arguments
-                                    callID:callID];
+// static
+base::expected<TTCActuationRequest*, std::string>
+TtcToolValidator::CreateActuationRequest(const std::string& name,
+                                         const base::DictValue& arguments,
+                                         const std::string& call_id) {
+  base::expected<void, std::string> validation =
+      ValidateToolCall(name, arguments, call_id);
   if (!validation.has_value()) {
     return base::unexpected(validation.error());
   }
 
-  NSData* actionData = SerializeActionProto(BuildActionProto(name, arguments));
-  TTCActuationRequest* request =
-      [[TTCActuationRequest alloc] initWithActionProtos:@[ actionData ]
-                                             taskUpdate:kSingleToolTaskUpdate
-                                                 callID:callID];
+  NSData* action_data = SerializeActionProto(BuildActionProto(name, arguments));
+  TTCActuationRequest* request = [[TTCActuationRequest alloc]
+      initWithActionProtos:@[ action_data ]
+                taskUpdate:kSingleToolTaskUpdate
+                    callID:base::SysUTF8ToNSString(call_id)];
   return request;
 }
 
-+ (base::expected<TTCActuationRequest*, NSString*>)
-    createActuationRequestWithToolCalls:(NSArray<NSDictionary*>*)toolCalls {
-  if (!toolCalls || ![toolCalls isKindOfClass:[NSArray class]] ||
-      toolCalls.count == 0) {
-    return base::unexpected(ToNSString(ttc::kErrorMessageEmptyToolCalls));
+// static
+base::expected<TTCActuationRequest*, std::string>
+TtcToolValidator::CreateActuationRequestWithToolCalls(
+    const base::ListValue& tool_calls) {
+  if (tool_calls.empty()) {
+    return base::unexpected(ttc::kErrorMessageEmptyToolCalls);
   }
 
-  NSMutableArray<NSData*>* actionProtos = [NSMutableArray array];
-  NSMutableArray<NSString*>* callIDs = [NSMutableArray array];
+  NSMutableArray<NSData*>* action_protos = [NSMutableArray array];
+  NSMutableArray<NSString*>* call_ids = [NSMutableArray array];
+  const base::DictValue empty_args;
 
-  for (id item in toolCalls) {
-    if (![item isKindOfClass:[NSDictionary class]]) {
-      return base::unexpected(ToNSString(ttc::kErrorMessageInvalidToolCall));
+  for (const base::Value& item : tool_calls) {
+    const base::DictValue* tool_call = item.GetIfDict();
+    if (!tool_call) {
+      return base::unexpected(ttc::kErrorMessageInvalidToolCall);
     }
 
-    NSDictionary* toolCall = (NSDictionary*)item;
-    NSString* name = toolCall[kNameKey];
-    NSString* callID = toolCall[kIdKey];
-    NSDictionary* args = toolCall[kArgsKey] ?: @{};
+    const std::string* name = tool_call->FindString(kNameKey);
+    const std::string* call_id = tool_call->FindString(kIdKey);
+    if (!name || !call_id) {
+      return base::unexpected(ttc::kErrorMessageInvalidToolCall);
+    }
 
-    auto validation = [self validateToolName:name arguments:args callID:callID];
+    const base::Value* args_value = tool_call->Find(kArgsKey);
+    const base::DictValue* args = &empty_args;
+    if (args_value) {
+      args = args_value->GetIfDict();
+      if (!args) {
+        return base::unexpected(ttc::kErrorMessageInvalidArguments);
+      }
+    }
+
+    base::expected<void, std::string> validation =
+        ValidateToolCall(*name, *args, *call_id);
     if (!validation.has_value()) {
       return base::unexpected(validation.error());
     }
 
-    [callIDs addObject:callID];
-    [actionProtos addObject:SerializeActionProto(BuildActionProto(name, args))];
+    [call_ids addObject:base::SysUTF8ToNSString(*call_id)];
+    [action_protos
+        addObject:SerializeActionProto(BuildActionProto(*name, *args))];
   }
 
   TTCActuationRequest* request =
-      [[TTCActuationRequest alloc] initWithActionProtos:actionProtos
+      [[TTCActuationRequest alloc] initWithActionProtos:action_protos
                                              taskUpdate:kBatchToolTaskUpdate
-                                                callIDs:callIDs];
+                                                callIDs:call_ids];
   return request;
 }
-
-@end

@@ -28,7 +28,10 @@ source_set("tools") {
     "//ios/web/public",
     "//url",
   ]
-  public_deps = [ "//components/actor/public/mojom:mojo_bindings" ]
+  public_deps = [
+    "//components/actor/public/mojom:mojo_bindings",
+    "//components/ttc/app/public",
+  ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -46,6 +49,7 @@ source_set("unit_tests") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/sessions:session_id",
+    "//components/ttc/app/public",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/util:test_support",

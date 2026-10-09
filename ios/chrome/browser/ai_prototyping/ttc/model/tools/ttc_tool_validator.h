@@ -7,67 +7,59 @@
 
 #import <Foundation/Foundation.h>
 
-#import <string_view>
+#import <string>
 
 #import "base/types/expected.h"
+#import "base/values.h"
 
 @class TTCActuationRequest;
 
 namespace ttc {
 
 // Canonical error messages for tool validation, sorted alphabetically.
-inline constexpr std::string_view kErrorMessageEmptyToolCalls =
+inline constexpr char kErrorMessageEmptyToolCalls[] =
     "Tool calls array cannot be empty.";
-inline constexpr std::string_view kErrorMessageInvalidArguments =
+inline constexpr char kErrorMessageInvalidArguments[] =
     "Invalid tool arguments.";
-inline constexpr std::string_view kErrorMessageInvalidToolCall =
-    "Invalid tool call.";
-inline constexpr std::string_view kErrorMessageInvalidUrl =
+inline constexpr char kErrorMessageInvalidToolCall[] = "Invalid tool call.";
+inline constexpr char kErrorMessageInvalidUrl[] =
     "Invalid URL provided in arguments.";
-inline constexpr std::string_view kErrorMessageNewTabUnsupported =
+inline constexpr char kErrorMessageNewTabUnsupported[] =
     "Opening in a new tab is not supported.";
-inline constexpr std::string_view kErrorMessageUnknownTool =
-    "Unknown tool name.";
+inline constexpr char kErrorMessageUnknownTool[] = "Unknown tool name.";
 
 }  // namespace ttc
 
-// Validates incoming TTC tool calls and acts as an adapter
-// constructing `TTCActuationRequest` payloads for `TTCActuationHandler`.
+// Validates incoming TTC tool calls and acts as an adapter constructing
+// `TTCActuationRequest` payloads for `TTCActuationHandler`.
 // Note: Generated `Action` protobufs intentionally do not include `tab_id` or
 // `window_id`; these runtime session identifiers are injected downstream by
 // `TTCActuationHandler` using active `WebState` tracking.
-@interface TTCToolValidator : NSObject
+class TtcToolValidator {
+ public:
+  TtcToolValidator() = delete;
 
-- (instancetype)init NS_UNAVAILABLE;
+  // Validates the tool name, arguments, and correlation `call_id`
+  // syntactically. Returns `base::ok()` on success, or an error message
+  // describing the violation.
+  static base::expected<void, std::string> ValidateToolCall(
+      const std::string& name,
+      const base::DictValue& arguments,
+      const std::string& call_id);
 
-// Validates the tool name and arguments syntactically.
-// @param name The tool name (e.g., `open_url`, `go_back`).
-// @param arguments The tool arguments dictionary.
-// @param callID The correlation identifier from the client.
-// @return Void on success, or an error message describing the violation.
-+ (base::expected<void, NSString*>)validateToolName:(NSString*)name
-                                          arguments:(NSDictionary*)arguments
-                                             callID:(NSString*)callID;
+  // Validates a tool call and creates an actuation request containing the
+  // serialized `optimization_guide::proto::Action` proto.
+  static base::expected<TTCActuationRequest*, std::string>
+  CreateActuationRequest(const std::string& name,
+                         const base::DictValue& arguments,
+                         const std::string& call_id);
 
-// Validates a tool call and creates an actuation request containing the
-// serialized `optimization_guide::proto::Action` proto.
-// @param name The tool name.
-// @param arguments The tool arguments dictionary.
-// @param callID The correlation identifier.
-// @return A populated `TTCActuationRequest` on success, or an error string.
-+ (base::expected<TTCActuationRequest*, NSString*>)
-    createActuationRequestWithToolName:(NSString*)name
-                             arguments:(NSDictionary*)arguments
-                                callID:(NSString*)callID;
-
-// Validates a batch of tool call dictionaries and creates an actuation request
-// containing all serialized `optimization_guide::proto::Action` protos.
-// Each dictionary must contain `@"name"`, `@"id"`, and optional `@"args"`.
-// @param toolCalls Array of tool call dictionaries.
-// @return A populated `TTCActuationRequest` on success, or an error string.
-+ (base::expected<TTCActuationRequest*, NSString*>)
-    createActuationRequestWithToolCalls:(NSArray<NSDictionary*>*)toolCalls;
-
-@end
+  // Validates a batch of tool call dictionaries and creates an actuation
+  // request containing all serialized `optimization_guide::proto::Action`
+  // protos. Each dictionary in `tool_calls` must contain `"name"`, `"id"`, and
+  // optional `"args"`.
+  static base::expected<TTCActuationRequest*, std::string>
+  CreateActuationRequestWithToolCalls(const base::ListValue& tool_calls);
+};
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_TOOL_VALIDATOR_H_
