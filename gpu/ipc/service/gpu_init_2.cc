@@ -470,7 +470,7 @@ VulkanImplementation* GpuInit2::vulkan_implementation() {
 bool GpuInit2::InitializeAndStartSandbox(
     base::CommandLine* command_line,
     const GpuPreferences& gpu_preferences) {
-  TRACE_EVENT("gpu,startup", "gpu::GpuInit2::InitializeAndStartSandbox");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeAndStartSandbox");
 #if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
@@ -1333,7 +1333,7 @@ void GpuInit2::SetSkiaBackendType() {
 
 bool GpuInit2::InitializeDawn() {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  TRACE_EVENT("gpu,startup", "gpu::GpuInit2::InitializeDawn");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeDawn");
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
           kGpuFeatureStatusEnabled &&
       !gpu::DawnContextProvider::DefaultForceFallbackAdapter()) {
@@ -1402,7 +1402,7 @@ bool GpuInit2::InitializeDawn() {
 
 bool GpuInit2::InitializeVulkan() {
 #if BUILDFLAG(ENABLE_VULKAN)
-  TRACE_EVENT("gpu,startup", "gpu::GpuInit2::InitializeVulkan");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeVulkan");
   DCHECK(gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
          gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) ||
          gpu_feature_info_.IsFeatureEnabled(

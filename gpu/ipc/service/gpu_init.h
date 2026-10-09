@@ -54,7 +54,7 @@ class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper {
 // initialization (GPUInfo, GpuFeatureInfo, watchdog, Vulkan/Dawn context, etc.)
 // to consumers such as VizMainImpl. GpuInit holds no state of its own; each
 // implementation owns its members independently:
-//   - GpuInit1: the current, shipping initialization path.
+//   - GpuInitLegacy: the current, shipping initialization path.
 //   - GpuInit2: the path where GPU startup optimizations are being developed.
 //     Selected when features::kGpuInitOptimization is enabled.
 // Use Create() to obtain the implementation appropriate for the current
@@ -62,7 +62,7 @@ class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper {
 class GPU_IPC_SERVICE_EXPORT GpuInit {
  public:
   // Returns GpuInit2 if features::kGpuInitOptimization is enabled, otherwise
-  // GpuInit1. Requires base::FeatureList to be initialized.
+  // GpuInitLegacy. Requires base::FeatureList to be initialized.
   static std::unique_ptr<GpuInit> Create();
 
   GpuInit(const GpuInit&) = delete;
@@ -101,14 +101,14 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 };
 
 // The current GPU initialization path. See GpuInit for details.
-class GPU_IPC_SERVICE_EXPORT GpuInit1 : public GpuInit {
+class GPU_IPC_SERVICE_EXPORT GpuInitLegacy : public GpuInit {
  public:
-  GpuInit1();
+  GpuInitLegacy();
 
-  GpuInit1(const GpuInit1&) = delete;
-  GpuInit1& operator=(const GpuInit1&) = delete;
+  GpuInitLegacy(const GpuInitLegacy&) = delete;
+  GpuInitLegacy& operator=(const GpuInitLegacy&) = delete;
 
-  ~GpuInit1() override;
+  ~GpuInitLegacy() override;
 
   // GpuInit:
   void set_sandbox_helper(GpuSandboxHelper* helper) override;

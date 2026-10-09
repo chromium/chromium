@@ -361,7 +361,7 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::PlatformThread::SetDefaultThreadType(base::ThreadType::kPresentation);
 
-  // Picks GpuInit1 or GpuInit2 based on features::kGpuInitOptimization.
+  // Picks GpuInitLegacy or GpuInit2 based on features::kGpuInitOptimization.
   auto gpu_init = gpu::GpuInit::Create();
 
   ContentSandboxHelper sandbox_helper;

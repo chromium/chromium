@@ -368,67 +368,67 @@ std::unique_ptr<GpuInit> GpuInit::Create() {
   if (base::FeatureList::IsEnabled(features::kGpuInitOptimization)) {
     return std::make_unique<GpuInit2>();
   }
-  return std::make_unique<GpuInit1>();
+  return std::make_unique<GpuInitLegacy>();
 }
 
-GpuInit1::GpuInit1() = default;
+GpuInitLegacy::GpuInitLegacy() = default;
 
-GpuInit1::~GpuInit1() {
+GpuInitLegacy::~GpuInitLegacy() {
   StopForceDiscreteGPU();
 }
 
-void GpuInit1::set_sandbox_helper(GpuSandboxHelper* helper) {
+void GpuInitLegacy::set_sandbox_helper(GpuSandboxHelper* helper) {
   sandbox_helper_ = helper;
 }
 
-const GPUInfo& GpuInit1::gpu_info() const {
+const GPUInfo& GpuInitLegacy::gpu_info() const {
   return gpu_info_;
 }
 
-const GpuFeatureInfo& GpuInit1::gpu_feature_info() const {
+const GpuFeatureInfo& GpuInitLegacy::gpu_feature_info() const {
   return gpu_feature_info_;
 }
 
-const gfx::GpuExtraInfo& GpuInit1::gpu_extra_info() const {
+const gfx::GpuExtraInfo& GpuInitLegacy::gpu_extra_info() const {
   return gpu_extra_info_;
 }
 
-const std::optional<GPUInfo>& GpuInit1::gpu_info_for_hardware_gpu() const {
+const std::optional<GPUInfo>& GpuInitLegacy::gpu_info_for_hardware_gpu() const {
   return gpu_info_for_hardware_gpu_;
 }
 
 const std::optional<GpuFeatureInfo>&
-GpuInit1::gpu_feature_info_for_hardware_gpu() const {
+GpuInitLegacy::gpu_feature_info_for_hardware_gpu() const {
   return gpu_feature_info_for_hardware_gpu_;
 }
 
-const std::optional<DevicePerfInfo>& GpuInit1::device_perf_info() const {
+const std::optional<DevicePerfInfo>& GpuInitLegacy::device_perf_info() const {
   return device_perf_info_;
 }
 
-const GpuPreferences& GpuInit1::gpu_preferences() const {
+const GpuPreferences& GpuInitLegacy::gpu_preferences() const {
   return gpu_preferences_;
 }
 
-std::unique_ptr<GpuWatchdogThread> GpuInit1::TakeWatchdogThread() {
+std::unique_ptr<GpuWatchdogThread> GpuInitLegacy::TakeWatchdogThread() {
   return std::move(watchdog_thread_);
 }
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-std::unique_ptr<DawnContextProvider> GpuInit1::TakeDawnContextProvider() {
+std::unique_ptr<DawnContextProvider> GpuInitLegacy::TakeDawnContextProvider() {
   return std::move(dawn_context_provider_);
 }
 #endif
 
-scoped_refptr<gl::GLSurface> GpuInit1::TakeDefaultOffscreenSurface() {
+scoped_refptr<gl::GLSurface> GpuInitLegacy::TakeDefaultOffscreenSurface() {
   return std::move(default_offscreen_surface_);
 }
 
-bool GpuInit1::init_successful() const {
+bool GpuInitLegacy::init_successful() const {
   return init_successful_;
 }
 
-VulkanImplementation* GpuInit1::vulkan_implementation() {
+VulkanImplementation* GpuInitLegacy::vulkan_implementation() {
 #if BUILDFLAG(ENABLE_VULKAN)
   return vulkan_implementation_.get();
 #else
@@ -436,10 +436,10 @@ VulkanImplementation* GpuInit1::vulkan_implementation() {
 #endif
 }
 
-bool GpuInit1::InitializeAndStartSandbox(
+bool GpuInitLegacy::InitializeAndStartSandbox(
     base::CommandLine* command_line,
     const GpuPreferences& gpu_preferences) {
-  TRACE_EVENT("gpu,startup", "gpu::GpuInit1::InitializeAndStartSandbox");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeAndStartSandbox");
 #if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
@@ -1104,8 +1104,8 @@ bool GpuInit1::InitializeAndStartSandbox(
   return true;
 }
 
-void GpuInit1::InitializeInProcess(base::CommandLine* command_line,
-                                   const GpuPreferences& gpu_preferences) {
+void GpuInitLegacy::InitializeInProcess(base::CommandLine* command_line,
+                                        const GpuPreferences& gpu_preferences) {
   gpu_preferences_ = gpu_preferences;
   init_successful_ = true;
 
@@ -1321,7 +1321,7 @@ void GpuInit1::InitializeInProcess(base::CommandLine* command_line,
   RecordUMA();
 }
 
-void GpuInit1::RecordUMA() {
+void GpuInitLegacy::RecordUMA() {
   // Don't record UMA from the GPU info collection process as it's not
   // represenative of a real GPU process launch.
   if (gpu_preferences_.enable_perf_data_collection) {
@@ -1346,17 +1346,17 @@ void GpuInit1::RecordUMA() {
   UMA_HISTOGRAM_ENUMERATION("GPU.SkiaBackendType", gpu_info_.skia_backend_type);
 }
 
-void GpuInit1::SaveHardwareGpuInfoAndGpuFeatureInfo() {
+void GpuInitLegacy::SaveHardwareGpuInfoAndGpuFeatureInfo() {
   gpu_info_for_hardware_gpu_ = gpu_info_;
   gpu_feature_info_for_hardware_gpu_ = gpu_feature_info_;
 }
 
-void GpuInit1::AdjustInfoToSwiftShader() {
+void GpuInitLegacy::AdjustInfoToSwiftShader() {
   gpu_feature_info_ = ComputeGpuFeatureInfoForSoftwareGL();
   CollectContextGraphicsInfo(&gpu_info_);
 }
 
-void GpuInit1::SetSkiaBackendType() {
+void GpuInitLegacy::SetSkiaBackendType() {
   CHECK(init_successful_);
   CHECK_EQ(gpu_info_.skia_backend_type, SkiaBackendType::kNone);
   auto skia_backend_type = SkiaBackendType::kUnknown;
@@ -1410,9 +1410,9 @@ void GpuInit1::SetSkiaBackendType() {
   crash_key.Set(SkiaBackendTypeToString(skia_backend_type));
 }
 
-bool GpuInit1::InitializeDawn() {
+bool GpuInitLegacy::InitializeDawn() {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  TRACE_EVENT("gpu,startup", "gpu::GpuInit1::InitializeDawn");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeDawn");
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
           kGpuFeatureStatusEnabled &&
       !gpu::DawnContextProvider::DefaultForceFallbackAdapter()) {
@@ -1479,9 +1479,9 @@ bool GpuInit1::InitializeDawn() {
   return false;
 }
 
-bool GpuInit1::InitializeVulkan() {
+bool GpuInitLegacy::InitializeVulkan() {
 #if BUILDFLAG(ENABLE_VULKAN)
-  TRACE_EVENT("gpu,startup", "gpu::GpuInit1::InitializeVulkan");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeVulkan");
   DCHECK(gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
          gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) ||
          gpu_feature_info_.IsFeatureEnabled(
