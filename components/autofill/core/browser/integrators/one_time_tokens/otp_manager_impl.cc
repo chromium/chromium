@@ -201,6 +201,15 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
             base::BindRepeating(&OtpManagerImpl::OnTickleReceived,
                                 weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // If a Gmail OTP retrieval is already in flight (e.g. initiated upon tickle
+  // arrival while the field was focused), do not start a concurrent one. The
+  // in-flight retriever will deliver the token to any pending suggestions
+  // callback upon completion.
+  if (gmail_otp_retriever_) {
+    return;
+  }
+
   affiliations::AffiliationService* affiliation_service =
       owner_->client().GetAffiliationService();
   one_time_tokens::GmailOtpBackend* gmail_otp_backend =
@@ -213,9 +222,11 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
         *affiliation_service);
     const url::Origin frame_origin =
         owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
+    // TODO(crbug.com/571474857): Clarify security requirements for login flow
+    // classification in non-agentic OTP autofill.
     gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
         *gmail_otp_backend, std::move(checker), frame_origin,
-        /*is_login_flow=*/true,
+        /*is_login_flow=*/false,
         base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -307,10 +318,16 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
   }
 }
 
+// Verifies preconditions (field focus, user consent, no existing input, etc.)
+// and starts an asynchronous Gmail OTP retrieval for the focused field's
+// origin.
 void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
       << "Tickle received for source: " << static_cast<int>(source);
+  if (source != OneTimeTokenSource::kGmail) {
+    return;
+  }
   if (!IsOtpFieldDetected()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
@@ -332,8 +349,50 @@ void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
            "Skipping payload fetch.";
     return;
   }
-  // TODO(crbug.com/556170646): Retrieve the Gmail OTP on tickle arrival and
-  // proactively trigger suggestions via the renderer.
+  const AutofillField* focused_field = GetFocusedOtpField();
+  if (!focused_field) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP tickle received but no OTP field is currently focused. "
+           "Skipping payload fetch.";
+    return;
+  }
+  if (gmail_otp_retriever_) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "GmailOtpRetriever is already in flight. Skipping token retrieval "
+           "on tickle.";
+    return;
+  }
+
+  affiliations::AffiliationService* affiliation_service =
+      owner_->client().GetAffiliationService();
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      owner_->client().GetGmailOtpBackend();
+  if (!affiliation_service || !gmail_otp_backend) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP tickle received but AffiliationService or GmailOtpBackend is "
+           "missing. Skipping payload fetch.";
+    return;
+  }
+
+  LOG_AF(owner_->client().GetCurrentLogManager())
+      << LoggingScope::kOneTimeTokens
+      << "Starting GmailOtpRetriever on tickle arrival.";
+  auto checker = std::make_unique<affiliations::DomainRelationChecker>(
+      *affiliation_service);
+  const url::Origin frame_origin =
+      focused_field->origin().opaque()
+          ? owner_->client().GetLastCommittedPrimaryMainFrameOrigin()
+          : focused_field->origin();
+  // TODO(crbug.com/571474857): Clarify security requirements for login flow
+  // classification in non-agentic OTP autofill.
+  gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
+      *gmail_otp_backend, std::move(checker), frame_origin,
+      /*is_login_flow=*/false,
+      base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OtpManagerImpl::OnGmailOtpRetrieved(

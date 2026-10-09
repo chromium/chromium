@@ -108,6 +108,19 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   void GetRecentOtpsAndRenewSubscription();
 
   // Called when an incoming OTP tickle push notification arrives.
+  //
+  // Verifies preconditions before initiating retrieval:
+  // - The tickle source is Gmail.
+  // - An OTP field is detected on the page and currently has focus.
+  // - No OTP field already contains user-typed input.
+  // - The user has opted into Gmail OTP filling.
+  // - No Gmail OTP retrieval is already in flight.
+  // - Both AffiliationService and GmailOtpBackend are available.
+  //
+  // If all preconditions are satisfied, starts an asynchronous retrieval via
+  // `GmailOtpRetriever` using the focused field's frame origin (falling back to
+  // the primary main frame origin if opaque) to fetch the token payload, which
+  // invokes `OnGmailOtpRetrieved` upon completion.
   void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
 
   // Callback for `one_time_tokens::GmailOtpRetriever`.
