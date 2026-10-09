@@ -583,4 +583,15 @@ public class ActorMetricsTest {
                 ActorUtils.getActorNotificationPermissionState());
         assertTrue(ActorUtils.areActorNotificationsEnabled());
     }
+
+    @Test
+    public void testRecordTimeBetweenWorklogUpdates() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES, 1500);
+
+        ActorMetrics.recordTimeBetweenWorklogUpdates(1500);
+
+        watcher.assertExpected();
+    }
 }
