@@ -53,14 +53,18 @@ enum class ToolId {
   kAttemptOtpFilling = 16,
   // Enters fullscreen mode for a window.
   kEnterFullscreen = 17,
-  kMaxValue = kEnterFullscreen,
+  // Highlights matching text in the active tab and scrolls it into view.
+  kFindAndHighlight = 18,
+  kMaxValue = kFindAndHighlight,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.
 struct ToolDefinition {
   ToolDefinition(ToolId id, std::string name, std::string description);
-  ToolDefinition(ToolId id, std::string name, std::string description,
+  ToolDefinition(ToolId id,
+                 std::string name,
+                 std::string description,
                  base::DictValue parameters_json_schema);
   ~ToolDefinition();
 

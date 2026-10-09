@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_FIND_AND_HIGHLIGHT_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_FIND_AND_HIGHLIGHT_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -19,12 +20,20 @@ class ToolRequestVisitorFunctor;
 class FindAndHighlightToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "FindAndHighlight";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "find_and_highlight";
+  // JSON argument key for the search query string parameter.
+  static constexpr std::string_view kQueryParam = "query";
 
   FindAndHighlightToolRequest(tabs::TabHandle tab_handle, std::string query);
   ~FindAndHighlightToolRequest() override;
 
   FindAndHighlightToolRequest(const FindAndHighlightToolRequest&);
   FindAndHighlightToolRequest& operator=(const FindAndHighlightToolRequest&);
+
+  // Returns the `ToolId::kFindAndHighlight` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,
