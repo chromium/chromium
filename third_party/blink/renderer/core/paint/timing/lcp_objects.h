@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_LCP_OBJECTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_LCP_OBJECTS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -20,17 +22,46 @@ struct ResourceLoadTimings {
   base::TimeTicks discovery_time;
 };
 
-struct LargestContentfulPaintDetails {
-  base::TimeTicks largest_image_paint_time;
-  uint64_t largest_image_paint_size = 0;
+struct LargestImagePaintDetails {
+  base::TimeTicks presentation_time;
+  uint64_t paint_size = 0;
   ResourceLoadTimings resource_load_timings = {};
-  blink::LargestContentfulPaintType largest_contentful_paint_type =
+  blink::LargestContentfulPaintType type =
       blink::LargestContentfulPaintType::kNone;
-  double largest_contentful_paint_image_bpp = 0.0;
-  base::TimeTicks largest_text_paint_time;
-  uint64_t largest_text_paint_size = 0;
-  std::optional<WebURLRequest::Priority>
-      largest_contentful_paint_image_request_priority = std::nullopt;
+  double bpp = 0.0;
+  std::optional<WebURLRequest::Priority> request_priority = std::nullopt;
+};
+
+struct LargestTextPaintDetails {
+  base::TimeTicks presentation_time;
+  uint64_t paint_size = 0;
+};
+
+struct LargestContentfulPaintDetails {
+  // Returns the type of the LCP candidate, selecting between `largest_text` and
+  // `largest_image`.
+  blink::LargestContentfulPaintType Type() const {
+    return IsCandidateText() ? blink::LargestContentfulPaintType::kText
+                             : largest_image.type;
+  }
+
+  // Returns the presentation time of the LCP candidate, selecting between
+  // `largest_text` and `largest_image`.
+  base::TimeTicks PresentationTime() const {
+    return IsCandidateText() ? largest_text.presentation_time
+                             : largest_image.presentation_time;
+  }
+
+  LargestImagePaintDetails largest_image;
+  LargestTextPaintDetails largest_text;
+
+ private:
+  // Returns true iff the `largest_text` is the LCP candidate.
+  bool IsCandidateText() const {
+    return largest_text.paint_size > largest_image.paint_size ||
+           (largest_text.paint_size == largest_image.paint_size &&
+            largest_text.presentation_time < largest_image.presentation_time);
+  }
 };
 
 // This class is used for tracing only.

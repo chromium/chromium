@@ -207,8 +207,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   void ReportMetricsCandidateToTrace(const TextRecord&);
   void ReportNoMetricsImageCandidateToTrace();
 
-  void UpdateLatestLcpDetailsTypeIfNeeded();
-
   // Processes a list of LCP candidates, updating the `LcpCandidates` with the
   // largest candidate. Also handles recording use counters for the largest
   // removed element (see `MaybeRecordRemovedCandidateUseCounter()`).

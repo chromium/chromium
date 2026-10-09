@@ -44,8 +44,6 @@ void PopulateFrameTraceData(TracedValue& value, const LocalFrame& frame) {
                                           frame.IsInFencedFrameTree());
 }
 
-}  // namespace
-
 LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
     const AtomicString& type_string) {
   if (type_string.empty()) {
@@ -71,6 +69,47 @@ LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
 
   return LargestContentfulPaintType::kNone;
 }
+
+LargestContentfulPaintType ComputeImageLargestContentfulPaintType(
+    const MediaTiming& timing,
+    const LocalDOMWindow* window) {
+  LargestContentfulPaintType type = blink::LargestContentfulPaintType::kImage;
+
+  // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
+  // default, we'd be able to use the value of the first animated frame time
+  // directly.
+  if (!timing.GetFirstVideoFrameTime().is_null()) {
+    // Set the video flag.
+    type |= blink::LargestContentfulPaintType::kVideo;
+  } else if (timing.IsPaintedFirstFrame()) {
+    // Set the animated image flag.
+    type |= blink::LargestContentfulPaintType::kAnimatedImage;
+  }
+
+  // Set specific type of the image.
+  type |= GetLargestContentfulPaintTypeFromString(timing.MediaType());
+
+  // Set DataURI type.
+  if (timing.IsDataUrl()) {
+    type |= blink::LargestContentfulPaintType::kDataURI;
+  }
+
+  // Set cross-origin flag of the image.
+  if (window) {
+    auto image_url = timing.Url();
+    if (!image_url.IsEmpty() && image_url.ProtocolIsInHttpFamily() &&
+        window->GetFrame()->IsOutermostMainFrame()) {
+      auto image_origin = SecurityOrigin::Create(image_url);
+      if (!image_origin->IsSameOriginWith(window->GetSecurityOrigin())) {
+        type |= blink::LargestContentfulPaintType::kCrossOrigin;
+      }
+    }
+  }
+
+  return type;
+}
+
+}  // namespace
 
 LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
     WindowPerformance* window_performance,
@@ -262,17 +301,17 @@ bool LargestContentfulPaintCalculator::HasLargestImagePaintChangedForMetrics(
     base::TimeTicks largest_image_paint_time,
     uint64_t largest_image_paint_size) const {
   return largest_image_paint_time !=
-             latest_lcp_details_.largest_image_paint_time ||
+             latest_lcp_details_.largest_image.presentation_time ||
          largest_image_paint_size !=
-             latest_lcp_details_.largest_image_paint_size;
+             latest_lcp_details_.largest_image.paint_size;
 }
 
 bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
     base::TimeTicks largest_text_paint_time,
     uint64_t largest_text_paint_size) const {
   return largest_text_paint_time !=
-             latest_lcp_details_.largest_text_paint_time ||
-         largest_text_paint_size != latest_lcp_details_.largest_text_paint_size;
+             latest_lcp_details_.largest_text.presentation_time ||
+         largest_text_paint_size != latest_lcp_details_.largest_text.paint_size;
 }
 
 bool LargestContentfulPaintCalculator::
@@ -301,62 +340,20 @@ bool LargestContentfulPaintCalculator::
     return false;
   }
 
-  latest_lcp_details_.largest_contentful_paint_type =
-      blink::LargestContentfulPaintType::kNone;
-  // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
-  // default, we'd be able to use the value of
-  // largest_image_record->first_animated_frame_time directly.
+  LargestImagePaintDetails& image_details = latest_lcp_details_.largest_image;
+  image_details = LargestImagePaintDetails();
   if (const MediaTiming* timing = image_record.GetMediaTiming()) {
-    if (!timing->GetFirstVideoFrameTime().is_null()) {
-      // Set the video flag.
-      latest_lcp_details_.largest_contentful_paint_type |=
-          blink::LargestContentfulPaintType::kVideo;
-    } else if (timing->IsPaintedFirstFrame()) {
-      // Set the animated image flag.
-      latest_lcp_details_.largest_contentful_paint_type |=
-          blink::LargestContentfulPaintType::kAnimatedImage;
-    }
-
-    // Set image type flag.
-    latest_lcp_details_.largest_contentful_paint_type |=
-        blink::LargestContentfulPaintType::kImage;
-
-    // Set specific type of the image.
-    latest_lcp_details_.largest_contentful_paint_type |=
-        GetLargestContentfulPaintTypeFromString(timing->MediaType());
-
-    // Set DataURI type.
-    if (timing->IsDataUrl()) {
-      latest_lcp_details_.largest_contentful_paint_type |=
-          blink::LargestContentfulPaintType::kDataURI;
-    }
-
-    // Set cross-origin flag of the image.
-    if (auto* window = window_performance_->DomWindow()) {
-      auto image_url = timing->Url();
-      if (!image_url.IsEmpty() && image_url.ProtocolIsInHttpFamily() &&
-          window->GetFrame()->IsOutermostMainFrame()) {
-        auto image_origin = SecurityOrigin::Create(image_url);
-        if (!image_origin->IsSameOriginWith(window->GetSecurityOrigin())) {
-          latest_lcp_details_.largest_contentful_paint_type |=
-              blink::LargestContentfulPaintType::kCrossOrigin;
-        }
-      }
-    }
-
-    latest_lcp_details_.resource_load_timings.discovery_time =
+    image_details.type = ComputeImageLargestContentfulPaintType(
+        *timing, window_performance_->DomWindow());
+    image_details.resource_load_timings.discovery_time =
         timing->DiscoveryTime();
-    latest_lcp_details_.resource_load_timings.load_start = timing->LoadStart();
-    latest_lcp_details_.resource_load_timings.load_end = timing->LoadEnd();
+    image_details.resource_load_timings.load_start = timing->LoadStart();
+    image_details.resource_load_timings.load_end = timing->LoadEnd();
   }
-  latest_lcp_details_.largest_image_paint_time = image_paint_time;
-  latest_lcp_details_.largest_image_paint_size =
-      image_record.EffectiveVisualSize();
-  latest_lcp_details_.largest_contentful_paint_image_bpp =
-      image_record.EntropyForLCP();
-  latest_lcp_details_.largest_contentful_paint_image_request_priority =
-      image_record.RequestPriority();
-  UpdateLatestLcpDetailsTypeIfNeeded();
+  image_details.presentation_time = image_paint_time;
+  image_details.paint_size = image_record.EffectiveVisualSize();
+  image_details.bpp = image_record.EntropyForLCP();
+  image_details.request_priority = image_record.RequestPriority();
 
   // TODO(crbug.com/449779010): Presentation time is the only thing that matters
   // for metrics, so consider removing this IsSufficientlyLoadedForReporting().
@@ -388,38 +385,15 @@ bool LargestContentfulPaintCalculator::
     return false;
   }
 
-  latest_lcp_details_.largest_text_paint_time = text_record.PaintTime();
-  latest_lcp_details_.largest_text_paint_size =
+  latest_lcp_details_.largest_text.presentation_time = text_record.PaintTime();
+  latest_lcp_details_.largest_text.paint_size =
       text_record.EffectiveVisualSize();
-  UpdateLatestLcpDetailsTypeIfNeeded();
 
   if (delegate_->IsHardNavigation() && PaintTimingDetector::IsTracing()) {
     ReportMetricsCandidateToTrace(text_record);
   }
 
   return true;
-}
-
-void LargestContentfulPaintCalculator::UpdateLatestLcpDetailsTypeIfNeeded() {
-  if (latest_lcp_details_.largest_text_paint_size <
-          latest_lcp_details_.largest_image_paint_size ||
-      (latest_lcp_details_.largest_text_paint_size ==
-           latest_lcp_details_.largest_image_paint_size &&
-       latest_lcp_details_.largest_text_paint_time >=
-           latest_lcp_details_.largest_image_paint_time)) {
-    return;
-  }
-  // We set latest_lcp_details_.largest_contentful_paint_type_ only here
-  // because we use latest_lcp_details_.largest_contentful_paint_type_ to
-  // track the LCP type of the largest image only. When the largest image gets
-  // updated, the latest_lcp_details_.largest_contentful_paint_type_ gets
-  // reset and updated accordingly in the
-  // UpdateMetricsIfLargestImagePaintChanged() method. If the LCP element
-  // turns out to be the largest text, we simply set the
-  // latest_lcp_details_.largest_contentful_paint_type_ to be kText here. This
-  // is possible because currently text elements have only 1 LCP type kText.
-  latest_lcp_details_.largest_contentful_paint_type =
-      LargestContentfulPaintType::kText;
 }
 
 void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {

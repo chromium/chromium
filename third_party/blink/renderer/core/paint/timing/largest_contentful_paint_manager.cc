@@ -65,22 +65,10 @@ void LargestContentfulPaintManager::OnLcpMetricsForReportingChanged() {
   // Notify the browser of the updated largest contentful paint candidate so
   // that startup profiling can observe it (mirrors the FCP notification), and
   // pass the candidate's renderer-side presentation timestamp so the browser
-  // does not have to approximate the timing on IPC arrival. The candidate is
-  // the larger of the image and text records, with ties broken by the earlier
-  // paint time, matching LargestContentfulPaintCalculator's own selection in
-  // UpdateLatestLcpDetailsTypeIfNeeded().
-  const bool text_is_larger = lcp_details.largest_text_paint_size >
-                                  lcp_details.largest_image_paint_size ||
-                              (lcp_details.largest_text_paint_size ==
-                                   lcp_details.largest_image_paint_size &&
-                               lcp_details.largest_text_paint_time <
-                                   lcp_details.largest_image_paint_time);
-  const base::TimeTicks presentation_time =
-      text_is_larger ? lcp_details.largest_text_paint_time
-                     : lcp_details.largest_image_paint_time;
+  // does not have to approximate the timing on IPC arrival.
   // LocalFrame::OnLargestContentfulPaint() filters to the outermost main frame.
   if (LocalFrame* frame = window_->GetFrame()) {
-    frame->OnLargestContentfulPaint(presentation_time);
+    frame->OnLargestContentfulPaint(lcp_details.PresentationTime());
   }
 }
 

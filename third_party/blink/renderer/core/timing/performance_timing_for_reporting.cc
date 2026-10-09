@@ -22,26 +22,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
-namespace {
-std::optional<base::TimeTicks> MergeLargestContentfulPaintValues(
-    const LargestContentfulPaintDetails& timing) {
-  const uint64_t text_paint_size = timing.largest_text_paint_size;
-  const uint64_t image_paint_size = timing.largest_image_paint_size;
-  if (text_paint_size == 0 && image_paint_size == 0) {
-    return std::nullopt;
-  }
-
-  const base::TimeTicks largest_text_paint = timing.largest_text_paint_time;
-  const base::TimeTicks largest_image_paint = timing.largest_image_paint_time;
-
-  if (text_paint_size == image_paint_size) {
-    return std::min(largest_text_paint, largest_image_paint);
-  }
-  return text_paint_size > image_paint_size ? largest_text_paint
-                                            : largest_image_paint;
-}
-}  // namespace
-
 static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
                                       bool cross_origin_isolated_capability) {
   // TODO: add histograms to understand when/why |duration| is sometimes
@@ -58,34 +38,39 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
   // The largest_image_paint_time and the largest_text_paint_time are converted
   // into seconds.
   double largest_image_paint_time =
-      base::Milliseconds(
-          MonotonicTimeToIntegerMilliseconds(timing.largest_image_paint_time))
+      base::Milliseconds(MonotonicTimeToIntegerMilliseconds(
+                             timing.largest_image.presentation_time))
           .InSecondsF();
 
   double largest_text_paint_time =
-      base::Milliseconds(
-          MonotonicTimeToIntegerMilliseconds(timing.largest_text_paint_time))
+      base::Milliseconds(MonotonicTimeToIntegerMilliseconds(
+                             timing.largest_text.presentation_time))
           .InSecondsF();
 
+  const ResourceLoadTimings& load_timings =
+      timing.largest_image.resource_load_timings;
   ResourceLoadTimingsForReporting resource_load_timings = {
-      MonotonicTimeToPseudoWallTime(
-          timing.resource_load_timings.discovery_time),
-      MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_start),
-      MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_end)};
+      MonotonicTimeToPseudoWallTime(load_timings.discovery_time),
+      MonotonicTimeToPseudoWallTime(load_timings.load_start),
+      MonotonicTimeToPseudoWallTime(load_timings.load_end)};
 
+  // Specify nullopt if neither text nor image has been painted to distinguish
+  // between no value and a null value for a pending image.
   std::optional<base::TimeTicks> merged_unclamped_paint_time =
-      MergeLargestContentfulPaintValues(timing);
+      timing.largest_text.paint_size > 0 || timing.largest_image.paint_size > 0
+          ? std::make_optional(timing.PresentationTime())
+          : std::nullopt;
 
   return {largest_image_paint_time,
-          timing.largest_image_paint_size,
+          timing.largest_image.paint_size,
           resource_load_timings,
-          timing.largest_contentful_paint_type,
+          timing.Type(),
 
-          timing.largest_contentful_paint_image_bpp,
+          timing.largest_image.bpp,
           largest_text_paint_time,
-          timing.largest_text_paint_size,
+          timing.largest_text.paint_size,
 
-          timing.largest_contentful_paint_image_request_priority,
+          timing.largest_image.request_priority,
           merged_unclamped_paint_time};
 }
 
