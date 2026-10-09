@@ -28,6 +28,9 @@ namespace ttc {
 // Registering as a PCES observer enables automatic page content extraction for
 // every tab in the profile (not just the monitored one) for as long as this
 // object exists.
+//
+// Extracted page context is never emitted for a page whose URL is not
+// supported (see IsUrlSupportedForPageContext()).
 // TODO(b/555804152): Monitor for additional non-navigation, in-page changes.
 class TtcPageContextMonitor
     : public page_content_annotations::PageContentExtractionService::Observer {
@@ -59,15 +62,21 @@ class TtcPageContextMonitor
  private:
   // Requests page context for the monitored page on construction. If PCES
   // already has content cached for the page, `on_page_context_fetched_` is
-  // invoked asynchronously; otherwise an extraction is triggered and
-  // `on_page_context_fetched_` is invoked once it completes. No-op if the
-  // page's URL is not supported (see `ttc::IsUrlSupportedForPageContext`);
+  // invoked asynchronously (if the page's URL is supported); otherwise an
+  // extraction is triggered and `on_page_context_fetched_` is invoked once it
+  // completes.
   void FetchPageContext();
 
   // Returns whether `page` is the primary page of the monitored WebContents.
   bool IsMonitoredPage(const content::Page& page) const;
 
-  void NotifyPageContextFetched(PageContextResult result);
+  // Checks whether `page` has a supported URL and, if so and `page` is still
+  // the monitored page, invokes `on_page_context_fetched_` with `result`.
+  void MaybeNotifyPageContextFetched(base::WeakPtr<content::Page> page,
+                                     PageContextResult result);
+  void NotifyPageContextFetched(base::WeakPtr<content::Page> page,
+                                PageContextResult result,
+                                bool is_url_supported);
 
   // Weak because the monitored WebContents may be destroyed before the owner
   // of this object learns about it and destroys this object.
@@ -86,6 +95,8 @@ class TtcPageContextMonitor
   // Holds the posted task for delivering already-cached page content on
   // construction. Cancelled if a navigation or fresh extraction supersedes it.
   base::CancelableOnceClosure pending_cached_notification_;
+
+  base::WeakPtrFactory<TtcPageContextMonitor> weak_ptr_factory_{this};
 };
 
 }  // namespace ttc

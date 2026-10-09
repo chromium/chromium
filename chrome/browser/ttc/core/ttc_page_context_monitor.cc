@@ -18,6 +18,7 @@
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ttc {
@@ -69,13 +70,6 @@ void TtcPageContextMonitor::FetchPageContext() {
   CHECK(web_contents_);
 
   content::Page& page = web_contents_->GetPrimaryPage();
-  if (!IsUrlSupportedForPageContext(
-          page.GetMainDocument().GetLastCommittedURL())) {
-    // TODO(b/555804152): Figure out how to send specific error messages to
-    // the server.
-    return;
-  }
-
   // PCES may have a cached extraction for this page. If so, use it; if not,
   // fetch one async.
   if (std::optional<page_content_annotations::ExtractedPageContentResult>
@@ -86,8 +80,8 @@ void TtcPageContextMonitor::FetchPageContext() {
     // construction.
     CHECK(pending_cached_notification_.IsCancelled());
     pending_cached_notification_.Reset(base::BindOnce(
-        &TtcPageContextMonitor::NotifyPageContextFetched,
-        base::Unretained(this),
+        &TtcPageContextMonitor::MaybeNotifyPageContextFetched,
+        base::Unretained(this), page.GetWeakPtr(),
         BuildPageContextResult(std::move(extracted->page_content),
                                extracted->is_eligible_for_server_upload)));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -109,6 +103,7 @@ void TtcPageContextMonitor::OnPageContentReset(content::Page& current_page,
   // Deliberately not gated on IsUrlSupportedForPageContext(), so that
   // observers learn that context for the previous page no longer applies.
   pending_cached_notification_.Cancel();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   on_page_context_invalidated_.Run();
 }
 
@@ -124,26 +119,48 @@ void TtcPageContextMonitor::OnPageContentExtracted(
   if (!page_content_annotations::IsAnnotatedPageContentPtr(page_content)) {
     return;
   }
-  if (!IsUrlSupportedForPageContext(
-          page.GetMainDocument().GetLastCommittedURL())) {
-    return;
-  }
 
   pending_cached_notification_.Cancel();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   // PCES caches the eligibility of non-PDF content before notifying observers,
   // so the synchronous lookup reflects `page_content`.
-  NotifyPageContextFetched(BuildPageContextResult(
-      page_content_annotations::GetAnnotatedPageContentPtrFromPageContent(
-          std::move(page_content)),
-      extraction_service_->GetServerUploadEligibilityForPage(page).value_or(
-          false)));
+  MaybeNotifyPageContextFetched(
+      page.GetWeakPtr(),
+      BuildPageContextResult(
+          page_content_annotations::GetAnnotatedPageContentPtrFromPageContent(
+              std::move(page_content)),
+          extraction_service_->GetServerUploadEligibilityForPage(page).value_or(
+              false)));
 }
 
 bool TtcPageContextMonitor::IsMonitoredPage(const content::Page& page) const {
   return web_contents_ && &page == &web_contents_->GetPrimaryPage();
 }
 
-void TtcPageContextMonitor::NotifyPageContextFetched(PageContextResult result) {
+void TtcPageContextMonitor::MaybeNotifyPageContextFetched(
+    base::WeakPtr<content::Page> weak_page,
+    PageContextResult result) {
+  if (!weak_page || !IsMonitoredPage(*weak_page)) {
+    return;
+  }
+  IsUrlSupportedForPageContext(
+      weak_page->GetMainDocument().GetLastCommittedURL(),
+      base::BindOnce(&TtcPageContextMonitor::NotifyPageContextFetched,
+                     weak_ptr_factory_.GetWeakPtr(), weak_page,
+                     std::move(result)));
+}
+
+void TtcPageContextMonitor::NotifyPageContextFetched(
+    base::WeakPtr<content::Page> weak_page,
+    PageContextResult result,
+    bool is_url_supported) {
+  // The URL support check may complete asynchronously, by which time the
+  // monitored page may have changed.
+  if (!is_url_supported || !weak_page || !IsMonitoredPage(*weak_page)) {
+    // TODO(b/555804152): Figure out how to send specific error messages to
+    // the server.
+    return;
+  }
   on_page_context_fetched_.Run(result);
 }
 
