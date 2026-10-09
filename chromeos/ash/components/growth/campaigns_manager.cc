@@ -176,6 +176,10 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
   matcher_.SetPrefs(prefs);
 }
 
+void CampaignsManager::SetActiveAccountId(const AccountId& account_id) {
+  client_->SetActiveAccountId(account_id);
+}
+
 void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                                      bool in_oobe) {
   CAMPAIGNS_LOG(DEBUG) << "Start loading campaigns. `in_oobe`: "

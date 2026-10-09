@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
+#include "components/account_id/account_id.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 
 class ApplicationLocaleStorage;
@@ -59,6 +60,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
       growth::CampaignComponentLoadedCallback callback) override;
   void AddOnTrackerInitializedCallback(
       growth::OnTrackerInitializedCallback callback) override;
+  void SetActiveAccountId(const AccountId& account_id) override;
   bool IsDeviceInDemoMode() const override;
   bool IsFeatureAwareDevice() const override;
   bool IsAppIconOnShelf(const std::string& app_id) const override;
@@ -105,6 +107,11 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                             bool init_success);
   void UpdateConfig(const std::map<std::string, std::string>& params);
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
+
+  // The account of the active user, or an empty AccountId when there is no
+  // active user. Set by `SetActiveAccountId()` and used to resolve the per-user
+  // feature engagement tracker.
+  AccountId account_id_;
 
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
   const raw_ref<variations::VariationsService> variations_service_;

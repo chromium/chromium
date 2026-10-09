@@ -201,6 +201,25 @@ TEST_F(CampaignsManagerClientTest, LoadCampaignsComponentFailed) {
   EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
 }
 
+TEST_F(CampaignsManagerClientTest, TrackerUnavailableWithoutActiveAccount) {
+  // No active user session: the account is empty, so the feature engagement
+  // tracker is unavailable. The tracker-backed methods must no-op safely.
+  bool callback_ran = false;
+  bool init_success = true;
+  campaigns_manager_client_->AddOnTrackerInitializedCallback(
+      base::BindLambdaForTesting([&](bool success) {
+        callback_ran = true;
+        init_success = success;
+      }));
+  EXPECT_TRUE(callback_ran);
+  EXPECT_FALSE(init_success);
+
+  // Must not crash when there is no tracker.
+  campaigns_manager_client_->RecordEvent("test_event",
+                                         /*trigger_campaigns=*/false);
+  EXPECT_FALSE(campaigns_manager_client_->WouldTriggerHelpUI(/*params=*/{}));
+}
+
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0) {
   int campaign_id = 0;
   CampaignButtonId button_id = CampaignButtonId::kPrimary;

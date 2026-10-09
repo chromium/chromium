@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
+class AccountId;
 class PrefService;
 class PrefRegistrySimple;
 
@@ -58,6 +59,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void RemoveObserver(Observer* observer);
 
   void SetPrefs(PrefService* prefs);
+
+  // Sets the account of the active user, forwarded to the client so it can
+  // resolve per-user services (e.g. the feature engagement tracker). Empty when
+  // there is no active user.
+  void SetActiveAccountId(const AccountId& account_id);
 
   // Download and install campaigns. Once installed, trigger the
   // `OnCampaignsLoaded` to install campaigns and notifier observers when

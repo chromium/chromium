@@ -29,6 +29,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               AddOnTrackerInitializedCallback,
               (OnTrackerInitializedCallback callback),
               (override));
+  MOCK_METHOD(void,
+              SetActiveAccountId,
+              (const AccountId& account_id),
+              (override));
   MOCK_METHOD(bool, IsDeviceInDemoMode, (), (const, override));
   MOCK_METHOD(bool, IsFeatureAwareDevice, (), (const, override));
   MOCK_METHOD(bool,

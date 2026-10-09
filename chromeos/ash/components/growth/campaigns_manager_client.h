@@ -15,6 +15,8 @@
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 
+class AccountId;
+
 namespace base {
 class Version;
 }  // namespace base
@@ -43,6 +45,11 @@ class CampaignsManagerClient {
 
   virtual void AddOnTrackerInitializedCallback(
       OnTrackerInitializedCallback callback) = 0;
+
+  // Sets the account of the active user so the client can resolve per-user
+  // services (e.g. the feature engagement tracker). Empty when there is no
+  // active user.
+  virtual void SetActiveAccountId(const AccountId& account_id) = 0;
 
   // True if the device is in demo mode.
   virtual bool IsDeviceInDemoMode() const = 0;

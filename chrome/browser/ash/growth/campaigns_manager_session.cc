@@ -330,9 +330,12 @@ void SetCampaignManagerPrefService(Profile* profile) {
 
   if (!profile) {
     campaigns_manager->SetPrefs(nullptr);
+    campaigns_manager->SetActiveAccountId(EmptyAccountId());
     return;
   }
   campaigns_manager->SetPrefs(profile->GetPrefs());
+  campaigns_manager->SetActiveAccountId(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)));
 }
 
 }  // namespace

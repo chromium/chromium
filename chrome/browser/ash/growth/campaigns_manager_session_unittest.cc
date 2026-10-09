@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -112,6 +113,10 @@ class CampaignsManagerSessionTest : public testing::Test {
             base::BindRepeating(
                 &CampaignsManagerSessionTest::CreateOwnerSettingsServiceAsh,
                 base::Unretained(this))}});
+
+    // Annotate the profile with the account so that AnnotatedAccountId::Get()
+    // resolves in CampaignsManagerSession, mirroring a real user session.
+    ash::AnnotatedAccountId::Set(profile, account_id);
 
     owner_settings_service_ash_ =
         ash::OwnerSettingsServiceAshFactory::GetInstance()
