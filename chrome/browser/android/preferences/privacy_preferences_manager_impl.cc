@@ -7,11 +7,14 @@
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/universal_optout/universal_optout_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/universal_optout/universal_optout_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PrivacyPreferencesManagerImpl_jni.h"
@@ -39,6 +42,14 @@ static bool
 JNI_PrivacyPreferencesManagerImpl_ShouldUseMetricsChoiceRestructure() {
   return metrics::MetricsReportingChoiceService::
       ShouldUseMetricsConsentRestructure();
+}
+
+static bool JNI_PrivacyPreferencesManagerImpl_IsUniversalOptOutEligible(
+    JNIEnv* env,
+    Profile* profile) {
+  universal_optout::UniversalOptOutService* service =
+      universal_optout::UniversalOptOutServiceFactory::GetForProfile(profile);
+  return service && service->IsEligible();
 }
 
 DEFINE_JNI(PrivacyPreferencesManagerImpl)

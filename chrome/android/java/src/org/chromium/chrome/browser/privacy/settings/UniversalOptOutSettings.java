@@ -106,7 +106,7 @@ public class UniversalOptOutSettings extends ChromeBaseSettingsFragment {
 
         PrefService userPrefs = UserPrefs.get(profile);
         return userPrefs.getBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED)
-                || userPrefs.getBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE);
+                || PrivacyPreferencesManagerImpl.getInstance().isUniversalOptOutEligible(profile);
     }
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

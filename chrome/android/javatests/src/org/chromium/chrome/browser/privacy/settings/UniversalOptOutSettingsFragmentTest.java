@@ -13,6 +13,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.text.Spanned;
@@ -75,10 +77,12 @@ public class UniversalOptOutSettingsFragmentTest {
     private UserActionTester mActionTester;
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncherMock;
+    @Mock private PrivacyPreferencesManagerImpl.Natives mPrivacyPreferencesManagerJniMock;
 
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(mPrivacyPreferencesManagerJniMock);
         // Assume default is false, but clear just in case.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -201,11 +205,11 @@ public class UniversalOptOutSettingsFragmentTest {
         ChromeFeatureList.UNIVERSAL_OPT_OUT
     })
     public void testSearchableIndex_RemovedWhenNonEligible() {
+        setUniversalOptOutEligibleForTesting(false);
         var indexProvider = UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
-                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
                     indexProvider.updateDynamicPreferences(
                             mSettingsActivityTestRule.getActivity(),
                             mSearchIndexDataMock,
@@ -220,6 +224,27 @@ public class UniversalOptOutSettingsFragmentTest {
                 .removeEntry(
                         indexProvider.getUniqueId(
                                 UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS,
+        ChromeFeatureList.UNIVERSAL_OPT_OUT
+    })
+    public void testSearchableIndex_KeptWhenEligible() {
+        setUniversalOptOutEligibleForTesting(true);
+        var indexProvider = UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            ProfileManager.getLastUsedRegularProfile());
+                });
+
+        verify(mSearchIndexDataMock, never()).removeEntry(any());
     }
 
     @Test
@@ -243,6 +268,10 @@ public class UniversalOptOutSettingsFragmentTest {
                 .removeEntry(
                         indexProvider.getUniqueId(
                                 UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
+    }
+
+    private void setUniversalOptOutEligibleForTesting(boolean eligible) {
+        doReturn(eligible).when(mPrivacyPreferencesManagerJniMock).isUniversalOptOutEligible(any());
     }
 
     private ViewAction clickOnLearnMoreLink() {

@@ -19,6 +19,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
@@ -130,6 +132,7 @@ public class PrivacySettingsFragmentTest {
     @Mock private SettingsNavigation mSettingsNavigation;
 
     @Mock private SettingsIndexData mSearchIndexDataMock;
+    @Mock private PrivacyPreferencesManagerImpl.Natives mPrivacyPreferencesManagerJniMock;
 
     /**
      * Waits until the settings UI is ready to be captured by a render test.
@@ -198,6 +201,7 @@ public class PrivacySettingsFragmentTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActionTester = new UserActionTester();
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(mPrivacyPreferencesManagerJniMock);
     }
 
     @After
@@ -228,7 +232,6 @@ public class PrivacySettingsFragmentTest {
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             ContentSetting.DEFAULT);
                     getPrefService().clearPref(Pref.UNIVERSAL_OPT_OUT_ENABLED);
-                    getPrefService().clearPref(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE);
                 });
     }
 
@@ -615,10 +618,10 @@ public class PrivacySettingsFragmentTest {
         ChromeFeatureList.UNIVERSAL_OPT_OUT
     })
     public void testUniversalOptOutSettingsVisible_EligibleAndTurnedOn() {
+        setUniversalOptOutEligibleForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, true);
-                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, true);
                 });
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -637,10 +640,10 @@ public class PrivacySettingsFragmentTest {
         ChromeFeatureList.UNIVERSAL_OPT_OUT
     })
     public void testUniversalOptOutSettingsVisible_EligibleAndTurnedOff() {
+        setUniversalOptOutEligibleForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
-                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, true);
                 });
 
         var histogram =
@@ -660,10 +663,10 @@ public class PrivacySettingsFragmentTest {
         ChromeFeatureList.UNIVERSAL_OPT_OUT
     })
     public void testUniversalOptOutSettingsVisible_NotEligibleAndTurnedOn() {
+        setUniversalOptOutEligibleForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, true);
-                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
                 });
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -682,10 +685,10 @@ public class PrivacySettingsFragmentTest {
         ChromeFeatureList.UNIVERSAL_OPT_OUT
     })
     public void testUniversalOptOutSettingsHidden_NotEligibleAndTurnedOff() {
+        setUniversalOptOutEligibleForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
-                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
                 });
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -700,6 +703,7 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     @DisableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
     public void testUniversalOptOutSettingsHidden_FeatureDisabled() {
+        setUniversalOptOutEligibleForTesting(true);
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Privacy.UniversalOptOut.SettingsVisibility", false);
@@ -720,11 +724,11 @@ public class PrivacySettingsFragmentTest {
         ChromeFeatureList.UNIVERSAL_OPT_OUT
     })
     public void testSearchableIndex_UniversalOptOutSettings_RemovedWhenNonEligible() {
+        setUniversalOptOutEligibleForTesting(false);
         var indexProvider = PrivacySettings.SEARCH_INDEX_DATA_PROVIDER;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
-                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
                     indexProvider.updateDynamicPreferences(
                             mSettingsActivityTestRule.getActivity(),
                             mSearchIndexDataMock,
@@ -732,6 +736,28 @@ public class PrivacySettingsFragmentTest {
                 });
 
         verify(mSearchIndexDataMock)
+                .removeEntry(indexProvider.getUniqueId(PrivacySettings.PREF_UNIVERSAL_OPT_OUT));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS,
+        ChromeFeatureList.UNIVERSAL_OPT_OUT
+    })
+    public void testSearchableIndex_UniversalOptOutSettings_KeptWhenEligible() {
+        setUniversalOptOutEligibleForTesting(true);
+        var indexProvider = PrivacySettings.SEARCH_INDEX_DATA_PROVIDER;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            ProfileManager.getLastUsedRegularProfile());
+                });
+
+        verify(mSearchIndexDataMock, never())
                 .removeEntry(indexProvider.getUniqueId(PrivacySettings.PREF_UNIVERSAL_OPT_OUT));
     }
 
@@ -750,5 +776,9 @@ public class PrivacySettingsFragmentTest {
 
         verify(mSearchIndexDataMock)
                 .removeEntry(indexProvider.getUniqueId(PrivacySettings.PREF_UNIVERSAL_OPT_OUT));
+    }
+
+    private void setUniversalOptOutEligibleForTesting(boolean eligible) {
+        doReturn(eligible).when(mPrivacyPreferencesManagerJniMock).isUniversalOptOutEligible(any());
     }
 }
