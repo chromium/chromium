@@ -2068,8 +2068,6 @@ void NavigationURLLoaderImpl::ParseHeaders(
   // - Network
   // - ServiceWorker
   // - WebUI
-  base::UmaHistogramBoolean("Navigation.URLLoader.InMainPath",
-                            static_cast<bool>(head->parsed_headers));
   if (head->parsed_headers) {
 #ifndef NDEBUG
     // In debug mode, force reparsing the headers and check that they match.
