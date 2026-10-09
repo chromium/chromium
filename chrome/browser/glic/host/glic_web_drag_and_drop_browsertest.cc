@@ -208,17 +208,8 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
                                       1);
 }
 
-// Web-to-Glic drag-and-drop OSExchangeData custom data simulation is supported
-// on macOS, Windows, and ChromeOS, and disabled on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_testWebToGlicDragStripsDomDropPayload \
-  DISABLED_testWebToGlicDragStripsDomDropPayload
-#else
-#define MAYBE_testWebToGlicDragStripsDomDropPayload \
-  testWebToGlicDragStripsDomDropPayload
-#endif
 IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
-                       MAYBE_testWebToGlicDragStripsDomDropPayload) {
+                       testWebToGlicDragStripsDomDropPayload) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
   Host* glic_host = &glic_instance->host();
