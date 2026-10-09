@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -21,7 +20,6 @@
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -125,7 +123,6 @@ void LargestContentfulPaintCalculator::ProcessLcpCandidates(
   // ICP processes its own candidates so it can group by context.
   CHECK(delegate_->IsHardNavigation());
 
-  PaintTimingRecord* largest_removed_record = nullptr;
   for (const auto& record : records) {
     // Filter out anything that wasn't a valid candidate for LCP but might have
     // been valid for other PaintTiming clients.
@@ -139,20 +136,9 @@ void LargestContentfulPaintCalculator::ProcessLcpCandidates(
     // candidates since they would have been shown to the user, and since it
     // better matches the LCP spec.
     if (record->WasNodeRemoved()) {
-      if (record->IsEffectiveSizeLargerThan(largest_removed_record)) {
-        largest_removed_record = record.Get();
-      }
       continue;
     }
     candidates->MaybeUpdateCandidate(record.Get());
-  }
-  if (largest_removed_record) {
-    // Only record the UseCounter if the removed record was also larger than the
-    // candidate for this frame.
-    if (largest_removed_record->IsEffectiveSizeLargerThan(
-            candidates->Candidate<T>())) {
-      MaybeRecordRemovedCandidateUseCounter(*largest_removed_record);
-    }
   }
 }
 
@@ -530,28 +516,6 @@ ImageRecord* LargestContentfulPaintCalculator::LargestPresentedOrPendingImage()
     return largest_pending_image_.Get();
   }
   return largest_presented_image_.Get();
-}
-
-void LargestContentfulPaintCalculator::MaybeRecordRemovedCandidateUseCounter(
-    const PaintTimingRecord& record) {
-  if (record.IsTextRecord()) {
-    // This might not end up affecting metrics, but it could, and it could be
-    // emitted to performance timeline (depending on the largest image).
-    if (record.IsEffectiveSizeLargerThan(largest_presented_text_)) {
-      UseCounter::Count(window_performance_->DomWindow(),
-                        WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
-    }
-  } else {
-    // Use `LargestPresentedOrPendingImage()` instead of
-    // `largest_presented_image_` since that determines the image candidate for
-    // metrics. This might not end up affecting metrics, but it could, and it
-    // could be emitted to performance timeline (depending on the largest text).
-    ImageRecord* largest_image = LargestPresentedOrPendingImage();
-    if (record.IsEffectiveSizeLargerThan(largest_image)) {
-      UseCounter::Count(window_performance_->DomWindow(),
-                        WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
-    }
-  }
 }
 
 LargestContentfulPaintCalculator::LcpCandidates::LcpCandidates() = default;

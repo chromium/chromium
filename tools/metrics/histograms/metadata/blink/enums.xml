@@ -6514,7 +6514,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5717" label="AnimationSvgCompositedTypes"/>
   <int value="5718" label="AttributionReportingXhr"/>
   <int value="5719" label="DidUseServerHttpAuthOnCrossPartitionRequest"/>
-  <int value="5720" label="LcpCandidateRemovedWhilePaintTimePending"/>
+  <int value="5720" label="OBSOLETE_LcpCandidateRemovedWhilePaintTimePending"/>
   <int value="5721" label="GetBBoxForElementWithZeroWidthOrHeight"/>
   <int value="5722" label="GetBBoxForNestedSVGElementWithZeroWidthOrHeight"/>
   <int value="5723" label="OBSOLETE_kXMLExternalResourceLoadEntitiesOnly"/>
