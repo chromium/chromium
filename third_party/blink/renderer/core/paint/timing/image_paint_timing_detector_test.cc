@@ -1327,8 +1327,6 @@ TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestPaintedImageSetForFirstVideoFrame) {
-  ScopedReportFirstFrameTimeAsRenderTimeForTest
-      scoped_enable_use_first_frame_time(true);
   SetMainFrameBodyContent(R"HTML(
     <video id="target" width=300 height=200></video>
   )HTML");
@@ -1347,9 +1345,6 @@ TEST_P(ImagePaintTimingDetectorTest, LargestPaintedImageSetForFirstVideoFrame) {
   video_timing->SetUrl(KURL("http://test.com/video"));
   video_timing->SetContentSizeForEntropy(1024 * 1024);
 
-  // Since ReportFirstFrameTimeAsRenderTime is enabled, this should create an
-  // `ImageRecord` and set its paint and presentation time. But the image will
-  // only be pending until the next animation frame.
   SimulateFirstVideoFrame(video_element, video_timing, 300, 100);
   EXPECT_EQ(LcpCandidateCount(), 0u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 0u);

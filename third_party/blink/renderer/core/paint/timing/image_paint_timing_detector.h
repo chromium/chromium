@@ -140,10 +140,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // collections.
   void RemoveRecord(MediaRecordIdHash);
 
-  // Sets the first animated frame time for the given `ImageRecord` based on the
-  // record's `MediaTiming`, which must be a VideoTiming.
-  void SetVideoFirstAnimatedFrameTime(ImageRecord*);
-
   base::TimeTicks LoadTime(MediaRecordIdHash) const;
 
   void ForEachPaintTimingClient(base::FunctionRef<void(PaintTimingClient*)>);

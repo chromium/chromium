@@ -257,7 +257,7 @@ void ImagePaintTimingDetector::RecordImage(
   // that for filtering.
   record->SetIsSufficientlyLoadedForReporting();
   if (is_video) {
-    SetVideoFirstAnimatedFrameTime(record);
+    record->SetFirstAnimatedFrameTime(media_timing.GetFirstVideoFrameTime());
   } else {
     record->SetLoadTime(style_image ? LoadTime(*style_image)
                                     : LoadTime(record_id_hash));
@@ -316,30 +316,6 @@ void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
 
   CHECK(record->IsSufficientlyLoadedForReporting());
   images_queued_for_paint_time_.push_back(record);
-}
-
-void ImagePaintTimingDetector::SetVideoFirstAnimatedFrameTime(
-    ImageRecord* record) {
-  CHECK(record->GetMediaTiming());
-  CHECK(!record->GetMediaTiming()->GetFirstVideoFrameTime().is_null(),
-        base::NotFatalUntil::M156);
-  record->SetFirstAnimatedFrameTime(
-      record->GetMediaTiming()->GetFirstVideoFrameTime());
-
-  // Without this feature, the paint time will be set based on the next frame.
-  if (!RuntimeEnabledFeatures::ReportFirstFrameTimeAsRenderTimeEnabled()) {
-    return;
-  }
-  base::TimeTicks paint_time = record->FirstAnimatedFrameTime();
-  // TODO(crbug.com/383568320): this timestamp it not specified, and it's
-  // not clear how it should be coarsened.
-  LocalDOMWindow* window =
-      paint_timing_detector_->GetPaintTiming().GetDocument()->domWindow();
-  DOMHighResTimeStamp dom_timestamp =
-      DOMWindowPerformance::performance(CHECK_DEREF(window))
-          ->MonotonicTimeToDOMHighResTimeStamp(paint_time);
-  record->SetPaintTime(paint_time,
-                       DOMPaintTimingInfo{dom_timestamp, dom_timestamp});
 }
 
 void ImagePaintTimingDetector::RemoveRecord(MediaRecordIdHash record_id_hash) {
