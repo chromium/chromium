@@ -1403,6 +1403,18 @@ bool BrowserAutofillManager::TryToShowTouchToFillSuggestions(
 
 bool BrowserAutofillManager::MaybeShowPrivateInferenceNotice(
     base::span<const Suggestion> autofill_ai_suggestions) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/555072393): Remove the Android message in
+  // `ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice()` once
+  // `kAutofillAiPrivateInferenceNoticeBottomSheet` is launched.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiPrivateInferenceNoticeBottomSheet)) {
+    // The notice is shown in the Touch To Fill bottom sheet instead, see
+    // `TouchToFillAutofillDelegate::TryToShowTouchToFill()`.
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (!driver().CanShowAutofillUi()) {
     return false;
   }

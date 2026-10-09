@@ -542,9 +542,12 @@ class BrowserAutofillManager : public AutofillManager {
       const std::vector<Suggestion>& suggestions,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Shows the private inference notice on Android, if the list of suggestions
-  // has a private inference notice suggestion. The notice is shows as an
-  // message on android, unlike Desktop, where it's shown as a suggestion.
+  // Shows the private inference notice on mobile if `autofill_ai_suggestions`
+  // contains a private inference notice suggestion. Desktop shows the notice
+  // as a suggestion instead.
+  // On Android, if `features::kAutofillAiPrivateInferenceNoticeBottomSheet` is
+  // enabled, the notice is shown in the Touch To Fill bottom sheet instead and
+  // this is a no-op.
   bool MaybeShowPrivateInferenceNotice(
       base::span<const Suggestion> autofill_ai_suggestions);
 

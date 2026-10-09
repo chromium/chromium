@@ -6201,6 +6201,13 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 // eligible.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        PrivateInferenceNotice_DoesNotShowIfAutofillUiCantBeShown) {
+#if BUILDFLAG(IS_ANDROID)
+  // Disable the bottom sheet, so that the message is suppressed by
+  // `CanShowAutofillUi()` and not by the bottom sheet feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiPrivateInferenceNoticeBottomSheet);
+#endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(autofill_driver(), CanShowAutofillUi)
       .WillRepeatedly(Return(false));
   SeeForm(/*may_run_model=*/false);
@@ -6226,6 +6233,12 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 // eligible.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        TouchToFillAutofillSuggestion_DoesNotShowIfNotEligible) {
+#if BUILDFLAG(IS_ANDROID)
+  // The Android message is only shown if the bottom sheet is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiPrivateInferenceNoticeBottomSheet);
+#endif  // BUILDFLAG(IS_ANDROID)
   SeeForm(/*may_run_model=*/false);
 
   std::vector<Suggestion> suggestions = {
@@ -6244,6 +6257,31 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that the private inference notice is never shown as an Android message
+// if the bottom sheet feature is enabled, even if Touch To Fill isn't shown.
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
+       PrivateInferenceNotice_DoesNotShowMessageIfBottomSheetFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiPrivateInferenceNoticeBottomSheet);
+  SeeForm(/*may_run_model=*/false);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
+
+  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice).Times(0);
+  TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
+                       /*form_element_was_clicked=*/true);
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice)));
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
