@@ -10,11 +10,15 @@ body {
 <script>
   // Create and attach the embed element. Called from the browser test with the
   // content_id. Optional embedId can be provided to give the embed an ID
-  // attribute for later targeting.
-  function createEmbed(contentId, embedId) {
+  // attribute for later targeting. Set allowPinchZoom to add the corresponding
+  // boolean attribute.
+  function createEmbed(contentId, embedId, allowPinchZoom = false) {
     const embed = document.createElement('embed');
     embed.setAttribute('data-content-id', contentId);
     embed.setAttribute('type', 'application/x-chromium-surface-embed');
+    if (allowPinchZoom) {
+      embed.setAttribute('data-allow-pinch-zoom', '');
+    }
     embed.style.position = 'absolute';
     embed.style.left = '10px';
     const existingEmbeds = document.querySelectorAll('embed').length;

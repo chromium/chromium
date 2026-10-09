@@ -89,8 +89,13 @@ Content Security Policy setup. After completing that setup, include an
 
 ```html
 <embed type="application/x-chromium-surface-embed"
-data-content-id="[content-id]">
+data-content-id="[content-id]"
+data-allow-pinch-zoom>
 ```
 
 The `data-content-id` corresponds to a `surface_embed::SurfaceEmbedHandle` ID,
-which identifies the `WebContents` to be embedded.
+which identifies the `WebContents` to be embedded. The optional
+`data-allow-pinch-zoom` boolean attribute makes touchscreen and touchpad pinch
+gestures scale the embedded `WebContents` instead of the embedding
+`WebContents`. See [USER_GUIDE.md](./USER_GUIDE.md) for attribute mutation
+semantics.

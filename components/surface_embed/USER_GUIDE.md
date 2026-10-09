@@ -113,3 +113,10 @@ which is `"application/x-chromium-surface-embed"`.
 * **`data-content-id`**: Must contain the serialized string representation of
 the `surface_embed::SurfaceEmbedHandle` token corresponding to the nested
 `WebContents` (the `content_id` retrieved in Section 1.3).
+* **`data-allow-pinch-zoom`**: Optional boolean attribute. When present,
+touchscreen and touchpad pinch gestures that start over the embedded content
+scale the embedded `WebContents`; when absent, they scale the embedding
+`WebContents`. Adding or removing the attribute affects future pinch sequences.
+A pinch sequence already in progress keeps the target selected when that
+sequence began. As with other HTML boolean attributes, the value is ignored, so
+`data-allow-pinch-zoom="false"` still enables child pinch zoom.

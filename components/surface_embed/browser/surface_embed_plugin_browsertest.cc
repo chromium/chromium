@@ -500,9 +500,55 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagCreatesPlugin) {
   ASSERT_EQ(kSingleEmbedCount, GetHostCount());
   SurfaceEmbedHost* host = GetHost(0);
   ASSERT_NE(nullptr, host);
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+  EXPECT_EQ(content::SurfaceEmbedConnector::PinchGestureMode::
+                kDelegateToParentWebContents,
+            connector->GetPinchGestureModeForTesting());
 
   // Expect the stub plugin code to render a red square.
   EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       AllowPinchZoomAttributeUpdatesConnectorMode) {
+  auto child_contents = SetupHarnessAndChild();
+  SurfaceEmbedHandle* embedded_handle =
+      SurfaceEmbedHandle::CreateForWebContents(child_contents.get());
+  ASSERT_NE(nullptr, embedded_handle);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("createEmbed($1, 'pinch-zoom-embed', true);",
+                         embedded_handle->id().ToString())));
+  ASSERT_TRUE(WaitForHostAttachment(kSingleEmbedCount));
+
+  ASSERT_EQ(kSingleEmbedCount, GetHostCount());
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+  EXPECT_EQ(
+      content::SurfaceEmbedConnector::PinchGestureMode::kScaleChildWebContents,
+      connector->GetPinchGestureModeForTesting());
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.getElementById('pinch-zoom-embed')"
+                              ".removeAttribute('data-allow-pinch-zoom');"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetPinchGestureModeForTesting() ==
+           content::SurfaceEmbedConnector::PinchGestureMode::
+               kDelegateToParentWebContents;
+  }));
+
+  ASSERT_TRUE(
+      content::ExecJs(web_contents(),
+                      "document.getElementById('pinch-zoom-embed')"
+                      ".setAttribute('data-allow-pinch-zoom', 'false');"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetPinchGestureModeForTesting() ==
+           content::SurfaceEmbedConnector::PinchGestureMode::
+               kScaleChildWebContents;
+  }));
+  EXPECT_EQ(connector, child_contents->GetSurfaceEmbedConnector());
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,

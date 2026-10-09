@@ -112,7 +112,8 @@ void SurfaceEmbedHost::SetSurfaceEmbed(
 }
 
 void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
-                                       bool is_embed_element_focused) {
+                                       bool is_embed_element_focused,
+                                       bool allow_pinch_zoom) {
   has_received_attach_connector_for_testing_ = true;
 
   // Should never call attach without having a valid SurfaceEmbed remote already
@@ -154,8 +155,14 @@ void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
   }
 
   child_contents_ = web_contents_to_attach->GetWeakPtr();
-  content::SurfaceEmbedConnector::Attach(
-      web_contents_to_attach, &collection_->render_frame_host(), this);
+  const auto pinch_gesture_mode =
+      allow_pinch_zoom ? content::SurfaceEmbedConnector::PinchGestureMode::
+                             kScaleChildWebContents
+                       : content::SurfaceEmbedConnector::PinchGestureMode::
+                             kDelegateToParentWebContents;
+  content::SurfaceEmbedConnector::Attach(web_contents_to_attach,
+                                         &collection_->render_frame_host(),
+                                         this, pinch_gesture_mode);
 
   // If accessibility info was received before the connector was attached,
   // pass it to the connector now.
@@ -166,6 +173,18 @@ void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
   if (is_embed_element_focused) {
     FocusChildWebContents();
   }
+}
+
+void SurfaceEmbedHost::SetAllowPinchZoom(bool allow_pinch_zoom) {
+  content::SurfaceEmbedConnector* connector = GetConnector();
+  if (!connector) {
+    return;
+  }
+  connector->SetPinchGestureMode(
+      allow_pinch_zoom ? content::SurfaceEmbedConnector::PinchGestureMode::
+                             kScaleChildWebContents
+                       : content::SurfaceEmbedConnector::PinchGestureMode::
+                             kDelegateToParentWebContents);
 }
 
 void SurfaceEmbedHost::FocusChildWebContents() {

@@ -11,7 +11,8 @@ export function getHtml(this: WebviewElement) {
 ${this.enableSurfaceEmbed ? html`
   ${this.guestId ? html`
     <embed class="content" type="application/x-chromium-surface-embed"
-        data-content-id="${this.guestId}">
+        data-content-id="${this.guestId}"
+        ?data-allow-pinch-zoom="${this.allowPinchZoom}">
   ` : html``}
 ` : html`
   <iframe class="content"></iframe>

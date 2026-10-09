@@ -70,8 +70,15 @@ interface SurfaceEmbedHost {
   // Attaches the child content identified by `content_id` to the parent.
   // `is_embed_element_focused` indicates whether the <embed> element currently
   // has focus in the parent document.
+  // `allow_pinch_zoom` indicates whether touchscreen pinch gestures should
+  // scale the child WebContents instead of the embedding WebContents.
   AttachConnector(mojo_base.mojom.UnguessableToken content_id,
-                  bool is_embed_element_focused);
+                  bool is_embed_element_focused,
+                  bool allow_pinch_zoom);
+
+  // Updates whether future touchscreen pinch gestures should scale the child
+  // WebContents. A pinch sequence already in progress keeps its current target.
+  SetAllowPinchZoom(bool allow_pinch_zoom);
 
   // Detaches the currently attached child content, if any.
   DetachConnector();
@@ -104,4 +111,3 @@ interface SurfaceEmbedHost {
   // if accessibility is not yet enabled.
   SetParentAccessibilityInfo(int32 ax_node_id);
 };
-
