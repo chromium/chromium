@@ -23,6 +23,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "This class tests activity restart behavior and thus cannot be batched.")
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/571926766
 public class TabletPhoneLayoutChangeTest {
     private static final long TIMEOUT_MS = 10000;
 
