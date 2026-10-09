@@ -18,7 +18,7 @@ import os
 import re
 import sys
 
-USE_PYTHON_3 = f'This script will only run under python3.'
+USE_PYTHON_3 = 'This script will only run under python3.'
 
 # e.g. '  Section contains the following exports for CRYPT32.dll'
 RE_NEWMOD = re.compile(

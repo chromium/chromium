@@ -10,7 +10,7 @@ https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
 for the rules we're checking against here.
 """
 
-import os
+import os  # noqa: F401
 
 
 def GetPathsToPrepend(input_api):

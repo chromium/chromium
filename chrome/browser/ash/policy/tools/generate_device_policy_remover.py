@@ -51,8 +51,8 @@ def main():
 
   # Python 3 doesn't expose a global `reload`.
   if sys.version_info.major == 2:
-    reload(google)
-    reload(google.protobuf)
+    reload(google)  # noqa: F821
+    reload(google.protobuf)  # noqa: F821
   else:
     import importlib
 

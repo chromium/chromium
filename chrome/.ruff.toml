@@ -2,26 +2,30 @@ line-length = 80
 indent-width = 2
 extend-exclude = [
   "*_pb2.py",
-  # Legacy Python 2 scripts (either fail Python 3 syntax parsing or use Python 2
-  # constructs like `print >> sys.stderr`, `BaseHTTPServer`, `raw_input`, or `.iteritems()`).
+  "third_party/*",
   "browser/ash/power/ml/smart_dim/print_example_preprocessor_config.py",
   "browser/offline_pages/android/evaluation/run_offline_page_evaluation_test.py",
   "browser/preloading/prefetch/no_state_prefetch/tools/prerender_test_server/prerender_test_server.py",
   "browser/resources/accessibility/tools/generate_manifest.py",
   "browser/resources/chromeos/accessibility/tools/print_js_deps.py",
+  "installer/linux/debian/deb_version.py",
+  "installer/linux/debian/package_version_interval.py",
+  "test/chromeos/autotest/files/*",
   "test/chromeos/utilities/vm_setup_state.py",
   "tools/build/appid.py",
   "tools/build/mac/archive_symbols.py",
   "tools/build/make_zip.py",
+  "tools/build/win/makecab_test.py",
   "tools/history-viz.py",
   "tools/inconsistent-eol.py",
   "tools/webforms_aggregator.py",
   "tools/webforms_aggregator_tests.py",
   "tools/webforms_aggregator_unittests.py",
   "tools/webforms_extractor.py",
-  # Uses "The Chromium OS Authors" copyright headers.
-  "test/chromeos/autotest/files/*",
 ]
+
+[lint]
+unfixable = ["F401"]
 
 [format]
 quote-style = "preserve"

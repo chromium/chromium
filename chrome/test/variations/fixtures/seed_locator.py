@@ -10,7 +10,7 @@ import pytest
 from chrome.test.variations.test_utils import TEST_DATA_DIR
 from chrome.test.variations.fixtures.result_sink import AddArtifact
 from enum import Enum
-from typing import Callable, Mapping
+from typing import Callable, Mapping  # noqa: F401
 
 _DEFAULT_SEED_PATH = os.path.join(TEST_DATA_DIR, 'variations_seed.json')
 

@@ -137,7 +137,7 @@ class DriverFactory:
     Returns:
       An instance of webdriver.Remote
     """
-    raise NotImplemented
+    raise NotImplementedError
 
   def close(self):
     """Cleans up anything that is created during the session."""

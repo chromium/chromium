@@ -8,7 +8,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import os
+import os  # noqa: F401
 import re
 from xml.dom import minidom
 
@@ -22,7 +22,7 @@ def _CheckNoProductNameInGeneratedResources(input_api, output_api):
   """
 
   problems = []
-  filename_filter = lambda x: x.LocalPath().endswith(('.grd', '.grdp'))
+  filename_filter = lambda x: x.LocalPath().endswith(('.grd', '.grdp'))  # noqa: E731
 
   for f, line_num, line in input_api.RightHandSideLines(filename_filter):
     if (
@@ -55,7 +55,7 @@ def _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api):
   STRICT = False
 
   brand_word = re.compile(r'(?<![A-Za-z])(Chrome|Chromium)(?![A-Za-z])')
-  filename_filter = lambda af: af.LocalPath().endswith(
+  filename_filter = lambda af: af.LocalPath().endswith(  # noqa: E731
     "generated_resources.grd"
   )
 
@@ -145,10 +145,10 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
   """
 
   problems = []
-  filename_filter = lambda x: x.LocalPath().endswith("generated_resources.grd")
+  filename_filter = lambda x: x.LocalPath().endswith("generated_resources.grd")  # noqa: E731
 
   for f, line_num, line in input_api.RightHandSideLines(filename_filter):
-    if "name=\"IDS_FLAGS_" in line and not "translateable=\"false\"" in line:
+    if "name=\"IDS_FLAGS_" in line and "translateable=\"false\"" not in line:
       problems.append(
         "Missing translateable=\"false\" in %s:%d" % (f.LocalPath(), line_num)
       )
@@ -190,7 +190,7 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
     (
       af
       for af in input_api.change.AffectedFiles()
-      if af.AbsoluteLocalPath() == CHROMEOS_STRINGS_PATH
+      if af.AbsoluteLocalPath() == CHROMEOS_STRINGS_PATH  # noqa: F821
     ),
     None,
   )
@@ -210,10 +210,10 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
     # First upload, notify about string changes.
     return [
       output_api.PresubmitNotifyResult(
-        UPDATE_TEXT_VERSION_MESSAGE % "v<GERRIT_CL_NUMBER>"
+        UPDATE_TEXT_VERSION_MESSAGE % "v<GERRIT_CL_NUMBER>"  # noqa: F821
       ),
       output_api.PresubmitNotifyResult(
-        UPDATE_INVALIDATION_VERSION_MESSAGE % "iv<GERRIT_CL_NUMBER>"
+        UPDATE_INVALIDATION_VERSION_MESSAGE % "iv<GERRIT_CL_NUMBER>"  # noqa: F821
       ),
     ]
 
@@ -224,7 +224,7 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
     (
       af
       for af in input_api.change.AffectedFiles()
-      if af.AbsoluteLocalPath() == TEXT_VERSION_PATH
+      if af.AbsoluteLocalPath() == TEXT_VERSION_PATH  # noqa: F821
     ),
     None,
   )
@@ -234,7 +234,7 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
     text_version_file.NewContents()
   ):
     result.append(
-      output_api.PresubmitError(UPDATE_TEXT_VERSION_MESSAGE % new_text_version)
+      output_api.PresubmitError(UPDATE_TEXT_VERSION_MESSAGE % new_text_version)  # noqa: F821
     )
   # Check if invalidation version was updated.
   if text_version_file is None or new_invalidation_version not in '\n'.join(
@@ -242,7 +242,7 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
   ):
     result.append(
       output_api.PresubmitNotifyResult(
-        UPDATE_INVALIDATION_VERSION_MESSAGE % new_invalidation_version
+        UPDATE_INVALIDATION_VERSION_MESSAGE % new_invalidation_version  # noqa: F821
       )
     )
   return result

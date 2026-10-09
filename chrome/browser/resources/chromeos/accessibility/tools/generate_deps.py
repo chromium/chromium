@@ -8,8 +8,8 @@ Closure style provide/require calls.
 '''
 
 import optparse
-import os
-import sys
+import os  # noqa: F401
+import sys  # noqa: F401
 
 from jsbundler import PathRewriter
 
@@ -21,7 +21,7 @@ def _HasSameContent(filename, content):
   try:
     with open(filename) as file:
       return file.read() == content
-  except:
+  except:  # noqa: E722
     # Ignore all errors and fall back on a safe bet.
     return False
 

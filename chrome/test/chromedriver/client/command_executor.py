@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
 sys.path.insert(1, _PARENT_DIR)
-import util
+import util  # noqa: E402, F401
 
 sys.path.remove(_PARENT_DIR)
 

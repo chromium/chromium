@@ -145,7 +145,7 @@ def _CheckReIgnoreComment(
     return False
 
   problems = []
-  sources = lambda x: input_api.FilterSourceFile(
+  sources = lambda x: input_api.FilterSourceFile(  # noqa: E731
     x, files_to_check=(r'.*\.java$',), files_to_skip=files_to_skip
   )
   for f in input_api.AffectedFiles(include_deletes=False, file_filter=sources):

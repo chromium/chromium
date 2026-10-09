@@ -11,8 +11,8 @@ import PRESUBMIT
 
 file_dir_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(file_dir_path, '..', '..', '..', '..'))
-from PRESUBMIT_test_mocks import MockAffectedFile
-from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
+from PRESUBMIT_test_mocks import MockAffectedFile  # noqa: E402
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi  # noqa: E402
 
 
 class CheckNoNewSharedPreferencesCountersTest(unittest.TestCase):

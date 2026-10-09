@@ -6,7 +6,7 @@
 
 import atexit
 import base64
-import http.client
+import http.client  # noqa: F401
 import json
 import os
 import platform
@@ -64,7 +64,7 @@ def Is64Bit():
         value = key_and_value[1].strip()
         if key == 'target_cpu':
           return value.endswith('64')
-  except:
+  except:  # noqa: E722
     pass
   # If we don't find anything, or if there is no GN args file, default to the
   # host architecture.

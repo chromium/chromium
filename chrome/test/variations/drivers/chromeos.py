@@ -64,7 +64,7 @@ class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
     return [arg for arg in startup_args if arg not in removed_args]
 
 
-def _launch_browser(browser_args: List[str]) -> 'Browser':
+def _launch_browser(browser_args: List[str]) -> 'Browser':  # noqa: F821
   finder_options = browser_options.BrowserFinderOptions()
   finder_options.browser_type = 'cros-browser'
   finder_options.verbosity = 2
@@ -187,7 +187,7 @@ class CrOSDriverFactory(DriverFactory):
 
     def poll():
       stat = tunnel.poll()
-      while stat == None:
+      while stat == None:  # noqa: E711
         stat = tunnel.poll()
 
     threading.Thread(target=poll).start()

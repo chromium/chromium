@@ -1,5 +1,2 @@
-line-length = 80
+extend = "../../../../../../.ruff.toml"
 indent-width = 4
-
-[format]
-quote-style = "preserve"

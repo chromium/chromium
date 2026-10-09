@@ -32,14 +32,14 @@ _TEST_DIR = os.path.join(_PARENT_DIR, "test")
 _PY_TESTS = os.path.join(_TEST_DIR, "run_py_tests.py")
 
 sys.path.insert(1, _PARENT_DIR)
-import chrome_paths
-import util
+import chrome_paths  # noqa: E402
+import util  # noqa: E402
 
 sys.path.remove(_PARENT_DIR)
 
 sys.path.insert(1, _TEST_DIR)
-import unittest_util
-import webserver
+import unittest_util  # noqa: E402
+import webserver  # noqa: E402
 
 sys.path.remove(_TEST_DIR)
 # pylint: enable=g-import-not-at-top, g-bad-import-order
@@ -138,7 +138,7 @@ class ChromeDriverClientReplayTest(unittest.TestCase):
 
     # pylint: disable=unidiomatic-typecheck
     self.assertTrue(
-      type(logged) == type(real)
+      type(logged) == type(real)  # noqa: E721
       or (isinstance(real, str) and isinstance(logged, str))
     )
     # pylint: enable=unidiomatic-typecheck

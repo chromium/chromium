@@ -40,8 +40,8 @@ sys.path.append(
   os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/')
 )
 
-import web_idl
-import action_helpers
+import web_idl  # noqa: E402
+import action_helpers  # noqa: E402
 
 
 @dataclasses.dataclass
@@ -283,7 +283,7 @@ def build_operation_rules(
 def get_methods_to_ignore(
   interface: web_idl.interface.Interface,
 ) -> Sequence[str]:
-  if not interface.identifier in WEBIDL_GRAMMAR_IGNORE_LIST:
+  if interface.identifier not in WEBIDL_GRAMMAR_IGNORE_LIST:
     return []
   return WEBIDL_GRAMMAR_IGNORE_LIST[interface.identifier]['methods']
 
@@ -444,14 +444,14 @@ def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
   backrefs = {}
   for rule in builder.rules + builder.lines + builder.helperlines:
     assert isinstance(graph, dict)
-    if not rule.lhs.name in graph:
+    if rule.lhs.name not in graph:
       graph[rule.lhs.name] = []
     deps = []
     for type in rule.rhs:
       if not isinstance(type, DomatoType) or type.is_terminal:
         continue
       deps.append(type.name)
-      if not type.name in backrefs:
+      if type.name not in backrefs:
         backrefs[type.name] = set()
       backrefs[type.name].add(rule.lhs.name)
     graph[rule.lhs.name].append(deps)
@@ -467,7 +467,7 @@ def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
     if name in handled:
       return handled[name]
     handled[name] = False
-    if not name in graph:
+    if name not in graph:
       handled[name] = False
       return False
 

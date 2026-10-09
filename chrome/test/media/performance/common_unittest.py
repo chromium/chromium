@@ -97,9 +97,10 @@ class TeardownTest(fakes.SenderTestCase):
         with self.assertLogs(level='INFO') as logs:
             common.teardown_test_environment(None, None, make_args())
         self.assertFalse(
-            any('Cleaned up tmp files' in l for l in logs.output), logs.output
+            any('Cleaned up tmp files' in l for l in logs.output),  # noqa: E741
+            logs.output,  # noqa: E741
         )
-        self.assertTrue(any('rc=255' in l for l in logs.output))
+        self.assertTrue(any('rc=255' in l for l in logs.output))  # noqa: E741
 
     def test_teardown_logs_success(self):
         with self.assertLogs(level='INFO') as logs:
@@ -174,7 +175,7 @@ class DumpRemoteLogsTest(fakes.SenderTestCase):
                     common.dump_remote_logs(
                         make_args(sender_os=sender_os), '120', 'vp8'
                     )
-                self.assertTrue(any('log line' in l for l in logs.output))
+                self.assertTrue(any('log line' in l for l in logs.output))  # noqa: E741
 
 
 class CrosInstallChromedriverTest(unittest.TestCase):

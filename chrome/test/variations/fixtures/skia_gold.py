@@ -154,7 +154,7 @@ def skia_gold_util(
     skia_tmp_dir, skia_gold_properties
   )
 
-  config = request.config
+  config = request.config  # noqa: F841
   session = skia_gold_session_manager.GetSkiaGoldSession(
     {
       'platform': test_options.platform,

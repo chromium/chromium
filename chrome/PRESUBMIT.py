@@ -33,7 +33,7 @@ EXCLUDE = (
 def _CheckChangeLintsClean(input_api, output_api):
   """Makes sure that the chrome/ code is cpplint clean."""
   files_to_skip = input_api.DEFAULT_FILES_TO_SKIP + EXCLUDE
-  sources = lambda x: input_api.FilterSourceFile(
+  sources = lambda x: input_api.FilterSourceFile(  # noqa: E731
     x, files_to_check=INCLUDE_CPP_FILES_ONLY, files_to_skip=files_to_skip
   )
   return input_api.canned_checks.CheckChangeLintsClean(
@@ -324,6 +324,7 @@ def _CommonChecks(input_api, output_api):
     _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api)
   )
   results.extend(_CheckNoBaseRunLoopInChrome(input_api, output_api))
+  results.extend(input_api.canned_checks.RunRuff(input_api, output_api))
   return results
 
 

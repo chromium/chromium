@@ -556,17 +556,17 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
 sys.path.insert(
   0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools')
 )
-from check_glic_api_test_registration_test import (
-  CheckGlicApiTestRegistrationCliAndRepoTest,
-  CheckGlicApiTestRegistrationCppExtractorTest,
-  CheckGlicApiTestRegistrationCppHandlingTest,
-  CheckGlicApiTestRegistrationFileTypeTest,
-  CheckGlicApiTestRegistrationPairMatchingTest,
-  CheckGlicApiTestRegistrationRepoRootTest,
-  CheckGlicApiTestRegistrationTsHandlingTest,
-  CheckGlicApiTestRegistrationTypeScriptExtractorTest,
+from check_glic_api_test_registration_test import (  # noqa: E402
+  CheckGlicApiTestRegistrationCliAndRepoTest,  # noqa: F401
+  CheckGlicApiTestRegistrationCppExtractorTest,  # noqa: F401
+  CheckGlicApiTestRegistrationCppHandlingTest,  # noqa: F401
+  CheckGlicApiTestRegistrationFileTypeTest,  # noqa: F401
+  CheckGlicApiTestRegistrationPairMatchingTest,  # noqa: F401
+  CheckGlicApiTestRegistrationRepoRootTest,  # noqa: F401
+  CheckGlicApiTestRegistrationTsHandlingTest,  # noqa: F401
+  CheckGlicApiTestRegistrationTypeScriptExtractorTest,  # noqa: F401
 )
-from sort_headers_test import SortHeadersTest
+from sort_headers_test import SortHeadersTest  # noqa: E402, F401
 
 if __name__ == '__main__':
   unittest.main()

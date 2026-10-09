@@ -76,7 +76,7 @@ def CheckNoNewMethodsInContextualTasksUi(input_api, output_api):
       if any(v.strip() for v in values):
         return []
 
-  file_filter = lambda f: input_api.FilterSourceFile(
+  file_filter = lambda f: input_api.FilterSourceFile(  # noqa: E731
     f, files_to_check=[_CONTEXTUAL_TASKS_UI_PATH]
   )
   affected_files = input_api.AffectedFiles(

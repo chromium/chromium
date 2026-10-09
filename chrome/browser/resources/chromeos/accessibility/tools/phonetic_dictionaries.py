@@ -72,7 +72,7 @@ def main():
     with open_file(file_path) as in_file:
       contents = json.loads(in_file.read().strip())
       try:
-        test = json.loads(contents['CHROMEVOX_PHONETIC_MAP']['message'])
+        test = json.loads(contents['CHROMEVOX_PHONETIC_MAP']['message'])  # noqa: F841
         if sys.version_info >= (3, 0):
           data = contents['CHROMEVOX_PHONETIC_MAP']['message']
         else:
@@ -80,7 +80,7 @@ def main():
           data = contents['CHROMEVOX_PHONETIC_MAP']['message'].encode('utf-8')
         locale = locale.replace('_', '-').lower()
         output += CONTENT_TEMPLATE % {'locale': locale, 'data': data}
-      except ValueError as e:
+      except ValueError:
         continue
 
   # Write to file.

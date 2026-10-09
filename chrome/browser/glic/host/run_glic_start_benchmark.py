@@ -10,11 +10,11 @@ Compressed/Uncompressed configurations and prints a comparative summary table.
 """
 
 import argparse
-import os
+import os  # noqa: F401
 import re
 import subprocess
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional  # noqa: F401
 
 TEST_FILE = "chrome/browser/glic/host/glic_start_benchmark_browsertest.cc"
 

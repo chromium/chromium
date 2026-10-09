@@ -13,7 +13,7 @@ Run this script with vpython3 instead.
 """
 
 import optparse
-from pywintypes import IID
+from pywintypes import IID  # noqa: F401
 import sys
 from win32com.propsys import propsys
 from win32com.propsys import pscon

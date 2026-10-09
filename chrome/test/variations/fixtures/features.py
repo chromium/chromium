@@ -8,7 +8,7 @@ import os
 import pathlib
 import pytest
 
-from selenium import webdriver
+from selenium import webdriver  # noqa: F401
 
 from typing import Callable, List
 

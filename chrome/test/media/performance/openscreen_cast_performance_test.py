@@ -560,7 +560,7 @@ def run_performance_test(
                     )
                     receiver_trace_proc.terminate()
                     receiver_trace_proc.wait()
-                    stdout_data = receiver_trace_proc.stdout.read()
+                    stdout_data = receiver_trace_proc.stdout.read()  # noqa: F841
                     stderr_data = receiver_trace_proc.stderr.read()
                     logging.error(
                         "Receiver Perfetto trace timed out. Stderr: %s",

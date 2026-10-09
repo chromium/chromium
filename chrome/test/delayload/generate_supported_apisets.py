@@ -23,7 +23,7 @@ import sys
 import struct
 import ctypes
 
-USE_PYTHON_3 = f'This script will only run under python3.'
+USE_PYTHON_3 = 'This script will only run under python3.'
 
 # Assume this script is under chrome\test\delayload
 _SCRIPT_DIR = os.path.dirname(__file__)
@@ -31,7 +31,7 @@ _ROOT_DIR = os.path.join(_SCRIPT_DIR, os.pardir, os.pardir, os.pardir)
 _PEFILE_DIR = os.path.join(_ROOT_DIR, 'third_party', 'pefile_py3')
 
 sys.path.insert(1, _PEFILE_DIR)
-import pefile
+import pefile  # noqa: E402
 
 
 def from_utf16(data, start, length):

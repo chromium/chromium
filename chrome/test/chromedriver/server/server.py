@@ -7,7 +7,7 @@ import os
 import socket
 import subprocess
 import psutil
-import threading
+import threading  # noqa: F401
 import time
 import urllib
 
@@ -136,7 +136,7 @@ class Server(object):
 
     try:
       urllib.request.urlopen(self.GetUrl() + '/shutdown', timeout=10).close()
-    except:
+    except:  # noqa: E722
       self._process.terminate()
 
     # By this point of execution the ChromeDriver process might already be gone.

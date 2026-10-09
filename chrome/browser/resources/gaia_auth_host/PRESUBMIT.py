@@ -8,7 +8,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import re
+import re  # noqa: F401
 
 
 def _FilterFile(affected_file):
@@ -17,7 +17,7 @@ def _FilterFile(affected_file):
 
 
 def _CountOccurences(matcher, contents):
-  return sum(matcher.search(line) != None for line in contents)
+  return sum(matcher.search(line) != None for line in contents)  # noqa: E711
 
 
 def _CheckSamlHandlerApiCallErrors(input_api, output_api):

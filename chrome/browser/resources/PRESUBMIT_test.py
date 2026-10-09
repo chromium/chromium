@@ -93,7 +93,7 @@ class HTMLActionAdditionTest(unittest.TestCase):
       ' "radio" dialog-pref value=\n'
       ' "false">'
     ]
-    warnings = self._testChange(lines)
+    warnings = self._testChange(lines)  # noqa: F841
     self.assertEqual([], self._testChange(lines))
 
   def _testChange(self, lines):

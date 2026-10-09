@@ -214,7 +214,7 @@ class TerminateChromedriverTest(fakes.SenderTestCase):
                 sender.terminate_chromedriver()
 
         self.assertIn(NO_ROUTE, str(ctx.exception))
-        self.assertFalse(any('confirmed gone' in l for l in logs.output))
+        self.assertFalse(any('confirmed gone' in l for l in logs.output))  # noqa: E741
         # Later cleanup must see the sender as unreachable.
         self.assertTrue(_mac().transport.known_unreachable)
 
@@ -229,7 +229,7 @@ class TerminateChromedriverTest(fakes.SenderTestCase):
         self.ssh.responses[_MAC_CHECK] = completed(1, stdout='')
         with self.assertLogs(level='INFO') as logs:
             _mac().terminate_chromedriver()
-        self.assertTrue(any('confirmed gone' in l for l in logs.output))
+        self.assertTrue(any('confirmed gone' in l for l in logs.output))  # noqa: E741
 
     def test_unreachable_sender_raises_before_any_ssh(self):
         self.make_unreachable()
@@ -264,7 +264,7 @@ class WaitForChromedriverTest(fakes.SenderTestCase):
         with self.assertLogs(level='WARNING') as logs:
             with self.assertRaises(RuntimeError):
                 _mac().wait_for_chromedriver()
-        self.assertTrue(any('driver crashed' in l for l in logs.output))
+        self.assertTrue(any('driver crashed' in l for l in logs.output))  # noqa: E741
 
 
 class InstallChromeTest(fakes.SenderTestCase):
@@ -501,9 +501,10 @@ class CleanupTest(fakes.SenderTestCase):
         self.run.assert_not_called()
         self.assertIn(fakes.SKIP_LOG, logs.output)
         self.assertFalse(
-            any('Cleaned up remote' in l for l in logs.output), logs.output
+            any('Cleaned up remote' in l for l in logs.output),  # noqa: E741
+            logs.output,  # noqa: E741
         )
-        self.assertFalse(any('confirmed gone' in l for l in logs.output))
+        self.assertFalse(any('confirmed gone' in l for l in logs.output))  # noqa: E741
 
     def test_cleanup_binaries_skips_when_terminate_finds_255(self):
         self.ssh.responses[_MAC_CHECK] = completed(255, stderr=NO_ROUTE)
@@ -518,13 +519,13 @@ class CleanupTest(fakes.SenderTestCase):
         )
         with self.assertLogs(level='INFO') as logs:
             _mac().cleanup_binaries()
-        self.assertFalse(any('Cleaned up remote' in l for l in logs.output))
+        self.assertFalse(any('Cleaned up remote' in l for l in logs.output))  # noqa: E741
         self.assertTrue(
             any(
                 l.startswith('WARNING')
                 and 'rc=1' in l
                 and 'permission denied' in l
-                for l in logs.output
+                for l in logs.output  # noqa: E741
             ),
             logs.output,
         )

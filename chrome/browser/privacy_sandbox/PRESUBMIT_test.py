@@ -17,7 +17,7 @@ sys.path.append(
 import PRESUBMIT_test_mocks
 
 SAMPLE_FILE_CONTENT = (
-  f'<?xml version="1.0" encoding="utf-8"?>'
+  '<?xml version="1.0" encoding="utf-8"?>'
   '<LinearLayout'
   '   xmlns:android="http://schemas.android.com/apk/res/android"'
   '   xmlns:app="http://schemas.android.com/apk/res-auto"'
@@ -181,7 +181,7 @@ class CheckPrivacySandboxXmlElementsHaveResourceIdsTest(unittest.TestCase):
     bad_element_1 = result[0].items[2]
     self.assertEqual(PS_NOTICE_EEA_FILE, affected_file)
     self.assertEqual(
-      f'<TextView\n\tandroid:text="@string/nested_element_text"/>',
+      '<TextView\n\tandroid:text="@string/nested_element_text"/>',
       bad_element_1,
     )
 

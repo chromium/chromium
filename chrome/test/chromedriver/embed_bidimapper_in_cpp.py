@@ -13,7 +13,7 @@ the exported function when called.
 """
 
 import optparse
-import os
+import os  # noqa: F401
 import sys
 
 import cpp_source

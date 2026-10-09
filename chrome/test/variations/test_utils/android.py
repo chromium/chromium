@@ -19,9 +19,9 @@ from chrome.test.variations.test_utils.helper import find_gsutil_cmd
 sys.path.append(os.path.join(SRC_DIR, 'build', 'android'))
 
 # This import adds `devil` to `sys.path`.
-import devil_chromium
+import devil_chromium  # noqa: F401
 
-from devil.android import apk_helper
+from devil.android import apk_helper  # noqa: F401
 from devil.android import device_utils
 from devil.android import forwarder
 from devil.android.sdk import adb_wrapper

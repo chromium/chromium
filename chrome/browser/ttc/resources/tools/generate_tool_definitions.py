@@ -23,12 +23,12 @@ def _ToParagraphs(lines_array):
   for line in lines_array:
     if not line.strip():
       if current_para:
-        paragraphs.append(" ".join(l.strip() for l in current_para))
+        paragraphs.append(" ".join(l.strip() for l in current_para))  # noqa: E741
         current_para = []
     else:
       current_para.append(line)
   if current_para:
-    paragraphs.append(" ".join(l.strip() for l in current_para))
+    paragraphs.append(" ".join(l.strip() for l in current_para))  # noqa: E741
   return "\n\n".join(paragraphs)
 
 

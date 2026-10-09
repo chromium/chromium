@@ -11,8 +11,8 @@ import PRESUBMIT
 
 file_dir_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(file_dir_path, '..', '..', '..'))
-from PRESUBMIT_test_mocks import MockAffectedFile
-from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
+from PRESUBMIT_test_mocks import MockAffectedFile  # noqa: E402
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi  # noqa: E402
 
 
 # Mocks os.walk()
@@ -32,7 +32,7 @@ class MockOsWalkFileSystem(object):
         slash_index = remaining.find('/')
         if slash_index >= 0:
           dir_name = remaining[:slash_index]
-          if not dir_name in dirs:
+          if dir_name not in dirs:
             dirs.append(dir_name)
         else:
           files.append(remaining)

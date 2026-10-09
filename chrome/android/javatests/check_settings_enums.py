@@ -9,7 +9,7 @@ Finds them using dexdump on ChromePublic.apk.
 """
 
 import argparse
-import os
+import os  # noqa: F401
 import pathlib
 import subprocess
 import sys

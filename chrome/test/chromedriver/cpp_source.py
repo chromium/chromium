@@ -4,7 +4,7 @@
 
 """Writes C++ header/cc source files for embedding resources into C++."""
 
-import datetime
+import datetime  # noqa: F401
 import os
 import sys
 

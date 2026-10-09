@@ -11,10 +11,6 @@ PRESUBMIT_VERSION = '2.0.0'
 _OTA_DOC_LINK = 'https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3doc/celab/write_enterprise_test.md?cl=head#testing-cloud-user-policies'
 
 
-def CheckRuff(input_api, output_api):
-  return input_api.canned_checks.RunRuff(input_api, output_api)
-
-
 def CheckAccountsBelongToPool(input_api, output_api):
   account_pattern = input_api.re.compile(r'[\w\-]+@chromepizzatest.com')
   user_pattern = input_api.re.compile(r'account\d+')

@@ -7,7 +7,7 @@
 """Expands template using Mustache template engine."""
 
 import argparse
-import codecs
+import codecs  # noqa: F401
 import json
 import os
 import sys
@@ -17,10 +17,10 @@ src_dir = os.path.join(
   os.path.dirname(__file__), os.pardir, os.pardir, os.pardir, os.pardir
 )
 sys.path.insert(1, os.path.join(src_dir, 'third_party'))
-import chevron
+import chevron  # noqa: E402
 
 sys.path.insert(1, os.path.join(src_dir, 'build'))
-import action_helpers  # pylint: disable=import-error
+import action_helpers  # pylint: disable=import-error  # noqa: E402
 
 
 def _AppendParsedVariables(initial_variable_list, extra_variables, error_func):

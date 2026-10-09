@@ -46,7 +46,7 @@ def InternalCheckUserActionUpdate(input_api, output_api, action_xml_path):
     # for actions.xml will do a more complete presubmit check.
     return []
 
-  file_filter = lambda f: f.LocalPath().endswith('.html')
+  file_filter = lambda f: f.LocalPath().endswith('.html')  # noqa: E731
   action_re = r'(^|\s+)metric\s*=\s*"([^ ]*)"'
   current_actions = None
   for f in input_api.AffectedFiles(file_filter=file_filter):

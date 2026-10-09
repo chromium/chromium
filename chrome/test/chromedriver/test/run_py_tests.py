@@ -14,7 +14,7 @@
 import argparse
 import base64
 import codecs
-import hashlib
+import hashlib  # noqa: F401
 import http.client
 import imghdr
 import json
@@ -42,30 +42,30 @@ _SERVER_DIR = os.path.join(_PARENT_DIR, 'server')
 _TEST_DIR = os.path.join(_PARENT_DIR, 'test')
 
 sys.path.insert(1, _PARENT_DIR)
-import chrome_paths
-import util
+import chrome_paths  # noqa: E402
+import util  # noqa: E402
 
 sys.path.remove(_PARENT_DIR)
 
 sys.path.insert(1, _CLIENT_DIR)
-import chromedriver
-import framereference
-import webelement
-import webshadowroot
-import websocket_connection
-import windowreference
-from websocket_connection import WebSocketConnection
+import chromedriver  # noqa: E402
+import framereference  # noqa: E402
+import webelement  # noqa: E402
+import webshadowroot  # noqa: E402
+import websocket_connection  # noqa: E402
+import windowreference  # noqa: E402
+from websocket_connection import WebSocketConnection  # noqa: E402
 
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
-import server
+import server  # noqa: E402
 
 sys.path.remove(_SERVER_DIR)
 
 sys.path.insert(1, _TEST_DIR)
-import unittest_util
-import webserver
+import unittest_util  # noqa: E402
+import webserver  # noqa: E402
 
 sys.path.remove(_TEST_DIR)
 
@@ -81,7 +81,7 @@ sys.path.insert(
     'monotonic',
   ),
 )
-from monotonic import monotonic
+from monotonic import monotonic  # noqa: E402
 
 _TEST_DATA_DIR = os.path.join(chrome_paths.GetTestData(), 'chromedriver')
 
@@ -492,8 +492,8 @@ class RunnerSelfTest(unittest.TestCase):
         self.assertEqual('chrome-headless-shell', _InferBrowserName(path))
 
   def testBrowserPathInference(self):
-    is_headless_shell = lambda path: 'chrome-headless-shell' in path
-    is_not_headless_shell = lambda path: 'chrome-headless-shell' not in path
+    is_headless_shell = lambda path: 'chrome-headless-shell' in path  # noqa: E731
+    is_not_headless_shell = lambda path: 'chrome-headless-shell' not in path  # noqa: E731
     driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
     for platform in ['linux', 'mac', 'win']:
       # Successful inference
@@ -535,7 +535,7 @@ class ChromeDriverBaseTest(unittest.TestCase):
     for driver in self._drivers:
       try:
         driver.Quit()
-      except:
+      except:  # noqa: E722
         pass
     self._drivers = []
     for temp_dir in self._temp_dirs:
@@ -3441,7 +3441,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
     # DSL: 2Mbps throughput, 5ms RTT
     throughput_kbps = 2048
-    throughput = throughput_kbps * 1024
+    throughput = throughput_kbps * 1024  # noqa: F841
     self._driver.SetNetworkConditionsName('DSL')
 
     _32_bytes = " 0 1 2 3 4 5 6 7 8 9 A B C D E F"
@@ -7724,7 +7724,7 @@ class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):
     timed_out = False
     try:
       action()
-    except chromedriver.Timeout as e:
+    except chromedriver.Timeout:
       timed_out = True
     finally:
       self._handler.send_response_event.set()
@@ -7880,7 +7880,7 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTestWithWebServer):
       omaha_list = json.loads(
         urllib.request.urlopen('http://omahaproxy.appspot.com/all.json').read()
       )
-      for l in omaha_list:
+      for l in omaha_list:  # noqa: E741
         if l['os'] != 'android':
           continue
         for v in l['versions']:
@@ -7929,7 +7929,7 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTestWithWebServer):
 
   def testAndroidOpenNewWindow(self):
     self._driver = self.CreateDriver()
-    size = self._driver.GetWindowRect()
+    size = self._driver.GetWindowRect()  # noqa: F841
 
     old_target_id = self._driver.GetCurrentWindowHandle()
     window1 = self._driver.SendCommandAndGetResult(
@@ -7955,15 +7955,15 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTestWithWebServer):
   def testAndroidScrollsMultipleWindows(self):
     """Regression test for crbug.com/413382905"""
     self._driver = self.CreateDriver()
-    size = self._driver.GetWindowRect()
+    size = self._driver.GetWindowRect()  # noqa: F841
 
     old_target_id = self._driver.GetCurrentWindowHandle()
-    window1 = self._driver.SendCommandAndGetResult(
+    window1 = self._driver.SendCommandAndGetResult(  # noqa: F841
       'Browser.getWindowForTarget', {'targetId': old_target_id}
     )
     new_window1 = self._driver.NewWindow(window_type='window')
     new_window2 = self._driver.NewWindow(window_type='window')
-    new_window3 = self._driver.NewWindow(window_type='window')
+    new_window3 = self._driver.NewWindow(window_type='window')  # noqa: F841
 
     # Switch to first window
     self._driver.SwitchToWindow(new_window1['handle'])
@@ -8944,10 +8944,10 @@ class CustomChromeDriverInstanceTest(ChromeDriverBaseTest):
     self._chromedriver_servers = []
 
   def tearDown(self):
-    for server in self._chromedriver_servers:
+    for server in self._chromedriver_servers:  # noqa: F402
       try:
         server.Kill()
-      except:
+      except:  # noqa: E722
         pass
     self._chromedriver_servers = []
 
@@ -10784,7 +10784,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     try:
       self._driver.GetDialogType()
       return True
-    except:
+    except:  # noqa: E722
       return False
 
   def FedCmNoDialogCondition(self):
@@ -10798,7 +10798,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
         return True
       else:
         return False
-    except:
+    except:  # noqa: E722
       return False
 
   def testGetAccounts(self):
@@ -11236,8 +11236,8 @@ class AutoOpenDevtoolsTests(ChromeDriverBaseTestWithWebServer):
     self.WaitForCondition(lambda: len(self._driver.GetWindowHandles()) >= 2)
     self._driver.Load(initial_url)
     primary_window = self._driver.GetCurrentWindowHandle()
-    handles = self._driver.GetWindowHandles()
-    self.WaitForCondition(lambda: self.WaitForDevToolsToOpen() == True)
+    handles = self._driver.GetWindowHandles()  # noqa: F841
+    self.WaitForCondition(lambda: self.WaitForDevToolsToOpen() == True)  # noqa: E712
     self._driver.SwitchToWindow(primary_window)
     self.assertTrue(self._driver.GetTitle(), "Initial")
 

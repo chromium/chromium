@@ -12,7 +12,7 @@ import PRESUBMIT
 file_dir_path = os.path.dirname(os.path.abspath(__file__))
 # chromium/src is 3 levels up from chrome/browser/readaloud
 sys.path.insert(0, os.path.join(file_dir_path, '..', '..', '..'))
-from PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
+from PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi  # noqa: E402
 
 
 class AssertionOrderPresubmitTest(unittest.TestCase):

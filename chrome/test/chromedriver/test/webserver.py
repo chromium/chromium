@@ -6,7 +6,7 @@ import http.server
 import os
 import socketserver
 import ssl
-import sys
+import sys  # noqa: F401
 import threading
 
 
@@ -93,13 +93,13 @@ class _BaseServer(http.server.HTTPServer):
       def handle(self):
         try:
           http.server.BaseHTTPRequestHandler.handle(self)
-        except:
+        except:  # noqa: E722
           pass  # Ignore socket errors.
 
       def finish(self):
         try:
           http.server.BaseHTTPRequestHandler.finish(self)
-        except:
+        except:  # noqa: E722
           pass  # Ignore socket errors.
 
     http.server.HTTPServer.__init__(self, ('127.0.0.1', 0), _Handler)

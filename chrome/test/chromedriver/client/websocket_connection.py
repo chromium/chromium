@@ -11,7 +11,7 @@ from command_executor import CommandExecutor
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
 sys.path.insert(1, _PARENT_DIR)
-import chrome_paths
+import chrome_paths  # noqa: E402
 
 sys.path.remove(_PARENT_DIR)
 sys.path.insert(
@@ -25,18 +25,18 @@ sys.path.insert(
     'websocket-client',
   ),
 )
-import websocket
+import websocket  # noqa: E402
 
-from websocket import (
+from websocket import (  # noqa: E402
   WebSocketConnectionClosedException as InternalWebSocketConnectionClosedException,
 )
-from websocket import (
+from websocket import (  # noqa: E402
   WebSocketTimeoutException as InternalWebSocketTimeoutException,
 )
-from exceptions import WebSocketConnectionClosedException
-from exceptions import WebSocketTimeoutException
-from exceptions import ChromeDriverException
-from exceptions import EXCEPTION_MAP
+from exceptions import WebSocketConnectionClosedException  # noqa: E402
+from exceptions import WebSocketTimeoutException  # noqa: E402
+from exceptions import ChromeDriverException  # noqa: E402
+from exceptions import EXCEPTION_MAP  # noqa: E402
 
 
 class WebSocketCommands:
@@ -137,7 +137,7 @@ class WebSocketConnection(object):
 
   def _IsExpectedEvent(self, message, event_name, channel):
     return (
-      message.get('id') == None
+      message.get('id') == None  # noqa: E711
       and message.get('method') == event_name
       and message.get('goog:channel') == channel
     )
@@ -155,7 +155,7 @@ class WebSocketConnection(object):
     timeout: timeout in seconds, fractional
     """
     start = time.monotonic()
-    if timeout == None:
+    if timeout == None:  # noqa: E711
       timeout = self.GetTimeout()
 
     try:

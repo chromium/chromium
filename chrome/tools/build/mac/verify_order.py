@@ -9,7 +9,7 @@
 from __future__ import print_function
 
 import argparse
-import os.path
+import os.path  # noqa: F401
 import re
 import sys
 import subprocess

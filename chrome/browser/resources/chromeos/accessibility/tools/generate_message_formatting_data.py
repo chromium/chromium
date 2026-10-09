@@ -9,7 +9,7 @@ internationalize messages.
 
 import optparse
 import os
-import sys
+import sys  # noqa: F401
 import xml.etree.ElementTree as ElementTree
 
 from pathlib import Path

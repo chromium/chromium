@@ -3,10 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import io
-import os
-import sys
-import tempfile
+import io  # noqa: F401
+import os  # noqa: F401
+import sys  # noqa: F401
+import tempfile  # noqa: F401
 import unittest
 
 import sort_headers

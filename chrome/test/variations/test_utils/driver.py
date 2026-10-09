@@ -3,13 +3,13 @@
 # found in the LICENSE file.
 """Utility functions for extracting features."""
 
-import dataclasses
+import dataclasses  # noqa: F401
 import html
 import logging
 import os
 import sys
 
-from typing import List
+from typing import List  # noqa: F401
 
 from chrome.test.variations.fixtures import features
 from chrome.test.variations.fixtures import test_options

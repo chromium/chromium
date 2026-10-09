@@ -42,9 +42,9 @@ sys.path.append(
   os.path.join(SOURCE_DIR, 'mojo/public/tools/bindings/generators')
 )
 
-import action_helpers
-from mojom.generate import module as mojom
-from mojom_js_generator import JavaScriptStylizer
+import action_helpers  # noqa: E402
+from mojom.generate import module as mojom  # noqa: E402
+from mojom_js_generator import JavaScriptStylizer  # noqa: E402
 
 
 @dataclasses.dataclass
@@ -253,7 +253,7 @@ def build_pending_receiver_rules(kind, builder: DomatoGrammarBuilder):
     should_record=True,
   )
 
-  if not remote_type.name in DEFINED_TYPES:
+  if remote_type.name not in DEFINED_TYPES:
     builder.add_helper_line(
       Rule(
         remote_type,
@@ -285,7 +285,7 @@ def build_pending_associated_receiver_rules(
     name=f'{adapt_type_name(kind.kind.qualified_name)}Remote',
     should_record=True,
   )
-  if not remote_type.name in DEFINED_TYPES:
+  if remote_type.name not in DEFINED_TYPES:
     builder.add_helper_line(
       Rule(
         remote_type,

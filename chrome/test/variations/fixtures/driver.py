@@ -172,7 +172,7 @@ def driver_factory(
   pytestconfig,
   chromedriver_path: str,
   tmp_path_factory: pytest.TempPathFactory,
-  local_http_server: 'HTTPServer',
+  local_http_server: 'HTTPServer',  # noqa: F821
 ) -> DriverFactory:
   """Returns a factory that creates a webdriver."""
   factory: Optional[DriverFactory] = None

@@ -18,12 +18,12 @@ _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
 _TEST_DIR = os.path.join(_PARENT_DIR, "test")
 # pylint: disable=g-import-not-at-top
 sys.path.insert(1, _TEST_DIR)
-import unittest_util
+import unittest_util  # noqa: E402
 
 sys.path.remove(_TEST_DIR)
 
 sys.path.insert(1, _PARENT_DIR)
-import util
+import util  # noqa: E402
 
 sys.path.insert(1, _PARENT_DIR)
 # pylint: enable=g-import-not-at-top

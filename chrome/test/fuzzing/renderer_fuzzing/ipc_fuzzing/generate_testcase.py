@@ -77,9 +77,9 @@ sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
 sys.path.append(os.path.join(SOURCE_DIR, 'build'))
 sys.path.append(os.path.join(SOURCE_DIR, 'mojo/public/tools/mojom/'))
 
-from mojom.parse import parser as mojom_parser, ast
-import action_helpers
-import jinja2
+from mojom.parse import parser as mojom_parser, ast  # noqa: E402
+import action_helpers  # noqa: E402
+import jinja2  # noqa: E402
 
 XVFB_PATH = os.path.join(SOURCE_DIR, 'testing/xvfb.py')
 
@@ -219,8 +219,8 @@ def filter_data(data):
   Args:
       data: the JSON data.
   """
-  is_not_associated = lambda x: x['type'] != 'AssociatedRemote'
-  is_associated = lambda x: x['type'] == 'AssociatedRemote'
+  is_not_associated = lambda x: x['type'] != 'AssociatedRemote'  # noqa: E731
+  is_associated = lambda x: x['type'] == 'AssociatedRemote'  # noqa: E731
   data['associated_interfaces'] = list(
     filter(is_associated, data['context_interfaces'])
   )
@@ -231,7 +231,7 @@ def filter_data(data):
     filter(is_not_associated, data['process_interfaces'])
   )
   ctx_interfaces = [s['qualified_name'] for s in data['context_interfaces']]
-  data_filter = lambda x: x['qualified_name'] not in ctx_interfaces
+  data_filter = lambda x: x['qualified_name'] not in ctx_interfaces  # noqa: E731
   data['process_interfaces'] = list(
     filter(data_filter, data['process_interfaces'])
   )

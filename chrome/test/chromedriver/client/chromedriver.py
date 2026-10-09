@@ -15,7 +15,7 @@ from webshadowroot import WebShadowRoot
 from windowreference import WindowReference
 from framereference import FrameReference
 from websocket_connection import WebSocketConnection
-from exceptions import *
+from exceptions import *  # noqa: F403
 
 ELEMENT_KEY_W3C = 'element-6066-11e4-a52e-4f735466cecf'
 ELEMENT_KEY = 'ELEMENT'
@@ -29,32 +29,32 @@ _UNSET = object()
 
 def _ExceptionForLegacyResponse(response):
   exception_class_map = {
-    6: InvalidSessionId,
-    7: NoSuchElement,
-    8: NoSuchFrame,
-    9: UnknownCommand,
-    10: StaleElementReference,
-    11: ElementNotVisible,
-    12: InvalidElementState,
-    13: UnknownError,
-    17: JavaScriptError,
-    19: XPathLookupError,
-    21: Timeout,
-    23: NoSuchWindow,
-    24: InvalidCookieDomain,
-    26: UnexpectedAlertOpen,
-    27: NoSuchAlert,
-    28: ScriptTimeout,
-    32: InvalidSelector,
-    33: SessionNotCreated,
-    60: ElementNotInteractable,
-    61: InvalidArgument,
-    62: NoSuchCookie,
-    405: UnsupportedOperation,
+    6: InvalidSessionId,  # noqa: F405
+    7: NoSuchElement,  # noqa: F405
+    8: NoSuchFrame,  # noqa: F405
+    9: UnknownCommand,  # noqa: F405
+    10: StaleElementReference,  # noqa: F405
+    11: ElementNotVisible,  # noqa: F405
+    12: InvalidElementState,  # noqa: F405
+    13: UnknownError,  # noqa: F405
+    17: JavaScriptError,  # noqa: F405
+    19: XPathLookupError,  # noqa: F405
+    21: Timeout,  # noqa: F405
+    23: NoSuchWindow,  # noqa: F405
+    24: InvalidCookieDomain,  # noqa: F405
+    26: UnexpectedAlertOpen,  # noqa: F405
+    27: NoSuchAlert,  # noqa: F405
+    28: ScriptTimeout,  # noqa: F405
+    32: InvalidSelector,  # noqa: F405
+    33: SessionNotCreated,  # noqa: F405
+    60: ElementNotInteractable,  # noqa: F405
+    61: InvalidArgument,  # noqa: F405
+    62: NoSuchCookie,  # noqa: F405
+    405: UnsupportedOperation,  # noqa: F405
   }
   status = response['status']
   msg = response['value']['message']
-  return exception_class_map.get(status, ChromeDriverException)(msg)
+  return exception_class_map.get(status, ChromeDriverException)(msg)  # noqa: F405
 
 
 def _ExceptionForStandardResponse(response):
@@ -65,7 +65,7 @@ def _ExceptionForStandardResponse(response):
   if stacktrace:
     msg += '\n\nStackTrace:\n\n' + stacktrace
 
-  return EXCEPTION_MAP.get(error, ChromeDriverException)(msg)
+  return EXCEPTION_MAP.get(error, ChromeDriverException)(msg)  # noqa: F405
 
 
 class ChromeDriver(object):
@@ -290,7 +290,7 @@ class ChromeDriver(object):
       self._session_id = response['sessionId']
       self.capabilities = self._UnwrapValue(response['value'])
     else:
-      raise UnknownError("unexpected response")
+      raise UnknownError("unexpected response")  # noqa: F405
 
   def _KeyToTypeMap(self):
     return [
@@ -347,7 +347,7 @@ class ChromeDriver(object):
 
   def _RequestCrash(self):
     # Can't issue a new command without session_id
-    if not hasattr(self, '_session_id') or self._session_id == None:
+    if not hasattr(self, '_session_id') or self._session_id == None:  # noqa: E711
       return
     tempDriver = ChromeDriver(
       self._server_url,
@@ -441,13 +441,13 @@ class ChromeDriver(object):
     if isinstance(id_or_name, str) and self.w3c_compliant:
       try:
         id_or_name = self.FindElement('css selector', '[id="%s"]' % id_or_name)
-      except NoSuchElement:
+      except NoSuchElement:  # noqa: F405
         try:
           id_or_name = self.FindElement(
             'css selector', '[name="%s"]' % id_or_name
           )
-        except NoSuchElement:
-          raise NoSuchFrame(id_or_name)
+        except NoSuchElement:  # noqa: F405
+          raise NoSuchFrame(id_or_name)  # noqa: F405
     self.ExecuteCommand(Command.SWITCH_TO_FRAME, {'id': id_or_name})
 
   def SwitchToFrameByIndex(self, index):
@@ -491,7 +491,7 @@ class ChromeDriver(object):
       max_kv = max(non_null_params, key=lambda item: item[1])
       # Both sides of the comparison are in milliseconds.
       if self._executor.HttpTimeout() * 500 < max_kv[1]:
-        raise ChromeDriverException(
+        raise ChromeDriverException(  # noqa: F405
           'Timeout "%s" for ChromeDriver exceeds 50%% of the '
           'HTTP connection timeout' % max_kv[0]
         )

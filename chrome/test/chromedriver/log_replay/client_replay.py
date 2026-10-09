@@ -49,17 +49,17 @@ _SERVER_DIR = os.path.join(_PARENT_DIR, "server")
 
 # pylint: disable=g-import-not-at-top
 sys.path.insert(1, _CLIENT_DIR)
-import command_executor
+import command_executor  # noqa: E402
 
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
-import server
+import server  # noqa: E402
 
 sys.path.remove(_SERVER_DIR)
 
 sys.path.insert(1, _PARENT_DIR)
-import util
+import util  # noqa: E402
 
 sys.path.remove(_PARENT_DIR)
 # pylint: enable=g-import-not-at-top

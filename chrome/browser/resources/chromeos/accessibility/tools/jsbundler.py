@@ -47,9 +47,9 @@ sys.path.insert(
     ('third_party/google-closure-library/' + 'closure/bin/build'),
   ),
 )
-import rjsmin
-import source
-import treescan
+import rjsmin  # noqa: E402
+import source  # noqa: E402
+import treescan  # noqa: E402, F401
 
 
 def Die(message):
@@ -92,7 +92,7 @@ class Bundle(object):
     '''
     if isinstance(sources, SourceWithPaths):
       sources = [sources]
-    for source in sources:
+    for source in sources:  # noqa: F402
       path = source.GetInPath()
       if path not in self._added_paths:
         self._added_paths.add(path)
@@ -185,7 +185,7 @@ def _GetBase(sources):
   Returns:
     SourceWithPath: The source file providing the goog namespace.
   '''
-  for source in list(sources.values()):
+  for source in list(sources.values()):  # noqa: F402
     if (
       os.path.basename(source.GetInPath()) == 'base.js'
       and 'goog' in source.provides
@@ -229,10 +229,10 @@ def LinkOrCopyFiles(sources, dest_dir):
       os.unlink(dst)
     try:
       os.link(src, dst)
-    except:
+    except:  # noqa: E722
       shutil.copy(src, dst)
 
-  for source in sources:
+  for source in sources:  # noqa: F402
     LinkOrCopyOneFile(
       source.GetInPath(), os.path.join(dest_dir, source.GetOutPath())
     )
@@ -281,7 +281,7 @@ def WriteStampfile(stampfile):
   Args:
     stampfile, string: name of stamp file to touch
   '''
-  with open(stampfile, 'w') as file:
+  with open(stampfile, 'w') as file:  # noqa: F841
     os.utime(stampfile, None)
 
 
