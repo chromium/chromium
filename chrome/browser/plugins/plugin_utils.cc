@@ -79,7 +79,7 @@ bool IsExtensionAllowedForMimeType(Profile* profile,
     return true;
   }
 
-  return handler->IsPluginExtension() || handler->CanEmbedMimeType(mime_type);
+  return handler->CanEmbedMimeType(mime_type);
 }
 
 }  // namespace

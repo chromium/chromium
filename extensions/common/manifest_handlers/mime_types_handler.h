@@ -59,7 +59,6 @@ class MimeTypesHandler {
   GURL GetHandlerUrl(const std::string& mime_type) const;
 
   // Returns whether `mime_type` supports embedding (iframe/embed/object).
-  // CHECKs that plugin (legacy manifest format) handlers never set can_embed.
   bool CanEmbedMimeType(const std::string& mime_type) const;
 
   // Returns the manifest's `enabled` value for `mime_type`, or true if the

@@ -289,7 +289,10 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
   auto info = std::make_unique<MimeTypesHandlerInfo>();
   info->handler_.set_extension_id(extension->id());
   for (const std::string& mime_type : mime_types) {
-    info->handler_.AddMIMEType(mime_type, handler_gurl, /*can_embed=*/false,
+    // The legacy format has no can_embed key, so allowlisted handlers embed
+    // by default.
+    info->handler_.AddMIMEType(mime_type, handler_gurl,
+                               /*can_embed=*/info->handler_.IsPluginExtension(),
                                /*enabled=*/true);
   }
 
