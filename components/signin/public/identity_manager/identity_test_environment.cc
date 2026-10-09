@@ -344,6 +344,9 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service =
       std::make_unique<GaiaCookieManagerService>(
           account_tracker_service.get(), token_service.get(), signin_client);
+  // Tests fake /ListAccounts responses without setting cookies.
+  gaia_cookie_manager_service->set_ignore_missing_gaia_cookies_for_testing(
+      true);
   IdentityManager::InitParameters init_params;
   init_params.primary_account_mutator =
       std::make_unique<PrimaryAccountMutatorImpl>(account_tracker_service.get(),

@@ -33,6 +33,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/backoff_entry.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -267,6 +268,11 @@ class GaiaCookieManagerService
     list_accounts_stale_ = stale;
   }
 
+  // Sends /ListAccounts even if there are no Gaia cookies, for tests that fake
+  // the response without setting cookies. Also discards the result of an
+  // earlier request that was skipped because there were no Gaia cookies.
+  void set_ignore_missing_gaia_cookies_for_testing(bool ignore);
+
   // If set, this callback will be invoked whenever the
   // GaiaCookieManagerService's list of GAIA accounts is updated. The GCMS
   // monitors the SAPISID cookie and triggers a /ListAccounts call on change.
@@ -337,8 +343,18 @@ class GaiaCookieManagerService
   // Helper method to initialize listed accounts ids.
   void InitializeListedAccountsIds();
 
+  // Starts /ListAccounts unless there are no Gaia cookies, in which case the
+  // request completes with no accounts.
+  void MaybeStartFetchingListAccounts();
+  void OnGaiaCookiesForListAccounts(
+      const net::CookieAccessResultList& cookies,
+      const net::CookieAccessResultList& excluded_cookies);
+
   // Virtual for testing purposes.
   virtual void StartFetchingListAccounts();
+
+  // Updates the state and notifies observers once the accounts are known.
+  void HandleListAccountsSuccess(std::vector<gaia::ListedAccount> accounts);
 
   // Prepare for logout and then starts fetching logout request.
   // Virtual for testing purpose.
@@ -398,6 +414,12 @@ class GaiaCookieManagerService
   std::vector<gaia::ListedAccount> accounts_;
 
   bool list_accounts_stale_;
+
+  // True if `accounts_` comes from a request that was skipped because there
+  // were no Gaia cookies.
+  bool list_accounts_skipped_ = false;
+
+  bool ignore_missing_gaia_cookies_for_testing_ = false;
 
   base::WeakPtrFactory<GaiaCookieManagerService> weak_ptr_factory_{this};
 };

@@ -5,9 +5,11 @@
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 
 #include "base/strings/strcat.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
+#include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
@@ -35,6 +37,11 @@ void ActiveUserTestMixin::SetFakeCookieValue() {
   base::RunLoop run_loop;
   observer.SetOnAccountsInCookieUpdatedCallback(run_loop.QuitClosure());
 
+  // Signing in on the web sets Gaia cookies, without which Chrome doesn't
+  // list the accounts.
+  ASSERT_TRUE(content::SetCookie(test_->browser()->GetProfile(),
+                                 GaiaUrls::GetInstance()->gaia_url(),
+                                 "SAPISID=fake; Secure; Domain=.google.com"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       test_->browser(),
       test_server_->GetURL("accounts.google.com",

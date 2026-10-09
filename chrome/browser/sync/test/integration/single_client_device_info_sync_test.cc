@@ -15,6 +15,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -50,7 +51,9 @@
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/device_name_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -1150,6 +1153,10 @@ IN_PROC_BROWSER_TEST_P(
   signin::MakeAccountAvailable(identity_manager,
                                options.Build(GetClient(0)->GetEmailForAccount(
                                    SyncTestAccount::kDefaultAccount)));
+  // Signing in on the web sets Gaia cookies. It must outlive the PRE_ test.
+  ASSERT_TRUE(content::SetCookie(
+      GetProfile(0), GaiaUrls::GetInstance()->secure_google_url(),
+      "SAPISID=fake; Secure; Domain=.google.com; Max-Age=86400"));
 }
 
 // TODO(crbug.com/483936092): signin::MakeAccountAvailable() (needed by the PRE_

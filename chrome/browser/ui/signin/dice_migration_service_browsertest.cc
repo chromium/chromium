@@ -23,6 +23,8 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -46,6 +48,10 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void ImplicitlySignIn(const std::string& email) {
+    // Signing in on the web sets Gaia cookies. It must outlive the PRE_ test.
+    ASSERT_TRUE(content::SetCookie(
+        GetProfile(), GaiaUrls::GetInstance()->secure_google_url(),
+        "SAPISID=fake; Secure; Domain=.google.com; Max-Age=86400"));
     signin::MakeAccountAvailable(
         GetIdentityManager(),
         signin::AccountAvailabilityOptionsBuilder()

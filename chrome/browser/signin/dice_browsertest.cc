@@ -274,6 +274,9 @@ std::unique_ptr<HttpResponse> HandleSigninURL(
           main_email.c_str(), kAuthorizationCode);
     }
     http_response->AddCustomHeader(kDiceResponseHeader, header_value_to_add);
+    // Like Gaia, set the Gaia cookies on sign-in.
+    http_response->AddCustomHeader(
+        "Set-Cookie", "SAPISID=fake; Path=/; Secure; Max-Age=86400");
   }
 
   // When hitting the Chrome Sync endpoint, redirect to kEnableSyncURL, which
@@ -578,6 +581,9 @@ class DiceBrowserTest : public InProcessBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     const GURL& base_url = https_server_.base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
+    // Make the test server the Google origin as well, so that the cookies it
+    // sets are Gaia cookies, as observed by the Gaia cookie listener.
+    command_line->AppendSwitchASCII(switches::kGoogleUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kGoogleApisUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kLsoUrl, base_url.spec());
   }

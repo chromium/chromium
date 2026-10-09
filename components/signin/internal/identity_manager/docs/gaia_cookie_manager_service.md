@@ -15,6 +15,7 @@ Freshness: 2026-09-02
 
 ### 2. List Accounts (`ListAccounts`, `TriggerListAccounts`)
 - Fetches the list of accounts currently present in the cookie jar via the `ListAccounts?json=standard&laf=b64bin` endpoint.
+- When `kSkipListAccountsWithoutGaiaCookies` is enabled and the cookie jar has no cookies for the Gaia origin, the request is not sent and completes with an empty account list.
 - Parsed account info is cached in memory, persisted in prefs, and dispatched to observers via `GaiaAccountsInCookieUpdatedCallback`.
 - `ListAccounts()` returns cached data if fresh or triggers a fetch if stale.
 - `TriggerListAccounts()` always enqueues a fetch.
