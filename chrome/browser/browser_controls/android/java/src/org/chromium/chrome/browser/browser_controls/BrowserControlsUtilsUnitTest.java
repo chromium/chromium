@@ -27,6 +27,8 @@ import org.chromium.ui.display.DisplayAndroid;
 /** Unit tests for {@link BrowserControlsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowserControlsUtilsUnitTest {
+    private static final String HISTOGRAM_AVAILABLE_WINDOW_HEIGHT =
+            "Android.BrowserControls.AvailableWindowHeight";
     private static final String HISTOGRAM_PERCENTAGE_MAX_HEIGHT =
             "Android.BrowserControls.PercentageOfWindowUsedByBrowserControlsAtMaxHeight";
     private static final String HISTOGRAM_PERCENTAGE_MIN_HEIGHT =
@@ -93,6 +95,7 @@ public class BrowserControlsUtilsUnitTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_AVAILABLE_WINDOW_HEIGHT, 800)
                         .expectIntRecord(HISTOGRAM_PERCENTAGE_MAX_HEIGHT, 20)
                         .expectIntRecord(HISTOGRAM_PERCENTAGE_MIN_HEIGHT, 3)
                         .build();
@@ -110,6 +113,7 @@ public class BrowserControlsUtilsUnitTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_AVAILABLE_WINDOW_HEIGHT)
                         .expectNoRecords(HISTOGRAM_PERCENTAGE_MAX_HEIGHT)
                         .expectNoRecords(HISTOGRAM_PERCENTAGE_MIN_HEIGHT)
                         .build();
@@ -128,6 +132,7 @@ public class BrowserControlsUtilsUnitTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_AVAILABLE_WINDOW_HEIGHT, 800)
                         .expectIntRecord(HISTOGRAM_PERCENTAGE_MAX_HEIGHT, 100)
                         .expectIntRecord(HISTOGRAM_PERCENTAGE_MIN_HEIGHT, 100)
                         .build();

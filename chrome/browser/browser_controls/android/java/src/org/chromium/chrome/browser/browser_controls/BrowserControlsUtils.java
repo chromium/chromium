@@ -21,6 +21,8 @@ import org.chromium.ui.display.DisplayUtil;
 @NullMarked
 public class BrowserControlsUtils {
 
+    private static final String HISTOGRAM_AVAILABLE_WINDOW_HEIGHT =
+            "Android.BrowserControls.AvailableWindowHeight";
     private static final String HISTOGRAM_PERCENTAGE_MAX_HEIGHT =
             "Android.BrowserControls.PercentageOfWindowUsedByBrowserControlsAtMaxHeight";
     private static final String HISTOGRAM_PERCENTAGE_MIN_HEIGHT =
@@ -174,8 +176,8 @@ public class BrowserControlsUtils {
     }
 
     /**
-     * Records the percentage of the window's total height used by combined top and bottom browser
-     * controls.
+     * Records metrics for combined top and bottom browser controls, including the available window
+     * height in pixels and the percentage of the window's total height used by controls.
      */
     public static void recordCombinedControlsMetrics(
             BrowserControlsStateProvider stateProvider,
@@ -189,6 +191,12 @@ public class BrowserControlsUtils {
                         + stateProvider.getBottomControlsMinHeight();
         if (windowHeight <= 0 || totalHeight < 0 || minHeight < 0) return;
 
+        RecordHistogram.recordCustomCountHistogram(
+                HISTOGRAM_AVAILABLE_WINDOW_HEIGHT,
+                windowHeight,
+                /* min= */ 100,
+                /* max= */ 10000,
+                /* numBuckets= */ 50);
         RecordHistogram.recordPercentageHistogram(
                 HISTOGRAM_PERCENTAGE_MAX_HEIGHT,
                 calculatePercentageOfWindowUsed(totalHeight, windowHeight));

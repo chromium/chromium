@@ -1382,6 +1382,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BrowserControls.AvailableWindowHeight" units="pixels"
+    expires_after="2027-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the available window height in pixels for the app window. Recorded
+    when a navigation finishes in the main frame of the active tab. This can be
+    paired with percentage-of-window browser controls metrics to compute the
+    absolute pixel height available vs consumed by the controls.
+  </summary>
+</histogram>
+
 <histogram name="Android.BrowserControls.LockedByTabState" enum="Boolean"
     expires_after="2027-09-13">
   <owner>wenyufu@chromium.org</owner>
