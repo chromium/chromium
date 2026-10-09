@@ -556,11 +556,12 @@ TEST_F(PermissionsTabHelperTest,
             web_state_.GetStateForPermission(web::PermissionMicrophone));
 }
 
-// Test that deleting an allowed or blocked site exception (resetting to
-// CONTENT_SETTING_DEFAULT) does not revoke an allowed permission or re-enable a
-// revoked permission on the WebState.
+// Tests that deleting an allowed site exception (resetting to
+// `CONTENT_SETTING_DEFAULT`) revokes an allowed permission on the `WebState`,
+// and deleting a blocked site exception does not re-enable a revoked
+// permission.
 TEST_F(PermissionsTabHelperTest,
-       TestDeletingSiteExceptionsDoesNotMutateActivePermissionState) {
+       TestDeletingSiteExceptionsRevokesAllowedPermissionState) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
 
@@ -574,22 +575,22 @@ TEST_F(PermissionsTabHelperTest,
   web_state_.SetStateForPermission(web::PermissionStateAllowed,
                                    web::PermissionCamera);
 
-  // Deleting the ALLOW site exception resets to ASK and keeps the session
-  // permission allowed.
+  // Deleting the `CONTENT_SETTING_ALLOW` site exception resets to
+  // `CONTENT_SETTING_ASK` and revokes the session permission.
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
       CONTENT_SETTING_DEFAULT);
-  EXPECT_EQ(web::PermissionStateAllowed,
+  EXPECT_EQ(web::PermissionStateNotAccessible,
             web_state_.GetStateForPermission(web::PermissionCamera));
 
-  // Blocking the site revokes the session permission.
+  // Blocking the site keeps the session permission revoked.
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(web::PermissionStateNotAccessible,
             web_state_.GetStateForPermission(web::PermissionCamera));
 
-  // Deleting the BLOCK site exception resets to ASK and keeps the session
-  // permission revoked.
+  // Deleting the `CONTENT_SETTING_BLOCK` site exception resets to
+  // `CONTENT_SETTING_ASK` and keeps the session permission revoked.
   settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
       CONTENT_SETTING_DEFAULT);

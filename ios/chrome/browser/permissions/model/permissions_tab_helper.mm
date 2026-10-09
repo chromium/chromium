@@ -256,7 +256,7 @@ void PermissionsTabHelper::OnContentSettingChanged(
       continue;
     }
     ContentSetting setting = settings_map->GetContentSetting(url, url, type);
-    if (setting == CONTENT_SETTING_BLOCK) {
+    if (setting != CONTENT_SETTING_ALLOW) {
       // Setting `PermissionStateNotAccessible` maps to
       // `WKMediaCaptureStateNone` on `WKWebView`, which calls
       // `WebPageProxy::stopMediaCapture` and
