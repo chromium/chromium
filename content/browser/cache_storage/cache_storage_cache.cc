@@ -2672,15 +2672,8 @@ void CacheStorageCache::SizeImpl(SizeCallback callback) {
   CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
 
   // TODO(cmumford): Can CacheStorage::kSizeUnknown be returned instead of zero?
-  if (backend_state_ != BACKEND_OPEN) {
-    scheduler_task_runner_->PostTask(FROM_HERE,
-                                     base::BindOnce(std::move(callback), 0));
-    return;
-  }
-
-  int64_t size = backend_state_ == BACKEND_OPEN ? PaddedCacheSize() : 0;
-  scheduler_task_runner_->PostTask(FROM_HERE,
-                                   base::BindOnce(std::move(callback), size));
+  std::move(callback).Run(backend_state_ == BACKEND_OPEN ? PaddedCacheSize()
+                                                         : 0);
 }
 
 void CacheStorageCache::GetSizeThenCloseDidGetSize(SizeCallback callback,
