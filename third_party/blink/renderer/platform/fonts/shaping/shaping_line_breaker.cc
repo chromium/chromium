@@ -97,7 +97,7 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
     return {start};
   }
   if (ShouldTrimStartOfWrappedLine(text_spacing_trim_) &&
-      Character::MaybeHanKerningOpen(GetText()[start])) [[unlikely]] {
+      unicode::MaybeHanKerningOpen(GetText()[start])) [[unlikely]] {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply
     // `HanKerning` if applicable. Note, it may not actually apply, if the font
@@ -347,7 +347,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   wtf_size_t last_safe;
   const ShapeResult* line_end_result = nullptr;
   if (candidate_break < range_end && ShouldTrimEnd(text_spacing_trim_) &&
-      Character::MaybeHanKerningClose(text[candidate_break])) [[unlikely]] {
+      unicode::MaybeHanKerningClose(text[candidate_break])) [[unlikely]] {
     const wtf_size_t adjusted_candidate_break = candidate_break + 1;
     if (break_iterator_->IsBreakable(adjusted_candidate_break)) {
       last_safe = result_->CachedPreviousSafeToBreakOffset(candidate_break);

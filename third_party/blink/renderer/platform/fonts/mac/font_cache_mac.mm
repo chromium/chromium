@@ -378,7 +378,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     // U+3006 (IDEOGRAPHIC CLOSING MARK) is the lowest Unicode codepoint with
     // [:Ideographic=Yes:].
     const bool is_ideographic =
-        character >= 0x3006 && Character::IsIdeographic(character);
+        character >= 0x3006 && unicode::IsIdeographic(character);
     const bool is_nastaliq =
         !is_ideographic &&
         font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&

@@ -1594,7 +1594,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
             is_next_start_of_paragraph &&
             ShouldTrimStartOfParagraph(
                 font.GetFontDescription().GetTextSpacingTrim()) &&
-            Character::MaybeHanKerningOpen(
+            unicode::MaybeHanKerningOpen(
                 text_content[start_item.StartOffset()]),
     });
     is_next_start_of_paragraph = false;

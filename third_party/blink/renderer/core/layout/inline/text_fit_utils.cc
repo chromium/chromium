@@ -83,7 +83,7 @@ ShapeResult* ShapeForFit(const InlineItem& item,
         start_offset < text_content.length() &&
         ShouldTrimStartOfParagraph(
             font.GetFontDescription().GetTextSpacingTrim()) &&
-        Character::MaybeHanKerningOpen(text_content[start_offset]);
+        unicode::MaybeHanKerningOpen(text_content[start_offset]);
   }
 
   ShapeResult* result = nullptr;

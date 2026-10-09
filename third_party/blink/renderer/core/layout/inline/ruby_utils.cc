@@ -150,7 +150,7 @@ bool CanTrimHanKerningOpen(const ShapeResult& shape_result,
                            const String& text_content,
                            wtf_size_t text_offset) {
   UChar32 character = text_content.CodePointAtOrZero(text_offset);
-  if (!Character::MaybeHanKerningOpen(character)) {
+  if (!unicode::MaybeHanKerningOpen(character)) {
     return false;
   }
   const SimpleFontData* primary_font = style.GetFont()->PrimaryFont();
@@ -180,7 +180,7 @@ bool CanTrimHanKerningClose(const ShapeResult& shape_result,
                             wtf_size_t text_offset) {
   wtf_size_t next_index = text_offset;
   UChar32 character = text_content.CodePointAtAndNext(next_index);
-  if (!Character::MaybeHanKerningClose(character)) {
+  if (!unicode::MaybeHanKerningClose(character)) {
     return false;
   }
   const SimpleFontData* primary_font = style.GetFont()->PrimaryFont();
@@ -413,7 +413,7 @@ AnnotationOverhang GetOverhang(
                                  *previous_item_style, text_content,
                                  last_non_space_index)) {
         kerning_overhang = LayoutUnit(font_size * kHanKerningHalf);
-      } else if (Character::MaybeHanKerningMiddle(last_non_space_character)) {
+      } else if (unicode::MaybeHanKerningMiddle(last_non_space_character)) {
         kerning_overhang = LayoutUnit(font_size * kHanKerningQuarter);
       }
     }
@@ -492,7 +492,7 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
         !CanTrimHanKerningClose(*previous_item.item->TextShapeResult(),
                                 previous_item_style, text_content,
                                 previous_character_index) &&
-        !Character::MaybeHanKerningMiddle(previous_character)) {
+        !unicode::MaybeHanKerningMiddle(previous_character)) {
       return false;
     }
     return true;
@@ -601,7 +601,7 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
       if (CanTrimHanKerningOpen(shape_result, *text_item.Style(), text_content,
                                 space_end)) {
         kerning_overhang = LayoutUnit(font_size * kHanKerningHalf);
-      } else if (Character::MaybeHanKerningMiddle(
+      } else if (unicode::MaybeHanKerningMiddle(
                      text_content.CodePointAtOrZero(space_end))) {
         kerning_overhang = LayoutUnit(font_size * kHanKerningQuarter);
       }

@@ -266,7 +266,7 @@ void TextAutoSpace::Apply(const InlineNode& node, InlineItemsData& data) {
       ++char_iter;
       continue;
     }
-    EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
+    EastAsianSpacingType type = unicode::GetEastAsianSpacingType(ch);
     const bool is_wide = type == EastAsianSpacingType::kWide;
     if (is_wide || is_last_wide) [[unlikely]] {
       // Resolve `kConditional` to `kNarrow` or `kOther`.

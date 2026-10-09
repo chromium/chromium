@@ -151,7 +151,7 @@ class PLATFORM_EXPORT HanKerning {
 
 inline bool HanKerning::MayApply(StringView text) {
   return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar ch) {
-    return !Character::MaybeHanKerningOpenOrCloseFast(ch);
+    return !unicode::MaybeHanKerningOpenOrCloseFast(ch);
   }>();
 }
 

@@ -1895,7 +1895,7 @@ String ApplyFullwidthTransform(const String& text,
     if (code_point == uchar::kSpace && !preserve_white_space) {
       transformed_char = code_point;
     } else {
-      transformed_char = Character::FullwidthVariant(code_point);
+      transformed_char = unicode::FullwidthVariant(code_point);
     }
     result.Append(transformed_char);
   }
@@ -1912,7 +1912,7 @@ String ApplyFullSizeKanaTransform(const String& text,
   wtf_size_t target_offset = 0;
 
   for (UChar32 code_point : text) {
-    UChar32 transformed = Character::FullSizeKanaVariant(code_point);
+    UChar32 transformed = unicode::FullSizeKanaVariant(code_point);
 
     wtf_size_t source_len = U16_LENGTH(code_point);
     wtf_size_t target_len = U16_LENGTH(transformed);

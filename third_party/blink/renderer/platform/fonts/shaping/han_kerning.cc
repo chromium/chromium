@@ -141,7 +141,7 @@ HanKerning::CharType CharTypeFromBounds(
 // https://drafts.csswg.org/css-text-4/#text-spacing-classes
 HanKerning::CharType HanKerning::GetCharType(UChar ch,
                                              const FontData& font_data) {
-  const CharType type = Character::GetHanKerningCharType(ch);
+  const CharType type = unicode::GetHanKerningCharType(ch);
   switch (type) {
     case CharType::kOther:
     case CharType::kOpen:

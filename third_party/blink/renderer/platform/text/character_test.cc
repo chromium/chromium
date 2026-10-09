@@ -28,7 +28,7 @@ testing::AssertionResult IsCjkIdeographOrSymbolWithMessage(UChar32 codepoint) {
   char formatted_as_hex[kFormatBufferSize];
   snprintf(formatted_as_hex, kFormatBufferSize, "0x%x", codepoint);
 
-  if (Character::IsCjkIdeographOrSymbol(codepoint)) {
+  if (IsCjkIdeographOrSymbol(codepoint)) {
     return testing::AssertionSuccess()
            << "Codepoint " << formatted_as_hex << " is a CjkIdeographOrSymbol.";
   }
@@ -65,21 +65,21 @@ TEST(CharacterTest, Derived) {
     }
 
     const UBlockCode block = ublock_getCode(ch);
-    EXPECT_EQ(Character::IsBlockCjkSymbolsAndPunctuation(ch),
+    EXPECT_EQ(IsBlockCjkSymbolsAndPunctuation(ch),
               block == UBLOCK_CJK_SYMBOLS_AND_PUNCTUATION);
-    EXPECT_EQ(Character::IsBlockHalfwidthAndFullwidthForms(ch),
+    EXPECT_EQ(IsBlockHalfwidthAndFullwidthForms(ch),
               block == UBLOCK_HALFWIDTH_AND_FULLWIDTH_FORMS);
 
-    const UEastAsianWidth eaw = Character::EastAsianWidth(ch);
-    EXPECT_EQ(Character::IsEastAsianWidthFullwidth(ch),
+    const UEastAsianWidth eaw = EastAsianWidth(ch);
+    EXPECT_EQ(IsEastAsianWidthFullwidth(ch),
               eaw == UEastAsianWidth::U_EA_FULLWIDTH);
 
-    if (!Character::MayNeedEastAsianSpacing(ch)) {
-      EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
+    if (!MayNeedEastAsianSpacing(ch)) {
+      EastAsianSpacingType type = GetEastAsianSpacingType(ch);
       DCHECK_NE(type, EastAsianSpacingType::kWide);
     }
 
-    if (!Character::MaybeHanKerningOpenOrCloseFast(ch)) {
+    if (!MaybeHanKerningOpenOrCloseFast(ch)) {
       DCHECK(!internal::MaybeHanKerningOpenSlow(ch));
       DCHECK(!internal::MaybeHanKerningCloseSlow(ch));
     }
@@ -160,18 +160,16 @@ static void TestSpecificUChar32RangeIdeograph(UChar32 range_start,
                                               bool before = true,
                                               bool after = true) {
   if (before) {
-    EXPECT_FALSE(Character::IsCjkIdeographOrSymbol(range_start - 1))
+    EXPECT_FALSE(IsCjkIdeographOrSymbol(range_start - 1))
         << std::hex << (range_start - 1);
   }
-  EXPECT_TRUE(Character::IsCjkIdeographOrSymbol(range_start))
-      << std::hex << range_start;
+  EXPECT_TRUE(IsCjkIdeographOrSymbol(range_start)) << std::hex << range_start;
   UChar32 mid = static_cast<UChar32>(
       (static_cast<uint64_t>(range_start) + range_end) / 2);
-  EXPECT_TRUE(Character::IsCjkIdeographOrSymbol(mid)) << std::hex << mid;
-  EXPECT_TRUE(Character::IsCjkIdeographOrSymbol(range_end))
-      << std::hex << range_end;
+  EXPECT_TRUE(IsCjkIdeographOrSymbol(mid)) << std::hex << mid;
+  EXPECT_TRUE(IsCjkIdeographOrSymbol(range_end)) << std::hex << range_end;
   if (after) {
-    EXPECT_FALSE(Character::IsCjkIdeographOrSymbol(range_end + 1))
+    EXPECT_FALSE(IsCjkIdeographOrSymbol(range_end + 1))
         << std::hex << (range_end + 1);
   }
 }
@@ -370,7 +368,7 @@ TEST(CharacterTest, HanKerning) {
       {0xFF63, HanKerningCharType::kCloseNarrow},
   };
   for (const Data& data : data_list) {
-    EXPECT_EQ(Character::GetHanKerningCharType(data.ch), data.type);
+    EXPECT_EQ(GetHanKerningCharType(data.ch), data.type);
   }
 }
 
@@ -655,28 +653,25 @@ TEST(CharacterTest, TestIsEmojiVariationSequence) {
 }
 
 TEST(CharacterTest, TestIsIdeographicVariationSequence) {
-  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x8279, 0xe0100));
-  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x8279, 0xe01ef));
-  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x9038, 0xe0101));
-  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x9038, 0xe01ef));
-  EXPECT_FALSE(Character::IsIdeographicVariationSequence(0x9038, 0xfe00));
-  EXPECT_FALSE(Character::IsIdeographicVariationSequence(0x0041, 0xe0100));
+  EXPECT_TRUE(IsIdeographicVariationSequence(0x8279, 0xe0100));
+  EXPECT_TRUE(IsIdeographicVariationSequence(0x8279, 0xe01ef));
+  EXPECT_TRUE(IsIdeographicVariationSequence(0x9038, 0xe0101));
+  EXPECT_TRUE(IsIdeographicVariationSequence(0x9038, 0xe01ef));
+  EXPECT_FALSE(IsIdeographicVariationSequence(0x9038, 0xfe00));
+  EXPECT_FALSE(IsIdeographicVariationSequence(0x0041, 0xe0100));
 }
 
 // The test data are sampled from the ground truth.
 TEST(CharacterTest, TestEastAsianSpacingPropertySampling) {
   // MICRO SIGN
-  EXPECT_EQ(Character::GetEastAsianSpacingType(0x00B5),
-            EastAsianSpacingType::kNarrow);
+  EXPECT_EQ(GetEastAsianSpacingType(0x00B5), EastAsianSpacingType::kNarrow);
   // WAVY DASH
-  EXPECT_EQ(Character::GetEastAsianSpacingType(0x3030),
-            EastAsianSpacingType::kOther);
+  EXPECT_EQ(GetEastAsianSpacingType(0x3030), EastAsianSpacingType::kOther);
   // KAWI DANDA
-  EXPECT_EQ(Character::GetEastAsianSpacingType(0x11F43),
+  EXPECT_EQ(GetEastAsianSpacingType(0x11F43),
             EastAsianSpacingType::kConditional);
   // KATAKANA LETTER SMALL KO
-  EXPECT_EQ(Character::GetEastAsianSpacingType(0x1B155),
-            EastAsianSpacingType::kWide);
+  EXPECT_EQ(GetEastAsianSpacingType(0x1B155), EastAsianSpacingType::kWide);
 }
 
 namespace {
@@ -794,9 +789,9 @@ TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
         &error_code);
     ASSERT_TRUE(U_SUCCESS(error_code))
         << error_code << "\t" << required_capacity;
-    UEastAsianWidth east_asian_width = Character::EastAsianWidth(test_char);
+    UEastAsianWidth east_asian_width = EastAsianWidth(test_char);
 
-    switch (Character::GetEastAsianSpacingType(test_char)) {
+    switch (GetEastAsianSpacingType(test_char)) {
       case EastAsianSpacingType::kWide:
         EXPECT_TRUE(
             ShouldBeWidth(test_char, script, east_asian_width, script_list))

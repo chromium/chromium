@@ -66,7 +66,7 @@ inline TextAutoSpace::TextAutoSpace(const InlineItemsData& data) {
                                         ETextAutospace::kNoAutospace;
                            }) ||
       data.text_content.IsAllSpecialCharacters<[](UChar ch) {
-        return !Character::MayNeedEastAsianSpacing(ch);
+        return !unicode::MayNeedEastAsianSpacing(ch);
       }>()) {
     return;
   }
