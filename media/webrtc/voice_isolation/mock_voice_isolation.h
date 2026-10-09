@@ -26,6 +26,7 @@ class MockVoiceIsolation : public VoiceIsolation {
               (const AudioBus& input_bus, AudioBus& output_bus),
               (override));
   MOCK_METHOD(void, ClearBuffers, (), (override));
+  MOCK_METHOD(base::TimeDelta, AlgorithmicDelay, (), (const, override));
 };
 
 class MockVoiceIsolationComponent : public VoiceIsolationComponent {

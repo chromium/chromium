@@ -76,10 +76,14 @@ class VoiceIsolationImpl : public VoiceIsolation {
 
   void ProcessAudio(const AudioBus& input_bus, AudioBus& output_bus) override;
   void ClearBuffers() override;
+  base::TimeDelta AlgorithmicDelay() const override;
 
  private:
   // Mono component that processes exactly one external buffer per call.
   const std::unique_ptr<VoiceIsolationComponent> voice_isolation_component_;
+
+  // Cached algorithmic delay of `voice_isolation_component_`.
+  const base::TimeDelta algorithmic_delay_;
 
   // Channel count of the external buffers.
   const int channels_;
@@ -100,6 +104,9 @@ VoiceIsolationImpl::VoiceIsolationImpl(
     std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation,
     const media::AudioParameters& audio_params)
     : voice_isolation_component_(std::move(internal_voice_isolation)),
+      algorithmic_delay_(voice_isolation_component_
+                             ? voice_isolation_component_->AlgorithmicDelay()
+                             : base::TimeDelta()),
       channels_(audio_params.channels()) {
   CHECK(voice_isolation_component_);
   CHECK(VoiceIsolation::SupportsAudioParameters(audio_params));
@@ -158,6 +165,10 @@ void VoiceIsolationImpl::ClearBuffers() {
   // The scratch buses are fully overwritten on every call, so only the
   // component holds state.
   voice_isolation_component_->ClearBuffers();
+}
+
+base::TimeDelta VoiceIsolationImpl::AlgorithmicDelay() const {
+  return algorithmic_delay_;
 }
 }  // namespace
 

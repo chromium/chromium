@@ -555,4 +555,31 @@ TEST(VoiceIsolationDeathTest, ProcessAudioDiesOnSameInputAndOutputBus) {
   EXPECT_CHECK_DEATH(voice_isolation->ProcessAudio(*bus, *bus));
 }
 
+TEST(VoiceIsolationTest, AlgorithmicDelay) {
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRateHz,
+                         kComponentFrameSize);
+
+  // 1. With PassthroughVoiceIsolation (component algorithmic delay is 0).
+  auto passthrough = std::make_unique<PassthroughVoiceIsolation>(
+      kComponentFrameSize, kComponentFramesPerSecond);
+  EXPECT_EQ(passthrough->AlgorithmicDelay(), base::TimeDelta());
+
+  std::unique_ptr<VoiceIsolation> vi_passthrough =
+      VoiceIsolation::Create(std::move(passthrough), params);
+  ASSERT_NE(vi_passthrough, nullptr);
+  EXPECT_EQ(vi_passthrough->AlgorithmicDelay(), base::TimeDelta());
+
+  // 2. With default model (BufferedVoiceIsolation + StftVoiceIsolation +
+  // BandSplitVoiceIsolation + TfLiteVoiceIsolation).
+  // StftVoiceIsolation adds 10ms algorithmic delay and BufferedVoiceIsolation
+  // adds 10ms buffering delay.
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  std::unique_ptr<VoiceIsolation> vi_model =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(vi_model, nullptr);
+  EXPECT_EQ(vi_model->AlgorithmicDelay(), base::Milliseconds(20));
+}
+
 }  // namespace media

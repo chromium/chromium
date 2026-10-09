@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
@@ -76,6 +77,11 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
   // Clears all internal state and buffers. In multi-threaded environments it
   // should be called from the same sequence as `ProcessAudio`.
   virtual void ClearBuffers() = 0;
+
+  // Returns the algorithmic delay this VoiceIsolation pipeline adds: the time
+  // between an input sample and its corresponding output sample. Excludes
+  // computation time. Constant for the lifetime of the object.
+  virtual base::TimeDelta AlgorithmicDelay() const = 0;
 
  protected:
   VoiceIsolation() = default;
