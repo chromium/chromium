@@ -10,8 +10,6 @@ static_library("app_shortcuts") {
     "arc_app_shortcuts_request.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/apps/app_service/app_icon",

@@ -12,8 +12,6 @@ static_library("error_notification") {
     "arc_error_notification_item.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/public/cpp",
     "//ash/resources/vector_icons",

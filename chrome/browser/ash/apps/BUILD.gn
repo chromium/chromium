@@ -16,7 +16,6 @@ static_library("apps") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chromeos/ash/experiences/arc/mojom",

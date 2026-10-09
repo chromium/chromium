@@ -15,7 +15,6 @@ static_library("auto_sleep") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",

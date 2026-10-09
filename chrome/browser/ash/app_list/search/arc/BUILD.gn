@@ -23,10 +23,7 @@ static_library("arc") {
     "recommend_apps_fetcher_impl.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//components/app_icon_loader",
-  ]
+  public_deps = [ "//components/app_icon_loader" ]
 
   deps = [
     "//ash/public/cpp",

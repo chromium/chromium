@@ -16,8 +16,6 @@ static_library("cert_store") {
     "cert_store_service_factory.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/ash/certificate_provider",
