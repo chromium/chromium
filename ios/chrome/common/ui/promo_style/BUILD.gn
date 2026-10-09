@@ -40,7 +40,6 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/button_stack:constants" ]
   frameworks = [ "Foundation.framework" ]
 }
 

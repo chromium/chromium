@@ -340,8 +340,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   scrollView.delegate = self;
   scrollView.contentInset =
       UIEdgeInsetsMake(0, 0, [self contentViewBottomInset], 0);
-  scrollView.accessibilityIdentifier =
-      kButtonStackScrollViewAccessibilityIdentifier;
   return scrollView;
 }
 
