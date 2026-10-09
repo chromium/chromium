@@ -91,6 +91,11 @@ class TaskPolicyConfig {
     // Serializes `this` as a string for debugging.
     std::string ToDebugString() const;
 
+    template <typename H>
+    friend H AbslHashValue(H h, const Location& location) {
+      return H::combine(std::move(h), location.data_);
+    }
+
     friend auto operator<=>(const Location&, const Location&) = default;
     friend bool operator==(const Location&, const Location&) = default;
 
@@ -124,7 +129,7 @@ class TaskPolicyConfig {
     // - `resources`: The set of accessible resources granted by this rule.
     // - `allowed_tools`: The set of tools allowed on this location. An empty
     //   set means no tools are allowed and interaction/navigation is blocked.
-    explicit Rule(std::vector<Location> navigation_sources,
+    explicit Rule(absl::flat_hash_set<Location> navigation_sources,
                   ResourceSet resources,
                   absl::flat_hash_set<ClientTool> allowed_tools);
     ~Rule();
@@ -145,7 +150,7 @@ class TaskPolicyConfig {
     friend bool operator==(const Rule&, const Rule&) = default;
 
    private:
-    std::vector<Location> navigation_sources_;
+    absl::flat_hash_set<Location> navigation_sources_;
     ResourceSet resources_;
     absl::flat_hash_set<ClientTool> allowed_tools_;
   };

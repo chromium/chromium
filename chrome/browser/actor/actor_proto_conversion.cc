@@ -82,6 +82,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -1323,14 +1324,16 @@ ConvertLocation(const optimization_guide::proto::Location& location) {
 
 base::expected<origin_gating::TaskPolicyConfig::Rule, std::string_view>
 ConvertRule(const optimization_guide::proto::LocationRule& location_rule) {
-  std::vector<origin_gating::TaskPolicyConfig::Location> navigation_sources;
+  absl::flat_hash_set<origin_gating::TaskPolicyConfig::Location>
+      navigation_sources;
+  navigation_sources.reserve(location_rule.navigation_sources_size());
   for (const auto& nav_source : location_rule.navigation_sources()) {
     if (!nav_source.has_source()) {
       return base::unexpected("NavigationSource has no source location set");
     }
     ASSIGN_OR_RETURN(origin_gating::TaskPolicyConfig::Location source,
                      ConvertLocation(nav_source.source()));
-    navigation_sources.emplace_back(source);
+    navigation_sources.insert(source);
   }
   origin_gating::TaskPolicyConfig::Rule::ResourceSet resources;
   for (const auto& resource : location_rule.metadata().accessible_resources()) {

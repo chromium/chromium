@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -109,7 +110,7 @@ TaskPolicyConfig::Rule& TaskPolicyConfig::Rule::operator=(const Rule&) =
 
 TaskPolicyConfig::Rule& TaskPolicyConfig::Rule::operator=(Rule&&) = default;
 
-TaskPolicyConfig::Rule::Rule(std::vector<Location> navigation_sources,
+TaskPolicyConfig::Rule::Rule(absl::flat_hash_set<Location> navigation_sources,
                              ResourceSet resources,
                              absl::flat_hash_set<ClientTool> allowed_tools)
     : navigation_sources_(std::move(navigation_sources)),
@@ -131,9 +132,13 @@ bool TaskPolicyConfig::Rule::CanActuate(const ClientTool& tool) const {
 }
 
 base::Value TaskPolicyConfig::Rule::ToDebugValue() const {
+  // Sort for a stable order, since `navigation_sources_` is unordered.
+  std::vector<std::string> sorted_sources =
+      base::ToVector(navigation_sources_, &Location::ToDebugString);
+  std::ranges::sort(sorted_sources);
   base::ListValue sources;
-  for (const auto& source : navigation_sources_) {
-    sources.Append(source.ToDebugString());
+  for (const auto& source : sorted_sources) {
+    sources.Append(source);
   }
 
   // Sort for a stable order, since `allowed_tools_` is unordered.

@@ -25,6 +25,7 @@
 #include "components/origin_gating/core/task_policy_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -44,7 +45,7 @@ using Location = TaskPolicyConfig::Location;
 using Rule = TaskPolicyConfig::Rule;
 using Wildcard = TaskPolicyConfig::Wildcard;
 
-Rule CreateExpectedRule(std::vector<Location> navigation_sources = {},
+Rule CreateExpectedRule(absl::flat_hash_set<Location> navigation_sources = {},
                         Rule::ResourceSet resources = {},
                         absl::flat_hash_set<ClientTool> allowed_tools = {}) {
   return Rule(std::move(navigation_sources), resources,

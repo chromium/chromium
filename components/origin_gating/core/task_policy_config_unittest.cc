@@ -18,6 +18,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -50,7 +51,7 @@ enum class OtherTestTool {
   kOther = 1,
 };
 
-Rule CreateRule(std::vector<Location> navigation_sources = {},
+Rule CreateRule(absl::flat_hash_set<Location> navigation_sources = {},
                 Rule::ResourceSet resources = {},
                 absl::flat_hash_set<ClientTool> allowed_tools = {}) {
   return Rule(std::move(navigation_sources), resources,
