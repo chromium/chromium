@@ -72,9 +72,13 @@ class CloseWindowToolRequest : public ToolRequest {
 class EnterFullscreenToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "EnterFullscreen";
+  static constexpr std::string_view kModelFacingName = "enter_fullscreen";
 
   explicit EnterFullscreenToolRequest(int32_t window_id);
   ~EnterFullscreenToolRequest() override;
+
+  // Returns the `ToolId::kEnterFullscreen` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   int32_t GetWindowId() const { return window_id_; }
 

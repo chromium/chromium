@@ -41,6 +41,7 @@
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
+
 namespace actor {
 namespace {
 
@@ -242,6 +243,19 @@ TEST(ToolRegistryTest, AttemptOtpFillingToolDefinition) {
   EXPECT_THAT(*definition,
               RequiresParam(AttemptOtpFillingToolRequest::kForSigninParam));
 }
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+TEST(ToolRegistryTest, EnterFullscreenToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      EnterFullscreenToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kEnterFullscreen);
+  EXPECT_EQ(definition->name, EnterFullscreenToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
@@ -447,6 +461,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsOpenKnownPageTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kOpenKnownPage,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsEnterFullscreenTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kEnterFullscreen,
                                     &ToolDefinition::id));
 }
 #endif

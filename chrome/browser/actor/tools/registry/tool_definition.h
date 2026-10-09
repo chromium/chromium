@@ -51,7 +51,9 @@ enum class ToolId {
   kOpenKnownPage = 15,
   // Fills a one-time password (OTP) into input fields on the page.
   kAttemptOtpFilling = 16,
-  kMaxValue = kAttemptOtpFilling,
+  // Enters fullscreen mode for a window.
+  kEnterFullscreen = 17,
+  kMaxValue = kEnterFullscreen,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
