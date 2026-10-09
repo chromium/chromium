@@ -110,33 +110,33 @@ public class TabClosureParamsUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BEFORE_UNLOAD_SUPPORT)
-    public void areUnloadHandlersEnabled_featureEnabledOnDesktop_returnTrue() {
+    public void areBeforeUnloadHandlersEnabled_featureEnabledOnDesktop_returnTrue() {
         DeviceInfo.setIsDesktopForTesting(true);
 
-        assertTrue(TabClosureParamsUtils.areUnloadHandlersEnabled());
+        assertTrue(TabClosureParamsUtils.areBeforeUnloadHandlersEnabled());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BEFORE_UNLOAD_SUPPORT)
-    public void areUnloadHandlersEnabled_featureEnabledOnMobile_returnFalse() {
+    public void areBeforeUnloadHandlersEnabled_featureEnabledOnMobile_returnFalse() {
         DeviceInfo.setIsDesktopForTesting(false);
 
-        assertFalse(TabClosureParamsUtils.areUnloadHandlersEnabled());
+        assertFalse(TabClosureParamsUtils.areBeforeUnloadHandlersEnabled());
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BEFORE_UNLOAD_SUPPORT)
-    public void areUnloadHandlersEnabled_featureDisabledOnDesktop_returnFalse() {
+    public void areBeforeUnloadHandlersEnabled_featureDisabledOnDesktop_returnFalse() {
         DeviceInfo.setIsDesktopForTesting(true);
 
-        assertFalse(TabClosureParamsUtils.areUnloadHandlersEnabled());
+        assertFalse(TabClosureParamsUtils.areBeforeUnloadHandlersEnabled());
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BEFORE_UNLOAD_SUPPORT)
-    public void areUnloadHandlersEnabled_featureDisabledOnMobile_returnFalse() {
+    public void areBeforeUnloadHandlersEnabled_featureDisabledOnMobile_returnFalse() {
         DeviceInfo.setIsDesktopForTesting(false);
 
-        assertFalse(TabClosureParamsUtils.areUnloadHandlersEnabled());
+        assertFalse(TabClosureParamsUtils.areBeforeUnloadHandlersEnabled());
     }
 }

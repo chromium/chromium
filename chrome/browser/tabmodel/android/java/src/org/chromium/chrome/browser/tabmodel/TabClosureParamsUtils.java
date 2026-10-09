@@ -69,12 +69,11 @@ public final class TabClosureParamsUtils {
     }
 
     /**
-     * Whether tab closure may dispatch {@code beforeunload} and {@code unload} handlers on this
-     * build and form factor.
+     * Whether tab closure may dispatch {@code beforeunload} handlers on this build and form factor.
      *
-     * @return true if unload handlers may be dispatched during tab closure.
+     * @return true if {@code beforeunload} handlers may be dispatched during tab closure.
      */
-    public static boolean areUnloadHandlersEnabled() {
+    public static boolean areBeforeUnloadHandlersEnabled() {
         return ChromeFeatureList.sAndroidBeforeUnloadSupport.isEnabled() && DeviceInfo.isDesktop();
     }
 }

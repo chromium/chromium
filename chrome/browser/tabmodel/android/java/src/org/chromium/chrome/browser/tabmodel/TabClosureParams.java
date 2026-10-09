@@ -185,7 +185,7 @@ public class TabClosureParams {
          * has to confirm. False means the tabs are destroyed without the handlers being given a
          * chance, and a registered {@code beforeunload} handler cannot cancel the closure.
          *
-         * @see TabClosureParamsUtils#areUnloadHandlersEnabled()
+         * @see TabClosureParamsUtils#areBeforeUnloadHandlersEnabled()
          */
         public Builder allowUnloadHandlers(boolean allowUnloadHandlers) {
             mAllowUnloadHandlers = allowUnloadHandlers;

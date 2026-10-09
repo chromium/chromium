@@ -46,7 +46,7 @@ public class BeforeUnloadTabClosePrompter implements TabRemover.TabClosePrompter
     private static @Nullable WebContents webContentsNeedingBeforeUnload(
             TabClosureParams tabClosureParams, Tab tab) {
         if (!tabClosureParams.allowUnloadHandlers
-                || !TabClosureParamsUtils.areUnloadHandlersEnabled()
+                || !TabClosureParamsUtils.areBeforeUnloadHandlersEnabled()
                 || tab.isDestroyed()) {
             return null;
         }
