@@ -19,7 +19,7 @@ namespace base::i18n {
 // ThreadSafeLocaleHolder is a thread-safe container for a single LanguageTag
 // (locale). It allows any thread to safely read and write the active locale
 // concurrently under an internal lock. This class is final and non-virtual.
-class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) ThreadSafeLocaleHolder final {
+class COMPONENT_EXPORT(LANGUAGE_TAG) ThreadSafeLocaleHolder final {
  public:
   // Constructs a holder initialized with the specified `initial_locale`.
   explicit ThreadSafeLocaleHolder(LanguageTag initial_locale);
@@ -44,8 +44,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) ThreadSafeLocaleHolder final {
 // operations (calls to SetLocale) to a single sequence (via SEQUENCE_CHECKER).
 // However, it supports thread-safe GetLocale(), allowing multiple threads
 // and sequences to safely and concurrently read the active locale.
-class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU)
-    SequenceCheckedLocaleHolder final {
+class COMPONENT_EXPORT(LANGUAGE_TAG) SequenceCheckedLocaleHolder final {
  public:
   explicit SequenceCheckedLocaleHolder(LanguageTag initial_locale);
   ~SequenceCheckedLocaleHolder();

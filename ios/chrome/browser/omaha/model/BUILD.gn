@@ -9,7 +9,7 @@ source_set("model") {
   ]
   public_deps = [
     "//base",
-    "//base/i18n:language_tag_no_icu",
+    "//base/i18n:language_tag",
     "//ios/chrome/browser/upgrade/model:public",
   ]
   deps = [

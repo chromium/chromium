@@ -41,7 +41,7 @@ namespace base::i18n {
 //
 //   // No match:
 //   matcher.Match(GetKnownLanguageTag<"de">()); // Returns nullopt
-class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagMatcher {
+class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTagMatcher {
  public:
   // Creates a new matcher for the given set of supported locales.
   // Precomputes matching logic for the provided list of supported locales.
@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagMatcher {
 // language tag needs to be given during construction which makes it useful for
 // usages where a default is needed but the client does not necessarily know
 // which language to use as default.
-class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagMatcherWithDefault {
+class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTagMatcherWithDefault {
  public:
   // Similar to `LanguageTagMatcher::Create` but also takes as the first
   // argument, a default locale.

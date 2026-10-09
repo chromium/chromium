@@ -11,12 +11,12 @@
 namespace base::i18n {
 
 // Returns whether `tag` represents a Chinese (zh) language.
-COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) bool IsChinese(const LanguageTag& tag);
+COMPONENT_EXPORT(LANGUAGE_TAG) bool IsChinese(const LanguageTag& tag);
 // Returns whether `tag` represents a Chinese Simplified (zh-Hans) language.
-COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU)
+COMPONENT_EXPORT(LANGUAGE_TAG)
 bool IsSimplifiedChinese(const LanguageTag& tag);
 // Returns whether `tag` represents a Chinese Traditional (zh-Hant) language.
-COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU)
+COMPONENT_EXPORT(LANGUAGE_TAG)
 bool IsTraditionalChinese(const LanguageTag& tag);
 
 }  // namespace base::i18n

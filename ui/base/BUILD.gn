@@ -659,7 +659,7 @@ if (is_ios) {
     ]
     deps = [
       "//base",
-      "//base/i18n:language_tag_no_icu",
+      "//base/i18n:language_tag",
     ]
     frameworks = [ "Foundation.framework" ]
   }

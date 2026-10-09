@@ -58,7 +58,7 @@ component("prefs") {
   deps = []
   public_deps = [
     "//base",
-    "//base/i18n:language_tag_no_icu",
+    "//base/i18n:language_tag",
   ]
 
   if (is_android) {

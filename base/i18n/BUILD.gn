@@ -6,35 +6,21 @@ source_set("base_i18n_export") {
   public = [ "base_i18n_export.h" ]
 }
 
-component("language_tag_no_icu") {
-  output_name = "language_tag_no_icu"
-  sources = [
-    "bcp47_extensions.cc",
-    "bcp47_extensions.h",
-    "language_tag.cc",
-    "language_tag.h",
-    "language_tag_value_converters.cc",
-    "language_tag_value_converters.h",
-  ]
-
-  defines = [ "IS_LANGUAGE_TAG_IMPL" ]
-
-  public_deps = [
-    "//base",
-    "//base/i18n/internal",
-  ]
-  deps = [ "//base/i18n/internal:canonical_language_tags" ]
-}
-
 # This component provides usability of `LanguageTag` without any dependencies on
 # ICU4C, it does however, depend on ICU4X locale canonicalization.
 component("language_tag") {
   output_name = "language_tag"
   sources = [
+    "bcp47_extensions.cc",
+    "bcp47_extensions.h",
     "chinese_helpers.cc",
     "chinese_helpers.h",
+    "language_tag.cc",
+    "language_tag.h",
     "language_tag_matcher.cc",
     "language_tag_matcher.h",
+    "language_tag_value_converters.cc",
+    "language_tag_value_converters.h",
     "legacy_language_tag_helpers.h",
     "locale_holder.cc",
     "locale_holder.h",
@@ -42,11 +28,10 @@ component("language_tag") {
     "tag_converters.h",
   ]
 
-  defines = [ "IS_LANGUAGE_TAG_WITH_ICU_IMPL" ]
+  defines = [ "IS_LANGUAGE_TAG_IMPL" ]
 
-  public_deps = [ ":language_tag_no_icu" ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//base/i18n/internal",
     "//base/i18n/internal:canonical_language_tags",
     "//third_party/abseil-cpp:absl",

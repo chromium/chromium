@@ -34,7 +34,7 @@ namespace base::i18n {
 //
 // Examples of valid language tags:
 // Valid: "en-US", "en-GB", "en-US-POSIX", "zh-Hans-CN", "und"
-class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagConverter {
+class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTagConverter {
  public:
   LanguageTagConverter();
   ~LanguageTagConverter();
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) LanguageTagConverter {
 // Helper function to obtain a `LanguageTag` from a string. It is just a
 // convenient function to avoid people having to call the `LanguageTagConverter`
 // singleton as it is quite verbose to do it.
-COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU)
+COMPONENT_EXPORT(LANGUAGE_TAG)
 std::optional<LanguageTag> GetLanguageTagFromString(std::string_view tag);
 
 }  // namespace base::i18n
