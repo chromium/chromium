@@ -38,9 +38,7 @@ static_library("eche_app") {
     "//chromeos/ash/services/secure_channel",
     "//chromeos/ash/services/secure_channel/public/cpp/client",
     "//chromeos/ash/services/secure_channel/public/cpp/shared",
-    "//components/account_id",
     "//components/pref_registry",
-    "//components/user_manager",
     "//url",
   ]
 
@@ -74,18 +72,13 @@ source_set("unit_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/constants",
-    "//ash/public/cpp",
     "//ash/webui/eche_app_ui",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chrome/test/base:testing_browser_process",
-    "//chromeos/ash/components/browser_context_helper",
-    "//components/user_manager",
     "//testing/gtest",
     "//ui/gfx:test_support",
-    "//ui/message_center",
   ]
 }

@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
@@ -16,11 +15,9 @@
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
-#include "ash/webui/eche_app_ui/eche_app_notification_controller.h"
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -42,9 +39,7 @@
 #include "chromeos/ash/services/secure_channel/presence_monitor_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
-#include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/user_manager/user.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -103,7 +98,9 @@ void LaunchWebApp(const std::string& package_name,
                        : base::DoNothing());
 }
 
-void RelaunchLast(EcheAppManager* eche_app_manager) {
+void RelaunchLast(Profile* profile) {
+  EcheAppManager* eche_app_manager =
+      EcheAppManagerFactory::GetForProfile(profile);
   std::unique_ptr<LaunchedAppInfo> last_launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
   LaunchWebApp(
@@ -112,8 +109,9 @@ void RelaunchLast(EcheAppManager* eche_app_manager) {
       last_launched_app_info->user_id, last_launched_app_info->icon,
       last_launched_app_info->phone_name,
       last_launched_app_info->apps_launch_info_provider, eche_app_manager);
-  EcheAppManagerFactory::GetInstance()
-      ->CloseConnectionOrLaunchErrorNotifications();
+  if (eche_app_manager) {
+    eche_app_manager->CloseConnectionOrLaunchErrorNotifications();
+  }
 }
 
 }  // namespace
@@ -132,60 +130,6 @@ EcheAppManagerFactory* EcheAppManagerFactory::GetInstance() {
 }
 
 // static
-void EcheAppManagerFactory::ShowNotification(
-    base::WeakPtr<EcheAppManagerFactory> weak_ptr,
-    Profile* profile,
-    const std::optional<std::u16string>& title,
-    const std::optional<std::u16string>& message,
-    std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
-  if (!weak_ptr->notification_controller_) {
-    const AccountId& account_id =
-        CHECK_DEREF(
-            BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
-            .GetAccountId();
-    weak_ptr->notification_controller_ =
-        std::make_unique<EcheAppNotificationController>(
-            account_id,
-            base::BindRepeating(&RelaunchLast,
-                                EcheAppManagerFactory::GetForProfile(profile)));
-  }
-
-  if (info->category() ==
-      LaunchAppHelper::NotificationInfo::Category::kNative) {
-    if (std::get<LaunchAppHelper::NotificationInfo::NotificationType>(
-            info->type()) ==
-        LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock) {
-      weak_ptr->notification_controller_->ShowScreenLockNotification(
-          title ? title.value()
-                : u"");  // If null, show a default value to be safe.
-    }
-  } else if (info->category() ==
-             LaunchAppHelper::NotificationInfo::Category::kWebUI) {
-    weak_ptr->notification_controller_->ShowNotificationFromWebUI(
-        title, message, info->type());
-  }
-}
-
-// static
-void EcheAppManagerFactory::CloseNotification(
-    base::WeakPtr<EcheAppManagerFactory> weak_ptr,
-    Profile* profile,
-    const std::string& notification_id) {
-  if (!weak_ptr->notification_controller_) {
-    const AccountId& account_id =
-        CHECK_DEREF(
-            BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
-            .GetAccountId();
-    weak_ptr->notification_controller_ =
-        std::make_unique<EcheAppNotificationController>(
-            account_id,
-            base::BindRepeating(&RelaunchLast,
-                                EcheAppManagerFactory::GetForProfile(profile)));
-  }
-  weak_ptr->notification_controller_->CloseNotification(notification_id);
-}
-
-// static
 void EcheAppManagerFactory::LaunchEcheApp(
     Profile* profile,
     const std::optional<int64_t>& notification_id,
@@ -195,11 +139,13 @@ void EcheAppManagerFactory::LaunchEcheApp(
     const gfx::Image& icon,
     const std::u16string& phone_name,
     AppsLaunchInfoProvider* apps_launch_info_provider) {
+  EcheAppManager* eche_app_manager =
+      EcheAppManagerFactory::GetForProfile(profile);
   LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
-               phone_name, apps_launch_info_provider,
-               EcheAppManagerFactory::GetForProfile(profile));
-  EcheAppManagerFactory::GetInstance()
-      ->CloseConnectionOrLaunchErrorNotifications();
+               phone_name, apps_launch_info_provider, eche_app_manager);
+  if (eche_app_manager) {
+    eche_app_manager->CloseConnectionOrLaunchErrorNotifications();
+  }
 }
 
 EcheAppManagerFactory::EcheAppManagerFactory()
@@ -270,10 +216,7 @@ EcheAppManagerFactory::BuildServiceInstanceForBrowserContext(
           secure_channel_client, std::move(presence_monitor_client),
           std::make_unique<EcheAppAccessibilityProviderProxy>(),
           base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
-          base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
-                              weak_ptr_factory_.GetMutableWeakPtr(), profile),
-          base::BindRepeating(&EcheAppManagerFactory::CloseNotification,
-                              weak_ptr_factory_.GetMutableWeakPtr(), profile));
+          base::BindRepeating(&RelaunchLast, profile));
 
   EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
                             ->GetStatusAreaWidget()
@@ -295,11 +238,6 @@ void EcheAppManagerFactory::SetLastLaunchedAppInfo(
 std::unique_ptr<LaunchedAppInfo>
 EcheAppManagerFactory::GetLastLaunchedAppInfo() {
   return std::move(last_launched_app_info_);
-}
-
-void EcheAppManagerFactory::CloseConnectionOrLaunchErrorNotifications() {
-  if (notification_controller_ != nullptr)
-    notification_controller_->CloseConnectionOrLaunchErrorNotifications();
 }
 
 }  // namespace eche_app
