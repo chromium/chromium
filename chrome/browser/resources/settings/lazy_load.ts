@@ -173,6 +173,7 @@ export {OnDeviceAiBrowserProxyImpl} from './ai_page/on_device_ai_browser_proxy.j
 // </if>
 export {SettingsSkillsPageElement} from './ai_page/skills_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
+export {EntityTypeName} from './autofill_ai_enums.mojom-webui.js';
 export {SettingsAutofillAiAddOrEditDialogElement} from './autofill_page/autofill_ai_add_or_edit_dialog.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
 export {AutofillManagerImpl} from './autofill_page/autofill_manager_proxy.js';

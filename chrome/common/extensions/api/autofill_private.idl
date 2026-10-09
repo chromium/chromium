@@ -709,11 +709,12 @@ namespace autofillPrivate {
     // Fetches legal disclosure lines and context token for upserting a
     // public pass.
     static void getDetailsForUpsertPass(
+      long entityTypeName,
       GetDetailsForUpsertPassCallback callback);
 
     // Preloads legal disclosure lines and context token for upserting a
     // public pass.
-    static void preloadDetailsForUpsertPass();
+    static void preloadDetailsForUpsertPass(long entityTypeName);
   };
 
   interface Events {

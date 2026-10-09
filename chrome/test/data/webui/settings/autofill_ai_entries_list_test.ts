@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertGE, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 import {ModelExecutionEnterprisePolicyValue, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsAutofillAiEntriesListElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
-import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl, EntityTypeName} from 'chrome://settings/lazy_load.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -808,6 +808,46 @@ suite('AutofillAiEntriesListUiTest', function() {
         entriesList.shadowRoot.querySelectorAll<HTMLElement>(
             '#addSpecificEntityType');
     assertEquals(1, addEntityButtons.length);
+  });
+
+  test('PreloadsDetailsForEligiblePublicPass', async function() {
+    entityDataManager.setGetWritableEntityTypesResponse([
+      {
+        typeName: EntityTypeName.kVehicle,
+        typeNameAsString: 'Vehicle',
+        addEntityTypeString: 'Add vehicle',
+        editEntityTypeString: 'Edit vehicle',
+        deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage: true,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
+      },
+      {
+        typeName: EntityTypeName.kFlightReservation,
+        typeNameAsString: 'Flight reservation',
+        addEntityTypeString: 'Add flight reservation',
+        editEntityTypeString: 'Edit flight reservation',
+        deleteEntityTypeString: 'Delete flight reservation',
+        supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
+      },
+      {
+        typeName: EntityTypeName.kPassport,
+        typeNameAsString: 'Passport',
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: true,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
+      },
+    ]);
+
+    await createEntriesList();
+
+    assertEquals(
+        1, entityDataManager.getCallCount('preloadDetailsForUpsertPass'));
+    assertEquals(
+        EntityTypeName.kVehicle,
+        entityDataManager.getArgs('preloadDetailsForUpsertPass')[0]);
   });
 });
 

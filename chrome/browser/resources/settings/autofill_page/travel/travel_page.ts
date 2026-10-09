@@ -30,8 +30,6 @@ import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../../me
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 import {SettingsViewMixinLit} from '../../settings_page/settings_view_mixin_lit.js';
-import type {EntityDataManagerProxy} from '../entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from '../entity_data_manager_proxy.js';
 import {AutofillPolicyDataCategory, checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
 import type {TypesBlockedEntry} from '../policy_utils.js';
 
@@ -127,8 +125,6 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private entityDataManager_: EntityDataManagerProxy =
-      EntityDataManagerProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -142,8 +138,6 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     this.addPrefObserver(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI, updateOptedIn);
     this.addPrefObserver('autofill.types_blocked', updateOptedIn);
-
-    this.entityDataManager_.preloadDetailsForUpsertPass();
   }
 
   protected optInToggleDisabled_(): boolean {

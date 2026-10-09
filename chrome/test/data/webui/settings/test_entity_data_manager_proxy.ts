@@ -217,12 +217,13 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.methodCalled('toggleAutofillAiReauthRequirement');
   }
 
-  getDetailsForUpsertPass(): Promise<UpsertPassDetails|null> {
-    this.methodCalled('getDetailsForUpsertPass');
+  getDetailsForUpsertPass(entityTypeName: number):
+      Promise<UpsertPassDetails|null> {
+    this.methodCalled('getDetailsForUpsertPass', entityTypeName);
     return Promise.resolve(this.upsertPassDetails_);
   }
 
-  preloadDetailsForUpsertPass(): void {
-    this.methodCalled('preloadDetailsForUpsertPass');
+  preloadDetailsForUpsertPass(entityTypeName: number): void {
+    this.methodCalled('preloadDetailsForUpsertPass', entityTypeName);
   }
 }

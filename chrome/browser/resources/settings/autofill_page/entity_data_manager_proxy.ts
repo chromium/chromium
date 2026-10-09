@@ -114,13 +114,14 @@ export interface EntityDataManagerProxy {
    * Preloads legal disclosure lines and context token for upserting a public
    * pass into the backend cache.
    */
-  preloadDetailsForUpsertPass(): void;
+  preloadDetailsForUpsertPass(entityTypeName: number): void;
 
   /**
    * Fetches legal disclosure lines and context token for upserting a public
    * pass.
    */
-  getDetailsForUpsertPass(): Promise<UpsertPassDetails|null>;
+  getDetailsForUpsertPass(entityTypeName: number):
+      Promise<UpsertPassDetails|null>;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
@@ -193,12 +194,13 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
         optedIn);
   }
 
-  preloadDetailsForUpsertPass(): void {
-    chrome.autofillPrivate.preloadDetailsForUpsertPass();
+  preloadDetailsForUpsertPass(entityTypeName: number): void {
+    chrome.autofillPrivate.preloadDetailsForUpsertPass(entityTypeName);
   }
 
-  getDetailsForUpsertPass(): Promise<UpsertPassDetails|null> {
-    return chrome.autofillPrivate.getDetailsForUpsertPass();
+  getDetailsForUpsertPass(entityTypeName: number):
+      Promise<UpsertPassDetails|null> {
+    return chrome.autofillPrivate.getDetailsForUpsertPass(entityTypeName);
   }
 
   static getInstance() {

@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import type {CrButtonElement, CrInputElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
-import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import {EntityDataManagerProxyImpl, EntityTypeName} from 'chrome://settings/lazy_load.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
@@ -1358,7 +1358,9 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
             mockUpsertPassDetails);
         dialog.entityInstance = structuredClone(vehicleEntity);
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled('getDetailsForUpsertPass');
+        const entityTypeName =
+            await entityDataManager.whenCalled('getDetailsForUpsertPass');
+        assertEquals(EntityTypeName.kVehicle, entityTypeName);
         await microtasksFinished();
 
         assertEquals(mockUpsertPassDetails, dialog.upsertPassDetails);
@@ -1373,7 +1375,9 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     entityDataManager.setGetDetailsForUpsertPassResponse(mockUpsertPassDetails);
     dialog.entityInstance = structuredClone(vehicleEntity);
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getDetailsForUpsertPass');
+    const entityTypeName =
+        await entityDataManager.whenCalled('getDetailsForUpsertPass');
+    assertEquals(EntityTypeName.kVehicle, entityTypeName);
     await microtasksFinished();
 
     // 1. Details are fetched and assigned.

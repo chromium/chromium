@@ -5,10 +5,12 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_api.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
@@ -905,7 +907,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
 
   std::optional<base::Value> result =
       extensions::api_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[]", profile());
+          function.get(),
+          base::StringPrintf(
+              "[%d]", std::to_underlying(autofill::EntityTypeName::kVehicle)),
+          profile());
   EXPECT_THAT(
       result,
       Optional(AllOf(
@@ -935,8 +940,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
       extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
   function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
 
-  ASSERT_TRUE(
-      extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(),
+      base::StringPrintf(
+          "[%d]", std::to_underlying(autofill::EntityTypeName::kVehicle)),
+      profile()));
   ASSERT_TRUE(function->GetResultListForTest());
   EXPECT_TRUE(function->GetResultListForTest()->empty());
 }
@@ -958,8 +966,11 @@ IN_PROC_BROWSER_TEST_F(
       extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
   function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
 
-  ASSERT_TRUE(
-      extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(),
+      base::StringPrintf(
+          "[%d]", std::to_underlying(autofill::EntityTypeName::kVehicle)),
+      profile()));
   ASSERT_TRUE(function->GetResultListForTest());
   EXPECT_TRUE(function->GetResultListForTest()->empty());
 }
@@ -984,11 +995,32 @@ IN_PROC_BROWSER_TEST_F(
 
   std::optional<base::Value> result =
       extensions::api_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[]", profile());
+          function.get(),
+          base::StringPrintf(
+              "[%d]", std::to_underlying(autofill::EntityTypeName::kVehicle)),
+          profile());
   EXPECT_THAT(result, Optional(AllOf(
                           DictionaryHasValue("contextToken", base::Value("")),
                           DictionaryHasValue("legalMessageLines",
                                              base::test::ParseJson("[]")))));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
+                       GetDetailsForUpsertPass_NoOpsForIneligibleEntityType) {
+  EXPECT_CALL(wallet_manager(), ExtractPreloadedDetailsForUpsertPass).Times(0);
+
+  for (int entity_type_name :
+       {std::to_underlying(autofill::EntityTypeName::kPassport), -1}) {
+    auto function = base::MakeRefCounted<
+        extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
+    function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+    ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+        function.get(), base::StringPrintf("[%d]", entity_type_name),
+        profile()));
+    ASSERT_TRUE(function->GetResultListForTest());
+    EXPECT_TRUE(function->GetResultListForTest()->empty());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
@@ -1002,8 +1034,27 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
       extensions::AutofillPrivatePreloadDetailsForUpsertPassFunction>();
   function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
 
-  ASSERT_TRUE(
-      extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(),
+      base::StringPrintf(
+          "[%d]", std::to_underlying(autofill::EntityTypeName::kVehicle)),
+      profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiPublicPassTest,
+    PreloadDetailsForUpsertPass_NoOpsForIneligibleEntityType) {
+  EXPECT_CALL(wallet_manager(), PreloadDetailsForUpsertPass).Times(0);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivatePreloadDetailsForUpsertPassFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(),
+      base::StringPrintf(
+          "[%d]", std::to_underlying(autofill::EntityTypeName::kPassport)),
+      profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,

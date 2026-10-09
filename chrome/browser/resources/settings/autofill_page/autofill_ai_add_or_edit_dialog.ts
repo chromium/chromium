@@ -220,7 +220,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         this.isPublicPass_(this.entityInstance.type) &&
         !this.upsertPassDetails) {
       this.upsertPassDetails =
-          await this.entityDataManager_.getDetailsForUpsertPass();
+          await this.entityDataManager_.getDetailsForUpsertPass(
+              this.entityInstance.type.typeName);
     }
 
     // TODO(crbug.com/407794687): Decide whether the code should show a spinner

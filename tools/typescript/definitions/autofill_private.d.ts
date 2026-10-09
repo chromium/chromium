@@ -379,9 +379,9 @@ declare global {
           Promise<boolean>;
       export function fetchUserDataProcessingConsent():
           Promise<UserDataProcessingConsentStates>;
-      export function getDetailsForUpsertPass():
+      export function getDetailsForUpsertPass(entityTypeName: number):
           Promise<UpsertPassDetails|null>;
-      export function preloadDetailsForUpsertPass(): void;
+      export function preloadDetailsForUpsertPass(entityTypeName: number): void;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
