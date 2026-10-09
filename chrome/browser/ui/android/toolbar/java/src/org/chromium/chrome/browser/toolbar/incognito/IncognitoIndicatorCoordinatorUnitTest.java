@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.incognito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -16,7 +17,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.TextView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,9 +30,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -44,14 +49,20 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.function.Supplier;
 
 /** Unit tests for {@link IncognitoIndicatorCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+@EnableFeatures({
+    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+    SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU,
+    SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS
+})
 public class IncognitoIndicatorCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -64,9 +75,11 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     private Activity mActivity;
     private int mDefaultFallbackWidth;
     private IncognitoIndicatorCoordinator mCoordinator;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
+        mUserActionTester = new UserActionTester();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
@@ -92,6 +105,11 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         assertNull(
                 "Indicator should not be inflated initially.",
                 mCoordinator.getIncognitoIndicatorView());
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -186,6 +204,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)
     public void testCreateAndShowMenu() {
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
         assertNotNull("Indicator should be inflated.", mCoordinator.getIncognitoIndicatorView());
@@ -246,5 +265,36 @@ public class IncognitoIndicatorCoordinatorUnitTest {
 
         // Verify event notified.
         verify(mTracker).notifyEvent(EventConstants.INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_USED);
+    }
+
+    @Test
+    public void testOnClick_IncognitoCardMenu() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        mCoordinator.setVisibility(/* visible= */ true);
+
+        final int windowCount = 1;
+        MultiWindowUtils.setInstanceCountForTesting(windowCount);
+
+        mCoordinator.getIncognitoIndicatorView().performClick();
+
+        AnchoredPopupWindow popup = mCoordinator.getMenuWindowForTesting();
+        assertNotNull(popup);
+        assertTrue(popup.isShowing());
+
+        View contentView = popup.getContentView();
+        assertNotNull(contentView);
+        assertNotNull(contentView.findViewById(R.id.incognito_menu_card));
+
+        TextView closeButton = contentView.findViewById(R.id.close_all_incognito_windows_button);
+        assertNotNull(closeButton);
+        assertNotNull(closeButton.getBackground());
+        assertEquals("Close 1 Incognito window", closeButton.getText().toString());
+        closeButton.performClick();
+
+        assertTrue(
+                mUserActionTester.getActions().contains("MobileIncognitoIndicatorCloseAllWindows"));
+        assertFalse(popup.isShowing());
+        assertNull(mCoordinator.getMenuWindowForTesting());
     }
 }

@@ -11,12 +11,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,9 +34,15 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
+import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu.Delegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -251,44 +259,84 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         R.color.toolbar_text_box_background_incognito,
                         null);
 
-        int measuredWidth = menu.getMenuDimensions()[0];
-        mMenuWindow =
+        showMenuWindow(context, menu.getContentView(), menu.getMenuDimensions()[0]);
+    }
+
+    /**
+     * Create and display the Incognito card menu containing the Incognito card and the Close
+     * Incognito windows action row, anchored to the Incognito indicator.
+     *
+     * @param context The context of the Incognito menu.
+     */
+    private void createAndShowIncognitoCardMenu(Context context) {
+        if (mIncognitoIndicator == null) return;
+
+        View contentView = LayoutInflater.from(context).inflate(R.layout.incognito_menu, null);
+        TextViewWithCompoundDrawables closeButton =
+                contentView.findViewById(R.id.close_all_incognito_windows_button);
+        assert closeButton != null;
+        closeButton.setText(
+                getCloseAllIncognitoWindowsTitle(context, mIncognitoWindowCountSupplier.get()));
+        closeButton.setOnClickListener(
+                v -> {
+                    RecordUserAction.record("MobileIncognitoIndicatorCloseAllWindows");
+                    if (mMenuWindow != null) {
+                        mMenuWindow.dismiss();
+                    }
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                });
+        ContainerStyle style =
+                new ContainmentItemController(context)
+                        .createStandardBuilder(
+                                /* isTop= */ true, /* isBottom= */ true, /* isSingleLine= */ true)
+                        .build();
+        ContainmentViewStyler.applyBackgroundStyle(closeButton, style);
+        ContainmentViewStyler.applyMargins(closeButton, style);
+
+        int menuWidth = context.getResources().getDimensionPixelSize(R.dimen.account_menu_width);
+        showMenuWindow(context, contentView, menuWidth);
+    }
+
+    private void showMenuWindow(Context context, View contentView, int desiredWidth) {
+        if (mIncognitoIndicator == null) return;
+
+        AnchoredPopupWindow.Builder builder =
                 new AnchoredPopupWindow.Builder(
                                 context,
                                 mIncognitoIndicator,
                                 new ColorDrawable(Color.TRANSPARENT),
-                                menu::getContentView,
+                                (_) -> contentView,
                                 new ViewRectProvider(mIncognitoIndicator))
                         .addOnDismissListener(
                                 () -> {
                                     if (mIncognitoIndicator != null) {
                                         mIncognitoIndicator.setSelected(false);
                                     }
+                                    mMenuWindow = null;
                                 })
                         .setAnimateFromAnchor(true)
                         .setDismissOnScreenSizeChange(true)
-                        .setDismissOnTouchInteraction(true)
                         .setFocusable(true)
                         .setTouchModal(true)
-                        .setDesiredContentWidth(measuredWidth)
+                        .setDesiredContentWidth(desiredWidth)
                         .setHorizontalOverlapAnchor(true)
                         .setPreferredHorizontalOrientation(
                                 AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE)
-                        .setVerticalOverlapAnchor(false)
-                        .build();
+                        .setVerticalOverlapAnchor(false);
+        if (isIncognitoCardEnabled()) {
+            builder.setOutsideTouchable(true);
+        } else {
+            builder.setDismissOnTouchInteraction(true);
+        }
+        mMenuWindow = builder.build();
 
         mMenuWindow.show();
     }
 
     @VisibleForTesting
     ModelList buildMenuItems(Context context) {
-        int incognitoWindowCount = mIncognitoWindowCountSupplier.get();
         String title =
-                context.getResources()
-                        .getQuantityString(
-                                R.plurals.menu_close_all_incognito_windows,
-                                incognitoWindowCount,
-                                incognitoWindowCount);
+                getCloseAllIncognitoWindowsTitle(context, mIncognitoWindowCountSupplier.get());
         ModelList itemList = new ModelList();
         itemList.add(
                 new ListItemBuilder()
@@ -297,6 +345,15 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         .withIsIncognito(true)
                         .build());
         return itemList;
+    }
+
+    private static String getCloseAllIncognitoWindowsTitle(
+            Context context, int incognitoWindowCount) {
+        return context.getResources()
+                .getQuantityString(
+                        R.plurals.menu_close_all_incognito_windows,
+                        incognitoWindowCount,
+                        incognitoWindowCount);
     }
 
     @Override
@@ -318,7 +375,11 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
         RecordUserAction.record("MobileIncognitoIndicatorClicked");
         Context context = mIncognitoIndicator.getContext();
         mIncognitoIndicator.setSelected(true);
-        createAndShowMenu(context, buildMenuItems(context));
+        if (isIncognitoCardEnabled()) {
+            createAndShowIncognitoCardMenu(context);
+        } else {
+            createAndShowMenu(context, buildMenuItems(context));
+        }
     }
 
     @Override
@@ -331,6 +392,13 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     public boolean onContextClick(View view) {
         onClick(view);
         return true;
+    }
+
+    private boolean isIncognitoCardEnabled() {
+        return DeviceInfo.isDesktop()
+                && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
+                && SigninFeatureMap.isEnabled(
+                        SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS);
     }
 
     private void triggerIPH() {

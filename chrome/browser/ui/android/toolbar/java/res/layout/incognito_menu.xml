@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Override default_popup_menu_bg padding to match the outer spacing of
+     account_menu.xml. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/incognito_menu_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/account_menu_padding_top"
+    android:paddingBottom="@dimen/account_menu_padding_bottom"
+    android:paddingHorizontal="0dp"
+    android:clipToOutline="true"
+    android:elevation="@dimen/app_menu_elevation"
+    android:background="@drawable/default_popup_menu_bg"
+    android:backgroundTint="@macro/settings_bg_color">
+
+    <include layout="@layout/incognito_menu_card" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/close_all_incognito_windows_button"
+        style="@style/AccountMenuControlRow"
+        android:drawableStart="@drawable/material_ic_close_24dp"
+        app:drawableWidth="@dimen/account_menu_item_icon_size"
+        app:drawableHeight="@dimen/account_menu_item_icon_size"
+        app:chromeDrawableTint="@color/default_icon_color_tint_list" />
+
+</LinearLayout>
