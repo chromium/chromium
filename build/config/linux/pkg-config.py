@@ -6,6 +6,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import re
@@ -142,15 +143,29 @@ def main():
     )
     (options, args) = parser.parse_args()
 
-    # If this is run on non-Linux platforms, just return nothing and indicate
-    # success. This allows us to "kind of emulate" a Linux build from other
-    # platforms.
     if "linux" not in sys.platform:
-        if options.dridriverdir or options.libdir:
-            sys.stdout.write("")
+        if (
+            sys.platform == 'darwin'
+            and options.sysroot
+            and shutil.which(options.pkg_config)
+        ):
+            # Cross-compiling for Linux from macOS: query the sysroot's .pc
+            # files with the host's pkg-config. Make sure that only the
+            # sysroot's .pc files are used, and that the usual Linux system
+            # directories (instead of host-specific ones, e.g. the macOS SDK)
+            # are filtered out, like pkg-config on Linux does.
+            os.environ.pop('PKG_CONFIG_PATH', None)
+            os.environ.pop('PKG_CONFIG_SYSROOT_DIR', None)
+            os.environ['PKG_CONFIG_SYSTEM_INCLUDE_PATH'] = '/usr/include'
+            os.environ['PKG_CONFIG_SYSTEM_LIBRARY_PATH'] = '/usr/lib:/lib'
+        else:
+            # Otherwise, just return nothing and indicate success. This allows
+            # us to "kind of emulate" a Linux build from other platforms.
+            if options.dridriverdir or options.libdir:
+                sys.stdout.write("")
+                return 0
+            print("[[],[],[],[],[]]")
             return 0
-        print("[[],[],[],[],[]]")
-        return 0
 
     # Make a list of regular expressions to strip out.
     strip_out = []

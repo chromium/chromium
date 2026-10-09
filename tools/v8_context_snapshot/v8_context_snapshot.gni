@@ -31,12 +31,14 @@ declare_args() {
 
 declare_args() {
   # TODO(crbug.com/40539769): Enable the feature on more environments.
-  # Disable in mac and win cross builds since building Blink twice is slow.
+  # Disable in mac, win and linux cross builds from a different host OS since
+  # building Blink twice is slow (and the host toolchain targets the host OS).
   use_v8_context_snapshot =
       include_both_v8_snapshots ||
       (!is_chromeos && !is_android && !is_castos && !is_fuchsia &&
        !(host_toolchain == default_toolchain && is_msan) &&
-       !(is_win && host_os != "win") && !(is_mac && host_os != "mac"))
+       !(is_win && host_os != "win") && !(is_mac && host_os != "mac") &&
+       !(is_linux && host_os != "linux"))
 }
 
 # Apply the secondary abi overrides. Must occur outside of declare_args in
