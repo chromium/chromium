@@ -2197,6 +2197,17 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(StartupPolicy) -->
+
+<enum name="StartupPolicy">
+  <int value="0" label="Not configured"/>
+  <int value="1" label="Restore last session"/>
+  <int value="2" label="Open New Tab page"/>
+  <int value="3" label="Open specific pages"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/multiwindow/TabbedStartupWindowPolicyDelegate.java:StartupPolicy) -->
+
 <!-- LINT.IfChange(SupportedConfigurationStrangeInsetsState) -->
 
 <enum name="SupportedConfigurationStrangeInsetsState">

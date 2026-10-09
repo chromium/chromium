@@ -3757,6 +3757,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.RestoreOnStartupUrlsCount" units="count"
+    expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of startup URLs configured to open when the
+    restore-on-startup preference is set to open specific pages (URLS). Recorded
+    once per browser process session when startup URLs are evaluated for a
+    regular window on Android devices where startup preference sync is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.StartupPolicy" enum="StartupPolicy"
+    expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the session startup policy evaluated when claiming the startup
+    policy for a regular window on cold startup on Android devices where startup
+    preference sync is enabled. Distinguishes between an unset preference
+    (defaulting to restoring the last session) and explicitly synced policies.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.StartupRestorationDuration" units="ms"
     expires_after="2027-05-14">
   <owner>aishwaryarj@google.com</owner>

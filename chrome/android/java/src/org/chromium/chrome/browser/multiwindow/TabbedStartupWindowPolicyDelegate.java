@@ -85,6 +85,35 @@ import java.util.Set;
         int UNMAPPED_TASK = 3;
     }
 
+    // LINT.IfChange(StartupPolicy)
+    @IntDef({
+        StartupPolicy.UNSET,
+        StartupPolicy.LAST,
+        StartupPolicy.NEW_TAB,
+        StartupPolicy.URLS,
+        StartupPolicy.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    /* package */ @interface StartupPolicy {
+        /**
+         * No startup preference is configured or synced; defaults to restoring the last session.
+         */
+        int UNSET = 0;
+
+        /** Explicitly configured to restore the last session ("Continue where you left off"). */
+        int LAST = 1;
+
+        /** Explicitly configured to open the New Tab page. */
+        int NEW_TAB = 2;
+
+        /** Explicitly configured to open a specific page or set of pages. */
+        int URLS = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:StartupPolicy)
+
     private static @Nullable TabbedStartupWindowPolicyDelegate sInstance;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
@@ -204,7 +233,10 @@ import java.util.Set;
             return Collections.emptyList();
         }
 
-        return ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls();
+        List<String> urls = ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls();
+        RecordHistogram.recordCount100Histogram(
+                "Android.MultiWindow.RestoreOnStartupUrlsCount", urls.size());
+        return urls;
     }
 
     /**
@@ -300,6 +332,22 @@ import java.util.Set;
         // startup URLs as evaluated so that a single NTP is opened instead of startup URLs.
         if (isIncognito || startupMode == StartupMode.NEW_WINDOW) {
             mHasEvaluatedStartupUrls = true;
+        }
+
+        if (!isIncognito) {
+            int startupPref = ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue();
+            @StartupPolicy int startupPolicy;
+            if (startupPref == SessionStartupPref.LAST) {
+                startupPolicy = StartupPolicy.LAST;
+            } else if (startupPref == SessionStartupPref.NEW_TAB) {
+                startupPolicy = StartupPolicy.NEW_TAB;
+            } else if (startupPref == SessionStartupPref.URLS) {
+                startupPolicy = StartupPolicy.URLS;
+            } else {
+                startupPolicy = StartupPolicy.UNSET;
+            }
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.MultiWindow.StartupPolicy", startupPolicy, StartupPolicy.NUM_ENTRIES);
         }
     }
 
