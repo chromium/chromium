@@ -1878,6 +1878,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="SAVING_ON_HTTP_AFTER_HTTPS"/>
 </enum>
 
+<!-- LINT.IfChange(RemoteActorCredentialSharingFailureReason) -->
+
+<enum name="RemoteActorCredentialSharingFailureReason">
+  <int value="0" label="Invalid parameters"/>
+  <int value="1" label="Passbox upload failed"/>
+  <int value="2" label="Permission grant failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_impl.h:RemoteActorCredentialSharingFailureReason) -->
+
 <!-- LINT.IfChange(RemoteActorCredentialSharingResult) -->
 
 <enum name="RemoteActorCredentialSharingResult">

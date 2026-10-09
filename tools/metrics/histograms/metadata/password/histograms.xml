@@ -3727,6 +3727,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.RemoteActorCredentialSharing.SharingFailureReason"
+    enum="RemoteActorCredentialSharingFailureReason" expires_after="2027-04-28">
+  <owner>derinel@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the reason why sharing a credential with a remote actor failed in
+    RemoteActorCredentialSharingService. Recorded when a credential sharing
+    operation fails.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.RequestVerificationAsyncResult"
     enum="AuthenticationResultStatusWin" expires_after="2027-02-28">
   <owner>sygiet@google.com</owner>

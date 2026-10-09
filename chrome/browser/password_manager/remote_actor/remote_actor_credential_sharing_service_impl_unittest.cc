@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -69,6 +70,7 @@ class RemoteActorCredentialSharingServiceImplTest : public testing::Test {
 };
 
 TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordSuccess) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -126,10 +128,13 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordSuccess) {
       aps_request->request.url.spec(), "{}");
 
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason", 0);
 }
 
 TEST_F(RemoteActorCredentialSharingServiceImplTest,
        SharePasswordPassboxFailure) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -163,9 +168,13 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest,
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason",
+      RemoteActorCredentialSharingFailureReason::kPassboxUploadFailed, 1);
 }
 
 TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordAPSFailure) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -212,10 +221,14 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordAPSFailure) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason",
+      RemoteActorCredentialSharingFailureReason::kPermissionGrantFailed, 1);
 }
 
 TEST_F(RemoteActorCredentialSharingServiceImplTest,
        SharePasswordNoPrimaryAccountCallsBackWithFalse) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> future;
   RemoteActorCredentialSharingService::ShareParameters params;
   params.obfuscated_gaia_id = "12345";
@@ -230,6 +243,9 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest,
   service_->SharePassword(params, future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason",
+      RemoteActorCredentialSharingFailureReason::kPassboxUploadFailed, 1);
 }
 
 struct InvalidParamsTestCase {
@@ -245,6 +261,7 @@ class RemoteActorCredentialSharingServiceImplInvalidParamsTest
 
 TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
        SharePasswordInvalidParams) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -264,6 +281,9 @@ TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
 
   EXPECT_FALSE(future.Get());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason",
+      RemoteActorCredentialSharingFailureReason::kInvalidParameters, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

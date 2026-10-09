@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_permission_client.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.h"
@@ -15,6 +16,17 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
+
+namespace {
+
+void LogSharingFailureReason(
+    RemoteActorCredentialSharingFailureReason failure_reason) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason",
+      failure_reason);
+}
+
+}  // namespace
 
 RemoteActorCredentialSharingServiceImpl::
     RemoteActorCredentialSharingServiceImpl(
@@ -40,6 +52,8 @@ void RemoteActorCredentialSharingServiceImpl::SharePassword(
 
   if (params.task_id.empty() || params.web_origin.empty() ||
       params.obfuscated_gaia_id.empty()) {
+    LogSharingFailureReason(
+        RemoteActorCredentialSharingFailureReason::kInvalidParameters);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -50,7 +64,7 @@ void RemoteActorCredentialSharingServiceImpl::SharePassword(
       params.time_to_live,
       base::BindOnce(
           &RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted,
-          base::Unretained(this), params, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), params, std::move(callback)));
 }
 
 void RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted(
@@ -58,6 +72,8 @@ void RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted(
     SharePasswordCallback callback,
     bool success) {
   if (!success) {
+    LogSharingFailureReason(
+        RemoteActorCredentialSharingFailureReason::kPassboxUploadFailed);
     std::move(callback).Run(false);
     return;
   }
@@ -67,7 +83,21 @@ void RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted(
   permission.web_origin = params.web_origin;
   permission.password_client_tag_hash = params.password_client_tag_hash();
 
-  permission_client_->GrantPasswordPermission(permission, std::move(callback));
+  permission_client_->GrantPasswordPermission(
+      permission,
+      base::BindOnce(
+          &RemoteActorCredentialSharingServiceImpl::OnPermissionGrantCompleted,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RemoteActorCredentialSharingServiceImpl::OnPermissionGrantCompleted(
+    SharePasswordCallback callback,
+    bool success) {
+  if (!success) {
+    LogSharingFailureReason(
+        RemoteActorCredentialSharingFailureReason::kPermissionGrantFailed);
+  }
+  std::move(callback).Run(success);
 }
 
 }  // namespace password_manager

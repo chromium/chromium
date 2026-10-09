@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -17,6 +18,18 @@ class IdentityManager;
 }
 
 namespace password_manager {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(RemoteActorCredentialSharingFailureReason)
+enum class RemoteActorCredentialSharingFailureReason {
+  kInvalidParameters = 0,
+  kPassboxUploadFailed = 1,
+  kPermissionGrantFailed = 2,
+  kMaxValue = kPermissionGrantFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:RemoteActorCredentialSharingFailureReason)
 
 class RemoteActorCredentialPermissionClient;
 class RemoteActorCredentialStoreClient;
@@ -54,11 +67,15 @@ class RemoteActorCredentialSharingServiceImpl
   void OnPassboxCompleted(const ShareParameters& params,
                           SharePasswordCallback callback,
                           bool success);
+  void OnPermissionGrantCompleted(SharePasswordCallback callback, bool success);
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<RemoteActorCredentialStoreClient> credential_store_;
   std::unique_ptr<RemoteActorCredentialPermissionClient> permission_client_;
+
+  base::WeakPtrFactory<RemoteActorCredentialSharingServiceImpl>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
