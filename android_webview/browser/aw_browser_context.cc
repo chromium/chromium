@@ -149,7 +149,8 @@ AwBrowserContext::AwBrowserContext(std::string name,
       http_cache_path_(BuildHttpCachePath(relative_path_)),
       simple_factory_key_(GetPath(), IsOffTheRecord()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  TRACE_EVENT("startup", "AwBrowserContext::AwBrowserContext", "name", name_);
+  TRACE_EVENT("android_webview", "AwBrowserContext::AwBrowserContext", "name",
+              name_);
 
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
@@ -285,7 +286,7 @@ void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void AwBrowserContext::CreateUserPrefService() {
-  TRACE_EVENT0("startup", "AwBrowserContext::CreateUserPrefService");
+  TRACE_EVENT("android_webview", "AwBrowserContext::CreateUserPrefService");
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 
   RegisterPrefs(pref_registry.get());
