@@ -83,12 +83,31 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
       download_item->IsDangerous());
 }
 
+void DangerousDownloadDialogBridge::OnDownloadUpdated(
+    download::DownloadItem* download_item) {
+  // Downloads awaiting user confirmation in this dialog remain IN_PROGRESS
+  // (even after all data is saved) until validated. `IsDone()` only becomes
+  // true if the download reaches a terminal state (e.g. cancelled,
+  // non-resumably interrupted, or completed elsewhere) without being destroyed.
+  if (download_item->IsDone()) {
+    DismissDialog(download_item);
+  }
+}
+
 void DangerousDownloadDialogBridge::OnDownloadDestroyed(
+    download::DownloadItem* download_item) {
+  DismissDialog(download_item);
+}
+
+void DangerousDownloadDialogBridge::DismissDialog(
     download::DownloadItem* download_item) {
   auto iter = std::ranges::find(download_items_, download_item);
   if (iter != download_items_.end()) {
     (*iter)->RemoveObserver(this);
     download_items_.erase(iter);
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_DangerousDownloadDialogBridge_dismissDialog(env, java_object_,
+                                                     download_item->GetGuid());
   }
 }
 

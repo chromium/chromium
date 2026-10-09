@@ -63,6 +63,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dialog confirmed"/>
   <int value="2" label="Dialog canceled"/>
   <int value="3" label="Dialog dismissed"/>
+  <int value="4" label="Dialog dismissed by native"/>
 </enum>
 
 <enum name="Download.DragInfo">
