@@ -11877,6 +11877,13 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
     return;
   }
 
+  if (IsInCanvasSubtree()) {
+    // A popover inside a canvas subtree does not render with privacy
+    // protections when in the top layer. So treat transitioning between top
+    // layer states as equivalent to moving in or out of the canvas subtree.
+    DidChangeIsInCanvasSubtree();
+  }
+
   bool user_action_stops_at_top_layer =
       RuntimeEnabledFeatures::UserActionPseudosStopAtTopLayerEnabled();
   bool update_focus_within = user_action_stops_at_top_layer && HasFocusWithin();
