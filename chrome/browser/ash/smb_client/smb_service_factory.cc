@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
@@ -15,7 +16,8 @@
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash::smb_client {
 
@@ -51,11 +53,13 @@ bool SmbServiceFactory::IsSmbServiceCreated(void* context) {
 }
 
 void SmbServiceFactory::OnUserSessionStartUpTaskCompleted() {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
 
   content::BrowserContext* browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user);
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
   if (browser_context) {
     // This will create SmbService if it doesn't exist yet.
     Get(browser_context);
