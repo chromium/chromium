@@ -521,11 +521,6 @@ export const ComposeboxEmbedderMixin =
           this.eventTracker.removeAll();
         }
 
-        override firstUpdated(changedProperties: PropertyValues<this>) {
-          super.firstUpdated(changedProperties);
-          this.setupInputListener_();
-        }
-
         private setupInputListener_() {
           const inputElem = this.getInputElement()?.inputElement;
           if (inputElem) {
@@ -656,6 +651,11 @@ export const ComposeboxEmbedderMixin =
             this.voiceSearchCoherenceEnabled =
                 this.computeVoiceSearchCoherenceEnabled();
           }
+        }
+
+        override firstUpdated(changedProperties: PropertyValues<this>) {
+          super.firstUpdated(changedProperties);
+          this.setupInputListener_();
         }
 
         override updated(changedProperties: PropertyValues<this>) {

@@ -13,9 +13,9 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 suite('cr-scrollable-mixin', function() {
   const TestElementBase = CrSelectableMixin(CrLitElement);
 
-  class TestElement extends TestElementBase {
+  class TestDummyElement extends TestElementBase {
     static get is() {
-      return 'test-element';
+      return 'test-dummy';
     }
 
     override render() {
@@ -25,20 +25,20 @@ suite('cr-scrollable-mixin', function() {
     }
   }
 
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(TestDummyElement.is, TestDummyElement);
 
-  let element: TestElement;
+  let element: TestDummyElement;
 
   setup(function() {
     document.body.innerHTML = getTrustedHtml(`
-      <test-element attr-for-selected="href" selected-attribute="selected"
+      <test-dummy attr-for-selected="href" selected-attribute="selected"
           selectable="[selectable]">
         <a href="/a" selectable>a</a>
         <a href="/b" selectable>b</a>
         <a href="/c" selectable>c</a>
         <a href="/d">d</a>
-      </test-element>`);
-    element = document.body.querySelector('test-element')!;
+      </test-dummy>`);
+    element = document.body.querySelector('test-dummy')!;
     return element.updateComplete;
   });
 
@@ -131,7 +131,7 @@ suite('cr-scrollable-mixin overrides', function() {
 
   class TestOverridesElement extends TestOverridesElementBase {
     static get is() {
-      return 'test-overrides-element';
+      return 'test-overrides';
     }
 
     override render() {
@@ -178,8 +178,7 @@ suite('cr-scrollable-mixin overrides', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = document.createElement('test-overrides-element') as
-        TestOverridesElement;
+    element = document.createElement('test-overrides') as TestOverridesElement;
     document.body.appendChild(element);
   });
 

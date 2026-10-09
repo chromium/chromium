@@ -11,9 +11,9 @@ import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://w
 suite('CrRippleMixin', function() {
   const TestElementBase = CrRippleMixin(CrLitElement);
 
-  class TestElement extends TestElementBase {
+  class TestDummyElement extends TestElementBase {
     static get is() {
-      return 'test-element';
+      return 'test-dummy';
     }
 
     useCustomContainer: boolean = false;
@@ -37,13 +37,13 @@ suite('CrRippleMixin', function() {
     }
   }
 
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(TestDummyElement.is, TestDummyElement);
 
-  let element: TestElement;
+  let element: TestDummyElement;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = document.createElement('test-element') as TestElement;
+    element = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(element);
   });
 

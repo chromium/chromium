@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SelectionOverlayElementElement} from './glic_selection_overlay.js';
+import type {GlicSelectionOverlayElement} from './glic_selection_overlay.js';
 
-export function getHtml(this: SelectionOverlayElementElement) {
+export function getHtml(this: GlicSelectionOverlayElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     <div id="selectionOverlay" @pointerenter="${this.onPointerenter}"

@@ -14,7 +14,6 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverlayBorderGlowElement} from '/lens/overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from '/lens/overlay_shimmer_canvas.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from '/lens/post_selection_renderer.js';
@@ -48,7 +47,7 @@ const GLIC_BORDER_GLOW_COLORS: string[] = [
  *   - Listening to mouse/tap events and delegating them to the correct features
  *   - Coordinating animations between the different features
  */
-export interface SelectionOverlayElementElement {
+export interface GlicSelectionOverlayElement {
   $: {
     backgroundImageCanvas: HTMLCanvasElement,
     cursor: HTMLElement,
@@ -57,12 +56,10 @@ export interface SelectionOverlayElementElement {
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
     selectionOverlay: HTMLElement,
-    floatingPromptContainer?: HTMLElement,
-    promptInput?: HTMLInputElement,
   };
 }
 
-export class SelectionOverlayElementElement extends
+export class GlicSelectionOverlayElement extends
     SelectionOverlayBaseLitElement {
   static get is() {
     return 'glic-selection-overlay';
@@ -109,10 +106,6 @@ export class SelectionOverlayElementElement extends
   accessor hideHandles: boolean = false;
   accessor disableMultiSelect: boolean = false;
 
-  constructor() {
-    super();
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     const handlerImpl = this.baseHandler as SelectionOverlayBaseHandlerImpl;
@@ -121,6 +114,65 @@ export class SelectionOverlayElementElement extends
           this.hideHandles = options.hideHandles;
           this.disableMultiSelect = options.disableMultiSelect;
         }));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.floatingPromptResizeObserver_.disconnect();
+  }
+
+  override firstUpdated() {
+    super.firstUpdated();
+    GLIC_BORDER_GLOW_COLORS.forEach((color, index) => {
+      this.style.setProperty(`--overlay-border-glow-color-${index + 1}`, color);
+    });
+    this.updateThemeColors();
+    this.resetCursor();
+
+    this.eventTracker_.add(
+        document, 'post-selection-updated',
+        (e: CustomEvent<PostSelectionBoundingBox>) => {
+          const prev = this.activeSelection;
+          const selectionChanged = !prev ||
+              Math.abs(prev.top - e.detail.top) > 1e-5 ||
+              Math.abs(prev.left - e.detail.left) > 1e-5 ||
+              Math.abs(prev.width - e.detail.width) > 1e-5 ||
+              Math.abs(prev.height - e.detail.height) > 1e-5;
+          this.activeSelection = e.detail;
+          if (this.currentGesture?.state === GestureState.NOT_STARTED ||
+              this.currentGesture?.state === undefined) {
+            // Activate the dark scrim on the region selection layer, which
+            // normally only activates at the end of a manual drag gesture.
+            this.selectionElements.regionSelectionLayer
+                .handlePostSelectionDragGestureEnd();
+            this.updateFloatingPromptPosition();
+            if (selectionChanged) {
+              this.fetchSuggestedActions();
+            }
+          }
+        });
+
+    this.eventTracker_.add(document, 'post-selection-cleared', () => {
+      this.activeSelection = null;
+      this.showFloatingPrompt = false;
+      this.clearInlineFulfillment_();
+    });
+
+    if (this.enableSelectionOverlayPrompt) {
+      this.fetchSuggestedActions();
+    }
+
+    this.eventTracker_.add(window, 'resize', () => {
+      if (this.showFloatingPrompt) {
+        this.updateFloatingPromptPosition();
+      }
+    });
+
+    const container =
+        this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
+    if (container) {
+      this.floatingPromptResizeObserver_.observe(container);
+    }
   }
 
   override get selectionElements() {
@@ -133,10 +185,6 @@ export class SelectionOverlayElementElement extends
       regionSelectionLayer: this.$.regionSelectionLayer,
       selectionOverlay: this.$.selectionOverlay,
     };
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
   }
 
   // Overridden to log container and screenshot dimensions for diagnosing
@@ -195,65 +243,6 @@ export class SelectionOverlayElementElement extends
           `isResized=${this.isResized}, ` +
           `shouldApplyMargins=${shouldApplyMargins}`);
     }
-  }
-
-  override firstUpdated() {
-    super.firstUpdated();
-    GLIC_BORDER_GLOW_COLORS.forEach((color, index) => {
-      this.style.setProperty(`--overlay-border-glow-color-${index + 1}`, color);
-    });
-    this.updateThemeColors();
-    this.resetCursor();
-
-    this.eventTracker_.add(
-        document, 'post-selection-updated',
-        (e: CustomEvent<PostSelectionBoundingBox>) => {
-          const prev = this.activeSelection;
-          const selectionChanged = !prev ||
-              Math.abs(prev.top - e.detail.top) > 1e-5 ||
-              Math.abs(prev.left - e.detail.left) > 1e-5 ||
-              Math.abs(prev.width - e.detail.width) > 1e-5 ||
-              Math.abs(prev.height - e.detail.height) > 1e-5;
-          this.activeSelection = e.detail;
-          if (this.currentGesture?.state === GestureState.NOT_STARTED ||
-              this.currentGesture?.state === undefined) {
-            // Activate the dark scrim on the region selection layer, which
-            // normally only activates at the end of a manual drag gesture.
-            this.selectionElements.regionSelectionLayer
-                .handlePostSelectionDragGestureEnd();
-            this.updateFloatingPromptPosition();
-            if (selectionChanged) {
-              this.fetchSuggestedActions();
-            }
-          }
-        });
-
-    this.eventTracker_.add(document, 'post-selection-cleared', () => {
-      this.activeSelection = null;
-      this.showFloatingPrompt = false;
-      this.clearInlineFulfillment_();
-    });
-
-    if (this.enableSelectionOverlayPrompt) {
-      this.fetchSuggestedActions();
-    }
-
-    this.eventTracker_.add(window, 'resize', () => {
-      if (this.showFloatingPrompt) {
-        this.updateFloatingPromptPosition();
-      }
-    });
-
-    const container =
-        this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
-    if (container) {
-      this.floatingPromptResizeObserver_.observe(container);
-    }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.floatingPromptResizeObserver_.disconnect();
   }
 
   // Repositions the prompt when its size changes, e.g. when a card is added
@@ -616,9 +605,9 @@ export class SelectionOverlayElementElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'glic-selection-overlay': SelectionOverlayElementElement;
+    'glic-selection-overlay': GlicSelectionOverlayElement;
   }
 }
 
 customElements.define(
-    SelectionOverlayElementElement.is, SelectionOverlayElementElement);
+    GlicSelectionOverlayElement.is, GlicSelectionOverlayElement);

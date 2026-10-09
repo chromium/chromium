@@ -11,11 +11,6 @@ export class IwaDevInstallLocalBundleTabElement extends
     return 'iwa-dev-install-local-bundle-tab';
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.notifyValidChanged();
-  }
-
   override render() {
     return getHtml.bind(this)();
   }
@@ -27,6 +22,11 @@ export class IwaDevInstallLocalBundleTabElement extends
   }
 
   accessor disabled: boolean = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.notifyValidChanged();
+  }
 
   override isValid(): boolean {
     return true;

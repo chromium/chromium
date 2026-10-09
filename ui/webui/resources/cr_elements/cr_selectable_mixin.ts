@@ -74,14 +74,6 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     private items_: Element[] = [];
     private selectedItem_: Element|null = null;
 
-    override firstUpdated(changedProperties: PropertyValues<this>) {
-      super.firstUpdated(changedProperties);
-      if (this.selectOnClick) {
-        this.addEventListener('click', e => this.onClick_(e));
-      }
-      this.observeItems();
-    }
-
     // Override this method in client code to modify the observation logic,
     // or to turn it off completely. By default it listens for any changes on
     // the first <slot> node in this shadowRoot.
@@ -105,6 +97,14 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
           this.selected = value;
         }
       }
+    }
+
+    override firstUpdated(changedProperties: PropertyValues<this>) {
+      super.firstUpdated(changedProperties);
+      if (this.selectOnClick) {
+        this.addEventListener('click', e => this.onClick_(e));
+      }
+      this.observeItems();
     }
 
     override updated(changedProperties: PropertyValues<this>) {

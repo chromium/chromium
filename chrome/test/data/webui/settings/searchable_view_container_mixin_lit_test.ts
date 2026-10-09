@@ -10,7 +10,7 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 suite('SearchableViewContainerMixinLit', function() {
   const TestParentViewElementBase = SettingsViewMixinLit(CrLitElement);
 
-  class TestParentViewElement extends TestParentViewElementBase {
+  class TestParentViewLitElement extends TestParentViewElementBase {
     static get is() {
       return 'test-parent-view-lit';
     }
@@ -27,13 +27,13 @@ suite('SearchableViewContainerMixinLit', function() {
       return trigger;
     }
   }
-  customElements.define(TestParentViewElement.is, TestParentViewElement);
+  customElements.define(TestParentViewLitElement.is, TestParentViewLitElement);
 
   const TestElementBase = SearchableViewContainerMixinLit(CrLitElement);
 
-  class TestElement extends TestElementBase {
+  class TestDummyLitElement extends TestElementBase {
     static get is() {
-      return 'test-element-lit';
+      return 'test-dummy-lit';
     }
 
     static override get styles() {
@@ -73,15 +73,16 @@ suite('SearchableViewContainerMixinLit', function() {
       `;
     }
   }
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(TestDummyLitElement.is, TestDummyLitElement);
 
-  let testElement: TestElement;
+  let testElement: TestDummyLitElement;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     Router.getInstance().navigateTo(routes.BASIC);
-    testElement = document.createElement('test-element-lit') as TestElement;
+    testElement =
+        document.createElement('test-dummy-lit') as TestDummyLitElement;
     document.body.appendChild(testElement);
     return microtasksFinished();
   });

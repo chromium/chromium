@@ -17,11 +17,6 @@ export const InkTextObserverMixin = <T extends Constructor<CrLitElement>>(
       InkTextObserverMixinInterface {
     private tracker_: EventTracker = new EventTracker();
 
-    override firstUpdated() {
-      this.onTextAttributesChanged(
-          Ink2Manager.getInstance().getCurrentTextAttributes());
-    }
-
     override connectedCallback() {
       super.connectedCallback();
       this.tracker_.add(
@@ -33,6 +28,11 @@ export const InkTextObserverMixin = <T extends Constructor<CrLitElement>>(
     override disconnectedCallback() {
       super.disconnectedCallback();
       this.tracker_.removeAll();
+    }
+
+    override firstUpdated() {
+      this.onTextAttributesChanged(
+          Ink2Manager.getInstance().getCurrentTextAttributes());
     }
 
     // Should be overridden by clients.

@@ -258,9 +258,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   static override get properties() {
     return {
-      // from PdfViewerBaseElement
-      showErrorDialog: {type: Boolean},
-      strings: {type: Object},
+      ...super.properties,
 
       // <if expr="enable_pdf_ink2">
       annotationMode_: {type: String},
@@ -422,6 +420,35 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         10));
   }
 
+  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
+  override connectedCallback() {
+    super.connectedCallback();
+    this.tracker.add(window, 'beforeunload', this.onBeforeUnload_.bind(this));
+    // <if expr="enable_pdf_ink2">
+    const mediaQuery = window.matchMedia('(min-width: 960px)');
+    this.useSidePanelForInk_ = mediaQuery.matches;
+    this.tracker.add(mediaQuery, 'change', () => {
+      this.useSidePanelForInk_ = mediaQuery.matches;
+      // If in DRAW or TEXT annotation mode, record opening the
+      // UI that's opened by making the window narrower/wider.
+      if (this.annotationMode_ !== AnnotationMode.OFF) {
+        record(
+            this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
+                                       UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
+      }
+    });
+    this.tracker.add(
+        Ink2Manager.getInstance(), 'undo-redo-state-changed',
+        this.handleUndoRedoStateChanged_.bind(this));
+    // </if> enable_pdf_ink2
+  }
+
+  override disconnectedCallback() {
+    this.tracker.removeAll();
+    super.disconnectedCallback();
+  }
+  // </if> enable_pdf_ink2 or enable_pdf_save_to_drive
+
   // <if expr="enable_pdf_ink2">
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -452,35 +479,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     // </if>
   }
-
-  // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
-  override connectedCallback() {
-    super.connectedCallback();
-    this.tracker.add(window, 'beforeunload', this.onBeforeUnload_.bind(this));
-    // <if expr="enable_pdf_ink2">
-    const mediaQuery = window.matchMedia('(min-width: 960px)');
-    this.useSidePanelForInk_ = mediaQuery.matches;
-    this.tracker.add(mediaQuery, 'change', () => {
-      this.useSidePanelForInk_ = mediaQuery.matches;
-      // If in DRAW or TEXT annotation mode, record opening the
-      // UI that's opened by making the window narrower/wider.
-      if (this.annotationMode_ !== AnnotationMode.OFF) {
-        record(
-            this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
-                                       UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
-      }
-    });
-    this.tracker.add(
-        Ink2Manager.getInstance(), 'undo-redo-state-changed',
-        this.handleUndoRedoStateChanged_.bind(this));
-    // </if> enable_pdf_ink2
-  }
-
-  override disconnectedCallback() {
-    this.tracker.removeAll();
-    super.disconnectedCallback();
-  }
-  // </if> enable_pdf_ink2 or enable_pdf_save_to_drive
 
   getBackgroundColor(): number {
     return BACKGROUND_COLOR;
