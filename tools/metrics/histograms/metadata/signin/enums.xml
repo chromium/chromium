@@ -268,6 +268,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="RefreshTokenRemoved"/>
   <int value="3" label="RefreshTokenInvalidated"/>
   <int value="4" label="ExternalAppAccountUpdated"/>
+  <int value="5" label="PrimaryAccountSet"/>
+  <int value="6" label="PrimaryAccountCleared"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_service_impl.h:FetchTriggerCause) -->

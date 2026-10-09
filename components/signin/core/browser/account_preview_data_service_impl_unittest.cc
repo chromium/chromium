@@ -1354,6 +1354,183 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingUpdatedOnPrimaryAccountChanged) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo acc1 = identity_test_env_.MakeAccountAvailable("acc1@gmail.com");
+  AccountInfo acc2 = identity_test_env_.MakeAccountAvailable("acc2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(acc1.GetEmail()), acc1.GetGaiaId()},
+       {std::string(acc2.GetEmail()), acc2.GetGaiaId()}});
+#endif
+
+  // Resolve acc1 with 0 data, and acc2 with passwords and another device.
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(
+      &test_url_loader_factory_, {.password_count = 50},
+      {DevicePreview{
+          .cache_guid = "other_device",
+          .last_updated = base::Time::Now(),
+          .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}});
+  waiter.Wait();
+
+  // Signed out initially: no switching account.
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+
+  base::HistogramTester histograms;
+
+  // Sign in with acc1 (which already has a valid refresh token and cached
+  // preview data). OnPrimaryAccountChanged should recompute and store acc2 as
+  // the switching account.
+  identity_test_env_.identity_manager()
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(acc1.GetAccountId(), ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kSettings);
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, acc2.GetGaiaId())));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountSet, 1);
+
+  // Clear the primary account while keeping tokens: switching account should be
+  // cleared and recomputation triggered with kPrimaryAccountCleared.
+  identity_test_env_.identity_manager()
+      ->GetPrimaryAccountMutator()
+      ->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::kTest);
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, acc2.GetGaiaId())));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountCleared,
+      1);
+
+  // Sign in again and clear the primary account (removing all tokens): both
+  // switching and promo accounts should be cleared.
+  identity_test_env_.identity_manager()
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(acc1.GetAccountId(), ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kSettings);
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, acc2.GetGaiaId())));
+  identity_test_env_.ClearPrimaryAccount();
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+  EXPECT_EQ(service_->GetPreferredAccountForPromo(), std::nullopt);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingRecomputedOnSwitchingAccountRemoved) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo sec1 = identity_test_env_.MakeAccountAvailable("sec1@gmail.com");
+  AccountInfo sec2 = identity_test_env_.MakeAccountAvailable("sec2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(sec1.GetEmail()), sec1.GetGaiaId()},
+       {std::string(sec2.GetEmail()), sec2.GetGaiaId()}});
+#endif
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}};
+
+  // Primary has 0 data, sec1 has high passwords (100), sec2 has medium
+  // passwords (50).
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 100},
+                          other_devices);
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50},
+                          other_devices);
+  waiter.Wait();
+
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, sec1.GetGaiaId())));
+
+  // Remove sec1 (current switching account). Should recompute and select sec2.
+  identity_test_env_.RemoveRefreshTokenForAccount(sec1.GetAccountId());
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, sec2.GetGaiaId())));
+
+  // Remove sec2. Should clear switching account.
+  identity_test_env_.RemoveRefreshTokenForAccount(sec2.GetAccountId());
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingUpdatedOnPrimaryAccountReauthenticated) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo sec = identity_test_env_.MakeAccountAvailable("sec@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(sec.GetEmail()), sec.GetGaiaId()}});
+#endif
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}};
+
+  // Primary has 0 passwords and sec has 50 passwords, so sec is selected as
+  // the switching account.
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50},
+                          other_devices);
+  waiter.Wait();
+
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, sec.GetGaiaId())));
+
+  // Invalidate primary account with a persistent error (Signin Pending). It
+  // should clear the switching account and recompute.
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(primary.GetGaiaId()).has_value());
+
+  // Re-authenticate the primary account. It should re-fetch the primary
+  // account and recompute sec as the switching account.
+  AllDataAvailableWaiter reauth_waiter(service_.get());
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+  reauth_waiter.Wait();
+
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, sec.GetGaiaId())));
+}
+
 TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
   base::DictValue dict;
   dict.Set("gaia_id", "test_gaia_id");
@@ -1498,6 +1675,49 @@ TEST_F(AccountPreviewDataServiceTest, LogsFetchTriggerCause) {
       "Signin.AccountPreview.SuccessfulFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
           kRefreshTokenInvalidated,
+      1);
+
+  // 5. Trigger cause by setting primary account (OnPrimaryAccountChanged
+  // followed by OnRefreshTokenUpdatedForAccount).
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop5;
+  service_->SetFetchCompleteCallbackForTesting(run_loop5.QuitClosure());
+  identity_test_env_.MakePrimaryAccountAvailable("primary@gmail.com",
+                                                 ConsentLevel::kSignin);
+  run_loop5.Run();
+
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountSet, 1);
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.SuccessfulFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountSet, 1);
+
+  // 6. Trigger cause by clearing primary account while an uncached account
+  // remains.
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  base::RunLoop run_loop_fail3;
+  service_->SetFetchCompleteCallbackForTesting(run_loop_fail3.QuitClosure());
+  identity_test_env_.MakeAccountAvailable("account4@gmail.com");
+  run_loop_fail3.Run();
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop6;
+  service_->SetFetchCompleteCallbackForTesting(run_loop6.QuitClosure());
+  identity_test_env_.identity_manager()
+      ->GetPrimaryAccountMutator()
+      ->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::kTest);
+  run_loop6.Run();
+
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountCleared,
+      1);
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.SuccessfulFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountCleared,
       1);
 }
 

@@ -52,7 +52,9 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     kRefreshTokenRemoved = 2,
     kRefreshTokenInvalidated = 3,
     kExternalAppAccountUpdated = 4,
-    kMaxValue = kExternalAppAccountUpdated,
+    kPrimaryAccountSet = 5,
+    kPrimaryAccountCleared = 6,
+    kMaxValue = kPrimaryAccountCleared,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
 
@@ -104,6 +106,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void SetAllDataAvailableCallbackForTesting(base::OnceClosure callback);
 
   // IdentityManager::Observer implementation:
+  void OnPrimaryAccountChanged(
+      const PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
@@ -211,6 +215,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // Mapping used to look up gaia_id based on account_id, used when an account
   // is removed.
   absl::flat_hash_map<CoreAccountId, GaiaId> account_id_to_gaia_id_;
+
+  // True if `OnPrimaryAccountChanged()` was called with `kSet` before the
+  // primary account refresh token was available.
+  bool waiting_for_primary_account_token_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>

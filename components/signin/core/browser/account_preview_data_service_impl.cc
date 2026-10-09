@@ -75,7 +75,10 @@ void RecordSuccessfulFetchingMetrics(
     case AccountPreviewDataServiceImpl::FetchTriggerCause::
         kRefreshTokenInvalidated:
     case AccountPreviewDataServiceImpl::FetchTriggerCause::
-        kExternalAppAccountUpdated: {
+        kExternalAppAccountUpdated:
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::kPrimaryAccountSet:
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::
+        kPrimaryAccountCleared: {
       int count = pref_service->GetInteger(
           prefs::kAccountPreviewNonPeriodicFetchCountPref);
       pref_service->SetInteger(prefs::kAccountPreviewNonPeriodicFetchCountPref,
@@ -362,6 +365,44 @@ AccountPreviewDataServiceImpl::GetExternalAppAccountForTesting() const {
 }
 #endif
 
+void AccountPreviewDataServiceImpl::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event_details) {
+  PrimaryAccountChangeEvent::Type event_type =
+      event_details.GetEventTypeFor(ConsentLevel::kSignin);
+  if (event_type == PrimaryAccountChangeEvent::Type::kNone) {
+    return;
+  }
+
+  WriteSwitchingAccountToPrefs(/*preference=*/std::nullopt);
+
+  switch (event_type) {
+    case PrimaryAccountChangeEvent::Type::kNone:
+      NOTREACHED();
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      waiting_for_primary_account_token_ = false;
+      EnsureAllAccountsFetched(FetchTriggerCause::kPrimaryAccountCleared);
+      return;
+    case PrimaryAccountChangeEvent::Type::kSet: {
+      // On sign-in, the ordering between `OnPrimaryAccountChanged()` and
+      // `OnRefreshTokenUpdatedForAccount()` is not guaranteed. If refresh
+      // tokens are already loaded and the token for the primary account is not
+      // available yet, wait for `OnRefreshTokenUpdatedForAccount()` to trigger
+      // the fetch with `kPrimaryAccountSet`. If refresh tokens are not loaded
+      // yet, `EnsureAllAccountsFetched()` will defer the fetch until
+      // `OnRefreshTokensLoaded()`.
+      const CoreAccountId& primary_account_id =
+          event_details.GetCurrentState().primary_account.account_id;
+      if (identity_manager_->AreRefreshTokensLoaded() &&
+          !identity_manager_->HasAccountWithRefreshToken(primary_account_id)) {
+        waiting_for_primary_account_token_ = true;
+        return;
+      }
+      EnsureAllAccountsFetched(FetchTriggerCause::kPrimaryAccountSet);
+      return;
+    }
+  }
+}
+
 void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   // This prevents startup refresh token updates from triggering unexpected
@@ -377,7 +418,15 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
     return;
   }
 
-  EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenUpdated);
+  FetchTriggerCause cause = FetchTriggerCause::kRefreshTokenUpdated;
+  if (waiting_for_primary_account_token_ &&
+      account_info.account_id ==
+          identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin)) {
+    waiting_for_primary_account_token_ = false;
+    cause = FetchTriggerCause::kPrimaryAccountSet;
+  }
+
+  EnsureAllAccountsFetched(cause);
 }
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
@@ -541,9 +590,11 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   // preferred data is exactly equivalent to the current list of accounts. This
   // will directly be false for all periodic refreshes since the previous list
   // and results are cleared during periodic refreshes.
-  // In case the external app account was updated, we want to trigger a new
-  // preferred account computation, so we need to bypass this optimization.
+  // In case the external app account or primary account was updated, we want to
+  // trigger a new account computation, so we need to bypass this optimization.
   if (cause != FetchTriggerCause::kExternalAppAccountUpdated &&
+      cause != FetchTriggerCause::kPrimaryAccountSet &&
+      cause != FetchTriggerCause::kPrimaryAccountCleared &&
       switches::kAccountPreviewDataPersistAccounts.Get() &&
       !HaveAccountsMutatedSinceLastFetch(accounts)) {
     base::UmaHistogramEnumeration(
@@ -935,9 +986,23 @@ void AccountPreviewDataServiceImpl::ProcessAccountRemoval(
     active_fetchers_.erase(gaia_id);
   }
 
+  bool should_recompute = false;
   auto preferred_account = GetPreferredAccountForPromo();
   if (preferred_account && preferred_account->gaia_id == gaia_id) {
     WritePreferredAccountToPrefs(/*preference=*/std::nullopt);
+    should_recompute = true;
+  }
+
+  const bool is_primary = account_id == identity_manager_->GetPrimaryAccountId(
+                                            ConsentLevel::kSignin);
+  auto switching_account = GetPreferredAccountForSwitching();
+  if (is_primary ||
+      (switching_account && switching_account->gaia_id == gaia_id)) {
+    WriteSwitchingAccountToPrefs(/*preference=*/std::nullopt);
+    should_recompute = true;
+  }
+
+  if (should_recompute) {
     EnsureAllAccountsFetched(trigger_cause);
   }
 }
@@ -949,6 +1014,7 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
   all_accounts_fetched_barrier_.Reset();
   batch_gaia_ids_.clear();
   account_id_to_gaia_id_.clear();
+  waiting_for_primary_account_token_ = false;
   deferred_fetch_on_loaded_tokens_callback_.Reset();
 #if BUILDFLAG(IS_ANDROID)
   deferred_external_app_account_update_callback_.Reset();
