@@ -150,11 +150,16 @@ public interface BottomSheetContent {
     int getVerticalScrollOffset();
 
     /**
-     * Called to destroy the {@link BottomSheetContent} when it is dismissed. The means the
-     * sheet is in the {@link BottomSheetController.SheetState#HIDDEN} state without being
-     * suppressed. This method does not necessarily need to be used but exists for convenience.
-     * Cleanup can be done manually via the owning component (likely watching for the sheet hidden
-     * event using an observer).
+     * Called to destroy the {@link BottomSheetContent} when it is dismissed. The means the sheet is
+     * in the {@link BottomSheetController.SheetState#HIDDEN} state without being suppressed. This
+     * method does not necessarily need to be used but exists for convenience. Cleanup can be done
+     * manually via the owning component (likely watching for the sheet hidden event using an
+     * observer).
+     *
+     * <p>When deferred content swapping is enabled, this is also called when the content is dropped
+     * from the pending show requests without ever being shown, for example by {@code
+     * ManagedBottomSheetController#clearRequestsAndHide()}. Observers are not notified in that
+     * case.
      */
     void destroy();
 

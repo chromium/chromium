@@ -323,17 +323,36 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         // Reset property to default correctly for any future sheets.
                         scrimProperties.set(ScrimProperties.BACKGROUND_COLOR, null);
 
+                        boolean deferContentSwap =
+                                BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden
+                                        .isEnabled();
                         // Try to swap contents unless the sheet's content has a custom lifecycle.
+                        // A content that is hiding is being dismissed or swapped out already, and
+                        // one that is queued was swapped out by requestShowContent(): don't queue
+                        // those again.
                         if (mBottomSheet.getCurrentSheetContent() != null
-                                && !mBottomSheet.getCurrentSheetContent().hasCustomLifecycle()) {
+                                && !mBottomSheet.getCurrentSheetContent().hasCustomLifecycle()
+                                && (!deferContentSwap
+                                        || (!mIsProcessingHideRequest
+                                                && !mBottomSheet.isHiding()))) {
                             // If the sheet is closed, it is an opportunity for another content to
                             // try to take its place if it is a higher priority.
                             BottomSheetContent content = mBottomSheet.getCurrentSheetContent();
                             BottomSheetContent nextContent = mContentQueue.peek();
                             if (content != null
                                     && nextContent != null
+                                    && (!deferContentSwap || !mContentQueue.contains(content))
                                     && canIncomingSupersede(content, nextContent)) {
-                                mContentQueue.add(content);
+                                if (deferContentSwap) {
+                                    // Like requestShowContent() does, keep the content to come back
+                                    // after the next content, unless that one discards it.
+                                    if (!shouldBlockRequeueOnSwap(nextContent)) {
+                                        mIsSuppressingCurrentContent = true;
+                                        mContentQueue.add(content);
+                                    }
+                                } else {
+                                    mContentQueue.add(content);
+                                }
                                 mBottomSheet.setSheetState(SheetState.HIDDEN, true);
                             }
                         }
@@ -849,14 +868,25 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     public void clearRequestsAndHide() {
         if (mBottomSheet == null) return;
 
-        clearRequests(assumeNonNull(mContentQueue).iterator());
+        List<BottomSheetContent> queuedContentsToDestroy = clearQueuedRequests();
 
-        BottomSheetContent currentContent = mBottomSheet.getCurrentSheetContent();
+        boolean deferContentSwap =
+                BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden.isEnabled();
+        BottomSheetContent currentContent = getCurrentSheetContent();
         if (currentContent == null || !currentContent.hasCustomLifecycle()) {
+            if (deferContentSwap) {
+                mIsSuppressingCurrentContent = false;
+            }
             hideContent(currentContent, /* animate= */ true);
         }
         mContentWhenSuppressed = null;
         mSheetStateBeforeSuppress = SheetState.NONE;
+
+        if (!deferContentSwap) return;
+
+        for (BottomSheetContent content : queuedContentsToDestroy) {
+            content.destroy();
+        }
     }
 
     @Override
@@ -952,16 +982,24 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     /**
-     * Remove all contents from {@code iterator} that don't have a custom lifecycle.
+     * Removes all contents from {@link #mContentQueue} that don't have a custom lifecycle.
      *
-     * @param iterator The iterator whose items must be removed.
+     * @return The queued contents that were removed and need to be destroyed immediately, excluding
+     *     {@link #getCurrentSheetContent()} which is destroyed once it finishes hiding.
      */
-    private void clearRequests(Iterator<BottomSheetContent> iterator) {
-        while (iterator.hasNext()) {
-            if (!iterator.next().hasCustomLifecycle()) {
-                iterator.remove();
+    private List<BottomSheetContent> clearQueuedRequests() {
+        BottomSheetContent currentContent = getCurrentSheetContent();
+        List<BottomSheetContent> contentsToDestroy = new ArrayList<>();
+        Iterator<BottomSheetContent> it = assumeNonNull(mContentQueue).iterator();
+        while (it.hasNext()) {
+            BottomSheetContent content = it.next();
+            if (content.hasCustomLifecycle()) continue;
+            it.remove();
+            if (content != currentContent) {
+                contentsToDestroy.add(content);
             }
         }
+        return contentsToDestroy;
     }
 
     /**

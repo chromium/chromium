@@ -81,6 +81,7 @@ public class BottomSheetControllerImplUnitTest {
     private @Mock AppHeaderState mAppHeaderState;
     private @Mock BottomSheetCoordinator mBottomSheet;
     private @Mock BottomSheetContent mSheetContent;
+    private @Mock BottomSheetContent mOtherSheetContent;
     private @Mock InsetObserver mInsetObserver;
     private @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
     private @Captor ArgumentCaptor<PropertyModel> mScrimPropertyModelCaptor;
@@ -1089,6 +1090,250 @@ public class BottomSheetControllerImplUnitTest {
 
         // Ensure contentA wasn't shown a second time
         verify(mBottomSheet, times(1)).showContent(contentA);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testClearRequestsAndHide_DestroysQueuedContent() {
+        BottomSheetContent queuedContent = showContentAndQueueNextContent();
+
+        mController.clearRequestsAndHide();
+
+        // The queued content will never be shown, so it is destroyed. The current content is
+        // hidden and destroyed as before.
+        verify(queuedContent).destroy();
+        verify(mSheetContent).destroy();
+        verify(mBottomSheet, never()).showContent(queuedContent);
+        verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testClearRequestsAndHide_DeferContentSwapDisabled_DoesNotDestroyQueuedContent() {
+        BottomSheetContent queuedContent = showContentAndQueueNextContent();
+
+        mController.clearRequestsAndHide();
+
+        verify(queuedContent, never()).destroy();
+        verify(mSheetContent).destroy();
+        verify(mBottomSheet, never()).showContent(queuedContent);
+        verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testClearRequestsAndHide_KeepsQueuedContentWithCustomLifecycle() {
+        BottomSheetContent queuedContent = showContentAndQueueNextContent();
+        when(queuedContent.hasCustomLifecycle()).thenReturn(true);
+
+        mController.clearRequestsAndHide();
+
+        // The owner of the content manages its lifecycle: it is neither dropped nor destroyed, and
+        // it is shown once the current content is hidden.
+        verify(queuedContent, never()).destroy();
+        verify(mBottomSheet).showContent(queuedContent);
+        verify(mSheetContent).destroy();
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testClearRequestsAndHide_DestroyRequestsContent_ShowsRequestedContent() {
+        BottomSheetContent queuedContent = showContentAndQueueNextContent();
+        when(mOtherSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        // Destroying the cleared content requests other content.
+        doAnswer(
+                        invocation -> {
+                            mController.requestShowContent(mOtherSheetContent, /* animate= */ true);
+                            return null;
+                        })
+                .when(queuedContent)
+                .destroy();
+
+        mController.clearRequestsAndHide();
+
+        // The new request isn't cleared, and it is shown now that the sheet is hidden.
+        verify(queuedContent).destroy();
+        verify(mBottomSheet).showContent(mOtherSheetContent);
+    }
+
+    @Test
+    @EnableFeatures({
+        BottomSheetFeatureMap.BOTTOM_SHEET_TYPES,
+        BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN
+    })
+    public void testClearRequestsAndHide_PreemptedSheetIsDestroyedWhenHidden() {
+        showSheetPreemptedByOtherSheet();
+
+        // The requests are cleared while the preempted sheet is still animating to HIDDEN.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.SCROLLING);
+        mController.clearRequestsAndHide();
+
+        // The preempting sheet will never be shown. The preempted sheet is still on screen, so it
+        // is destroyed once it is hidden.
+        verify(mOtherSheetContent).destroy();
+        verify(mSheetContent, never()).destroy();
+
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        simulateSheetHidden(StateChangeReason.NONE);
+
+        // The preempted sheet is dismissed instead of coming back after the preempting sheet, and
+        // each sheet is destroyed once.
+        verify(mSheetContent).destroy();
+        verify(mOtherSheetContent).destroy();
+        verify(mBottomSheet).showContent(mSheetContent);
+        verify(mBottomSheet, never()).showContent(mOtherSheetContent);
+        verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    @EnableFeatures({
+        BottomSheetFeatureMap.BOTTOM_SHEET_TYPES,
+        BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN
+    })
+    public void testClearRequestsAndHide_DuringPendingContentSwap_PreemptedSheetDestroyed() {
+        showSheetPreemptedByOtherSheet();
+
+        // The requests are cleared by an observer that is notified that the preempted sheet is
+        // hidden.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+        mController.clearRequestsAndHide();
+
+        verify(mOtherSheetContent).destroy();
+        verify(mSheetContent, never()).destroy();
+
+        // The preempted sheet is destroyed once the pending content swap is done.
+        commitSheetStateChange(SheetState.HIDDEN);
+
+        verify(mSheetContent).destroy();
+        verify(mOtherSheetContent).destroy();
+        verify(mBottomSheet).showContent(mSheetContent);
+        verify(mBottomSheet, never()).showContent(mOtherSheetContent);
+        verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    @EnableFeatures({
+        BottomSheetFeatureMap.BOTTOM_SHEET_TYPES,
+        BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN
+    })
+    public void testClearRequestsAndHide_SheetClosedWhilePreempting_DestroyedOnceWhenHidden() {
+        showSheetPreemptedAndNotifySheetClosed();
+
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.SCROLLING);
+        mController.clearRequestsAndHide();
+
+        // The current sheet is still on screen, so it isn't destroyed yet, and onSheetClosed() did
+        // not queue it a second time.
+        verify(mOtherSheetContent).destroy();
+        verify(mSheetContent, never()).destroy();
+
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        simulateSheetHidden(StateChangeReason.NONE);
+
+        verify(mSheetContent).destroy();
+        verify(mOtherSheetContent).destroy();
+        verify(mBottomSheet).showContent(mSheetContent);
+        verify(mBottomSheet, never()).showContent(mOtherSheetContent);
+        verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    @EnableFeatures({
+        BottomSheetFeatureMap.BOTTOM_SHEET_TYPES,
+        BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN
+    })
+    public void testClearRequestsAndHide_AfterSheetClosedWhilePreempting_DestroyedOnce() {
+        showSheetPreemptedAndNotifySheetClosed();
+
+        // The preempting sheet is shown once the preempted sheet is hidden; onSheetClosed() did
+        // not queue the preempted sheet a second time.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        simulateSheetHidden(StateChangeReason.NONE);
+        verify(mBottomSheet).showContent(mOtherSheetContent);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(mOtherSheetContent);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.PEEK);
+
+        mController.clearRequestsAndHide();
+
+        // The preempted sheet will never be shown again, so it is destroyed, only once. The shown
+        // sheet is destroyed once it is hidden.
+        verify(mSheetContent).destroy();
+        verify(mOtherSheetContent, never()).destroy();
+
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        simulateSheetHidden(StateChangeReason.NONE);
+
+        verify(mSheetContent).destroy();
+        verify(mOtherSheetContent).destroy();
+        verify(mBottomSheet).showContent(mSheetContent);
+        verify(mBottomSheet).showContent(null);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetClosed_WhileContentIsDismissedWithoutAnimation_DoesNotRequeueIt() {
+        BottomSheetContent next = showContentAndQueueNextContent();
+        // Make the queued content able to supersede the current one, so that closing the sheet
+        // would normally queue the current content again.
+        when(mSheetContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.LOW);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.FULL);
+
+        // The sheet closes while the current content is being dismissed.
+        mController.hideContent(mSheetContent, /* animate= */ false);
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+
+        verify(mBottomSheet, never()).setSheetState(SheetState.HIDDEN, true);
+
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        simulateSheetHidden(StateChangeReason.NONE);
+
+        // The dismissed content is destroyed instead of coming back after the queued content.
+        verify(mSheetContent).destroy();
+        verify(mBottomSheet).showContent(next);
+        verify(mBottomSheet, never()).showContent(mSheetContent);
+    }
+
+    /**
+     * Shows {@link #mSheetContent}, then has {@link #mOtherSheetContent} preempt it: the sheet
+     * starts animating to {@link SheetState#HIDDEN} and {@link #mSheetContent} is queued again, to
+     * come back after {@link #mOtherSheetContent} is closed. Requires {@link
+     * BottomSheetFeatureMap#BOTTOM_SHEET_TYPES}.
+     */
+    private void showSheetPreemptedByOtherSheet() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
+
+        BottomSheetType typeA = new BottomSheetType.Builder().setSuppressible(true).build();
+        when(mSheetContent.getSheetType()).thenReturn(typeA);
+        when(mSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        BottomSheetType typeB =
+                new BottomSheetType.Builder().setUserInitiated(true).setModal(true).build();
+        when(mOtherSheetContent.getSheetType()).thenReturn(typeB);
+        when(mOtherSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        assertTrue(mController.requestShowContent(mSheetContent, /* animate= */ true));
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+
+        assertTrue(mController.requestShowContent(mOtherSheetContent, /* animate= */ true));
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
+    }
+
+    /**
+     * Same as {@link #showSheetPreemptedByOtherSheet()}, then notifies that the sheet is closed
+     * while it is animating to {@link SheetState#HIDDEN}, which must not queue {@link
+     * #mSheetContent} a second time.
+     */
+    private void showSheetPreemptedAndNotifySheetClosed() {
+        showSheetPreemptedByOtherSheet();
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
     }
 
     @Test

@@ -32,7 +32,9 @@ public interface ManagedBottomSheetController
 
     /**
      * For all contents that don't have a custom lifecycle, we remove them from show requests or
-     * hide it if it is currently shown.
+     * hide it if it is currently shown. The shown content is destroyed once it is hidden. When
+     * BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN is enabled, contents removed from show requests are
+     * destroyed too, since they will never be shown.
      */
     void clearRequestsAndHide();
 
