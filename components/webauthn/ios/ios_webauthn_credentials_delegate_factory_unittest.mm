@@ -16,14 +16,22 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace webauthn {
+
+namespace {
 
 constexpr char kFrameId1[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 constexpr char kFrameId2[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 constexpr char kRemoteFrameId1[] = "cccccccccccccccccccccccccccccccc";
 constexpr char kRemoteFrameId2[] = "dddddddddddddddddddddddddddddddd";
 constexpr char kRemoteFrameId1New[] = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+constexpr char kOriginUrl1[] = "https://example.com";
+constexpr char kOriginUrl2[] = "https://attacker.example";
+
+}  // namespace
 
 class IOSWebAuthnCredentialsDelegateFactoryTest : public PlatformTest {
  protected:
@@ -68,7 +76,7 @@ class IOSWebAuthnCredentialsDelegateFactoryTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   web::FakeWebState web_state_;
-  raw_ptr<IOSWebAuthnCredentialsDelegateFactory> factory_;
+  raw_ptr<IOSWebAuthnCredentialsDelegateFactory> factory_ = nullptr;
 };
 
 // Tests that the factory creates a delegate for a given frame.
@@ -141,13 +149,20 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, DelegateDestroyedWithFrame) {
   EXPECT_NE(old_delegate, new_delegate);
 }
 
-// Tests that the factory returns the same delegate for a remote frame token.
+// Tests that the factory returns the same delegate for a remote frame token
+// when the isolated-world frame's security origin matches `expected_origin`.
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, DelegateForRemoteFrameToken) {
+  auto fake_frame = web::FakeWebFrame::Create(kFrameId1, /*is_main_frame=*/true,
+                                              GURL(kOriginUrl1));
+  web_frames_manager()->AddWebFrame(std::move(fake_frame));
+
   autofill::RemoteFrameToken remote_token(
       *autofill::DeserializeJavaScriptFrameId(kRemoteFrameId1));
 
   base::test::TestFuture<IOSWebAuthnCredentialsDelegate*> future;
-  factory()->GetDelegateForRemoteFrameToken(remote_token, future.GetCallback());
+  factory()->GetDelegateForRemoteFrameToken(
+      remote_token, url::Origin::Create(GURL(kOriginUrl1)),
+      future.GetCallback());
   IOSWebAuthnCredentialsDelegate* delegate_from_remote = future.Get();
   EXPECT_TRUE(delegate_from_remote);
 
@@ -160,8 +175,43 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, DelegateForRemoteFrameToken) {
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
        ReturnsNullptrForMissingRemoteFrameToken) {
   base::test::TestFuture<IOSWebAuthnCredentialsDelegate*> future;
-  factory()->GetDelegateForRemoteFrameToken(autofill::RemoteFrameToken(),
-                                            future.GetCallback());
+  factory()->GetDelegateForRemoteFrameToken(
+      autofill::RemoteFrameToken(), url::Origin::Create(GURL(kOriginUrl1)),
+      future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that the factory returns `nullptr` when the isolated-world frame's
+// security origin does not match `expected_origin`.
+TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
+       ReturnsNullptrForRemoteFrameTokenWithMismatchedOrigin) {
+  auto fake_frame = web::FakeWebFrame::Create(
+      kFrameId1, /*is_main_frame=*/false, GURL(kOriginUrl1));
+  web_frames_manager()->AddWebFrame(std::move(fake_frame));
+
+  autofill::RemoteFrameToken remote_token(
+      *autofill::DeserializeJavaScriptFrameId(kRemoteFrameId1));
+
+  base::test::TestFuture<IOSWebAuthnCredentialsDelegate*> future;
+  factory()->GetDelegateForRemoteFrameToken(
+      remote_token, url::Origin::Create(GURL(kOriginUrl2)),
+      future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that the factory returns `nullptr` when the corresponding
+// isolated-world frame does not exist.
+TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
+       ReturnsNullptrForRemoteFrameTokenWhenIsolatedFrameMissing) {
+  autofill::RemoteFrameToken remote_token(
+      *autofill::DeserializeJavaScriptFrameId(kRemoteFrameId1));
+
+  base::test::TestFuture<IOSWebAuthnCredentialsDelegate*> future;
+  factory()->GetDelegateForRemoteFrameToken(
+      remote_token, url::Origin::Create(GURL(kOriginUrl1)),
+      future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get());
 }

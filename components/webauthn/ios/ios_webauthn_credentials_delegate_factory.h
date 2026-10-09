@@ -14,6 +14,10 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_user_data.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -45,10 +49,13 @@ class IOSWebAuthnCredentialsDelegateFactory
       const std::string& frame_id);
 
   // Resolves the delegate for the given `remote_frame_token` and passes it to
-  // `callback`. If the mapping is not yet registered, the callback will run
-  // asynchronously when the mapping becomes available.
+  // `callback` if the resolved isolated-world frame's security origin matches
+  // `expected_origin` (passing `nullptr` otherwise). If the mapping is not yet
+  // registered, the callback will run asynchronously when the mapping becomes
+  // available.
   void GetDelegateForRemoteFrameToken(
       autofill::RemoteFrameToken remote_frame_token,
+      const url::Origin& expected_origin,
       base::OnceCallback<void(IOSWebAuthnCredentialsDelegate*)> callback);
 
  private:

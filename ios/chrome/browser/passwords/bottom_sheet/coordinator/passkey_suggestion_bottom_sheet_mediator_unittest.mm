@@ -85,6 +85,12 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
     frame->set_browser_state(&fake_browser_state_);
     frames_manager->AddWebFrame(std::move(frame));
 
+    auto other_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    auto other_frame = web::FakeWebFrame::Create(
+        kFrameId, /*is_main_frame=*/true, GURL("https://example.com"));
+    other_frame->set_browser_state(&fake_browser_state_);
+    other_frames_manager->AddWebFrame(std::move(other_frame));
+
     web::ContentWorld passkey_world =
         webauthn::PasskeyJavaScriptFeature::GetInstance()
             ->GetSupportedContentWorld();
@@ -94,8 +100,8 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
             : web::ContentWorld::kPageContentWorld;
 
     web_state_->SetWebFramesManager(passkey_world, std::move(frames_manager));
-    web_state_->SetWebFramesManager(
-        other_world, std::make_unique<web::FakeWebFramesManager>());
+    web_state_->SetWebFramesManager(other_world,
+                                    std::move(other_frames_manager));
 
     web_state_list_->InsertWebState(
         std::move(web_state),

@@ -12,7 +12,9 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state.h"
+#import "url/origin.h"
 
 namespace webauthn {
 
@@ -58,6 +60,7 @@ IOSWebAuthnCredentialsDelegateFactory::GetDelegateForFrameId(
 
 void IOSWebAuthnCredentialsDelegateFactory::GetDelegateForRemoteFrameToken(
     autofill::RemoteFrameToken remote_frame_token,
+    const url::Origin& expected_origin,
     base::OnceCallback<void(IOSWebAuthnCredentialsDelegate*)> callback) {
   if (!remote_frame_token) {
     std::move(callback).Run(nullptr);
@@ -71,16 +74,32 @@ void IOSWebAuthnCredentialsDelegateFactory::GetDelegateForRemoteFrameToken(
 
   auto delegate_resolver = base::BindOnce(
       [](base::WeakPtr<IOSWebAuthnCredentialsDelegateFactory> factory,
+         url::Origin expected_origin,
          base::OnceCallback<void(IOSWebAuthnCredentialsDelegate*)> callback,
          autofill::LocalFrameToken local_token) {
         if (!factory) {
           std::move(callback).Run(nullptr);
           return;
         }
-        std::move(callback).Run(
-            factory->GetDelegateForFrameId(local_token.ToString()));
+        std::string local_frame_id = local_token.ToString();
+        // Verify that the target frame in the isolated world has the same
+        // security origin as the requesting frame in the page world to prevent
+        // cross-origin `remote_frame_token` confusion.
+        web::WebFramesManager* frames_manager =
+            autofill::AutofillJavaScriptFeature::GetInstance()
+                ->GetWebFramesManager(factory->web_state_);
+        web::WebFrame* isolated_frame =
+            frames_manager ? frames_manager->GetFrameWithId(local_frame_id)
+                           : nullptr;
+        if (!isolated_frame ||
+            !isolated_frame->GetSecurityOrigin().IsSameOriginWith(
+                expected_origin)) {
+          std::move(callback).Run(nullptr);
+          return;
+        }
+        std::move(callback).Run(factory->GetDelegateForFrameId(local_frame_id));
       },
-      weak_factory_.GetWeakPtr(), std::move(callback));
+      weak_factory_.GetWeakPtr(), expected_origin, std::move(callback));
 
   // Note that DeclareNewRemoteToken initiallly calls LookupChildFrame, so
   // DeclareNewRemoteToken is called directly here to avoid calling

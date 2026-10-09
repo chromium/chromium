@@ -43,6 +43,7 @@ source_set("ios") {
     "//ios/web/public/js_messaging",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//url",
   ]
 }
 
@@ -135,6 +136,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
 

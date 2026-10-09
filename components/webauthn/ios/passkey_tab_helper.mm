@@ -255,18 +255,20 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
 void PasskeyTabHelper::HandleAssertion(AssertionRequestParams params) {
   std::optional<autofill::RemoteFrameToken> remote_frame_token =
       params.RemoteFrameToken();
+  web::WebFrame* web_frame = GetWebFrame(params.FrameId());
 
-  if (!remote_frame_token.has_value()) {
+  if (!remote_frame_token.has_value() || !web_frame) {
     DeferToRenderer(params.RequestInfo(), params.Type());
     return;
   }
 
+  url::Origin expected_origin = web_frame->GetSecurityOrigin();
   auto get_delegate_callback =
       base::BindOnce(&PasskeyTabHelper::OnWebAuthnCredentialsDelegateResolved,
                      weak_factory_.GetWeakPtr(), std::move(params));
 
   IOSWebAuthnCredentialsDelegateFactory::GetFactory(web_state_.get())
-      ->GetDelegateForRemoteFrameToken(*remote_frame_token,
+      ->GetDelegateForRemoteFrameToken(*remote_frame_token, expected_origin,
                                        std::move(get_delegate_callback));
 }
 
@@ -274,7 +276,8 @@ void PasskeyTabHelper::OnWebAuthnCredentialsDelegateResolved(
     AssertionRequestParams params,
     IOSWebAuthnCredentialsDelegate* delegate) {
   if (!delegate) {
-    // On a malformed or empty remote frame ID, defer to renderer.
+    // On a malformed, empty, or cross-origin remote frame ID, defer to
+    // renderer.
     DeferToRenderer(params.RequestInfo(), params.Type());
     return;
   }

@@ -71,6 +71,8 @@ constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
 
 constexpr char kMainRemoteFrameId[] = "1effd8f52a067c8d3a01762d3c41dfda";
+constexpr char kChildRemoteFrameId[] = "2effd8f52a067c8d3a01762d3c41dfdb";
+constexpr char kCrossOriginChildUrl[] = "https://victim.example";
 
 AssertionRequestParams BuildTestAssertionRequestParams(
     const std::vector<device::PublicKeyCredentialDescriptor>& allow_credentials,
@@ -1347,7 +1349,15 @@ TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_ModelThenFrame) {
   // sheet.
   EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
 
-  // Make the web frame available.
+  // Make the web frame available in both content worlds.
+  auto autofill_frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kOriginURL));
+  autofill_frame->set_browser_state(&fake_browser_state_);
+  static_cast<web::FakeWebFramesManager*>(
+      fake_web_state_.GetWebFramesManager(
+          autofill::AutofillJavaScriptFeature::GetInstance()
+              ->GetSupportedContentWorld()))
+      ->AddWebFrame(std::move(autofill_frame));
+
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kOriginURL));
   frame->set_browser_state(&fake_browser_state_);
   frames_manager_ptr->AddWebFrame(std::move(frame));
@@ -1379,7 +1389,15 @@ TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_FrameThenModel) {
   // Neither ready -> shouldn't show suggestion sheet.
   EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
 
-  // Make the web frame available first.
+  // Make the web frame available first in both content worlds.
+  auto autofill_frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kOriginURL));
+  autofill_frame->set_browser_state(&fake_browser_state_);
+  static_cast<web::FakeWebFramesManager*>(
+      fake_web_state_.GetWebFramesManager(
+          autofill::AutofillJavaScriptFeature::GetInstance()
+              ->GetSupportedContentWorld()))
+      ->AddWebFrame(std::move(autofill_frame));
+
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kOriginURL));
   frame->set_browser_state(&fake_browser_state_);
   frames_manager_ptr->AddWebFrame(std::move(frame));
@@ -1456,6 +1474,65 @@ TEST_F(PasskeyTabHelperTest, HandleAssertionMalformedRemoteFrameIdGraceful) {
 
   // Verify that the suggestion bottom sheet was NOT shown.
   EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+}
+
+// Tests that a passkey assertion request defers back to the renderer and does
+// not populate the target frame's delegate when `remote_frame_token` resolves
+// to a cross-origin frame.
+TEST_F(PasskeyTabHelperTest,
+       HandleAssertionCrossOriginRemoteFrameIdDefersToRenderer) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  RegisterFrame(web::kChildFakeFrameId, kChildRemoteFrameId);
+
+  // Add the cross-origin child frame to both the page world and isolated world.
+  web::FakeWebFramesManager* passkey_frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              PasskeyJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  auto passkey_child_frame =
+      web::FakeWebFrame::CreateChildWebFrame(GURL(kCrossOriginChildUrl));
+  passkey_child_frame->set_browser_state(&fake_browser_state_);
+  passkey_frames_manager->AddWebFrame(std::move(passkey_child_frame));
+
+  web::FakeWebFramesManager* autofill_frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              autofill::AutofillJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  auto autofill_child_frame =
+      web::FakeWebFrame::CreateChildWebFrame(GURL(kCrossOriginChildUrl));
+  autofill_child_frame->set_browser_state(&fake_browser_state_);
+  autofill_frames_manager->AddWebFrame(std::move(autofill_child_frame));
+
+  // Add a passkey for the main frame's RP ID.
+  passkey_model_->AddNewPasskeyForTesting(GetTestPasskey(kCredentialId));
+
+  // Send an assertion request from the main frame (`kOriginURL`), but supply
+  // the cross-origin child frame's `kChildRemoteFrameId`.
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kChildRemoteFrameId);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // The assertion request should defer back to the renderer on the main frame.
+  web::FakeWebFrame* main_frame = static_cast<web::FakeWebFrame*>(
+      passkey_frames_manager->GetFrameWithId(web::kMainFakeFrameId));
+  ASSERT_TRUE(main_frame);
+  EXPECT_NE(main_frame->GetLastJavaScriptCall().find(kDeferToRendererJsCall),
+            std::u16string::npos);
+
+  // Verify that the suggestion bottom sheet was NOT shown and the child frame's
+  // delegate was not populated with credentials.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+  IOSWebAuthnCredentialsDelegate* child_delegate =
+      IOSWebAuthnCredentialsDelegateFactory::GetFactory(&fake_web_state_)
+          ->GetDelegateForFrameId(web::kChildFakeFrameId);
+  ASSERT_TRUE(child_delegate);
+  EXPECT_FALSE(child_delegate->GetPasskeys().has_value());
 }
 
 // Tests that HandleSignalUnknownCredential hides the passkey matching the

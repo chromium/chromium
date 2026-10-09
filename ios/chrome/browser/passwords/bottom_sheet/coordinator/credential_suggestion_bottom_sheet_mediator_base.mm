@@ -13,6 +13,7 @@
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
+#import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -24,6 +25,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -86,7 +89,8 @@
     _webStateListObservation.emplace(&(*_webStateListObserver));
     _webStateListObservation->Observe(_webStateList);
 
-    _URL = _webStateList->GetActiveWebState()->GetLastCommittedURL();
+    web::WebState* activeWebState = _webStateList->GetActiveWebState();
+    _URL = activeWebState->GetLastCommittedURL();
 
     _domain = @"";
     if (!_URL.is_empty()) {
@@ -97,19 +101,28 @@
 
     if (_requestInfo.has_value() &&
         _requestInfo->remote_frame_token.has_value()) {
-      __weak __typeof(self) weakSelf = self;
-      auto callback = base::BindOnce(
-          [](CredentialSuggestionBottomSheetMediatorBase* mediator,
-             webauthn::IOSWebAuthnCredentialsDelegate* delegate) {
-            mediator.webAuthnCredentialsDelegate =
-                delegate ? delegate->GetWeakPtr() : nullptr;
-          },
-          weakSelf);
+      web::WebFramesManager* framesManager =
+          webauthn::PasskeyJavaScriptFeature::GetInstance()
+              ->GetWebFramesManager(activeWebState);
+      web::WebFrame* frame =
+          framesManager ? framesManager->GetFrameWithId(_requestInfo->frame_id)
+                        : nullptr;
+      if (frame) {
+        __weak __typeof(self) weakSelf = self;
+        auto callback = base::BindOnce(
+            [](CredentialSuggestionBottomSheetMediatorBase* mediator,
+               webauthn::IOSWebAuthnCredentialsDelegate* delegate) {
+              mediator.webAuthnCredentialsDelegate =
+                  delegate ? delegate->GetWeakPtr() : nullptr;
+            },
+            weakSelf);
 
-      webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
-          _webStateList->GetActiveWebState())
-          ->GetDelegateForRemoteFrameToken(*_requestInfo->remote_frame_token,
-                                           std::move(callback));
+        webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+            activeWebState)
+            ->GetDelegateForRemoteFrameToken(*_requestInfo->remote_frame_token,
+                                             frame->GetSecurityOrigin(),
+                                             std::move(callback));
+      }
     }
   }
   return self;
