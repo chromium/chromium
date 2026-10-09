@@ -80,6 +80,7 @@
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
@@ -1324,6 +1325,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         HistoryTabHelper::FromWebContents(tab.GetContents()));
   }
 
+  resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
+      tab.GetContents());
+
   ukm::InitializeSourceUrlRecorderForWebContents(tab.GetContents());
 }
 
@@ -1945,6 +1949,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     HistoryClustersTabHelper::CreateForWebContents(
         new_contents, HistoryTabHelper::FromWebContents(new_contents));
   }
+
+  resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
+      new_contents);
 
   ukm::InitializeSourceUrlRecorderForWebContents(new_contents);
 }

@@ -29,7 +29,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
@@ -207,10 +206,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       web_contents);
 #endif  // BUILDFLAG(IS_ANDROID)
-  // TODO(siggi): Remove this once the Resource Coordinator refactoring is done.
-  //     See https://crbug.com/40604438.
-  resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
-      web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (g_browser_process->safe_browsing_service()) {

@@ -83,6 +83,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
@@ -707,6 +708,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     HistoryClustersTabHelper::CreateForWebContents(
         web_contents, HistoryTabHelper::FromWebContents(web_contents));
   }
+
+  resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
+      web_contents);
 
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
 

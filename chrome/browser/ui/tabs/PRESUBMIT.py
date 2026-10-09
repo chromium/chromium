@@ -86,6 +86,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # glic::OnGuestAdded, WebUIContentsPreloadManager, and WebUIContentsWrapper,
   # so WebContents must own it.
   'PrefsTabHelper::CreateForWebContents',
+  # ResourceCoordinatorTabHelper is also attached directly to WebContents in
+  # TabLifecycleUnit for unit tests and stops TabLoadTracker tracking in
+  # WebContentsDestroyed() after TabFeatures is destroyed, so WebContents must
+  # own it.
+  'resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents',
   # SafetyTipWebContentsObserver is queried on WebContents by
   # chrome_security_state::GetVisibleSecurityState during
   # SecurityStatePageLoadMetricsObserver::OnComplete in
