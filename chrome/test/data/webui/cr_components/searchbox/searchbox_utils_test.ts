@@ -122,25 +122,36 @@ suite('SearchboxUtilsTest', () => {
 
     teardown(() => {
       testEl.remove();
+      // Remove any stub of the native ariaNotify() installed by a test.
+      delete document.ariaNotify;
     });
 
-    test('calls ariaNotify with high priority when available', () => {
-      const calls: Array<{message: string, options?: AriaNotificationOptions}> =
-          [];
-      testEl.ariaNotify =
-          (message: string, options: AriaNotificationOptions) => {
-            calls.push({message, options});
+    test(
+        'calls ariaNotify on the document with high priority when available',
+        () => {
+          const calls:
+              Array<{message: string, options?: AriaNotificationOptions}> = [];
+          document.ariaNotify =
+              (message: string, options: AriaNotificationOptions) => {
+                calls.push({message, options});
+              };
+          // The element's own ariaNotify() is not used, as it is dropped while
+          // the element has no accessibility object.
+          let elementNotified = false;
+          testEl.ariaNotify = () => {
+            elementNotified = true;
           };
 
-      announce(testEl, 'Hello world');
-      assertEquals(1, calls.length);
-      assertEquals('Hello world', calls[0]!.message);
-      assertEquals('high', calls[0]!.options?.priority);
-    });
+          announce(testEl, 'Hello world');
+          assertEquals(1, calls.length);
+          assertEquals('Hello world', calls[0]!.message);
+          assertEquals('high', calls[0]!.options?.priority);
+          assertFalse(elementNotified);
+        });
 
     test('does not announce empty messages', () => {
       let called = false;
-      testEl.ariaNotify = () => {
+      document.ariaNotify = () => {
         called = true;
       };
 
@@ -152,7 +163,7 @@ suite('SearchboxUtilsTest', () => {
         'falls back to cr-a11y-announcer when ariaNotify is unavailable',
         async () => {
           Object.defineProperty(
-              testEl, 'ariaNotify', {value: undefined, configurable: true});
+              document, 'ariaNotify', {value: undefined, configurable: true});
           const announcementPromise =
               eventToPromise('cr-a11y-announcer-messages-sent', document.body);
 

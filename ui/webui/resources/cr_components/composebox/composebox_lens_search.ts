@@ -46,16 +46,25 @@ export class ComposeboxLensSearchElement extends I18nMixinLit
 
   accessor isIcon: boolean = false;
   accessor hasVirtualFocus: boolean = false;
+  // Whether gaining virtual focus announces the hint. Hosts that narrate
+  // virtual focus themselves set this to false, so the two don't compete.
+  announcesVirtualFocus: boolean = true;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('hasVirtualFocus') && this.hasVirtualFocus) {
-      const message = this.i18n('lensSearchHint');
+    if (changedProperties.has('hasVirtualFocus') && this.hasVirtualFocus &&
+        this.announcesVirtualFocus) {
+      const message = this.getA11yLabel();
       if (message) {
         getA11yAnnouncer(this).announce(message);
       }
     }
+  }
+
+  /** Returns the label screen readers narrate for this element. */
+  getA11yLabel(): string {
+    return this.i18n('lensSearchHint');
   }
 
   protected onLensSearchClick_(e: Event) {

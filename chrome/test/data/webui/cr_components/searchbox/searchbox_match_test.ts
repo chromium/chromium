@@ -7,7 +7,6 @@ import 'chrome://new-tab-page/new_tab_page.js';
 import {SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {createAutocompleteMatch, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
-import type {AriaNotificationOptions} from 'chrome://resources/cr_components/searchbox/utils.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -397,7 +396,9 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals('Search Google', matchEl.ariaLabel);
   });
 
-  test('VirtualFocusAnnouncesOnSelectionChange', async () => {
+  test('VirtualFocusSelectionDoesNotAnnounce', async () => {
+    // The hosting searchbox's input narrates virtual focus selection changes,
+    // so matches must not compete with it.
     matchEl.virtualFocusEnabled = true;
     const match = createAutocompleteMatch();
     match.a11yLabel = 'Search Google';
@@ -405,12 +406,10 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.matchIndex = 0;
     await microtasksFinished();
 
-    const notifications:
-        Array<{message: string, options?: AriaNotificationOptions}> = [];
-    matchEl.ariaNotify =
-        (message: string, options?: AriaNotificationOptions) => {
-          notifications.push({message, options});
-        };
+    let notified = false;
+    matchEl.ariaNotify = () => {
+      notified = true;
+    };
 
     matchEl.selection = {
       line: 0,
@@ -418,18 +417,8 @@ suite('CrComponentsRealboxMatchTest', () => {
       actionIndex: 0,
     };
     await microtasksFinished();
-    assertEquals(1, notifications.length);
-    assertEquals('Search Google', notifications[0]!.message);
-    assertEquals('high', notifications[0]!.options?.priority);
-
-    // Selection on a different line does not announce on this match.
-    matchEl.selection = {
-      line: 1,
-      state: SelectionLineState.kNormal,
-      actionIndex: 0,
-    };
-    await microtasksFinished();
-    assertEquals(1, notifications.length);
+    assertEquals('Search Google', matchEl.ariaLabel);
+    assertFalse(notified);
   });
 
   test('InstantKeywordMatchClickFiresKeywordClickAndRefocuses', async () => {
