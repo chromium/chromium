@@ -41,7 +41,7 @@ import java.util.List;
 /** Render test for {@link RichRadioButtonList}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class RichRadioButtonListRenderTest {
     @ClassParameter
     private static final List<ParameterSet> sClassParams =

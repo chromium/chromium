@@ -44,7 +44,7 @@ import java.util.List;
 /** Render test for {@link RichRadioButton}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class RichRadioButtonRenderTest {
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -59,7 +59,7 @@ public class RichRadioButtonRenderTest {
 
     private static final int REVISION = 3;
     private static final String REVISION_DESCRIPTION =
-            "Render test for RichRadioButton covering various states and orientations, with"
+            "Render test for RichRadioButton covering various states and orientations with"
                     + " improved layout and ellipsized text in the vertical layout";
 
     private final boolean mIsRightToLeftLayout;
