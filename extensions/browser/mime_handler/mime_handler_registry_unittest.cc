@@ -4,7 +4,8 @@
 
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 
-#include "base/containers/span.h"
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
@@ -106,7 +107,7 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
   // Returns the highest-precedence candidate for `mime_type`, or an empty
   // id when the registry holds none.
   ExtensionId GetHandlerForMimeType(const std::string& mime_type) {
-    base::span<const ExtensionId> handlers =
+    const std::vector<ExtensionId> handlers =
         registry()->GetHandlersForMimeType(mime_type);
     return handlers.empty() ? ExtensionId() : handlers.front();
   }
@@ -232,7 +233,7 @@ TEST_F(MimeHandlerRegistryTest, GetHandlersByMimeTypeReturnsAllTypes) {
 }
 
 TEST_F(MimeHandlerRegistryTest, GetHandlersForMimeTypeIsOrdered) {
-  // Exercise all three precedence rules in one ordered span:
+  // Exercise all three precedence rules in one ordered list:
   //   * public_new and public_old are public handlers; public beats
   //     allowlisted, and newest-install-time wins among public.
   //   * qoffice and pdf are both allowlisted; qoffice has a higher
@@ -259,7 +260,7 @@ TEST_F(MimeHandlerRegistryTest, GetHandlersForMimeTypeIsOrdered) {
   LoadExtension(public_old.get());
   LoadExtension(public_new.get());
 
-  base::span<const ExtensionId> candidates =
+  const std::vector<ExtensionId> candidates =
       registry()->GetHandlersForMimeType(kPdfMimeType);
   ASSERT_EQ(candidates.size(), 4u);
   EXPECT_EQ(candidates[0], public_new->id());
@@ -292,13 +293,13 @@ TEST_F(MimeHandlerRegistryTest, MultipleMimeTypesWithOverlap) {
   // msword: only the allowlisted extension registers for it.
   EXPECT_EQ(allowlisted->id(), GetHandlerForMimeType(kDocMimeType));
 
-  base::span<const ExtensionId> pdf_candidates =
+  const std::vector<ExtensionId> pdf_candidates =
       registry()->GetHandlersForMimeType(kPdfMimeType);
   ASSERT_EQ(pdf_candidates.size(), 2u);
   EXPECT_EQ(pdf_candidates[0], public_pdf->id());
   EXPECT_EQ(pdf_candidates[1], allowlisted->id());
 
-  base::span<const ExtensionId> doc_candidates =
+  const std::vector<ExtensionId> doc_candidates =
       registry()->GetHandlersForMimeType(kDocMimeType);
   ASSERT_EQ(doc_candidates.size(), 1u);
   EXPECT_EQ(doc_candidates[0], allowlisted->id());
@@ -403,7 +404,7 @@ TEST_F(MimeHandlerRegistryTest, EnabledByDefaultUntilDisabled) {
   EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
-TEST_F(MimeHandlerRegistryTest, ManifestEnabledFalseStartsUnregistered) {
+TEST_F(MimeHandlerRegistryTest, ManifestEnabledFalseStartsDisabled) {
   auto ext =
       CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl,
                                  base::DictValue().Set("enabled", false));

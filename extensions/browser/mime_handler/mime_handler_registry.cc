@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
-#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -140,19 +140,27 @@ MimeHandlerRegistry::MimeHandlerRegistry(content::BrowserContext* context)
 
 MimeHandlerRegistry::~MimeHandlerRegistry() = default;
 
-base::span<const ExtensionId> MimeHandlerRegistry::GetHandlersForMimeType(
+std::vector<ExtensionId> MimeHandlerRegistry::GetHandlersForMimeType(
     const std::string& mime_type) const {
   auto it = handlers_by_type_.find(mime_type);
   if (it == handlers_by_type_.end()) {
     return {};
   }
   CHECK(!it->second.empty());
-  return it->second;
+  return EnabledHandlers(mime_type, it->second);
 }
 
-const MimeHandlerRegistry::HandlersByMimeType&
+MimeHandlerRegistry::HandlersByMimeType
 MimeHandlerRegistry::GetHandlersByMimeType() const {
-  return handlers_by_type_;
+  HandlersByMimeType enabled_handlers_by_type;
+  for (const auto& [mime_type, handlers] : handlers_by_type_) {
+    std::vector<ExtensionId> enabled_handlers =
+        EnabledHandlers(mime_type, handlers);
+    if (!enabled_handlers.empty()) {
+      enabled_handlers_by_type[mime_type] = std::move(enabled_handlers);
+    }
+  }
+  return enabled_handlers_by_type;
 }
 
 bool MimeHandlerRegistry::IsEnabledForMimeType(
@@ -201,25 +209,6 @@ void MimeHandlerRegistry::SetEnabledForMimeType(const ExtensionId& extension_id,
   options.EnsureDict(mime_type)->Set(kMimeHandlerEnabledKey, enabled);
   prefs->SetDictionaryPref(extension_id, kMimeHandlerOptions,
                            std::move(options));
-
-  // Mirror the new state in `handlers_by_type_` so lookups don't need
-  // to consult prefs.
-  if (enabled) {
-    std::vector<ExtensionId>& handlers = handlers_by_type_[mime_type];
-    if (std::ranges::find(handlers, extension_id) == handlers.end()) {
-      handlers.emplace_back(extension_id);
-      SortByPrecedence(handlers);
-    }
-    return;
-  }
-
-  auto it = handlers_by_type_.find(mime_type);
-  if (it == handlers_by_type_.end()) {
-    return;
-  }
-  std::erase(it->second, extension_id);
-  base::EraseIf(handlers_by_type_,
-                [](const auto& pair) { return pair.second.empty(); });
 }
 
 void MimeHandlerRegistry::OnExtensionLoaded(
@@ -242,11 +231,6 @@ void MimeHandlerRegistry::RegisterExtension(const Extension* extension) {
   }
 
   for (const auto& mime_type : handler->GetSupportedMimeTypes()) {
-    if (!IsEnabledForMimeType(extension->id(), mime_type)) {
-      // Disabled handlers are excluded from the registry entirely.
-      // `SetEnabledForMimeType` will add them back if re-enabled.
-      continue;
-    }
     std::vector<ExtensionId>& handlers = handlers_by_type_[mime_type];
     handlers.emplace_back(extension->id());
     SortByPrecedence(handlers);
@@ -272,6 +256,16 @@ const MimeTypesHandler& MimeHandlerRegistry::GetHandlerOfMimeType(
   CHECK(handler);
   CHECK(std::ranges::contains(handler->GetSupportedMimeTypes(), mime_type));
   return *handler;
+}
+
+std::vector<ExtensionId> MimeHandlerRegistry::EnabledHandlers(
+    const std::string& mime_type,
+    const std::vector<ExtensionId>& handlers) const {
+  std::vector<ExtensionId> enabled_handlers = handlers;
+  std::erase_if(enabled_handlers, [&](const ExtensionId& extension_id) {
+    return !IsEnabledForMimeType(extension_id, mime_type);
+  });
+  return enabled_handlers;
 }
 
 void MimeHandlerRegistry::SortByPrecedence(

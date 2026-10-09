@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -147,7 +146,7 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
   ExtensionId GetHandlerForMimeType(const std::string& mime_type) {
     MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(profile());
     CHECK(registry);
-    base::span<const ExtensionId> handlers =
+    const std::vector<ExtensionId> handlers =
         registry->GetHandlersForMimeType(mime_type);
     return handlers.empty() ? ExtensionId() : handlers.front();
   }
