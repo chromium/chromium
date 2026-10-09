@@ -18,6 +18,7 @@
 #include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"

@@ -18,3 +18,7 @@ This directory implements the `isolated-app://` protocol handler and
   (`CompleteWithGeneratedResponse()`), logging errors to DevTools console and
   failing requests (`LogErrorMessageToConsole()`, `LogErrorAndFail()`), and
   forwarding developer-mode proxy requests (`HandleProxy()`).
+- `header_utils.{h,cc}`: Helpers in namespace `web_app::iwa` for constructing
+  default/dev-mode Content Security Policies (CSP) and applying required COOP,
+  COEP, CORP, and CSP headers to `net::HttpResponseHeaders` and
+  `network::mojom::ParsedHeaders`.

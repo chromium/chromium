@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/isolated_web_apps/public/header_utils.h"
+#include "components/webapps/isolated_web_apps/url_loading/header_utils.h"
 
 #include <optional>
 #include <string>

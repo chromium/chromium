@@ -21,7 +21,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "net/base/backoff_entry.h"
 
 namespace web_app {

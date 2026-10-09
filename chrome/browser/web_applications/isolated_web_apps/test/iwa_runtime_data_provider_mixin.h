@@ -8,7 +8,7 @@
 #include <type_traits>
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 
 namespace web_app {
 

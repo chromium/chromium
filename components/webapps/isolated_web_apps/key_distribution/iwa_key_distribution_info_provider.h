@@ -20,16 +20,16 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "build/build_config.h"
 #include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 class BrowserProcessImpl;
 class TestingBrowserProcess;

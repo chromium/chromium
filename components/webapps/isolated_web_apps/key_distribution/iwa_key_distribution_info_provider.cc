@@ -24,10 +24,10 @@
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_entitlements.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
-#include "components/webapps/isolated_web_apps/public/iwa_entitlements.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
 

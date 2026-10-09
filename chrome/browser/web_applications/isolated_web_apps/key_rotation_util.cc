@@ -9,7 +9,7 @@
 #include "base/containers/span.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 
 namespace web_app {
 

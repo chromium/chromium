@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_PUBLIC_HEADER_UTILS_H_
-#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_PUBLIC_HEADER_UTILS_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_URL_LOADING_HEADER_UTILS_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_URL_LOADING_HEADER_UTILS_H_
 
 #include <optional>
 #include <string>
@@ -41,4 +41,4 @@ void SetRequiredParsedHeadersForIsolatedApp(
 }  // namespace iwa
 }  // namespace web_app
 
-#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_PUBLIC_HEADER_UTILS_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_URL_LOADING_HEADER_UTILS_H_

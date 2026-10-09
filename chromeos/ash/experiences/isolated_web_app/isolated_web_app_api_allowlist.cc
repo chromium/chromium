@@ -5,7 +5,7 @@
 #include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_allowlist.h"
 
 #include "chromeos/constants/chromeos_features.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "url/origin.h"
 

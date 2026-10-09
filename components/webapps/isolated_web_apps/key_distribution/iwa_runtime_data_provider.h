@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_PUBLIC_IWA_RUNTIME_DATA_PROVIDER_H_
-#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_PUBLIC_IWA_RUNTIME_DATA_PROVIDER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_RUNTIME_DATA_PROVIDER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_RUNTIME_DATA_PROVIDER_H_
 
 #include <optional>
 #include <string>
@@ -17,7 +17,7 @@
 #include "base/one_shot_event.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "components/webapps/isolated_web_apps/public/iwa_entitlements.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_entitlements.h"
 
 class BrowserProcessImpl;
 class TestingBrowserProcess;
@@ -112,4 +112,4 @@ class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaRuntimeDataProvider {
 
 }  // namespace web_app
 
-#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_PUBLIC_IWA_RUNTIME_DATA_PROVIDER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_KEY_DISTRIBUTION_IWA_RUNTIME_DATA_PROVIDER_H_

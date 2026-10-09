@@ -23,7 +23,7 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/test_support/fake_iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"

@@ -6,14 +6,17 @@ source_set("key_distribution") {
   defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
   visibility = [ "//components/webapps/isolated_web_apps/*" ]
   sources = [
+    "iwa_entitlements.cc",
+    "iwa_entitlements.h",
     "iwa_key_distribution_histograms.h",
     "iwa_key_distribution_info_provider.cc",
     "iwa_key_distribution_info_provider.h",
+    "iwa_runtime_data_provider.cc",
+    "iwa_runtime_data_provider.h",
   ]
   public_deps = [
     "//base",
     "//components/webapps/isolated_web_apps/key_distribution/proto",
-    "//components/webapps/isolated_web_apps/public",
   ]
   deps = [
     "//build:chromeos_buildflags",
@@ -27,7 +30,10 @@ source_set("key_distribution") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "iwa_key_distribution_info_provider_unittest.cc" ]
+  sources = [
+    "iwa_entitlements_unittest.cc",
+    "iwa_key_distribution_info_provider_unittest.cc",
+  ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -40,6 +46,7 @@ source_set("unit_tests") {
     "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/test_support",
     "//content/public/common",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -21,7 +21,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/client.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/url_loading_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/isolated_web_apps_policy.h"

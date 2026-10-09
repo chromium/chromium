@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/isolated_web_apps/public/iwa_entitlements.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_entitlements.h"
 
 #include <string>
 

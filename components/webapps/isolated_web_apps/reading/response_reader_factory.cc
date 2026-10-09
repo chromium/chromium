@@ -22,7 +22,7 @@
 #include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"

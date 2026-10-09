@@ -24,7 +24,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/isolated_web_app_external_install_options.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

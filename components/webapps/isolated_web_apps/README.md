@@ -50,10 +50,9 @@ fundamental building blocks of the IWA platform.
 - [`identity/`](identity/README.md): Validation of IWA identity and public keys,
   including support for key rotation via `IwaIdentityValidator`.
 - [`key_distribution/`](key_distribution/README.md): Component-loaded key
-  rotation, allowlist, blocklist, and special permissions provider
-  (`IwaKeyDistributionInfoProvider`) and protobuf definitions.
-- [`public/`](public/README.md): Public interfaces and utilities exposed to the
-  embedder (`IwaRuntimeDataProvider`, `iwa_entitlements`, `header_utils`).
+  rotation, allowlist, blocklist, entitlements, and special permissions provider
+  (`IwaRuntimeDataProvider`, `IwaKeyDistributionInfoProvider`,
+  `IwaEntitlementsSet`) and protobuf definitions.
 - [`reading/`](reading/README.md): Low-level logic for parsing and validating
   Signed Web Bundle contents (`SignedWebBundleReader`,
   `IsolatedWebAppValidator`) and caching `IsolatedWebAppResponseReader`
@@ -67,5 +66,6 @@ fundamental building blocks of the IWA platform.
 - [`types/`](types/README.md): Core strong domain types (`IwaOrigin`,
   `IwaVersion`, `IwaSource`, `IsolatedWebAppStorageLocation`, `UpdateChannel`).
 - [`url_loading/`](url_loading/README.md): Implementation of the
-  `isolated-app://` `URLLoader` and `URLLoaderFactory` to translate network
-  requests into bundle reads or dev-mode proxy forwards.
+  `isolated-app://` `URLLoader`, `URLLoaderFactory`, and COOP/COEP/CORP/CSP
+  `header_utils` to translate network requests into bundle reads or dev-mode
+  proxy forwards.

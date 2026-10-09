@@ -9,7 +9,7 @@
 #include "chrome/browser/web_applications/web_app_isolation_delegate.h"
 #include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 
 namespace web_app {
 

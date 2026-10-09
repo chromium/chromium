@@ -21,7 +21,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/isolated_web_app_external_install_options.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/storage_partition.h"

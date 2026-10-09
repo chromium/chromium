@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "services/network/public/cpp/resource_request.h"

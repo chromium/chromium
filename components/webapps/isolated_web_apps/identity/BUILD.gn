@@ -12,7 +12,7 @@ source_set("identity") {
 
   deps = [
     "//components/webapps/isolated_web_apps:iwa_client",
-    "//components/webapps/isolated_web_apps/public",
+    "//components/webapps/isolated_web_apps/key_distribution",
   ]
 
   public_deps = [

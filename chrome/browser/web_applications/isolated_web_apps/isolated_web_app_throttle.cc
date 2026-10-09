@@ -17,7 +17,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
 #include "content/public/browser/console_message.h"
