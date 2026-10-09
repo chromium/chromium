@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -82,7 +81,6 @@ public class UrlBarCoordinatorUnitTest {
         mContext = activity;
         mUrlBar = new TestUrlBar(activity);
         activity.setContentView(mUrlBar);
-        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(mUrlBar);
         mCoordinator =
                 new UrlBarCoordinator(
                         mContext,
@@ -227,10 +225,32 @@ public class UrlBarCoordinatorUnitTest {
     }
 
     @Test
-    public void setKeyboardVisibility_hideWhenStateHiddenButDelegateReportsShowing_schedulesHide() {
-        // State is HIDDEN, but the OS soft keyboard is still showing (e.g. after a transient
-        // inset dip or focus transfer).
-        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(mUrlBar);
+    public void setKeyboardVisibility_lateOsShowAfterHideRunnableFires_retriggersHide() {
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
+
+        // Hide requested and debounce timer fires before OS finishes showing keyboard.
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
+        clearInvocations(mKeyboardVisibilityDelegate);
+
+        // Late OS show callback arrives while still in HIDING state -> re-triggers hide.
+        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
+    }
+
+    @Test
+    public void setKeyboardVisibility_hideAfterTransientOsHideDuringShow_schedulesHide() {
+        mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
+
+        // Simulate a transient 0-inset callback during IME keyboard swap
+        // (PHASE_WM_ABORT_SHOW_IME_POST_LAYOUT) while the new IME view is still inflating.
+        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ false);
 
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();

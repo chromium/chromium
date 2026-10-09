@@ -125,10 +125,6 @@ public class UrlBarCoordinator
         PropertyModelChangeProcessor.create(mModel, urlBar, UrlBarViewBinder::bind);
 
         mMediator = new UrlBarMediator(context, mModel, textChangeListener, richTextChangeListener);
-        mKeyboardState =
-                mKeyboardVisibilityDelegate.isKeyboardShowing(urlBar)
-                        ? KeyboardState.SHOWN
-                        : KeyboardState.HIDDEN;
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
     }
 
@@ -316,6 +312,10 @@ public class UrlBarCoordinator
             if (!isOppositeTransitionPending) {
                 mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
                 mKeyboardState = isKeyboardShowing ? KeyboardState.SHOWN : KeyboardState.HIDDEN;
+            } else if (isKeyboardShowing
+                    && mUrlBar.getHandler() != null
+                    && !mUrlBar.getHandler().hasCallbacks(mKeyboardTransitionRunnable)) {
+                mUrlBar.postDelayed(mKeyboardTransitionRunnable, KEYBOARD_DEBOUNCE_DELAY_MS);
             }
         }
         // The cursor visibility should follow soft keyboard visibility and should be hidden
@@ -374,20 +374,19 @@ public class UrlBarCoordinator
 
     private void setKeyboardVisibilityDebounced(boolean showKeyboard) {
         boolean isCurrentlyShowing =
-                mKeyboardState == KeyboardState.SHOWN
-                        || mKeyboardState == KeyboardState.SHOWING
-                        || (mKeyboardState == KeyboardState.HIDDEN
-                                && mKeyboardVisibilityDelegate.isKeyboardShowing(mUrlBar));
+                mKeyboardState == KeyboardState.SHOWN || mKeyboardState == KeyboardState.SHOWING;
         if (showKeyboard == isCurrentlyShowing) {
             return;
         }
 
         // If we are currently in a transiting state (HIDING or SHOWING) and a request in the
-        // opposite direction arrives, the OS was never actually instructed to change visibility
-        // (the debounce timer hasn't fired yet). We can fast-cancel the pending task and
+        // opposite direction arrives before the debounce timer has fired, the OS was never
+        // actually instructed to change visibility. We can fast-cancel the pending task and
         // immediately transition back to the corresponding steady state (SHOWN or HIDDEN)
         // without calling into Android's InputMethodManager.
-        if (mKeyboardState == KeyboardState.HIDING || mKeyboardState == KeyboardState.SHOWING) {
+        if ((mKeyboardState == KeyboardState.HIDING || mKeyboardState == KeyboardState.SHOWING)
+                && mUrlBar.getHandler() != null
+                && mUrlBar.getHandler().hasCallbacks(mKeyboardTransitionRunnable)) {
             mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
             mKeyboardState = showKeyboard ? KeyboardState.SHOWN : KeyboardState.HIDDEN;
             return;
@@ -399,10 +398,8 @@ public class UrlBarCoordinator
 
     private void resolveKeyboardTransition() {
         if (mKeyboardState == KeyboardState.SHOWING) {
-            mKeyboardState = KeyboardState.SHOWN;
             mKeyboardVisibilityDelegate.showKeyboard(mUrlBar);
         } else if (mKeyboardState == KeyboardState.HIDING) {
-            mKeyboardState = KeyboardState.HIDDEN;
             mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
         }
     }

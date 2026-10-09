@@ -69,7 +69,7 @@ public class OmniboxActionsTest {
 
     @After
     public void tearDown() throws Exception {
-        if (mOmniboxUtils.getFocus()) {
+        if (mOmniboxUtils != null) {
             mOmniboxUtils.clearFocus();
         }
         ThreadUtils.runOnUiThreadBlocking(

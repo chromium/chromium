@@ -237,6 +237,7 @@ public class OmniboxTestUtils {
                     Criteria.checkThat(
                             "Omnibox is focused.", mUrlBar.hasFocus(), Matchers.is(true));
                 });
+        waitAnimationsComplete();
     }
 
     /**
