@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LOADING_DATA_COLLECTOR_H_
 #define CHROME_BROWSER_PREDICTORS_LOADING_DATA_COLLECTOR_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>
@@ -48,6 +49,11 @@ struct OriginRequestSummary {
 
 // Stores the data learned from a single navigation.
 struct PageRequestSummary {
+  // Low-priority loads are recorded for as long as the page is alive. To bound
+  // the memory used by long-lived pages, `low_priority_origins` and
+  // `low_priority_subresource_urls` stop growing at this many entries each.
+  static constexpr size_t kMaxLowPriorityEntries = 500;
+
   PageRequestSummary(ukm::SourceId ukm_source_id,
                      const GURL& main_frame_url,
                      base::TimeTicks navigation_started);
@@ -87,7 +93,8 @@ struct PageRequestSummary {
   // that are not learned by LoadingPredictor. These are from low-priority
   // subresource loads, or subresource loads after the load event for the page
   // has been dispatched. They are used to record metrics to understand the
-  // precision of optimization guide predictions.
+  // precision of optimization guide predictions. Each keeps only the first
+  // `kMaxLowPriorityEntries` distinct entries.
   base::flat_set<url::Origin> low_priority_origins;
   base::flat_set<GURL> low_priority_subresource_urls;
 

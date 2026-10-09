@@ -12954,7 +12954,8 @@ be describing additional metrics about the same event.
       page for low-priority subresource loads before it unloaded. This will be
       recorded if the Optimization Guide was consulted for the page load and the
       Optimization Guide had a prediction for it. If more than 100 subresource
-      origins were correctly predicted, this will be capped at 100.
+      origins were correctly predicted, this will be capped at 100. Only the
+      first 500 distinct origins of low-priority loads are considered.
     </summary>
   </metric>
   <metric
@@ -12964,7 +12965,8 @@ be describing additional metrics about the same event.
       low-priority subresource loads before it unloaded. This will be recorded
       if the Optimization Guide was consulted for the page load and the
       Optimization Guide had a prediction for it. If more than 100 subresources
-      were predicted, this will be capped at 100.
+      were predicted, this will be capped at 100. Only the first 500 distinct
+      low-priority subresources loaded by the page are considered.
     </summary>
   </metric>
   <metric
@@ -12974,7 +12976,8 @@ be describing additional metrics about the same event.
       the page for low-priority subresource loads before it unloaded. This will
       be recorded if the Optimization Guide was consulted for the page load and
       the Optimization Guide had a prediction for it. If more than 100
-      subresources were predicted, this will be capped at 100.
+      subresources were predicted, this will be capped at 100. Only the first
+      500 distinct low-priority subresources loaded by the page are considered.
     </summary>
   </metric>
   <metric name="OptimizationGuidePredictionCorrectlyPredictedOrigins">

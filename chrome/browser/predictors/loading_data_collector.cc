@@ -123,7 +123,9 @@ void PageRequestSummary::UpdateOrAddResource(
       const GURL final_url =
           net::SimplifyUrlForRequest(resource_load_info.final_url);
       if (is_low_priority) {
-        low_priority_subresource_urls.insert(final_url);
+        if (low_priority_subresource_urls.size() < kMaxLowPriorityEntries) {
+          low_priority_subresource_urls.insert(final_url);
+        }
       } else {
         subresource_urls.insert(final_url);
       }
@@ -214,7 +216,9 @@ void PageRequestSummary::UpdateOrAddToOrigins(
     return;
 
   if (is_low_priority) {
-    low_priority_origins.insert(origin);
+    if (low_priority_origins.size() < kMaxLowPriorityEntries) {
+      low_priority_origins.insert(origin);
+    }
     return;
   }
 

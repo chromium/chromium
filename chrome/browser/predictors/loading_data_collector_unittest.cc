@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -552,6 +553,38 @@ TEST_F(LoadingDataCollectorTest, RecordPageDestroyed) {
   collector_->RecordPageDestroyed(navigation_id, std::nullopt);
   // PageRequestSummary should be cleared up after the page is destroyed.
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
+}
+
+// Resources loaded after the load event are recorded as low priority for as
+// long as the page is alive, so the sets that hold them must be bounded.
+TEST_F(LoadingDataCollectorTest, LowPriorityResourcesAreBounded) {
+  PageRequestSummary summary(ukm::SourceId(), GURL("https://example.com"),
+                             base::TimeTicks::Now());
+  summary.MainFrameLoadComplete();
+
+  constexpr size_t kMax = PageRequestSummary::kMaxLowPriorityEntries;
+  auto script_url = [](size_t i) {
+    return base::StringPrintf("https://host%zu.example.com/script.js", i);
+  };
+  for (size_t i = 0; i < kMax + 10; ++i) {
+    summary.UpdateOrAddResource(*CreateResourceLoadInfo(
+        script_url(i), network::mojom::RequestDestination::kScript));
+  }
+
+  EXPECT_EQ(summary.low_priority_subresource_urls.size(), kMax);
+  EXPECT_EQ(summary.low_priority_origins.size(), kMax);
+  EXPECT_TRUE(summary.subresource_urls.empty());
+  EXPECT_TRUE(summary.origins.empty());
+
+  // Entries recorded before the limit was reached are kept. Later ones are not.
+  const GURL first_url(script_url(0));
+  EXPECT_TRUE(summary.low_priority_subresource_urls.contains(first_url));
+  EXPECT_TRUE(
+      summary.low_priority_origins.contains(url::Origin::Create(first_url)));
+  const GURL late_url(script_url(kMax));
+  EXPECT_FALSE(summary.low_priority_subresource_urls.contains(late_url));
+  EXPECT_FALSE(
+      summary.low_priority_origins.contains(url::Origin::Create(late_url)));
 }
 
 }  // namespace predictors
