@@ -447,6 +447,7 @@ source_set("unit_tests") {
     "actor_actions_runner_unittest.cc",
     "actor_commit_deferring_condition_unittest.cc",
     "actor_critical_action_logger_unittest.cc",
+    "actor_keyed_service_proto_wrapper_unittest.cc",
     "actor_keyed_service_unittest.cc",
     "actor_metrics_unittest.cc",
     "actor_navigation_throttle_unittest.cc",
