@@ -1,6 +1,13 @@
 #!/usr/bin/perl
 # Script to generate a 304 HTTP status with (illegal) X-Frame-Options headers.
 # Relies on its nph- filename to invoke the CGI non-parsed-header facility.
+#
+# Because this is an nph- script, Apache sends our output to the client
+# verbatim. On Windows, Perl opens STDOUT in text mode and would rewrite each
+# "\r\n" below as "\r\r\n", which Chromium does not accept as a header line
+# terminator. Force binary mode so the bytes we print are the bytes on the
+# wire on every platform.
+binmode(STDOUT);
 
 $protocol = $ENV{'SERVER_PROTOCOL'};
 $software = $ENV{'SERVER_SOFTWARE'};
@@ -11,6 +18,7 @@ if ($if_modified) {
     print "Server: $software\r\n";
     print "X-Frame-Options: deny\r\n";
     print "Connection: close\r\n";
+    print "\r\n";
     exit(0);
 }
 
