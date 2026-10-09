@@ -9346,6 +9346,8 @@ from previous Chrome versions.
   <int value="-1698514367" label="AimUrlInterceptPassthrough:enabled"/>
   <int value="-1698438797" label="TabGroupsCollapseFreezing:enabled"/>
   <int value="-1698059272" label="NewContentForCheckerboardedScrolls:enabled"/>
+  <int value="-1697061491"
+      label="safe-browsing-no-protection-suppress-warnings:enabled"/>
   <int value="-1696778023"
       label="HappinessTrackingSurveysForDesktopSettings:disabled"/>
   <int value="-1696619241" label="OmniboxWrapPopupPosition:disabled"/>
@@ -11933,6 +11935,8 @@ from previous Chrome versions.
   <int value="-918900957" label="AutofillCreditCardAssist:disabled"/>
   <int value="-918899240" label="HistoryClustersOnDeviceClustering:disabled"/>
   <int value="-918618075" label="enable-service-worker"/>
+  <int value="-918029678"
+      label="safe-browsing-no-protection-suppress-warnings:disabled"/>
   <int value="-917218910" label="FirstPartyVietnameseInput:enabled"/>
   <int value="-916780902" label="ExternalPciDevicesAllowed:enabled"/>
   <int value="-916419217" label="LensOverlay:disabled"/>
@@ -19844,6 +19848,8 @@ from previous Chrome versions.
   <int value="1472060209" label="OmniboxSteadyStateTextStyle:disabled"/>
   <int value="1472719830" label="IgnoreDeviceFlexArcEnabledPolicy:enabled"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
+  <int value="1473185557"
+      label="SafeBrowsingNoProtectionSuppressWarnings:enabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>
@@ -20523,6 +20529,8 @@ from previous Chrome versions.
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
   <int value="1684080951" label="ArcUnthrottleOnActiveAudio:enabled"/>
+  <int value="1685020899"
+      label="SafeBrowsingNoProtectionSuppressWarnings:disabled"/>
   <int value="1685280468" label="AppServiceShelf:enabled"/>
   <int value="1685873842" label="PrefetchActivationBeacon:enabled"/>
   <int value="1685892690" label="AndroidTipsNotificationsV2:disabled"/>

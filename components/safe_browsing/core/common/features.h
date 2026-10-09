@@ -490,6 +490,10 @@ extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
 // and stale hash files on disk during database startup.
 BASE_DECLARE_FEATURE(kSafeBrowsingDeleteUnusedStores);
 
+// Suppresses dangerous file warnings when Safe Browsing is in No Protection
+// mode.
+BASE_DECLARE_FEATURE(kSafeBrowsingNoProtectionSuppressWarnings);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables sync checker to check allowlist first on Chrome on Android. This is
 // an optimization to improve the speed of Safe Browsing checks.

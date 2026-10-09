@@ -49,6 +49,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/download_item_utils.h"
@@ -732,6 +734,180 @@ TEST_F(DownloadTargetDeterminerTest, Basic) {
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
   RunTestCasesWithActiveItem(kBasicTestCases);
+}
+
+TEST_F(DownloadTargetDeterminerTest, NoSafeBrowsingSuppressWarnings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  const DownloadTestCase kNoSBTestCases[] = {
+      {// When Safe Browsing is turned off and
+       // kSafeBrowsingNoProtectionSuppressWarnings is enabled, heuristic
+       // dangerous file warning is suppressed for ALLOW_ON_USER_GESTURE.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.kindabad", "",
+       FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.kindabad"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
+
+      {// Dangerous file types (e.g. .bad) also have their warning suppressed.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.bad", "",
+       FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.bad"), DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
+  };
+
+  RunTestCasesWithActiveItem(kNoSBTestCases);
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       NoSafeBrowsingDisabledFeature_DoesNotSuppress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  const DownloadTestCase kNoSBDisabledTestCases[] = {
+      {// When the feature is disabled, dangerous file warnings are NOT
+       // suppressed in No Protection mode.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       DownloadFileType::ALLOW_ON_USER_GESTURE,
+       "http://example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.kindabad"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_UNCONFIRMED},
+  };
+
+  RunTestCasesWithActiveItem(kNoSBDisabledTestCases);
+}
+
+TEST_F(DownloadTargetDeterminerTest, StandardSafeBrowsing_DoesNotSuppress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  const DownloadTestCase kStandardSBTestCases[] = {
+      {// For protected profiles, dangerous file warnings are NOT suppressed.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       DownloadFileType::ALLOW_ON_USER_GESTURE,
+       "http://example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.kindabad"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_UNCONFIRMED},
+  };
+
+  RunTestCasesWithActiveItem(kStandardSBTestCases);
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       NoSafeBrowsingSuppressWarnings_EnterprisePolicy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  // Set enterprise download restriction to block dangerous files.
+  profile()->GetPrefs()->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::DANGEROUS_FILES));
+
+  const DownloadTestCase kNoSBPolicyTestCases[] = {
+      {// Even when Safe Browsing is turned off, enterprise download
+       // restrictions prevent suppression of dangerous file warnings.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       DownloadFileType::ALLOW_ON_USER_GESTURE,
+       "http://example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.kindabad"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_UNCONFIRMED},
+  };
+
+  RunTestCasesWithActiveItem(kNoSBPolicyTestCases);
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       NoSafeBrowsingSuppressWarnings_ExtensionControlled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  // Mark Safe Browsing pref as extension-controlled.
+  profile()->GetTestingPrefService()->SetExtensionPref(
+      prefs::kSafeBrowsingEnabled, base::Value(false));
+
+  const DownloadTestCase kNoSBExtensionTestCases[] = {
+      {// Extension-controlled Safe Browsing setting prevents suppression.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       DownloadFileType::ALLOW_ON_USER_GESTURE,
+       "http://example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.kindabad"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_UNCONFIRMED},
+  };
+
+  RunTestCasesWithActiveItem(kNoSBExtensionTestCases);
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       NoSafeBrowsingSuppressWarnings_PolicyManagedSafeBrowsing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings);
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  // Mark Safe Browsing pref as enterprise-policy managed.
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, base::Value(false));
+
+  const DownloadTestCase kNoSBManagedTestCases[] = {
+      {// Policy-managed Safe Browsing setting prevents suppression.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       DownloadFileType::ALLOW_ON_USER_GESTURE,
+       "http://example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.kindabad"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_UNCONFIRMED},
+  };
+
+  RunTestCasesWithActiveItem(kNoSBManagedTestCases);
 }
 
 TEST_F(DownloadTargetDeterminerTest, CancelSaveAs) {

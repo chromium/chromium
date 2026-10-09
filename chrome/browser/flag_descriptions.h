@@ -2557,6 +2557,12 @@ inline constexpr char kSafeBrowsingLocalListsUseSBv5Description[] =
     "Fetch and check local lists using the Safe Browsing v5 API instead of the "
     "v4 Update API.";
 
+inline constexpr char kSafeBrowsingNoProtectionSuppressWarningsName[] =
+    "Safe Browsing Suppress Dangerous File Warnings in No Protection";
+inline constexpr char kSafeBrowsingNoProtectionSuppressWarningsDescription[] =
+    "Suppresses fallback heuristic dangerous file warnings when Safe Browsing "
+    "is in No Protection mode.";
+
 inline constexpr char kXSLTName[] = "XSLT";
 inline constexpr char kXSLTDescription[] =
     "Toggles whether or not XSLT is supported by the browser.";

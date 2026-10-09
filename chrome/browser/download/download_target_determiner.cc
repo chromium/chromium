@@ -86,6 +86,8 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
 using content::BrowserThread;
@@ -956,6 +958,11 @@ DownloadTargetDeterminer::Result
     return CONTINUE;
   }
 
+  if (ShouldSuppressDangerousFileWarning()) {
+    danger_level_ = DownloadFileType::NOT_DANGEROUS;
+    return CONTINUE;
+  }
+
   // First determine the danger level assuming that the user doesn't have any
   // prior visits to the referrer recoreded in history. The resulting danger
   // level would be ALLOW_ON_USER_GESTURE if the level depends on the visit
@@ -998,8 +1005,9 @@ DownloadTargetDeterminer::Result
   // If the danger level doesn't depend on having visited the refererrer URL or
   // if original profile doesn't have a HistoryService or the referrer url is
   // invalid, then assume the referrer has not been visited before.
-  if (danger_type_ == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS)
+  if (danger_type_ == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
     danger_type_ = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
+  }
   return CONTINUE;
 }
 
@@ -1019,8 +1027,9 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
   danger_level_ = GetDangerLevel(
       visited_referrer_before ? VISITED_REFERRER : NO_VISITS_TO_REFERRER);
   if (danger_level_ != DownloadFileType::NOT_DANGEROUS &&
-      danger_type_ == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS)
+      danger_type_ == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
     danger_type_ = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
+  }
   DoLoop();
 }
 
@@ -1411,4 +1420,29 @@ void DownloadTargetDeterminer::Start(
 base::FilePath DownloadTargetDeterminer::GetCrDownloadPath(
     const base::FilePath& suggested_path) {
   return base::FilePath(suggested_path.value() + kCrdownloadSuffix);
+}
+
+bool DownloadTargetDeterminer::ShouldSuppressDangerousFileWarning() const {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingNoProtectionSuppressWarnings)) {
+    return false;
+  }
+  const PrefService& prefs = *GetProfile()->GetPrefs();
+  if (safe_browsing::GetSafeBrowsingState(prefs) !=
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING) {
+    return false;
+  }
+  if (safe_browsing::IsSafeBrowsingPolicyManaged(prefs) ||
+      safe_browsing::IsSafeBrowsingExtensionControlled(prefs)) {
+    return false;
+  }
+  if (download_prefs_ && download_prefs_->download_restriction() !=
+                             policy::DownloadRestriction::NONE) {
+    return false;
+  }
+  return true;
+#else
+  return false;
+#endif
 }
