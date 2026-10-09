@@ -73,14 +73,6 @@ external/wpt/css/css-text/hyphens/hyphens-auto-inline-010.html
 external/wpt/css/css-text/hyphens/hyphens-auto-last-word-001.html
 external/wpt/css/css-text/hyphens/hyphens-character.html
 external/wpt/css/css-text/hyphens/hyphens-punctuation-001.html
-external/wpt/css/css-text/i18n/ja/css-text-line-break-ja-in-loose.html
-external/wpt/css/css-text/i18n/ja/css-text-line-break-ja-pr-normal.html
-external/wpt/css/css-text/i18n/ja/css-text-line-break-ja-pr-strict.html
-external/wpt/css/css-text/i18n/other-lang/css-text-line-break-de-in-loose.html
-external/wpt/css/css-text/i18n/unknown-lang/css-text-line-break-in-loose.html
-external/wpt/css/css-text/i18n/zh/css-text-line-break-zh-in-loose.html
-external/wpt/css/css-text/i18n/zh/css-text-line-break-zh-pr-normal.html
-external/wpt/css/css-text/i18n/zh/css-text-line-break-zh-pr-strict.html
 external/wpt/css/css-text/line-breaking/line-breaking-atomic-022.html
 external/wpt/css/css-text/tab-size/tab-size.html
 external/wpt/css/css-text/text-autospace/text-autospace-first-line-001.html
