@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="NewTabPageLogoClick">
   <int value="0" label="Static logo clicked"/>
-  <int value="1" label="(Deprecated) CTA image clicked"/>
+  <int value="1" label="CTA image clicked"/>
   <int value="2" label="Animated logo clicked"/>
 </enum>
 
@@ -229,11 +229,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="NewTabPageLogoShown">
   <int value="0" label="Static logo shown"/>
-  <int value="1" label="(Deprecated) CTA image shown"/>
+  <int value="1" label="CTA image shown"/>
   <int value="2" label="Animated logo shown"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/search/ntp_user_data_logger.h:LogoImpressionType) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/search/ntp_user_data_logger.h:LogoImpressionType, //chrome/browser/ui/android/logo/java/src/org/chromium/chrome/browser/logo/LogoMediator.java:LogoShownId) -->
 
 <!-- LINT.IfChange(NewTabPageLogoShowniOSGoogleDSEEnum) -->
 
