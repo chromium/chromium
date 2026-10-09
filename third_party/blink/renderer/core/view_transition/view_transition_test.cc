@@ -1222,6 +1222,82 @@ TEST_P(ViewTransitionTest, NoneBackdropFilterGroupAnimation) {
   UpdateAllLifecyclePhasesAndFinishDirectives();
 }
 
+// The old and new pseudo-elements have a `mix-blend-mode: plus-lighter`
+// animation whose value can't change. An author !important declaration, e.g. to
+// opt out of the plus-lighter blending, prevents it from running on the
+// compositor, but it still shouldn't tick on the main thread.
+TEST_P(ViewTransitionTest, ImportantBlendModeDoesNotTickStaticAnimation) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      div {
+        view-transition-name: foo;
+        width: 100px;
+        height: 100px;
+        contain: paint;
+      }
+      ::view-transition-old(*), ::view-transition-new(*) {
+        mix-blend-mode: normal !important;
+      }
+    </style>
+    <div id=target></div>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto start_setup_callback =
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* transition_pseudo = To<ViewTransitionTransitionElement>(
+      GetDocument().documentElement()->GetPseudoElement(
+          kPseudoIdViewTransition));
+  ASSERT_TRUE(transition_pseudo);
+  const AtomicString name("foo");
+  auto* group = transition_pseudo->FindViewTransitionGroupPseudoElement(name);
+  ASSERT_TRUE(group);
+  auto* image_pair =
+      group->GetPseudoElement(kPseudoIdViewTransitionImagePair, name);
+  ASSERT_TRUE(image_pair);
+
+  int blend_mode_animation_count = 0;
+  for (PseudoId pseudo_id :
+       {kPseudoIdViewTransitionOld, kPseudoIdViewTransitionNew}) {
+    auto* pseudo = image_pair->GetPseudoElement(pseudo_id, name);
+    ASSERT_TRUE(pseudo);
+    // The author's !important declaration wins over the animation.
+    EXPECT_FALSE(pseudo->ComputedStyleRef().HasBlendMode());
+    ElementAnimations* element_animations = pseudo->GetElementAnimations();
+    ASSERT_TRUE(element_animations);
+    for (const auto& entry : element_animations->Animations()) {
+      Animation* animation = entry.key;
+      if (!animation->effect()->Affects(
+              PropertyHandle(GetCSSPropertyMixBlendMode()))) {
+        continue;
+      }
+      ++blend_mode_animation_count;
+      EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+      EXPECT_TRUE(animation->AnimationHasNoEffect());
+    }
+  }
+  EXPECT_EQ(2, blend_mode_animation_count);
+
+  FinishTransition();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
 TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
   SetHtmlInnerHTML(R"HTML(
     <style>

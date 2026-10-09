@@ -192,6 +192,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   mutable bool needs_update_;
   mutable std::optional<AnimationTimeDelta> last_update_time_;
   mutable bool last_is_idle_ = false;
+  mutable bool last_requires_iteration_events_ = false;
   // This flag, together with |normalized_.*boundary_aligned|, indicates
   // whether this AnimationEffect should be endpoint-exclusive.
   // |normalized_.*boundary_aligned| is not sufficient for this purpose because

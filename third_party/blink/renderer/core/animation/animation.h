@@ -812,8 +812,10 @@ class CORE_EXPORT Animation : public EventTarget,
   // to being optimized out on the compositor. Updated in |Animation::PreCommit|
   // and |MarkPendingIfCompositorPropertyAnimationChanges|.
   bool compositor_property_animations_have_no_effect_;
-  // True if the only reason for not running the animation on the compositor is
-  // that the animation would have no effect. Updated in |Animation::PreCommit|.
+  // True if the animation doesn't need to tick on the main thread because it
+  // has no visible change: either that's the only reason for not running it on
+  // the compositor, or none of its values can change while it's in play.
+  // Updated in |Animation::PreCommit|.
   bool animation_has_no_effect_;
   // True is we have paused this animation in anticipation of a future trigger
   // event.

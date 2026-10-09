@@ -3,15 +3,21 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -100,6 +106,65 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   // it.
   Compositor().BeginFrame(1);
   Compositor().BeginFrame(1);
+}
+
+// An animation that doesn't tick on the main thread, e.g. because none of its
+// values can change while it's in play, still needs a frame after it starts to
+// dispatch animationstart, which isn't dispatched while it's pending.
+TEST_F(AnimationSimTest, NonTickingAnimationDispatchesStartEventOnNextFrame) {
+  class CountingEventListener final : public NativeEventListener {
+   public:
+    void Invoke(ExecutionContext*, Event*) override { ++count_; }
+    int count() const { return count_; }
+
+   private:
+    int count_ = 0;
+  };
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+      @keyframes anim {
+        from { opacity: 0.5; }
+        to { opacity: 0.5; }
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  auto* start_listener = MakeGarbageCollected<CountingEventListener>();
+  target->addEventListener(event_type_names::kAnimationstart, start_listener);
+
+  // Create the animation outside of a frame, e.g. as a forced style update
+  // would.
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("animation: anim 10s"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  ASSERT_EQ(1u, element_animations->Animations().size());
+  Animation* animation = element_animations->Animations().begin()->key;
+  EXPECT_TRUE(animation->pending());
+
+  // The animation starts during this frame's paint, after events are
+  // dispatched.
+  ASSERT_TRUE(Compositor().NeedsBeginFrame());
+  Compositor().BeginFrame();
+  EXPECT_FALSE(animation->pending());
+  EXPECT_TRUE(animation->AnimationHasNoEffect());
+  EXPECT_EQ(0, start_listener->count());
+
+  // The animation doesn't tick, but it needs one more frame to dispatch
+  // animationstart.
+  ASSERT_TRUE(Compositor().NeedsBeginFrame());
+  Compositor().BeginFrame();
+  EXPECT_EQ(1, start_listener->count());
+  // It still doesn't need to tick until it ends.
+  EXPECT_GT(animation->TimeToEffectChange().value().InSecondsF(), 9);
 }
 
 }  // namespace blink

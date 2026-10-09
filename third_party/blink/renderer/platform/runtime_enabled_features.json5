@@ -6132,6 +6132,15 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/569098933. Doesn't tick an animation
+      // on the main thread if none of its values can change while it's in play
+      // (e.g. the view transition `mix-blend-mode: plus-lighter` animation),
+      // even if it can't run on the compositor for another reason, such as
+      // affecting an !important property.
+      name: "SkipTickingStaticAnimations",
+      status: "stable",
+    },
+    {
       // Skips the browser touch event filter, ensuring that events that reach
       // the queue and would otherwise be filtered out will instead be passed
       // onto the renderer compositor process as long as the page hasn't timed

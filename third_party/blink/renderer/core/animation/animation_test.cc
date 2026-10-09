@@ -2845,6 +2845,158 @@ TEST_P(AnimationAnimationTestCompositing,
   EXPECT_EQ(2u, animation->TimelineInternal()->AnimationsNeedingUpdateCount());
 }
 
+// A static animation, i.e. one whose value can't change while it's in play,
+// doesn't need to tick on the main thread, even if it can't run on the
+// compositor for another reason, such as affecting an !important property.
+TEST_P(AnimationAnimationTestCompositing,
+       StaticAnimationAffectingImportantPropertyDoesNotTick) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { mix-blend-mode: plus-lighter; }
+        to { mix-blend-mode: plus-lighter; }
+      }
+      #target {
+        width: 10px;
+        height: 10px;
+        background: rebeccapurple;
+        animation: anim 30s;
+        mix-blend-mode: normal !important;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_EQ(1u, element_animations->Animations().size());
+  Animation* animation = element_animations->Animations().begin()->key;
+
+  RunDocumentLifecycle();
+
+  const PaintArtifactCompositor* paint_artifact_compositor =
+      GetDocument().View()->GetPaintArtifactCompositor();
+  ASSERT_TRUE(paint_artifact_compositor);
+
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
+            CompositorAnimations::kAnimationHasNoVisibleChange |
+                CompositorAnimations::kAffectsImportantProperty);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->AnimationHasNoEffect());
+
+  // The no-effect animation doesn't count. The one animation is
+  // AnimationAnimationTestCompositing::animation_.
+  EXPECT_EQ(1u, animation->TimelineInternal()->AnimationsNeedingUpdateCount());
+
+  // The next effect change should be at the end because the animation's value
+  // can't change before then.
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(30),
+                   animation->TimeToEffectChange().value());
+}
+
+// Having no visible change on the compositor, e.g. because the target is
+// hidden, doesn't make an animation static. An animation that also animates a
+// property that can't be composited still needs to tick on the main thread.
+TEST_P(AnimationAnimationTestCompositing,
+       HiddenAnimationWithDynamicMainThreadPropertyTicks) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { opacity: 0; width: 10px; }
+        to { opacity: 1; width: 20px; }
+      }
+      #target {
+        width: 10px;
+        height: 10px;
+        background: rebeccapurple;
+        animation: anim 30s;
+      }
+    </style>
+    <div style="visibility: hidden;">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_EQ(1u, element_animations->Animations().size());
+  Animation* animation = element_animations->Animations().begin()->key;
+
+  RunDocumentLifecycle();
+
+  const PaintArtifactCompositor* paint_artifact_compositor =
+      GetDocument().View()->GetPaintArtifactCompositor();
+  ASSERT_TRUE(paint_artifact_compositor);
+
+  CompositorAnimations::FailureReasons disposition =
+      animation->CheckCanStartAnimationOnCompositor(
+          paint_artifact_compositor, StartOnCompositorReason::kGeneric);
+  EXPECT_TRUE(disposition & CompositorAnimations::kAnimationHasNoVisibleChange);
+  EXPECT_TRUE(disposition & CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(animation->AnimationHasNoEffect());
+  EXPECT_EQ(2u, animation->TimelineInternal()->AnimationsNeedingUpdateCount());
+
+  // The width animation ticks on the main thread.
+  EXPECT_TIMEDELTA(AnimationTimeDelta(),
+                   animation->TimeToEffectChange().value());
+}
+
+// The time to the next effect change of an animation depends on whether
+// animationiteration events are needed. If an animationiteration listener is
+// added while a static animation is pending, i.e. without a change in its
+// current time, the animation still needs to tick at its iteration boundaries
+// once it starts.
+TEST_P(AnimationAnimationTestCompositing,
+       StaticAnimationTicksForIterationListenerAddedWhilePending) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { opacity: 0.5; }
+        to { opacity: 0.5; }
+      }
+      #target {
+        width: 10px;
+        height: 10px;
+        background: rebeccapurple;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("animation: anim 1s infinite"));
+  // Create the animation without starting it.
+  GetDocument().UpdateStyleAndLayoutTree();
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  ASSERT_EQ(1u, element_animations->Animations().size());
+  Animation* animation = element_animations->Animations().begin()->key;
+  EXPECT_TRUE(animation->pending());
+  // Without animationiteration listeners, the infinite static animation never
+  // needs to tick.
+  EXPECT_TRUE(animation->effect()->TimeToForwardsEffectChange().is_max());
+
+  target->addEventListener(event_type_names::kAnimationiteration,
+                           MakeGarbageCollected<MockEventListener>());
+
+  // Start the animation in a frame at the same time, so its current time
+  // doesn't change.
+  GetPage().Animator().ServiceScriptedAnimations(
+      GetAnimationClock().CurrentTime());
+  RunDocumentLifecycle();
+  EXPECT_FALSE(animation->pending());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(animation->AnimationHasNoEffect());
+
+  // The animation needs to tick at the end of the first iteration to dispatch
+  // the animationiteration event.
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
+                   animation->TimeToEffectChange().value());
+}
+
 TEST_P(AnimationAnimationTestNoCompositing,
        GetEffectTimingDelayZeroUseCounter) {
   animation->setEffect(MakeAnimation(/* duration */ 1.0));

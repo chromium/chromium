@@ -69,13 +69,17 @@ class TestAnimationEffectEventDelegate : public AnimationEffect::EventDelegate {
     event_triggered_ = true;
   }
   bool RequiresIterationEvents(const AnimationEffect& animation_node) override {
-    return true;
+    return requires_iteration_events_;
+  }
+  void SetRequiresIterationEvents(bool requires_iteration_events) {
+    requires_iteration_events_ = requires_iteration_events;
   }
   void Reset() { event_triggered_ = false; }
   bool EventTriggered() { return event_triggered_; }
 
  private:
   bool event_triggered_;
+  bool requires_iteration_events_ = true;
 };
 
 class TestAnimationEffect : public AnimationEffect {
@@ -100,7 +104,12 @@ class TestAnimationEffect : public AnimationEffect {
   }
 
   bool Affects(const PropertyHandle&) const override { return false; }
-  void UpdateChildrenAndEffects() const override {}
+  void UpdateChildrenAndEffects() const override {
+    ++update_children_and_effects_count_;
+  }
+  int UpdateChildrenAndEffectsCount() const {
+    return update_children_and_effects_count_;
+  }
   void WillDetach() {}
   TestAnimationEffectEventDelegate* EventDelegate() {
     return event_delegate_.Get();
@@ -111,7 +120,10 @@ class TestAnimationEffect : public AnimationEffect {
       AnimationTimeDelta time_to_next_iteration) const override {
     local_time_ = local_time;
     time_to_next_iteration_ = time_to_next_iteration;
-    return AnimationTimeDelta::Max();
+    // Like KeyframeEffect, only tick at iteration boundaries if iteration
+    // events are required.
+    return RequiresIterationEvents() ? time_to_next_iteration
+                                     : AnimationTimeDelta::Max();
   }
   std::optional<AnimationTimeDelta> TimelineDuration() const override {
     return std::nullopt;
@@ -138,6 +150,7 @@ class TestAnimationEffect : public AnimationEffect {
   Member<TestAnimationEffectEventDelegate> event_delegate_;
   mutable std::optional<AnimationTimeDelta> local_time_;
   mutable std::optional<AnimationTimeDelta> time_to_next_iteration_;
+  mutable int update_children_and_effects_count_ = 0;
 };
 
 TEST(AnimationAnimationEffectTest, Sanity) {
@@ -785,6 +798,36 @@ TEST(AnimationAnimationEffectTest, TimeToEffectChange) {
   time_to_next_iteration = animation_node->TakeTimeToNextIteration();
   EXPECT_TRUE(time_to_next_iteration);
   EXPECT_TRUE(time_to_next_iteration->is_max());
+}
+
+// The time to the next effect change depends on whether iteration events are
+// required, which can change without a change in the inherited time, e.g. if an
+// animationiteration listener is added while the animation is pending.
+TEST(AnimationAnimationEffectTest,
+     TimeToEffectChangeFollowsIterationEventsRequirement) {
+  test::TaskEnvironment task_environment;
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+  timing.iteration_count = std::numeric_limits<double>::infinity();
+  auto* animation_node = MakeGarbageCollected<TestAnimationEffect>(timing);
+
+  animation_node->EventDelegate()->SetRequiresIterationEvents(false);
+  animation_node->UpdateInheritedTime(0.25);
+  EXPECT_TRUE(animation_node->TimeToForwardsEffectChange().is_max());
+  EXPECT_EQ(1, animation_node->UpdateChildrenAndEffectsCount());
+
+  // Requiring iteration events means the effect changes at the end of the
+  // current iteration. The effect itself doesn't need a full update.
+  animation_node->EventDelegate()->SetRequiresIterationEvents(true);
+  animation_node->UpdateInheritedTime(0.25);
+  EXPECT_NEAR(0.75, animation_node->TimeToForwardsEffectChange().InSecondsF(),
+              0.000000000000001);
+  EXPECT_EQ(1, animation_node->UpdateChildrenAndEffectsCount());
+
+  animation_node->EventDelegate()->SetRequiresIterationEvents(false);
+  animation_node->UpdateInheritedTime(0.25);
+  EXPECT_TRUE(animation_node->TimeToForwardsEffectChange().is_max());
+  EXPECT_EQ(1, animation_node->UpdateChildrenAndEffectsCount());
 }
 
 TEST(AnimationAnimationEffectTest, UpdateTiming) {

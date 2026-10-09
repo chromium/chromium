@@ -370,12 +370,20 @@ void AnimationEffect::UpdateInheritedTime(
   }
 
   if (needs_update) {
-    // FIXME: This probably shouldn't be recursive.
     UpdateChildrenAndEffects();
+  }
+
+  // The time to the next effect change depends on whether iteration events are
+  // required, which can change without a change in the inherited time, e.g. if
+  // an animationiteration listener is added while the animation is pending.
+  const bool requires_iteration_events = RequiresIterationEvents();
+  if (needs_update ||
+      last_requires_iteration_events_ != requires_iteration_events) {
     calculated_.time_to_forwards_effect_change = CalculateTimeToEffectChange(
         true, inherited_time, calculated_.time_to_next_iteration);
     calculated_.time_to_reverse_effect_change = CalculateTimeToEffectChange(
         false, inherited_time, calculated_.time_to_next_iteration);
+    last_requires_iteration_events_ = requires_iteration_events;
   }
 }
 
