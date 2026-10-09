@@ -2390,6 +2390,7 @@
       "external/wpt/css/css-overflow/scroll-markers/targeted-column-scroll-marker-selection-002.html",
       "external/wpt/css/css-overflow/scroll-markers/targeted-column-scroll-marker-selection-003.html",
       "external/wpt/css/css-overflow/scroll-markers/targeted-column-scroll-marker-selection-004.html",
+      "external/wpt/css/css-position/overlay/backdrop-outside-top-layer.html",
       "external/wpt/css/css-pseudo/events-on-pseudo-element.tentative.html",
       "external/wpt/fullscreen/api/element-request-fullscreen-namespaces.html",
       "external/wpt/fullscreen/rendering/exit-fullscreen-scroll-to-unscrollable-area-overflow-hidden.html",

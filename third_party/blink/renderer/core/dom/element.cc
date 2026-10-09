@@ -11802,9 +11802,13 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
         return style->HasScrollMarkerGroupAfter();
       }
     }
-    if (!RuntimeEnabledFeatures::OverlayPropertyEnabled() &&
-        pseudo_id == kPseudoIdBackdrop) {
-      return IsInTopLayer();
+    if (pseudo_id == kPseudoIdBackdrop) {
+      if (!IsInTopLayer()) {
+        return false;
+      }
+      if (!RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
+        return true;
+      }
     }
     if (pseudo_id == kPseudoIdOverscrollBackdrop) {
       if (!IsValidOverscrollArea()) {
