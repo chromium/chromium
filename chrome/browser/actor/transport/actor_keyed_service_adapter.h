@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_keyed_service_proto_wrapper.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/transport/actuation_delegate.h"
@@ -78,6 +79,8 @@ class ActorKeyedServiceAdapter : public ActuationDelegate,
  private:
   // ActorKeyedService outlives this adapter.
   raw_ptr<ActorKeyedService> actor_service_;
+  ActorKeyedServiceProtoWrapper actor_keyed_service_proto_wrapper_{
+      actor_service_};
   base::WeakPtrFactory<ActorKeyedServiceAdapter> weak_ptr_factory_{this};
 };
 

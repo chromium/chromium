@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/transport/actor_keyed_service_adapter.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -69,8 +70,8 @@ void ActorKeyedServiceAdapter::StopTask(TaskId task_id,
 void ActorKeyedServiceAdapter::Act(
     const optimization_guide::proto::Actions& actions,
     ActCallback callback) {
-  // TODO(crbug.com/565390794): Pipe Act to ActorKeyedService.
-  NOTIMPLEMENTED();
+  actor_keyed_service_proto_wrapper_.PerformActions(actions,
+                                                    std::move(callback));
 }
 
 void ActorKeyedServiceAdapter::OnTabAddedToTask(
