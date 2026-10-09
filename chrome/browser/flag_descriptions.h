@@ -8340,12 +8340,6 @@ inline constexpr char kSingleCaCertVerificationPhase2Name[] =
 inline constexpr char kSingleCaCertVerificationPhase2Description[] =
     "Use a single CA cert for server's cert verification, no fallback.";
 
-inline constexpr char kCrosSeparateGeoApiKeyName[] =
-    "Use ChromeOS-specific API keys for location resolution";
-inline constexpr char kCrosSeparateGeoApiKeyDescription[] =
-    "If enabled, ChromeOS system services and Chrome-on-ChromeOS will use "
-    "different API keys and GCP endpoint to resolve location.";
-
 inline constexpr char kCrosCachedLocationProviderName[] =
     "Use Caching in System Location Provider to optimize GCP utilization";
 inline constexpr char kCrosCachedLocationProviderDescription[] =

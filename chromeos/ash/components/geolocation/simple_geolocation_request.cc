@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -157,14 +156,10 @@ GURL GeolocationRequestURL(const GURL& url) {
     return url;
   }
 
-  std::string api_key;
-  if (features::IsCrosSeparateGeoApiKeyEnabled()) {
-    api_key = google_apis::GetCrosSystemGeoAPIKey();
-  } else {
-    api_key = google_apis::GetAPIKey();
-  }
-  if (api_key.empty())
+  const std::string api_key = google_apis::GetCrosSystemGeoAPIKey();
+  if (api_key.empty()) {
     return url;
+  }
 
   std::string query(url.GetQuery());
   if (!query.empty())

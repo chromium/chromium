@@ -426,10 +426,6 @@ BASE_FEATURE(kCopyClientKeysCertsToChaps, base::FEATURE_ENABLED_BY_DEFAULT);
 // Adds location access control to Privacy Hub.
 BASE_FEATURE(kCrosPrivacyHub, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, ChromeOS system services and Chrome-on-ChromeOS will use separate
-// API keys for Geolocation resolution.
-BASE_FEATURE(kCrosSeparateGeoApiKey, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables cros safety service for trust and safety filtering for the text/image
 // output of on-device gen ai models.
 BASE_FEATURE(kCrosSafetyService, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2199,10 +2195,6 @@ bool IsCopyClientKeysCertsToChapsEnabled() {
 
 bool IsCrosPrivacyHubLocationEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub);
-}
-
-bool IsCrosSeparateGeoApiKeyEnabled() {
-  return base::FeatureList::IsEnabled(kCrosSeparateGeoApiKey);
 }
 
 bool IsCrosSafetyServiceEnabled() {

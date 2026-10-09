@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -19,7 +18,6 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -110,11 +108,7 @@ class TestDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
 
 class DeviceCommandQueryGeolocationJobTest : public testing::Test {
  public:
-  DeviceCommandQueryGeolocationJobTest() {
-    // Always enable the separate API key feature for these tests.
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kCrosSeparateGeoApiKey);
-  }
+  DeviceCommandQueryGeolocationJobTest() = default;
   DeviceCommandQueryGeolocationJobTest(
       const DeviceCommandQueryGeolocationJobTest&) = delete;
   DeviceCommandQueryGeolocationJobTest& operator=(
@@ -239,7 +233,6 @@ class DeviceCommandQueryGeolocationJobTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedStubInstallAttributes test_install_attributes_{
       ash::StubInstallAttributes::CreateCloudManaged("test_domain", "test_id")};
   network::TestURLLoaderFactory test_url_loader_factory_;

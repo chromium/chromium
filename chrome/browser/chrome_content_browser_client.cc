@@ -3875,11 +3875,10 @@ ChromeContentBrowserClient::GetSystemNetworkContext() {
 
 std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::features::IsCrosSeparateGeoApiKeyEnabled()) {
-    return google_apis::GetCrosChromeGeoAPIKey();
-  }
-#endif
+  return google_apis::GetCrosChromeGeoAPIKey();
+#else
   return google_apis::GetAPIKey();
+#endif
 }
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)

@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -162,16 +160,9 @@ namespace override_geo_api_keys {
 }  // namespace override_geo_api_keys
 
 class SystemLocationProviderAPIKeyTest : public SystemLocationProviderTestBase,
-                                         public testing::TestWithParam<bool> {
+                                         public testing::Test {
  public:
-  SystemLocationProviderAPIKeyTest()
-      : is_separate_api_keys_enabled_(GetParam()) {
-    if (is_separate_api_keys_enabled_) {
-      feature_list_.InitAndEnableFeature(features::kCrosSeparateGeoApiKey);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kCrosSeparateGeoApiKey);
-    }
-  }
+  SystemLocationProviderAPIKeyTest() = default;
 
   void SetUp() override {
     url_factory_.SetInterceptor(
@@ -188,14 +179,11 @@ class SystemLocationProviderAPIKeyTest : public SystemLocationProviderTestBase,
 
   void TearDown() override { SystemLocationProvider::DestroyForTesting(); }
 
-  const bool is_separate_api_keys_enabled_;
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(SystemLocationProviderAPIKeyTest, TestCorrectAPIKeysAreUsed) {
+TEST_F(SystemLocationProviderAPIKeyTest, TestCorrectAPIKeysAreUsed) {
   utils::GeolocationReceiver receiver;
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
@@ -217,22 +205,14 @@ TEST_P(SystemLocationProviderAPIKeyTest, TestCorrectAPIKeysAreUsed) {
       SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
-  // Check that the appropriate API key was used depending on the
-  // `CrosSeparateGeoApiKey` feature status.
+  // Check that the ChromeOS system geolocation API key was used.
   const GURL request_url = requests_monitor.last_request_url();
   ASSERT_TRUE(request_url.has_query());
-  EXPECT_EQ(is_separate_api_keys_enabled_,
-            request_url.GetQuery().find(GOOGLE_API_KEY_CROS_SYSTEM_GEO) !=
-                std::string::npos);
-  EXPECT_EQ(is_separate_api_keys_enabled_,
-            request_url.GetQuery().find(GOOGLE_API_KEY) == std::string::npos);
+  EXPECT_NE(request_url.GetQuery().find(GOOGLE_API_KEY_CROS_SYSTEM_GEO),
+            std::string::npos);
+  EXPECT_EQ(request_url.GetQuery().find(GOOGLE_API_KEY), std::string::npos);
   EXPECT_EQ(1U, interceptor.attempts());
 }
-
-// GetParam() - `ash::features::kCrosSeparateGeoApiKey` feature state.
-INSTANTIATE_TEST_SUITE_P(All,
-                         SystemLocationProviderAPIKeyTest,
-                         testing::Bool());
 
 // Test sending of WiFi Access points and Cell Towers.
 // (This is mostly derived from GeolocationHandlerTest.)
