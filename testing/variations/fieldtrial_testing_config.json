@@ -17137,6 +17137,21 @@
             ]
         }
     ],
+    "ThreeDSecureTelemetryForIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThreeDSecureTelemetryForIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThrottleConsecutiveNoDamageMainFrames": [
         {
             "platforms": [
