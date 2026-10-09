@@ -32,7 +32,7 @@ const base::FeatureParam<bool> kSessionEndsOnStreamEnd{
     &kDictation, "session_ends_on_stream_end", true};
 
 const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay{
-    &kDictation, "auto_session_end_delay", base::Milliseconds(750)};
+    &kDictation, "auto_session_end_delay", base::Milliseconds(300)};
 
 const base::FeatureParam<std::string> kDictationConnectorTag{
     &kDictation, "connector_tag", ""};
