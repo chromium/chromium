@@ -7938,6 +7938,14 @@
     "expiry_milestone": 162
   },
   {
+    "name": "organizer-panel-foreign-tabs",
+    "owners": [
+      "agale@google.com",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "origin-agent-cluster-default",
     "owners": [ "vogelheim@chromium.org", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 130

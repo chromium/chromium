@@ -12099,6 +12099,7 @@ from previous Chrome versions.
   <int value="-867087281" label="enable-virtual-keyboard"/>
   <int value="-867085393" label="WebNotesDynamicTemplates:enabled"/>
   <int value="-866993841" label="OfflinePagesCTV2:disabled"/>
+  <int value="-866542977" label="OrganizerPanelForeignTabs:disabled"/>
   <int value="-866162444"
       label="UseSyncInvalidationsForWalletAndOffer:enabled"/>
   <int value="-866097797"
@@ -17300,6 +17301,7 @@ from previous Chrome versions.
   <int value="713946324" label="OmniboxSearchReadyIncognito:disabled"/>
   <int value="714714531" label="VcControlsUi:enabled"/>
   <int value="714871827" label="FastPairSoftwareScanning:enabled"/>
+  <int value="715157494" label="OrganizerPanelForeignTabs:enabled"/>
   <int value="715464715"
       label="AttachLogsToAutofillRaterExtensionReport:disabled"/>
   <int value="715617684" label="OriginTrials:disabled"/>

@@ -4284,6 +4284,11 @@ inline constexpr char kOrganizerPanelName[] = "Organizer Panel";
 inline constexpr char kOrganizerPanelDescription[] =
     "Enables the Organizer Panel.";
 
+inline constexpr char kOrganizerPanelForeignTabsName[] =
+    "Organizer Panel Foreign Tabs";
+inline constexpr char kOrganizerPanelForeignTabsDescription[] =
+    "Enables cross-device tabs in the Organizer Panel.";
+
 inline constexpr char kPullToRefreshName[] = "Pull-to-refresh gesture";
 inline constexpr char kPullToRefreshDescription[] =
     "Pull-to-refresh gesture in response to vertical overscroll.";

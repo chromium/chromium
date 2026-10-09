@@ -12424,6 +12424,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"organizer-panel", flag_descriptions::kOrganizerPanelName,
      flag_descriptions::kOrganizerPanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(organizer_panel::kOrganizerPanel)},
+    {"organizer-panel-foreign-tabs",
+     flag_descriptions::kOrganizerPanelForeignTabsName,
+     flag_descriptions::kOrganizerPanelForeignTabsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(organizer_panel::kOrganizerPanelForeignTabs)},
 
     {"sync-ai-threads", flag_descriptions::kSyncAIThreadsName,
      flag_descriptions::kSyncAIThreadsDescription, kOsDesktop,
