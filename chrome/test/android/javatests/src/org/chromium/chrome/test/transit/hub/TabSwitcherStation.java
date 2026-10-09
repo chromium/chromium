@@ -266,7 +266,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
             BasePageStation.Builder<T> destinationBuilder) {
         T destination =
                 destinationBuilder.initSelectingExistingTab().withIncognito(mIsIncognito).build();
-        return pressBackTo().withRetry().arriveAt(destination);
+        return pressBackTo().arriveAt(destination);
     }
 
     /** Expect a tab group card to exist. */

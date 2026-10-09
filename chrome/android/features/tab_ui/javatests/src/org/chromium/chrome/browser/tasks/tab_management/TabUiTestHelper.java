@@ -83,7 +83,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
-import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
@@ -193,8 +192,6 @@ public class TabUiTestHelper {
      * Leave tab switcher by tapping "back".
      *
      * <p>Hops on Public Transit at the tab switcher and presses back to return to the previous tab.
-     * Unlike {@link TabSwitcherStation#leaveHubToPreviousTabViaBack(BasePageStation.Builder)}, the
-     * back press is not retried: a retried press that lands on the page finishes the Activity.
      *
      * @param cta The current running activity.
      * @return the {@link CtaPageStation} returned to.
@@ -209,12 +206,7 @@ public class TabUiTestHelper {
                         incognito
                                 ? IncognitoTabSwitcherStation.from(selector)
                                 : RegularTabSwitcherStation.from(selector));
-        CtaPageStation destination =
-                CtaPageStation.newGenericBuilder()
-                        .initSelectingExistingTab()
-                        .withIncognito(incognito)
-                        .build();
-        return tabSwitcher.pressBackTo().arriveAt(destination);
+        return tabSwitcher.leaveHubToPreviousTabViaBack(CtaPageStation.newGenericBuilder());
     }
 
     /**
