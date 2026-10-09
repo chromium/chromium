@@ -37,19 +37,13 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       omnibox::kDismissedEnterpriseSearchAggregatorIphPrefName, false);
   registry->RegisterBooleanPref(
       omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName, false);
-  registry->RegisterBooleanPref(
-      omnibox::kDismissedHistoryEmbeddingsSettingsPromo, false);
   registry->RegisterBooleanPref(omnibox::kDismissedHistoryScopePromo, false);
-  registry->RegisterBooleanPref(omnibox::kDismissedHistoryEmbeddingsScopePromo,
-                                false);
   registry->RegisterBooleanPref(kBottomOmniboxEverUsed, false);
 
   registry->RegisterIntegerPref(kShownCountGeminiIph, 0);
   registry->RegisterIntegerPref(kShownCountEnterpriseSearchAggregatorIph, 0);
   registry->RegisterIntegerPref(kShownCountFeaturedEnterpriseSiteSearchIph, 0);
-  registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsSettingsPromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
-  registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
 
   registry->RegisterIntegerPref(kAimHintLastImpressionDay, 0);

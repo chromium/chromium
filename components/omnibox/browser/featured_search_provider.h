@@ -79,21 +79,9 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   bool ShouldShowFeaturedEnterpriseSiteSearchIPHMatch() const;
   void AddFeaturedEnterpriseSiteSearchIPHMatch();
 
-  // Whether to show the History Embeddings promo row in @history scope.
-  bool ShouldShowHistoryEmbeddingsSettingsPromoIphMatch() const;
-  void AddHistoryEmbeddingsSettingsPromoIphMatch();
-
-  // Whether to show the History Embeddings disclaimer row in @history scope.
-  bool ShouldShowHistoryEmbeddingsDisclaimerIphMatch() const;
-  void AddHistoryEmbeddingsDisclaimerIphMatch();
-
   // Whether to show the @history keyword promo row in zero-state.
   bool ShouldShowHistoryScopePromoIphMatch() const;
   void AddHistoryScopePromoIphMatch();
-
-  // Whether to show the @history (embeddings) keyword promo row in zero-state.
-  bool ShouldShowHistoryEmbeddingsScopePromoIphMatch() const;
-  void AddHistoryEmbeddingsScopePromoIphMatch();
 
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;

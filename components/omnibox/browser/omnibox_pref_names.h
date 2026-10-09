@@ -46,10 +46,6 @@ inline constexpr char kDismissedEnterpriseSearchAggregatorIphPrefName[] =
 inline constexpr char kDismissedFeaturedEnterpriseSiteSearchIphPrefName[] =
     "omnibox.dismissed_featured_enterprise_search_iph";
 inline constexpr char kDismissedGeminiIph[] = "omnibox.dismissed_gemini_iph";
-inline constexpr char kDismissedHistoryEmbeddingsScopePromo[] =
-    "omnibox.dismissed_history_embeddings_scope_promo";
-inline constexpr char kDismissedHistoryEmbeddingsSettingsPromo[] =
-    "omnibox.dismissed_history_embeddings_settings_promo";
 inline constexpr char kDismissedHistoryScopePromo[] =
     "omnibox.dismissed_history_scope_promo";
 
@@ -92,10 +88,6 @@ inline constexpr char kShownCountEnterpriseSearchAggregatorIph[] =
 inline constexpr char kShownCountFeaturedEnterpriseSiteSearchIph[] =
     "omnibox.shown_count_featured_enterprise_search_iph";
 inline constexpr char kShownCountGeminiIph[] = "omnibox.shown_count_gemini_iph";
-inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
-    "omnibox.shown_count_history_embeddings_scope_promo";
-inline constexpr char kShownCountHistoryEmbeddingsSettingsPromo[] =
-    "omnibox.shown_count_history_embeddings_settings_promo";
 inline constexpr char kShownCountHistoryScopePromo[] =
     "omnibox.shown_count_history_scope_promo";
 
