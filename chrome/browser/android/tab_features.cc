@@ -21,6 +21,7 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
+#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -116,6 +117,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/content_capture/common/content_capture_features.h"
@@ -128,6 +130,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -657,6 +660,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         GetUserDataFactory()
             .CreateInstance<predictors::LoadingPredictorTabHelper>(
                 *tab, *tab, web_contents);
+  }
+
+  if (breadcrumbs::IsEnabled(g_browser_process->local_state()) &&
+      infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
+    BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to

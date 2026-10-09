@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -51,7 +50,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
-#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -170,9 +168,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     autofill_client_provider.CreateClientForWebContents(web_contents);
   }
 
-  if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
-    BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
-  }
   // Password manager relies on ChromeAutofillClient initialized by browser
   // autofill, which is gated by enable_browser_autofill.
   if (enable_browser_autofill) {

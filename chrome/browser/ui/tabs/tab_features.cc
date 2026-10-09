@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
@@ -232,6 +233,7 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -1275,6 +1277,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             .CreateInstance<predictors::LoadingPredictorTabHelper>(
                 tab, tab, tab.GetContents());
   }
+
+  if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
+    BreadcrumbManagerTabHelper::CreateForWebContents(tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1863,6 +1869,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         GetUserDataFactory()
             .CreateInstance<predictors::LoadingPredictorTabHelper>(
                 *tab, *tab, new_contents);
+  }
+
+  if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
+    BreadcrumbManagerTabHelper::CreateForWebContents(new_contents);
   }
 }
 
