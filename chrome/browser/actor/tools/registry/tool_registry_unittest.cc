@@ -37,8 +37,8 @@
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
+#include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
-
 namespace actor {
 namespace {
 
@@ -367,6 +367,31 @@ TEST(ToolRegistryTest, GetAllToolsContainsPerformSearchTool) {
                                     ToolId::kPerformSearch,
                                     &ToolDefinition::id));
 }
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+TEST(ToolRegistryTest, ExitFullscreenToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ExitFullscreenToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kExitFullscreen);
+  EXPECT_EQ(definition->name, ExitFullscreenToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsExitFullscreenTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kExitFullscreen,
+                                    &ToolDefinition::id));
+}
+#endif
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/actor/tools/tool_request.h"
 
@@ -90,9 +91,13 @@ class EnterFullscreenToolRequest : public ToolRequest {
 class ExitFullscreenToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "ExitFullscreen";
+  static constexpr std::string_view kModelFacingName = "exit_fullscreen";
 
   explicit ExitFullscreenToolRequest(int32_t window_id);
   ~ExitFullscreenToolRequest() override;
+
+  // Returns the `ToolId::kExitFullscreen` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   int32_t GetWindowId() const { return window_id_; }
 

@@ -45,7 +45,9 @@ enum class ToolId {
   kPlayVideo = 12,
   // Search using the default search engine.
   kPerformSearch = 13,
-  kMaxValue = kPerformSearch,
+  // Exits fullscreen mode for the active tab.
+  kExitFullscreen = 14,
+  kMaxValue = kExitFullscreen,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
