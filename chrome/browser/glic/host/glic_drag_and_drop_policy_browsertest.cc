@@ -203,10 +203,7 @@ IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest, testDragAndDropDlpBlocked) {
 
 // Linux does not natively support direct in-memory FileContents retrieval
 // inside OSExchangeData.
-// Web-to-Glic drag-and-drop is fully supported on macOS, Windows, and
-// ChromeOS. On Windows, this test is currently disabled due to test simulation
-// flakiness in headless CI runners.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_testWebToGlicDragDlpBlocked DISABLED_testWebToGlicDragDlpBlocked
 #else
 #define MAYBE_testWebToGlicDragDlpBlocked testWebToGlicDragDlpBlocked
