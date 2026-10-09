@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
@@ -205,6 +206,7 @@ public class TabListEditorMenuTest {
                                     LinearLayout.LayoutParams.MATCH_PARENT,
                                     LinearLayout.LayoutParams.MATCH_PARENT);
                     layout.setLayoutParams(layoutParams);
+                    layout.setGravity(Gravity.CENTER_VERTICAL);
 
                     LayoutInflater inflater = LayoutInflater.from(activity);
                     mToolbar =
@@ -785,8 +787,8 @@ public class TabListEditorMenuTest {
 
     private void openMenu(PopupListener listener) throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(() -> mMenuButton.addPopupListener(listener));
-        onViewWaiting(allOf(withId(R.id.list_menu_button), isDisplayed(), isEnabled()))
-                .perform(click());
+        onViewWaiting(allOf(withId(R.id.list_menu_button), isDisplayed(), isEnabled()));
+        ThreadUtils.runOnUiThreadBlocking(() -> mMenuButton.performClick());
         listener.waitForShown();
     }
 
