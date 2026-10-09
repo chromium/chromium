@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.webauthn;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.widget.Button;
 
 import org.junit.After;
@@ -13,6 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -21,9 +31,13 @@ import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -35,6 +49,13 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;
+
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private BottomSheetContent mOtherBottomSheetContent;
+    @Mock private Runnable mPositiveCallbackMock;
+    @Mock private Runnable mNegativeCallbackMock;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mObserverCaptor;
+    @Captor private ArgumentCaptor<BottomSheetContent> mContentCaptor;
 
     private Runnable mPositiveCallback;
     private Runnable mNegativeCallback;
@@ -62,8 +83,7 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
                     mUserPositive = false;
                 };
 
-        BottomSheetControllerProvider.setInstanceForTesting(
-                createBottomSheetController(/* requestShowContentResponse= */ true));
+        setUpBottomSheetController(/* requestShowContentResponse= */ true);
     }
 
     @After
@@ -75,12 +95,20 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
         mBottomsheet = new AuthenticatorIncognitoConfirmationBottomsheet(mWebContents);
     }
 
-    private BottomSheetController createBottomSheetController(boolean requestShowContentResponse) {
-        BottomSheetController controller = Mockito.mock(BottomSheetController.class);
-        Mockito.doReturn(requestShowContentResponse)
-                .when(controller)
-                .requestShowContent(Mockito.any(BottomSheetContent.class), Mockito.anyBoolean());
-        return controller;
+    private void setUpBottomSheetController(boolean requestShowContentResponse) {
+        doAnswer(
+                        invocation -> {
+                            if (requestShowContentResponse) {
+                                BottomSheetContent content = invocation.getArgument(0);
+                                doReturn(content)
+                                        .when(mBottomSheetController)
+                                        .getCurrentSheetContent();
+                            }
+                            return requestShowContentResponse;
+                        })
+                .when(mBottomSheetController)
+                .requestShowContent(any(BottomSheetContent.class), anyBoolean());
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
     }
 
     private boolean show() {
@@ -127,5 +155,122 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
         Assert.assertFalse(mBottomsheet.mIsShowing);
         Assert.assertTrue(mUserResponded);
         Assert.assertFalse(mUserPositive);
+    }
+
+    private BottomSheetObserver showAndCaptureObserver() {
+        createBottomsheet();
+        show();
+        Assert.assertTrue(mBottomsheet.mIsShowing);
+
+        verify(mBottomSheetController).addObserver(mObserverCaptor.capture());
+        return mObserverCaptor.getValue();
+    }
+
+    @Test
+    public void testOnSheetStateChangedHidden_currentSheetContent_closesSheet() {
+        BottomSheetObserver observer = showAndCaptureObserver();
+
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+
+        Assert.assertFalse(mBottomsheet.mIsShowing);
+        Assert.assertTrue(mUserResponded);
+        Assert.assertFalse(mUserPositive);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testOnSheetStateChangedHidden_otherSheetContent_ignoresHidden() {
+        BottomSheetObserver observer = showAndCaptureObserver();
+
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+
+        Assert.assertTrue(mBottomsheet.mIsShowing);
+        Assert.assertFalse(mUserResponded);
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testOnSheetStateChangedHidden_deferContentSwapDisabled_closesSheet() {
+        BottomSheetObserver observer = showAndCaptureObserver();
+
+        // Without deferral, the controller already replaced the hidden content.
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(null);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+
+        Assert.assertFalse(mBottomsheet.mIsShowing);
+        Assert.assertTrue(mUserResponded);
+        Assert.assertFalse(mUserPositive);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testBottomSheetContentDestroy_closesSheet() {
+        BottomSheetObserver observer = showAndCaptureObserver();
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), anyBoolean());
+
+        // The content is dropped while another content is still shown, e.g. by
+        // clearRequestsAndHide().
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherBottomSheetContent);
+        mContentCaptor.getValue().destroy();
+
+        Assert.assertFalse(mBottomsheet.mIsShowing);
+        Assert.assertTrue(mUserResponded);
+        Assert.assertFalse(mUserPositive);
+        verify(mBottomSheetController).removeObserver(observer);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testBottomSheetContentDestroy_currentSheetContent_ignored() {
+        showAndCaptureObserver();
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), anyBoolean());
+
+        // The current content is closed when it is hidden, see onSheetStateChanged().
+        mContentCaptor.getValue().destroy();
+
+        Assert.assertTrue(mBottomsheet.mIsShowing);
+        Assert.assertFalse(mUserResponded);
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testBottomSheetContentDestroy_deferContentSwapDisabled_noop() {
+        showAndCaptureObserver();
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), anyBoolean());
+
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mOtherBottomSheetContent);
+        mContentCaptor.getValue().destroy();
+
+        Assert.assertTrue(mBottomsheet.mIsShowing);
+        Assert.assertFalse(mUserResponded);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testClose_hideContentDestroysContent_runsCallbackOnce() {
+        createBottomsheet();
+        mBottomsheet.show(mPositiveCallbackMock, mNegativeCallbackMock);
+        doAnswer(
+                        invocation -> {
+                            // The controller replaces the hidden content before destroying it.
+                            doReturn(null).when(mBottomSheetController).getCurrentSheetContent();
+                            BottomSheetContent content = invocation.getArgument(0);
+                            content.destroy();
+                            return null;
+                        })
+                .when(mBottomSheetController)
+                .hideContent(any(BottomSheetContent.class), anyBoolean());
+
+        mBottomsheet.close(/* success= */ true);
+
+        verify(mPositiveCallbackMock).run();
+        verify(mNegativeCallbackMock, never()).run();
     }
 }
