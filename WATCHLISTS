@@ -1371,12 +1371,6 @@
     'gfx_image': {
       'filepath': 'ui/gfx/image/',
     },
-    'glic': {
-      'filepath': 'chrome/browser/glic|'\
-                  'chrome/test/data/webui/glic|'\
-                  'chrome/browser/resources/glic',
-
-    },
     'glic_api': {
       'filepath': 'chrome/browser/resources/glic/glic_api/',
     },
@@ -3127,7 +3121,6 @@
                     'robpitkin+watch@chromium.org'],
     'gfx_geometry': ['cc-bugs@chromium.org'],
     'gfx_image': ['rsesek+watch@chromium.org'],
-    'glic': ['dewittj+watch@chromium.org'],
     'glic_api': ['zewenli@google.com', 'anuragsimgeker@google.com',
                  'thorstenk@google.com'],
     'global_media_controls': ['steimel+watch-gmc@chromium.org'],
