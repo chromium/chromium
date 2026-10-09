@@ -27,23 +27,23 @@
 
 namespace {
 
-// Returns two point ranges (<left, width> pairs) at row |canvasY| which belong
+// Returns two point ranges (<left, width> pairs) at row |canvas_y| which belong
 // to |src| but not |dst|. A range is empty if its width is 0.
 inline void findBlendRangeAtRow(const gfx::Rect& src,
                                 const gfx::Rect& dst,
-                                int canvasY,
+                                int canvas_y,
                                 int& left1,
                                 int& width1,
                                 int& left2,
                                 int& width2) {
-  SECURITY_CHECK(canvasY >= src.y() && canvasY < src.bottom());
+  SECURITY_CHECK(canvas_y >= src.y() && canvas_y < src.bottom());
   left1 = -1;
   width1 = 0;
   left2 = -1;
   width2 = 0;
 
-  if (canvasY < dst.y() || canvasY >= dst.bottom() || src.x() >= dst.right() ||
-      src.right() <= dst.x()) {
+  if (canvas_y < dst.y() || canvas_y >= dst.bottom() ||
+      src.x() >= dst.right() || src.right() <= dst.x()) {
     left1 = src.x();
     width1 = src.width();
     return;
@@ -67,30 +67,32 @@ inline void findBlendRangeAtRow(const gfx::Rect& src,
 // images.
 void alphaBlendPremultiplied(blink::ImageFrame& src,
                              blink::ImageFrame& dst,
-                             int canvasY,
+                             int canvas_y,
                              int left,
                              int width) {
   for (int x = 0; x < width; ++x) {
-    int canvasX = left + x;
-    blink::ImageFrame::PixelData* pixel = src.GetAddr(canvasX, canvasY);
+    int canvas_x = left + x;
+    blink::ImageFrame::PixelData* pixel = src.GetAddr(canvas_x, canvas_y);
     if (SkPMColorGetA(*pixel) != 0xff) {
-      blink::ImageFrame::PixelData prevPixel = *dst.GetAddr(canvasX, canvasY);
-      blink::ImageFrame::BlendSrcOverDstPremultiplied(pixel, prevPixel);
+      blink::ImageFrame::PixelData prev_pixel =
+          *dst.GetAddr(canvas_x, canvas_y);
+      blink::ImageFrame::BlendSrcOverDstPremultiplied(pixel, prev_pixel);
     }
   }
 }
 
 void alphaBlendNonPremultiplied(blink::ImageFrame& src,
                                 blink::ImageFrame& dst,
-                                int canvasY,
+                                int canvas_y,
                                 int left,
                                 int width) {
   for (int x = 0; x < width; ++x) {
-    int canvasX = left + x;
-    blink::ImageFrame::PixelData* pixel = src.GetAddr(canvasX, canvasY);
+    int canvas_x = left + x;
+    blink::ImageFrame::PixelData* pixel = src.GetAddr(canvas_x, canvas_y);
     if (SkPMColorGetA(*pixel) != 0xff) {
-      blink::ImageFrame::PixelData prevPixel = *dst.GetAddr(canvasX, canvasY);
-      blink::ImageFrame::BlendSrcOverDstRaw(pixel, prevPixel);
+      blink::ImageFrame::PixelData prev_pixel =
+          *dst.GetAddr(canvas_x, canvas_y);
+      blink::ImageFrame::BlendSrcOverDstRaw(pixel, prev_pixel);
     }
   }
 }

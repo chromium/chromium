@@ -124,20 +124,20 @@ struct RWBuffer::BufferHead {
     }
   }
 
-  void Validate(size_t minUsed,
+  void Validate(size_t min_used,
                 const RWBuffer::BufferBlock* tail = nullptr) const {
 #if DCHECK_IS_ON()
     DCHECK(!ref_count_.IsZero());
-    size_t totalUsed = 0;
+    size_t total_used = 0;
     const RWBuffer::BufferBlock* block = &block_;
     const RWBuffer::BufferBlock* lastBlock = block;
     while (block) {
       block->Validate();
-      totalUsed += block->used_;
+      total_used += block->used_;
       lastBlock = block;
       block = block->next_;
     }
-    DCHECK(minUsed <= totalUsed);
+    DCHECK(min_used <= total_used);
     if (tail) {
       DCHECK(tail == lastBlock);
     }

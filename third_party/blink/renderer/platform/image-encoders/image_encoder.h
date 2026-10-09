@@ -77,7 +77,7 @@ class PLATFORM_EXPORT ImageEncoder {
       const SkPixmap& src,
       SkPngRustEncoder::CompressionLevel);
 
-  bool encodeRows(int numRows) { return encoder_->encodeRows(numRows); }
+  bool encodeRows(int num_rows) { return encoder_->encodeRows(num_rows); }
 
   /**
    *  If quality is in [0, 1], this will simply convert to a [0, 100]

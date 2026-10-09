@@ -125,8 +125,8 @@ TEST(RWBufferTest, Size) {
   RWBuffer buffer;
   buffer.Append(base::byte_span_from_cstring(gABC));
 
-  scoped_refptr<ROBuffer> roBuffer(buffer.MakeROBufferSnapshot());
-  ROBuffer::Iter iter(roBuffer.get());
+  scoped_refptr<ROBuffer> ro_buffer(buffer.MakeROBufferSnapshot());
+  ROBuffer::Iter iter(ro_buffer.get());
   EXPECT_TRUE((*iter).data());
   EXPECT_EQ((*iter).size(), 26u);
 
@@ -141,11 +141,11 @@ TEST(RWBufferTest, Empty) {
   RWBuffer buffer;
   ASSERT_EQ(0u, buffer.size());
 
-  scoped_refptr<ROBuffer> roBuffer = buffer.MakeROBufferSnapshot();
-  ASSERT_TRUE(roBuffer);
-  if (roBuffer) {
-    EXPECT_EQ(roBuffer->size(), 0u);
-    ROBuffer::Iter iter(roBuffer.get());
+  scoped_refptr<ROBuffer> ro_buffer = buffer.MakeROBufferSnapshot();
+  ASSERT_TRUE(ro_buffer);
+  if (ro_buffer) {
+    EXPECT_EQ(ro_buffer->size(), 0u);
+    ROBuffer::Iter iter(ro_buffer.get());
     EXPECT_TRUE((*iter).empty());
     EXPECT_TRUE(!(*iter).data());
     EXPECT_TRUE(!iter.Next());
@@ -201,8 +201,8 @@ TEST(RWBufferTest, FunctionConstructorSmall) {
 
   EXPECT_EQ(20U, buffer.size());
 
-  scoped_refptr<ROBuffer> roBuffer = buffer.MakeROBufferSnapshot();
-  ROBuffer::Iter iter(roBuffer.get());
+  scoped_refptr<ROBuffer> ro_buffer = buffer.MakeROBufferSnapshot();
+  ROBuffer::Iter iter(ro_buffer.get());
   EXPECT_EQ(*iter, base::span_from_cstring(gABC).first(20U));
 }
 

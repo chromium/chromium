@@ -46,7 +46,7 @@ class PLATFORM_EXPORT RWBuffer {
     size_t remaining_;
   };
 
-  explicit RWBuffer(size_t initialCapacity = 0);
+  explicit RWBuffer(size_t initial_capacity = 0);
   // |writer| is a function used to initialize the RWBuffer.
   // |writer| is responsible for not writing off the edge of the buffer.
   // |writer| should return the amount of memory written to the buffer.
