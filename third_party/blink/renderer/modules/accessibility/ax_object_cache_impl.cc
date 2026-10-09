@@ -3844,6 +3844,18 @@ void AXObjectCacheImpl::SerializeAXUpdatesIfNeeded(Document& document) {
     return;
   }
 
+  // Name computation requires a clean layout (see MayHaveHTMLLabel()), but
+  // layout cannot be updated here. Try to serialize in the next frame instead.
+  // The popup document, if any, is serialized at the same time as `document`,
+  // so the layout of both must be clean. See https://crbug.com/551990098.
+  Document* popup_document = GetPopupDocumentIfShowing();
+  if (document.Lifecycle().GetState() < DocumentLifecycle::kLayoutClean ||
+      (popup_document && popup_document->Lifecycle().GetState() <
+                             DocumentLifecycle::kLayoutClean)) {
+    ScheduleImmediateSerialization();
+    return;
+  }
+
   // ------------------------ Freeze and serialize ---------------------------
   {
     // The frozen state begins immediately after processing deferred events.

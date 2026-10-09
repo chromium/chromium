@@ -166,6 +166,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual bool CommitAXUpdates(Document&, bool force) = 0;
 
   // Serializes updates applied by CommitAXUpdates().
+  // If layout is dirty, leave the updates pending and request a retry.
   virtual void SerializeAXUpdatesIfNeeded(Document&) = 0;
 
   // Handles a notification from the `ariaNotify` API.

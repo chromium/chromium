@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -16,7 +17,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -27,6 +30,8 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
@@ -40,9 +45,11 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -409,6 +416,126 @@ TEST_F(AccessibilityTest, UpdateAXForAllDocumentsAfterPausedUpdates) {
   ax_object_cache->UpdateAXForAllDocuments();
   ScopedFreezeAXCache freeze(*ax_object_cache);
   CHECK(!root->NeedsToUpdateCachedValues());
+}
+
+namespace {
+
+class SerializationTestWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  bool IsAccessibilityEnabled() const override;
+
+  bool SendAccessibilitySerialization(
+      std::vector<ui::AXTreeUpdate> updates,
+      std::vector<ui::AXEvent> events,
+      ui::AXLocationAndScrollUpdates location_and_scroll_updates,
+      bool had_load_complete_messages) override;
+
+  std::vector<ui::AXTreeUpdate> updates_;
+};
+
+bool SerializationTestWebFrameClient::IsAccessibilityEnabled() const {
+  return true;
+}
+
+bool SerializationTestWebFrameClient::SendAccessibilitySerialization(
+    std::vector<ui::AXTreeUpdate> updates,
+    std::vector<ui::AXEvent> events,
+    ui::AXLocationAndScrollUpdates location_and_scroll_updates,
+    bool had_load_complete_messages) {
+  updates_ = std::move(updates);
+  return true;
+}
+
+class AXObjectCacheSerializationTest : public SimTest {
+ protected:
+  // Mock time prevents the batching delay from expiring, so an ordinary
+  // commit will always wait.
+  AXObjectCacheSerializationTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override;
+};
+
+std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+AXObjectCacheSerializationTest::CreateWebFrameClientForMainFrame() {
+  return std::make_unique<SerializationTestWebFrameClient>();
+}
+
+}  // namespace
+
+// Serializing with dirty layout used to fail the CHECK in MayHaveHTMLLabel()
+// (https://crbug.com/551990098). Serialization must wait for clean layout and
+// retry in the next frame.
+TEST_F(AXObjectCacheSerializationTest, SerializeRequiresCleanLayout) {
+  // A natively labeled input: its name is computed from the label during
+  // serialization, which is where the crash happened.
+  SimRequest request("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  request.Complete(R"HTML(
+    <label for="input">Name</label><input id="input">
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Serialize for real: the frame client accepts accessibility updates and
+  // records what it receives.
+  Document& document = GetDocument();
+  document.GetFrame()->SetEmbeddingToken(
+      ui::AXTreeID::CreateNewAXTreeID().token().value());
+  auto& frame_client =
+      static_cast<SerializationTestWebFrameClient&>(WebFrameClient());
+  AXContext ax_context(document, ui::kAXModeDefaultForTests);
+  auto& cache = *To<AXObjectCacheImpl>(document.ExistingAXObjectCache());
+
+  // Pretend a serialization was just acknowledged, so that an ordinary commit
+  // would wait for the batching delay.
+  cache.OnSerializationReceived();
+
+  // Queue the whole tree for serialization and register a ready callback.
+  cache.MarkDocumentDirty();
+  Element* input = document.getElementById(AtomicString("input"));
+  bool ax_ready = false;
+  cache.ScheduleAXUpdateWithCallback(BindOnce(
+      [](bool* ax_ready) { *ax_ready = true; }, Unretained(&ax_ready)));
+
+  // Commit the tree with clean layout, as the frame's accessibility steps do.
+  document.View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  ASSERT_TRUE(cache.CommitAXUpdates(document, /*force=*/true));
+  ASSERT_TRUE(cache.HasObjectsPendingSerialization());
+  const AXID input_id = cache.Get(input)->AXObjectID();
+
+  // Dirty the layout before serializing, as in the crash. Serialization must
+  // be deferred, with the objects and the callback still pending.
+  input->SetNeedsStyleRecalc(kLocalStyleChange,
+                             StyleChangeReasonForTracing::Create("test"));
+  ASSERT_LT(document.Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
+  cache.SerializeAXUpdatesIfNeeded(document);
+  EXPECT_TRUE(frame_client.updates_.empty());
+  EXPECT_FALSE(ax_ready);
+  EXPECT_TRUE(cache.HasObjectsPendingSerialization());
+
+  // The next frame cleans layout, then commits and serializes at once, without
+  // waiting for the batching delay.
+  ASSERT_TRUE(Compositor().NeedsBeginFrame());
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ax_ready);
+  EXPECT_FALSE(cache.HasObjectsPendingSerialization());
+
+  // The input's name was computed from its label, with clean layout.
+  bool found_input = false;
+  for (const auto& update : frame_client.updates_) {
+    for (const auto& node : update.nodes) {
+      if (node.id == input_id) {
+        found_input = true;
+        EXPECT_EQ("Name",
+                  node.GetStringAttribute(ax::mojom::StringAttribute::kName));
+        EXPECT_EQ(ax::mojom::NameFrom::kRelatedElement, node.GetNameFrom());
+      }
+    }
+  }
+  EXPECT_TRUE(found_input);
 }
 
 // A node-less AXObject, like AXValidationMessage, with hooks for controlling
