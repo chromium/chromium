@@ -3893,6 +3893,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_MENU_PROMO_CARD_DESCRIPTION" desc="Subtitle of the promo card in the account menu when signed out.">
         Sign in to get your bookmarks, passwords, and more on all your devices
       </message>
+      <message name="IDS_ACCOUNT_MENU_MANAGED_HEADER" desc="Header at the top of the account menu identity card indicating that Chrome is enterprise managed.">
+        Chrome is managed
+      </message>
 
       <!-- Strings for Seamless Sign-in -->
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_NTP_WITH_ACCOUNT" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Continue as John' to sign in to their Google Account. The tone should be informative and lightweight.">

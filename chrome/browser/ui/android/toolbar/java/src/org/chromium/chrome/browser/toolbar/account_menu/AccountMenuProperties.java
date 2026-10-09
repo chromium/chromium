@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -138,13 +139,38 @@ public class AccountMenuProperties {
         public static final WritableObjectPropertyKey<DisplayableProfileData> PROFILE_DATA =
                 new WritableObjectPropertyKey<>();
 
-        public static final PropertyKey[] ALL_KEYS = {PROFILE_DATA};
+        /** Whether the managed header should be displayed on the card. */
+        public static final WritableBooleanPropertyKey SHOULD_DISPLAY_MANAGED_HEADER =
+                new WritableBooleanPropertyKey();
+
+        /** Click listener for the managed header button. */
+        public static final WritableObjectPropertyKey<OnClickListener>
+                MANAGED_HEADER_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+        public static final PropertyKey[] ALL_KEYS = {
+            PROFILE_DATA, SHOULD_DISPLAY_MANAGED_HEADER, MANAGED_HEADER_CLICK_LISTENER
+        };
 
         private IdentityCardProperties() {}
 
         /** Factory helper to create an IdentityCard PropertyModel. */
         public static PropertyModel createModel(DisplayableProfileData profileData) {
             return new PropertyModel.Builder(ALL_KEYS).with(PROFILE_DATA, profileData).build();
+        }
+
+        /**
+         * Factory helper to create an IdentityCard PropertyModel with managed header display state
+         * and click listener.
+         */
+        public static PropertyModel createModel(
+                DisplayableProfileData profileData,
+                boolean shouldDisplayManagedHeader,
+                @Nullable OnClickListener onManagedHeaderClickListener) {
+            return new PropertyModel.Builder(ALL_KEYS)
+                    .with(PROFILE_DATA, profileData)
+                    .with(SHOULD_DISPLAY_MANAGED_HEADER, shouldDisplayManagedHeader)
+                    .with(MANAGED_HEADER_CLICK_LISTENER, onManagedHeaderClickListener)
+                    .build();
         }
     }
 }

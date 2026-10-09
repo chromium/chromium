@@ -222,6 +222,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="New Incognito window clicked"/>
   <int value="8" label="Manage your Google Account clicked"/>
   <int value="9" label="Account settings clicked"/>
+  <int value="10" label="Managed account header clicked"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/account_menu/AccountMenuMediator.java:AccountMenuEvent) -->

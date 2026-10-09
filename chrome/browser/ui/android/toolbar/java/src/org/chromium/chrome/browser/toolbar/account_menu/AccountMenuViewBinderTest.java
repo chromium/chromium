@@ -187,6 +187,8 @@ public class AccountMenuViewBinderTest {
         assertEquals("John Doe", nameView.getText().toString());
         assertEquals("test@gmail.com", emailView.getText().toString());
         assertEquals(View.VISIBLE, emailView.getVisibility());
+        assertEquals(
+                View.GONE, cardView.findViewById(R.id.account_menu_managed_header).getVisibility());
     }
 
     @Test
@@ -233,8 +235,43 @@ public class AccountMenuViewBinderTest {
         assertEquals(View.GONE, emailView.getVisibility());
     }
 
+    @Test
+    public void testBindIdentityCard_managed() {
+        View cardView =
+                bindIdentityCard(
+                        "Test User",
+                        "test@gmail.com",
+                        /* hasDisplayableEmailAddress= */ true,
+                        /* shouldDisplayManagedHeader= */ true,
+                        mClickListener);
+        View managedHeader = cardView.findViewById(R.id.account_menu_managed_header);
+        assertEquals(View.VISIBLE, managedHeader.getVisibility());
+        assertTrue(managedHeader.getBackground() instanceof RippleDrawable);
+        TextView managedTextView = cardView.findViewById(R.id.account_menu_managed_text);
+        assertEquals(
+                mActivity.getString(R.string.account_menu_managed_header),
+                managedTextView.getText().toString());
+
+        managedHeader.performClick();
+        verify(mClickListener).onClick(managedHeader);
+    }
+
     private View bindIdentityCard(
             @Nullable String fullName, String email, boolean hasDisplayableEmailAddress) {
+        return bindIdentityCard(
+                fullName,
+                email,
+                hasDisplayableEmailAddress,
+                /* shouldDisplayManagedHeader= */ false,
+                /* onManagedHeaderClickListener= */ null);
+    }
+
+    private View bindIdentityCard(
+            @Nullable String fullName,
+            String email,
+            boolean hasDisplayableEmailAddress,
+            boolean shouldDisplayManagedHeader,
+            @Nullable OnClickListener onManagedHeaderClickListener) {
         DisplayableProfileData profileData =
                 new DisplayableProfileData(
                         new CoreAccountId(new GaiaId("account_id")),
@@ -246,7 +283,9 @@ public class AccountMenuViewBinderTest {
                         /* hasAiTierRing= */ false);
         View cardView =
                 LayoutInflater.from(mActivity).inflate(R.layout.account_menu_identity_card, null);
-        PropertyModel model = IdentityCardProperties.createModel(profileData);
+        PropertyModel model =
+                IdentityCardProperties.createModel(
+                        profileData, shouldDisplayManagedHeader, onManagedHeaderClickListener);
         PropertyModelChangeProcessor.create(
                 model, cardView, AccountMenuViewBinder::bindIdentityCard);
         return cardView;

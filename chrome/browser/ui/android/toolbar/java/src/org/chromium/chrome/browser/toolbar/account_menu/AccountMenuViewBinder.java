@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
@@ -129,6 +130,27 @@ public class AccountMenuViewBinder {
                 nameView.setText(profileData.getFullNameOrFallbackName(view.getContext()));
                 emailView.setVisibility(View.GONE);
             }
+        } else if (propertyKey == IdentityCardProperties.SHOULD_DISPLAY_MANAGED_HEADER) {
+            boolean shouldDisplayManagedHeader =
+                    model.get(IdentityCardProperties.SHOULD_DISPLAY_MANAGED_HEADER);
+            View managedHeader = view.findViewById(R.id.account_menu_managed_header);
+            managedHeader.setVisibility(shouldDisplayManagedHeader ? View.VISIBLE : View.GONE);
+            if (shouldDisplayManagedHeader) {
+                Context context = view.getContext();
+                ContainerStyle style =
+                        new ContainmentItemController(context)
+                                .createStandardBuilder(
+                                        /* isTop= */ true,
+                                        /* isBottom= */ true,
+                                        /* isSingleLine= */ true)
+                                .setBackgroundColor(SemanticColorUtils.getColorSurfaceDim(context))
+                                .build();
+                ContainmentViewStyler.applyBackgroundStyle(managedHeader, style);
+            }
+        } else if (propertyKey == IdentityCardProperties.MANAGED_HEADER_CLICK_LISTENER) {
+            view.findViewById(R.id.account_menu_managed_header)
+                    .setOnClickListener(
+                            model.get(IdentityCardProperties.MANAGED_HEADER_CLICK_LISTENER));
         } else {
             assert false : "Unhandled property key: " + propertyKey;
         }

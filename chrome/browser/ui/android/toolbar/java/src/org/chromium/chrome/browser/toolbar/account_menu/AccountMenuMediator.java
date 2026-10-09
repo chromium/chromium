@@ -10,12 +10,15 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -46,6 +50,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -54,6 +59,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -82,7 +88,8 @@ public class AccountMenuMediator
         Event.NEW_INCOGNITO_TAB_CLICKED,
         Event.NEW_INCOGNITO_WINDOW_CLICKED,
         Event.MANAGE_GOOGLE_ACCOUNT_CLICKED,
-        Event.ACCOUNT_SETTINGS_CLICKED
+        Event.ACCOUNT_SETTINGS_CLICKED,
+        Event.MANAGED_HEADER_CLICKED
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface Event {
@@ -119,7 +126,10 @@ public class AccountMenuMediator
         /** The user selected the account settings item, shown to signed-in users. */
         int ACCOUNT_SETTINGS_CLICKED = 9;
 
-        int COUNT = 10;
+        /** The user selected the managed header button, shown to signed-in managed users. */
+        int MANAGED_HEADER_CLICKED = 10;
+
+        int COUNT = 11;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountMenuEvent)
@@ -131,6 +141,7 @@ public class AccountMenuMediator
     private final @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final Runnable mDismissCallback;
+    private @Nullable CallbackController mCallbackController = new CallbackController();
     private @Nullable ProfileDataCache mProfileDataCache;
     private final SigninManager mSigninManager;
     private final IdentityManager mIdentityManager;
@@ -220,6 +231,10 @@ public class AccountMenuMediator
     /** Cleans up observers and resources. */
     public void destroy() {
         mSigninManager.removeSignInStateObserver(this);
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
         if (mProfileDataCache != null) {
             mProfileDataCache.removeObserver(this);
             mProfileDataCache = null;
@@ -277,9 +292,54 @@ public class AccountMenuMediator
             mProfileDataCache.addObserver(this);
         }
         DisplayableProfileData profileData = mProfileDataCache.getById(accountInfo.getId());
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)) {
+            mModelList.add(
+                    new ListItem(
+                            ItemType.IDENTITY_CARD,
+                            IdentityCardProperties.createModel(profileData)));
+            return;
+        }
+        boolean isProfileManaged = ManagedBrowserUtils.isProfileManaged(mProfile);
         mModelList.add(
                 new ListItem(
-                        ItemType.IDENTITY_CARD, IdentityCardProperties.createModel(profileData)));
+                        ItemType.IDENTITY_CARD,
+                        IdentityCardProperties.createModel(
+                                profileData,
+                                isProfileManaged,
+                                isProfileManaged ? createManagedHeaderClickListener() : null)));
+        if (!isProfileManaged && mCallbackController != null) {
+            CoreAccountId accountId = accountInfo.getId();
+            mSigninManager.isAccountManaged(
+                    accountInfo,
+                    mCallbackController.makeCancelable(
+                            isManaged -> updateAccountManagedHeader(accountId, isManaged)));
+        }
+    }
+
+    private void updateAccountManagedHeader(CoreAccountId accountId, boolean isAccountManaged) {
+        AccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
+        if (!isAccountManaged
+                || primaryAccount == null
+                || !primaryAccount.getId().equals(accountId)) {
+            return;
+        }
+        for (ListItem item : mModelList) {
+            if (item.type == ItemType.IDENTITY_CARD) {
+                item.model.set(IdentityCardProperties.SHOULD_DISPLAY_MANAGED_HEADER, true);
+                item.model.set(
+                        IdentityCardProperties.MANAGED_HEADER_CLICK_LISTENER,
+                        createManagedHeaderClickListener());
+                break;
+            }
+        }
+    }
+
+    private OnClickListener createManagedHeaderClickListener() {
+        return v -> {
+            recordEvent(Event.MANAGED_HEADER_CLICKED);
+            mDismissCallback.run();
+            openManagementPage();
+        };
     }
 
     private void addPromoCard() {
@@ -343,6 +403,15 @@ public class AccountMenuMediator
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(mContext, SettingsFragment.MAIN);
+    }
+
+    private void openManagementPage() {
+        TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
+        if (selector != null) {
+            TabCreator tabCreator =
+                    selector.getTabCreatorManager().getTabCreator(/* incognito= */ false);
+            tabCreator.launchUrl(UrlConstants.MANAGEMENT_URL, TabLaunchType.FROM_CHROME_UI);
+        }
     }
 
     /** Opens a new Incognito window if supported, or a new Incognito tab otherwise. */

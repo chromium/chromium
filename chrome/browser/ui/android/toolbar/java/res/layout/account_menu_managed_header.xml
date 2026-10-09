@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!-- TODO(crbug.com/553434658): Add render tests for the managed account
+     header. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/account_menu_managed_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:focusable="true"
+    android:clickable="true"
+    android:visibility="gone"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/account_menu_managed_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_domain"
+        app:tint="@macro/default_icon_color_secondary"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/account_menu_managed_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/account_menu_managed_header"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+</LinearLayout>
