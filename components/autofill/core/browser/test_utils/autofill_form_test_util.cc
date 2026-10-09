@@ -574,13 +574,18 @@ void FormStructureTest::CheckFormStructureTestData(
       EXPECT_TRUE(IsAutofillable(*form_structure));
     }
     if (test_case.form_flags.should_be_parsed) {
-      EXPECT_TRUE(ShouldBeParsed(form, /*log_manager=*/nullptr));
+      EXPECT_FALSE(
+          GetFormParsingPermissions(form, /*ignore_small_forms=*/true).empty());
     }
     if (test_case.form_flags.should_be_queried) {
-      EXPECT_TRUE(ShouldBeQueried(*form_structure));
+      EXPECT_TRUE(GetFormParsingPermissions(*form_structure,
+                                            /*ignore_small_forms=*/true)
+                      .contains(FormParsingPermission::kServerQuery));
     }
     if (test_case.form_flags.should_be_uploaded) {
-      EXPECT_TRUE(ShouldBeUploaded(*form_structure));
+      EXPECT_TRUE(GetFormParsingPermissions(*form_structure,
+                                            /*ignore_small_forms=*/true)
+                      .contains(FormParsingPermission::kServerUpload));
     }
     if (test_case.form_flags.has_author_specified_types) {
       EXPECT_TRUE(

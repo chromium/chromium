@@ -120,14 +120,16 @@ bool AtLeastNumFieldsSatisfy(const T& form, size_t num, Predicate p) {
 
 template <typename T>
   requires IsForm<T>
-bool ShouldBeParsed(const T& form,
-                    ShouldBeParsedParams params,
-                    LogManager* log_manager) {
+DenseSet<FormParsingPermission> GetFormParsingPermissions(
+    const T& form,
+    bool ignore_small_forms,
+    FormParsingPermissionsParams params,
+    LogManager* log_manager) {
   // Exclude URLs not on the web via HTTP(S).
   if (!HasAllowedScheme(url(form))) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingNotAllowedScheme << form;
-    return false;
+    return {};
   }
 
   if (fields(form).size() < params.min_required_fields &&
@@ -138,7 +140,7 @@ bool ShouldBeParsed(const T& form,
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingNotEnoughFields
                         << fields(form).size() << form;
-    return false;
+    return {};
   }
 
   // Rule out search forms.
@@ -147,7 +149,7 @@ bool ShouldBeParsed(const T& form,
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingUrlMatchesSearchRegex
                         << form;
-    return false;
+    return {};
   }
 
   bool has_text_field =
@@ -155,41 +157,30 @@ bool ShouldBeParsed(const T& form,
   if (!has_text_field) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingFormHasNoTextfield << form;
+    return {};
   }
-  return has_text_field;
-}
 
-template <typename T>
-  requires IsForm<T>
-bool ShouldRunHeuristics(const T& form, bool ignore_small_forms) {
-  if (ignore_small_forms &&
-      fields(form).size() < kMinRequiredFieldsForHeuristics) {
-    return false;
+  DenseSet<FormParsingPermission> permissions;
+  if (!ignore_small_forms ||
+      fields(form).size() >= kMinRequiredFieldsForHeuristics) {
+    permissions.insert(FormParsingPermission::kHeuristics);
   }
-  return HasAllowedScheme(url(form));
-}
-
-template <typename T>
-  requires IsForm<T>
-bool ShouldRunHeuristicsForSingleFields(const T& form) {
-  return fields(form).size() >= 1 && HasAllowedScheme(url(form));
-}
-
-template <typename T>
-  requires IsForm<T>
-bool ShouldBeQueried(const T& form) {
-  return (fields(form).size() >= kMinRequiredFieldsForQuery ||
-          std::ranges::any_of(fields(form), is_password_field)) &&
-         ShouldBeParsed(form, {}, nullptr);
-}
-
-bool ShouldBeUploaded(const FormStructure& form) {
-  return fields(form).size() >= kMinRequiredFieldsForUpload &&
-         ShouldBeParsed(form, {}, nullptr);
+  if (fields(form).size() >= 1) {
+    permissions.insert(FormParsingPermission::kSingleFieldHeuristics);
+  }
+  if (fields(form).size() >= kMinRequiredFieldsForQuery ||
+      std::ranges::any_of(fields(form), is_password_field)) {
+    permissions.insert(FormParsingPermission::kServerQuery);
+  }
+  if (fields(form).size() >= kMinRequiredFieldsForUpload) {
+    permissions.insert(FormParsingPermission::kServerUpload);
+  }
+  return permissions;
 }
 
 bool ShouldUploadUkm(const FormStructure& form, bool require_classified_field) {
-  if (!ShouldBeParsed(form, {}, nullptr)) {
+  if (GetFormParsingPermissions(form, /*ignore_small_forms=*/true, {}, nullptr)
+          .empty()) {
     return false;
   }
 
@@ -243,36 +234,19 @@ bool ShouldUploadUkm(const FormStructure& form, bool require_classified_field) {
 
 }  // namespace internal
 
-bool ShouldBeParsed(const FormData& form, LogManager* log_manager) {
-  return internal::ShouldBeParsed(form, {}, log_manager);
+DenseSet<FormParsingPermission> GetFormParsingPermissions(
+    const FormData& form,
+    bool ignore_small_forms,
+    LogManager* log_manager) {
+  return internal::GetFormParsingPermissions(form, ignore_small_forms, {},
+                                             log_manager);
 }
 
-bool ShouldRunHeuristics(const FormData& form, bool ignore_small_forms) {
-  return internal::ShouldRunHeuristics(form, ignore_small_forms);
-}
-
-bool ShouldRunHeuristics(const FormStructure& form, bool ignore_small_forms) {
-  return internal::ShouldRunHeuristics(form, ignore_small_forms);
-}
-
-bool ShouldRunHeuristicsForSingleFields(const FormData& form) {
-  return internal::ShouldRunHeuristicsForSingleFields(form);
-}
-
-bool ShouldRunHeuristicsForSingleFields(const FormStructure& form) {
-  return internal::ShouldRunHeuristicsForSingleFields(form);
-}
-
-bool ShouldBeQueried(const FormData& form) {
-  return internal::ShouldBeQueried(form);
-}
-
-bool ShouldBeQueried(const FormStructure& form) {
-  return internal::ShouldBeQueried(form);
-}
-
-bool ShouldBeUploaded(const FormStructure& form) {
-  return internal::ShouldBeUploaded(form);
+DenseSet<FormParsingPermission> GetFormParsingPermissions(
+    const FormStructure& form,
+    bool ignore_small_forms) {
+  return internal::GetFormParsingPermissions(form, ignore_small_forms, {},
+                                             nullptr);
 }
 
 bool ShouldUploadUkm(const FormStructure& form, bool require_classified_field) {
@@ -284,20 +258,25 @@ bool IsAutofillable(const FormStructure& form) {
       std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
                 kMinRequiredFieldsForUpload});
   return internal::AtLeastNumFieldsSatisfy(form, kMinRequiredFields,
-                                           &AutofillField::IsFieldFillable) &&
-         internal::ShouldBeParsed(form, {}, nullptr);
+                                           &AutofillField::IsFieldFillable);
 }
 
-bool ShouldBeParsedForTest(const FormData& form,  // IN-TEST
-                           ShouldBeParsedParams params,
-                           LogManager* log_manager) {
-  return internal::ShouldBeParsed(form, params, log_manager);
+DenseSet<FormParsingPermission> GetFormParsingPermissionsForTest(  // IN-TEST
+    const FormData& form,
+    bool ignore_small_forms,
+    FormParsingPermissionsParams params,
+    LogManager* log_manager) {
+  return internal::GetFormParsingPermissions(form, ignore_small_forms, params,
+                                             log_manager);
 }
 
-bool ShouldBeParsedForTest(const FormStructure& form,  // IN-TEST
-                           ShouldBeParsedParams params,
-                           LogManager* log_manager) {
-  return internal::ShouldBeParsed(form, params, log_manager);
+DenseSet<FormParsingPermission> GetFormParsingPermissionsForTest(  // IN-TEST
+    const FormStructure& form,
+    bool ignore_small_forms,
+    FormParsingPermissionsParams params,
+    LogManager* log_manager) {
+  return internal::GetFormParsingPermissions(form, ignore_small_forms, params,
+                                             log_manager);
 }
 
 }  // namespace autofill

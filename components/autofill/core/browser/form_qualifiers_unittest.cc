@@ -19,31 +19,39 @@ namespace {
 
 class FormStructureShouldTest : public testing::Test {
  public:
-  static bool ShouldBeParsed(const FormStructure& form,
-                             ShouldBeParsedParams params = {}) {
-    const bool r = ShouldBeParsedForTest(form, params, nullptr);
-    CHECK_EQ(r, ShouldBeParsedForTest(form.ToFormData(), params, nullptr))
-        << "ShouldBeParsed(FormStructure) and ShouldBeParsed(FormData) must be "
-           "equivalent";
+  static DenseSet<FormParsingPermission> GetFormParsingPermissions(
+      const FormStructure& form,
+      bool ignore_small_forms = true,
+      FormParsingPermissionsParams params = {}) {
+    const DenseSet<FormParsingPermission> r = GetFormParsingPermissionsForTest(
+        form, ignore_small_forms, params, nullptr);
+    CHECK(r == GetFormParsingPermissionsForTest(
+                   form.ToFormData(), ignore_small_forms, params, nullptr))
+        << "GetFormParsingPermissions(FormStructure) and "
+           "GetFormParsingPermissions(FormData) must be equivalent";
     return r;
+  }
+
+  static bool ShouldBeParsed(const FormStructure& form,
+                             FormParsingPermissionsParams params = {}) {
+    return !GetFormParsingPermissions(form, /*ignore_small_forms=*/true, params)
+                .empty();
   }
 
   static bool ShouldRunHeuristics(const FormStructure& form,
                                   bool ignore_small_forms) {
-    const bool r = autofill::ShouldRunHeuristics(form, ignore_small_forms);
-    CHECK_EQ(
-        r, autofill::ShouldRunHeuristics(form.ToFormData(), ignore_small_forms))
-        << "ShouldRunHeuristics(FormStructure) and "
-           "ShouldRunHeuristics(FormData) must be equivalent";
-    return r;
+    return GetFormParsingPermissions(form, ignore_small_forms)
+        .contains(FormParsingPermission::kHeuristics);
   }
 
   static bool ShouldBeQueried(const FormStructure& form) {
-    const bool r = autofill::ShouldBeQueried(form);
-    CHECK_EQ(r, autofill::ShouldBeQueried(form.ToFormData()))
-        << "ShouldBeQueried(FormStructure) and "
-           "ShouldBeQueried(FormData) must be equivalent";
-    return r;
+    return GetFormParsingPermissions(form).contains(
+        FormParsingPermission::kServerQuery);
+  }
+
+  static bool ShouldBeUploaded(const FormStructure& form) {
+    return GetFormParsingPermissions(form).contains(
+        FormParsingPermission::kServerUpload);
   }
 
   static bool FormIsAutofillable(const FormData& form) {

@@ -2749,7 +2749,9 @@ void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
 
 bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
   return client().IsAutofillEnabled() && !client().IsOffTheRecord() &&
-         ShouldBeUploaded(form);
+         GetFormParsingPermissions(
+             form, /*ignore_small_forms=*/!client().IsTabInActorMode())
+             .contains(FormParsingPermission::kServerUpload);
 }
 
 void BrowserAutofillManager::

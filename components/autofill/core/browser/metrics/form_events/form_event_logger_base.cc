@@ -67,8 +67,10 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form,
   // applicable  must not run heuristics normally (i.e., their field count is
   // below `kMinRequiredFieldsForHeuristics`), but must be eligible for single
   // field form heuristics.
-  if (ShouldRunHeuristics(form, ignore_small_forms) ||
-      !ShouldRunHeuristicsForSingleFields(form)) {
+  const DenseSet<FormParsingPermission> permissions =
+      GetFormParsingPermissions(form, ignore_small_forms);
+  if (permissions.contains(FormParsingPermission::kHeuristics) ||
+      !permissions.contains(FormParsingPermission::kSingleFieldHeuristics)) {
     return false;
   }
   // Having met the prerequisites, now determine if there's a field whose

@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -27,36 +28,28 @@ class FormData;
 class FormStructure;
 class LogManager;
 
-// Returns true if this form matches the structural requirements for Autofill.
-[[nodiscard]] bool ShouldBeParsed(const FormData& form,
-                                  LogManager* log_manager);
+// Permissions indicating which parsing operations Autofill may perform.
+enum class FormParsingPermission {
+  // General heuristic predictions should be computed for fields of this form.
+  kHeuristics,
+  // Single-field heuristic predictions should be computed for fields of this
+  // form.
+  kSingleFieldHeuristics,
+  // Server predictions should be queried for fields of this form.
+  kServerQuery,
+  // Autofill should upload votes for fields of this form.
+  kServerUpload,
+  kMaxValue = kServerUpload,
+};
 
-// Returns true if heuristic autofill type detection should be attempted for
-// this form.
-[[nodiscard]] bool ShouldRunHeuristics(const FormData& form,
-                                       bool ignore_small_forms);
-[[nodiscard]] bool ShouldRunHeuristics(const FormStructure& form,
-                                       bool ignore_small_forms);
-
-// Returns true if autofill's heuristic field type detection should be attempted
-// for this form given that `kMinRequiredFieldsForHeuristics` is not met.
-[[nodiscard]] bool ShouldRunHeuristicsForSingleFields(const FormData& form);
-[[nodiscard]] bool ShouldRunHeuristicsForSingleFields(
-    const FormStructure& form);
-
-// Returns true if we should query the crowd-sourcing server to determine this
-// form's field types. If the form includes author-specified types, this will
-// return false unless there are password fields in the form. If there are no
-// password fields the assumption is that the author has expressed their intent
-// and crowdsourced data should not be used to override this. Password fields
-// are different because there is no way to specify password generation
-// directly.
-[[nodiscard]] bool ShouldBeQueried(const FormData& form);
-[[nodiscard]] bool ShouldBeQueried(const FormStructure& form);
-
-// Returns true if we should upload Autofill votes for this form to the
-// crowd-sourcing server. It is not applied for Password Manager votes.
-[[nodiscard]] bool ShouldBeUploaded(const FormStructure& form);
+// Returns the set of parsing permissions for `form`.
+[[nodiscard]] DenseSet<FormParsingPermission> GetFormParsingPermissions(
+    const FormData& form,
+    bool ignore_small_forms,
+    LogManager* log_manager = nullptr);
+[[nodiscard]] DenseSet<FormParsingPermission> GetFormParsingPermissions(
+    const FormStructure& form,
+    bool ignore_small_forms);
 
 // Returns whether the form is considered parseable and meets a couple of other
 // requirements which makes uploading UKM data worthwhile. For example, the form
@@ -71,7 +64,7 @@ class LogManager;
 
 // Production code only uses the default parameters.
 // Exposed publicly for testing. Production code only uses the default values.
-struct ShouldBeParsedParams {
+struct FormParsingPermissionsParams {
   size_t min_required_fields =
       std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
                 kMinRequiredFieldsForUpload});
@@ -79,13 +72,20 @@ struct ShouldBeParsedParams {
       kRequiredFieldsForFormsWithOnlyPasswordFields;
 };
 
-// Variants of ShouldBeParsed() that additionally take ShouldBeParsedParams.
-[[nodiscard]] bool ShouldBeParsedForTest(const FormData& form,  // IN-TEST
-                                         ShouldBeParsedParams params,
-                                         LogManager* log_manager);
-[[nodiscard]] bool ShouldBeParsedForTest(const FormStructure& form,  // IN-TEST
-                                         ShouldBeParsedParams params,
-                                         LogManager* log_manager);
+// Variants of GetFormParsingPermissions() that additionally take
+// FormParsingPermissionsParams.
+[[nodiscard]] DenseSet<FormParsingPermission>
+GetFormParsingPermissionsForTest(  // IN-TEST
+    const FormData& form,
+    bool ignore_small_forms,
+    FormParsingPermissionsParams params,
+    LogManager* log_manager);
+[[nodiscard]] DenseSet<FormParsingPermission>
+GetFormParsingPermissionsForTest(  // IN-TEST
+    const FormStructure& form,
+    bool ignore_small_forms,
+    FormParsingPermissionsParams params,
+    LogManager* log_manager);
 
 }  // namespace autofill
 

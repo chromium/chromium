@@ -99,12 +99,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::ignore = IsAutofillable(form_structure);
   std::ignore = form_structure.IsCompleteCreditCardForm(
       FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm);
-  std::ignore = ShouldBeParsed(form_data, /*log_manager=*/nullptr);
-  std::ignore =
-      ShouldRunHeuristics(form_structure, /*ignore_small_forms=*/true);
-  std::ignore = ShouldRunHeuristicsForSingleFields(form_structure);
-  std::ignore = ShouldBeQueried(form_structure);
-  std::ignore = ShouldBeUploaded(form_structure);
+  std::ignore = GetFormParsingPermissions(form_data,
+                                          /*ignore_small_forms=*/true);
+  std::ignore = GetFormParsingPermissions(form_structure,
+                                          /*ignore_small_forms=*/true);
   return 0;
 }
 
