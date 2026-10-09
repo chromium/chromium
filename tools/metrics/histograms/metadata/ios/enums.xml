@@ -1682,6 +1682,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Allowed by saved setting (no prompt)"/>
   <int value="2" label="Denied by saved setting (no prompt)"/>
   <int value="3" label="Blocked by parental controls (no prompt)"/>
+  <int value="4" label="Denied in background (no prompt)"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/permissions/model/permissions_metrics.h:IOSPermissionRequestResolution) -->

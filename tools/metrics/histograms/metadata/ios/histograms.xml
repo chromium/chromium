@@ -6088,8 +6088,7 @@ chromium-metrics-reviews@google.com.
   <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records how a site permission request for {PermissionType} was resolved in
-    Chrome on iOS (whether a prompt was shown, or the request was immediately
-    allowed/denied from a previously saved site setting or parental controls).
+    Chrome on iOS.
   </summary>
   <token key="PermissionType">
     <variant name="Camera" summary="camera"/>

@@ -420,6 +420,13 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
   }
 
   if (IsDomainLevelSitePermissionsEnabled()) {
+    if (!source->IsVisible()) {
+      RecordPermissionRequestResolution(
+          permissions, IOSPermissionRequestResolution::kDeniedInBackground);
+      PostPermissionDecision(handler, web::PermissionDecisionDeny);
+      return;
+    }
+
     scoped_refptr<HostContentSettingsMap> settings_map =
         ios::HostContentSettingsMapFactory::GetForProfile(profile);
     GURL url = source->GetLastCommittedURL();

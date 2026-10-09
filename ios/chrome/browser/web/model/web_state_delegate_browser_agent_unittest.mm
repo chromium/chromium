@@ -146,6 +146,20 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     return web_state_list->GetActiveWebState();
   }
 
+  web::FakeWebState* InsertFakeWebState(const GURL& url) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(profile_.get());
+    web_state->SetCurrentURL(url);
+    web_state->WasShown();
+    OverlayRequestQueue::CreateForWebState(web_state.get());
+    PermissionsTabHelper::CreateForWebState(web_state.get());
+    web::FakeWebState* raw_web_state = web_state.get();
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
+    return raw_web_state;
+  }
+
   AppLauncherTabHelper* AttachAppLauncherTabHelper(web::WebState* web_state) {
     AppLauncherTabHelper::CreateForWebState(
         web_state, [[AppLauncherAbuseDetector alloc] init],
@@ -461,9 +475,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
   base::HistogramTester histogram_tester;
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_.get());
-  web_state->SetCurrentURL(GURL(kURL1));
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
 
   scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -473,7 +485,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
 
   base::test::TestFuture<web::PermissionDecision> decision_future;
   delegate()->HandlePermissionsDecisionRequest(
-      web_state.get(), @[ @(web::PermissionCamera) ],
+      web_state, @[ @(web::PermissionCamera) ],
       base::CallbackToBlock(decision_future.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionGrant, decision_future.Get());
   histogram_tester.ExpectUniqueSample(
@@ -490,9 +502,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
   base::HistogramTester histogram_tester;
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_.get());
-  web_state->SetCurrentURL(GURL(kURL1));
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
 
   scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -502,7 +512,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
 
   base::test::TestFuture<web::PermissionDecision> decision_future;
   delegate()->HandlePermissionsDecisionRequest(
-      web_state.get(), @[ @(web::PermissionMicrophone) ],
+      web_state, @[ @(web::PermissionMicrophone) ],
       base::CallbackToBlock(decision_future.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
   histogram_tester.ExpectUniqueSample(
@@ -519,11 +529,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
   base::HistogramTester histogram_tester;
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_.get());
-  web_state->SetCurrentURL(GURL(kURL1));
-  OverlayRequestQueue::CreateForWebState(web_state.get());
-  PermissionsTabHelper::CreateForWebState(web_state.get());
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
 
   scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -536,8 +542,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
 
   base::test::TestFuture<web::PermissionDecision> decision_future;
   delegate()->HandlePermissionsDecisionRequest(
-      web_state.get(),
-      @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
+      web_state, @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
       base::CallbackToBlock(decision_future.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
   histogram_tester.ExpectUniqueSample(
@@ -545,7 +550,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       IOSPermissionRequestResolution::kDeniedBySavedSetting, 1);
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state.get(), OverlayModality::kWebContentArea);
+      web_state, OverlayModality::kWebContentArea);
   EXPECT_EQ(0U, queue->size());
 }
 
@@ -557,11 +562,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
   base::HistogramTester histogram_tester;
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_.get());
-  web_state->SetCurrentURL(GURL(kURL1));
-  OverlayRequestQueue::CreateForWebState(web_state.get());
-  PermissionsTabHelper::CreateForWebState(web_state.get());
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
 
   scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -570,13 +571,12 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       CONTENT_SETTING_ALLOW);
 
   delegate()->HandlePermissionsDecisionRequest(
-      web_state.get(),
-      @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
+      web_state, @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
       ^(web::PermissionDecision decision){
       });
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state.get(), OverlayModality::kWebContentArea);
+      web_state, OverlayModality::kWebContentArea);
   EXPECT_EQ(1U, queue->size());
   histogram_tester.ExpectUniqueSample(
       kPermissionRequestResolutionCameraAndMicrophoneHistogram,
@@ -591,11 +591,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
   base::HistogramTester histogram_tester;
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_.get());
-  web_state->SetCurrentURL(GURL(kURL1));
-  OverlayRequestQueue::CreateForWebState(web_state.get());
-  PermissionsTabHelper::CreateForWebState(web_state.get());
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
 
   scoped_refptr<HostContentSettingsMap> settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -604,16 +600,74 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       CONTENT_SETTING_ALLOW);
 
   delegate()->HandlePermissionsDecisionRequest(
-      web_state.get(), @[ @(web::PermissionCamera) ],
+      web_state, @[ @(web::PermissionCamera) ],
       ^(web::PermissionDecision decision){
       });
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state.get(), OverlayModality::kWebContentArea);
+      web_state, OverlayModality::kWebContentArea);
   EXPECT_EQ(1U, queue->size());
   histogram_tester.ExpectUniqueSample(
       kPermissionRequestResolutionCameraHistogram,
       IOSPermissionRequestResolution::kPromptShown, 1);
+}
+
+// Tests that HandlePermissionsDecisionRequest immediately denies permission
+// when the WebState is not visible, even if the domain has an explicit ALLOW
+// rule.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequestDeniedWhenNotVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  web_state->WasHidden();
+
+  scoped_refptr<HostContentSettingsMap> settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  settings_map->SetContentSettingDefaultScope(
+      GURL(kURL1), GURL(kURL1), ContentSettingsType::MEDIASTREAM_CAMERA,
+      CONTENT_SETTING_ALLOW);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraHistogram,
+      IOSPermissionRequestResolution::kDeniedInBackground, 1);
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kWebContentArea);
+  EXPECT_EQ(0U, queue->size());
+}
+
+// Tests that HandlePermissionsDecisionRequest immediately denies permission
+// for multiple permissions in a background tab and records the combined
+// histogram.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequestDeniedInBackgroundMultiplePermissions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  web_state->WasHidden();
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraAndMicrophoneHistogram,
+      IOSPermissionRequestResolution::kDeniedInBackground, 1);
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kWebContentArea);
+  EXPECT_EQ(0U, queue->size());
 }
 
 // Tests that RequestGeolocationPermission returns

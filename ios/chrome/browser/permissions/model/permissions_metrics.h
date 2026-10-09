@@ -39,7 +39,8 @@ enum class IOSPermissionRequestResolution {
   kAllowedBySavedSetting = 1,
   kDeniedBySavedSetting = 2,
   kBlockedBySupervisedUser = 3,
-  kMaxValue = kBlockedBySupervisedUser,
+  kDeniedInBackground = 4,
+  kMaxValue = kDeniedInBackground,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSPermissionRequestResolution)
 
