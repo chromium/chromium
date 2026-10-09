@@ -64,14 +64,16 @@ class HTMLParserScriptRunner final
  public:
   static HTMLParserScriptRunner* Create(HTMLParserReentryPermit* reentry_permit,
                                         Document* document,
-                                        HTMLParserScriptRunnerHost* host) {
-    return MakeGarbageCollected<HTMLParserScriptRunner>(reentry_permit,
-                                                        document, host);
+                                        HTMLParserScriptRunnerHost* host,
+                                        bool is_parsing_fragment = false) {
+    return MakeGarbageCollected<HTMLParserScriptRunner>(
+        reentry_permit, document, host, is_parsing_fragment);
   }
 
   HTMLParserScriptRunner(HTMLParserReentryPermit*,
                          Document*,
-                         HTMLParserScriptRunnerHost*);
+                         HTMLParserScriptRunnerHost*,
+                         bool is_parsing_fragment = false);
   HTMLParserScriptRunner(const HTMLParserScriptRunner&) = delete;
   HTMLParserScriptRunner& operator=(const HTMLParserScriptRunner&) = delete;
   ~HTMLParserScriptRunner() override;
@@ -140,6 +142,11 @@ class HTMLParserScriptRunner final
   PendingScript* TryTakeReadyScriptWaitingForParsing(
       HeapDeque<Member<PendingScript>>* waiting_scripts);
 
+  // Posts a task that continues executing the deferred scripts
+  // (ExecuteScriptsWaitingForParsing()) and notifies the host once they are
+  // all done, so that execution yields to the event loop in between.
+  void ScheduleDeferredScriptExecution();
+
   Member<HTMLParserReentryPermit> reentry_permit_;
   Member<Document> document_;
   Member<HTMLParserScriptRunnerHost> host_;
@@ -150,6 +157,9 @@ class HTMLParserScriptRunner final
   // Scripts that were deferred by the web developer. This is an ordered list.
   // https://html.spec.whatwg.org/C/#list-of-scripts-that-will-execute-when-the-document-has-finished-parsing
   HeapDeque<Member<PendingScript>> scripts_to_execute_after_parsing_;
+
+  const bool is_parsing_fragment_;
+  bool should_yield_before_executing_deferred_scripts_ = false;
 };
 
 }  // namespace blink

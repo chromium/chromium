@@ -394,7 +394,8 @@ HTMLDocumentParser::HTMLDocumentParser(
   if (parser_content_policy == kAllowScriptingContentAndMarkAsParserInserted) {
     CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
     script_runner_ = HTMLParserScriptRunner::Create(
-        ReentryPermit(), &fragment_target->GetDocument(), this);
+        ReentryPermit(), &fragment_target->GetDocument(), this,
+        /*is_parsing_fragment=*/true);
   }
 
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
