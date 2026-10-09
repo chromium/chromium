@@ -68,7 +68,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -232,7 +231,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
             IsPlatformEligibleForSyncCheckerCheckAllowlist());
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.

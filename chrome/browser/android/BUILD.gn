@@ -260,6 +260,7 @@ source_set("tabs_impl") {
     "//components/sensitive_content:features",
     "//components/site_engagement/content",
     "//components/tabs:public",
+    "//components/ukm/content",
     "//components/webapps/browser",
     "//content/public/browser",
     "//extensions/buildflags",

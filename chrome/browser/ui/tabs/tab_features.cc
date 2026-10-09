@@ -258,6 +258,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
@@ -1312,6 +1313,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         tab.GetContents(),
         HistoryTabHelper::FromWebContents(tab.GetContents()));
   }
+
+  ukm::InitializeSourceUrlRecorderForWebContents(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1926,6 +1929,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     HistoryClustersTabHelper::CreateForWebContents(
         new_contents, HistoryTabHelper::FromWebContents(new_contents));
   }
+
+  ukm::InitializeSourceUrlRecorderForWebContents(new_contents);
 }
 
 customize_chrome::SidePanelController*

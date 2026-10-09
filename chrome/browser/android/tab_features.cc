@@ -152,6 +152,7 @@
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
@@ -696,6 +697,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     HistoryClustersTabHelper::CreateForWebContents(
         web_contents, HistoryTabHelper::FromWebContents(web_contents));
   }
+
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

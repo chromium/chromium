@@ -719,6 +719,7 @@ if (!is_android) {
       "//components/sync_sessions",
       "//components/tab_groups",
       "//components/tabs:impl",
+      "//components/ukm/content",
       "//components/wallet/core/common:features",
       "//components/web_modal",
       "//components/webapps/browser",

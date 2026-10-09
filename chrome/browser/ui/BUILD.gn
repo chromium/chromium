@@ -1454,7 +1454,6 @@ source_set("tab_helpers_impl") {
     "//components/site_engagement/content",
     "//components/tabs:public",
     "//components/tracing:tracing_config",
-    "//components/ukm/content",
     "//components/webapps/browser",
     "//components/zoom",
     "//content/public/browser",
