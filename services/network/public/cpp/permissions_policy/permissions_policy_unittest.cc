@@ -2237,13 +2237,9 @@ TEST_F(PermissionsPolicyTest, TestSandboxedFrameFromHeaderPolicy) {
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
   url::Origin sandboxed_origin = url::Origin();
-  network::ParsedPermissionsPolicy frame_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/true}}};
-  std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
-      policy1.get(), /*header_policy=*/{}, frame_policy, sandboxed_origin);
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentWithFramePolicy(policy1.get(), /*header_policy=*/{},
+                                      /*frame_policy=*/{}, sandboxed_origin);
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(kDefaultSelfFeature,
                                                   sandboxed_origin));
@@ -3416,6 +3412,94 @@ TEST_F(DeprecateUnloadTest, Headerless) {
   EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("about:blank")));
   EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("data:abc")));
   EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("blob:abc")));
+}
+
+// Tests for PermissionsPolicy::Allowlist::Contains.
+// Regression test for crbug.com/565859110: Allowlist with matches_all_origins =
+// true must match opaque origins, per W3C Permissions Policy §Allowlist
+// matching algorithm step 1.
+TEST(PermissionsPolicyAllowlistTest, Contains) {
+  const url::Origin kTestOrigin =
+      url::Origin::Create(GURL("https://example.test/"));
+  const url::Origin kOpaqueOrigin = url::Origin();
+
+  // Empty allowlist.
+  PermissionsPolicy::Allowlist empty_allowlist;
+  EXPECT_FALSE(empty_allowlist.Contains(kTestOrigin));
+  EXPECT_FALSE(empty_allowlist.Contains(kOpaqueOrigin));
+
+  // Matches opaque src.
+  PermissionsPolicy::Allowlist opaque_allowlist;
+  opaque_allowlist.AddOpaqueSrc();
+  EXPECT_FALSE(opaque_allowlist.Contains(kTestOrigin));
+  EXPECT_TRUE(opaque_allowlist.Contains(kOpaqueOrigin));
+
+  // Matches all origins (wildcard '*').
+  // Must match both tuple origin and opaque origin.
+  PermissionsPolicy::Allowlist all_allowlist;
+  all_allowlist.AddAll();
+  EXPECT_TRUE(all_allowlist.Contains(kTestOrigin));
+  EXPECT_TRUE(all_allowlist.Contains(kOpaqueOrigin));
+
+  // Matches all origins with RemoveMatchesAll.
+  all_allowlist.RemoveMatchesAll();
+  EXPECT_FALSE(all_allowlist.Contains(kTestOrigin));
+  EXPECT_FALSE(all_allowlist.Contains(kOpaqueOrigin));
+
+  // Matches self.
+  ParsedPermissionsPolicyDeclaration self_decl;
+  self_decl.self_if_matches = kTestOrigin;
+  PermissionsPolicy::Allowlist self_allowlist =
+      PermissionsPolicy::Allowlist::FromDeclaration(self_decl);
+  EXPECT_TRUE(self_allowlist.Contains(kTestOrigin));
+  EXPECT_FALSE(self_allowlist.Contains(kOpaqueOrigin));
+
+  // Matches allowed origins.
+  ParsedPermissionsPolicyDeclaration match_decl;
+  match_decl.allowed_origins.emplace_back(
+      *network::OriginWithPossibleWildcards::FromOrigin(kTestOrigin));
+  PermissionsPolicy::Allowlist match_allowlist =
+      PermissionsPolicy::Allowlist::FromDeclaration(match_decl);
+  EXPECT_TRUE(match_allowlist.Contains(kTestOrigin));
+  EXPECT_FALSE(match_allowlist.Contains(kOpaqueOrigin));
+}
+
+// Verifies that a PermissionsPolicy created from a parsed policy with
+// matches_all_origins = true enables features for an opaque origin.
+TEST_F(PermissionsPolicyTest, MatchesAllEnablesFeatureForOpaqueOrigin) {
+  const url::Origin kOpaqueOrigin = url::Origin();
+
+  // Header policy enabling kDefaultSelfFeature for all origins ('*').
+  network::ParsedPermissionsPolicy header_policy = {
+      {kDefaultSelfFeature,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/false}};
+
+  std::unique_ptr<PermissionsPolicy> policy =
+      CreateFromParsedPolicy(header_policy, kOpaqueOrigin);
+  EXPECT_TRUE(policy->IsFeatureEnabled(kDefaultSelfFeature));
+}
+
+// Verifies that an iframe container policy with wildcard '*' allows a feature
+// in a child frame with an opaque origin (e.g. sandboxed iframe or data: URL).
+TEST_F(PermissionsPolicyTest, ContainerPolicyMatchesAllForOpaqueChildFrame) {
+  const url::Origin kOpaqueOrigin = url::Origin();
+
+  std::unique_ptr<PermissionsPolicy> parent =
+      CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
+
+  network::ParsedPermissionsPolicy container_policy = {
+      {kDefaultSelfFeature,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/false}};
+
+  std::unique_ptr<PermissionsPolicy> child = CreateFromParentWithFramePolicy(
+      parent.get(), /*header_policy=*/{}, container_policy, kOpaqueOrigin);
+  EXPECT_TRUE(child->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
 }  // namespace network
