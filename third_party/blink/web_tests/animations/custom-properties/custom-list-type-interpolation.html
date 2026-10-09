@@ -144,5 +144,70 @@ assertComposition({
   {at: 1.5, is: '100px'},
 ]);
 
+CSS.registerProperty({
+  name: '--transform-list-or-none',
+  syntax: '<transform-list> | none',
+  initialValue: 'none',
+  inherits: false
+});
+
+CSS.registerProperty({
+  name: '--number-list-or-transform-list',
+  syntax: '<number>+ | <transform-list>',
+  initialValue: '100',
+  inherits: false
+});
+
+CSS.registerProperty({
+  name: '--length-list-or-transform-function-list',
+  syntax: '<length># | <transform-function>#',
+  initialValue: '10px, 20px',
+  inherits: false
+});
+
+assertComposition({
+  property: '--transform-list-or-none',
+  underlying: 'none',
+  addFrom: 'translateX(10px) scale(2)',
+  addTo: 'translateX(100px) scale(4)',
+}, [
+  {at: 0, is: 'translateX(10px) scale(2)'},
+  {at: 0.5, is: 'translateX(55px) scale(3)'},
+  {at: 1, is: 'translateX(100px) scale(4)'},
+]);
+
+assertComposition({
+  property: '--number-list-or-transform-list',
+  underlying: '100',
+  addFrom: 'translateX(10px)',
+  addTo: 'translateX(100px)',
+}, [
+  {at: 0, is: 'translateX(10px)'},
+  {at: 0.5, is: 'translateX(55px)'},
+  {at: 1, is: 'translateX(100px)'},
+]);
+
+assertComposition({
+  property: '--number-list-or-transform-list',
+  underlying: 'translateX(100px)',
+  addFrom: '10',
+  addTo: '100',
+}, [
+  {at: 0, is: '10'},
+  {at: 0.5, is: '55'},
+  {at: 1, is: '100'},
+]);
+
+assertComposition({
+  property: '--length-list-or-transform-function-list',
+  underlying: '10px, 20px',
+  addFrom: 'translateX(10px), scale(2)',
+  addTo: 'translateX(100px), scale(4)',
+}, [
+  {at: 0, is: 'translateX(10px), scale(2)'},
+  {at: 0.5, is: 'translateX(55px), scale(3)'},
+  {at: 1, is: 'translateX(100px), scale(4)'},
+]);
+
 </script>
 </body>
