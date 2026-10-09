@@ -27,6 +27,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
@@ -989,8 +990,7 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
       {VAEntrypointVideoProc}    // kVideoProcess.
       ,
   });
-  static_assert(std::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
-                "");
+  static_assert(kAllowedEntryPoints.size() == VaapiWrapper::kCodecModeMax, "");
 
   std::vector<VAEntrypoint> entrypoints;
   std::ranges::copy_if(va_entrypoints, std::back_inserter(entrypoints),
@@ -1166,10 +1166,8 @@ class VASupportedProfiles {
                               std::vector<VAConfigAttrib>& required_attribs,
                               ProfileInfo* profile_info) const;
 
-  std::vector<ProfileInfo> supported_profiles_[VaapiWrapper::kCodecModeMax];
-  static_assert(std::extent<decltype(supported_profiles_)>() ==
-                    VaapiWrapper::kCodecModeMax,
-                "|supported_profiles_| size is incorrect.");
+  std::array<std::vector<ProfileInfo>, VaapiWrapper::kCodecModeMax>
+      supported_profiles_;
 
   const ReportErrorToUMACB report_error_to_uma_cb_;
 };
@@ -1185,13 +1183,13 @@ const VASupportedProfiles::ProfileInfo* VASupportedProfiles::IsProfileSupported(
     VAProfile va_profile,
     VAEntrypoint va_entrypoint) const {
   auto iter = std::ranges::find_if(
-      UNSAFE_TODO(supported_profiles_[mode]),
+      supported_profiles_[mode],
       [va_profile, va_entrypoint](const ProfileInfo& profile) {
         return profile.va_profile == va_profile &&
                (va_entrypoint == kVAEntrypointInvalid ||
                 profile.va_entrypoint == va_entrypoint);
       });
-  if (iter != UNSAFE_TODO(supported_profiles_[mode]).end()) {
+  if (iter != supported_profiles_[mode].end()) {
     return &*iter;
   }
   return nullptr;
@@ -1274,8 +1272,7 @@ void VASupportedProfiles::FillSupportedProfileInfos(
         supported_profile_infos.push_back(profile_info);
       }
     }
-    UNSAFE_TODO(supported_profiles_[static_cast<int>(mode)]) =
-        supported_profile_infos;
+    supported_profiles_[mode] = supported_profile_infos;
   }
 }
 
@@ -2252,7 +2249,7 @@ std::map<VAProfile, std::vector<VAEntrypoint>>
 VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(CodecMode mode) {
   std::map<VAProfile, std::vector<VAEntrypoint>> configurations;
   for (const auto& supported_profile :
-       UNSAFE_TODO(VASupportedProfiles::Get().supported_profiles_[mode])) {
+       VASupportedProfiles::Get().supported_profiles_[mode]) {
     configurations[supported_profile.va_profile].push_back(
         supported_profile.va_entrypoint);
   }
@@ -2760,8 +2757,8 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
   CHECK_GE(descriptor.num_objects, 1u);
   handle.modifier = descriptor.objects[0].drm_format_modifier;
   std::vector<base::ScopedFD> fds;
-  for (size_t index = 0; index < descriptor.num_objects; ++index) {
-    const auto& object = UNSAFE_TODO(descriptor.objects[index]);
+  for (const auto& object :
+       base::span(descriptor.objects).first(descriptor.num_objects)) {
     // The modifier should not change for different planes.
     CHECK_EQ(handle.modifier, object.drm_format_modifier);
 
@@ -2802,8 +2799,8 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
                          FourccToString(descriptor.fourcc)};
   }
 
-  for (uint32_t index = 0; index < descriptor.num_layers; ++index) {
-    const auto& layer = UNSAFE_TODO(descriptor.layers[index]);
+  for (const auto& layer :
+       base::span(descriptor.layers).first(descriptor.num_layers)) {
     // According to va/va_drmcommon.h, if VA_EXPORT_SURFACE_SEPARATE_LAYERS is
     // specified, each layer should contain one plane.
     DCHECK_EQ(1u, layer.num_planes);

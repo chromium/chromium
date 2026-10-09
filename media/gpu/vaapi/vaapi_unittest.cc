@@ -908,29 +908,28 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
             expected_drm_modifier);
   // TODO(mcasas): |num_layers| actually depends on |va_descriptor.va_fourcc|.
   EXPECT_EQ(va_descriptor.num_layers, 2u);
-  for (uint32_t i = 0; i < va_descriptor.num_layers; ++i) {
-    UNSAFE_TODO(EXPECT_EQ(va_descriptor.layers[i].num_planes, 1u));
+  base::span layers =
+      base::span(va_descriptor.layers).first(va_descriptor.num_layers);
+  for (uint32_t i = 0; const auto& layer : layers) {
+    EXPECT_EQ(layer.num_planes, 1u);
     const uint32_t expected_object_index =
         (va_descriptor.num_objects == 1) ? 0 : i;
-    UNSAFE_TODO(EXPECT_EQ(va_descriptor.layers[i].object_index[0],
-                          expected_object_index));
+    EXPECT_EQ(layer.object_index[0], expected_object_index);
 
-    DVLOG(2) << "plane " << i
-             << ", pitch: " << UNSAFE_TODO(va_descriptor.layers[i]).pitch[0];
+    DVLOG(2) << "plane " << i << ", pitch: " << layer.pitch[0];
     // Luma and chroma planes have different |pitch| expectations.
     // TODO(mcasas): consider bitdepth for pitch lower thresholds.
     if (i == 0) {
-      UNSAFE_TODO(EXPECT_GE(
-          va_descriptor.layers[i].pitch[0],
-          base::checked_cast<uint32_t>(scoped_va_surface->size().width())));
+      EXPECT_GE(layer.pitch[0], base::checked_cast<uint32_t>(
+                                    scoped_va_surface->size().width()));
     } else {
       const auto expected_rounded_up_pitch =
           base::bits::AlignUpDeprecatedDoNotUse(
               scoped_va_surface->size().width(), 2);
-      UNSAFE_TODO(
-          EXPECT_GE(va_descriptor.layers[i].pitch[0],
-                    base::checked_cast<uint32_t>(expected_rounded_up_pitch)));
+      EXPECT_GE(layer.pitch[0],
+                base::checked_cast<uint32_t>(expected_rounded_up_pitch));
     }
+    ++i;
   }
 
   // Now open minigbm pointing to the DRM primary node, allocate a gbm_bo, and
@@ -983,9 +982,9 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   const int bo_num_planes = gbm_bo_get_plane_count(bo);
   ASSERT_EQ(va_descriptor.num_layers,
             base::checked_cast<uint32_t>(bo_num_planes));
-  for (int i = 0; i < bo_num_planes; ++i) {
-    UNSAFE_TODO(EXPECT_EQ(va_descriptor.layers[i].pitch[0],
-                          gbm_bo_get_stride_for_plane(bo, i)));
+  for (int i = 0; const auto& layer : layers) {
+    EXPECT_EQ(layer.pitch[0], gbm_bo_get_stride_for_plane(bo, i));
+    ++i;
   }
 
   // TODO(mcasas): consider comparing |va_descriptor.objects[0].size| with |bo|s

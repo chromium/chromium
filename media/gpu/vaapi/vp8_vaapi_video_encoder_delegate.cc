@@ -59,11 +59,11 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
       82, 85, 88, 91, 94, 97, 100, 103, 106, 109, 112, 115, 118, 121, 124, 127,
   });
 
-  for (size_t q = 0; q < std::size(kQuantizerToQindex); ++q) {
+  for (size_t q = 0; q < kQuantizerToQindex.size(); ++q) {
     if (kQuantizerToQindex[q] >= q_index)
       return q;
   }
-  return std::size(kQuantizerToQindex) - 1;
+  return kQuantizerToQindex.size() - 1;
 }
 
 // The return value is expressed as a percentage of the average. For example,
@@ -180,10 +180,12 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
     metadata.layer_sync = false;
     buffer_flags.fill(kUpdate);
   } else {
-    constexpr std::pair<Vp8Metadata,
-                        std::array<BufferFlags, kNumVp8ReferenceBuffers>>
-        kFrameConfigs[][kTemporalLayerCycle] = {
-            {
+    using FrameConfig =
+        std::pair<Vp8Metadata,
+                  std::array<BufferFlags, kNumVp8ReferenceBuffers>>;
+    static constexpr std::array<std::array<FrameConfig, kTemporalLayerCycle>, 2>
+        kFrameConfigs = {{
+            {{
                 // For two temporal layers.
                 {{.non_reference = false,
                   .temporal_idx = 0,
@@ -197,8 +199,8 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
                  {kReferenceAndUpdate, kNone, kNone}},
                 {{.non_reference = true, .temporal_idx = 1, .layer_sync = true},
                  {kReference, kNone, kNone}},
-            },
-            {
+            }},
+            {{
                 // For three temporal layers.
                 {{.non_reference = false,
                   .temporal_idx = 0,
@@ -214,12 +216,12 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
                   .temporal_idx = 2,
                   .layer_sync = false},
                  {kNone, kReference, kNone}},
-            },
-        };
+            }},
+        }};
 
     std::tie(metadata, buffer_flags) =
-        UNSAFE_TODO(kFrameConfigs[num_layers - kMinSupportedVP8TemporalLayers]
-                                 [frame_num % kTemporalLayerCycle]);
+        kFrameConfigs[num_layers - kMinSupportedVP8TemporalLayers]
+                     [frame_num % kTemporalLayerCycle];
   }
 
   frame_hdr.frame_type =

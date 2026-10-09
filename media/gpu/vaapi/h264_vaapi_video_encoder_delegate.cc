@@ -7,6 +7,7 @@
 #include <va/va.h>
 #include <va/va_enc_h264.h>
 
+#include <array>
 #include <climits>
 #include <utility>
 
@@ -171,26 +172,28 @@ void UpdatePictureForTemporalLayerEncoding(
   DCHECK_GE(num_layers, kMinSupportedH264TemporalLayers);
   DCHECK_LE(num_layers, kMaxSupportedH264TemporalLayers);
   constexpr size_t kTemporalLayerCycle = 4;
-  constexpr std::pair<H264Metadata, bool>
-      kFrameMetadata[][kTemporalLayerCycle] = {
-          {
-              // For two temporal layers.
+  using FrameMetadata = std::pair<H264Metadata, bool>;
+  static constexpr std::array<std::array<FrameMetadata, kTemporalLayerCycle>, 2>
+      kFrameMetadata = {{
+          // For two temporal layers.
+          {{
               {{.temporal_idx = 0, .layer_sync = false}, true},
               {{.temporal_idx = 1, .layer_sync = true}, false},
               {{.temporal_idx = 0, .layer_sync = false}, true},
               {{.temporal_idx = 1, .layer_sync = true}, false},
-          },
-          {
-              // For three temporal layers.
+          }},
+          // For three temporal layers.
+          {{
               {{.temporal_idx = 0, .layer_sync = false}, true},
               {{.temporal_idx = 2, .layer_sync = true}, false},
               {{.temporal_idx = 1, .layer_sync = true}, true},
               {{.temporal_idx = 2, .layer_sync = false}, false},
-          }};
+          }},
+      }};
 
   // Fill |pic.metadata_for_encoding| and |pic.ref|.
-  std::tie(pic.metadata_for_encoding.emplace(), pic.ref) = UNSAFE_TODO(
-      kFrameMetadata[num_layers - 2])[num_encoded_frames % kTemporalLayerCycle];
+  std::tie(pic.metadata_for_encoding.emplace(), pic.ref) =
+      kFrameMetadata[num_layers - 2][num_encoded_frames % kTemporalLayerCycle];
 
   UpdatePrevRefFrameNumAndSetFrameNum(pic, prev_ref_frame_num);
 

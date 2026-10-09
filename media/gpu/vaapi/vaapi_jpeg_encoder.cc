@@ -13,7 +13,6 @@
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/numerics/safe_conversions.h"
@@ -62,9 +61,10 @@ void FillQMatrix(VAQMatrixBufferJPEG* q_matrix) {
   static_assert(std::size(kZigZag8x8) == std::size(luminance.value),
                 "Luminance quantization table size mismatch.");
   q_matrix->load_lum_quantiser_matrix = 1;
-  for (size_t i = 0; i < std::size(kZigZag8x8); i++) {
-    UNSAFE_TODO(q_matrix->lum_quantiser_matrix[i]) =
-        UNSAFE_TODO(luminance.value[kZigZag8x8[i]]);
+  base::span lum_val(luminance.value);
+  for (auto [dst, zig_zag] :
+       std::views::zip(q_matrix->lum_quantiser_matrix, kZigZag8x8)) {
+    dst = lum_val[zig_zag];
   }
 
   const JpegQuantizationTable& chrominance = kDefaultQuantTable[1];
@@ -74,9 +74,10 @@ void FillQMatrix(VAQMatrixBufferJPEG* q_matrix) {
   static_assert(std::size(kZigZag8x8) == std::size(chrominance.value),
                 "Chrominance quantization table size mismatch.");
   q_matrix->load_chroma_quantiser_matrix = 1;
-  for (size_t i = 0; i < std::size(kZigZag8x8); i++) {
-    UNSAFE_TODO(q_matrix->chroma_quantiser_matrix[i]) =
-        UNSAFE_TODO(chrominance.value[kZigZag8x8[i]]);
+  base::span chroma_val(chrominance.value);
+  for (auto [dst, zig_zag] :
+       std::views::zip(q_matrix->chroma_quantiser_matrix, kZigZag8x8)) {
+    dst = chroma_val[zig_zag];
   }
 }
 
@@ -199,7 +200,8 @@ size_t FillJpegHeader(const gfx::Size& input_size,
       (quality < 50) ? (5000 / quality) : (200 - (quality * 2)));
 
   // Quantization Tables.
-  for (size_t i = 0; i < 2; ++i) {
+  for (size_t i = 0;
+       const JpegQuantizationTable& quant_table : kDefaultQuantTable) {
     const uint8_t kQuantSegment[] = {
         0xFF, JPEG_DQT, 0x00,
         0x03 + kDctSize,         // Segment length:67 (2-byte).
@@ -208,9 +210,9 @@ size_t FillJpegHeader(const gfx::Size& input_size,
     };
     writer.Write(kQuantSegment);
 
-    const JpegQuantizationTable& quant_table =
-        UNSAFE_TODO(kDefaultQuantTable[i]);
-    for (size_t j = 0; j < kDctSize; ++j) {
+    static_assert(std::size(kZigZag8x8) == kDctSize);
+    base::span quant_val(quant_table.value);
+    for (uint8_t zig_zag : kZigZag8x8) {
       // The iHD media driver shifts the quantization values
       // by 50 while encoding. We should add 50 here to
       // ensure the correctness in the packed header that is
@@ -218,14 +220,15 @@ size_t FillJpegHeader(const gfx::Size& input_size,
       // GStreamer test cases show a psnr improvement in
       // Y plane (41.27 to 48.31) with this quirk.
       const static uint32_t shift =
-          VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD ? 50 : 0;
+          VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD
+              ? 50
+              : 0;
       uint32_t scaled_quant_value =
-          (UNSAFE_TODO(quant_table.value[kZigZag8x8[j]]) * quality_normalized +
-           shift) /
-          100;
+          (quant_val[zig_zag] * quality_normalized + shift) / 100;
       scaled_quant_value = std::clamp(scaled_quant_value, 1u, 255u);
       writer.Write(static_cast<uint8_t>(scaled_quant_value));
     }
+    ++i;
   }
 
   // Start of Frame - Baseline.

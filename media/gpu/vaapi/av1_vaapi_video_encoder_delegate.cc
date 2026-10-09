@@ -7,6 +7,7 @@
 #include <array>
 #include <bit>
 #include <bitset>
+#include <ranges>
 #include <utility>
 
 #include "base/bits.h"
@@ -38,8 +39,6 @@ constexpr gfx::Size kAV1AlignmentSize(64, 64);
 constexpr int kCDEFStrengthDivisor = 4;
 constexpr int kPrimaryReferenceNone = 7;
 
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
-
 // Convert Qindex, whose range is 0-255, to the quantizer parameter used in
 // libaom av1 rate control, whose range is 0-63.
 // The table is generated from the table of
@@ -62,9 +61,9 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
       59, 59, 59, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 62, 63, 63,
       63, 63, 63, 63,
   });
-  static_assert(std::size(kQindexToQuantizer) == 256,
+  static_assert(kQindexToQuantizer.size() == 256,
                 "Unexpected kQindexToQuantizer size");
-  CHECK_LT(base::strict_cast<size_t>(q_index), std::size(kQindexToQuantizer));
+  CHECK_LT(base::strict_cast<size_t>(q_index), kQindexToQuantizer.size());
   return kQindexToQuantizer[q_index];
 }
 
@@ -332,13 +331,10 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
 
   pic_hdr.cdef_damping_minus_3 = pic_param.cdef_damping_minus_3;
   pic_hdr.cdef_bits = pic_param.cdef_bits;
-  for (size_t i = 0; i < ARRAY_SIZE(current_params.cdef_y_pri_strength); i++) {
-    pic_hdr.cdef_y_pri_strength[i] =
-        UNSAFE_TODO(current_params.cdef_y_pri_strength[i]);
-    pic_hdr.cdef_y_sec_strength[i] = current_params.cdef_y_sec_strength[i];
-    pic_hdr.cdef_uv_pri_strength[i] = current_params.cdef_uv_pri_strength[i];
-    pic_hdr.cdef_uv_sec_strength[i] = current_params.cdef_uv_sec_strength[i];
-  }
+  pic_hdr.cdef_y_pri_strength = current_params.cdef_y_pri_strength;
+  pic_hdr.cdef_y_sec_strength = current_params.cdef_y_sec_strength;
+  pic_hdr.cdef_uv_pri_strength = current_params.cdef_uv_pri_strength;
+  pic_hdr.cdef_uv_sec_strength = current_params.cdef_uv_sec_strength;
   pic_hdr.reduced_tx_set = pic_param.picture_flags.bits.reduced_tx_set;
   pic_hdr.tx_mode =
       static_cast<libgav1::TxMode>(pic_param.mode_control_flags.bits.tx_mode);
@@ -1040,15 +1036,13 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 
   pic_param.cdef_damping_minus_3 = 5 - 3;
   pic_param.cdef_bits = 3;
-  for (size_t i = 0; i < ARRAY_SIZE(current_params_.cdef_y_pri_strength); i++) {
-    UNSAFE_TODO({
-      pic_param.cdef_y_strengths[i] =
-          current_params_.cdef_y_pri_strength[i] * kCDEFStrengthDivisor +
-          current_params_.cdef_y_sec_strength[i];
-      pic_param.cdef_uv_strengths[i] =
-          current_params_.cdef_uv_pri_strength[i] * kCDEFStrengthDivisor +
-          current_params_.cdef_uv_sec_strength[i];
-    })
+  for (auto [y, y_pri, y_sec, uv, uv_pri, uv_sec] : std::views::zip(
+           pic_param.cdef_y_strengths, current_params_.cdef_y_pri_strength,
+           current_params_.cdef_y_sec_strength, pic_param.cdef_uv_strengths,
+           current_params_.cdef_uv_pri_strength,
+           current_params_.cdef_uv_sec_strength)) {
+    y = y_pri * kCDEFStrengthDivisor + y_sec;
+    uv = uv_pri * kCDEFStrengthDivisor + uv_sec;
   }
 
   pic_param.loop_restoration_flags.bits.yframe_restoration_type = 0;
