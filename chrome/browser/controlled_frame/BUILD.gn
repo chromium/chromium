@@ -166,6 +166,7 @@ source_set("browser_tests") {
 
   sources = [
     "controlled_frame_apitest.cc",
+    "controlled_frame_client_cert_browsertest.cc",
     "controlled_frame_contextmenus_browsertest.cc",
     "controlled_frame_dialog_browsertest.cc",
     "controlled_frame_disabled_permission_browsertest.cc",
@@ -189,6 +190,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions:browser_tests",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/hid",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/renderer_context_menu:test_support",
     "//chrome/browser/serial",
@@ -213,6 +215,7 @@ source_set("browser_tests") {
     "//components/permissions:test_support",
     "//components/prefs",
     "//components/services/app_service",
+    "//components/web_modal",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
@@ -230,6 +233,8 @@ source_set("browser_tests") {
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/gfx",
     "//ui/shell_dialogs",
+    "//ui/views",
+    "//ui/views:test_support",
     "//url",
   ]
 }
