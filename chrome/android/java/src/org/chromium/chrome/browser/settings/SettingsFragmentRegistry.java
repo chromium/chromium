@@ -587,6 +587,11 @@ public class SettingsFragmentRegistry {
         registerMapping(path, detailFragmentClass);
     }
 
+    public static void registerMainMenuAnchorForTesting(
+            Class<? extends Fragment> fragmentClass, String mainMenuKey) {
+        registerMainMenuAnchor(fragmentClass, mainMenuKey);
+    }
+
     /**
      * Resolves a chrome://settings URL string to a target Fragment class.
      *

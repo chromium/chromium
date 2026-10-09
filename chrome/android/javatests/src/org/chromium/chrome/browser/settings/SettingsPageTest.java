@@ -52,6 +52,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
@@ -81,6 +82,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
@@ -631,21 +635,46 @@ public class SettingsPageTest {
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testPaymentAppsUrlHighlightsMainMenu_urlNav() {
+        assertUrlHighlightsAutofillAndPasswords("/paymentApps", AndroidPaymentAppsFragment.class);
+    }
+
+    /**
+     * Regression test for https://crbug.com/565947215. These pages declare a main menu row that
+     * Autofill and passwords replaces under HoT.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures({
+        ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testFoldedRowPagesUrlHighlightMainMenu_urlNav() {
+        assertUrlHighlightsAutofillAndPasswords("/payments", AutofillPaymentMethodsFragment.class);
+        assertUrlHighlightsAutofillAndPasswords("/addresses", AutofillProfilesFragment.class);
+        assertUrlHighlightsAutofillAndPasswords(
+                "/autofill/settings", AutofillOptionsFragment.class);
+    }
+
+    /**
+     * Loads {@code path} under chrome-native://settings, waits for {@code fragmentClass} to show in
+     * the detail pane, and checks that Autofill and passwords is highlighted in the main menu.
+     */
+    private void assertUrlHighlightsAutofillAndPasswords(
+            String path, Class<? extends Fragment> fragmentClass) {
         // The test requires an emulator wide enough to use two-column mode.
         Resources res = mActivityTestRule.getActivity().getResources();
         int minWidth = res.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
         int screenWidth = res.getDisplayMetrics().widthPixels;
         Assume.assumeTrue("Test requires two-column mode.", screenWidth >= minWidth);
 
-        mActivityTestRule.loadUrl("chrome-native://settings/paymentApps");
+        mActivityTestRule.loadUrl("chrome-native://settings" + path);
 
         CriteriaHelper.pollUiThread(
                 () -> {
                     var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
                     Criteria.checkThat(hostFragment, notNullValue());
-                    Criteria.checkThat(
-                            hostFragment.getMainFragment(),
-                            instanceOf(AndroidPaymentAppsFragment.class));
+                    Criteria.checkThat(hostFragment.getMainFragment(), instanceOf(fragmentClass));
                 });
 
         int autofillTitle = R.string.autofill_and_passwords_settings_title;

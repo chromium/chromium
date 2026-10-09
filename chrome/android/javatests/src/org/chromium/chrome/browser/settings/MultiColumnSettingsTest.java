@@ -157,6 +157,16 @@ public class MultiColumnSettingsTest {
         }
     }
 
+    /** A page that declares its main menu row, as pages opened from the main menu do. */
+    public static class DeclaredKeyTestFragment extends TestFragment {
+        static final String MAIN_MENU_KEY = "declared_key";
+
+        @Override
+        public @Nullable String getMainMenuKey() {
+            return MAIN_MENU_KEY;
+        }
+    }
+
     private final boolean mIsIdentityManagerSourceOfAccounts;
 
     public MultiColumnSettingsTest(boolean isIdentityManagerSourceOfAccounts) {
@@ -355,6 +365,35 @@ public class MultiColumnSettingsTest {
         assertEquals(1, newFragmentTracker.mTitles.size());
         assertSame(fragment1.getPageTitle(), newFragmentTracker.mTitles.get(0).titleSupplier);
         assertEquals(0, newFragmentTracker.mTitles.get(0).backStackCount);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    public void testFragmentTracker_MainMenuKey_OnlyTrustedWhileRowIsShown() {
+        final String anchorKey = "anchor_key";
+        SettingsFragmentRegistry.registerMainMenuAnchorForTesting(
+                DeclaredKeyTestFragment.class, anchorKey);
+        try {
+            ObserverList<MultiColumnSettings.Observer> observers = new ObserverList<>();
+            var fragmentManager = new TestFragmentManager();
+
+            // The declared row is on the main menu, so it is used as is.
+            var tracker =
+                    new MultiColumnSettings.FragmentTracker(observers, () -> null, key -> true);
+            tracker.onFragmentResumed(fragmentManager, new DeclaredKeyTestFragment());
+            assertEquals(DeclaredKeyTestFragment.MAIN_MENU_KEY, tracker.mTitles.get(0).mainMenuKey);
+
+            // The declared row has been removed from the main menu, e.g. by a feature that folds
+            // it into another row, so the page falls through to the rest of the chain.
+            tracker = new MultiColumnSettings.FragmentTracker(observers, () -> null, key -> false);
+            tracker.onFragmentResumed(fragmentManager, new DeclaredKeyTestFragment());
+            assertEquals(anchorKey, tracker.mTitles.get(0).mainMenuKey);
+        } finally {
+            SettingsFragmentRegistry.sFragmentToMainMenuAnchorMap.remove(
+                    DeclaredKeyTestFragment.class);
+        }
     }
 
     @Test

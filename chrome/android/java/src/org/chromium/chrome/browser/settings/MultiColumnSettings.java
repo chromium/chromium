@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** Preference container implementation for SettingsActivity in multi-column mode. */
@@ -109,7 +110,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     private @Nullable Profile mProfile;
 
     private final FragmentTracker mFragmentTracker =
-            new FragmentTracker(mObservers, () -> mProfile);
+            new FragmentTracker(
+                    mObservers,
+                    () -> mProfile,
+                    key -> getMainSettings().findPreference(key) != null);
 
     private @Nullable Context mThemedContext;
 
@@ -1062,15 +1066,26 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         private final ObserverList<Observer> mObservers;
         private final Supplier<@Nullable Profile> mProfileSupplier;
+        // TODO(crbug.com/513493349): Remove this check (crrev.com/c/8490574) once the HoT cleanup
+        // removes the stale getMainMenuKey() overrides. Keep the URL nav highlight tests in
+        // SettingsPageTest; they should still pass.
+        private final Predicate<String> mIsMainMenuRowShown;
 
         FragmentTracker(ObserverList<Observer> observers) {
-            this(observers, () -> null);
+            this(observers, () -> null, key -> true);
         }
 
+        /**
+         * @param isMainMenuRowShown whether a main menu key names a row currently on the main menu.
+         *     Rows are added and removed at runtime, so this cannot be known statically.
+         */
         FragmentTracker(
-                ObserverList<Observer> observers, Supplier<@Nullable Profile> profileSupplier) {
+                ObserverList<Observer> observers,
+                Supplier<@Nullable Profile> profileSupplier,
+                Predicate<String> isMainMenuRowShown) {
             mObservers = observers;
             mProfileSupplier = profileSupplier;
+            mIsMainMenuRowShown = isMainMenuRowShown;
         }
 
         private static final String TAG = "FragmentTracker";
@@ -1280,10 +1295,15 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         private @Nullable String getMainMenuKey(EmbeddableSettingsPage page) {
             String mainMenuKey = page.getMainMenuKey();
+            if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+                return mainMenuKey;
+            }
 
-            // Building the index is expensive, so only consult the breadcrumb trail when the page
-            // doesn't already declare a main menu key.
-            if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() || mainMenuKey != null) {
+            // A page declares its main menu row statically, but rows are added and removed at
+            // runtime (e.g., a feature can fold several rows into one). Building the index is
+            // expensive, so trust the declared key when its row is on the menu, and otherwise fall
+            // through to the breadcrumb trail, which reflects the menu as it is now.
+            if (mainMenuKey != null && mIsMainMenuRowShown.test(mainMenuKey)) {
                 return mainMenuKey;
             }
 
