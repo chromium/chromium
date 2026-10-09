@@ -582,6 +582,22 @@ TEST_F(MultipleRequestGetDataForAgentTest, GetDataForAgent_Success) {
   EXPECT_EQ(response_details_.expiration_year, 2030);
 }
 
+TEST_F(MultipleRequestGetDataForAgentTest,
+       GetDataForAgent_AgenticPaymentCredentials) {
+  SendGetDataForAgentRequest();
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      R"({"agentic_payment_credentials":{"token":"5555555555554444",)"
+      R"("cvv":"456","expiration_month":7,"expiration_year":2031}})");
+
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(response_details_.card_number, "5555555555554444");
+  EXPECT_EQ(response_details_.cvc, "456");
+  EXPECT_EQ(response_details_.expiration_month, 7);
+  EXPECT_EQ(response_details_.expiration_year, 2031);
+}
+
 // The server attaches a test card to error responses. It must not be used.
 TEST_F(MultipleRequestGetDataForAgentTest,
        GetDataForAgent_ServerErrorIgnoresMockPaymentToken) {

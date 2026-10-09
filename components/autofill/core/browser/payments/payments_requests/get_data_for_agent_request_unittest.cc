@@ -108,12 +108,38 @@ TEST_F(GetDataForAgentRequestTest, IgnoresMockPaymentToken) {
   EXPECT_FALSE(request_->IsResponseComplete());
 }
 
-TEST_F(GetDataForAgentRequestTest, IgnoresAgenticPaymentCredentials) {
+TEST_F(GetDataForAgentRequestTest, ParsesAgenticPaymentCredentials) {
   request_->ParseResponse(Dict().Set("agentic_payment_credentials",
                                      Dict()
                                          .Set("token", "5555555555554444")
                                          .Set("cvv", "456")
                                          .Set("expiration_month", 7)
+                                         .Set("expiration_year", 2031)));
+  EXPECT_TRUE(request_->IsResponseComplete());
+
+  GetDataForAgentResponseDetails details = RespondAndGetDetails();
+  EXPECT_EQ(details.card_number, "5555555555554444");
+  EXPECT_EQ(details.cvc, "456");
+  EXPECT_EQ(details.expiration_month, 7);
+  EXPECT_EQ(details.expiration_year, 2031);
+}
+
+TEST_F(GetDataForAgentRequestTest, AgenticPaymentCredentialsWithoutToken) {
+  request_->ParseResponse(Dict().Set("agentic_payment_credentials",
+                                     Dict()
+                                         .Set("cvv", "456")
+                                         .Set("expiration_month", 7)
+                                         .Set("expiration_year", 2031)));
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetDataForAgentRequestTest,
+       AgenticPaymentCredentialsWithInvalidExpirationMonth) {
+  request_->ParseResponse(Dict().Set("agentic_payment_credentials",
+                                     Dict()
+                                         .Set("token", "5555555555554444")
+                                         .Set("cvv", "456")
+                                         .Set("expiration_month", 0)
                                          .Set("expiration_year", 2031)));
   EXPECT_FALSE(request_->IsResponseComplete());
 }

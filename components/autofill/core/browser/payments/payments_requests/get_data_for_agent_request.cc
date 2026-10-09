@@ -24,11 +24,33 @@ namespace {
 constexpr char kGetDataForAgentRequestPath[] =
     "payments/apis-secure/chromepaymentsservice/getdataforagent";
 
+// Returns the response details, or std::nullopt if the card number or the
+// expiration date is missing.
+std::optional<GetDataForAgentResponseDetails> CreateResponseDetails(
+    const std::string* card_number,
+    const std::string* cvc,
+    std::optional<int> expiration_month,
+    std::optional<int> expiration_year) {
+  if (!card_number || card_number->empty() || !expiration_month ||
+      *expiration_month < 1 || *expiration_month > 12 || !expiration_year ||
+      *expiration_year <= 0) {
+    return std::nullopt;
+  }
+
+  GetDataForAgentResponseDetails response_details;
+  response_details.card_number = *card_number;
+  if (cvc) {
+    response_details.cvc = *cvc;
+  }
+  response_details.expiration_month = *expiration_month;
+  response_details.expiration_year = *expiration_year;
+  return response_details;
+}
+
 // Parses the JSON object that the server returns as a string in
-// `payment_token`, e.g.
+// `payment_token` for a card number (FPAN), e.g.
 // {"paymentMethod": "CARD", "paymentMethodDetails": {"pan": "4111111111111111",
 //  "cvc": "123", "expirationMonth": 12, "expirationYear": 2030}}
-// Returns std::nullopt if the card number or the expiration date is missing.
 std::optional<GetDataForAgentResponseDetails> ParsePaymentToken(
     std::string_view payment_token) {
   std::optional<base::DictValue> token =
@@ -40,22 +62,22 @@ std::optional<GetDataForAgentResponseDetails> ParsePaymentToken(
   if (!details) {
     return std::nullopt;
   }
-  const std::string* pan = details->FindString("pan");
-  std::optional<int> month = details->FindInt("expirationMonth");
-  std::optional<int> year = details->FindInt("expirationYear");
-  if (!pan || pan->empty() || !month || *month < 1 || *month > 12 || !year ||
-      *year <= 0) {
-    return std::nullopt;
-  }
+  return CreateResponseDetails(
+      details->FindString("pan"), details->FindString("cvc"),
+      details->FindInt("expirationMonth"), details->FindInt("expirationYear"));
+}
 
-  GetDataForAgentResponseDetails response_details;
-  response_details.card_number = *pan;
-  if (const std::string* cvc = details->FindString("cvc")) {
-    response_details.cvc = *cvc;
-  }
-  response_details.expiration_month = *month;
-  response_details.expiration_year = *year;
-  return response_details;
+// Parses `agentic_payment_credentials`, which the server returns for a network
+// agentic token (APAN), e.g.
+// {"token": "5555555555554444", "cvv": "456", "expiration_month": 7,
+//  "expiration_year": 2031}
+// The token is filled like a card number, and the CVV is a dynamic CVV.
+std::optional<GetDataForAgentResponseDetails> ParseAgenticPaymentCredentials(
+    const base::DictValue& credentials) {
+  return CreateResponseDetails(credentials.FindString("token"),
+                               credentials.FindString("cvv"),
+                               credentials.FindInt("expiration_month"),
+                               credentials.FindInt("expiration_year"));
 }
 
 }  // namespace
@@ -89,15 +111,17 @@ std::string GetDataForAgentRequest::GetRequestContent() {
 }
 
 void GetDataForAgentRequest::ParseResponse(const base::DictValue& response) {
-  // Only `payment_token` is used. The test card in `mock_payment_token` is
-  // ignored.
-  // TODO(crbug.com/567655010): Support `agentic_payment_credentials`.
-  const std::string* payment_token = response.FindString("payment_token");
-  if (!payment_token) {
-    return;
+  // The server sets either `payment_token` or `agentic_payment_credentials`,
+  // depending on the type of credential. The test card in `mock_payment_token`
+  // is ignored.
+  std::optional<GetDataForAgentResponseDetails> details;
+  if (const std::string* payment_token = response.FindString("payment_token")) {
+    details = ParsePaymentToken(*payment_token);
+  } else if (const base::DictValue* credentials =
+                 response.FindDict("agentic_payment_credentials")) {
+    details = ParseAgenticPaymentCredentials(*credentials);
   }
-  if (std::optional<GetDataForAgentResponseDetails> details =
-          ParsePaymentToken(*payment_token)) {
+  if (details) {
     response_details_ = *std::move(details);
   }
 }
