@@ -29,9 +29,10 @@ extension ILType {
         ])
     fileprivate static let jsBlinkMojomAuthenticatorRemoteWrapper: ILType = .object(
         ofGroup: "blink.mojom.AuthenticatorRemoteWrapper",
-        withMethods: ["close", "isBound", "associateAndPassReceiver"])
-    fileprivate static let jsBlinkMojomAuthenticatorPendingReceiver: ILType = .object(
-        ofGroup: "blink.mojom.AuthenticatorPendingReceiver")
+        withMethods: [
+          "close",
+          "isBound",
+        ])
 }
 
 extension ObjectGroup {
@@ -68,16 +69,7 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsBlinkMojomAuthenticatorPendingReceiver,
-        ]
-    )
-
-    fileprivate static let blinkMojomAuthenticatorPendingReceiver = ObjectGroup(
-        name: "blink.mojom.AuthenticatorPendingReceiver",
-        instanceType: .jsBlinkMojomAuthenticatorPendingReceiver,
-        properties: [:],
-        methods: [:]
-    )
+        ])
 }
 
 ///

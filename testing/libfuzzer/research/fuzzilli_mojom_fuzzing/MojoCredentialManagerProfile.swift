@@ -25,9 +25,10 @@ extension ILType {
         ])
     fileprivate static let jsBlinkMojomCredentialManagerRemoteWrapper: ILType = .object(
         ofGroup: "blink.mojom.CredentialManagerRemoteWrapper",
-        withMethods: ["close", "isBound", "associateAndPassReceiver"])
-    fileprivate static let jsBlinkMojomCredentialManagerPendingReceiver: ILType = .object(
-        ofGroup: "blink.mojom.CredentialManagerPendingReceiver")
+        withMethods: [
+          "close",
+          "isBound",
+        ])
 }
 
 extension ObjectGroup {
@@ -57,16 +58,7 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsBlinkMojomCredentialManagerPendingReceiver,
-        ]
-    )
-
-    fileprivate static let blinkMojomCredentialManagerPendingReceiver = ObjectGroup(
-        name: "blink.mojom.CredentialManagerPendingReceiver",
-        instanceType: .jsBlinkMojomCredentialManagerPendingReceiver,
-        properties: [:],
-        methods: [:]
-    )
+        ])
 }
 
 ///

@@ -25,9 +25,10 @@ extension ILType {
         ])
     fileprivate static let jsBlinkMojomSpeculationHostRemoteWrapper: ILType = .object(
         ofGroup: "blink.mojom.SpeculationHostRemoteWrapper",
-        withMethods: ["close", "isBound", "associateAndPassReceiver"])
-    fileprivate static let jsBlinkMojomSpeculationHostPendingReceiver: ILType = .object(
-        ofGroup: "blink.mojom.SpeculationHostPendingReceiver")
+        withMethods: [
+          "close",
+          "isBound",
+        ])
 }
 
 extension ObjectGroup {
@@ -57,16 +58,7 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsBlinkMojomSpeculationHostPendingReceiver,
-        ]
-    )
-
-    fileprivate static let blinkMojomSpeculationHostPendingReceiver = ObjectGroup(
-        name: "blink.mojom.SpeculationHostPendingReceiver",
-        instanceType: .jsBlinkMojomSpeculationHostPendingReceiver,
-        properties: [:],
-        methods: [:]
-    )
+        ])
 }
 
 ///
