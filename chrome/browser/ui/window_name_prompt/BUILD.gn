@@ -25,6 +25,7 @@ source_set("browser_tests") {
   sources = [ "window_name_prompt_browsertest.cc" ]
   deps = [
     "//base",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/window_metadata",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",

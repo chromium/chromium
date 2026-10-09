@@ -33,6 +33,7 @@ if (!is_android) {
     deps = [
       ":net_internals",
       "//base",
+      "//chrome/browser/net",
       "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//chrome/test:test_support",

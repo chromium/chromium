@@ -35,6 +35,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser/feature_engagement",
     "//chrome/browser/search_engine_choice",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/user_education",
@@ -49,6 +50,7 @@ source_set("interactive_ui_tests") {
   sources = [ "interactive_feature_promo_test_interactive_uitest.cc" ]
   deps = [
     ":impl",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//components/feature_engagement/test:test_support",
     "//components/user_education/views",
   ]

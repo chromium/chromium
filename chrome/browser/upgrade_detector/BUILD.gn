@@ -82,7 +82,6 @@ source_set("impl") {
       "//base/version_info",
       "//chrome/browser:browser_process",
       "//chrome/browser/lifetime",
-      "//chrome/browser/ui",
       "//chrome/common:channel_info",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",
@@ -111,7 +110,10 @@ source_set("impl") {
         "installed_version_updater_chromeos.cc",
         "upgrade_detector_chromeos.cc",
       ]
-      deps += [ "//chromeos/ash/components/channel" ]
+      deps += [
+        "//chromeos/ash/components/channel",
+        "//chromeos/ash/components/settings",
+      ]
     }
   }
 

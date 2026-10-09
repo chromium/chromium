@@ -251,6 +251,7 @@ if (!is_chromeos_device) {
       ":passwords",
       ":test_support",
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/ui:tab_dialogs",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords:test_support",
       "//chrome/browser/ui/views/controls",

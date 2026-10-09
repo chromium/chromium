@@ -438,6 +438,9 @@ source_set("browser_tests") {
 
     data += [ "//chrome/test/data/" ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/feedback" ]
+  }
 }
 
 source_set("interactive_ui_tests") {

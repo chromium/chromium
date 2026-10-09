@@ -255,6 +255,7 @@ source_set("unit_tests") {
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/views/side_panel/customize_chrome",
+      "//chrome/browser/ui/webui/util",
     ]
   }
 }

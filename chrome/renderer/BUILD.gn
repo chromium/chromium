@@ -479,6 +479,7 @@ if (!is_android) {
       "//components/autofill/content/renderer",
       "//components/autofill/content/renderer:test_support",
       "//components/commerce/content/renderer",
+      "//components/commerce/core:commerce_constants",
       "//components/no_state_prefetch/renderer",
       "//components/optimization_guide/content/renderer",
       "//components/safe_browsing/core/common/phishing_classifier",

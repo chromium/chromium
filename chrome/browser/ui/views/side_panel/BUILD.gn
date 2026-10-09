@@ -231,6 +231,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/data_sharing",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui/read_anything:prefs",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",

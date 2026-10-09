@@ -110,6 +110,7 @@ source_set("browser_tests") {
     "//chrome/browser/speech",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/read_anything:impl",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/user_education",
