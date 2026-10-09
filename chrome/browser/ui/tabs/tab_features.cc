@@ -124,6 +124,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -1281,6 +1282,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(tab.GetContents());
   }
+
+  PrefsTabHelper::CreateForWebContents(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1874,6 +1877,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(new_contents);
   }
+
+  PrefsTabHelper::CreateForWebContents(new_contents);
 }
 
 customize_chrome::SidePanelController*

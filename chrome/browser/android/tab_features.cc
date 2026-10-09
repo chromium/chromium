@@ -98,6 +98,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
@@ -666,6 +667,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }
+
+  PrefsTabHelper::CreateForWebContents(web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

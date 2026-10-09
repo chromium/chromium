@@ -212,6 +212,7 @@ source_set("tabs_impl") {
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/javascript_dialogs",
+    "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_panel",

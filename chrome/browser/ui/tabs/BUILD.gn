@@ -630,6 +630,7 @@ if (!is_android) {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/prefs",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/search",

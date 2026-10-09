@@ -63,6 +63,12 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # PaymentHandlerWebFlowViewController::PopulateSheet, DocumentPipHost, and
   # GlicSidePanelUi, so the WebContents must own it.
   'permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents',
+  # PrefsTabHelper is also attached to non-tab WebContents in DevToolsWindow,
+  # ChromeExtensionHostDelegate::OnExtensionHostCreated,
+  # GlicNoWebviewContentsManager, GlicWebUIContentsManager,
+  # glic::OnGuestAdded, WebUIContentsPreloadManager, and WebUIContentsWrapper,
+  # so WebContents must own it.
+  'PrefsTabHelper::CreateForWebContents',
   # The task manager tag is looked up from WebContents user data by
   # WebContentsTaskProvider, is swapped in place by WebAppTabHelper, and is
   # also attached to non-tab WebContents (e.g. payment handler WebViews) and
