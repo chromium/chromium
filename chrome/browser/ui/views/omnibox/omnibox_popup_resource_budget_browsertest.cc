@@ -48,25 +48,31 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
 // Classic (or full) popup plus the AIM popup, created eagerly per window.
 constexpr size_t kPopupWebContentsPerWindow = 2;
-// Widgets are created on first show, so only a popup that is showing (at most
-// the focused window's, e.g. the full popup on startup) has one.
-constexpr size_t kMaxPopupWidgets = 1;
+// Widgets are created on first show and, in these configurations, destroyed on
+// hide, so a hidden popup with a widget was created eagerly. Which popups are
+// showing depends on window focus, which varies by platform, so only hidden
+// ones are budgeted.
+constexpr size_t kMaxHiddenPopupWidgets = 0;
 // AIM-ineligible profiles get only the classic (or full) popup.
 constexpr size_t kPopupWebContentsPerAimIneligibleWindow = 1;
 // Top-chrome WebUIs of one profile share a renderer process.
 constexpr size_t kPopupRenderProcessesPerProfile = 1;
 
-constexpr size_t kExtraWindows = 4;
+// Enough to show scaling. Each window loads two WebUI documents, which is slow
+// on debug and sanitizer builds.
+constexpr size_t kExtraWindows = 2;
 
 struct PopupResources {
   std::vector<raw_ptr<content::WebContents>> web_contents;
   std::set<raw_ptr<content::RenderProcessHost>> processes;
   size_t widgets = 0;
+  size_t hidden_widgets = 0;
 };
 
 LocationBarView* GetLocationBarView(BrowserWindowInterface* browser) {
@@ -103,8 +109,15 @@ PopupResources CountPopupResources(Profile* profile) {
         location_bar->GetOmniboxPopupView()->presenter(),
         location_bar->GetOmniboxPopupAimPresenter()};
     for (const OmniboxPopupPresenterBase* presenter : presenters) {
-      if (presenter && presenter->GetWidget()) {
-        ++resources.widgets;
+      // Widgets close asynchronously after hide; ignore ones on their way out.
+      const views::Widget* widget =
+          presenter ? presenter->GetWidget() : nullptr;
+      if (!widget || widget->IsClosed()) {
+        continue;
+      }
+      ++resources.widgets;
+      if (!presenter->IsShown()) {
+        ++resources.hidden_widgets;
       }
     }
   }
@@ -151,6 +164,7 @@ void LogPopupResources(std::string_view label,
   LOG(INFO) << "OmniboxPopupBudget[" << label << "] windows=" << windows
             << " web_contents=" << resources.web_contents.size()
             << " widgets=" << resources.widgets
+            << " hidden_widgets=" << resources.hidden_widgets
             << " processes=" << resources.processes.size()
             << " popup_process_pmf_kb=" << popup_process_kb
             << " renderer_pmf_kb=" << renderer_kb
@@ -211,7 +225,7 @@ class OmniboxPopupResourceBudgetBrowserTest
     PopupResources resources = CountPopupResources(profile);
     LogPopupResources(label, windows, resources);
     EXPECT_LE(resources.web_contents.size(), windows * web_contents_per_window);
-    EXPECT_LE(resources.widgets, kMaxPopupWidgets);
+    EXPECT_LE(resources.hidden_widgets, kMaxHiddenPopupWidgets);
     EXPECT_LE(resources.processes.size(), kPopupRenderProcessesPerProfile);
   }
 

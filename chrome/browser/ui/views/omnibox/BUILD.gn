@@ -341,6 +341,7 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//ui/events:test_support",
     "//ui/shell_dialogs:test_support",
+    "//ui/views",
   ]
 
   if (use_ozone) {
