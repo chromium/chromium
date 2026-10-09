@@ -5452,6 +5452,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
       </message>
 
+      <!-- Accessibility strings for side panel -->
+      <message name="IDS_ACCESSIBILITY_SIDE_PANEL_RESIZE_HANDLE" is_accessibility_with_no_ui="true" desc="Content description for the handle that resizes the side panel when dragged.">
+        Resize side panel
+      </message>
+
       <!-- Accessibility strings for omnibox -->
       <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_REFINE" desc="Content description for the omnibox refine button followed with the text or URL that will be shown in the Omnibox if the user clicks the refine button, eg. User input 'The' may offer a suggestion 'The meaning of life' or 'thewirecutter.com'.">
         Refine: <ph name="REFINE_TEXT">%1$s<ex>The meaning of life</ex></ph>

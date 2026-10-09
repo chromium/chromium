@@ -43,6 +43,9 @@ public interface SidePanelContainerCoordinator {
      */
     int WIDE_SIDE_PANEL_WIDTH_DP = 412;
 
+    /** Maximum side panel container width that the user can pick by resizing the panel. */
+    int MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP = 500;
+
     /**
      * Initializes this {@link SidePanelContainerCoordinator}.
      *

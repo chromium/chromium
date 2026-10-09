@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.side_panel;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,11 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
@@ -86,6 +89,33 @@ final class SidePanelContainerCoordinatorImpl
      * @see #mIsPreparingForAutoClose
      */
     private boolean mIsPreparingForAutoRestore;
+
+    /**
+     * The width (in dp) that the user last committed by resizing the side panel in this window, or
+     * null if the side panel should use its automatic width.
+     *
+     * <p>This isn't always the rendered width. {@link #determineShowableSize} clamps it to the
+     * available width, so the side panel can be narrower while space is limited, e.g. in a narrow
+     * window. The width is kept as is, so that the side panel returns to it once there's space.
+     *
+     * <p>An in-progress drag overrides it, and only a commit updates it, so a drag that ends
+     * without a commit (e.g. the side panel hides mid-drag) leaves it unchanged.
+     *
+     * <p>The width applies to all side panel entries, and isn't persisted, so a new window or
+     * session starts with the automatic width.
+     *
+     * <p>TODO(crbug.com/570096420): Persist the width per side panel entry.
+     */
+    private @Nullable Integer mUserCommittedWidthDp;
+
+    /**
+     * The container width proposed by an in-progress manual resize drag, or null if no drag is in
+     * progress.
+     *
+     * <p>The proposed width is raw, so it can be negative or exceed the available width. {@link
+     * #determineShowableSize} clamps it.
+     */
+    private @Nullable @Px Integer mLiveResizeWidthPx;
 
     private boolean mIsContentReplacementPausedForTesting;
     private boolean mSimulateAutoCloseConditionForTesting;
@@ -425,27 +455,22 @@ final class SidePanelContainerCoordinatorImpl
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
 
-        var context = mContainerView.getContext();
-        int availableWidthDp = ViewUtils.pxToDp(context, availableWidth);
-        int windowWidthDp = ViewUtils.pxToDp(context, windowWidth);
-
-        int horizontalPaddingDp =
-                ViewUtils.pxToDp(
-                        context,
-                        mContainerView.getPaddingLeft() + mContainerView.getPaddingRight());
-        int minSidePanelContainerWidthDp = horizontalPaddingDp + MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
-
-        int showableWidthDp =
-                determineShowableWidthDp(
-                        availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp);
+        @Px
+        int showableWidthPx =
+                determineShowableWidthPx(
+                        mContainerView.getContext(),
+                        getUserResizedWidthPx(),
+                        availableWidth,
+                        windowWidth,
+                        getMinSidePanelContainerWidthDp());
         @HeightType
         int heightType =
                 determineHeightType(
-                        showableWidthDp,
+                        showableWidthPx,
                         mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TABSTRIP)
                                 > 0);
 
-        return new SideUiSize(ViewUtils.dpToPx(context, showableWidthDp), heightType);
+        return new SideUiSize(showableWidthPx, heightType);
     }
 
     @Override
@@ -476,6 +501,9 @@ final class SidePanelContainerCoordinatorImpl
         if (renderedWidth == 0) {
             getContentContainer().removeAllViews();
             mCurrentContent = null;
+            // Hiding the panel removes the resize handle, which ends any drag without committing
+            // it.
+            mLiveResizeWidthPx = null;
         }
 
         // TODO(http://crbug.com/488047364): Notify the SidePanelContent View of the width change.
@@ -566,6 +594,50 @@ final class SidePanelContainerCoordinatorImpl
         mIsPreparingForAutoRestore = false;
     }
 
+    @Override
+    public boolean supportsManualResize() {
+        ThreadUtils.assertOnUiThread();
+        return SidePanelUtils.isManualResizeEnabled();
+    }
+
+    @Override
+    public @StringRes int getResizeHandleContentDescriptionRes() {
+        ThreadUtils.assertOnUiThread();
+        return R.string.accessibility_side_panel_resize_handle;
+    }
+
+    @Override
+    public @Px Integer getResizeHandleWidthPx() {
+        ThreadUtils.assertOnUiThread();
+        // Match the container's inner padding so that the handle doesn't overlap the panel.
+        return mContainerView
+                .getResources()
+                .getDimensionPixelSize(R.dimen.side_ui_container_padding);
+    }
+
+    @Override
+    public void onResizeLive(@Px int proposedWidthPx) {
+        log(TAG, "onResizeLive", proposedWidthPx);
+        ThreadUtils.assertOnUiThread();
+        mLiveResizeWidthPx = proposedWidthPx;
+    }
+
+    @Override
+    public void onResizeCommitted(@Px int finalWidthPx) {
+        log(TAG, "onResizeCommitted", finalWidthPx);
+        ThreadUtils.assertOnUiThread();
+
+        // A tap, or a cancel without a move, has nothing to commit.
+        if (mLiveResizeWidthPx == null) return;
+        mLiveResizeWidthPx = null;
+
+        mUserCommittedWidthDp =
+                MathUtils.clamp(
+                        ViewUtils.pxToDp(mContainerView.getContext(), finalWidthPx),
+                        getMinSidePanelContainerWidthDp(),
+                        MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //              End of SideUiContainer Implementation                                        //
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -600,10 +672,74 @@ final class SidePanelContainerCoordinatorImpl
         return 0;
     }
 
+    /**
+     * Returns the final width (in px) of the side panel container.
+     *
+     * <p>A width the user picked by resizing the side panel is clamped to [min, min(max,
+     * available)]. Otherwise, this falls back to {@link #determineShowableWidthDp}.
+     *
+     * @param context The context for converting between dp and px.
+     * @param userResizedWidthPx The raw width the user picked, either live or committed, or null to
+     *     use the automatic width.
+     * @param availableWidthPx The available width in the window.
+     * @param windowWidthPx The window width.
+     * @param minSidePanelContainerWidthDp The minimum side panel container width.
+     * @return The width, or 0 if the available width can't accommodate the minimum width.
+     */
     @VisibleForTesting
-    static @HeightType int determineHeightType(int showableWidthDp, boolean isTabStripShowing) {
+    static @Px int determineShowableWidthPx(
+            Context context,
+            @Nullable @Px Integer userResizedWidthPx,
+            @Px int availableWidthPx,
+            @Px int windowWidthPx,
+            int minSidePanelContainerWidthDp) {
+        // No user-picked width, so fall back to the automatic width breakpoints.
+        if (userResizedWidthPx == null) {
+            return ViewUtils.dpToPx(
+                    context,
+                    determineShowableWidthDp(
+                            ViewUtils.pxToDp(context, availableWidthPx),
+                            ViewUtils.pxToDp(context, windowWidthPx),
+                            minSidePanelContainerWidthDp));
+        }
+
+        // Clamp the user-picked width, either committed or from an in-progress drag.
+        @Px
+        int minSidePanelContainerWidthPx = ViewUtils.dpToPx(context, minSidePanelContainerWidthDp);
+        if (availableWidthPx < minSidePanelContainerWidthPx) return 0;
+        return MathUtils.clamp(
+                userResizedWidthPx,
+                minSidePanelContainerWidthPx,
+                Math.min(
+                        ViewUtils.dpToPx(context, MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP),
+                        availableWidthPx));
+    }
+
+    private int getMinSidePanelContainerWidthDp() {
+        // TODO(crbug.com/571631909): This can be called before updateContainerBackground() sets
+        // the container's padding, in which case the padding is 0 and the minimum width is too
+        // small.
+        int horizontalPaddingDp =
+                ViewUtils.pxToDp(
+                        mContainerView.getContext(),
+                        mContainerView.getPaddingLeft() + mContainerView.getPaddingRight());
+        return horizontalPaddingDp + MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
+    }
+
+    /**
+     * Returns the raw width (in px) of an in-progress drag, or else the width that the user last
+     * picked in this window, or null if the side panel should use its automatic width.
+     */
+    private @Nullable @Px Integer getUserResizedWidthPx() {
+        if (mLiveResizeWidthPx != null) return mLiveResizeWidthPx;
+        if (mUserCommittedWidthDp == null) return null;
+        return ViewUtils.dpToPx(mContainerView.getContext(), mUserCommittedWidthDp);
+    }
+
+    @VisibleForTesting
+    static @HeightType int determineHeightType(@Px int showableWidthPx, boolean isTabStripShowing) {
         @HeightType int heightType = HeightType.NOT_APPLICABLE;
-        if (showableWidthDp != 0) {
+        if (showableWidthPx != 0) {
             heightType = isTabStripShowing ? HeightType.TOOLBAR : HeightType.WEB_CONTENTS;
         }
         return heightType;

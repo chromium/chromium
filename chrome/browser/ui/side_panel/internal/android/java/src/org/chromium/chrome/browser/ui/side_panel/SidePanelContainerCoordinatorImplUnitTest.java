@@ -6,16 +6,20 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.NARROW_SIDE_PANEL_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.WIDE_SIDE_PANEL_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
@@ -77,24 +81,104 @@ public class SidePanelContainerCoordinatorImplUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "xhdpi") // A density of 2.
+    public void determineShowableWidthPx_clampsUserResizedWidthOrFallsBackToAutomaticWidth() {
+        Context context = RuntimeEnvironment.getApplication();
+        int minWidthDp = 200;
+        int minWidthPx = 400;
+        int maxWidthPx = MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP * 2;
+        int availableWidthPx = maxWidthPx + 200;
+        int windowWidthPx = availableWidthPx + 1000;
+
+        // 1. Within bounds.
+        assertEquals(
+                600,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ 600,
+                        availableWidthPx,
+                        windowWidthPx,
+                        minWidthDp));
+
+        // 2. Below the minimum, including a negative width from dragging past the outer edge.
+        assertEquals(
+                minWidthPx,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ minWidthPx - 1,
+                        availableWidthPx,
+                        windowWidthPx,
+                        minWidthDp));
+        assertEquals(
+                minWidthPx,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ -100,
+                        availableWidthPx,
+                        windowWidthPx,
+                        minWidthDp));
+
+        // 3. Above the maximum, with more space available.
+        assertEquals(
+                maxWidthPx,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ maxWidthPx + 1,
+                        availableWidthPx,
+                        windowWidthPx,
+                        minWidthDp));
+
+        // 4. Above the available width, which is smaller than the maximum.
+        int narrowAvailableWidthPx = 700;
+        assertEquals(
+                narrowAvailableWidthPx,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ narrowAvailableWidthPx + 1,
+                        narrowAvailableWidthPx,
+                        windowWidthPx,
+                        minWidthDp));
+
+        // 5. Not enough space to accommodate the minimum width.
+        assertEquals(
+                0,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ 600,
+                        /* availableWidthPx= */ minWidthPx - 1,
+                        windowWidthPx,
+                        minWidthDp));
+
+        // 6. No user-picked width falls back to the automatic width, converted to px.
+        assertEquals(
+                NARROW_SIDE_PANEL_WIDTH_DP * 2,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthPx(
+                        context,
+                        /* userResizedWidthPx= */ null,
+                        /* availableWidthPx= */ NARROW_SIDE_PANEL_WIDTH_DP * 2,
+                        windowWidthPx,
+                        minWidthDp));
+    }
+
+    @Test
     public void determineHeightType_calculatePerShowableWidthAndTabStripState() {
         assertEquals(
                 HeightType.NOT_APPLICABLE,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
-                        /* showableWidthDp= */ 0, /* isTabStripShowing= */ true));
+                        /* showableWidthPx= */ 0, /* isTabStripShowing= */ true));
         assertEquals(
                 HeightType.NOT_APPLICABLE,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
-                        /* showableWidthDp= */ 0, /* isTabStripShowing= */ false));
+                        /* showableWidthPx= */ 0, /* isTabStripShowing= */ false));
         assertEquals(
                 HeightType.TOOLBAR,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
-                        /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
+                        /* showableWidthPx= */ WIDE_SIDE_PANEL_WIDTH_DP,
                         /* isTabStripShowing= */ true));
         assertEquals(
                 HeightType.WEB_CONTENTS,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
-                        /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
+                        /* showableWidthPx= */ WIDE_SIDE_PANEL_WIDTH_DP,
                         /* isTabStripShowing= */ false));
     }
 

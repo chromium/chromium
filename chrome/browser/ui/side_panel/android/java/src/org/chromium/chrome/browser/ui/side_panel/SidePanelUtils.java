@@ -43,4 +43,9 @@ public class SidePanelUtils {
 
         Log.e(TAG, content + optionalSuffix);
     }
+
+    /** Returns whether the side panel can be manually resized by dragging its inner edge. */
+    public static boolean isManualResizeEnabled() {
+        return ChromeFeatureList.sEnableAndroidSidePanelManualResizing.isEnabled();
+    }
 }
