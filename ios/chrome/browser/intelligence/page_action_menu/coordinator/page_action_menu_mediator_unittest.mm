@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/lens/lens_overlay_permission_utils.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -373,10 +375,12 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermission) {
 }
 
 // Tests that updatePermissionSetting updates both the session permission state
-// and the persisted content setting of the site.
+// and the persisted content setting of the site, and records metrics only when
+// the setting changes.
 TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
   scoped_feature_list_.InitWithFeatures(
       {kPageActionMenu, kDomainLevelSitePermissions}, {});
+  base::HistogramTester histogram_tester;
 
   const GURL url("https://example.com");
   web_state_->SetCurrentURL(url);
@@ -390,6 +394,9 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
   EXPECT_EQ(settings_map_->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_ALLOW);
+  histogram_tester.ExpectBucketCount(
+      kPermissionPageActionMenuSettingChangedCameraHistogram,
+      IOSPermissionSetting::kAlwaysAllow, 1);
 
   // 2. Never allow persists a BLOCK content setting and revokes the session.
   [mediator_
@@ -400,6 +407,9 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
   EXPECT_EQ(settings_map_->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_BLOCK);
+  histogram_tester.ExpectBucketCount(
+      kPermissionPageActionMenuSettingChangedCameraHistogram,
+      IOSPermissionSetting::kNeverAllow, 1);
 
   // 3. Allow once clears the persisted decision but grants for the session.
   [mediator_ updatePermissionSetting:PageActionMenuPermissionSetting::kAllowOnce
@@ -409,6 +419,17 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
   EXPECT_EQ(settings_map_->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_ASK);
+  histogram_tester.ExpectBucketCount(
+      kPermissionPageActionMenuSettingChangedCameraHistogram,
+      IOSPermissionSetting::kAllowOnce, 1);
+  histogram_tester.ExpectTotalCount(
+      kPermissionPageActionMenuSettingChangedCameraHistogram, 3);
+
+  // Selecting the same setting again should not record metrics.
+  [mediator_ updatePermissionSetting:PageActionMenuPermissionSetting::kAllowOnce
+                          forFeature:PageActionMenuCameraPermission];
+  histogram_tester.ExpectTotalCount(
+      kPermissionPageActionMenuSettingChangedCameraHistogram, 3);
 
   // 4. The microphone permission is updated independently.
   [mediator_
@@ -420,6 +441,9 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
   EXPECT_EQ(settings_map_->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_ASK);
+  histogram_tester.ExpectUniqueSample(
+      kPermissionPageActionMenuSettingChangedMicrophoneHistogram,
+      IOSPermissionSetting::kAlwaysAllow, 1);
 }
 
 // Tests that permission rows are shown as dropdowns reflecting the persisted

@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
@@ -67,6 +68,19 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
     return false;
   }
   return !auth_service->HasPrimaryIdentity() && auth_service->SigninEnabled();
+}
+
+// Returns the `IOSPermissionSetting` corresponding to `setting`.
+IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
+    PageActionMenuPermissionSetting setting) {
+  switch (setting) {
+    case PageActionMenuPermissionSetting::kAllowOnce:
+      return IOSPermissionSetting::kAllowOnce;
+    case PageActionMenuPermissionSetting::kAlwaysAllow:
+      return IOSPermissionSetting::kAlwaysAllow;
+    case PageActionMenuPermissionSetting::kNeverAllow:
+      return IOSPermissionSetting::kNeverAllow;
+  }
 }
 
 }  // namespace
@@ -424,13 +438,9 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   switch (featureType) {
     case PageActionMenuCameraPermission:
       permission = web::PermissionCamera;
-      RecordPageActionMenuFeatureRowUsed(
-          IOSPageActionMenuFeatureType::kCameraPermission);
       break;
     case PageActionMenuMicrophonePermission:
       permission = web::PermissionMicrophone;
-      RecordPageActionMenuFeatureRowUsed(
-          IOSPageActionMenuFeatureType::kMicrophonePermission);
       break;
     case PageActionMenuTranslate:
     case PageActionMenuPopupBlocker:
@@ -439,6 +449,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
       return;
   }
 
+  const bool settingChanged = [self permissionSettingFor:permission] != setting;
+
   [self persistSetting:setting forPermission:permission];
 
   web::PermissionState state =
@@ -446,6 +458,12 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
           ? web::PermissionStateNotAccessible
           : web::PermissionStateAllowed;
   _webState->SetStateForPermission(state, permission);
+
+  if (settingChanged) {
+    RecordPermissionSettingChanged(
+        IOSPermissionSettingChangeSurface::kPageActionMenu, permission,
+        IOSPermissionSettingForPageActionMenuPermissionSetting(setting));
+  }
 }
 
 - (NSArray<PageActionMenuFeature*>*)activeFeatures {

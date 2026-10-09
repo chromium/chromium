@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/permissions/model:tab_helper",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
