@@ -4,6 +4,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -243,6 +244,17 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
     base::RunLoop().RunUntilIdle();
     return called;
   }));
+
+  // This test creates an unresponsive WebProcess via `while(true) {}`. Force
+  // close `WKWebView` via a private API so the `WebPageProxy` and its
+  // `WebProcess` are terminated immediately instead of remaining hung while the
+  // in-flight JavaScript evaluation callback retains the `WKWebView`.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  WKWebView* web_view = base::apple::ObjCCast<WKWebView>(
+      web::test::GetWebController(web_state()).webViewNavigationProxy);
+  [web_view performSelector:@selector(_close)];
+#pragma clang diagnostic pop
 }
 
 // Tests that the expected result is received from executing a JavaScript
