@@ -47,6 +47,11 @@ void LogWalletNoticeFunnelEvent(AutofillAiWalletNoticeFunnelEvents event,
                                 event);
 }
 
+void LogUpsertDetailsCacheStatus(AutofillAiUpsertDetailsCacheStatus status) {
+  base::UmaHistogramEnumeration("Autofill.Ai.WalletNotice.Settings.CacheStatus",
+                                status);
+}
+
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&
         local_entities_considered_for_deduplication_per_type,

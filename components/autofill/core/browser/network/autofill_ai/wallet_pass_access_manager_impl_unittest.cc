@@ -978,11 +978,15 @@ TEST_P(WalletPassAccessManagerImplTest,
 // without issuing a network request when nothing was preloaded.
 TEST_P(WalletPassAccessManagerImplTest,
        ExtractPreloadedDetailsForUpsertPass_NothingPreloaded_ReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(mock_http_client(), GetDetailsForUpsertPass).Times(0);
 
   EXPECT_EQ(access_manager().ExtractPreloadedDetailsForUpsertPass(
                 EntityType(EntityTypeName::kVehicle)),
             std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.WalletNotice.Settings.CacheStatus",
+      AutofillAiUpsertDetailsCacheStatus::kMissNoRequestInFlight, 1);
 }
 
 // Tests that `ExtractPreloadedDetailsForUpsertPass` synchronously returns a
@@ -990,6 +994,7 @@ TEST_P(WalletPassAccessManagerImplTest,
 // flight, a second read returns `std::nullopt`.
 TEST_P(WalletPassAccessManagerImplTest,
        ExtractPreloadedDetailsForUpsertPass_ConsumesCachedResponseAndRefills) {
+  base::HistogramTester histogram_tester;
   wallet::WalletHttpClient::GetDetailsForUpsertPassCallback refill_callback;
   EXPECT_CALL(mock_http_client(),
               GetDetailsForUpsertPass(
@@ -1007,6 +1012,13 @@ TEST_P(WalletPassAccessManagerImplTest,
   EXPECT_EQ(access_manager().ExtractPreloadedDetailsForUpsertPass(
                 EntityType(EntityTypeName::kVehicle)),
             std::nullopt);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.Ai.WalletNotice.Settings.CacheStatus"),
+      BucketsAre(
+          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kHit, 1),
+          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight,
+                       1)));
 }
 
 // Tests that `ExtractPreloadedDetailsForUpsertPass` returns `std::nullopt`
@@ -1014,6 +1026,7 @@ TEST_P(WalletPassAccessManagerImplTest,
 // the preload completes.
 TEST_P(WalletPassAccessManagerImplTest,
        ExtractPreloadedDetailsForUpsertPass_PreloadInFlight_ReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   wallet::WalletHttpClient::GetDetailsForUpsertPassCallback http_callback;
   wallet::WalletHttpClient::GetDetailsForUpsertPassCallback refill_callback;
   EXPECT_CALL(mock_http_client(),
@@ -1037,6 +1050,13 @@ TEST_P(WalletPassAccessManagerImplTest,
                   EntityType(EntityTypeName::kVehicle)),
               Optional(CreateExpectedUpsertPassResponse()));
   EXPECT_FALSE(refill_callback.is_null());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.Ai.WalletNotice.Settings.CacheStatus"),
+      BucketsAre(
+          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kHit, 1),
+          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight,
+                       1)));
 }
 
 #if GTEST_HAS_DEATH_TEST

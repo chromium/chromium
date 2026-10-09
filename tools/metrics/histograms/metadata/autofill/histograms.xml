@@ -2383,6 +2383,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.WalletNotice.Settings.CacheStatus"
+    enum="AutofillAiUpsertDetailsCacheStatus" expires_after="2027-03-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the cache status of preloaded Wallet upsert details when
+    synchronously extracting them while opening the add entity flow in Settings.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.WalletNotice.{Context}.Funnel"
     enum="AutofillAiWalletNoticeFunnelEvents" expires_after="2027-03-22">
   <owner>brunobraga@google.com</owner>

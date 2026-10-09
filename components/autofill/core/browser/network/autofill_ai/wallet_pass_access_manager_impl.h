@@ -96,6 +96,11 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   void FetchDetailsForUpsertPass(wallet::WalletHttpClient::PassType pass_type,
                                  GetDetailsForUpsertPassCallback callback);
 
+  // Extracts a preloaded `GetDetailsForUpsertPassResponse` for `entity_type`
+  // from `upsert_details_cache_` if present, triggering a background refill.
+  std::optional<GetDetailsForUpsertPassResponse>
+  ConsumeCachedDetailsForUpsertPass(EntityType entity_type);
+
   // Invoked when an asynchronous background preload request completes.
   // Stores the successful response in `upsert_details_cache_`.
   void OnPreloadDetailsForUpsertPassComplete(

@@ -250,19 +250,19 @@ void WalletPassAccessManagerImpl::PreloadDetailsForUpsertPass(
 std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
 WalletPassAccessManagerImpl::ExtractPreloadedDetailsForUpsertPass(
     EntityType entity_type) {
-  // Google Wallet `context_token`s are single-use tokens bound to a specific
-  // upsert operation. Once read by an active consumer, the cached entry must
-  // be removed so that subsequent flows do not attempt to reuse an expired or
-  // spent token.
-  absl::flat_hash_map<PassType, GetDetailsForUpsertPassResponse>::node_type
-      node = upsert_details_cache_.extract(PassTypeFromEntityType(entity_type));
-  if (node.empty()) {
-    return std::nullopt;
+  const PassType pass_type = PassTypeFromEntityType(entity_type);
+  const bool was_in_flight = in_flight_preloads_.contains(pass_type);
+  std::optional<GetDetailsForUpsertPassResponse> response =
+      ConsumeCachedDetailsForUpsertPass(entity_type);
+  if (response.has_value() && IsValidUpsertPassDetailsResponse(*response)) {
+    LogUpsertDetailsCacheStatus(AutofillAiUpsertDetailsCacheStatus::kHit);
+  } else {
+    LogUpsertDetailsCacheStatus(
+        was_in_flight
+            ? AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight
+            : AutofillAiUpsertDetailsCacheStatus::kMissNoRequestInFlight);
   }
-  // A cache hit means some caller opted into preloading this type, so refill
-  // the cache for the next flow instead of leaving it cold.
-  PreloadDetailsForUpsertPass(entity_type);
-  return std::move(node.mapped());
+  return response;
 }
 
 void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
@@ -272,7 +272,7 @@ void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
   PassType pass_type = PassTypeFromEntityType(entity_type);
 
   if (std::optional<GetDetailsForUpsertPassResponse> cached_response =
-          ExtractPreloadedDetailsForUpsertPass(entity_type)) {
+          ConsumeCachedDetailsForUpsertPass(entity_type)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), *std::move(cached_response)));
@@ -288,6 +288,24 @@ void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
   // in-flight preload completing later remains cached for subsequent
   // operations.
   FetchDetailsForUpsertPass(pass_type, std::move(callback));
+}
+
+std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+WalletPassAccessManagerImpl::ConsumeCachedDetailsForUpsertPass(
+    EntityType entity_type) {
+  // Google Wallet `context_token`s are single-use tokens bound to a specific
+  // upsert operation. Once read by an active consumer, the cached entry must
+  // be removed so that subsequent flows do not attempt to reuse an expired or
+  // spent token.
+  absl::flat_hash_map<PassType, GetDetailsForUpsertPassResponse>::node_type
+      node = upsert_details_cache_.extract(PassTypeFromEntityType(entity_type));
+  if (node.empty()) {
+    return std::nullopt;
+  }
+  // A cache hit means some caller opted into preloading this type, so refill
+  // the cache for the next flow instead of leaving it cold.
+  PreloadDetailsForUpsertPass(entity_type);
+  return std::move(node.mapped());
 }
 
 void WalletPassAccessManagerImpl::FetchDetailsForUpsertPass(

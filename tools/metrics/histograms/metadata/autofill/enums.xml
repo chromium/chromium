@@ -667,6 +667,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiUnmaskResult) -->
 
+<!-- LINT.IfChange(AutofillAiUpsertDetailsCacheStatus) -->
+
+<enum name="AutofillAiUpsertDetailsCacheStatus">
+  <int value="0" label="Cache hit"/>
+  <int value="1" label="Cache miss (preload request in flight)"/>
+  <int value="2" label="Cache miss (no preload request in flight)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiUpsertDetailsCacheStatus) -->
+
 <!-- LINT.IfChange(AutofillAiWalletManagementUrlSyncStatus) -->
 
 <enum name="AutofillAiWalletManagementUrlSyncStatus">
