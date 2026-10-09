@@ -4937,9 +4937,6 @@ crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interfac
 crbug.com/1066732 fast/events/platform-wheelevent-paging-x-in-scrolling-div.html [ Failure Pass ]
 crbug.com/1066732 fast/events/platform-wheelevent-paging-y-in-scrolling-div.html [ Failure Pass ]
 
-# COOP top navigation:
-crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html [ Failure ]
-
 # Stale revalidation shouldn't be blocked:
 
 # the inspector-protocol/media tests only work in the virtual test environment.
