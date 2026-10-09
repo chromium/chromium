@@ -86,7 +86,6 @@ bool TrackedAtomicPreference::EnforceAndReport(
 
   bool was_reset = false;
   if (reset_action == TrackedPreferenceHelper::DO_RESET ||
-      reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
     if (value) {
       base::ListValue* reset_prefs_list =

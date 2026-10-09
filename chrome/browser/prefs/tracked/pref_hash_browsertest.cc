@@ -1553,9 +1553,11 @@ PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedTampered, EncryptedTampered);
 
 // Tests that the SuperEncryptedHash is written to the Secure Preferences file.
 class PrefHashBrowserTestSuperEncryptedHashWritten
-    : public PrefHashBrowserTestBase {
+    : public PrefHashBrowserTestEncryptedBase {
  public:
-  PrefHashBrowserTestSuperEncryptedHashWritten() = default;
+  PrefHashBrowserTestSuperEncryptedHashWritten() {
+    feature_list_.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+  }
 
   void SetupPreferences() override {
     // Set a tracked preference to ensure the store is used.
@@ -1588,6 +1590,7 @@ class PrefHashBrowserTestSuperEncryptedHashWritten
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   bool super_encrypted_hash_found_ = false;
 };
 
@@ -2273,7 +2276,8 @@ class PrefHashBrowserTestEnterpriseFeatureDisabled
  public:
   PrefHashBrowserTestEnterpriseFeatureDisabled() {
     feature_list_.InitWithFeatures(
-        {}, {tracked::kEnableEncryptedTrackedPrefOnEnterprise});
+        {tracked::kEncryptedPrefHashing},
+        {tracked::kEnableEncryptedTrackedPrefOnEnterprise});
   }
 
  protected:

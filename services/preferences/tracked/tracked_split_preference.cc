@@ -107,7 +107,6 @@ bool TrackedSplitPreference::EnforceAndReport(
   helper_.ReportAction(reset_action);
 
   if (reset_action == TrackedPreferenceHelper::DO_RESET ||
-      reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
     base::ListValue* reset_prefs_list =
         pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);

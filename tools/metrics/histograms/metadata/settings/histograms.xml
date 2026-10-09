@@ -1367,18 +1367,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceResetViaHmacFallback"
-    enum="TrackedPreference" expires_after="2027-06-09">
-  <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The id of a tracked preference which was reset by Chrome via the old HMAC
-    fallback verification. Only emitted if the encrypted hash verification is
-    not available causing the verification to fallback to HMAC-based
-    verification.
-  </summary>
-</histogram>
-
 <histogram name="Settings.TrackedPreferences.AuthDataCalculated"
     enum="TrackedPreference" expires_after="2027-08-28">
   <owner>svend@chromium.org</owner>
@@ -1536,18 +1524,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     The id of a tracked preference which Chrome would have reset via the
     encrypted hash reset flow had the config allowed it.
-  </summary>
-</histogram>
-
-<histogram name="Settings.TrackedPreferenceWantedResetViaHmacFallback"
-    enum="TrackedPreference" expires_after="2027-06-09">
-  <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The id of a tracked preference which Chrome would have reset via the old
-    HMAC fallback reset flow had the config allowed it. Only emitted if the
-    encrypted hash verification is not available causing the verification to
-    fallback to HMAC-based verification.
   </summary>
 </histogram>
 

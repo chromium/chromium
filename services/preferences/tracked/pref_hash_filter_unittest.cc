@@ -1548,6 +1548,74 @@ TEST_P(PrefHashFilterTest, InitialValueChanged) {
   }
 }
 
+TEST_P(PrefHashFilterTest, InitialValueChangedViaHmacFallback) {
+  base::HistogramTester histogram_tester;
+  int expected_atomic_int_content = 1234;
+  base::DictValue initial_split_dict_content;
+  initial_split_dict_content.Set("a", "foo");
+  initial_split_dict_content.Set("b", 1234);
+  initial_split_dict_content.Set("c", 56);
+  initial_split_dict_content.Set("d", false);
+
+  base::DictValue expected_final_split_dict_content;
+  expected_final_split_dict_content.Set("b", 1234);
+  expected_final_split_dict_content.Set("d", false);
+
+  pref_store_contents_.Set(kAtomicPref, expected_atomic_int_content);
+  pref_store_contents_.Set(kSplitPref, initial_split_dict_content.Clone());
+
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::CHANGED_VIA_HMAC_FALLBACK);
+  mock_pref_hash_store_->SetCheckResult(kSplitPref,
+                                        ValueState::CHANGED_VIA_HMAC_FALLBACK);
+
+  std::vector<std::string> mock_invalid_keys = {"a", "c"};
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, mock_invalid_keys);
+
+  DoFilterOnLoad(GetParam() >= EnforcementLevel::ENFORCE_ON_LOAD);
+
+  ASSERT_EQ(2u, mock_validation_delegate_record_->CountValidationsOfState(
+                    ValueState::CHANGED_VIA_HMAC_FALLBACK));
+
+  if (GetParam() == EnforcementLevel::ENFORCE_ON_LOAD) {
+    EXPECT_FALSE(pref_store_contents_.contains(kAtomicPref));
+    const base::Value* split_value_in_store =
+        pref_store_contents_.Find(kSplitPref);
+    ASSERT_TRUE(split_value_in_store);
+    ASSERT_TRUE(split_value_in_store->is_dict());
+    EXPECT_EQ(expected_final_split_dict_content,
+              split_value_in_store->GetDict());
+
+    histogram_tester.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramReset, 0, 1);
+    histogram_tester.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramReset, 2, 1);
+    histogram_tester.ExpectTotalCount(
+        user_prefs::tracked::kTrackedPrefHistogramWantedReset, 0);
+    VerifyRecordedReset(true);
+  } else {
+    const base::Value* atomic_value_in_store =
+        pref_store_contents_.Find(kAtomicPref);
+    ASSERT_TRUE(atomic_value_in_store);
+    ASSERT_TRUE(atomic_value_in_store->is_int());
+    EXPECT_EQ(expected_atomic_int_content, atomic_value_in_store->GetInt());
+
+    const base::Value* split_value_in_store =
+        pref_store_contents_.Find(kSplitPref);
+    ASSERT_TRUE(split_value_in_store);
+    ASSERT_TRUE(split_value_in_store->is_dict());
+    EXPECT_EQ(initial_split_dict_content, split_value_in_store->GetDict());
+
+    histogram_tester.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramWantedReset, 0, 1);
+    histogram_tester.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramWantedReset, 2, 1);
+    histogram_tester.ExpectTotalCount(
+        user_prefs::tracked::kTrackedPrefHistogramReset, 0);
+    VerifyRecordedReset(false);
+  }
+}
+
 TEST_P(PrefHashFilterTest, EmptyCleared) {
   ASSERT_FALSE(pref_store_contents_.contains(kAtomicPref));
   ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));

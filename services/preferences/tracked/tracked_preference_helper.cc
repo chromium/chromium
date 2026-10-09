@@ -49,12 +49,11 @@ TrackedPreferenceHelper::ResetAction TrackedPreferenceHelper::GetAction(
       NOTREACHED()
           << "GetAction should not be called with an UNSUPPORTED value state";
     case ValueState::UNTRUSTED_UNKNOWN_VALUE:  // Falls through.
-    case ValueState::CHANGED:
+    case ValueState::CHANGED:                  // Falls through.
+    case ValueState::CHANGED_VIA_HMAC_FALLBACK:
       return enforce_ ? DO_RESET : WANTED_RESET;
     case ValueState::CHANGED_ENCRYPTED:
       return enforce_ ? DO_RESET_ENCRYPTED : WANTED_RESET_ENCRYPTED;
-    case ValueState::CHANGED_VIA_HMAC_FALLBACK:
-      return enforce_ ? DO_RESET_LEGACY : WANTED_RESET_LEGACY;
   }
   NOTREACHED() << "Unexpected ValueState: " << value_state;
 }
@@ -141,11 +140,6 @@ void TrackedPreferenceHelper::ReportAction(ResetAction reset_action) const {
           user_prefs::tracked::kTrackedPrefHistogramWantedReset, reporting_id_,
           reporting_ids_count_);
       break;
-    case WANTED_RESET_LEGACY:
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          user_prefs::tracked::kTrackedPrefHistogramWantedResetViaHmacFallback,
-          reporting_id_, reporting_ids_count_);
-      break;
     case WANTED_RESET_ENCRYPTED:
       UMA_HISTOGRAM_EXACT_LINEAR(
           user_prefs::tracked::kTrackedPrefHistogramWantedResetEncrypted,
@@ -155,11 +149,6 @@ void TrackedPreferenceHelper::ReportAction(ResetAction reset_action) const {
       UMA_HISTOGRAM_EXACT_LINEAR(
           user_prefs::tracked::kTrackedPrefHistogramReset, reporting_id_,
           reporting_ids_count_);
-      break;
-    case DO_RESET_LEGACY:
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          user_prefs::tracked::kTrackedPrefHistogramResetViaHmacFallback,
-          reporting_id_, reporting_ids_count_);
       break;
     case DO_RESET_ENCRYPTED:
       UMA_HISTOGRAM_EXACT_LINEAR(
