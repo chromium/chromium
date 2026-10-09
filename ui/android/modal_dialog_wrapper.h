@@ -121,7 +121,7 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
   std::optional<int> dismissal_cause_;
 
   ElementIdentifier checkbox_id_;
-  std::vector<DialogModelMenuItem*> menu_items_;
+  std::vector<raw_ptr<DialogModelMenuItem>> menu_items_;
 
   const raw_ptr<WindowAndroid> window_android_;
 
