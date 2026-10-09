@@ -12,7 +12,9 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  /* A min-height rather than a height, so that the view grows with its cards
+   * and the space below the last card is part of the scrolled content. */
+  min-height: 100%;
   width: 100%;
 }
 
@@ -25,16 +27,17 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  min-height: 0;
   width: 100%;
 }
 
+/* Keeps the cards readable on wide windows. Left-aligned, like the other
+ * Context Hub pages. */
 .container {
   box-sizing: border-box;
   display: flex;
   flex: 1;
   flex-direction: column;
-  min-height: 0;
+  max-width: 960px;
   width: 100%;
 }
 
@@ -55,6 +58,13 @@ h1 {
   margin: 0;
 }
 
+#fishfoodNote {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  line-height: 16px;
+  margin: 4px 0 0;
+}
+
 .empty-state {
   color: var(--cr-secondary-text-color);
   font-size: 14px;
@@ -65,10 +75,8 @@ h1 {
 .cards-list {
   box-sizing: border-box;
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: 8px;
-  min-height: 0;
   padding-block-end: 28px;
   width: 100%;
 }

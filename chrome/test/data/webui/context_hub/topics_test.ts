@@ -6,17 +6,21 @@ import 'chrome://context-hub/topics/topic_collection_carousel.js';
 import 'chrome://context-hub/topics/topic_details.js';
 import 'chrome://context-hub/topics/topics_view.js';
 
-import {browserProxyFactory, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
-import type {Topic, TopicCollection, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import {browserProxyFactory, PageHandlerRemote, TopicDefectCategory, TopicRating} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import type {Topic, TopicCollection, TopicFeedback, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
 import type {TopicCardElement} from 'chrome://context-hub/topics/topic_card.js';
 import type {TopicCollectionCarouselElement} from 'chrome://context-hub/topics/topic_collection_carousel.js';
 import type {TopicDetailsElement} from 'chrome://context-hub/topics/topic_details.js';
 import {getSuggestedPrompts, TOPIC_DETAILS_TABS} from 'chrome://context-hub/topics/topic_details.js';
+import type {TopicFeedbackControlsElement} from 'chrome://context-hub/topics/topic_feedback_controls.js';
 import type {TopicSitesDialogElement} from 'chrome://context-hub/topics/topic_sites_dialog.js';
-import {BADGE_BACKGROUND_COLORS, DEFAULT_ICON, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, MAX_TOPIC_SITES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
+import {BADGE_BACKGROUND_COLORS, createEmptyTopicFeedback, createTopicSnapshot, DEFAULT_ICON, formatTopicFeedbackComment, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, isTopicFeedbackEmpty, isTopicFeedbackValid, MAX_TOPIC_SITES, normalizeTopicFeedbackComment, parseTopicFeedbackComment, TOPIC_DEFECT_CATEGORIES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
 import type {BadgeShape, Collection} from 'chrome://context-hub/topics/topic_utils.js';
 import type {TopicsViewElement} from 'chrome://context-hub/topics/topics_view.js';
+import type {CrChipElement} from 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -225,6 +229,95 @@ suite('TopicUtils', () => {
     assertDeepEquals(
         ['Title 1', 'Prompt 2', 'Title 3'], getSuggestedPrompts(item));
   });
+
+  test('createTopicSnapshot captures the topic as shown', () => {
+    const snapshot = createTopicSnapshot(toTopicItem(createTopic()));
+    assertEquals('Topic title', snapshot.title);
+    assertEquals(EMOJI, snapshot.emoji);
+    assertEquals('Long overview.', snapshot.overview);
+    assertDeepEquals(
+        [3, 2, 1], snapshot.visitTimes.map(time => Number(time.internalValue)));
+
+    // The default icon isn't an emoji.
+    assertEquals(
+        '', createTopicSnapshot(toTopicItem(createTopic({emoji: null}))).emoji);
+  });
+
+  test('defect categories cover every TopicDefectCategory once', () => {
+    const categories = TOPIC_DEFECT_CATEGORIES.map(item => item.category);
+    assertEquals(
+        TopicDefectCategory.MAX_VALUE - TopicDefectCategory.MIN_VALUE + 1,
+        new Set(categories).size);
+    assertEquals(categories.length, new Set(categories).size);
+    assertTrue(TOPIC_DEFECT_CATEGORIES.every(
+        item => !!item.label && !!item.description));
+  });
+
+  test('isTopicFeedbackValid requires a defect and an Other comment', () => {
+    const empty = createEmptyTopicFeedback(toTopicItem(createTopic()));
+    assertTrue(isTopicFeedbackValid(empty));
+    assertTrue(isTopicFeedbackEmpty(empty));
+    assertTrue(isTopicFeedbackValid({...empty, rating: TopicRating.kLiked}));
+    assertFalse(isTopicFeedbackEmpty({...empty, rating: TopicRating.kLiked}));
+
+    const disliked = {...empty, rating: TopicRating.kDisliked};
+    assertFalse(isTopicFeedbackValid(disliked));
+    assertTrue(isTopicFeedbackValid(
+        {...disliked, defects: [TopicDefectCategory.kTooBroad]}));
+
+    const other = {...disliked, defects: [TopicDefectCategory.kOther]};
+    assertFalse(isTopicFeedbackValid(other));
+    assertFalse(isTopicFeedbackValid({...other, comment: ' '}));
+    assertTrue(isTopicFeedbackValid({...other, comment: 'Why'}));
+    // Suggestions alone don't describe the issue.
+    assertFalse(
+        isTopicFeedbackValid({...other, comment: 'Better title: New title'}));
+  });
+
+  test('suggestions are stored as lines at the end of the comment', () => {
+    const suggestions = new Map([
+      [TopicDefectCategory.kOverviewInaccurate, 'New\noverview'],
+      [TopicDefectCategory.kTitleWrongOrVague, 'New title'],
+    ]);
+    const comment = formatTopicFeedbackComment('Some text', suggestions);
+    assertEquals(
+        'Some text\n\nBetter title: New title\nBetter overview: New overview',
+        comment);
+
+    const parsed = parseTopicFeedbackComment(comment);
+    assertEquals('Some text', parsed.text);
+    assertEquals(
+        'New title',
+        parsed.suggestions.get(TopicDefectCategory.kTitleWrongOrVague));
+    assertEquals(
+        'New overview',
+        parsed.suggestions.get(TopicDefectCategory.kOverviewInaccurate));
+    assertFalse(parsed.suggestions.has(TopicDefectCategory.kEmojiWrong));
+
+    // Without text, the comment is just the suggestions.
+    assertEquals(
+        'Better emoji: X',
+        formatTopicFeedbackComment(
+            '', new Map([[TopicDefectCategory.kEmojiWrong, 'X']])));
+    // Without suggestions, the comment is just the text.
+    assertEquals('Text', formatTopicFeedbackComment('Text', new Map()));
+    assertEquals('Text', parseTopicFeedbackComment('Text').text);
+    assertEquals(0, parseTopicFeedbackComment('Text').suggestions.size);
+
+    // Text and suggestions keep their whitespace while being edited...
+    const editing = formatTopicFeedbackComment(
+        'Text\n', new Map([[TopicDefectCategory.kTitleWrongOrVague, 'A ']]));
+    assertEquals('Text\n', parseTopicFeedbackComment(editing).text);
+    assertEquals(
+        'A ',
+        parseTopicFeedbackComment(editing).suggestions.get(
+            TopicDefectCategory.kTitleWrongOrVague));
+    // ...and are trimmed when stored, dropping blank suggestions.
+    assertEquals(
+        'Text\n\nBetter title: A', normalizeTopicFeedbackComment(editing));
+    assertEquals(
+        'Text', normalizeTopicFeedbackComment('Text\n\nBetter title:  '));
+  });
 });
 
 suite('TopicsView', () => {
@@ -233,7 +326,8 @@ suite('TopicsView', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({kTopics: true});
+    loadTimeData.overrideValues(
+        {kTopics: true, kTopicsFishfoodFeedback: false});
     handler = TestMock.fromClass(PageHandlerRemote);
     const {instance} = browserProxyFactory.createForTest(handler);
     browserProxyFactory.setInstance(instance);
@@ -301,6 +395,298 @@ suite('TopicsView', () => {
     const params = new URLSearchParams(search);
     assertEquals('topic-1', params.get('id'));
     assertEquals('1', params.get('open_glic'));
+  });
+
+  test('hides fishfood feedback controls when it is off', async () => {
+    handler.setResultFor(
+        'getTopics', Promise.resolve({topics: [createTopic()]}));
+    await createView();
+
+    assertFalse(!!query('#sendFeedbackButton'));
+    assertFalse(!!query('#fishfoodNote'));
+    const card = query('topic-card') as TopicCardElement;
+    assertFalse(!!card.shadowRoot.querySelector('topic-feedback-controls'));
+    assertEquals(0, handler.getCallCount('getTopicFeedbacks'));
+  });
+});
+
+suite('TopicsFeedback', () => {
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let view: TopicsViewElement;
+  let card: TopicCardElement;
+  let controls: TopicFeedbackControlsElement;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({kTopics: true, kTopicsFishfoodFeedback: true});
+    handler = TestMock.fromClass(PageHandlerRemote);
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    handler.setResultFor(
+        'getTopics', Promise.resolve({topics: [createTopic()]}));
+  });
+
+  async function createView(feedbacks: TopicFeedback[] = []) {
+    handler.setResultFor('getTopicFeedbacks', Promise.resolve({feedbacks}));
+    view = document.createElement('topics-view');
+    document.body.appendChild(view);
+    await microtasksFinished();
+    card = view.shadowRoot.querySelector('topic-card')!;
+    controls = card.shadowRoot.querySelector('topic-feedback-controls')!;
+  }
+
+  function queryCard<T extends HTMLElement = HTMLElement>(selector: string): T|
+      null {
+    return controls.shadowRoot.querySelector<T>(selector);
+  }
+
+  function getChip(category: TopicDefectCategory): CrChipElement {
+    return queryCard<CrChipElement>(`cr-chip[data-category="${category}"]`)!;
+  }
+
+  async function click(selector: string) {
+    queryCard(selector)!.click();
+    await microtasksFinished();
+  }
+
+  async function clickChip(category: TopicDefectCategory) {
+    getChip(category).click();
+    await microtasksFinished();
+  }
+
+  function getLastSavedFeedback(): TopicFeedback {
+    const args = handler.getArgs('setTopicFeedback');
+    return args[args.length - 1];
+  }
+
+  test('loads feedback and shows the send feedback button', async () => {
+    await createView();
+    assertEquals(1, handler.getCallCount('getTopicFeedbacks'));
+    assertTrue(!!view.shadowRoot.querySelector('#sendFeedbackButton'));
+    assertTrue(!!view.shadowRoot.querySelector('#fishfoodNote'));
+    assertTrue(!!controls);
+    assertTrue(!!queryCard('#thumbsUp'));
+    assertTrue(!!queryCard('#thumbsDown'));
+    assertEquals(
+        'Good topic: Topic title',
+        queryCard('#thumbsUp')!.getAttribute('aria-label'));
+    assertEquals(
+        'Bad topic: Topic title',
+        queryCard('#thumbsDown')!.getAttribute('aria-label'));
+    assertFalse(!!queryCard('#defectsPanel'));
+  });
+
+  test('reloads feedback when the tab is shown again', async () => {
+    await createView();
+    assertEquals(null, card.feedback);
+
+    // The topic was rated on its details page in another tab.
+    const rated: TopicFeedback = {
+      ...createEmptyTopicFeedback(toTopicItem(createTopic())),
+      rating: TopicRating.kLiked,
+    };
+    handler.setResultFor(
+        'getTopicFeedbacks', Promise.resolve({feedbacks: [rated]}));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await microtasksFinished();
+
+    assertEquals(2, handler.getCallCount('getTopicFeedbacks'));
+    assertEquals(TopicRating.kLiked, card.feedback!.rating);
+  });
+
+  test('send feedback button fires an event', async () => {
+    await createView();
+    let fired = false;
+    view.addEventListener('send-feedback-click', () => fired = true);
+    view.shadowRoot.querySelector<HTMLElement>('#sendFeedbackButton')!.click();
+    assertTrue(fired);
+  });
+
+  test('thumbs up saves a liked rating with a snapshot', async () => {
+    await createView();
+    await click('#thumbsUp');
+
+    assertEquals(1, handler.getCallCount('setTopicFeedback'));
+    const feedback = getLastSavedFeedback();
+    assertEquals('topic-1', feedback.id);
+    assertEquals(TopicRating.kLiked, feedback.rating);
+    assertDeepEquals([], feedback.defects);
+    assertEquals('Topic title', feedback.snapshot.title);
+    assertEquals(EMOJI, feedback.snapshot.emoji);
+    assertEquals('Long overview.', feedback.snapshot.overview);
+    assertEquals(3, feedback.snapshot.visitTimes.length);
+    assertEquals('true', queryCard('#thumbsUp')!.getAttribute('aria-pressed'));
+    assertFalse(!!queryCard('#defectsPanel'));
+
+    // Clicking it again clears the rating.
+    await click('#thumbsUp');
+    assertEquals('topic-1', await handler.whenCalled('deleteTopicFeedback'));
+    assertEquals('false', queryCard('#thumbsUp')!.getAttribute('aria-pressed'));
+  });
+
+  test('thumbs down needs a defect, and saves each chip toggle', async () => {
+    await createView();
+    await click('#thumbsDown');
+
+    assertTrue(!!queryCard('#defectsPanel'));
+    assertTrue(!!queryCard('#defectError'));
+    assertEquals(
+        TOPIC_DEFECT_CATEGORIES.length,
+        controls.shadowRoot.querySelectorAll('cr-chip').length);
+    assertEquals(0, handler.getCallCount('setTopicFeedback'));
+
+    await clickChip(TopicDefectCategory.kTooBroad);
+    await clickChip(TopicDefectCategory.kEmojiWrong);
+    assertFalse(!!queryCard('#defectError'));
+    assertTrue(getChip(TopicDefectCategory.kTooBroad).selected);
+    assertTrue(getChip(TopicDefectCategory.kEmojiWrong).selected);
+    assertEquals(2, handler.getCallCount('setTopicFeedback'));
+    let feedback = getLastSavedFeedback();
+    assertEquals(TopicRating.kDisliked, feedback.rating);
+    assertDeepEquals(
+        [TopicDefectCategory.kTooBroad, TopicDefectCategory.kEmojiWrong],
+        feedback.defects);
+
+    await clickChip(TopicDefectCategory.kTooBroad);
+    assertFalse(getChip(TopicDefectCategory.kTooBroad).selected);
+    feedback = getLastSavedFeedback();
+    assertDeepEquals([TopicDefectCategory.kEmojiWrong], feedback.defects);
+
+    // Deselecting the last defect isn't valid, so isn't saved.
+    await clickChip(TopicDefectCategory.kEmojiWrong);
+    assertEquals(3, handler.getCallCount('setTopicFeedback'));
+    assertTrue(!!queryCard('#defectError'));
+  });
+
+  test('chips show a short label and the full description', async () => {
+    await createView();
+    await click('#thumbsDown');
+
+    const chip = getChip(TopicDefectCategory.kCombinesSeparateTopics);
+    assertEquals('Mixes topics', chip.textContent.trim());
+    assertEquals('Combines separate topics', chip.title);
+    assertEquals('Combines separate topics', chip.chipAriaLabel);
+  });
+
+  test('Other requires a comment', async () => {
+    await createView();
+    await click('#thumbsDown');
+    await clickChip(TopicDefectCategory.kOther);
+
+    const comment = queryCard<CrTextareaElement>('#comment')!;
+    assertTrue(comment.required);
+    assertTrue(comment.invalid);
+    assertTrue(!!comment.firstFooter);
+    assertEquals('flex', getComputedStyle(comment.$.footerContainer).display);
+    assertEquals(0, handler.getCallCount('setTopicFeedback'));
+
+    async function enterComment(value: string) {
+      comment.$.input.value = value;
+      comment.$.input.dispatchEvent(new Event('input'));
+      comment.$.input.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+    }
+
+    // Whitespace isn't a comment.
+    await enterComment('  ');
+    assertTrue(comment.invalid);
+    assertEquals(0, handler.getCallCount('setTopicFeedback'));
+
+    await enterComment(' Not a real topic ');
+    assertFalse(comment.invalid);
+    assertEquals('none', getComputedStyle(comment.$.footerContainer).display);
+    assertEquals(1, handler.getCallCount('setTopicFeedback'));
+    const feedback = getLastSavedFeedback();
+    assertDeepEquals([TopicDefectCategory.kOther], feedback.defects);
+    assertEquals('Not a real topic', feedback.comment);
+  });
+
+  test('asks for a better title, emoji or overview', async () => {
+    await createView();
+    await click('#thumbsDown');
+    assertEquals(0, controls.shadowRoot.querySelectorAll('.suggestion').length);
+
+    await clickChip(TopicDefectCategory.kOverviewInaccurate);
+    await clickChip(TopicDefectCategory.kTitleWrongOrVague);
+    await clickChip(TopicDefectCategory.kTooBroad);
+    const inputs =
+        controls.shadowRoot.querySelectorAll<CrInputElement>('.suggestion');
+    // In display order, whatever order the chips were picked in.
+    assertDeepEquals(
+        ['Better title', 'Better overview'],
+        Array.from(inputs, input => input.label));
+
+    async function enter(element: CrInputElement|CrTextareaElement,
+                         value: string) {
+      element.$.input.value = value;
+      element.$.input.dispatchEvent(new Event('input'));
+      element.$.input.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+    }
+
+    await enter(inputs[0]!, ' New title ');
+    assertEquals('Better title: New title', getLastSavedFeedback().comment);
+
+    const comment = queryCard<CrTextareaElement>('#comment')!;
+    await enter(comment, 'Some text');
+    assertEquals(
+        'Some text\n\nBetter title: New title', getLastSavedFeedback().comment);
+    // The textarea only shows the rater's own text.
+    assertEquals('Some text', comment.value);
+
+    await enter(inputs[1]!, 'New overview');
+    assertEquals(
+        'Some text\n\nBetter title: New title\nBetter overview: New overview',
+        getLastSavedFeedback().comment);
+
+    // Deselecting a defect drops its suggestion.
+    await clickChip(TopicDefectCategory.kTitleWrongOrVague);
+    assertEquals(1, controls.shadowRoot.querySelectorAll('.suggestion').length);
+    assertEquals(
+        'Some text\n\nBetter overview: New overview',
+        getLastSavedFeedback().comment);
+  });
+
+  test('shows stored suggestions in their fields', async () => {
+    const stored: TopicFeedback = {
+      ...createEmptyTopicFeedback(toTopicItem(createTopic())),
+      rating: TopicRating.kDisliked,
+      defects: [TopicDefectCategory.kEmojiWrong],
+      comment: 'Stored comment\n\nBetter emoji: X',
+    };
+    await createView([stored]);
+
+    assertEquals(
+        'Stored comment', queryCard<CrTextareaElement>('#comment')!.value);
+    const input = queryCard<CrInputElement>('.suggestion')!;
+    assertEquals('Better emoji', input.label);
+    assertEquals('X', input.value);
+  });
+
+  test('shows stored feedback, and thumbs up clears its defects', async () => {
+    const stored: TopicFeedback = {
+      ...createEmptyTopicFeedback(toTopicItem(createTopic())),
+      rating: TopicRating.kDisliked,
+      defects: [TopicDefectCategory.kTooNarrowOrFragmented],
+      comment: 'Stored comment',
+      rejectedVisits: [{internalValue: 2n}],
+    };
+    await createView([stored]);
+
+    assertEquals(
+        'true', queryCard('#thumbsDown')!.getAttribute('aria-pressed'));
+    assertTrue(getChip(TopicDefectCategory.kTooNarrowOrFragmented).selected);
+    assertEquals(
+        'Stored comment', queryCard<CrTextareaElement>('#comment')!.value);
+
+    await click('#thumbsUp');
+    assertFalse(!!queryCard('#defectsPanel'));
+    const feedback = getLastSavedFeedback();
+    assertEquals(TopicRating.kLiked, feedback.rating);
+    assertDeepEquals([], feedback.defects);
+    assertEquals('', feedback.comment);
+    // Feedback the card doesn't edit is kept.
+    assertEquals(1, feedback.rejectedVisits.length);
   });
 });
 

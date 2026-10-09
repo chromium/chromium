@@ -5,14 +5,15 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
+import './topic_feedback_controls.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './topic_card.css.js';
 import {getHtml} from './topic_card.html.js';
-import {getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, isCrIcon} from './topic_utils.js';
-import type {TopicItem} from './topic_utils.js';
+import {getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, isCrIcon, isTopicsFishfoodFeedbackEnabled} from './topic_utils.js';
+import type {TopicFeedback, TopicItem} from './topic_utils.js';
 
 // TODO(crbug.com/558572977): Use internationalized strings once GRD
 // strings are added.
@@ -32,10 +33,16 @@ export class TopicCardElement extends CrLitElement {
   static override get properties() {
     return {
       topic: {type: Object},
+      // The stored fishfood feedback on `topic`, if any.
+      feedback: {type: Object},
+      feedbackEnabled_: {type: Boolean},
     };
   }
 
   accessor topic: TopicItem|null = null;
+  accessor feedback: TopicFeedback|null = null;
+  protected accessor feedbackEnabled_: boolean =
+      isTopicsFishfoodFeedbackEnabled();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

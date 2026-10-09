@@ -12,7 +12,21 @@ export function getHtml(this: TopicsViewElement) {
     <main id="topics-view" aria-busy="${this.loadState_ === 'loading'}">
       <section class="container">
         <div class="header-container">
-          <h1>Topics</h1>
+          <div>
+            <h1>Topics</h1>
+            ${this.feedbackEnabled_ ? html`
+              <p id="fishfoodNote">
+                Fishfood: rate each topic with thumbs up or down. These
+                controls are temporary and only shown for testing.
+              </p>
+            ` : ''}
+          </div>
+          ${this.feedbackEnabled_ ? html`
+            <cr-button id="sendFeedbackButton"
+                @click="${this.onSendFeedbackClick_}">
+              Send fishfood feedback
+            </cr-button>
+          ` : ''}
         </div>
 
         ${this.loadState_ === 'error' ? html`
@@ -30,7 +44,9 @@ export function getHtml(this: TopicsViewElement) {
               aria-label="Topics">
             ${repeat(this.topics, topic => topic.id, topic => html`
               <topic-card role="listitem" .topic="${topic}"
-                  @jump-back-in="${this.onJumpBackIn_}">
+                  .feedback="${this.getFeedback_(topic)}"
+                  @jump-back-in="${this.onJumpBackIn_}"
+                  @topic-feedback-change="${this.onTopicFeedbackChange_}">
               </topic-card>
             `)}
           </div>

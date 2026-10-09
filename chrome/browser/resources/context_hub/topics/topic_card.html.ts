@@ -39,6 +39,13 @@ ${this.hasContent_() ? html`
         @click="${this.onJumpBackInClick_}">
       Jump back in
     </cr-button>
+
+    ${this.feedbackEnabled_ ? html`
+      <!-- Bottom: Temporary Fishfood Feedback, on its own row -->
+      <topic-feedback-controls .topic="${this.topic}"
+          .feedback="${this.feedback}">
+      </topic-feedback-controls>
+    ` : ''}
 ` : ''}
   <!--_html_template_end_-->`;
   // clang-format on

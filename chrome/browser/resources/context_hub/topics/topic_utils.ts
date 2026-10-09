@@ -10,9 +10,10 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import type {Topic, TopicCollection, TopicCollectionItem, TopicContinuationQuery, TopicVisit} from '../context_hub.mojom-webui.js';
+import {TopicDefectCategory, TopicRating} from '../context_hub.mojom-webui.js';
+import type {Topic, TopicCollection, TopicCollectionItem, TopicContinuationQuery, TopicFeedback, TopicSnapshot, TopicVisit} from '../context_hub.mojom-webui.js';
 
-export type {TopicContinuationQuery, TopicVisit} from '../context_hub.mojom-webui.js';
+export type {TopicContinuationQuery, TopicFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
 
 // A page in a `Collection`, as rendered on its carousel card.
 export interface CollectionItem {
@@ -55,6 +56,223 @@ export const DEFAULT_ICON = 'cr:insert-drive-file';
 export function isTopicsEnabled(): boolean {
   return loadTimeData.valueExists('kTopics') &&
       loadTimeData.getBoolean('kTopics');
+}
+
+// The topics feedback Mojo methods are additionally gated by the
+// `fishfood_feedback` param of kTopics, so they and the rating controls must
+// only be used when this returns true.
+export function isTopicsFishfoodFeedbackEnabled(): boolean {
+  return loadTimeData.valueExists('kTopicsFishfoodFeedback') &&
+      loadTimeData.getBoolean('kTopicsFishfoodFeedback');
+}
+
+export interface TopicDefectCategoryOption {
+  category: TopicDefectCategory;
+  // Short chip text.
+  label: string;
+  // The full wording documented on `TopicDefectCategory`, shown as the chip's
+  // tooltip and used as its accessible name.
+  description: string;
+}
+
+// The defect categories a rater can select when disliking a topic, in display
+// order.
+export const TOPIC_DEFECT_CATEGORIES: readonly TopicDefectCategoryOption[] = [
+  {
+    category: TopicDefectCategory.kIrrelevantInformationIncluded,
+    label: 'Irrelevant content',
+    description: 'Irrelevant information included',
+  },
+  {
+    category: TopicDefectCategory.kRelatedInformationMissing,
+    label: 'Missing content',
+    description: 'Related information missing',
+  },
+  {
+    category: TopicDefectCategory.kTitleWrongOrVague,
+    label: 'Wrong title',
+    description: 'Title wrong/vague',
+  },
+  {
+    category: TopicDefectCategory.kEmojiWrong,
+    label: 'Wrong emoji',
+    description: 'Emoji wrong',
+  },
+  {
+    category: TopicDefectCategory.kOverviewInaccurate,
+    label: 'Wrong overview',
+    description: 'Overview inaccurate',
+  },
+  {
+    category: TopicDefectCategory.kTooBroad,
+    label: 'Too broad',
+    description: 'Too broad',
+  },
+  {
+    category: TopicDefectCategory.kCombinesSeparateTopics,
+    label: 'Mixes topics',
+    description: 'Combines separate topics',
+  },
+  {
+    category: TopicDefectCategory.kTooNarrowOrFragmented,
+    label: 'Too narrow',
+    description: 'Too narrow / fragmented',
+  },
+  {
+    category: TopicDefectCategory.kIncidentalBrowsing,
+    label: 'Accidental browsing',
+    description: 'Incidental browsing (not intended)',
+  },
+  {
+    category: TopicDefectCategory.kDuplicateOfAnotherTopic,
+    label: 'Overlaps another topic',
+    // Reworded from the enum's "Duplicate of another topic", since topics are
+    // rarely exact duplicates, but rather parts of the same larger goal.
+    description: 'Overlaps with another topic, and should be combined with it',
+  },
+  {
+    category: TopicDefectCategory.kSensitiveTopic,
+    label: 'Sensitive topic',
+    description: 'Sensitive topic shouldn\'t be shown',
+  },
+  {
+    category: TopicDefectCategory.kOther,
+    label: 'Other',
+    description: 'Other (describe it in the comment)',
+  },
+];
+
+export interface TopicSuggestionField {
+  // The defect that prompts for the suggestion.
+  defect: TopicDefectCategory;
+  // The suggestion field's label, also its prefix in the stored comment.
+  label: string;
+}
+
+// The defects for which the rater is also asked what would be better, in
+// display order. Until `TopicFeedback` has fields for them, the suggestions are
+// stored as "<label>: <suggestion>" lines at the end of its comment.
+export const TOPIC_SUGGESTION_FIELDS: readonly TopicSuggestionField[] = [
+  {defect: TopicDefectCategory.kTitleWrongOrVague, label: 'Better title'},
+  {defect: TopicDefectCategory.kEmojiWrong, label: 'Better emoji'},
+  {defect: TopicDefectCategory.kOverviewInaccurate, label: 'Better overview'},
+];
+
+// A stored comment split into the rater's own text and their suggestions, by
+// the defect they're for.
+export interface TopicFeedbackComment {
+  text: string;
+  suggestions: Map<TopicDefectCategory, string>;
+}
+
+// Splits `comment` into the rater's text and the suggestion lines that
+// `formatTopicFeedbackComment()` appended to it.
+export function parseTopicFeedbackComment(comment: string):
+    TopicFeedbackComment {
+  const lines = comment.split('\n');
+  const suggestions = new Map<TopicDefectCategory, string>();
+  while (lines.length > 0) {
+    const line = lines[lines.length - 1]!;
+    const field = TOPIC_SUGGESTION_FIELDS.find(
+        field => line.startsWith(`${field.label}: `));
+    if (!field || suggestions.has(field.defect)) {
+      break;
+    }
+    suggestions.set(field.defect, line.slice(field.label.length + 2));
+    lines.pop();
+  }
+  let text = lines.join('\n');
+  // Drop the blank line separating the text from the suggestions.
+  if (suggestions.size > 0 && text.endsWith('\n')) {
+    text = text.slice(0, -1);
+  }
+  return {text, suggestions};
+}
+
+// Appends the non-empty `suggestions` to `text` as one line each. Doesn't trim
+// anything, so that it can run on every keystroke; use
+// `normalizeTopicFeedbackComment()` before storing the result.
+export function formatTopicFeedbackComment(
+    text: string, suggestions: Map<TopicDefectCategory, string>): string {
+  const lines = TOPIC_SUGGESTION_FIELDS.flatMap(field => {
+    // A suggestion has to stay on its line to be parsed back.
+    const suggestion =
+        (suggestions.get(field.defect) || '').replace(/[\r\n]+/g, ' ');
+    return suggestion ? [`${field.label}: ${suggestion}`] : [];
+  });
+  if (lines.length === 0) {
+    return text;
+  }
+  return text ? `${text}\n\n${lines.join('\n')}` : lines.join('\n');
+}
+
+// Trims the text and suggestions of `comment`, dropping blank suggestions.
+export function normalizeTopicFeedbackComment(comment: string): string {
+  const {text, suggestions} = parseTopicFeedbackComment(comment);
+  const trimmed = new Map(
+      Array.from(suggestions, ([defect, value]) => [defect, value.trim()]));
+  return formatTopicFeedbackComment(text.trim(), trimmed);
+}
+
+// Captures what `topic` looks like now, to store alongside its rating.
+// `timeRated` is set by the browser when the feedback is saved.
+export function createTopicSnapshot(topic: TopicItem): TopicSnapshot {
+  return {
+    title: topic.title,
+    emoji: isCrIcon(topic.icon) ? '' : topic.icon,
+    // The long overview, or the short one if that's all the topic has.
+    overview: topic.longDescription,
+    visitTimes: topic.visits.map(visit => visit.visitTime),
+    timeRated: {internalValue: 0n},
+  };
+}
+
+// Returns unrated feedback, with nothing filled in, for `topic`.
+export function createEmptyTopicFeedback(topic: TopicItem): TopicFeedback {
+  return {
+    id: topic.id,
+    snapshot: createTopicSnapshot(topic),
+    rating: TopicRating.kUnrated,
+    defects: [],
+    comment: '',
+    queryFeedbacks: [],
+    rejectedVisits: [],
+    duplicateOf: null,
+  };
+}
+
+// Whether `feedback` has a comment, ignoring surrounding whitespace.
+export function hasTopicFeedbackComment(feedback: TopicFeedback): boolean {
+  return feedback.comment.trim().length > 0;
+}
+
+// Whether `feedback`'s comment has text of the rater's own, besides any
+// suggestions, ignoring surrounding whitespace.
+export function hasTopicFeedbackCommentText(feedback: TopicFeedback): boolean {
+  return parseTopicFeedbackComment(feedback.comment).text.trim().length > 0;
+}
+
+// Whether `feedback` can be saved: a thumbs down needs at least one defect,
+// and the Other defect needs a comment.
+export function isTopicFeedbackValid(feedback: TopicFeedback): boolean {
+  if (feedback.rating === TopicRating.kDisliked &&
+      feedback.defects.length === 0) {
+    return false;
+  }
+  if (feedback.defects.includes(TopicDefectCategory.kOther) &&
+      !hasTopicFeedbackCommentText(feedback)) {
+    return false;
+  }
+  return true;
+}
+
+// Whether `feedback` holds nothing worth storing, in which case it should be
+// deleted rather than saved.
+export function isTopicFeedbackEmpty(feedback: TopicFeedback): boolean {
+  return feedback.rating === TopicRating.kUnrated &&
+      feedback.defects.length === 0 && !hasTopicFeedbackComment(feedback) &&
+      feedback.queryFeedbacks.length === 0 &&
+      feedback.rejectedVisits.length === 0 && !feedback.duplicateOf;
 }
 
 // Adapts a Topic from the browser process to what the topics UI renders. The

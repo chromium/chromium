@@ -1,0 +1,68 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Offsets the icon button padding ((32px - 18px) / 2) so the icons line up
+ * with the content above them. */
+#ratingRow {
+  display: flex;
+  margin-inline-start: -7px;
+}
+
+#ratingRow cr-icon-button {
+  --cr-icon-button-icon-size: 18px;
+  margin: 0;
+}
+
+#defectsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#defectsLabel {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+#defectChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+#defectChips cr-chip {
+  --cr-chip-height: 24px;
+}
+
+#defectChips cr-icon {
+  height: 14px;
+  width: 14px;
+}
+
+/* cr-textarea hides its footer by default. Show it while invalid, for the
+ * message asking for a comment on "Other". */
+#comment[invalid] {
+  --cr-textarea-footer-display: flex;
+}
+
+/* Matches the color of cr-textarea's invalid footer. */
+#defectError {
+  color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
+  font-size: 12px;
+  line-height: 16px;
+}
