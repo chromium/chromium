@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
+#include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 
@@ -24,12 +26,14 @@ namespace extensions {
 
 namespace {
 
-// Per-extension dict mapping `mime_type` -> bool (enabled flag).
-// A missing entry means the extension made no choice, so the manifest
-// decides.
-constexpr PrefMap kMimeHandlerEnabled = {"mime_handler_enabled",
+// Per-extension dict mapping `mime_type` -> options record.
+constexpr PrefMap kMimeHandlerOptions = {"mime_handler_options",
                                          PrefType::kDictionary,
                                          PrefScope::kExtensionSpecific};
+
+// Keys inside the per-MIME-type record of `kMimeHandlerOptions`. Each key
+// holds an option value that the extension chose at runtime.
+constexpr char kMimeHandlerEnabledKey[] = "enabled";
 
 class MimeHandlerRegistryFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -74,6 +78,40 @@ class MimeHandlerRegistryFactory : public BrowserContextKeyedServiceFactory {
   }
 };
 
+// Moves the per-MIME-type bools stored under "mime_handler_enabled" into
+// `kMimeHandlerOptions` records, then deletes the old key.
+// TODO(crbug.com/495538206): Remove after M160.
+void MigrateMimeHandlerEnabledToOptions(ExtensionPrefs& prefs) {
+  constexpr char kObsoleteMimeHandlerEnabledPref[] = "mime_handler_enabled";
+
+  const base::DictValue& extensions =
+      prefs.pref_service()->GetDict(pref_names::kExtensions);
+  for (const auto [extension_id, _] : extensions) {
+    if (!crx_file::id_util::IdIsValid(extension_id)) {
+      continue;
+    }
+    const base::DictValue* enabled_by_mime_type =
+        prefs.ReadPrefAsDict(extension_id, kObsoleteMimeHandlerEnabledPref);
+    if (!enabled_by_mime_type) {
+      continue;
+    }
+
+    base::DictValue options;
+    for (const auto [mime_type, value] : *enabled_by_mime_type) {
+      if (value.is_bool()) {
+        options.EnsureDict(mime_type)->Set(kMimeHandlerEnabledKey,
+                                           value.GetBool());
+      }
+    }
+    if (!options.empty()) {
+      prefs.SetDictionaryPref(extension_id, kMimeHandlerOptions,
+                              std::move(options));
+    }
+    prefs.UpdateExtensionPref(extension_id, kObsoleteMimeHandlerEnabledPref,
+                              std::nullopt);
+  }
+}
+
 }  // namespace
 
 // static
@@ -89,6 +127,8 @@ void MimeHandlerRegistry::EnsureFactoryBuilt() {
 
 MimeHandlerRegistry::MimeHandlerRegistry(content::BrowserContext* context)
     : browser_context_(*context) {
+  MigrateMimeHandlerEnabledToOptions(*ExtensionPrefs::Get(context));
+
   observation_.Observe(ExtensionRegistry::Get(context));
 
   // Register already-loaded extensions.
@@ -121,11 +161,12 @@ bool MimeHandlerRegistry::IsEnabledForMimeType(
   const MimeTypesHandler& handler =
       GetHandlerOfMimeType(extension_id, mime_type);
 
-  const base::DictValue* dict =
+  const base::DictValue* options =
       ExtensionPrefs::Get(&*browser_context_)
-          ->ReadPrefAsDictionary(extension_id, kMimeHandlerEnabled);
-  if (dict) {
-    std::optional<bool> stored = dict->FindBool(mime_type);
+          ->ReadPrefAsDictionary(extension_id, kMimeHandlerOptions);
+  if (const base::DictValue* record =
+          options ? options->FindDict(mime_type) : nullptr) {
+    std::optional<bool> stored = record->FindBool(kMimeHandlerEnabledKey);
     if (stored.has_value()) {
       return stored.value();
     }
@@ -152,13 +193,14 @@ void MimeHandlerRegistry::SetEnabledForMimeType(const ExtensionId& extension_id,
   //      overwrites the on-record setting. In-memory, profile-keyed
   //      storage for OTR may be the right answer.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(&*browser_context_);
-  base::DictValue dict;
+  base::DictValue options;
   if (const base::DictValue* existing =
-          prefs->ReadPrefAsDictionary(extension_id, kMimeHandlerEnabled)) {
-    dict = existing->Clone();
+          prefs->ReadPrefAsDictionary(extension_id, kMimeHandlerOptions)) {
+    options = existing->Clone();
   }
-  dict.Set(mime_type, enabled);
-  prefs->SetDictionaryPref(extension_id, kMimeHandlerEnabled, std::move(dict));
+  options.EnsureDict(mime_type)->Set(kMimeHandlerEnabledKey, enabled);
+  prefs->SetDictionaryPref(extension_id, kMimeHandlerOptions,
+                           std::move(options));
 
   // Mirror the new state in `handlers_by_type_` so lookups don't need
   // to consult prefs.
