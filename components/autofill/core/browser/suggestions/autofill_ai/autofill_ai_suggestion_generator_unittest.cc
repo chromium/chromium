@@ -206,6 +206,18 @@ std::u16string GetDriversLicenseName(const EntityInstance& entity) {
       ->GetCompleteInfo(kAppLocaleUS);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+Source GmailSource(std::string_view url, base::Time timestamp) {
+  return Source{.url = GURL(url),
+                .metadata = GmailSourceMetadata{.timestamp = timestamp}};
+}
+
+Source PhotosSource(std::string_view url, base::Time timestamp) {
+  return Source{.url = GURL(url),
+                .metadata = PhotosSourceMetadata{.timestamp = timestamp}};
+}
+#endif
+
 class AutofillAiSuggestionGeneratorTest : public testing::Test {
  public:
   explicit AutofillAiSuggestionGeneratorTest(
@@ -841,6 +853,346 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             {Suggestion::PersonalContextSourceCitation(
                                 GURL("https://photos.example.com"),
                                 gfx::Range(29, 32))})),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                                     l10n_util::GetStringUTF16(
+                                         IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                                     Suggestion::Icon::kSettings)))));
+}
+
+// Tests that when an entity has more than kMaxSourceAttributionCitations
+// sources, only the kMaxSourceAttributionCitations most recent sources across
+// apps are included in the attribution row.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContext_MoreThanMaxSources_CappedToMostRecent) {
+  // 7 sources (kMaxSourceAttributionCitations + 2 sources).
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {
+                           // T7: Newest Gmail
+                           GmailSource("https://mail.example.com/newest",
+                                       test::kJune2017),
+                           // T6: Newest Photos
+                           PhotosSource("https://photos.example.com/newest",
+                                        test::kJune2017 - base::Hours(1)),
+                           // T5: Second newest Gmail
+                           GmailSource("https://mail.example.com/second",
+                                       test::kJune2017 - base::Hours(2)),
+                           // T4: Second newest Photos
+                           PhotosSource("https://photos.example.com/second",
+                                        test::kJune2017 - base::Hours(3)),
+                           // T3: Third newest Gmail
+                           GmailSource("https://mail.example.com/third",
+                                       test::kJune2017 - base::Hours(4)),
+                           // T2: Oldest Photos (should be dropped, 6th)
+                           PhotosSource("https://photos.example.com/oldest",
+                                        test::kJune2017 - base::Hours(5)),
+                           // T1: Oldest Gmail (should be dropped, 7th)
+                           GmailSource("https://mail.example.com/oldest",
+                                       test::kJune2017 - base::Hours(6)),
+                       }},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  const std::u16string expected_source_label =
+      u"Suggested by Gemini · Gmail\u00A0[1]\u00A0[2]\u00A0[3] · "
+      u"Photos\u00A0[1]\u00A0[2]";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                 Suggestion::AutofillAiPayload(
+                                     passport_personal_context.guid())),
+                ChildrenAre(
+                    EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        expected_source_label, Suggestion::Icon::kSpark,
+                        Suggestion::AutofillAiPayload(
+                            passport_personal_context.guid(),
+                            {Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/newest"),
+                                 gfx::Range(28, 31)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/second"),
+                                 gfx::Range(32, 35)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/third"),
+                                 gfx::Range(36, 39)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://photos.example.com/newest"),
+                                 gfx::Range(49, 52)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://photos.example.com/second"),
+                                 gfx::Range(53, 56))})),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                                     l10n_util::GetStringUTF16(
+                                         IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                                     Suggestion::Icon::kSettings)))));
+}
+
+// Tests that sources without a timestamp (null timestamp) are ranked last
+// and therefore excluded when there are at least kMaxSourceAttributionCitations
+// timestamped sources.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContext_SourcesWithoutTimestamp_RankedLast) {
+  // First source listed has no timestamp (null timestamp), but 5 timestamped
+  // sources follow. The null-timestamp source should be ranked last and
+  // dropped.
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {
+                           GmailSource("https://mail.example.com/null-time",
+                                       base::Time()),
+                           GmailSource("https://mail.example.com/1",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/2",
+                                       test::kJune2017 - base::Hours(1)),
+                           GmailSource("https://mail.example.com/3",
+                                       test::kJune2017 - base::Hours(2)),
+                           GmailSource("https://mail.example.com/4",
+                                       test::kJune2017 - base::Hours(3)),
+                           GmailSource("https://mail.example.com/5",
+                                       test::kJune2017 - base::Hours(4)),
+                       }},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  const std::u16string expected_source_label =
+      u"Suggested by Gemini · "
+      u"Gmail\u00A0[1]\u00A0[2]\u00A0[3]\u00A0[4]\u00A0[5]";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                 Suggestion::AutofillAiPayload(
+                                     passport_personal_context.guid())),
+                ChildrenAre(
+                    EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        expected_source_label, Suggestion::Icon::kSpark,
+                        Suggestion::AutofillAiPayload(
+                            passport_personal_context.guid(),
+                            {Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/1"),
+                                 gfx::Range(28, 31)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/2"),
+                                 gfx::Range(32, 35)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/3"),
+                                 gfx::Range(36, 39)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/4"),
+                                 gfx::Range(40, 43)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/5"),
+                                 gfx::Range(44, 47))})),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                                     l10n_util::GetStringUTF16(
+                                         IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                                     Suggestion::Icon::kSettings)))));
+}
+
+// Tests that a source with an invalid URL is filtered out before capping and
+// does not consume a slot in the top kMaxSourceAttributionCitations citations.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_InvalidUrlDoesNotConsumeCap) {
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {
+                           GmailSource("not a valid url", test::kJune2017),
+                           GmailSource("https://mail.example.com/1",
+                                       test::kJune2017 - base::Hours(1)),
+                           GmailSource("https://mail.example.com/2",
+                                       test::kJune2017 - base::Hours(2)),
+                           GmailSource("https://mail.example.com/3",
+                                       test::kJune2017 - base::Hours(3)),
+                           GmailSource("https://mail.example.com/4",
+                                       test::kJune2017 - base::Hours(4)),
+                           GmailSource("https://mail.example.com/5",
+                                       test::kJune2017 - base::Hours(5)),
+                           GmailSource("https://mail.example.com/6",
+                                       test::kJune2017 - base::Hours(6)),
+                       }},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  const std::u16string expected_source_label =
+      u"Suggested by Gemini · "
+      u"Gmail\u00A0[1]\u00A0[2]\u00A0[3]\u00A0[4]\u00A0[5]";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                 Suggestion::AutofillAiPayload(
+                                     passport_personal_context.guid())),
+                ChildrenAre(
+                    EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        expected_source_label, Suggestion::Icon::kSpark,
+                        Suggestion::AutofillAiPayload(
+                            passport_personal_context.guid(),
+                            {Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/1"),
+                                 gfx::Range(28, 31)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/2"),
+                                 gfx::Range(32, 35)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/3"),
+                                 gfx::Range(36, 39)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/4"),
+                                 gfx::Range(40, 43)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/5"),
+                                 gfx::Range(44, 47))})),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                                     l10n_util::GetStringUTF16(
+                                         IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                                     Suggestion::Icon::kSettings)))));
+}
+
+// Tests that when multiple sources have the exact same timestamp, their
+// relative server order is preserved and only the first 5 survive the cap.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContext_SameTimestamp_PreservesServerOrder) {
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {
+                           GmailSource("https://mail.example.com/1",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/2",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/3",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/4",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/5",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/6",
+                                       test::kJune2017),
+                           GmailSource("https://mail.example.com/7",
+                                       test::kJune2017),
+                       }},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  const std::u16string expected_source_label =
+      u"Suggested by Gemini · "
+      u"Gmail\u00A0[1]\u00A0[2]\u00A0[3]\u00A0[4]\u00A0[5]";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                 Suggestion::AutofillAiPayload(
+                                     passport_personal_context.guid())),
+                ChildrenAre(
+                    EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        expected_source_label, Suggestion::Icon::kSpark,
+                        Suggestion::AutofillAiPayload(
+                            passport_personal_context.guid(),
+                            {Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/1"),
+                                 gfx::Range(28, 31)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/2"),
+                                 gfx::Range(32, 35)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/3"),
+                                 gfx::Range(36, 39)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/4"),
+                                 gfx::Range(40, 43)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/5"),
+                                 gfx::Range(44, 47))})),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                                     l10n_util::GetStringUTF16(
+                                         IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                                     Suggestion::Icon::kSettings)))));
+}
+
+// Tests that sources under the cap are reordered newest-first within each app.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_UnderCap_ReorderedByRecency) {
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {
+                           // Day 1: Oldest
+                           GmailSource("https://mail.example.com/day1",
+                                       test::kJune2017 - base::Days(2)),
+                           // Day 3: Newest
+                           GmailSource("https://mail.example.com/day3",
+                                       test::kJune2017),
+                           // Day 2: Middle
+                           GmailSource("https://mail.example.com/day2",
+                                       test::kJune2017 - base::Days(1)),
+                       }},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  const std::u16string expected_source_label =
+      u"Suggested by Gemini · Gmail\u00A0[1]\u00A0[2]\u00A0[3]";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(
+          MaybeSuggestedByGeminiTitle(),
+          AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                 Suggestion::AutofillAiPayload(
+                                     passport_personal_context.guid())),
+                ChildrenAre(
+                    EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        expected_source_label, Suggestion::Icon::kSpark,
+                        Suggestion::AutofillAiPayload(
+                            passport_personal_context.guid(),
+                            {Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/day3"),
+                                 gfx::Range(28, 31)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/day2"),
+                                 gfx::Range(32, 35)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com/day1"),
+                                 gfx::Range(36, 39))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(

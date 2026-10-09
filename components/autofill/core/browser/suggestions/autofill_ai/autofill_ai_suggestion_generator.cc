@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <memory>
 #include <ranges>
@@ -523,6 +524,10 @@ bool CanFillSomeField(const EntityInstance& entity,
 using EntityPayload = EntityInstance::PersonalContextRecordTypePayload;
 using SourceType = EntityPayload::Source::Type;
 
+// TODO(crbug.com/555710154): Replace recency ordering with a relevance score
+// once available on the client.
+constexpr size_t kMaxSourceAttributionCitations = 5;
+
 std::u16string PayloadSourceToAppName(SourceType source_type) {
   switch (source_type) {
     case SourceType::kPhotos:
@@ -532,16 +537,35 @@ std::u16string PayloadSourceToAppName(SourceType source_type) {
   }
 }
 
-// Groups valid source URLs by their `SourceType`.
+// Returns the (at most) `kMaxSourceAttributionCitations` most recent sources
+// with a valid URL, newest first. Sources with a null timestamp sort last;
+// ties keep their original (server) order.
+//
+// The returned pointers point into `payload_sources` and must not outlive it.
+std::vector<const EntityPayload::Source*> SelectMostRecentSources(
+    base::span<const EntityPayload::Source> payload_sources) {
+  std::vector<const EntityPayload::Source*> sources;
+  for (const EntityPayload::Source& source : payload_sources) {
+    if (source.url.is_valid()) {
+      sources.push_back(&source);
+    }
+  }
+  std::ranges::stable_sort(sources, std::ranges::greater(),
+                           &EntityPayload::Source::timestamp);
+  sources.resize(std::min(sources.size(), kMaxSourceAttributionCitations));
+  return sources;
+}
+
+// Groups the at most `kMaxSourceAttributionCitations` most recent valid sources
+// by `SourceType`, with URLs within each app ordered newest first.
 //
 // Returns a `base::flat_map` which keeps entries sorted by `SourceType`.
 base::flat_map<SourceType, std::vector<GURL>> GroupSourcesByApp(
     base::span<const EntityPayload::Source> payload_sources) {
   base::flat_map<SourceType, std::vector<GURL>> app_urls;
-  for (const EntityPayload::Source& source : payload_sources) {
-    if (source.url.is_valid()) {
-      app_urls[source.type()].emplace_back(source.url);
-    }
+  for (const EntityPayload::Source* source :
+       SelectMostRecentSources(payload_sources)) {
+    app_urls[source->type()].emplace_back(source->url);
   }
   return app_urls;
 }
