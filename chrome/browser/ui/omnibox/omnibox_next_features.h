@@ -108,6 +108,14 @@ extern const base::FeatureParam<bool> kShowContextMenu;
 extern const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam;
 // Controls whether small Loomnibox (480px width) is enabled.
 extern const base::FeatureParam<bool> kOmniboxEverywhereSmallLoomniboxParam;
+// Controls whether dynamic sizing is enabled for OmniboxEverywhere.
+extern const base::FeatureParam<bool> kOmniboxEverywhereDynamicSizingParam;
+// Controls the expanded content width (680 or 600) when DynamicSizing is
+// enabled.
+extern const base::FeatureParam<int> kOmniboxEverywhereDynamicSizingWidthParam;
+// Controls whether small (14px) font size is enabled for OmniboxEverywhere.
+extern const base::FeatureParam<bool> kOmniboxEverywhereSmallFontParam;
+
 // Controls showing titles under most visited tiles in OmniboxEverywhere.
 extern const base::FeatureParam<bool>
     kOmniboxEverywhereMostVisitedShowTitleParam;

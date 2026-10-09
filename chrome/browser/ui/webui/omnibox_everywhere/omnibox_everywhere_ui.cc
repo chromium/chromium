@@ -400,6 +400,12 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   AddMostVisitedSourceStrings(source);
   source->AddBoolean("smallLoomnibox",
                      omnibox::kOmniboxEverywhereSmallLoomniboxParam.Get());
+  source->AddBoolean("dynamicSizing",
+                     omnibox::kOmniboxEverywhereDynamicSizingParam.Get());
+  source->AddInteger("dynamicSizingWidth",
+                     omnibox::kOmniboxEverywhereDynamicSizingWidthParam.Get());
+  source->AddBoolean("smallFont",
+                     omnibox::kOmniboxEverywhereSmallFontParam.Get());
 
   source->AddBoolean("isPersistentMode",
                      !omnibox_everywhere::prefs::IsEphemeralModelEnabled());

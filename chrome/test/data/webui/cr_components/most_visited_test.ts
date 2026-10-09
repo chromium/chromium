@@ -2411,19 +2411,28 @@ suite('NonEditable', () => {
     titleElements.forEach(el => assertTrue(el.hidden));
   });
 
-  test('maxTiles limits total tiles in single row', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    await setUpTest({
-      nonEditable: true,
-      hideTitle: true,
-      singleRow: true,
-      maxTiles: 7,
-    });
-    await addTiles(10, /*customLinksEnabled=*/ false);
-    const tiles = queryTiles();
-    assertEquals(7, tiles.length);
-    tiles.forEach(el => assertFalse(el.hidden));
-  });
+  test(
+      'maxTiles limits total tiles in single row and updates dynamically',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        await setUpTest({
+          nonEditable: true,
+          hideTitle: true,
+          singleRow: true,
+          maxTiles: 7,
+        });
+        await addTiles(10, /*customLinksEnabled=*/ false);
+        let tiles = queryTiles();
+        assertEquals(7, tiles.length);
+        tiles.forEach(el => assertFalse(el.hidden));
+
+        // Verify dynamically changing maxTiles updates rendered tiles.
+        mostVisited.maxTiles = 5;
+        await microtasksFinished();
+        tiles = queryTiles();
+        assertEquals(5, tiles.length);
+        tiles.forEach(el => assertFalse(el.hidden));
+      });
 
   [false, true].forEach(hideTitle => {
     test(

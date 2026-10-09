@@ -79,7 +79,15 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // = 728px total window width (528px when smallLoomnibox is enabled).
   static constexpr int kPopupFixedWidth = 728;
   static constexpr int kPopupSmallFixedWidth = 528;
+  // Dynamic sizing popup window widths (32px left + 32px right body padding):
+  // - Expanded: 680px (Large) or 600px (Medium) content width + 64px = 744px /
+  //             664px.
+  // - Resting (persistent mode): 480px (Small) content width + 64px = 544px.
+  static constexpr int kDynamicPopupLargeFixedWidth = 744;
+  static constexpr int kDynamicPopupMediumFixedWidth = 664;
+  static constexpr int kDynamicPopupSmallFixedWidth = 544;
   static int GetPopupFixedWidth();
+  static int GetPopupExpandedFixedWidth();
   static constexpr int kDefaultRestingHeight = 152;
   // Resting height when the FRE intro modal is shown (searchbox + 2-row FRE
   // modal card + drop-shadow body padding).

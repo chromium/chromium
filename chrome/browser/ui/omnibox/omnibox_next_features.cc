@@ -120,6 +120,17 @@ const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam{
 // Controls whether small Loomnibox (480px width) is enabled.
 const base::FeatureParam<bool> kOmniboxEverywhereSmallLoomniboxParam{
     &kOmniboxEverywhere, "smallLoomnibox", true};
+// Controls whether dynamic sizing is enabled for OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereDynamicSizingParam{
+    &kOmniboxEverywhere, "DynamicSizing", false};
+// Controls the expanded content width (680 or 600) when DynamicSizing is
+// enabled.
+const base::FeatureParam<int> kOmniboxEverywhereDynamicSizingWidthParam{
+    &kOmniboxEverywhere, "DynamicSizingWidth", 680};
+// Controls whether small (14px) font size is enabled for OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereSmallFontParam{
+    &kOmniboxEverywhere, "SmallFont", false};
+
 // Controls showing titles under most visited tiles in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedShowTitleParam{
     &kOmniboxEverywhere, "MostVisitedShowTitle", true};

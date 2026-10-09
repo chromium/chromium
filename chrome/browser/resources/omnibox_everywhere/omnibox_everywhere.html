@@ -15,6 +15,14 @@
       max-width: 100vw;
     }
 
+    /* Override the default max-width: 100vw (which equals 544px when the
+     * persistent C++ widget is resting) so Blink's EnableAutoResize can measure
+     * the expanded app width and resize the native widget window. */
+    html:has(omnibox-everywhere-app[dynamic-sizing]) {
+      max-width: none;
+      width: max-content;
+    }
+
     body {
       background-color: transparent;
       height: auto;
@@ -22,6 +30,14 @@
        * widget bounds. */
       padding: 24px;
       margin: 0;
+    }
+
+    /* Shrink-wrap <body> to the app's intrinsic width for EnableAutoResize and
+     * use 32px horizontal padding so the CSS drop-shadow/glow is not clipped at
+     * the right edge. */
+    body:has(omnibox-everywhere-app[dynamic-sizing]) {
+      padding: 24px 32px;
+      width: max-content;
     }
   </style>
 </head>

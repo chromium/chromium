@@ -1039,6 +1039,16 @@ const FeatureEntry::Choice kOmniboxLoomChoices[] = {
      "OmniboxEverywhere:Multiline/false,IPH_OmniboxEverywhereLensPromo"},
     {"Enabled with Profile Picker", switches::kEnableFeatures,
      "OmniboxEverywhere:ProfilePicker/true,IPH_OmniboxEverywhereLensPromo"},
+    {"Enabled with Small Font (14px)", switches::kEnableFeatures,
+     "OmniboxEverywhere:SmallFont/true,IPH_OmniboxEverywhereLensPromo"},
+    {"Enabled with Dynamic Sizing (680px, 14px Font)",
+     switches::kEnableFeatures,
+     "OmniboxEverywhere:DynamicSizing/true/DynamicSizingWidth/680/"
+     "SmallFont/true,IPH_OmniboxEverywhereLensPromo"},
+    {"Enabled with Dynamic Sizing (600px, 14px Font)",
+     switches::kEnableFeatures,
+     "OmniboxEverywhere:DynamicSizing/true/DynamicSizingWidth/600/"
+     "SmallFont/true,IPH_OmniboxEverywhereLensPromo"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "OmniboxEverywhere,IPH_OmniboxEverywhereLensPromo"},
 };
