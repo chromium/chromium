@@ -239,5 +239,45 @@ class TargetDetailsWindowsTest(unittest.TestCase):
       )
 
 
+class BlackboxCoverageTest(unittest.TestCase):
+  def test_run_testcases_continuous_merges_all_profraws(self):
+    def write_profiles(env, **_):
+      out_dir = os.path.dirname(env['LLVM_PROFILE_FILE'])
+      for name, data in [
+        ('t_1.profraw', 'x'),
+        ('child_pool-0.profraw', 'x'),
+        ('child_pool-1.profraw', ''),
+      ]:
+        pathlib.Path(out_dir, name).write_text(data)
+      return True
+
+    env = {}
+    runner = mock.Mock(**{'run_testcases.side_effect': write_profiles})
+    with mock.patch.object(run_all_fuzzers, '_accumulated_profdata_merge') as m:
+      run_all_fuzzers._run_testcases(
+        'chrome', runner, env, ['t.html'], 'out.profdata', 1, True
+      )
+    self.assertTrue(env['LLVM_PROFILE_FILE'].endswith('_%p%c.profraw'))
+    merged = sorted(os.path.basename(f) for f in m.call_args[0][0])
+    self.assertEqual(merged, ['child_pool-0.profraw', 't_1.profraw'])
+
+  def test_blackbox_target_details(self):
+    with tempfile.TemporaryDirectory() as bin_dir:
+      chrome = os.path.join(bin_dir, 'chrome')
+      pathlib.Path(chrome).touch(mode=0o755)
+      args = argparse.Namespace(
+        fuzzer_binaries_dir=bin_dir,
+        fuzzer_corpora_dir='corpus',
+        fuzzer='blackbox',
+        target='chrome',
+        target_args='--foo "--bar=a b"',
+        testcase_timeout=20,
+      )
+      with mock.patch.dict(os.environ, {'DISPLAY': ':99'}):
+        (details,) = run_all_fuzzers._get_blackbox_target_details(args)
+    self.assertEqual(details['cmd_runner'].cmd, [chrome, '--foo', '--bar=a b'])
+    self.assertTrue(details['continuous_profiling'])
+
+
 if __name__ == '__main__':
   unittest.main()

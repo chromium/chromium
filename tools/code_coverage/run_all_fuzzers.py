@@ -17,6 +17,7 @@ import logging
 import math
 import os
 import pathlib
+import shlex
 import subprocess
 import sys
 import shutil
@@ -673,6 +674,7 @@ def _run_testcases(
   testcases: Sequence[str],
   target_profdata: str,
   timeout: float,
+  continuous_profiling: bool = False,
 ) -> bool:
   """Runs the given testcases and tries to generate a profdata file out of the
   runs. If the testcases are failing too frequently, the execution will be
@@ -685,13 +687,18 @@ def _run_testcases(
       testcases: the list of test cases to run.
       target_profdata: the profdata to write to.
       timeout: the timeout for each test case.
+      continuous_profiling: write counters to disk as they change (%c), rather
+        than at exit. Needed when processes are terminated without running exit
+        handlers, e.g. Chrome's child processes.
 
   Returns:
       whether it succeeded or not.
   """
   profraw_dir = tempfile.TemporaryDirectory()
-  profraw_file = os.path.join(profraw_dir.name, 'testcase_strategy_%p.profraw')
-  env['LLVM_PROFILE_FILE'] = profraw_file
+  pid_pattern = '%p%c' if continuous_profiling else '%p'
+  env['LLVM_PROFILE_FILE'] = os.path.join(
+    profraw_dir.name, f'testcase_strategy_{pid_pattern}.profraw'
+  )
   failures = 0
   total_runs = 0
   logging.info(
@@ -711,7 +718,11 @@ def _run_testcases(
     ):
       failures += 1
     total_runs += 1
-    matching_profraws = list(_matching_profraws(profraw_file))
+    # Not just LLVM_PROFILE_FILE matches: Chrome's sandboxed children write to
+    # child_pool-N.profraw.
+    matching_profraws = _matching_profraws(
+      os.path.join(profraw_dir.name, '*.profraw')
+    )
     _accumulated_profdata_merge(matching_profraws, target_profdata)
   res = os.path.exists(target_profdata)
   res_str = 'success' if res else 'failure'
@@ -788,6 +799,7 @@ def _run_fuzzer_target(args):
         corpus_files[:INDIVIDUAL_TESTCASES_MAX_TO_TRY],
         target_profdata,
         target_details['testcase_timeout'],
+        target_details.get('continuous_profiling', False),
       )
 
     if res:
@@ -861,6 +873,13 @@ def _parse_command_arguments():
     type=int,
     default=60,
     help='Timeout in seconds for each testcase. Defaults to 60 seconds.',
+  )
+
+  arg_parser.add_argument(
+    '--target-args',
+    default='',
+    help='Extra arguments for the blackbox target, as one shell-quoted '
+    'string, e.g. --target-args="--use-fake-ui-for-media-stream".',
   )
   args = arg_parser.parse_args()
   return args
@@ -997,11 +1016,14 @@ def _get_blackbox_target_details(args):
     'name': args.target,
     'profdata_file': os.path.join(REPORT_DIR, args.target + ".profdata"),
     'env': env,
-    'cmd_runner': ChromeRunner([fuzzer_target_binpath]),
+    'cmd_runner': ChromeRunner(
+      [fuzzer_target_binpath] + shlex.split(args.target_args)
+    ),
     'corpus': args.fuzzer_corpora_dir,
     'files': file_pattern,
     'testcase_timeout': args.testcase_timeout,
     'fuzzer_type': args.fuzzer,
+    'continuous_profiling': True,
   }
 
   target_details.append(details)

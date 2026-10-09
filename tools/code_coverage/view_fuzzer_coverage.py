@@ -11,6 +11,7 @@ by a given fuzzer.
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -105,6 +106,20 @@ def _ParseCommandArguments():
     'the bot running the fuzzer. Many blackbox fuzzers require a timeout '
     'because test cases can\'t signal when they are finished.',
   )
+  arg_parser.add_argument(
+    '--extra-gn-args',
+    action='append',
+    default=[],
+    help='Extra line for args.gn; may be repeated. E.g. use '
+    'coverage_instrumentation_input_file to keep large targets under the '
+    'linker\'s 2GB limit.',
+  )
+  arg_parser.add_argument(
+    '--target-args',
+    default='',
+    help='Blackbox only: extra arguments for the target, as one shell-quoted '
+    'string, e.g. --target-args="--use-fake-ui-for-media-stream".',
+  )
   args = arg_parser.parse_args()
   return args
 
@@ -125,6 +140,10 @@ def Main():
 
   os.makedirs(args.build_dir, exist_ok=True)
   os.makedirs(args.html_dir, exist_ok=True)
+  # `gn clean` fails on a directory that has never been generated.
+  has_existing_build = os.path.exists(
+    os.path.join(args.build_dir, 'build.ninja')
+  )
 
   step("Writing gn args")
   gn_args_file = os.path.join(args.build_dir, "args.gn")
@@ -133,8 +152,10 @@ def Main():
       f.write(gn_args_blackbox)
     else:
       f.write(gn_args_libfuzzer)
+    for extra_gn_arg in args.extra_gn_args:
+      f.write(extra_gn_arg + "\n")
 
-  if not args.retain_build_dir:
+  if not args.retain_build_dir and has_existing_build:
     step("gn clean")
     check_call(["gn", "clean", args.build_dir], cwd=chromium_src_dir)
   step("gn gen")
@@ -175,7 +196,8 @@ def Main():
   )
 
   run_all_fuzzers_cmd = [
-    sys.executable,
+    # xvfb.py needs psutil, which only the root vpython env provides.
+    shutil.which('vpython3') or sys.executable,
     XVFB_PATH,
     os.path.join(script_dir, "run_all_fuzzers.py"),
     "--fuzzer-binaries-dir",
@@ -191,6 +213,8 @@ def Main():
   ]
   if is_blackbox_fuzzer:
     run_all_fuzzers_cmd += ["--target", args.target]
+    if args.target_args:
+      run_all_fuzzers_cmd += [f"--target-args={args.target_args}"]
 
   check_call(run_all_fuzzers_cmd)
 
