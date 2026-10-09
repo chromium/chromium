@@ -242,6 +242,12 @@ class ContextualTasksExtensionHandlerBrowserTestBase
   }
 
   void TearDownOnMainThread() override {
+    // Expectation actions may reference test-body stack state (e.g. RunLoop
+    // quit closures). Clear them before AssertThatNetworkServiceDidNotCrash()
+    // spins a run loop that can dispatch late mojo messages to these mocks.
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+    testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
+    testing::Mock::VerifyAndClearExpectations(&mock_searchbox_page_);
     mock_lens_overlay_controller_.reset();
     if (mock_lens_controller_) {
       testing::Mock::VerifyAndClearExpectations(mock_lens_controller_);
