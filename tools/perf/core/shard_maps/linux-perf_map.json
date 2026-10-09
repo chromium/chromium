@@ -43,10 +43,6 @@
                     "--enable-field-trials=benchmarking"
                 ]
             },
-            "blink-ai.crossbench": {
-                "crossbench_name": "blink-ai",
-                "arguments": []
-            },
             "jetstream3-turbolev_future.crossbench": {
                 "crossbench_name": "jetstream_3",
                 "arguments": [

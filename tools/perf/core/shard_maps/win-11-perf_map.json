@@ -98,12 +98,6 @@
                     "--detailed-metrics",
                     "--enable-field-trials=benchmarking"
                 ]
-            },
-            "blink-ai.crossbench": {
-                "crossbench_name": "blink-ai",
-                "arguments": [
-                    "--extra-browser-args=--enable-features=OnDeviceModelForceCpuBackend"
-                ]
             }
         },
         "benchmarks": {

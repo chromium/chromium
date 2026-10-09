@@ -39,10 +39,6 @@
             }
         },
         "crossbench": {
-            "blink-ai.crossbench": {
-                "crossbench_name": "blink-ai",
-                "arguments": []
-            },
             "jetstream2.crossbench": {
                 "crossbench_name": "jetstream_2",
                 "arguments": [
