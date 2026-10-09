@@ -926,6 +926,12 @@ BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
 BASE_FEATURE(kAutofillNewSuggestionGeneration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, only single-field forms can be considered search forms (in
+// addition to matching `kUrlSearchActionRe` on the form's action URL).
+// TODO(crbug.com/566051797): Clean up when launched.
+BASE_FEATURE(kAutofillOnlyConsiderSingleFieldFormsAsSearchForms,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, `IsNormalizedNameVariantOf()` uses a linear-time greedy
 // algorithm instead of an exponential one that generates all name variants.
 // TODO(crbug.com/479905438) Remove once launched.

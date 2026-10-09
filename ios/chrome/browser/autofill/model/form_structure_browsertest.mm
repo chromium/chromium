@@ -233,6 +233,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillSupportSplitZipCode,
           features::kAutofillSupportStandaloneZipCodeGlobally,
           features::kAutofillEnableOneTimeCodeHeuristics,
+          // TODO(crbug.com/566051797): Remove once launched.
+          features::kAutofillOnlyConsiderSingleFieldFormsAsSearchForms,
       },
       // Disabled
       {
@@ -394,6 +396,7 @@ bool IsFailingTestName(const std::string& test_name) {
           // TODO(crbug.com/40229922): These pages contain labels which are only
           // inferred by the label detection improvements that haven't been
           // implemented on iOS.
+          "018_checkout_ae.com.html",
           "074_register_threadless.com.html",
           "097_register_alaskaair.com.html",
           "115_checkout_walgreens.com.html",

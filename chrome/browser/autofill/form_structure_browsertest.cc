@@ -244,6 +244,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillSupportSplitZipCode,
           features::kAutofillSupportStandaloneZipCodeGlobally,
           features::kAutofillEnableOneTimeCodeHeuristics,
+          // TODO(crbug.com/566051797): Remove once launched.
+          features::kAutofillOnlyConsiderSingleFieldFormsAsSearchForms,
       },
       // Disabled
       {

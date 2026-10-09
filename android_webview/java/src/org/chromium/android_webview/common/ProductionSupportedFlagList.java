@@ -297,6 +297,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_MOVE_SMALL_FORM_LOGIC_TO_CLIENT,
                 "Moves the small form handling from Autofill server to client."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ONLY_CONSIDER_SINGLE_FIELD_FORMS_AS_SEARCH_FORMS,
+                "When enabled, only single-field forms can be considered search forms."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_POLICY_CONTROLLED_FEATURE_AUTOFILL,
                 "Enables the policy-controlled feature \"autofill\"."),
         Flag.baseFeature(

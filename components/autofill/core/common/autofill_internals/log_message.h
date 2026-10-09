@@ -29,9 +29,7 @@ class LogBuffer;
     "scheme")                                                                  \
   T(AbortParsingNotEnoughFields,                                               \
     "Abort parsing form: Not enough fields in form: ")                         \
-  T(AbortParsingUrlMatchesSearchRegex,                                         \
-    "Abort parsing form: Action URL matches kUrlSearchActionRe, indicating "   \
-    "that the form may lead to a search.")                                     \
+  T(AbortParsingSearchForm, "Abort parsing form: Search form detected.")       \
   T(AbortParsingFormHasNoTextfield,                                            \
     "Abort parsing form: Form has no text field.")                             \
   T(FunnelMetrics, "Funnel Metrics")                                           \
