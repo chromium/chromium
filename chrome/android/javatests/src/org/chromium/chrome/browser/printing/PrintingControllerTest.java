@@ -28,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -85,7 +84,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
 public class PrintingControllerTest {
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
@@ -221,7 +219,8 @@ public class PrintingControllerTest {
         WebPageStation incognitoPage = mActivityTestRule.startOnIncognitoBlankPage();
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         final String url = testServer.getURL("/pdf/test/data/hello_world2.pdf");
-        PdfCtaPageStation pdfPage = incognitoPage.openFakeLink(url, PdfCtaPageStation.newBuilder());
+        PdfCtaPageStation pdfPage =
+                incognitoPage.openFakeLink(url, PdfCtaPageStation.newBuilder());
         Tab currentTab = pdfPage.getTab();
         testNormalPrintingFlowHelper(currentTab);
     }
