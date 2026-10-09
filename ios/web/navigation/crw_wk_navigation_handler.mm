@@ -1536,7 +1536,7 @@ NSError* SanitizeNavigationError(
 // renderer process for all page frames. With that Chromium does not allow
 // running App specific pages in the same process as a web site from the
 // internet. Allows navigation to app specific URL in the following cases:
-//   - last committed virtual URL is app specific
+//   - last committed virtual URL and actual URL are both app specific
 //   - last committed URL is app specific and loading the same URL
 //   - navigation not a new navigation (back-forward)
 //   - navigation is typed, generated or bookmark
@@ -1549,9 +1549,12 @@ NSError* SanitizeNavigationError(
   web::NavigationItem* lastItem =
       self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
   if (lastItem &&
-      (web::GetWebClient()->IsAppSpecificURL(lastItem->GetVirtualURL()))) {
-    // Last committed page is also app specific and navigation should be
-    // allowed.
+      web::GetWebClient()->IsAppSpecificURL(lastItem->GetVirtualURL()) &&
+      web::GetWebClient()->IsAppSpecificURL(lastItem->GetURL())) {
+    // Allow navigation only when both the virtual URL and actual URL of the
+    // last committed item are app-specific, so a non-app-specific page whose
+    // virtual URL was overridden to an app-specific URL cannot initiate
+    // navigations to app-specific pages.
     return YES;
   }
 

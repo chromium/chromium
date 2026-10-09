@@ -2025,6 +2025,77 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
   EXPECT_EQ(GURL(kRedirectURL), allowed_failing_url);
 }
 
+// Tests that a committed NavigationItem with an app-specific VirtualURL but a
+// non-app-specific actual URL (such as `about://newtab/` with virtual URL
+// `chrome://newtab/`) does not grant privileges to navigate to app-specific
+// WebUI URLs via renderer-initiated navigations.
+TEST_F(
+    CRWWebControllerPolicyDeciderTest,
+    NonAppSpecificURLWithAppSpecificVirtualURLDoesNotGrantAppSpecificNavigation) {
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  SetWebViewURL(@"about://newtab/");
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+  [fake_wk_list_ setCurrentURL:@"about://newtab/"];
+  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:navigation];
+  [navigation_delegate_ webView:mock_web_view_ didFinishNavigation:navigation];
+
+  NavigationItem* last_committed =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(last_committed);
+  last_committed->SetVirtualURL(GURL(kTestAppSpecificURL));
+  EXPECT_EQ(GURL("about://newtab/"), last_committed->GetURL());
+  EXPECT_EQ(GURL(kTestAppSpecificURL), last_committed->GetVirtualURL());
+
+  NSURL* app_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSMutableURLRequest* app_request =
+      [NSMutableURLRequest requestWithURL:app_url];
+  app_request.mainDocumentURL = [NSURL URLWithString:@"about://newtab/"];
+
+  FakeWKFrameInfo* main_frame = [[FakeWKFrameInfo alloc] init];
+  main_frame.mainFrame = YES;
+  main_frame.webView = mock_web_view_;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = app_request;
+  action.navigationType = WKNavigationTypeLinkActivated;
+  action.targetFrame = (WKFrameInfo*)main_frame;
+
+  // Because the committed actual URL (`about://newtab/`) is not app-specific,
+  // a renderer-initiated navigation to an app-specific URL must be cancelled.
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+  EXPECT_FALSE(WebStateImpl::FromWebState(web_state())->HasWebUI());
+
+  // When both the actual URL and VirtualURL of the committed item are
+  // app-specific, the renderer-initiated navigation is allowed.
+  last_committed->SetURL(GURL(kTestAppSpecificURL));
+  app_request.mainDocumentURL = app_url;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+}
+
 // Test fixture for window.open tests.
 class WindowOpenByDomTest : public WebTestWithWebController {
  protected:
