@@ -13,15 +13,23 @@ namespace cbor {
 
 class Value;
 
-class CBOR_EXPORT DiagnosticWriter {
+// Converts the given CBOR value to a compact string, following the
+// "Diagnostic Notation" format for CBOR
+// (https://tools.ietf.org/html/rfc7049#section-6). `rough_max_output_bytes`
+// provides a loose upper bound on the size of the result and the result may
+// be truncated if it exceeds this size.
+CBOR_EXPORT std::string WriteDiagnostic(const Value& node,
+                                        size_t rough_max_output_bytes = 4096);
+
+// Deprecated: Use `WriteDiagnostic()` instead.
+class DiagnosticWriter {
  public:
-  // Write converts the given CBOR value to a compact string, following the
-  // "Diagnostic Notation" format for CBOR
-  // (https://tools.ietf.org/html/rfc7049#section-6). |rough_max_output_bytes|
-  // provides a loose upper bound on the size of the result and the result may
-  // be truncated if it exceeds this size.
   static std::string Write(const Value& node,
-                           size_t rough_max_output_bytes = 4096);
+                           size_t rough_max_output_bytes = 4096) {
+    return WriteDiagnostic(node, rough_max_output_bytes);
+  }
+
+  DiagnosticWriter() = delete;
 };
 
 }  // namespace cbor
