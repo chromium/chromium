@@ -2197,10 +2197,9 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
 
   // 1. By default, feature is disabled and the full original query is preserved
   // in oq.
-  EXPECT_EQ(
-      "http://www.google.com/search?q=" + std::string(2500, 'a') +
-          "&oq=" + std::string(2500, 'a') + "&",
-      url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+  EXPECT_EQ("http://www.google.com/search?q=" + std::string(2500, 'a') +
+                "&oq=" + std::string(2500, 'a') + "&",
+            url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
 
   // 2. When feature is enabled with default param (2048), oq is truncated to
   // 2048 chars.
@@ -2256,6 +2255,144 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
     EXPECT_EQ(
         "http://www.google.com/search?q=abc&oq=&",
         url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+  }
+
+  // 5. Multi-byte UTF-8 and percent-encoded characters are not cut
+  // mid-sequence.
+  {
+    // A 4-byte UTF-8 emoji character U+1F600 (\U0001F600) encodes to
+    // "%F0%9F%98%80" (12 chars). With prefix "a", encoded string length is 13.
+    const std::u16string emoji_query = u"a\U0001F600";
+    search_terms.search_terms = emoji_query;
+    search_terms.original_query = emoji_query;
+
+    // Lengths 1 through 12 should avoid leaving an incomplete escape sequence
+    // or an incomplete multi-byte UTF-8 sequence, all safely truncating to "a".
+    for (int length : {1, 2, 3, 4, 7, 10, 12}) {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length",
+            base::NumberToString(length)}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=a%F0%9F%98%80&oq=a&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+
+    // Length 13 keeps the complete emoji.
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length", "13"}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=a%F0%9F%98%80&oq=a%F0%9F%98%80&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+
+    // A query with a percent character that escapes to "%25".
+    // "abc%d" encodes to "abc%25d" (length 7).
+    const std::u16string percent_query = u"abc%d";
+    search_terms.search_terms = percent_query;
+    search_terms.original_query = percent_query;
+
+    // Truncating at lengths 4 or 5 should not leave an incomplete "%" or "%2".
+    for (int length : {4, 5}) {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length",
+            base::NumberToString(length)}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=abc%25d&oq=abc&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+
+    // Truncating at length 6 keeps "%25".
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length", "6"}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=abc%25d&oq=abc%25&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+
+    // A 2-byte UTF-8 sequence: "café" ('é' encodes to "%C3%A9", 6 chars).
+    // Total encoded length is 9.
+    const std::u16string two_byte_query = u"caf\u00E9";
+    search_terms.search_terms = two_byte_query;
+    search_terms.original_query = two_byte_query;
+    for (int length : {4, 5, 6, 7, 8}) {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length",
+            base::NumberToString(length)}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=caf%C3%A9&oq=caf&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length", "9"}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=caf%C3%A9&oq=caf%C3%A9&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+
+    // A 3-byte UTF-8 sequence: "a\u4E16" (CJK '世' encodes to "%E4%B8%96", 9
+    // chars). Length 10 in total.
+    const std::u16string three_byte_query = u"a\u4E16";
+    search_terms.search_terms = three_byte_query;
+    search_terms.original_query = three_byte_query;
+    for (int length : {2, 3, 4, 5, 6, 7, 8, 9}) {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length",
+            base::NumberToString(length)}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=a%E4%B8%96&oq=a&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length", "10"}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=a%E4%B8%96&oq=a%E4%B8%96&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+
+    // Escaped ASCII character '&' encodes to "%26" (values < 0x80).
+    // "a&b" encodes to "a%26b" (5 chars).
+    const std::u16string ascii_escape_query = u"a&b";
+    search_terms.search_terms = ascii_escape_query;
+    search_terms.original_query = ascii_escape_query;
+    for (int length : {2, 3}) {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length",
+            base::NumberToString(length)}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=a%26b&oq=a&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          omnibox::kTruncateSearchSuggestOq,
+          {{"truncate_search_suggest_oq_length", "4"}});
+      EXPECT_EQ(
+          "http://www.google.com/search?q=a%26b&oq=a%26&",
+          url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    }
   }
 }
 

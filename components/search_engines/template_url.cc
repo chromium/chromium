@@ -29,6 +29,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -250,6 +251,53 @@ bool IsPolicySearchEngineBetterThanNonPolicyEngine(
   // user.
   return (!keyword.empty() && keyword[0] == u'@') ||
          other_engine->safe_for_autoreplace();
+}
+
+// Truncates `encoded_query` to at most `max_length` characters while ensuring
+// that percent-escape sequences (%XX) and multi-byte UTF-8 character sequences
+// are not cut mid-sequence.
+//
+// Truncation is done on the encoded value rather than the unencoded value
+// because the purpose of the truncation is to manage how much space the value
+// uses in the resulting URL, which may be limited to some total length. If we
+// truncated the pre-encoded value, the space taken in the resulting URL would
+// be variable, depending on what was encoded.
+std::string TruncateEncodedQuery(std::string_view encoded_query,
+                                 size_t max_length) {
+  if (encoded_query.length() <= max_length) {
+    return std::string(encoded_query);
+  }
+
+  std::string truncated(encoded_query.substr(0, max_length));
+
+  // Avoid cutting in the middle of a %XX escape sequence.
+  if (!truncated.empty() && truncated.back() == '%') {
+    truncated.pop_back();
+  } else if (truncated.length() >= 2 &&
+             truncated[truncated.length() - 2] == '%' &&
+             base::IsHexDigit(truncated.back())) {
+    truncated.erase(truncated.length() - 2);
+  }
+
+  // Avoid cutting in the middle of a multi-byte UTF-8 sequence. All non-ASCII
+  // bytes are escaped as %XX (>= 0x80, first hex digit >= '8'). A UTF-8
+  // character is at most 4 bytes, so at most 3 incomplete trailing bytes
+  // could be left by truncation. Trim at most 3 trailing non-ASCII %XX tokens.
+  auto is_non_ascii_escape = [](const std::string& s) {
+    return s.length() >= 3 && s[s.length() - 3] == '%' &&
+           base::IsHexDigit(s[s.length() - 2]) &&
+           base::IsHexDigit(s[s.length() - 1]) &&
+           (base::HexDigitToInt(s[s.length() - 2]) >= 8);
+  };
+
+  for (int i = 0;
+       i < 3 && is_non_ascii_escape(truncated) &&
+       !base::IsStringUTF8(base::UnescapeBinaryURLComponent(truncated));
+       ++i) {
+    truncated.erase(truncated.length() - 3);
+  }
+
+  return truncated;
 }
 
 }  // namespace
@@ -1332,9 +1380,8 @@ std::string TemplateURLRef::HandleReplacements(
           if (base::FeatureList::IsEnabled(omnibox::kTruncateSearchSuggestOq)) {
             const int max_length =
                 omnibox::kTruncateSearchSuggestOqLength.Get();
-            if (max_length >= 0 &&
-                original_query.length() > static_cast<size_t>(max_length)) {
-              original_query.resize(max_length);
+            if (max_length >= 0) {
+              original_query = TruncateEncodedQuery(original_query, max_length);
             }
           }
           HandleReplacement("oq", original_query, replacement, &url);
