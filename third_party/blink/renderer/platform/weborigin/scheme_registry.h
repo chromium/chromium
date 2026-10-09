@@ -84,7 +84,7 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsNotAllowingJavascriptURLs(
       const String& scheme);
   static void RemoveURLSchemeAsNotAllowingJavascriptURLsForTest(
-      const String& schemeForTest);
+      const String& scheme_for_test);
   static bool ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
       const String& scheme);
 

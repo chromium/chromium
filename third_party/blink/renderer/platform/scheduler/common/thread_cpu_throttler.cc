@@ -129,9 +129,9 @@ void ThreadCPUThrottler::ThrottlingThread::RestoreSignalHandler() {
 void ThreadCPUThrottler::ThrottlingThread::HandleSignal(int signal) {
   if (signal != SIGUSR2)
     return;
-  static base::TimeTicks lastResumeTime;
+  static base::TimeTicks last_resume_time;
   base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta run_duration = now - lastResumeTime;
+  base::TimeDelta run_duration = now - last_resume_time;
   uint32_t throttling_rate_percent =
       throttling_rate_percent_.load(std::memory_order_acquire);
   // Limit the observed run duration to 1000μs to deal with the first entrance
@@ -144,7 +144,7 @@ void ThreadCPUThrottler::ThrottlingThread::HandleSignal(int signal) {
   do {
     now = base::TimeTicks::Now();
   } while (now < wake_up_time);
-  lastResumeTime = now;
+  last_resume_time = now;
 }
 
 #endif  // USE_SIGNALS

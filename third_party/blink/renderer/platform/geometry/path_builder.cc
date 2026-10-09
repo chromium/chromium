@@ -56,10 +56,10 @@ std::array<gfx::Vector2dF, 3> ApproximateSuperellipseHalfCornerAsBezierCurve(
   // the middle of the corner.
   const float half_corner = Corner::HalfCornerForCurvature(curvature);
 
-  const gfx::Vector2dF P1(a, 1);
-  const gfx::Vector2dF P2(half_corner - b, half_corner + b);
-  const gfx::Vector2dF P3(half_corner, half_corner);
-  return {P1, P2, P3};
+  const gfx::Vector2dF p1(a, 1);
+  const gfx::Vector2dF p2(half_corner - b, half_corner + b);
+  const gfx::Vector2dF p3(half_corner, half_corner);
+  return {p1, p2, p3};
 }
 
 // Adds a curved corner to a path. The vertex argument is the 4 points

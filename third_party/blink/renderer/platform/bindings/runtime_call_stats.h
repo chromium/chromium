@@ -364,9 +364,9 @@ class PLATFORM_EXPORT RuntimeCallTimerScope {
     call_stats_->Enter(&timer_, counter);
   }
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
-  RuntimeCallTimerScope(RuntimeCallStats* stats, const char* counterName)
+  RuntimeCallTimerScope(RuntimeCallStats* stats, const char* counter_name)
       : call_stats_(stats), timer_(stats->clock()) {
-    call_stats_->Enter(&timer_, counterName);
+    call_stats_->Enter(&timer_, counter_name);
   }
 #endif
   ~RuntimeCallTimerScope() { call_stats_->Leave(&timer_); }

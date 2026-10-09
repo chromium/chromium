@@ -9,10 +9,10 @@
 namespace blink {
 
 TEST(ContentSecurityPolicyParsers, MatchesTheSerializedCSPGrammar) {
-  struct {
+  const struct {
     String value;
     bool expected;
-  } testCases[]{
+  } kTestCases[]{
       {"", true},                    // Empty string
       {" \t\n\r  ", true},           // Only whitespace
       {";", true},                   // Only semicolon
@@ -34,7 +34,7 @@ TEST(ContentSecurityPolicyParsers, MatchesTheSerializedCSPGrammar) {
       {"script-src 'none'; /invalid-directive-name", false},  // Invalid second
   };
 
-  for (const auto& testCase : testCases) {
+  for (const auto& testCase : kTestCases) {
     EXPECT_EQ(MatchesTheSerializedCSPGrammar(testCase.value),
               testCase.expected);
   }

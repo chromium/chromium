@@ -231,7 +231,8 @@ class TestURLLoaderClient : public URLLoaderClient {
     return true;
   }
 
-  void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override {
+  void DidSendData(uint64_t bytes_sent,
+                   uint64_t total_bytes_to_be_sent) override {
     EXPECT_TRUE(loader_);
   }
 
@@ -258,10 +259,10 @@ class TestURLLoaderClient : public URLLoaderClient {
     }
   }
 
-  void DidFinishLoading(base::TimeTicks finishTime,
-                        int64_t totalEncodedDataLength,
-                        uint64_t totalEncodedBodyLength,
-                        int64_t totalDecodedBodyLength) override {
+  void DidFinishLoading(base::TimeTicks finish_time,
+                        int64_t total_encoded_data_length,
+                        uint64_t total_encoded_body_length,
+                        int64_t total_decoded_body_length) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);
@@ -273,10 +274,10 @@ class TestURLLoaderClient : public URLLoaderClient {
   }
 
   void DidFail(const WebURLError& error,
-               base::TimeTicks finishTime,
-               int64_t totalEncodedDataLength,
-               uint64_t totalEncodedBodyLength,
-               int64_t totalDecodedBodyLength) override {
+               base::TimeTicks finish_time,
+               int64_t total_encoded_data_length,
+               uint64_t total_encoded_body_length,
+               int64_t total_decoded_body_length) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_finish_);
     error_ = error;

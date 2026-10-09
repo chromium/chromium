@@ -156,8 +156,8 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
   DecodedImageCallback(const DecodedImageCallback&) = delete;
   DecodedImageCallback& operator=(const DecodedImageCallback&) = delete;
 
-  int32_t Decoded(webrtc::VideoFrame& decodedImage) override {
-    callback_.Run(decodedImage);
+  int32_t Decoded(webrtc::VideoFrame& decoded_image) override {
+    callback_.Run(decoded_image);
     // TODO(sandersd): Does the return value matter? RTCVideoDecoder
     // ignores it.
     return 0;

@@ -73,8 +73,8 @@ class PLATFORM_EXPORT StatsCollectingDecoder
       LOCKS_EXCLUDED(lock_);
 
   // Implementation of webrtc::DecodedImageCallback.
-  int32_t Decoded(webrtc::VideoFrame& decodedImage) override;
-  void Decoded(webrtc::VideoFrame& decodedImage,
+  int32_t Decoded(webrtc::VideoFrame& decoded_image) override;
+  void Decoded(webrtc::VideoFrame& decoded_image,
                std::optional<int32_t> decode_time_ms,
                std::optional<uint8_t> qp) override;
 

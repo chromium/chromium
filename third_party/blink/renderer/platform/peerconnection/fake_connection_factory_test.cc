@@ -108,10 +108,10 @@ TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv4) {
   const webrtc::Connection* conn = factory->CreateConnection(
       webrtc::IceCandidateType::kHost, kIpv4Address, kPort);
   ASSERT_NE(conn, nullptr);
-  blink::IceConnection iceConn(conn);
-  EXPECT_EQ(iceConn.local_candidate().address().ToString(),
+  blink::IceConnection ice_conn(conn);
+  EXPECT_EQ(ice_conn.local_candidate().address().ToString(),
             conn->local_candidate().address().ToString());
-  EXPECT_EQ(iceConn.remote_candidate().address().ToString(),
+  EXPECT_EQ(ice_conn.remote_candidate().address().ToString(),
             conn->remote_candidate().address().ToString());
 }
 
@@ -121,10 +121,10 @@ TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv6) {
     const webrtc::Connection* conn = factory->CreateConnection(
         webrtc::IceCandidateType::kHost, kIpv6Address, kPort);
     ASSERT_NE(conn, nullptr);
-    blink::IceConnection iceConn(conn);
-    EXPECT_EQ(iceConn.local_candidate().address().ToString(),
+    blink::IceConnection ice_conn(conn);
+    EXPECT_EQ(ice_conn.local_candidate().address().ToString(),
               conn->local_candidate().address().ToString());
-    EXPECT_EQ(iceConn.remote_candidate().address().ToString(),
+    EXPECT_EQ(ice_conn.remote_candidate().address().ToString(),
               conn->remote_candidate().address().ToString());
   }
 }

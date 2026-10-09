@@ -144,12 +144,12 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebURLRequest(
 }
 
 scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
-    const WebHTTPBody& httpBody) {
+    const WebHTTPBody& http_body) {
   scoped_refptr<network::ResourceRequestBody> request_body =
       new network::ResourceRequestBody();
   size_t i = 0;
   WebHTTPBody::Element element;
-  while (httpBody.ElementAt(i++, element)) {
+  while (http_body.ElementAt(i++, element)) {
     switch (element.type) {
       case HTTPBodyElementType::kTypeData:
         request_body->AppendBytes(element.data.Copy());
@@ -199,8 +199,8 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
       }
     }
   }
-  request_body->set_identifier(httpBody.Identifier());
-  request_body->set_contains_sensitive_info(httpBody.ContainsPasswordData());
+  request_body->set_identifier(http_body.Identifier());
+  request_body->set_contains_sensitive_info(http_body.ContainsPasswordData());
   return request_body;
 }
 

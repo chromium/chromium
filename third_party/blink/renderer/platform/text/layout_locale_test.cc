@@ -191,12 +191,12 @@ TEST(LayoutLocaleTest, NastaliqScriptDisabled) {
 }
 
 TEST(LayoutLocaleTest, BreakKeyword) {
-  struct {
+  const struct {
     const char* expected;
     const char* locale;
     LineBreakStrictness strictness;
     bool use_phrase = false;
-  } tests[] = {
+  } kTests[] = {
       {nullptr, nullptr, LineBreakStrictness::kDefault},
       {"", "", LineBreakStrictness::kDefault},
       {"@lb=strict", nullptr, LineBreakStrictness::kStrict},
@@ -212,7 +212,7 @@ TEST(LayoutLocaleTest, BreakKeyword) {
       {"ja@lb=strict;lw=phrase", "ja", LineBreakStrictness::kStrict, true},
       {"ja@lb=loose;lw=phrase", "ja", LineBreakStrictness::kLoose, true},
   };
-  for (const auto& test : tests) {
+  for (const auto& test : kTests) {
     scoped_refptr<LayoutLocale> locale =
         LayoutLocale::CreateForTesting(AtomicString(test.locale));
     EXPECT_EQ(test.expected,
@@ -225,19 +225,19 @@ TEST(LayoutLocaleTest, BreakKeyword) {
 }
 
 TEST(LayoutLocaleTest, GetQuotesData) {
-  auto enQuotes = (QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019));
-  auto deQuotes = (QuotesData::Create(0x201e, 0x201c, 0x201a, 0x2018));
-  auto frQuotes = (QuotesData::Create(0xab, 0xbb, 0xab, 0xbb));
-  auto frCAQuotes = (QuotesData::Create(0xab, 0xbb, 0x201d, 0x201c));
+  auto en_quotes = QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019);
+  auto de_quotes = QuotesData::Create(0x201e, 0x201c, 0x201a, 0x2018);
+  auto fr_quotes = QuotesData::Create(0xab, 0xbb, 0xab, 0xbb);
+  auto fr_ca_quotes = QuotesData::Create(0xab, 0xbb, 0x201d, 0x201c);
   struct {
     const char* locale;
     const scoped_refptr<QuotesData> expected;
   } tests[] = {
       {nullptr, nullptr},    // no match
       {"loc-DNE", nullptr},  // no match
-      {"en", enQuotes},         {"fr", frQuotes},
-      {"fr-CA", frCAQuotes},    {"fr-DNE", frQuotes},  // use fr
-      {"DE-LATN-DE", deQuotes},
+      {"en", en_quotes},         {"fr", fr_quotes},
+      {"fr-CA", fr_ca_quotes},   {"fr-DNE", fr_quotes},  // use fr
+      {"DE-LATN-DE", de_quotes},
   };
   for (const auto& test : tests) {
     scoped_refptr<LayoutLocale> locale =

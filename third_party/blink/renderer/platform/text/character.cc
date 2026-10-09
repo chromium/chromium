@@ -77,16 +77,16 @@ base::Lock& GetFreezePatternLock() {
 
 }  // namespace
 
-void internal::ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
+void internal::ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicode_set,
                                             const char* pattern) {
   base::AutoLock locker(GetFreezePatternLock());
-  if (!unicodeSet->isEmpty()) {
+  if (!unicode_set->isEmpty()) {
     return;
   }
   blink::IcuError err;
   // Use ICU's invariant-character initialization method.
-  unicodeSet->applyPattern(icu::UnicodeString(pattern, -1, US_INV), err);
-  unicodeSet->freeze();
+  unicode_set->applyPattern(icu::UnicodeString(pattern, -1, US_INV), err);
+  unicode_set->freeze();
   DCHECK_EQ(err, U_ZERO_ERROR);
 }
 

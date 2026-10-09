@@ -55,7 +55,7 @@ PLATFORM_EXPORT bool IsHangulSlow(UChar32);
 PLATFORM_EXPORT bool MaybeHanKerningOpenSlow(UChar32);
 PLATFORM_EXPORT bool MaybeHanKerningCloseSlow(UChar32);
 PLATFORM_EXPORT bool MaybeHanKerningMiddleSlow(UChar32);
-void ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
+void ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicode_set,
                                   const char* pattern);
 
 }  // namespace internal

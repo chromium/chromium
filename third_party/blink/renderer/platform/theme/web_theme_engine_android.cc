@@ -18,8 +18,8 @@ gfx::Size WebThemeEngineAndroid::GetSize(WebThemeEngine::Part part) {
       // Minimum length for scrollbar thumb is the scrollbar thickness.
       ScrollbarStyle style;
       GetOverlayScrollbarStyle(&style);
-      int scrollbarThickness = style.thumb_thickness + style.scrollbar_margin;
-      return gfx::Size(scrollbarThickness, scrollbarThickness);
+      int scrollbar_thickness = style.thumb_thickness + style.scrollbar_margin;
+      return gfx::Size(scrollbar_thickness, scrollbar_thickness);
     }
     default:
       return WebThemeEngineDefault::GetSize(part);

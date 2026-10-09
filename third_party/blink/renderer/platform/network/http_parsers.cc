@@ -1043,14 +1043,14 @@ bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
 }
 
 std::unique_ptr<ServerTimingHeaderVector> ParseServerTimingHeader(
-    const String& headerValue) {
+    const String& header_value) {
   std::unique_ptr<ServerTimingHeaderVector> headers =
       std::make_unique<ServerTimingHeaderVector>();
 
-  if (!headerValue.IsNull()) {
-    DCHECK(headerValue.Is8Bit());
+  if (!header_value.IsNull()) {
+    DCHECK(header_value.Is8Bit());
 
-    HeaderFieldTokenizer tokenizer(headerValue);
+    HeaderFieldTokenizer tokenizer(header_value);
     while (!tokenizer.IsConsumed()) {
       StringView name;
       if (!tokenizer.ConsumeToken(ParsedContentType::Mode::kNormal, name)) {

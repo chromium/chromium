@@ -582,18 +582,18 @@ TEST(HTTPParsersTest, ParseMultipartHeadersContentCharset) {
   EXPECT_EQ("utf-8", response.TextEncodingName());
 }
 
-void testServerTimingHeader(const char* headerValue,
-                            Vector<Vector<String>> expectedResults) {
+void testServerTimingHeader(const char* header_value,
+                            Vector<Vector<String>> expected_results) {
   std::unique_ptr<ServerTimingHeaderVector> results =
-      ParseServerTimingHeader(headerValue);
-  EXPECT_EQ((*results).size(), expectedResults.size());
+      ParseServerTimingHeader(header_value);
+  EXPECT_EQ((*results).size(), expected_results.size());
   unsigned i = 0;
   for (const auto& header : *results) {
-    Vector<String> expectedResult = expectedResults[i++];
-    EXPECT_EQ(header->Name(), expectedResult[0]);
+    Vector<String> expected_result = expected_results[i++];
+    EXPECT_EQ(header->Name(), expected_result[0]);
     EXPECT_EQ(header->Duration(),
-              StringToDouble(expectedResult[1]).value_or(0));
-    EXPECT_EQ(header->Description(), expectedResult[2]);
+              StringToDouble(expected_result[1]).value_or(0));
+    EXPECT_EQ(header->Description(), expected_result[2]);
   }
 }
 

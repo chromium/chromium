@@ -60,7 +60,7 @@ int runTestSuite(base::TestSuite* testSuite) {
 }  // namespace
 
 int main(int argc, char** argv) {
-  blink::ScopedUnittestsEnvironmentSetup testEnvironmentSetup(argc, argv);
+  blink::ScopedUnittestsEnvironmentSetup test_environment_setup(argc, argv);
   int result = 0;
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -71,16 +71,17 @@ int main(int argc, char** argv) {
 #endif
 
   {
-    base::TestSuite testSuite(argc, argv);
+    base::TestSuite test_suite(argc, argv);
     mojo::core::Init();
-    base::TestIOThread testIoThread(base::TestIOThread::kAutoStart);
-    mojo::core::ScopedIPCSupport ipcSupport(
-        testIoThread.task_runner(),
+    base::TestIOThread test_io_thread(base::TestIOThread::kAutoStart);
+    mojo::core::ScopedIPCSupport ipc_support(
+        test_io_thread.task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
     gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
                                    gin::ArrayBufferAllocator::SharedInstance());
     result = base::LaunchUnitTests(
-        argc, argv, base::BindOnce(runTestSuite, base::Unretained(&testSuite)));
+        argc, argv,
+        base::BindOnce(runTestSuite, base::Unretained(&test_suite)));
   }
   return result;
 }

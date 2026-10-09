@@ -126,8 +126,8 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
         p90_decode_time_ms_(p90_decode_time_ms) {}
 
   // Implementation of webrtc::DecodedImageCallback.
-  int32_t Decoded(webrtc::VideoFrame& decodedImage) override { NOTREACHED(); }
-  void Decoded(webrtc::VideoFrame& decodedImage,
+  int32_t Decoded(webrtc::VideoFrame& decoded_image) override { NOTREACHED(); }
+  void Decoded(webrtc::VideoFrame& decoded_image,
                std::optional<int32_t> decode_time_ms,
                std::optional<uint8_t> qp) override {
     // Set the processing time. Start time is set to a fixed nonzero time since
@@ -142,7 +142,7 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
     webrtc::TimeDelta decode_time = webrtc::TimeDelta::Millis(
         use_min_decode_time ? min_decode_time_ms_ : p90_decode_time_ms_);
 
-    decodedImage.set_processing_time({start_time, start_time + decode_time});
+    decoded_image.set_processing_time({start_time, start_time + decode_time});
   }
 
  private:
