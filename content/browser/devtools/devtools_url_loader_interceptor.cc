@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 #include <ranges>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -631,6 +633,9 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // request paused event contains original headers. Previous headers
   // are used on resume to compute the difference for the network stack.
   std::unique_ptr<net::HttpRequestHeaders> headers_before_redirect_;
+  // The Origin header set by the caller (e.g., CorsURLLoader) for this
+  // redirect hop. Forwarded unchanged in ProcessFollowRedirect().
+  std::optional<std::string> redirect_origin_header_;
 
   // These two are needed to build a Request and are prepared as needed when
   // sending Request for the first time. Both need to be cleared upon redirect.
@@ -1459,6 +1464,7 @@ Response InterceptionJob::InnerContinueRequest(
   CHECK_EQ(State::kNotStarted, state_, base::NotFatalUntil::M159);
   ApplyModificationsToRequest(std::move(modifications));
   headers_before_redirect_.reset();
+  redirect_origin_header_.reset();
   StartRequest();
   return Response::Success();
 }
@@ -1473,18 +1479,16 @@ void InterceptionJob::ProcessFollowRedirect(
                                         headers_update_params.modified_headers);
   headers_update_params.modified_cors_exempt_headers =
       modified_cors_exempt_headers;
-  // Never report Origin as a client modification. The diff above is taken
-  // against the pre-redirect headers, so the Origin that the browser itself
-  // recomputed for this redirect (in FollowRedirect(), mirroring what the
-  // network service does) shows up here as though the client had set it.
-  // Forwarding it trips the network service's guard against modifying Origin
-  // on redirect and fails the request with net::ERR_INVALID_ARGUMENT, even for
-  // a client that never touched Origin. Dropping it is safe in every case: the
-  // network service recomputes the same value itself, so the request is
-  // unchanged on the wire, and Origin is not a header clients are allowed to
-  // change on a redirect anyway.
+  // Exclude browser-synthesized Origin changes from client modifications to
+  // prevent triggering the network service's invalid-argument redirect check,
+  // but preserve any Origin explicitly supplied by the caller (e.g.,
+  // CorsURLLoader on cross-origin redirect).
   headers_update_params.modified_headers.RemoveHeader(
       net::HttpRequestHeaders::kOrigin);
+  if (redirect_origin_header_) {
+    headers_update_params.modified_headers.SetHeader(
+        net::HttpRequestHeaders::kOrigin, std::move(*redirect_origin_header_));
+  }
   headers_before_redirect_.reset();
   loader_->FollowRedirect(std::move(headers_update_params), std::nullopt);
   state_ = State::kRequestSent;
@@ -1990,6 +1994,8 @@ void InterceptionJob::FollowRedirect(
   // any client changes.
   headers_before_redirect_ = std::make_unique<net::HttpRequestHeaders>(
       create_loader_params_->request.headers);
+  redirect_origin_header_ = headers_update_params.modified_headers.GetHeader(
+      net::HttpRequestHeaders::kOrigin);
   if (headers_override_) {
     // Always revert to the first request in the chain.
     HeadersOverride::Revert(std::move(headers_override_));
@@ -2037,6 +2043,7 @@ void InterceptionJob::FollowRedirect(
 
   CHECK_EQ(State::kNotStarted, state_, base::NotFatalUntil::M159);
   headers_before_redirect_.reset();
+  redirect_origin_header_.reset();
   StartRequest();
 }
 

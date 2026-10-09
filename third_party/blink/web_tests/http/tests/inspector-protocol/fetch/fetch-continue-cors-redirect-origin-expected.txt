@@ -1,0 +1,23 @@
+Tests that Fetch.continueRequest keeps the Origin header on a same-origin fetch that is redirected cross-origin.
+
+Redirect continued unmodified:
+Continuing GET http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_ORIGIN:HTTP_X_DEVTOOLS_TEST
+Continuing GET http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_ORIGIN:HTTP_X_DEVTOOLS_TEST
+Destination saw:
+HTTP_ORIGIN: http://127.0.0.1:8000
+HTTP_X_DEVTOOLS_TEST: <not set>
+
+Redirect continued with a header added:
+Continuing GET http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_ORIGIN:HTTP_X_DEVTOOLS_TEST
+Continuing GET http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_ORIGIN:HTTP_X_DEVTOOLS_TEST
+Destination saw:
+HTTP_ORIGIN: http://127.0.0.1:8000
+HTTP_X_DEVTOOLS_TEST: added
+
+Redirect continued with Origin overridden:
+Continuing GET http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_ORIGIN:HTTP_X_DEVTOOLS_TEST
+Continuing GET http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_ORIGIN:HTTP_X_DEVTOOLS_TEST
+Destination saw:
+HTTP_ORIGIN: http://127.0.0.1:8000
+HTTP_X_DEVTOOLS_TEST: <not set>
+
