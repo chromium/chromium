@@ -658,6 +658,30 @@ void BodyStreamBuffer::StopLoading() {
   EndLoading();
 }
 
+BodyStreamBuffer* BodyStreamBuffer::CreateProxy(
+    ExceptionState& exception_state) {
+  // ReleaseHandle() locks this buffer's stream and, unless the body is made
+  // from a ReadableStream, also closes and disturbs it.
+  BytesConsumer* consumer = ReleaseHandle(exception_state);
+  if (!consumer) {
+    return nullptr;
+  }
+  auto* proxy = BodyStreamBuffer::Create(script_state_, consumer, signal_.Get(),
+                                         /*cached_metadata_handler=*/nullptr);
+  if (!made_from_readable_stream_) {
+    return proxy;
+  }
+  // For a stream-backed body ReleaseHandle() returns a consumer that acquires
+  // its own reader, which locks the stream but does not disturb it until a
+  // read happens; "create a proxy" disturbs synchronously. This has to come
+  // after ReleaseHandle(), which DCHECKs that the stream is not yet disturbed.
+  stream_->MarkDisturbed();
+  // Like this body, the proxy has no source and an unknown length, so it has
+  // to be made from a ReadableStream as well.
+  return MakeGarbageCollected<BodyStreamBuffer>(
+      script_state_, proxy->Stream(), /*cached_metadata_handler=*/nullptr);
+}
+
 BytesConsumer* BodyStreamBuffer::ReleaseHandle(
     ExceptionState& exception_state) {
   DCHECK(!IsStreamLocked());

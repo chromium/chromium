@@ -15,14 +15,20 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_destination.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_duplex.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_retry_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -151,6 +157,59 @@ TEST_F(RequestBodyTest, InitWithBlob) {
   ASSERT_EQ(request->url(), RequestURL());
 
   EXPECT_EQ(request->BodyBufferByteLength(), body.length());
+}
+
+// A Request built from another Request gets a proxy of the input's body. When
+// that body is a ReadableStream, the proxy still has no source, so a further
+// Request built from it must still be restricted to CORS modes.
+TEST_F(RequestBodyTest, NoCorsModeRejectedForProxiedStreamBody) {
+  V8TestingScope scope;
+  auto* stream =
+      ReadableStream::Create(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  auto* init = CreateRequestInit(
+      scope, ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), stream));
+  init->setDuplex(V8RequestDuplex::Enum::kHalf);
+  Request* request1 = Request::Create(scope.GetScriptState(), RequestURL(),
+                                      init, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(request1);
+  Request* request2 =
+      Request::Create(scope.GetScriptState(), request1, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(request2);
+
+  auto* no_cors_init = RequestInit::Create();
+  no_cors_init->setMode(V8RequestMode::Enum::kNoCors);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_EQ(nullptr, Request::Create(scope.GetScriptState(), request2,
+                                     no_cors_init, exception_state));
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
+  EXPECT_EQ(
+      "If request is made from ReadableStream, mode should be\"same-origin\" "
+      "or \"cors\"",
+      exception_state.Message());
+}
+
+// A body created while its context is alive cannot be proxied once that
+// context has been destroyed. The constructor then throws instead of creating
+// a request, and the input request's body stays usable.
+TEST_F(RequestBodyTest, CreateFromRequestThrowsAfterContextDestroyed) {
+  V8TestingScope scope;
+  auto* init = CreateRequestInit(
+      scope, ToV8Traits<IDLString>::ToV8(scope.GetScriptState(), "test body!"));
+  Request* request1 = Request::Create(scope.GetScriptState(), RequestURL(),
+                                      init, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(request1);
+
+  scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_EQ(nullptr,
+            Request::Create(scope.GetScriptState(), request1, exception_state));
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            exception_state.CodeAs<DOMExceptionCode>());
+  EXPECT_FALSE(request1->IsBodyUsed());
+  EXPECT_FALSE(request1->IsBodyLocked());
 }
 
 TEST(ServiceWorkerRequestTest, FromString) {

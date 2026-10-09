@@ -209,6 +209,13 @@ class CORE_EXPORT ReadableStream
 
   void LockAndDisturb(ScriptState*);
 
+  // Marks the stream as disturbed without acquiring a reader. For callers that
+  // hand the stream's data to a consumer which acquires its own reader, and so
+  // cannot use LockAndDisturb(). The standard's "create a proxy" disturbs the
+  // stream synchronously, before any read has happened.
+  // https://streams.spec.whatwg.org/#readablestream-create-a-proxy
+  void MarkDisturbed() { is_disturbed_ = true; }
+
   // https://streams.spec.whatwg.org/#readablestream-close
   void CloseStream(ScriptState*, ExceptionState&);
 

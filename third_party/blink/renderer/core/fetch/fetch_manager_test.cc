@@ -31,7 +31,11 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_duplex.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_redirect.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
@@ -40,6 +44,7 @@
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -140,6 +145,20 @@ class FetchLaterTestBase : public testing::Test {
                                     scope.GetExceptionState());
 
     return request;
+  }
+
+  Request* CreateRequestWithStreamBody(V8TestingScope& scope,
+                                       const String& url) const {
+    auto* stream = ReadableStream::Create(scope.GetScriptState(),
+                                          scope.GetExceptionState());
+    auto* request_init = RequestInit::Create();
+    request_init->setMethod("POST");
+    request_init->setBody(ScriptValue(
+        scope.GetIsolate(),
+        ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), stream)));
+    request_init->setDuplex(V8RequestDuplex::Enum::kHalf);
+    return Request::Create(scope.GetScriptState(), url, request_init,
+                           scope.GetExceptionState());
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> TaskRunner() {
@@ -422,6 +441,56 @@ TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
   Histogram().ExpectTotalCount("FetchLater.Renderer.Total", 1);
   Histogram().ExpectUniqueSample("FetchLater.Renderer.Metrics",
                                  3 /*kActivatedOnEnteredBackForwardCache*/, 1);
+}
+
+// A request whose body is a ReadableStream has an unknown body length, so
+// fetchLater() must reject it.
+TEST_F(FetchLaterTest, StreamBodyThrowsTypeError) {
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  auto& exception_state = scope.GetExceptionState();
+  auto* fetch_later_manager =
+      MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
+  auto* request = CreateRequestWithStreamBody(scope, AtomicString("/"));
+  ASSERT_THAT(request, Not(IsNull()));
+
+  auto* result = fetch_later_manager->FetchLater(
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
+      request->signal(), /*activate_after_ms=*/std::nullopt, exception_state);
+
+  EXPECT_THAT(result, IsNull());
+  EXPECT_THAT(exception_state,
+              HasException("TypeError",
+                           "fetchLater doesn't support body with unknown "
+                           "length."));
+  EXPECT_EQ(fetch_later_manager->NumLoadersForTesting(), 0u);
+}
+
+// fetchLater(request) runs the Request constructor on `request`, which gives
+// the new request a proxy of the input's stream body. That body's length is
+// still unknown, so it must be rejected as well.
+TEST_F(FetchLaterTest, StreamBodyFromRequestThrowsTypeError) {
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+  auto& exception_state = scope.GetExceptionState();
+  auto* fetch_later_manager =
+      MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
+  auto* input = CreateRequestWithStreamBody(scope, AtomicString("/"));
+  ASSERT_THAT(input, Not(IsNull()));
+  auto* request =
+      Request::Create(scope.GetScriptState(), input, exception_state);
+  ASSERT_THAT(request, Not(IsNull()));
+
+  auto* result = fetch_later_manager->FetchLater(
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
+      request->signal(), /*activate_after_ms=*/std::nullopt, exception_state);
+
+  EXPECT_THAT(result, IsNull());
+  EXPECT_THAT(exception_state,
+              HasException("TypeError",
+                           "fetchLater doesn't support body with unknown "
+                           "length."));
+  EXPECT_EQ(fetch_later_manager->NumLoadersForTesting(), 0u);
 }
 
 // Base class for fetchLater() URL validation tests.

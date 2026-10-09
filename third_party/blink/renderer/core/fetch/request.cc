@@ -898,28 +898,28 @@ Request* Request::CreateRequestWithRequestOrString(
     return nullptr;
   }
 
-  // "Set |this|'s request's body to |body|.
+  // "Let |finalBody| be |inputOrInitBody|."
+  // "If |initBody| is null and |inputBody| is non-null, then:"
+  //   "If |inputBody| is unusable, then throw a TypeError." (checked above)
+  //   "Set |finalBody| to the result of creating a proxy for |inputBody|."
+  // Creating a proxy leaves |inputBody|'s stream in place -- same object,
+  // now locked and disturbed -- and hands the new request a new stream. Note
+  // this runs only when |init| did not supply a body; otherwise |input|'s
+  // body is left untouched. See https://github.com/whatwg/fetch/pull/959.
+  if (body && body == input_body) {
+    body = input_body->CreateProxy(exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+  }
+
+  // "Set |this|'s request's body to |finalBody|."
   if (body)
     r->request_->SetBuffer(body, body_byte_length);
 
   // "Set |r|'s MIME type to the result of extracting a MIME type from |r|'s
   // request's header list."
   r->request_->SetMimeType(r->request_->HeaderList()->ExtractMIMEType());
-
-  // "If |input| is a Request object and |input|'s request's body is
-  // non-null, run these substeps:"
-  if (input_request && input_request->BodyBuffer()) {
-    // "Let |dummyStream| be an empty ReadableStream object."
-    auto* dummy_stream =
-        BodyStreamBuffer::Create(script_state, BytesConsumer::CreateClosed(),
-                                 nullptr, /*cached_metadata_handler=*/nullptr);
-    // "Set |input|'s request's body to a new body whose stream is
-    // |dummyStream|."
-    input_request->request_->SetBuffer(dummy_stream);
-    // "Let |reader| be the result of getting reader from |dummyStream|."
-    // "Read all bytes from |dummyStream| with |reader|."
-    input_request->BodyBuffer()->CloseAndLockAndDisturb(exception_state);
-  }
 
   // "Return |r|."
   return r;

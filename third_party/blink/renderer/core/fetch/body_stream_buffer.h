@@ -85,6 +85,15 @@ class CORE_EXPORT BodyStreamBuffer final
                     ExceptionState&);
   void Tee(BodyStreamBuffer**, BodyStreamBuffer**, ExceptionState&);
 
+  // Implements the Streams standard's "create a proxy" operation for this
+  // body: returns a new BodyStreamBuffer drawing from the same underlying
+  // data, while *this* buffer's stream stays in place and becomes locked and
+  // disturbed. The proxy is made from a ReadableStream exactly when this buffer
+  // is.
+  // https://streams.spec.whatwg.org/#readablestream-create-a-proxy
+  // Callable only when neither locked nor disturbed.
+  BodyStreamBuffer* CreateProxy(ExceptionState&);
+
   // UnderlyingByteSourceBase
   ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
                                    ExceptionState&) override;
