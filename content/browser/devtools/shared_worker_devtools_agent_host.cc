@@ -204,7 +204,9 @@ SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
 }
 
 RenderProcessHost* SharedWorkerDevToolsAgentHost::GetProcessHost() {
-  CHECK(worker_host_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/571021243): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(worker_host_);
   return worker_host_->GetProcessHost();
 }
 
