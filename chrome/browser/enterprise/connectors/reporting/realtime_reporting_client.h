@@ -112,7 +112,7 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Return the Chrome OS user who is subject to reporting, or nullptr if
-  // the user cannot be deterined.
+  // the user cannot be determined.
   static const user_manager::User* GetChromeOSUser();
 #endif
 
@@ -120,6 +120,15 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
 
   raw_ptr<content::BrowserContext> context_;
   std::string username_;
+
+  // TODO(crbug.com/571187038): Remove `identity_manager_for_testing_` and
+  // `SetIdentityManagerForTesting()` once all tests are migrated to configure
+  // `IdentityManager` via `IdentityTestEnvironmentProfileAdaptor`.
+  // `DisableDanglingPtrDetection` is safe here because this pointer is only
+  // used in legacy tests where `IdentityTestEnvironment` may be torn down
+  // before the profile, and it is never dereferenced during teardown.
+  raw_ptr<signin::IdentityManager, DisableDanglingPtrDetection>
+      identity_manager_for_testing_ = nullptr;
 
   base::WeakPtrFactory<RealtimeReportingClient> weak_ptr_factory_{this};
 };

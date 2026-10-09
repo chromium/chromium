@@ -105,7 +105,7 @@ void RealtimeReportingClient::SetProfileCloudPolicyClientForTesting(
 
 void RealtimeReportingClient::SetIdentityManagerForTesting(
     signin::IdentityManager* identity_manager) {
-  identity_manager_ = identity_manager;
+  identity_manager_for_testing_ = identity_manager;
 }
 
 std::pair<std::string, policy::CloudPolicyClient*>
@@ -254,15 +254,13 @@ std::string RealtimeReportingClient::GetProfileUserName() {
   if (!username_.empty()) {
     return username_;
   }
-  username_ =
-      identity_manager_ ? GetProfileEmail(identity_manager_) : std::string();
+  username_ = GetProfileEmail(Profile::FromBrowserContext(context_));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (username_.empty()) {
-    username_ = Profile::FromBrowserContext(context_)->GetPrefs()->GetString(
-        enterprise_signin::prefs::kProfileUserEmail);
+  if (username_.empty() && identity_manager_for_testing_) {
+    username_ = identity_manager_for_testing_
+                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                    .email;
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return username_;
 }

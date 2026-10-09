@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,6 +28,8 @@
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -903,5 +906,36 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(policy::DM_STATUS_SUCCESS,
                                      policy::DM_STATUS_REQUEST_FAILED)));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(RealtimeReportingClientTestBase, GetProfileUserNameInIsolatedMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+
+  TestingProfile* original_profile = profile_manager_.CreateTestingProfile(
+      "original_profile", IdentityTestEnvironmentProfileAdaptor::
+                              GetIdentityTestEnvironmentFactories());
+  IdentityTestEnvironmentProfileAdaptor adaptor(original_profile);
+  adaptor.identity_test_env()->MakePrimaryAccountAvailable(
+      "profile@example.com", signin::ConsentLevel::kSignin);
+
+  original_profile->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  TestingProfile* isolated_profile =
+      TestingProfile::Builder().BuildIncognito(original_profile);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
+      isolated_profile,
+      base::BindRepeating(
+          &enterprise_connectors::test::BuildRealtimeReportingClient));
+  auto* isolated_reporting_client =
+      RealtimeReportingClientFactory::GetForProfile(isolated_profile);
+  ASSERT_NE(isolated_reporting_client, nullptr);
+  EXPECT_EQ("profile@example.com",
+            isolated_reporting_client->GetProfileUserName());
+}
 
 }  // namespace enterprise_connectors
