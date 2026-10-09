@@ -644,6 +644,26 @@ class UnitTest(unittest.TestCase):
       ['gen', '-c', 'debug_remoteexec', '//out/Default'], mbw=mbw, ret=1
     )
 
+  def test_gn_gen_without_output_options(self):
+    commands = {
+      'analyze': ['/tmp/in.json', '/tmp/out.json'],
+      'gen': [],
+      'get-swarming-command': ['foo_unittests'],
+      'isolate': ['foo_unittests'],
+      'isolate-everything': [],
+      'run': ['foo_unittests'],
+      'zip': ['foo_unittests', '/tmp/tests.zip'],
+    }
+    for command, extra_args in commands.items():
+      for ret in (0, 7):
+        with self.subTest(command=command, ret=ret):
+          mbw = self.fake_mbw()
+          mbw.ParseArgs([command, '//out/Default'] + extra_args)
+          mbw.cmds.append((ret, 'GN output', ''))
+          self.assertEqual(mbw.RunGNGen(mb.DefaultVals()), ret)
+          self.assertEqual(len(mbw.calls), 1)
+          self.assertNotIn('--ide=json', mbw.calls[0])
+
   def test_gen_swarming(self):
     files = {
       '/tmp/swarming_targets': 'base_unittests\n',

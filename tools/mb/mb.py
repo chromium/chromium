@@ -142,6 +142,8 @@ class MetaBuildWrapper:
 
   def ParseArgs(self, argv):
     def AddCommonOptions(subp):
+      # Commands can regenerate GN files without exposing these output flags.
+      subp.set_defaults(write_ide_json=False, json_output=None)
       group = subp.add_mutually_exclusive_group()
       group.add_argument(
         '-m',
