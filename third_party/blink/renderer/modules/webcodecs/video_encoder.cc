@@ -1207,10 +1207,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame->set_timestamp(blink_timestamp);
   }
 
-  base::TimeDelta frame_duration;
+  base::TimeDelta frame_duration = media::kNoTimestamp;
   if (frame->metadata().frame_duration &&
-      frame->metadata().frame_duration != media::kInfiniteDuration &&
-      frame->metadata().frame_duration != media::kNoTimestamp) {
+      frame->metadata().frame_duration != media::kInfiniteDuration) {
     frame_duration = *frame->metadata().frame_duration;
   }
 
@@ -1222,8 +1221,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame_transform = *frame->metadata().transformation;
   }
 
-  frame_metadata_[frame->timestamp()] = FrameMetadata{
-      .duration = frame_duration, .transformation = frame_transform};
+  frame_metadata_.push_back(FrameMetadata{.timestamp = frame->timestamp(),
+                                          .duration = frame_duration,
+                                          .transformation = frame_transform});
 
   request->StartTracingVideoEncode(encode_options.key_frame,
                                    frame->timestamp());
@@ -1636,21 +1636,26 @@ void VideoEncoder::CallOutputCallback(
 
   auto buffer = media::DecoderBuffer::FromArray(std::move(output.data));
   buffer->set_timestamp(output.timestamp);
+  buffer->set_duration(media::kNoTimestamp);
   buffer->set_is_key_frame(output.key_frame);
 
   auto output_transform = media::kNoTransformation;
-  const auto it = frame_metadata_.find(output.timestamp);
+  const auto it = std::ranges::find(frame_metadata_, output.timestamp,
+                                    &FrameMetadata::timestamp);
   if (it != frame_metadata_.end()) {
-    if (!it->second.duration.is_zero()) {
-      buffer->set_duration(it->second.duration);
-    }
-    output_transform = it->second.transformation;
+    buffer->set_duration(it->duration);
+    output_transform = it->transformation;
 
-    // While encoding happens in presentation order, outputs may be out of order
-    // for some codec configurations. The maximum number of reordered outputs is
-    // 16, so we can clear everything before that.
-    if (it - frame_metadata_.begin() > 16) {
-      frame_metadata_.erase(frame_metadata_.begin(), it + 1);
+    // Consume the matched entry. While encoding happens in presentation order,
+    // outputs may be out of order for some codec configurations. The maximum
+    // number of reordered outputs is 16, so only evict unmatched older entries
+    // that exceed the maximum reordering window.
+    constexpr ptrdiff_t kMaxReorderedFrames = 16;
+    const ptrdiff_t index = it - frame_metadata_.begin();
+    frame_metadata_.EraseAt(static_cast<wtf_size_t>(index));
+    if (index > kMaxReorderedFrames) {
+      frame_metadata_.EraseAt(
+          0, static_cast<wtf_size_t>(index - kMaxReorderedFrames));
     }
   }
 
@@ -1752,6 +1757,7 @@ void VideoEncoder::CallOutputCallback(
 void VideoEncoder::ResetInternal(DOMException* ex) {
   Base::ResetInternal(ex);
   active_encodes_ = 0;
+  frame_metadata_.clear();
   last_decoder_config_.reset();
 }
 

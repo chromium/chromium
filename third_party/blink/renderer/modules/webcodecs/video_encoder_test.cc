@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -189,12 +191,12 @@ VideoEncoderInit* CreateInit(ScriptState* script_state,
   return init;
 }
 
-VideoFrame* MakeVideoFrame(
-    ScriptState* script_state,
-    int width,
-    int height,
-    int timestamp,
-    std::optional<gfx::Rect> visible_rect = std::nullopt) {
+VideoFrame* MakeVideoFrame(ScriptState* script_state,
+                           int width,
+                           int height,
+                           int timestamp,
+                           std::optional<gfx::Rect> visible_rect = std::nullopt,
+                           std::optional<uint64_t> duration = std::nullopt) {
   std::vector<uint8_t> data(width * height * 4);
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(data));
 
@@ -209,6 +211,9 @@ VideoFrame* MakeVideoFrame(
 
   VideoFrameInit* video_frame_init = VideoFrameInit::Create();
   video_frame_init->setTimestamp(timestamp);
+  if (duration) {
+    video_frame_init->setDuration(*duration);
+  }
   if (visible_rect) {
     auto* dom_rect = DOMRectInit::Create();
     dom_rect->setX(visible_rect->x());
@@ -696,6 +701,202 @@ TEST_F(VideoEncoderTest, EncodePreservesVisibleRect) {
   ScriptPromiseTester tester(script_state, encoder->flush(script_state, es));
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+}
+
+class ChunkCollector : public ScriptFunction {
+ public:
+  explicit ChunkCollector(v8::Isolate* isolate) : isolate_(isolate) {}
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue args) override {
+    auto* chunk = V8EncodedVideoChunk::ToWrappable(isolate_, args.V8Value());
+    EXPECT_TRUE(chunk);
+    if (chunk) {
+      chunks_.emplace_back(chunk->timestamp(), chunk->duration());
+    }
+    return ScriptValue();
+  }
+
+  const Vector<std::pair<int64_t, std::optional<uint64_t>>>& chunks() const {
+    return chunks_;
+  }
+
+ private:
+  raw_ptr<v8::Isolate> const isolate_;
+  Vector<std::pair<int64_t, std::optional<uint64_t>>> chunks_;
+};
+
+TEST_F(VideoEncoderTest, EncodePreservesFrameDuration) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  MockFunctionScope mock_function(script_state);
+  auto* collector =
+      MakeGarbageCollected<ChunkCollector>(script_state->GetIsolate());
+  auto* init =
+      CreateInit(script_state, collector, mock_function.ExpectNoCall());
+  auto* encoder = CreateMockEncoder(script_state, init, es);
+  ASSERT_FALSE(es.HadException());
+
+  auto* config = CreateConfig();
+  media::VideoEncoder::OutputCB output_cb;
+
+  auto setup_mock_encoder = [&]() -> media::MockVideoEncoder* {
+    auto media_encoder = std::make_unique<media::MockVideoEncoder>();
+    media::MockVideoEncoder* mock_ptr = media_encoder.get();
+    EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+        .WillOnce(DoAll(
+            [encoder]() {
+              media::VideoEncoderInfo info;
+              info.implementation_name = "MockEncoderName";
+              info.is_hardware_accelerated = false;
+              encoder->CallOnMediaEncoderInfoChanged(info);
+            },
+            Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                std::move(media_encoder))))));
+    EXPECT_CALL(*mock_ptr, Initialize(_, _, _, _, _))
+        .WillOnce(DoAll(
+            SaveArg<3>(&output_cb),
+            WithArgs<4>([](media::VideoEncoder::EncoderStatusCB done_cb) {
+              scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                  FROM_HERE, blink::BindOnce(std::move(done_cb),
+                                             media::EncoderStatus::Codes::kOk));
+            })));
+    return mock_ptr;
+  };
+
+  EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
+      .WillOnce(Return(
+          ByMove(std::make_unique<media::MockVideoEncoderMetricsProvider>())));
+  media::MockVideoEncoder* mock_media_encoder = setup_mock_encoder();
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+
+  auto emit_output = [&](int64_t timestamp_us) {
+    media::VideoEncoderOutput out;
+    out.data = base::HeapArray<uint8_t>::Uninit(10);
+    out.key_frame = true;
+    out.timestamp = base::Microseconds(timestamp_us);
+    scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+        FROM_HERE, blink::BindOnce(output_cb, std::move(out), std::nullopt));
+  };
+
+  auto ack_encode = [](media::VideoEncoder::EncoderStatusCB done_cb) {
+    scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+        FROM_HERE,
+        blink::BindOnce(std::move(done_cb), media::EncoderStatus::Codes::kOk));
+  };
+
+  // Expect 7 encodes before reset:
+  // 1. timestamp=0, duration=std::nullopt (unset) -> emitted immediately
+  // 2. timestamp=10, duration=0 (zero) -> emitted immediately
+  // 3. timestamp=100, duration=111 (duplicate ts #1) -> emitted immediately
+  // 4. timestamp=100, duration=222 (duplicate ts #2) -> emitted immediately
+  // 5. timestamp=200, duration=333 (reordered #1) -> held until #6
+  // 6. timestamp=300, duration=444 (reordered #2) -> emits 300 then 200
+  // 7. timestamp=400, duration=555 (unconsumed before reset) -> not emitted
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<2>([&](media::VideoEncoder::EncoderStatusCB done_cb) {
+              ack_encode(std::move(done_cb));
+              emit_output(0);
+            }));
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<2>([&](media::VideoEncoder::EncoderStatusCB done_cb) {
+              ack_encode(std::move(done_cb));
+              emit_output(10);
+            }));
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<2>([&](media::VideoEncoder::EncoderStatusCB done_cb) {
+              ack_encode(std::move(done_cb));
+              emit_output(100);
+            }));
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<2>([&](media::VideoEncoder::EncoderStatusCB done_cb) {
+              ack_encode(std::move(done_cb));
+              emit_output(100);
+            }));
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(WithArgs<2>(ack_encode));
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<2>([&](media::VideoEncoder::EncoderStatusCB done_cb) {
+              ack_encode(std::move(done_cb));
+              emit_output(300);
+              emit_output(200);
+            }));
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(WithArgs<2>(ack_encode));
+    EXPECT_CALL(*mock_media_encoder, Flush(_)).WillOnce(ack_encode);
+  }
+
+  auto* opts = MakeGarbageCollected<VideoEncoderEncodeOptions>();
+  encoder->encode(
+      MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(), 0,
+                     std::nullopt, std::nullopt),
+      opts, es);
+  encoder->encode(MakeVideoFrame(script_state, kEncodeSize.width(),
+                                 kEncodeSize.height(), 10, std::nullopt, 0),
+                  opts, es);
+  encoder->encode(MakeVideoFrame(script_state, kEncodeSize.width(),
+                                 kEncodeSize.height(), 100, std::nullopt, 111),
+                  opts, es);
+  encoder->encode(MakeVideoFrame(script_state, kEncodeSize.width(),
+                                 kEncodeSize.height(), 100, std::nullopt, 222),
+                  opts, es);
+  encoder->encode(MakeVideoFrame(script_state, kEncodeSize.width(),
+                                 kEncodeSize.height(), 200, std::nullopt, 333),
+                  opts, es);
+  encoder->encode(MakeVideoFrame(script_state, kEncodeSize.width(),
+                                 kEncodeSize.height(), 300, std::nullopt, 444),
+                  opts, es);
+  encoder->encode(MakeVideoFrame(script_state, kEncodeSize.width(),
+                                 kEncodeSize.height(), 400, std::nullopt, 555),
+                  opts, es);
+
+  {
+    ScriptPromiseTester tester(script_state, encoder->flush(script_state, es));
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  // Now reset and reconfigure. The unconsumed frame at timestamp=400
+  // (duration=555) must not leak into encodes after reset().
+  encoder->reset(es);
+  ASSERT_FALSE(es.HadException());
+
+  media::MockVideoEncoder* second_mock_encoder = setup_mock_encoder();
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+
+  EXPECT_CALL(*second_mock_encoder, Encode(_, _, _))
+      .WillOnce(WithArgs<2>([&](media::VideoEncoder::EncoderStatusCB done_cb) {
+        ack_encode(std::move(done_cb));
+        emit_output(400);
+      }));
+  EXPECT_CALL(*second_mock_encoder, Flush(_)).WillOnce(ack_encode);
+
+  encoder->encode(
+      MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(),
+                     400, std::nullopt, std::nullopt),
+      opts, es);
+  {
+    ScriptPromiseTester tester(script_state, encoder->flush(script_state, es));
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  using Pair = std::pair<int64_t, std::optional<uint64_t>>;
+  EXPECT_THAT(
+      collector->chunks(),
+      testing::ElementsAre(Pair(0, std::nullopt), Pair(10, 0), Pair(100, 111),
+                           Pair(100, 222), Pair(300, 444), Pair(200, 333),
+                           Pair(400, std::nullopt)));
 }
 }  // namespace
 

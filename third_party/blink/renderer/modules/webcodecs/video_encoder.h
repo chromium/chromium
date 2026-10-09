@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {
@@ -185,12 +185,13 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // True if a running video encoder is hardware accelerated.
   bool is_platform_encoder_ = false;
 
-  // Per-frame metadata to be applied to outputs, linked by timestamp.
+  // Per-frame metadata to be applied to outputs, ordered by input sequence.
   struct FrameMetadata {
+    base::TimeDelta timestamp;
     base::TimeDelta duration;
     media::VideoTransformation transformation;
   };
-  base::flat_map<base::TimeDelta, FrameMetadata> frame_metadata_;
+  Vector<FrameMetadata> frame_metadata_;
 
   // Buffers returned by getAllFrameBuffers()
   HeapVector<Member<VideoEncoderBuffer>> frame_reference_buffers_;
