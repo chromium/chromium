@@ -94,6 +94,13 @@ Object: {
 Got a v8.evaluateModule event
 Object: {
 	args: {
+		data: {
+			columnNumber: number
+			frame: string
+			lineNumber: number
+			scriptId: number
+			url: string
+		}
 	}
 	cat: string
 	dur: number

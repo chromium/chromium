@@ -444,6 +444,15 @@ void Data(perfetto::TracedValue context,
           const TextPosition&);
 }
 
+namespace inspector_evaluate_module_event {
+void Data(perfetto::TracedValue context,
+          v8::Isolate*,
+          LocalFrame*,
+          const String& url,
+          int script_id,
+          const TextPosition&);
+}
+
 namespace inspector_target_rundown_event {
 
 void Data(perfetto::TracedValue context,

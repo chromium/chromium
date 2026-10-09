@@ -966,16 +966,26 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
     // Script IDs are not available on errored modules or on non-source text
     // modules, so we give them a default value.
+    int script_id = record->GetStatus() != v8::Module::kErrored &&
+                            record->IsSourceTextModule()
+                        ? record->ScriptId()
+                        : v8::UnboundScript::kNoScriptId;
     probe::ExecuteScript probe(execution_context, module_script->SourceUrl(),
-                               record->GetStatus() != v8::Module::kErrored &&
-                                       record->IsSourceTextModule()
-                                   ? record->ScriptId()
-                                   : v8::UnboundScript::kNoScriptId);
+                               script_id);
 
-    TRACE_EVENT("v8,devtools.timeline", "v8.evaluateModule",
-                [&](perfetto::EventContext ctx) {
-                  AddWorldAnnotations(ctx, script_state->World());
-                });
+    LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+    LocalFrame* frame = window ? window->GetFrame() : nullptr;
+    TRACE_EVENT(
+        "v8,devtools.timeline", "v8.evaluateModule", "data",
+        [&](perfetto::TracedValue context) {
+          inspector_evaluate_module_event::Data(
+              std::move(context), isolate, frame,
+              module_script->SourceUrl().GetString(), script_id,
+              module_script->StartPosition());
+        },
+        [&](perfetto::EventContext ctx) {
+          AddWorldAnnotations(ctx, script_state->World());
+        });
     RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
     // Do not perform a microtask checkpoint here. A checkpoint is performed
