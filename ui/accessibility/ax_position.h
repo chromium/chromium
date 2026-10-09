@@ -4277,6 +4277,41 @@ class AXPosition {
       return SlowCompareTo(other);
     }
 
+    // `AsLeafTextPositionBeforeCharacter` keeps a text position at the end of
+    // its anchor only when that position is followed by a generated newline,
+    // i.e. it is at the end of a paragraph. Such a position was not moved to
+    // the start of the next text anchor, so the order of the first uncommon
+    // ancestors (computed below) is no longer guaranteed to reflect the order
+    // of the two positions in the tree's text representation. For example, an
+    // unignored empty object that sits between the end of the paragraph and
+    // the next text contributes no text and is skipped when normalizing a
+    // position anchored to it, but it still occupies its own slot among the
+    // uncommon ancestors. The two methods would then disagree on whether a
+    // position in that empty object is after or at the end of the paragraph.
+    // Defer to "SlowCompareTo", which compares equivalent ancestor positions,
+    // including their affinity, on the common anchor.
+    //
+    // ++1 kRootWebArea
+    // ++++2 kGenericContainer kIsLineBreakingObject
+    // ++++++3 kTextField "Hello"
+    // ++++++++4 kStaticText "Hello"
+    // ++++++++++5 kInlineTextBox "Hello"
+    // ++++++6 kGenericContainer kIsLineBreakingObject (empty, unignored)
+    // ++++++7 kButton "Go"
+    // ++++++++8 kStaticText "Go"
+    // ++++++++++9 kInlineTextBox "Go"
+    //
+    // TextPosition anchor_id=5 text_offset=5 (annotated_text=Hello<>) is kept
+    // as is, because a generated newline separates it from "Go", while
+    // TextPosition anchor_id=6 text_offset=0 is normalized to anchor_id=9
+    // text_offset=0, i.e. after the generated newline.
+    if ((normalized_this_position->IsTextPosition() &&
+         normalized_this_position->AtEndOfAnchor()) ||
+        (normalized_other_position->IsTextPosition() &&
+         normalized_other_position->AtEndOfAnchor())) {
+      return SlowCompareTo(other);
+    }
+
     // Compute the ancestor stacks of both positions and walk them ourselves
     // rather than calling `LowestCommonAnchor`. That way, we can discover the
     // first uncommon ancestors which we need to use in order to compare the two

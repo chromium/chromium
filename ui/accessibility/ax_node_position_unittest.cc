@@ -11182,6 +11182,134 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
   EXPECT_EQ(*static_text_position, *button_position);
 }
 
+TEST_F(AXPositionTest, CompareToEmptyObjectAfterParagraphEnd) {
+  // On platforms that suppress the embedded object character, an unignored
+  // empty object contributes no text. A position at its start is thus at the
+  // same text offset as the end of the text before it, but a generated newline
+  // is reported after that text when the next text starts a new paragraph.
+  // The two positions should still compare as equal, as they do with
+  // `SlowCompareTo`, and not as if the empty object's position had crossed
+  // the generated newline. This is the shape of a search box followed by an
+  // empty offscreen container (e.g. a live region) and a button.
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
+
+  // ++1 kRootWebArea
+  // ++++2 kGenericContainer
+  // ++++++3 kTextField editable "Hello"
+  // ++++++++4 kStaticText editable "Hello"
+  // ++++++++++5 kInlineTextBox "Hello"
+  // ++++++6 kGenericContainer (empty)
+  // ++++++7 kButton
+  // ++++++++8 kStaticText "Go"
+  // ++++++++++9 kInlineTextBox "Go"
+  AXNodeData root_1;
+  AXNodeData container_2;
+  AXNodeData text_field_3;
+  AXNodeData static_text_4;
+  AXNodeData inline_box_5;
+  AXNodeData empty_container_6;
+  AXNodeData button_7;
+  AXNodeData static_text_8;
+  AXNodeData inline_box_9;
+
+  root_1.id = 1;
+  container_2.id = 2;
+  text_field_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+  empty_container_6.id = 6;
+  button_7.id = 7;
+  static_text_8.id = 8;
+  inline_box_9.id = 9;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+  root_1.child_ids = {container_2.id};
+
+  container_2.role = ax::mojom::Role::kGenericContainer;
+  container_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  container_2.child_ids = {text_field_3.id, empty_container_6.id, button_7.id};
+
+  text_field_3.role = ax::mojom::Role::kTextField;
+  text_field_3.AddState(ax::mojom::State::kEditable);
+  text_field_3.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+  text_field_3.SetValue("Hello");
+  text_field_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.AddState(ax::mojom::State::kEditable);
+  static_text_4.SetName("Hello");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.AddState(ax::mojom::State::kEditable);
+  inline_box_5.SetName("Hello");
+
+  empty_container_6.role = ax::mojom::Role::kGenericContainer;
+  empty_container_6.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  button_7.role = ax::mojom::Role::kButton;
+  button_7.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                            true);
+  button_7.child_ids = {static_text_8.id};
+
+  static_text_8.role = ax::mojom::Role::kStaticText;
+  static_text_8.SetName("Go");
+  static_text_8.child_ids = {inline_box_9.id};
+
+  inline_box_9.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_9.SetName("Go");
+
+  SetTree(CreateAXTree({root_1, container_2, text_field_3, static_text_4,
+                        inline_box_5, empty_container_6, button_7,
+                        static_text_8, inline_box_9}));
+
+  // TextPosition anchor_id=5 text_offset=5 annotated_text=Hello<>
+  TestPositionType end_of_text_field = CreateTextPosition(
+      inline_box_5, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, end_of_text_field);
+  ASSERT_TRUE(end_of_text_field->IsFollowedByGeneratedNewline());
+
+  // TextPosition anchor_id=6 text_offset=0 annotated_text=<>
+  TestPositionType empty_container_position =
+      CreateTextPosition(empty_container_6, 0 /* text_offset */,
+                         ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, empty_container_position);
+  ASSERT_TRUE(empty_container_position->IsInUnignoredEmptyObject());
+
+  EXPECT_EQ(0, *end_of_text_field->SlowCompareTo(*empty_container_position));
+  EXPECT_EQ(0, *end_of_text_field->CompareTo(*empty_container_position));
+  EXPECT_EQ(0, *empty_container_position->CompareTo(*end_of_text_field));
+  EXPECT_EQ(*end_of_text_field, *empty_container_position);
+  EXPECT_LE(*end_of_text_field, *empty_container_position);
+  EXPECT_GE(*end_of_text_field, *empty_container_position);
+
+  // The same, with the end of the text field expressed on the text field
+  // itself, as the caret would be.
+  TestPositionType end_of_text_field_value = CreateTextPosition(
+      text_field_3, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, end_of_text_field_value);
+  EXPECT_EQ(0,
+            *end_of_text_field_value->SlowCompareTo(*empty_container_position));
+  EXPECT_EQ(0, *end_of_text_field_value->CompareTo(*empty_container_position));
+  EXPECT_EQ(0, *empty_container_position->CompareTo(*end_of_text_field_value));
+
+  // Text that follows the empty object is still after the end of the text
+  // field, and after the empty object.
+  TestPositionType start_of_button = CreateTextPosition(
+      inline_box_9, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, start_of_button);
+  EXPECT_LT(*end_of_text_field, *start_of_button);
+  EXPECT_LT(*empty_container_position, *start_of_button);
+  EXPECT_GT(*start_of_button, *end_of_text_field);
+  EXPECT_GT(*start_of_button, *empty_container_position);
+}
+
 TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
