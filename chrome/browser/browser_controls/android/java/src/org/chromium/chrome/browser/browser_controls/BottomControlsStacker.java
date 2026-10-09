@@ -20,7 +20,6 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -794,15 +793,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         RecordHistogram.recordSparseHistogram(
                 "Android.BottomControlsStacker.NumberOfVisibleLayers", mNumberOfVisibleLayers);
 
-        int windowHeight =
-                DisplayUtil.dpToPx(
-                        mWindowAndroid.getDisplay(),
-                        mContext.getResources().getConfiguration().screenHeightDp);
+        int windowHeight = BrowserControlsUtils.getWindowHeight(mContext, mWindowAndroid);
         if (windowHeight <= 0 || mTotalHeight < 0 || mTotalMinHeight < 0) return;
         int percentageOfScreenUsedByBottomControlsMaxHeight =
-                Math.min(100, Math.round(100.f * mTotalHeight / windowHeight));
+                BrowserControlsUtils.calculatePercentageOfWindowUsed(mTotalHeight, windowHeight);
         int percentageOfScreenUsedByBottomControlsMinHeight =
-                Math.min(100, Math.round(100.f * mTotalMinHeight / windowHeight));
+                BrowserControlsUtils.calculatePercentageOfWindowUsed(mTotalMinHeight, windowHeight);
         RecordHistogram.recordPercentageHistogram(
                 "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight2",
                 percentageOfScreenUsedByBottomControlsMaxHeight);

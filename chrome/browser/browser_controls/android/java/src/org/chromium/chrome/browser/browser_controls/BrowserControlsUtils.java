@@ -10,15 +10,49 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 
 /** Static utilities related to browser controls interfaces. */
 @NullMarked
 public class BrowserControlsUtils {
 
+    private static final String HISTOGRAM_PERCENTAGE_MAX_HEIGHT =
+            "Android.BrowserControls.PercentageOfWindowUsedByBrowserControlsAtMaxHeight";
+    private static final String HISTOGRAM_PERCENTAGE_MIN_HEIGHT =
+            "Android.BrowserControls.PercentageOfWindowUsedByBrowserControlsAtMinHeight";
+
     private static @TriState int sSyncMinHeightWithTotalHeightForTesting;
+
+    /**
+     * Returns the height of the window in pixels based on the window's display and context
+     * configuration screenHeightDp.
+     *
+     * @param context The Context to retrieve screen configuration from.
+     * @param windowAndroid The WindowAndroid to retrieve the DisplayAndroid from.
+     * @return The height of the window in pixels.
+     */
+    public static int getWindowHeight(Context context, WindowAndroid windowAndroid) {
+        return DisplayUtil.dpToPx(
+                windowAndroid.getDisplay(),
+                context.getResources().getConfiguration().screenHeightDp);
+    }
+
+    /**
+     * Calculates the percentage of the window's total height used by a controls height [0, 100].
+     *
+     * @param controlsHeight The height of the controls in pixels.
+     * @param windowHeight The height of the window in pixels.
+     * @return The percentage of the window height used, rounded and clamped to [0, 100].
+     */
+    public static int calculatePercentageOfWindowUsed(int controlsHeight, int windowHeight) {
+        if (windowHeight <= 0 || controlsHeight < 0) return 0;
+        return Math.min(100, Math.round(100.f * controlsHeight / windowHeight));
+    }
 
     /**
      * Disallow top browser controls from scrolling off by setting min height equal to overall
@@ -137,6 +171,30 @@ public class BrowserControlsUtils {
                                 == provider.getBottomControlsMinHeight()
                         || BrowserControlsUtils.getBottomContentOffset(provider)
                                 == provider.getBottomControlsHeight());
+    }
+
+    /**
+     * Records the percentage of the window's total height used by combined top and bottom browser
+     * controls.
+     */
+    public static void recordCombinedControlsMetrics(
+            BrowserControlsStateProvider stateProvider,
+            Context context,
+            WindowAndroid windowAndroid) {
+        int windowHeight = getWindowHeight(context, windowAndroid);
+        int totalHeight =
+                stateProvider.getTopControlsHeight() + stateProvider.getBottomControlsHeight();
+        int minHeight =
+                stateProvider.getTopControlsMinHeight()
+                        + stateProvider.getBottomControlsMinHeight();
+        if (windowHeight <= 0 || totalHeight < 0 || minHeight < 0) return;
+
+        RecordHistogram.recordPercentageHistogram(
+                HISTOGRAM_PERCENTAGE_MAX_HEIGHT,
+                calculatePercentageOfWindowUsed(totalHeight, windowHeight));
+        RecordHistogram.recordPercentageHistogram(
+                HISTOGRAM_PERCENTAGE_MIN_HEIGHT,
+                calculatePercentageOfWindowUsed(minHeight, windowHeight));
     }
 
     public static void setsSyncMinHeightWithTotalHeightForTesting(boolean override) {

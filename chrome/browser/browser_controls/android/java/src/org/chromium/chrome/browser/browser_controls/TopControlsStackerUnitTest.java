@@ -17,6 +17,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,18 +32,27 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 
 /** Unit tests for {@link TopControlsStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TopControlsStackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int OFFSET_NOT_OBSERVED = -1024;
+    private static final String HISTOGRAM_NUMBER_OF_VISIBLE_LAYERS =
+            "Android.TopControlsStacker.NumberOfVisibleLayers";
+    private static final String HISTOGRAM_PERCENTAGE_MAX_HEIGHT =
+            "Android.TopControlsStacker.PercentageOfWindowUsedByTopControlsAtMaxHeight";
+    private static final String HISTOGRAM_PERCENTAGE_MIN_HEIGHT =
+            "Android.TopControlsStacker.PercentageOfWindowUsedByTopControlsAtMinHeight";
 
     /** Mock implementation of TestLayer for testing purposes. */
     private static class TestLayer implements TopControlLayer {
@@ -247,15 +260,28 @@ public class TopControlsStackerUnitTest {
     }
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private Context mContext;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Resources mResources;
+    @Mock private DisplayAndroid mDisplayAndroid;
 
+    private final Configuration mConfig = new Configuration();
     private BrowserControlsVisibilityDelegate mVisibilityDelegate;
     private TopControlsStacker mTopControlsStacker;
 
     @Before
     public void setUp() {
+        doReturn(mResources).when(mContext).getResources();
+        doReturn(mConfig).when(mResources).getConfiguration();
+        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
+        doReturn(1.0f).when(mDisplayAndroid).getDipScale();
+        mConfig.screenHeightDp = 800;
+
         mVisibilityDelegate = new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
         doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
-        mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer, mVisibilityDelegate);
+        mTopControlsStacker =
+                new TopControlsStacker(
+                        mBrowserControlsSizer, mVisibilityDelegate, mContext, mWindowAndroid);
     }
 
     @Test
@@ -1672,5 +1698,51 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.addControl(TestLayer.toolbarLayer());
         mTopControlsStacker.onTopControlsHeightChanged(100, 50);
         mTopControlsStacker.destroy();
+    }
+
+    @Test
+    public void testLayerMetrics() {
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_NUMBER_OF_VISIBLE_LAYERS, 2)
+                        .expectIntRecord(HISTOGRAM_PERCENTAGE_MAX_HEIGHT, 19)
+                        .expectIntRecord(HISTOGRAM_PERCENTAGE_MIN_HEIGHT, 0)
+                        .build();
+
+        mTopControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+        histogramWatcher.assertExpected();
+
+        TestLayer topScalp = TestLayer.topScalpLayer();
+        mTopControlsStacker.addControl(topScalp);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_NUMBER_OF_VISIBLE_LAYERS, 3)
+                        .expectIntRecord(HISTOGRAM_PERCENTAGE_MAX_HEIGHT, 22)
+                        .expectIntRecord(HISTOGRAM_PERCENTAGE_MIN_HEIGHT, 3)
+                        .build();
+
+        mTopControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+        histogramWatcher.assertExpected();
+
+        tabStrip.mVisibility = TopControlVisibility.HIDDEN;
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_NUMBER_OF_VISIBLE_LAYERS, 2)
+                        .expectIntRecord(HISTOGRAM_PERCENTAGE_MAX_HEIGHT, 16)
+                        .expectIntRecord(HISTOGRAM_PERCENTAGE_MIN_HEIGHT, 3)
+                        .build();
+
+        mTopControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+        histogramWatcher.assertExpected();
     }
 }

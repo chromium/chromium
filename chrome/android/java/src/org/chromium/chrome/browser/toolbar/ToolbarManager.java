@@ -1624,6 +1624,9 @@ public class ToolbarManager
                             mToolbar.onNavigatedToDifferentPage();
                             maybeTriggerCacheRefreshForZeroSuggest(navigation.getUrl());
                             mBottomControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+                            mTopControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
+                            BrowserControlsUtils.recordCombinedControlsMetrics(
+                                    mBrowserControlsSizer, mActivity, mWindowAndroid);
                         }
 
                         // If the load failed due to a different navigation, or we navigated back to

@@ -37,6 +37,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStackerUnitTest.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BottomOverscrollHandlerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegateTest.java",
     "java/src/org/chromium/chrome/browser/browser_controls/TopControlsStackerUnitTest.java",
   ]

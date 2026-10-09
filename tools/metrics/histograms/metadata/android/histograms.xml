@@ -1437,6 +1437,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.BrowserControls.PercentageOfWindowUsedByBrowserControlsAtMaxHeight"
+    units="%" expires_after="2027-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the percentage of the window's total height used by the combined top
+    and bottom browser controls at full height. Recorded when a navigation
+    finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.BrowserControls.PercentageOfWindowUsedByBrowserControlsAtMinHeight"
+    units="%" expires_after="2027-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the percentage of the window's total height used by the combined top
+    and bottom browser controls at minimum height. Recorded when a navigation
+    finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
 <histogram name="Android.BrowserControlsAnimationUpdate.HasExistingAnimation"
     enum="Boolean" expires_after="2026-09-13">
   <owner>peilinwang@chromium.org</owner>
@@ -6627,6 +6651,42 @@ chromium-metrics-reviews@google.com.
     newly preferred position. Recorded when the value of the toolbar position
     preference changes, either via long press or toggling it in the settings
     page.
+  </summary>
+</histogram>
+
+<histogram name="Android.TopControlsStacker.NumberOfVisibleLayers"
+    units="layers" expires_after="2027-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the number of visible top controls layers. Recorded when a
+    navigation finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.TopControlsStacker.PercentageOfWindowUsedByTopControlsAtMaxHeight"
+    units="%" expires_after="2027-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the percentage of the window's total height used by the top controls
+    stack at full height. This is the maximum % the window is obscured by the
+    top controls, which can ordinarily be scrolled off. Recorded when a
+    navigation finishes in the main frame of the active tab.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.TopControlsStacker.PercentageOfWindowUsedByTopControlsAtMinHeight"
+    units="%" expires_after="2027-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the percentage of the window's total height used by the top controls
+    stack at its minimum height. This is the minimum % the window is obscured by
+    the top controls, which cannot ordinarily be scrolled off. Recorded when a
+    navigation finishes in the main frame of the active tab.
   </summary>
 </histogram>
 
