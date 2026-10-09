@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -450,26 +451,30 @@ class PolicyTestCase {
   bool IsOsSupported() const {
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
     // For prefs testing desktop Android is considered a separate OS because it
-    // registers some additional prefs (e.g. extensions prefs).
-    const std::string os("desktop_android");
+    // registers some additional prefs (e.g. extensions prefs). It also runs
+    // test cases for "android".
+    static constexpr std::string_view kOsList[] = {"desktop_android",
+                                                   "android"};
 #elif BUILDFLAG(IS_ANDROID)
-    const std::string os("android");
+    static constexpr std::string_view kOsList[] = {"android"};
 #elif BUILDFLAG(IS_CHROMEOS)
-    const std::string os("chromeos");
+    static constexpr std::string_view kOsList[] = {"chromeos"};
 #elif BUILDFLAG(IS_IOS)
-    const std::string os("ios");
+    static constexpr std::string_view kOsList[] = {"ios"};
 #elif BUILDFLAG(IS_LINUX)
-    const std::string os("linux");
+    static constexpr std::string_view kOsList[] = {"linux"};
 #elif BUILDFLAG(IS_MAC)
-    const std::string os("mac");
+    static constexpr std::string_view kOsList[] = {"mac"};
 #elif BUILDFLAG(IS_WIN)
-    const std::string os("win");
+    static constexpr std::string_view kOsList[] = {"win"};
 #elif BUILDFLAG(IS_FUCHSIA)
-    const std::string os("fuchsia");
+    static constexpr std::string_view kOsList[] = {"fuchsia"};
 #else
 #error "Unknown platform"
 #endif
-    return std::ranges::contains(supported_os_, os);
+    return std::ranges::any_of(kOsList, [this](std::string_view os) {
+      return std::ranges::contains(supported_os_, os);
+    });
   }
 
   bool IsOsCovered() const {

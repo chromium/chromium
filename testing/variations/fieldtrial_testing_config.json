@@ -5722,24 +5722,6 @@
             ]
         }
     ],
-    "DesktopAndroidPolicy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "blocklist": "AlternateErrorPagesEnabled"
-                    },
-                    "enable_features": [
-                        "DesktopAndroidPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopAndroidUnifiedCompositorLimits": [
         {
             "platforms": [
