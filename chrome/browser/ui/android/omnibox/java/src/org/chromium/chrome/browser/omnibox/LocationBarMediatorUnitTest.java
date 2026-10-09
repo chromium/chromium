@@ -32,8 +32,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.Property;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -99,6 +102,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -295,6 +299,9 @@ public class LocationBarMediatorUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableNullableObservableSupplier<AiModeButtonUiConfig>
             mAiModeButtonUiConfigSupplier = ObservableSuppliers.createNullable();
+    private final SettableNonNullObservableSupplier<StatusIconResource> mAiModeButtonIconSupplier =
+            ObservableSuppliers.createNonNull(
+                    new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
     private final OmniboxAnimator mOmniboxAnimator = new OmniboxAnimator(1.0f, 0);
 
     // Members capturing final state of the LocationBarLayout elements.
@@ -386,6 +393,10 @@ public class LocationBarMediatorUnitTest {
                 .doReturn(mAiModeButtonUiConfigSupplier)
                 .when(mSearchEngineService)
                 .getAiModeButtonUiConfigSupplier();
+        lenient()
+                .doReturn(mAiModeButtonIconSupplier)
+                .when(mSearchEngineService)
+                .getAiModeButtonIconSupplier();
         SearchEngineService.setInstanceForTesting(mSearchEngineService);
         lenient().doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         lenient()
@@ -5644,6 +5655,42 @@ public class LocationBarMediatorUnitTest {
         verify(mActivationChip).setText("AI Mode");
         verify(mActivationChip).setContentDescription("AI Mode button");
         verify(mActivationChip).setTooltipText("Ask AI Mode");
+    }
+
+    @Test
+    public void testActivationChip_iconUpdatedFromSupplier_resourceIconTinted() {
+        mMediator.onFinishNativeInitialization();
+        clearInvocations(mActivationChip);
+
+        mAiModeButtonIconSupplier.set(
+                new StatusIconResource(
+                        R.drawable.ic_search_24dp, R.color.default_icon_color_tint_list));
+
+        verify(mActivationChip)
+                .setIconWithTint(any(Drawable.class), /* tintWithTextColor= */ eq(true));
+    }
+
+    @Test
+    public void testActivationChip_iconUpdatedFromSupplier_bitmapIconNotTinted() {
+        mMediator.onFinishNativeInitialization();
+        clearInvocations(mActivationChip);
+
+        Bitmap bitmap = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888);
+        mAiModeButtonIconSupplier.set(
+                new StatusIconResource("https://3p.com/favicon.ico", bitmap, 0));
+
+        verify(mActivationChip)
+                .setIconWithTint(any(Drawable.class), /* tintWithTextColor= */ eq(false));
+    }
+
+    @Test
+    public void testActivationChip_iconObserverRemovedOnDestroy() {
+        mMediator.onFinishNativeInitialization();
+        assertTrue(mAiModeButtonIconSupplier.hasObservers());
+
+        mMediator.destroy();
+
+        assertFalse(mAiModeButtonIconSupplier.hasObservers());
     }
 
     @Test

@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxAnimator;
@@ -278,6 +279,8 @@ public class LocationBarMediator
             this::onActivationChipSelectionChanged;
     private final Callback<@Nullable AiModeButtonUiConfig> mAiModeButtonUiConfigObserver =
             this::onAiModeButtonUiConfigChanged;
+    private final Callback<StatusIconResource> mAiModeButtonIconObserver =
+            this::onAiModeButtonIconChanged;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             _ -> {
                 updateActivationChip();
@@ -679,6 +682,9 @@ public class LocationBarMediator
             mSearchEngineService
                     .getAiModeButtonUiConfigSupplier()
                     .removeObserver(mAiModeButtonUiConfigObserver);
+            mSearchEngineService
+                    .getAiModeButtonIconSupplier()
+                    .removeObserver(mAiModeButtonIconObserver);
         }
         mHintTextUpdater.destroy();
         mStatusCoordinator = null;
@@ -2035,6 +2041,9 @@ public class LocationBarMediator
             mSearchEngineService
                     .getAiModeButtonUiConfigSupplier()
                     .removeObserver(mAiModeButtonUiConfigObserver);
+            mSearchEngineService
+                    .getAiModeButtonIconSupplier()
+                    .removeObserver(mAiModeButtonIconObserver);
         }
         mSearchEngineService = SearchEngineService.getForProfile(profile);
         mSearchEngineServiceSupplier.set(mSearchEngineService);
@@ -2050,6 +2059,9 @@ public class LocationBarMediator
         mSearchEngineService
                 .getAiModeButtonUiConfigSupplier()
                 .addSyncObserverAndCall(mAiModeButtonUiConfigObserver);
+        mSearchEngineService
+                .getAiModeButtonIconSupplier()
+                .addSyncObserverAndCallIfNonNull(mAiModeButtonIconObserver);
     }
 
     private void updateAlwaysShowAiModeCallback() {
@@ -3729,6 +3741,14 @@ public class LocationBarMediator
         activationChip.setTooltipText(config != null ? config.tooltip : null);
         updateActivationChip();
         updateAlwaysShowAiModeCallback();
+    }
+
+    private void onAiModeButtonIconChanged(StatusIconResource icon) {
+        mLocationBarLayout
+                .getActivationChip()
+                .setIconWithTint(
+                        icon.getDrawable(mContext),
+                        /* tintWithTextColor= */ icon.getIconRes() != 0);
     }
 
     /* package */ void updateActivationChip() {

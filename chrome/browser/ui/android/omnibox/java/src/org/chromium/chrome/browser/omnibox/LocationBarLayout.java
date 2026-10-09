@@ -250,11 +250,17 @@ public class LocationBarLayout extends ConstraintLayout {
 
         @ColorInt
         int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
-        mActivationChip.setIconTint(ColorStateList.valueOf(colorOnSurface));
+        mActivationChip.setTextColor(colorOnSurface);
+        boolean shouldTintIcon =
+                mSearchEngineService == null
+                        || mSearchEngineService.getAiModeButtonIconSupplier().get().getIconRes()
+                                != 0;
+        if (shouldTintIcon) {
+            mActivationChip.setIconTint(ColorStateList.valueOf(colorOnSurface));
+        }
         @ColorInt
         int focusRingColor = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
         mActivationChip.setForegroundTintList(ColorStateList.valueOf(focusRingColor));
-        mActivationChip.setTextColor(colorOnSurface);
     }
 
     /* package */ void setLensButtonTint(ColorStateList colorStateList) {
