@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -20,10 +21,13 @@ import static org.mockito.Mockito.verify;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,10 +39,11 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -49,7 +54,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.FakeTemplateUrl;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Arrays;
@@ -60,8 +65,8 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class DefaultSearchEngineDialogTest {
-    @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -72,6 +77,12 @@ public class DefaultSearchEngineDialogTest {
     private final FakeTemplateUrl mEngine2 = new FakeTemplateUrl("EngineTwo", "EngineTwoKeyword");
 
     private UserActionTester mUserActionTester;
+
+    @BeforeClass
+    public static void setupSuite() {
+        BlankUiTestActivity activity = sActivityTestRule.launchActivity(null);
+        ApplicationTestUtils.waitForActivityState(activity, Stage.RESUMED);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -101,12 +112,19 @@ public class DefaultSearchEngineDialogTest {
                                     });
                 });
         templateUrlServiceInit.waitForOnly();
-        mActivityTestRule.launchActivity(null);
+        CriteriaHelper.pollUiThread(sActivityTestRule.getActivity()::hasWindowFocus);
         mUserActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule
+                            .getActivity()
+                            .getModalDialogManager()
+                            .dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
+                });
         mUserActionTester.tearDown();
     }
 
@@ -165,7 +183,6 @@ public class DefaultSearchEngineDialogTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568491344
     public void testButtonClickRunsCallback() {
         showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
@@ -173,6 +190,8 @@ public class DefaultSearchEngineDialogTest {
                 .check(matches(isDisplayed()));
 
         onView(withText(mEngine1.getShortName())).inRoot(isDialog()).perform(click());
+        onView(withText(mEngine1.getShortName())).inRoot(isDialog()).check(matches(isChecked()));
+        onView(withId(R.id.primary_button)).inRoot(isDialog()).check(matches(isEnabled()));
         onView(withId(R.id.primary_button)).inRoot(isDialog()).perform(click());
 
         verify(mOnSuccessCallback).onResult(true);
@@ -180,7 +199,6 @@ public class DefaultSearchEngineDialogTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565382849
     public void testButtonClickDismissesDialog() {
         showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
@@ -188,6 +206,8 @@ public class DefaultSearchEngineDialogTest {
                 .check(matches(isDisplayed()));
 
         onView(withText(mEngine1.getShortName())).inRoot(isDialog()).perform(click());
+        onView(withText(mEngine1.getShortName())).inRoot(isDialog()).check(matches(isChecked()));
+        onView(withId(R.id.primary_button)).inRoot(isDialog()).check(matches(isEnabled()));
         onView(withId(R.id.primary_button)).inRoot(isDialog()).perform(click());
 
         onView(withText(R.string.search_engine_dialog_title)).check(doesNotExist());
@@ -226,7 +246,7 @@ public class DefaultSearchEngineDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new DefaultSearchEngineDialogCoordinator(
-                                    mActivityTestRule.getActivity(),
+                                    sActivityTestRule.getActivity(),
                                     delegate,
                                     promoType,
                                     mOnSuccessCallback)
