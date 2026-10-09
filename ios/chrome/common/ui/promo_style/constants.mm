@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
+
 NSString* const kPromoStyleHeaderViewBackgroundAccessibilityIdentifier =
     @"PromoStyleHeaderViewBackgroundAccessibilityIdentifier";
 NSString* const kPromoStyleTitleAccessibilityIdentifier =
@@ -19,7 +21,7 @@ NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
 NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
     @"PromoStyleDisclaimerViewAccessibilityIdentifier";
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
-    @"PromoStyleScrollViewAccessibilityIdentifier";
+    kButtonStackScrollViewAccessibilityIdentifier;
 
 const CGFloat kActionsBottomMarginWithSafeArea = 10.;
 const CGFloat kActionsBottomMarginWithoutSafeArea =

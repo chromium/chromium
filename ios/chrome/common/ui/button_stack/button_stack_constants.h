@@ -7,11 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-// Accessibility identifiers for the buttons.
+// Accessibility identifiers for the buttons and scroll view.
 extern NSString* const kButtonStackPrimaryActionAccessibilityIdentifier;
 extern NSString* const kButtonStackSecondaryActionAccessibilityIdentifier;
 extern NSString* const kButtonStackTertiaryActionAccessibilityIdentifier;
 extern NSString* const kButtonStackCheckmarkSymbolAccessibilityIdentifier;
+extern NSString* const kButtonStackScrollViewAccessibilityIdentifier;
 
 // Default margin for the button stack.
 extern const CGFloat kButtonStackMargin;
