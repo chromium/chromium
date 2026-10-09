@@ -339,11 +339,15 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
@@ -1096,6 +1100,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           tab.GetContents());
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      tab.GetContents(), HostContentSettingsMapFactory::GetForProfile(profile),
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile),
+      profile->GetPrefs(), g_browser_process->safe_browsing_service(),
+      enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
   if (autofill::ContentAutofillClient::FromWebContents(tab.GetContents())) {
     ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
         tab.GetContents());
@@ -1693,6 +1703,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
           new_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      new_contents, HostContentSettingsMapFactory::GetForProfile(profile),
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile),
+      profile->GetPrefs(), g_browser_process->safe_browsing_service(),
+      enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
   safe_browsing_tab_observer_.reset();
   if (autofill::ContentAutofillClient::FromWebContents(new_contents)) {
     ChromePasswordReuseDetectionManagerClient::CreateForWebContents(

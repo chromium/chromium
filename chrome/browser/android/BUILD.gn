@@ -254,6 +254,7 @@ source_set("tabs_impl") {
     "//components/payments/core",
     "//components/permissions",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/common:features",
     "//components/search",
     "//components/sensitive_content",

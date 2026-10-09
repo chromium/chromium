@@ -19,7 +19,6 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
@@ -58,7 +56,6 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
@@ -214,14 +211,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   //     See https://crbug.com/40604438.
   resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
       web_contents);
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
-      web_contents, HostContentSettingsMapFactory::GetForProfile(profile),
-      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-          GetForBrowserContext(profile),
-      profile->GetPrefs(), g_browser_process->safe_browsing_service(),
-      enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
-#endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (g_browser_process->safe_browsing_service()) {

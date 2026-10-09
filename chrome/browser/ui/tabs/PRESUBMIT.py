@@ -92,6 +92,13 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContentsDestroyed() after TabFeatures is destroyed, so the
   # the WebContents must own it.
   'SafetyTipWebContentsObserver::CreateForWebContents',
+  # SafeBrowsingNavigationObserver lives in
+  # //components/safe_browsing/content/browser, is looked up on WebContents by
+  # BrowserURLLoaderThrottle::WillRedirectRequest and
+  # SafeBrowsingNavigationObserverManager, and cleans up in
+  # WebContentsDestroyed() after TabFeatures is destroyed, so WebContents must
+  # own it.
+  'safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents',
   # SiteEngagementService::Helper lives in //components/site_engagement/content
   # and is also attached to non-tab WebContents in WebUIContentsWrapper, so
   # WebContents must own it.
