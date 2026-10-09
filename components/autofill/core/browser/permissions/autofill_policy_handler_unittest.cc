@@ -168,6 +168,44 @@ TEST_F(AutofillPolicyHandlerTest, CheckPolicySettings_AllPoliciesCorrectType) {
   EXPECT_TRUE(errors.empty());
 }
 
+TEST_F(AutofillPolicyHandlerTest,
+       CheckPolicySettings_InvalidListEntriesAllowedWithWarning) {
+  policy::PolicyMap policy;
+  policy.Set(
+      policy::key::kAutofillSettings, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(
+          base::ListValue()
+              .Append(base::DictValue()
+                          .Set("url_pattern", "invalid-url-pattern-123")
+                          .Set("blocked_types",
+                               base::ListValue().Append("payments")))
+              .Append(base::DictValue()
+                          .Set("url_pattern", "https://[*.]thenorthface.com")
+                          .Set("blocked_types",
+                               base::ListValue()
+                                   .Append("contact_info")
+                                   .Append("unknown_future_category")))
+              .Append(base::DictValue().Set(
+                  "blocked_types", base::ListValue().Append("travel")))),
+      nullptr);
+
+  AutofillSettingsPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  policy::PolicyErrorMap errors;
+
+  EXPECT_TRUE(handler.CheckPolicySettings(policy, &errors));
+  EXPECT_TRUE(errors.HasError(policy::key::kAutofillSettings));
+  EXPECT_FALSE(errors.HasFatalError(policy::key::kAutofillSettings));
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policy, &prefs);
+  const base::Value* value = nullptr;
+  EXPECT_TRUE(prefs.GetValue(prefs::kAutofillTypesBlocked, &value));
+  ASSERT_TRUE(value && value->is_list());
+  EXPECT_EQ(value->GetList().size(), 3u);
+}
+
 TEST_F(AutofillPolicyHandlerTest, MigrationHandler_AddressDisabled) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kAutofillAddressEnabled,

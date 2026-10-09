@@ -67,7 +67,7 @@ AutofillSettingsPolicyHandler::AutofillSettingsPolicyHandler(
           policy::key::kAutofillSettings,
           prefs::kAutofillTypesBlocked,
           schema,
-          policy::SCHEMA_ALLOW_UNKNOWN,
+          policy::SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
           policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED) {}
 

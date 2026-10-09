@@ -313,8 +313,9 @@ TEST_F(AutofillPolicyServiceTest,
       AutofillClient::AutofillPolicyDataCategory::kContactInfo));
 }
 
-// Tests that policy rules with malformed URL patterns are filtered out
-// silently without invalidating valid co-existing rules.
+// Tests that policy rules with malformed URL patterns or unknown category
+// strings are filtered out silently without invalidating valid co-existing
+// rules.
 TEST_F(AutofillPolicyServiceTest,
        MalformedUrlPatternRuleIsIgnoredWithoutAffectingValidRules) {
   base::ListValue blocked_list;
@@ -323,6 +324,7 @@ TEST_F(AutofillPolicyServiceTest,
   valid_entry.Set("url_pattern", "https://[*.]example.com");
   base::ListValue valid_types;
   valid_types.Append("contact_info");
+  valid_types.Append("unknown_future_category");
   valid_entry.Set("blocked_types", std::move(valid_types));
   blocked_list.Append(std::move(valid_entry));
 
@@ -333,6 +335,14 @@ TEST_F(AutofillPolicyServiceTest,
   invalid_entry.Set("blocked_types", std::move(invalid_types));
   blocked_list.Append(std::move(invalid_entry));
 
+  base::DictValue malformed_pattern_entry;
+  malformed_pattern_entry.Set("url_pattern", "http://[*.]example.com:invalid");
+  base::ListValue malformed_pattern_types;
+  malformed_pattern_types.Append("payments");
+  malformed_pattern_entry.Set("blocked_types",
+                              std::move(malformed_pattern_types));
+  blocked_list.Append(std::move(malformed_pattern_entry));
+
   SetPolicy(std::move(blocked_list));
 
   EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
@@ -341,6 +351,9 @@ TEST_F(AutofillPolicyServiceTest,
   EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
       GURL("https://www.example.com"),
       AutofillClient::AutofillPolicyDataCategory::kTravel));
+  EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kPayments));
 }
 
 // Tests that shopping category is blocked when the policy rule configures it
