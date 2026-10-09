@@ -1985,7 +1985,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 
   RunTestSequence(OpenExplainCard(kActiveTab, kOverlayWebContentsId),
                   WaitForElementVisible(kOverlayWebContentsId, kAskGemini),
-                  ClickElement(kOverlayWebContentsId, kAskGemini),
+                  ClickElement(kOverlayWebContentsId, kAskGemini,
+                               ExecuteJsMode::kFireAndForget),
+                  WaitForHide(OverlayBaseController::kOverlayId),
                   // Glic opens in the side panel.
                   WaitForShow(kSidePanelElementId),
                   InAnyContext(WaitForShow(kGlicViewElementId)));

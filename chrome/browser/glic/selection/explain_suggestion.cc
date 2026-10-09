@@ -131,6 +131,11 @@ void ExplainSuggestion::AskGemini() {
   // TODO(liuwilliam): Add the text.
   service->Invoke(GlicInvokeOptions(
       Target(*tab_), mojom::InvocationSource::kTextSelectionWidget));
+  if (auto* controller =
+          SelectionOverlayController::FromTabWebContents(tab_->GetContents())) {
+    // Closing the overlay may destroy `this`.
+    controller->Close();
+  }
 }
 
 void ExplainSuggestion::Bind(

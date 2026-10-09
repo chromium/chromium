@@ -1329,12 +1329,16 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, AskGeminiOpensGlic) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(ShowOverlay(tab));
   ExplainSuggestion suggestion(*tab, /*request=*/{});
   mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
   Connect(suggestion, remote);
 
   remote->AskGemini();
   EXPECT_TRUE(WaitForGlicOpen(tab).has_value());
+  EXPECT_EQ(SelectionOverlayController::FromTabWebContents(tab->GetContents())
+                ->state(),
+            SelectionOverlayController::State::kOff);
 }
 
 }  // namespace glic
