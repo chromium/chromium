@@ -250,6 +250,7 @@ UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
       return browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail;
     case personal_context::proto::SourceReference::kPhotos:
       return browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos;
+    case personal_context::proto::SourceReference::kChromeHistoryEntry:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       NOTREACHED();
   }

@@ -141,6 +141,7 @@ message SourceReference {
     GmailReference gmail = 1;
     PhotosReference photos = 2;
     DriveFile drive = 3;
+    ChromeHistoryEntry chrome_history_entry = 4;
   }
 }
 
@@ -156,8 +157,8 @@ message MessageUrls {
 
 // Represents a reference to a Gmail message.
 message GmailReference {
-  // URL to the email message. Prefer using message_urls if populated.
-  string message_url = 1;
+  // URL to the email message. Deprecated: prefer using message_urls.
+  string message_url = 1 [deprecated = true];
 
   // Subject of the email message.
   string subject = 2;
@@ -190,6 +191,16 @@ message DriveFile {
   string name = 1;
   // Drive URL of the file.
   string url = 2;
+}
+
+// Represents a reference to a Chrome history entry.
+message ChromeHistoryEntry {
+  // URL of the visited page.
+  string url = 1;
+  // Title of the visited page.
+  string title = 2;
+  // UTC timestamp of when the page was visited.
+  Timestamp visit_timestamp = 3;
 }
 
 // Represents a completed purchase transaction from a retail merchant.
