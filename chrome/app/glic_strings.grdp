@@ -666,4 +666,33 @@
   <message name="IDS_GLIC_HOTKEY_G" desc="G key text" translateable="false" formatter_data="android_java">
     G
   </message>
+  <if expr="is_android">
+    <message name="IDS_GLIC_FRE_DIALOG_TITLE" desc="Headline of the dialog that asks the user to turn on Gemini in Chrome the first time they open it." formatter_data="android_java">
+      Ask anything, right where you are, with Gemini in Chrome
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_TAB_SHARING_DESCRIPTION" desc="Description in the Gemini in Chrome opt-in dialog explaining that the content and URL of the open tab are shared with Google when starting a new chat." formatter_data="android_java">
+      Tabs are shared for more relevant answers. Google uses the content and URL of your open tab when you start a new chat. You can change this setting anytime.
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_TAB_SHARING_DESCRIPTION_BOLD" desc="Description in the Gemini in Chrome opt-in dialog explaining that the content and URL of the open tab are shared with Google when starting a new chat, with bold lead-in." formatter_data="android_java">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Tabs are shared for more relevant answers.<ph name="END_BOLD">&lt;/b&gt;</ph> Google uses the content and URL of your open tab when you start a new chat. You can change this setting anytime.
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_ENTERPRISE_DESCRIPTION" desc="Description in the Gemini in Chrome opt-in dialog for enterprise users explaining that their organization's data is private and secure." formatter_data="android_java">
+      Tabs are shared for more relevant answers. Google uses the content and URL of your open tab when you start a new chat. You can change this setting anytime. Your organization’s data is private and secure. It won’t be used to improve generative AI models.
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_ENTERPRISE_DESCRIPTION_BOLD" desc="Description in the Gemini in Chrome opt-in dialog for enterprise users explaining that their organization's data is private and secure, with bold lead-in." formatter_data="android_java">
+      <ph name="BEGIN_BOLD_1">&lt;b1&gt;</ph>Tabs are shared for more relevant answers.<ph name="END_BOLD_1">&lt;/b1&gt;</ph> Google uses the content and URL of your open tab when you start a new chat. You can change this setting anytime. <ph name="BEGIN_BOLD_2">&lt;b2&gt;</ph>Your organization’s data is private and secure.<ph name="END_BOLD_2">&lt;/b2&gt;</ph> It won’t be used to improve generative AI models.
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_LEGAL" desc="Legal text in the Gemini in Chrome opt-in dialog. Each link opens the named legal document." formatter_data="android_java">
+      <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Google Terms<ph name="END_LINK1">&lt;/link1&gt;</ph> and the <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>Gemini Apps Privacy Notice<ph name="END_LINK2">&lt;/link2&gt;</ph> apply.
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_ACCEPT" desc="Button in the Gemini in Chrome opt-in dialog. Turns on Gemini in Chrome and opens it. [CHAR_LIMIT=32]" formatter_data="android_java">
+      Start chat
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_TERMS_URL" desc="URL of the Google Terms of Service, opened from the Gemini in Chrome opt-in dialog." translateable="false" formatter_data="android_java">
+      https://policies.google.com/terms
+    </message>
+    <message name="IDS_GLIC_FRE_DIALOG_PRIVACY_NOTICE_URL" desc="URL of the Gemini Apps Privacy Notice, opened from the Gemini in Chrome opt-in dialog." translateable="false" formatter_data="android_java">
+      https://support.google.com/gemini/answer/13594961
+    </message>
+  </if>
 </grit-part>

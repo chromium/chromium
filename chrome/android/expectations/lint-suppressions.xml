@@ -157,6 +157,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="UnusedQuantity" severity="ignore"/>
   <issue id="UnusedResources">
     <!-- Do not add new suppressions without rationale. -->
+    <!-- TODO(crbug.com/571546748): Remove temporarily suppress Glic native FRE strings. -->
+    <ignore regexp="The resource `R.string.glic_fre_dialog_.*` appears to be unused"/>
+
     <!-- TODO(crbug.com/554115227): Remove temporarily suppress Actor notification prompt strings. -->
     <ignore regexp="The resource `R.string.actor_notification_prompt_toast_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.actor_notification_prompt_toast_body` appears to be unused"/>
