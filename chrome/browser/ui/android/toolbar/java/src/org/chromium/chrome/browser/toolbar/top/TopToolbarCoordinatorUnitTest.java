@@ -6,33 +6,25 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.app.Activity;
 import android.view.View;
-import android.view.View.OnLongClickListener;
-
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -48,7 +40,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -85,12 +80,11 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link TopToolbarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TopToolbarCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ToolbarControlContainer mControlContainer;
-    @Mock private ToolbarTablet mToolbarLayout;
+    @Mock private ResourceFactory.Natives mResourceFactoryJni;
+    @Mock private LocationBarCoordinator mLocationBarCoordinator;
     @Mock private ToolbarDataProvider mToolbarDataProvider;
     @Mock private ToolbarTabController mTabController;
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -108,7 +102,6 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
     @Mock private TabStripTransitionHandler mTabStripTransitionHandler;
     @Mock private View.OnLongClickListener mOnLongClickListener;
-    @Mock private ToolbarProgressBar mProgressBar;
     @Mock private BackButtonCoordinator mBackButtonCoordinator;
     @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
     @Mock private HomeButtonCoordinator mHomeButtonCoordinator;
@@ -124,11 +117,6 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Runnable mOnSigninTapped;
-    @Mock private Profile mProfile;
-    @Mock private View mLocationBarView;
-    @Mock private View mGlicActionChipView;
-    @Mock private Resources mResources;
-    @Mock private CoordinatorLayout.LayoutParams mCoordinatorLayoutParams;
     @Mock private View.OnLongClickListener mGlicLongClickListener;
 
     private final MonotonicObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier =
@@ -154,18 +142,31 @@ public class TopToolbarCoordinatorUnitTest {
     private final MonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
 
+    private Activity mActivity;
+    private ToolbarControlContainer mControlContainer;
+    private ToolbarTablet mToolbarLayout;
+    private ToolbarProgressBar mProgressBar;
     private TopToolbarCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        when(mToolbarLayout.getContext()).thenReturn(context);
-        when(mToolbarLayout.getResources()).thenReturn(mResources);
-        when(mToolbarLayout.findViewById(R.id.location_bar)).thenReturn(mLocationBarView);
-        when(mToolbarLayout.indexOfChild(mLocationBarView)).thenReturn(0);
-        when(mToolbarLayout.getToolbarDataProvider()).thenReturn(mToolbarDataProvider);
-        when(mToolbarDataProvider.getProfile()).thenReturn(mProfile);
-        when(mControlContainer.mutateToolbarLayoutParams()).thenReturn(mCoordinatorLayoutParams);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
+
+        mControlContainer =
+                (ToolbarControlContainer)
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+        mControlContainer.initWithToolbar(
+                R.layout.toolbar_tablet, R.dimen.toolbar_height_no_shadow);
+        mControlContainer.findViewById(R.id.toolbar_hairline).layout(0, 0, 100, 3);
+        mToolbarLayout = mControlContainer.findViewById(R.id.toolbar);
+        mToolbarLayout.layout(0, 0, 1000, 100);
+        mProgressBar = new ToolbarProgressBar(mActivity, /* attrs= */ null);
+
+        when(mLocationBarCoordinator.getFuseboxStateSupplier())
+                .thenReturn(ObservableSuppliers.createNonNull(FuseboxState.DISABLED));
+        mToolbarLayout.setLocationBarCoordinator(mLocationBarCoordinator);
 
         List<ButtonDataProvider> buttonDataProviders = new ArrayList<>();
 
@@ -220,6 +221,24 @@ public class TopToolbarCoordinatorUnitTest {
                         /* suppressTabStripAtStart= */ false);
     }
 
+    private boolean isGlicActionChipVisible() {
+        View chip = mToolbarLayout.getGlicActionChipView();
+        return chip != null && chip.getVisibility() == View.VISIBLE;
+    }
+
+    private void simulateCapture(int captureHeight, int topOffsetInCapture) {
+        mToolbarLayout.layout(0, topOffsetInCapture, 1000, topOffsetInCapture + 100);
+        if (captureHeight > 0) {
+            when(mToolbarDataProvider.getUrlBarData()).thenReturn(UrlBarData.EMPTY);
+            when(mLocationBarCoordinator.getContainerView())
+                    .thenReturn(mToolbarLayout.findViewById(R.id.location_bar));
+            mControlContainer.findViewById(R.id.toolbar_container).layout(0, 0, 100, captureHeight);
+            mControlContainer.getToolbarResourceAdapter().triggerBitmapCapture();
+        }
+        assertEquals(captureHeight, mControlContainer.getToolbarCaptureHeight());
+        assertEquals(topOffsetInCapture, mControlContainer.getToolbarTopOffsetInCapture());
+    }
+
     @Test
     public void testGlicActionChipVisibility_Toggled() {
         SettableNonNullObservableSupplier<Boolean> isVerticalTabActiveSupplier =
@@ -231,9 +250,7 @@ public class TopToolbarCoordinatorUnitTest {
                 ObservableSuppliers.createMonotonic();
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(currentTabModelSupplier);
         incognitoStateProvider.setTabModelSelector(mTabModelSelector);
-        clearInvocations(mToolbarLayout);
 
-        InOrder inOrder = Mockito.inOrder(mToolbarLayout);
         mCoordinator.observeGlicVerticalTabs(
                 isVerticalTabActiveSupplier,
                 isGlicPinnedSupplier,
@@ -241,46 +258,38 @@ public class TopToolbarCoordinatorUnitTest {
                 mGlicLongClickListener);
 
         // 1. Initial state (both false) -> Glic chip hidden.
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+        assertFalse(isGlicActionChipVisible());
 
         // 2. VT active = true, Glic pinned = false -> Glic chip hidden.
         isVerticalTabActiveSupplier.set(true);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+        assertFalse(isGlicActionChipVisible());
 
         // 3. VT active = true, Glic pinned = true -> Glic chip visible.
         isGlicPinnedSupplier.set(true);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(true), any(), eq(mGlicLongClickListener));
+        assertTrue(isGlicActionChipVisible());
 
         // 4. VT active = false, Glic pinned = true -> Glic chip hidden.
         isVerticalTabActiveSupplier.set(false);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+        assertFalse(isGlicActionChipVisible());
 
         // In Incognito mode, button visibility should still reflect VT active and pinned state.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
 
         // VT active = false, pinned = true -> Glic chip hidden.
         incognitoStateProvider.setIncognitoStateForTesting(true);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+        assertFalse(isGlicActionChipVisible());
 
         // VT active = true, pinned = true -> Glic chip visible.
         isVerticalTabActiveSupplier.set(true);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(true), any(), eq(mGlicLongClickListener));
+        assertTrue(isGlicActionChipVisible());
 
         // VT active = true, pinned = false -> Glic chip hidden.
         isGlicPinnedSupplier.set(false);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+        assertFalse(isGlicActionChipVisible());
 
         // VT active = false, pinned = false -> Glic chip hidden.
         isVerticalTabActiveSupplier.set(false);
-        inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+        assertFalse(isGlicActionChipVisible());
     }
 
     @Test
@@ -322,9 +331,7 @@ public class TopToolbarCoordinatorUnitTest {
         when(mBrowserControlsVisibilityManager.getTopControlsHairlineHeight()).thenReturn(3);
         when(mBrowserControlsVisibilityManager.getContentOffset()).thenReturn(0);
         when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(1f);
-        when(mControlContainer.getToolbarHeight()).thenReturn(147);
-        when(mControlContainer.getToolbarHairlineHeight()).thenReturn(3);
-        when(mControlContainer.getToolbarCaptureHeight()).thenReturn(150);
+        simulateCapture(/* captureHeight= */ 150, /* topOffsetInCapture= */ 0);
 
         mCoordinator.onBrowserControlsOffsetUpdate(-147, /* reachRestingPosition= */ true);
 
@@ -342,9 +349,7 @@ public class TopToolbarCoordinatorUnitTest {
         when(mBrowserControlsVisibilityManager.getTopControlsHairlineHeight()).thenReturn(3);
         when(mBrowserControlsVisibilityManager.getContentOffset()).thenReturn(0);
         when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(0f);
-        when(mControlContainer.getToolbarHeight()).thenReturn(147);
-        when(mControlContainer.getToolbarHairlineHeight()).thenReturn(3);
-        when(mControlContainer.getToolbarCaptureHeight()).thenReturn(150);
+        simulateCapture(/* captureHeight= */ 150, /* topOffsetInCapture= */ 0);
 
         mCoordinator.onBrowserControlsOffsetUpdate(0, /* reachRestingPosition= */ true);
 
@@ -359,8 +364,7 @@ public class TopToolbarCoordinatorUnitTest {
         mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
         setUpVisibleRestingControls();
 
-        when(mControlContainer.getToolbarCaptureHeight()).thenReturn(190);
-        when(mControlContainer.getToolbarTopOffsetInCapture()).thenReturn(40);
+        simulateCapture(/* captureHeight= */ 190, /* topOffsetInCapture= */ 40);
 
         // Fully visible: finalYOffset = 40 - 40 = 0.
         mCoordinator.onBrowserControlsOffsetUpdate(40, /* reachRestingPosition= */ false);
@@ -381,11 +385,9 @@ public class TopToolbarCoordinatorUnitTest {
         mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
         setUpVisibleRestingControls();
 
-        when(mControlContainer.getToolbarTopOffsetInCapture()).thenReturn(0);
-
-        for (int captureHeight : new int[] {150, 0}) {
+        for (int captureHeight : new int[] {0, 150}) {
             clearInvocations(mOverlayCoordinator);
-            when(mControlContainer.getToolbarCaptureHeight()).thenReturn(captureHeight);
+            simulateCapture(captureHeight, /* topOffsetInCapture= */ 0);
 
             // finalYOffset = 40 - 0 = 40.
             mCoordinator.onBrowserControlsOffsetUpdate(40, /* reachRestingPosition= */ false);
@@ -403,11 +405,9 @@ public class TopToolbarCoordinatorUnitTest {
         mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
         setUpVisibleRestingControls();
 
-        when(mControlContainer.getToolbarTopOffsetInCapture()).thenReturn(40);
-
         for (int captureHeight : new int[] {189, 190, 191, 240}) {
             clearInvocations(mOverlayCoordinator);
-            when(mControlContainer.getToolbarCaptureHeight()).thenReturn(captureHeight);
+            simulateCapture(captureHeight, /* topOffsetInCapture= */ 40);
 
             mCoordinator.onBrowserControlsOffsetUpdate(40, /* reachRestingPosition= */ false);
 
@@ -432,8 +432,12 @@ public class TopToolbarCoordinatorUnitTest {
     public void testOnToolbarHairlineSuppressedChanged() {
         mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
         mCoordinator.onToolbarHairlineSuppressedChanged(true);
-        verify(mToolbarLayout).onToolbarHairlineSuppressedChanged(true);
+        assertTrue(mToolbarLayout.isToolbarHairlineSuppressed());
         verify(mOverlayCoordinator).onToolbarHairlineSuppressedChanged(true);
+
+        mCoordinator.onToolbarHairlineSuppressedChanged(false);
+        assertFalse(mToolbarLayout.isToolbarHairlineSuppressed());
+        verify(mOverlayCoordinator).onToolbarHairlineSuppressedChanged(false);
     }
 
     @Test
@@ -464,36 +468,37 @@ public class TopToolbarCoordinatorUnitTest {
         isGlicPinnedSupplier.set(true);
         assertTrue(mCoordinator.shouldShowGlicToolbarButton());
 
+        View glicChip = mCoordinator.getGlicActionChipView();
+        assertNotNull(glicChip);
+        assertEquals(mToolbarLayout.findViewById(R.id.glic_action_chip), glicChip);
+
         // Verify long-click listener was passed to mToolbarLayout and forwards correctly when
         // triggered.
-        ArgumentCaptor<OnLongClickListener> captor =
-                ArgumentCaptor.forClass(View.OnLongClickListener.class);
-        // When isGlicPinnedSupplier.set(true) is called, #onGlicVisibilityNeedsUpdate ->
-        // #setGlicActionChipVisibility gets triggered.
-        verify(mToolbarLayout).setGlicActionChipVisibility(eq(true), any(), captor.capture());
-        View mockView = mock(View.class);
-        // Simulate a long-press with the captured listener object.
-        captor.getValue().onLongClick(mockView);
-        // Verify that the long-press event was delegated to mGlicLongClickListener.
-        verify(mGlicLongClickListener).onLongClick(mockView);
+        glicChip.performLongClick();
+        verify(mGlicLongClickListener).onLongClick(glicChip);
 
         // In incognito mode, button should still show if VT is active and Glic is pinned.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         incognitoStateProvider.setIncognitoStateForTesting(true);
         assertTrue(mCoordinator.shouldShowGlicToolbarButton());
-
-        // Test getGlicActionChipView.
-        when(mToolbarLayout.getGlicActionChipView()).thenReturn(mGlicActionChipView);
-        assertEquals(mGlicActionChipView, mCoordinator.getGlicActionChipView());
     }
 
     @Test
     public void testSetGlicPanelIsOpen() {
+        mToolbarLayout.setGlicActionChipVisibility(
+                /* visible= */ true, v -> {}, mGlicLongClickListener);
+        View glicChip = mCoordinator.getGlicActionChipView();
+        assertNotNull(glicChip);
+
         mCoordinator.setGlicPanelIsOpen(true);
-        verify(mToolbarLayout).setGlicPanelIsOpen(true);
+        assertEquals(
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip_close),
+                glicChip.getContentDescription());
 
         mCoordinator.setGlicPanelIsOpen(false);
-        verify(mToolbarLayout).setGlicPanelIsOpen(false);
+        assertEquals(
+                mActivity.getString(R.string.glic_tab_strip_button_tooltip),
+                glicChip.getContentDescription());
     }
 
     @Test
@@ -513,18 +518,17 @@ public class TopToolbarCoordinatorUnitTest {
 
     @Test
     public void testOnLongClickListener() {
-        verify(mToolbarLayout, never()).setOnLongClickListener(any());
+        assertNull(Shadows.shadowOf(mToolbarLayout).getOnLongClickListener());
 
-        ToolbarPhone toolbarPhone = mock(ToolbarPhone.class);
-        Context context = ApplicationProvider.getApplicationContext();
-        when(toolbarPhone.getContext()).thenReturn(context);
-        when(toolbarPhone.getResources()).thenReturn(mResources);
-        when(toolbarPhone.findViewById(R.id.location_bar)).thenReturn(mLocationBarView);
-        when(toolbarPhone.indexOfChild(mLocationBarView)).thenReturn(0);
-        when(toolbarPhone.getToolbarDataProvider()).thenReturn(mToolbarDataProvider);
+        ToolbarControlContainer phoneControlContainer =
+                (ToolbarControlContainer)
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+        phoneControlContainer.initWithToolbar(
+                R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
+        ToolbarPhone toolbarPhone = phoneControlContainer.findViewById(R.id.toolbar);
 
         new TopToolbarCoordinator(
-                mControlContainer,
+                phoneControlContainer,
                 toolbarPhone,
                 mToolbarDataProvider,
                 mTabController,
@@ -571,6 +575,6 @@ public class TopToolbarCoordinatorUnitTest {
                 mOnSigninTapped,
                 mDownloadButtonShouldShowSupplier,
                 /* suppressTabStripAtStart= */ false);
-        verify(toolbarPhone).setOnLongClickListener(mOnLongClickListener);
+        assertEquals(mOnLongClickListener, Shadows.shadowOf(toolbarPhone).getOnLongClickListener());
     }
 }
