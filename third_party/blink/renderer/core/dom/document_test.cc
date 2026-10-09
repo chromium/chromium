@@ -47,6 +47,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -93,6 +95,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
@@ -2300,6 +2303,16 @@ class DocumentFocusUseCounterTest : public DocumentSimTest {
   }
 
   Document* ChildDocument() { return ChildFrame()->GetDocument(); }
+
+  Element* AddLabel() {
+    Element* container = GetDocument().CreateRawElement(html_names::kDivTag);
+    container->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+      <input id="label-target">
+      <label id="label" for="label-target">Label</label>
+    )HTML");
+    GetDocument().body()->AppendChild(container);
+    return GetDocument().getElementById(AtomicString("label"));
+  }
 };
 
 TEST_F(DocumentFocusUseCounterTest, Blocked) {
@@ -2376,6 +2389,73 @@ TEST_F(DocumentFocusUseCounterTest, NotFiredWithFeatureDisabled) {
       WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
   EXPECT_FALSE(ChildDocument()->IsUseCounted(
       WebFeature::kFocusWithoutUserActivationBlocked));
+}
+
+TEST_F(DocumentFocusUseCounterTest, LabelFocusUsesInitiator) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+  Element* label = AddLabel();
+  ASSERT_TRUE(label);
+  ASSERT_FALSE(GetDocument().FocusedElement());
+
+  FocusParams params;
+  params.initiator_frame = ChildFrame();
+  label->Focus(params);
+  EXPECT_FALSE(GetDocument().FocusedElement());
+}
+
+TEST_F(DocumentFocusUseCounterTest, LabelFocusAllowedWithFeatureDisabled) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(false);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+  Element* label = AddLabel();
+  ASSERT_TRUE(label);
+  Element* target = GetDocument().getElementById(AtomicString("label-target"));
+  ASSERT_TRUE(target);
+  ASSERT_FALSE(GetDocument().FocusedElement());
+
+  FocusParams params;
+  params.initiator_frame = ChildFrame();
+  label->Focus(params);
+  EXPECT_EQ(target, GetDocument().FocusedElement());
+}
+
+TEST_F(DocumentFocusUseCounterTest, LabelClickAllowedWithFeatureDisabled) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(false);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+  ASSERT_TRUE(AddLabel());
+  Element* target = GetDocument().getElementById(AtomicString("label-target"));
+  ASSERT_TRUE(target);
+  ASSERT_FALSE(GetDocument().FocusedElement());
+
+  ChildFrame()->GetSettings()->SetScriptEnabled(true);
+  v8::HandleScope handle_scope(ChildFrame()->DomWindow()->GetIsolate());
+  ASSERT_EQ(ScriptEvaluationResult::ResultType::kSuccess,
+            ClassicScript::CreateUnspecifiedScript(
+                "parent.document.getElementById('label').click()")
+                ->RunScriptAndReturnValue(ChildFrame()->DomWindow())
+                .GetResultType());
+
+  EXPECT_EQ(target, GetDocument().FocusedElement());
+}
+
+TEST_F(DocumentFocusUseCounterTest,
+       TrustedLabelActivationIgnoresScriptContext) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+  Element* label = AddLabel();
+  ASSERT_TRUE(label);
+  Element* target = GetDocument().getElementById(AtomicString("label-target"));
+  ASSERT_TRUE(target);
+
+  ScriptState::Scope script_scope(ToScriptStateForMainWorld(ChildFrame()));
+  for (auto creation_scope :
+       {SimulatedClickCreationScope::kFromUserAgent,
+        SimulatedClickCreationScope::kFromAccessibility}) {
+    GetDocument().ClearFocusedElement();
+    ASSERT_FALSE(GetDocument().FocusedElement());
+    label->DispatchSimulatedClick(nullptr, creation_scope);
+    EXPECT_EQ(target, GetDocument().FocusedElement());
+  }
 }
 
 TEST_F(DocumentFocusUseCounterTest, PolicySetViaAllow) {

@@ -41,12 +41,14 @@ struct FocusParams {
               mojom::blink::FocusType focus_type,
               InputDeviceCapabilities* capabilities,
               const FocusOptions* focus_options = FocusOptions::Create(),
-              FocusTrigger focus_trigger = FocusTrigger::kScript)
+              FocusTrigger focus_trigger = FocusTrigger::kScript,
+              LocalFrame* initiator_frame = nullptr)
       : selection_behavior(selection),
         type(focus_type),
         source_capabilities(capabilities),
         options(focus_options),
-        focus_trigger(focus_trigger) {}
+        focus_trigger(focus_trigger),
+        initiator_frame(initiator_frame) {}
 
   SelectionBehaviorOnFocus selection_behavior =
       SelectionBehaviorOnFocus::kRestore;

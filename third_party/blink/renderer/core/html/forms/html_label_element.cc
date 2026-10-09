@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -36,6 +37,8 @@
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -265,9 +268,22 @@ void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
         const mojom::blink::FocusType focus_type =
             evt.isTrusted() ? mojom::blink::FocusType::kMouse
                             : mojom::blink::FocusType::kScript;
+
+        LocalFrame* initiator_frame = GetDocument().GetFrame();
+        if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled(
+                GetDocument().GetExecutionContext()) &&
+            !evt.isTrusted()) {
+          v8::Isolate* isolate = GetDocument().GetAgent().isolate();
+          if (isolate->InContext()) {
+            if (LocalDOMWindow* window = IncumbentDOMWindow(isolate)) {
+              initiator_frame = window->GetFrame();
+            }
+          }
+        }
+
         element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                                   focus_type, nullptr,
-                                   FocusOptions::Create()));
+                                   focus_type, nullptr, FocusOptions::Create(),
+                                   FocusTrigger::kScript, initiator_frame));
       }
     }
 
@@ -330,7 +346,7 @@ void HTMLLabelElement::Focus(const FocusParams& params) {
   if (HTMLElement* element = Control()) {
     element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
                                params.source_capabilities, params.options,
-                               params.focus_trigger));
+                               params.focus_trigger, params.initiator_frame));
   }
 }
 
