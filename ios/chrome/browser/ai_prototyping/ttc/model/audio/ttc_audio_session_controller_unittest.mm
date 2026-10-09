@@ -603,4 +603,93 @@ TEST_F(TTCAudioSessionControllerTest, TestOutputRoutedToSpeaker) {
   EXPECT_FALSE(controller_.isOutputRoutedToSpeaker);
 }
 
+// Tests that starting capture configures `aecMode` on the audio engine as
+// `kHardware` when the active input route supports hardware AEC, and
+// `kAdaptiveSoftware` otherwise.
+TEST_F(TTCAudioSessionControllerTest,
+       TestAECModeHardwareVsAdaptiveSoftwareOnStart) {
+  SetUpMockAudioApp(AVAudioApplicationRecordPermissionGranted);
+  fake_session_manager_.mockHasHardwareAEC = YES;
+
+  base::test::TestFuture<BOOL, NSError*> hw_future;
+  [controller_ startCaptureWithCompletion:base::CallbackToBlock(
+                                              hw_future.GetCallback())];
+  auto [hw_success, hw_error] = hw_future.Take();
+  EXPECT_TRUE(hw_success);
+  EXPECT_EQ(fake_engine_.aecMode, TTCAudioAECMode::kHardware);
+
+  [controller_ stopCapture];
+  fake_session_manager_.mockHasHardwareAEC = NO;
+
+  base::test::TestFuture<BOOL, NSError*> sw_future;
+  [controller_ startCaptureWithCompletion:base::CallbackToBlock(
+                                              sw_future.GetCallback())];
+  auto [sw_success, sw_error] = sw_future.Take();
+  EXPECT_TRUE(sw_success);
+  EXPECT_EQ(fake_engine_.aecMode, TTCAudioAECMode::kAdaptiveSoftware);
+}
+
+// Tests that route change callbacks update `aecMode` on the audio engine.
+TEST_F(TTCAudioSessionControllerTest, TestRouteChangeUpdatesAECMode) {
+  [controller_ audioSessionManager:fake_session_manager_
+         didChangeRouteDescription:@"In: Built-In Mic | Out: Speaker"
+                    hasHardwareAEC:YES];
+  EXPECT_EQ(fake_engine_.aecMode, TTCAudioAECMode::kHardware);
+
+  [controller_ audioSessionManager:fake_session_manager_
+         didChangeRouteDescription:@"In: Bluetooth HFP | Out: Bluetooth HFP"
+                    hasHardwareAEC:NO];
+  EXPECT_EQ(fake_engine_.aecMode, TTCAudioAECMode::kAdaptiveSoftware);
+}
+
+// Tests that `audioSessionManagerDidRequireEngineReconfiguration:` stops and
+// restarts an active audio engine, restoring capture and updating `aecMode`.
+TEST_F(TTCAudioSessionControllerTest,
+       TestEngineReconfigurationRestartsEngineAndCapture) {
+  fake_engine_.started = YES;
+  fake_engine_.capturing = YES;
+  fake_session_manager_.mockHasHardwareAEC = NO;
+
+  [controller_
+      audioSessionManagerDidRequireEngineReconfiguration:fake_session_manager_];
+
+  EXPECT_EQ(fake_engine_.stopCallCount, 1u);
+  EXPECT_EQ(fake_engine_.startCallCount, 1u);
+  EXPECT_EQ(fake_engine_.startCaptureCallCount, 1u);
+  EXPECT_TRUE(fake_engine_.isStarted);
+  EXPECT_TRUE(controller_.isCapturing);
+  EXPECT_EQ(fake_engine_.aecMode, TTCAudioAECMode::kAdaptiveSoftware);
+}
+
+// Tests that `audioSessionManagerDidRequireEngineReconfiguration:` is a no-op
+// when the audio engine is stopped and not starting.
+TEST_F(TTCAudioSessionControllerTest,
+       TestEngineReconfigurationIgnoredWhenEngineStopped) {
+  EXPECT_FALSE(fake_engine_.isStarted);
+
+  [controller_
+      audioSessionManagerDidRequireEngineReconfiguration:fake_session_manager_];
+
+  EXPECT_EQ(fake_engine_.stopCallCount, 0u);
+  EXPECT_EQ(fake_engine_.startCallCount, 0u);
+}
+
+// Tests that `audioSessionManagerDidBeginInterruption:` stops active playback
+// and capture and notifies the delegate.
+TEST_F(TTCAudioSessionControllerTest,
+       TestInterruptionBeganStopsCaptureAndPlayback) {
+  fake_engine_.started = YES;
+  fake_engine_.capturing = YES;
+  [controller_ playTestTone];
+  EXPECT_TRUE(controller_.isCapturing);
+  EXPECT_TRUE(controller_.isPlaying);
+
+  [controller_ audioSessionManagerDidBeginInterruption:fake_session_manager_];
+
+  EXPECT_FALSE(controller_.isCapturing);
+  EXPECT_FALSE(controller_.isPlaying);
+  EXPECT_FALSE(fake_engine_.isStarted);
+  EXPECT_TRUE(delegate_.didStopCapture);
+}
+
 }  // namespace

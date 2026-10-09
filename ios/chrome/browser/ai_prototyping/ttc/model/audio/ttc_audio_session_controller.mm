@@ -377,13 +377,107 @@ NSError* CreateControllerError(TTCAudioSessionControllerErrorCode code,
   if (self.isDisconnected) {
     return;
   }
+  self.audioEngine.aecMode =
+      hasAEC ? TTCAudioAECMode::kHardware : TTCAudioAECMode::kAdaptiveSoftware;
   if ([self.delegate
           respondsToSelector:@selector(audioControllerDidChangeRoute:)]) {
     [self.delegate audioControllerDidChangeRoute:self];
   }
 }
 
+- (void)audioSessionManagerDidRequireEngineReconfiguration:
+    (TTCAudioSessionManager*)manager {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (self.isDisconnected) {
+    return;
+  }
+  [self updateEngineAECMode];
+  if (!self.audioEngine.isStarted || self.isStartingCapture ||
+      self.isStartingPlaybackEngine) {
+    return;
+  }
+
+  BOOL wasCapturing = self.audioEngine.isCapturing;
+  uint64_t generation = ++self.sessionGeneration;
+  __weak __typeof(self) weakSelf = self;
+  [self.audioEngine stopWithCompletion:^(BOOL stopped, NSError* stopError) {
+    [weakSelf didStopEngineForReconfigurationWithWasCapturing:wasCapturing
+                                                   generation:generation];
+  }];
+}
+
+- (void)audioSessionManagerDidBeginInterruption:
+    (TTCAudioSessionManager*)manager {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (self.isDisconnected) {
+    return;
+  }
+  [self stopPlaybackImmediately];
+  [self stopCapture];
+}
+
 #pragma mark - Private
+
+// Updates `self.audioEngine.aecMode` based on whether the active audio route
+// provides hardware acoustic echo cancellation.
+- (void)updateEngineAECMode {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  self.audioEngine.aecMode = self.sessionManager.hasHardwareAEC
+                                 ? TTCAudioAECMode::kHardware
+                                 : TTCAudioAECMode::kAdaptiveSoftware;
+}
+
+// Restarts the audio engine after stopping for a route reconfiguration.
+- (void)didStopEngineForReconfigurationWithWasCapturing:(BOOL)wasCapturing
+                                             generation:(uint64_t)generation {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (self.isDisconnected || self.sessionGeneration != generation) {
+    return;
+  }
+  [self updateEngineAECMode];
+  __weak __typeof(self) weakSelf = self;
+  [self.audioEngine startWithCompletion:^(BOOL started, NSError* startError) {
+    [weakSelf didRestartEngineAfterReconfiguration:started
+                                             error:startError
+                                      wasCapturing:wasCapturing
+                                        generation:generation];
+  }];
+}
+
+// Restores capture and flushes queued playback after an engine reconfiguration
+// restart completes.
+- (void)didRestartEngineAfterReconfiguration:(BOOL)started
+                                       error:(NSError*)startError
+                                wasCapturing:(BOOL)wasCapturing
+                                  generation:(uint64_t)generation {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (self.isDisconnected || self.sessionGeneration != generation) {
+    return;
+  }
+  if (!started) {
+    if (wasCapturing &&
+        [self.delegate
+            respondsToSelector:@selector(audioControllerDidStopCapture:)]) {
+      [self.delegate audioControllerDidStopCapture:self];
+    }
+    if (startError &&
+        [self.delegate
+            respondsToSelector:@selector(audioController:didEncounterError:)]) {
+      [self.delegate audioController:self didEncounterError:startError];
+    }
+    return;
+  }
+
+  if (wasCapturing) {
+    if (![self.audioEngine startCapture]) {
+      if ([self.delegate
+              respondsToSelector:@selector(audioControllerDidStopCapture:)]) {
+        [self.delegate audioControllerDidStopCapture:self];
+      }
+    }
+  }
+  [self flushPendingPlaybackChunks];
+}
 
 // Immediately stops active playback, clears queued chunks, and stops the
 // underlying audio engine if capture is not active or starting.
@@ -493,6 +587,8 @@ NSError* CreateControllerError(TTCAudioSessionControllerErrorCode code,
     return;
   }
 
+  [self updateEngineAECMode];
+
   if (self.audioEngine.isStarted) {
     [self finishStartCaptureAfterEngineStart:YES
                                        error:nil
@@ -594,6 +690,7 @@ NSError* CreateControllerError(TTCAudioSessionControllerErrorCode code,
     return;
   }
 
+  [self updateEngineAECMode];
   self.isStartingPlaybackEngine = YES;
   __weak __typeof(self) weakSelf = self;
   [self.audioEngine startWithCompletion:^(BOOL started, NSError* startError) {

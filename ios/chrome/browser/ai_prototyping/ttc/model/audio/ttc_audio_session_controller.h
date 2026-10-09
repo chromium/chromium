@@ -31,11 +31,16 @@ enum class TTCAudioSessionControllerErrorCode : NSInteger {
 // sequencing and policy decisions between them:
 // - Capture startup pipeline (`startCaptureWithCompletion:`): requests
 //   microphone permission via `AVAudioApplication`, activates `AVAudioSession`
-//   via `TTCAudioSessionManager`, starts the audio engine graph, and begins
-//   microphone capture, rolling back session state if cancelled or failed.
+//   via `TTCAudioSessionManager`, selects `aecMode`, starts the audio engine
+//   graph, and begins microphone capture, rolling back session state if
+//   cancelled or failed.
 // - On-demand playback startup (`playStreamingAudioChunk:`): buffers incoming
 //   24kHz PCM chunks that arrive before the engine is running, activates the
 //   session and starts the engine on demand, and flushes queued chunks.
+// - Routing & interruption policy: maps `sessionManager.hasHardwareAEC` to
+//   `TTCAudioAECMode::kHardware` vs `kAdaptiveSoftware`, restarts the engine
+//   and restores capture/playback on route reconfiguration, and stops capture
+//   and playback when an `AVAudioSession` interruption begins.
 // - Graph-independent diagnostics: performs 16kHz-to-24kHz linear-interpolated
 //   local loopback (`loopbackEnabled`) and 440Hz sine-wave synthesis
 //   (`playTestTone`).
