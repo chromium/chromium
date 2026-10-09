@@ -4,23 +4,21 @@
 
 package org.chromium.components.messages;
 
-import static android.os.Looper.getMainLooper;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,10 +31,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
@@ -46,7 +46,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link MessageAnimationCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageAnimationCoordinatorUnitTest {
     private final MessageQueueDelegate mQueueDelegate =
             Mockito.spy(
@@ -88,18 +87,22 @@ public class MessageAnimationCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private MessageContainer mContainer;
-
     @Mock private Callback<Animator> mAnimatorStartCallback;
 
+    private MessageContainer mContainer;
+    private View mChildView;
     private MessageAnimationCoordinator mAnimationCoordinator;
 
     @Before
     public void setUp() {
         FeatureOverrides.enable(MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        mContainer = new MessageContainer(activity, /* attrs= */ null);
+        mChildView = new View(activity);
+        mContainer.addMessage(mChildView);
+        mChildView.layout(0, 0, 100, 100);
         mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, Animator::start);
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
-        when(mContainer.isIsInitializingLayout()).thenReturn(false);
     }
 
     // Test incoming candidates are same with current displayed ones.
@@ -108,15 +111,15 @@ public class MessageAnimationCoordinatorUnitTest {
     public void testDoNothing() throws TimeoutException {
         MessageState m1 = buildMessageState();
         MessageState m2 = buildMessageState();
+        mChildView.layout(0, 0, 0, 0);
         // Initial setup
         CallbackHelper callbackHelper = new CallbackHelper();
         mAnimationCoordinator.updateWithStacking(
                 Arrays.asList(m1, m2), false, callbackHelper::notifyCalled);
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mContainer).runAfterInitialMessageLayout(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        verify(mQueueDelegate, never()).onAnimationStart();
+        mChildView.layout(0, 0, 100, 100);
         verify(mQueueDelegate).onAnimationStart();
-        shadowOf(getMainLooper()).idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.waitForOnly();
         verify(mQueueDelegate).onAnimationEnd();
 
@@ -170,6 +173,7 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m2, 2);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
@@ -195,6 +199,7 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m2, 2);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
@@ -205,6 +210,7 @@ public class MessageAnimationCoordinatorUnitTest {
 
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
         inOrder.verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
         inOrder.verify(m2.handler).show(Position.BACK, Position.FRONT);
 
@@ -227,6 +233,7 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m2, 2);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
@@ -251,6 +258,7 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m3, 3);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
@@ -258,6 +266,7 @@ public class MessageAnimationCoordinatorUnitTest {
         // When transiting from [m1, m2] -> [m1, m3], finish this into two steps:
         // [m1, m2] -> [m1, null] -> [m1, m3]
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m3), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(m2.handler).hide(eq(Position.BACK), eq(Position.FRONT), anyBoolean());
         verify(m3.handler, never()).show(anyInt(), anyInt());
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
@@ -278,6 +287,7 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
@@ -302,11 +312,13 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler, never()).show(Position.FRONT, Position.BACK);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(m2.handler, never()).show(anyInt(), anyInt());
         verify(m1.handler).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
@@ -367,6 +379,7 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
@@ -390,9 +403,11 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        mChildView.layout(0, 0, 0, 0);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
-        verify(mContainer).runAfterInitialMessageLayout(captor.capture());
+        // Clear initializing-layout state without firing the pending OnLayoutChangeListener.
+        mChildView.setBottom(50);
+        mContainer.runAfterInitialMessageLayout(() -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
@@ -407,7 +422,7 @@ public class MessageAnimationCoordinatorUnitTest {
         verify(mAnimatorStartCallback, times(1)).onResult(any());
 
         // Trigger showing animation after hiding animation is started.
-        captor.getValue().run();
+        mChildView.layout(0, 0, 100, 100);
         verify(mQueueDelegate, times(1)).onAnimationStart();
         verify(mAnimatorStartCallback, times(1)).onResult(any());
     }
@@ -426,6 +441,7 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
+        mChildView.layout(0, 0, 0, 0);
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         mAnimationCoordinator.updateWithStacking(
                 Arrays.asList(m1, m2),
@@ -440,6 +456,9 @@ public class MessageAnimationCoordinatorUnitTest {
                 });
         verify(queueDelegate).onRequestShowing(captor.capture());
         captor.getValue().run();
+        // Clear initializing-layout state without firing the pending OnLayoutChangeListener.
+        mChildView.setBottom(50);
+        mContainer.runAfterInitialMessageLayout(() -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
@@ -453,8 +472,7 @@ public class MessageAnimationCoordinatorUnitTest {
         verify(queueDelegate, times(1)).onAnimationStart();
         verify(mAnimatorStartCallback, times(1)).onResult(any());
 
-        verify(mContainer).runAfterInitialMessageLayout(captor.capture());
-        captor.getValue().run();
+        mChildView.layout(0, 0, 100, 100);
         verify(queueDelegate, times(1)).onAnimationStart();
         verify(mAnimatorStartCallback, times(1)).onResult(any());
     }
@@ -462,14 +480,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test a new message is enqueued when the previous message is still waiting for onStartShowing.
     @Test
     public void testEnqueuingWhileWaitingForOnStartShowing() {
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
-                            return null;
-                        })
-                .when(mContainer)
-                .runAfterInitialMessageLayout(any(Runnable.class));
         mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, mAnimatorStartCallback);
         MessageQueueDelegate queueDelegate = Mockito.mock(MessageQueueDelegate.class);
         when(queueDelegate.isReadyForShowing()).thenReturn(false);
@@ -531,20 +541,12 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
-                            return null;
-                        })
-                .when(mContainer)
-                .runAfterInitialMessageLayout(any(Runnable.class));
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, m2}, currentMessages.toArray());
-        shadowOf(getMainLooper()).idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         var animator = ValueAnimator.ofInt(0, 1);
         animator.setDuration(100000);
@@ -580,16 +582,16 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
-        doReturn(false).when(mContainer).runAfterInitialMessageLayout(any());
+        mChildView.layout(0, 0, 0, 0);
+        Assert.assertFalse(mContainer.isIsInitializingLayout());
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
 
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m2.handler, never()).show(Position.FRONT, Position.BACK);
-        verify(mContainer).runAfterInitialMessageLayout(any());
+        Assert.assertTrue(mContainer.isIsInitializingLayout());
 
-        when(mContainer.isIsInitializingLayout()).thenReturn(true);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
         // Second message should not trigger a new animation if the first message is still
         // waiting for container to finish layout.

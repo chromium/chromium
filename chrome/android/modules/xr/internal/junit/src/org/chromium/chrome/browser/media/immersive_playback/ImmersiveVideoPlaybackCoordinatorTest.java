@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.SizeF;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +68,7 @@ import org.chromium.ui.xr.scenecore.XrQuaternion;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSpace;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
@@ -78,9 +80,23 @@ import java.util.function.Consumer;
 
 /** Tests for {@link ImmersiveVideoPlaybackCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// TODO(567604165): Remove mocking of Views / Activities
-@SuppressWarnings({"unchecked", "DoNotMock"})
+@SuppressWarnings("unchecked")
 public class ImmersiveVideoPlaybackCoordinatorTest {
+    /** {@link XrSurfaceEntityView} is abstract; this provides the holder to production code. */
+    private static class TestSurfaceEntityView extends XrSurfaceEntityView {
+        private final XrSurfaceEntityHolder mHolder;
+
+        TestSurfaceEntityView(Context context, XrSurfaceEntityHolder holder) {
+            super(context);
+            mHolder = holder;
+        }
+
+        @Override
+        public XrSurfaceEntityHolder getHolder() {
+            return mHolder;
+        }
+    }
+
     static {
         XrModuleProviderImpl.initialize();
     }
@@ -97,7 +113,6 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @Mock private XrSceneCoreSessionManager mXrSceneCoreSessionManager;
     @Mock private CompositorView mCompositorView;
     @Mock private XrMovableComponent mControlPanelMovableComponent;
-    @Mock private XrSurfaceEntityView mSurfaceEntityView;
     @Mock private XrResizableComponent mResizableComponent;
     @Mock private XrMovableComponent mSurfaceMovableComponent;
     @Mock private XrCurvedSurfaceEntityHolder mSurfaceEntityHolder;
@@ -134,8 +149,8 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         when(mXrSceneCoreSessionManager.startHeadPoseTracking()).thenReturn(true);
         when(mXrSceneCoreSessionManager.createPanelEntity(any(), any()))
                 .thenReturn(mControlPanelHolder);
-        when(mCompositorView.getView()).thenReturn(mSurfaceEntityView);
-        when(mSurfaceEntityView.getHolder()).thenReturn(mSurfaceEntityHolder);
+        when(mCompositorView.getView())
+                .thenReturn(new TestSurfaceEntityView(mActivity, mSurfaceEntityHolder));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
