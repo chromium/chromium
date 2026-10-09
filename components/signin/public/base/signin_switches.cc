@@ -301,11 +301,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts{
     &kEnableAccountPreviewData, "persist_accounts", true};
 
+// Controls optimizations for fetching account preview data. This flag has no
+// effect if `kEnableAccountPreviewData` is not enabled.
+BASE_FEATURE(kEnableAccountPreviewDataFetchOptimizations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether only the reduced set of data types (required for heuristics
 // and string personalization) is requested and recorded for account preview
-// data. This flag has no effect if `kEnableAccountPreviewData` is not enabled.
-BASE_FEATURE(kEnableAccountPreviewDataReducedTypes,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// data.
+BASE_FEATURE_PARAM(bool,
+                   kAccountPreviewDataReducedTypes,
+                   &kEnableAccountPreviewDataFetchOptimizations,
+                   true);
 
 // Controls whether fetching entity preview data is enabled (via a specific api
 // method). This flag has no effect if `kEnableAccountPreviewData` is not

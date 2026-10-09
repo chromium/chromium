@@ -34,7 +34,7 @@ class AccountPreviewMetricsRecorderTest : public testing::Test {
   AccountPreviewMetricsRecorderTest() {
     scoped_feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewPreferredAccount,
-         switches::kEnableAccountPreviewDataReducedTypes},
+         switches::kEnableAccountPreviewDataFetchOptimizations},
         {});
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
     AccountPreviewDataService::RegisterProfilePrefs(pref_service_.registry());
@@ -139,8 +139,9 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetrics) {
 
 TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsLegacyDataTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kEnableAccountPreviewDataReducedTypes);
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewDataFetchOptimizations,
+      {{switches::kAccountPreviewDataReducedTypes.name, "false"}});
   base::HistogramTester histogram_tester;
 
   AccountInfo account_info =

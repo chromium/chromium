@@ -6736,7 +6736,7 @@
             ]
         }
     ],
-    "EnableAccountPreviewDataReducedTypes": [
+    "EnableAccountPreviewDataFetchOptimizations": [
         {
             "platforms": [
                 "android",
@@ -6750,7 +6750,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableAccountPreviewDataReducedTypes"
+                        "EnableAccountPreviewDataFetchOptimizations"
                     ]
                 }
             ]

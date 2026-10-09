@@ -36,7 +36,7 @@ class AccountPreviewDataServiceBrowserTest : public SigninBrowserTestBase {
   AccountPreviewDataServiceBrowserTest() {
     feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewData,
-         switches::kEnableAccountPreviewDataReducedTypes},
+         switches::kEnableAccountPreviewDataFetchOptimizations},
         {});
   }
   ~AccountPreviewDataServiceBrowserTest() override = default;

@@ -45,7 +45,8 @@ inline constexpr syncer::DataType kRequestedDataTypes[] = {
 };
 
 // Legacy list of data types requested when
-// `switches::kEnableAccountPreviewDataReducedTypes` is disabled.
+// `switches::kEnableAccountPreviewDataFetchOptimizations` or
+// `switches::kAccountPreviewDataReducedTypes` is disabled.
 inline constexpr syncer::DataType kLegacyRequestedDataTypes[] = {
     syncer::AUTOFILL,     syncer::BOOKMARKS,
     syncer::PREFERENCES,  syncer::THEMES,
@@ -56,7 +57,9 @@ inline constexpr syncer::DataType kLegacyRequestedDataTypes[] = {
 };
 
 // Returns the list of data types to request from the statistics API and record
-// metrics for, based on `switches::kEnableAccountPreviewDataReducedTypes`.
+// metrics for, based on
+// `switches::kEnableAccountPreviewDataFetchOptimizations` and
+// `switches::kAccountPreviewDataReducedTypes`.
 base::span<const syncer::DataType> GetRequestedDataTypes();
 
 // Helper class to fetch account preview data from the Sync Preview API.

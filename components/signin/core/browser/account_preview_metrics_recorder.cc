@@ -53,7 +53,8 @@ std::optional<CountScale> GetScaleForDataType(syncer::DataType type) {
   }
 
   if (!base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewDataReducedTypes)) {
+          switches::kEnableAccountPreviewDataFetchOptimizations) ||
+      !switches::kAccountPreviewDataReducedTypes.Get()) {
     switch (type) {
       case syncer::APPS:
         return CountScale::k100;

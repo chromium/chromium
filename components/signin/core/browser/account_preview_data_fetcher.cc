@@ -229,11 +229,12 @@ std::string_view GetBaseUrl(version_info::Channel channel) {
 }  // namespace
 
 base::span<const syncer::DataType> GetRequestedDataTypes() {
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewDataReducedTypes)) {
-    return kLegacyRequestedDataTypes;
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewDataFetchOptimizations) &&
+      switches::kAccountPreviewDataReducedTypes.Get()) {
+    return kRequestedDataTypes;
   }
-  return kRequestedDataTypes;
+  return kLegacyRequestedDataTypes;
 }
 
 // The list of data types to fetch statistics for.

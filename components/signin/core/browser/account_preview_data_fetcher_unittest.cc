@@ -53,7 +53,7 @@ class AccountPreviewDataFetcherTest : public testing::Test {
   AccountPreviewDataFetcherTest() {
     feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewData,
-         switches::kEnableAccountPreviewDataReducedTypes,
+         switches::kEnableAccountPreviewDataFetchOptimizations,
          switches::kEnableAccountPreviewEntityPreviews},
         {});
   }
@@ -212,17 +212,29 @@ TEST_F(AccountPreviewDataFetcherTest, GetRequestedDataTypes) {
   EXPECT_EQ(GetRequestedDataTypes(),
             base::span<const syncer::DataType>(kRequestedDataTypes));
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kEnableAccountPreviewDataReducedTypes);
-  EXPECT_EQ(GetRequestedDataTypes(),
-            base::span<const syncer::DataType>(kLegacyRequestedDataTypes));
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        switches::kEnableAccountPreviewDataFetchOptimizations,
+        {{switches::kAccountPreviewDataReducedTypes.name, "false"}});
+    EXPECT_EQ(GetRequestedDataTypes(),
+              base::span<const syncer::DataType>(kLegacyRequestedDataTypes));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        switches::kEnableAccountPreviewDataFetchOptimizations);
+    EXPECT_EQ(GetRequestedDataTypes(),
+              base::span<const syncer::DataType>(kLegacyRequestedDataTypes));
+  }
 }
 
 TEST_F(AccountPreviewDataFetcherTest, SuccessWithLegacyDataTypes) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kEnableAccountPreviewDataReducedTypes);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewDataFetchOptimizations,
+      {{switches::kAccountPreviewDataReducedTypes.name, "false"}});
 
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
