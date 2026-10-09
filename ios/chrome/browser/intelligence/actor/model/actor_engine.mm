@@ -14,7 +14,6 @@
 #import "components/origin_gating/core/origin_gating_registration.h"
 #import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_task_intervention_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -213,11 +212,8 @@ ActorToolFactory& ActorEngine::GetToolFactory() const {
 
 ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
   if (!form_filling_handler_) {
-    intervention_handler_ = [[ActorTaskInterventionHandler alloc] init];
     form_filling_handler_ = ActorTaskFormFillingHandler::Create(
         base::PassKey<ActorEngine>(), GetJournal(), GetTaskId());
-    form_filling_handler_->SetInterventionDelegate(base::PassKey<ActorEngine>(),
-                                                   intervention_handler_);
   }
   return form_filling_handler_.get();
 }

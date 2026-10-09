@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -109,6 +110,9 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
 }
 
 }  // namespace
+
+@interface AIPrototypingMediator () <ActorTaskInterventionDelegate>
+@end
 
 @implementation AIPrototypingMediator {
   // The browser.
@@ -609,6 +613,7 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
       /*allow_incognito_web_states=*/false);
   actorService->AddControlledWebState(task_id,
                                       _webStateList->GetActiveWebState());
+  actorService->SetTaskInterventionDelegate(task_id, self);
 
   actorService->PerformActions(
       task_id, actions, "Executing AI Prototyping actions",
@@ -922,6 +927,26 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
     @"is_main_frame" : @(isMainFrame),
     @"depth" : @(depth)
   };
+}
+
+#pragma mark - ActorTaskInterventionDelegate
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+        completionHandler:
+            (void (^)(ActorFormSuggestion* selectedSuggestion,
+                      BOOL shouldStorePermission))completionHandler {
+  completionHandler(suggestions.firstObject, NO);
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  if (completionHandler) {
+    completionHandler();
+  }
 }
 
 @end

@@ -36,6 +36,7 @@ struct ActorSuggestion;
 namespace actor {
 
 class ActorEngine;
+class ActorTask;
 class AggregatedJournal;
 
 // Combines a `credential` and a user choice in the account picker, and
@@ -78,7 +79,7 @@ class ActorTaskFormFillingHandler {
 
   // Sets the intervention delegate.
   void SetInterventionDelegate(
-      base::PassKey<ActorEngine> pass_key,
+      base::PassKey<ActorTask> pass_key,
       id<ActorTaskInterventionDelegate> intervention_delegate) {
     intervention_delegate_ = intervention_delegate;
   }

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -33,6 +34,34 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
+// Test implementation of ActorTaskInterventionDelegate that automatically
+// selects the first suggestion and confirms interventions.
+@interface ActorTestInterventionHandler
+    : NSObject <ActorTaskInterventionDelegate>
+@end
+
+@implementation ActorTestInterventionHandler
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+        completionHandler:
+            (void (^)(ActorFormSuggestion* selectedSuggestion,
+                      BOOL shouldStorePermission))completionHandler {
+  completionHandler(suggestions.firstObject, NO);
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  if (completionHandler) {
+    completionHandler();
+  }
+}
+
+@end
+
 NSString* const kActorAppInterfaceErrorDomain = @"ActorAppInterfaceErrorDomain";
 
 namespace {
@@ -40,6 +69,15 @@ namespace {
 constexpr base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
 
 constexpr autofill::FormRendererId kSimulatedFormRendererId(12345);
+
+// Returns the intervention delegate for tests. Retained statically because
+// both `ActorTask` and `ActorTaskFormFillingHandler` hold a weak reference
+// to the delegate.
+id<ActorTaskInterventionDelegate> GetTestInterventionDelegate() {
+  static ActorTestInterventionHandler* delegate =
+      [[ActorTestInterventionHandler alloc] init];
+  return delegate;
+}
 
 // Returns the active WebState's main frame AutofillDriverIOS, or nullptr if
 // unavailable.
@@ -101,6 +139,7 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
+  service->SetTaskInterventionDelegate(task_id, GetTestInterventionDelegate());
 
   std::vector<optimization_guide::proto::Action> actions = {action};
 
@@ -150,6 +189,7 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
+  service->SetTaskInterventionDelegate(task_id, GetTestInterventionDelegate());
 
   std::vector<optimization_guide::proto::Action> actions;
   actions.reserve(actions_proto.actions_size());

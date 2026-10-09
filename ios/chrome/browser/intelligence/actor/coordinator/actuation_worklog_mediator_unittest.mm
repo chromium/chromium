@@ -469,3 +469,25 @@ TEST_F(ActuationWorklogMediatorTest,
   EXPECT_TRUE(RequestConfirmation(second_task_id));
   EXPECT_NE(fake_consumer_.intervention, nil);
 }
+
+// Tests that selecting from suggestions returns the first suggestion.
+TEST_F(ActuationWorklogMediatorTest, TestSelectFromSuggestions) {
+  StartObservingTask(task_id_);
+
+  ActorFormSuggestion* suggestion1 =
+      static_cast<ActorFormSuggestion*>([[NSObject alloc] init]);
+  ActorFormSuggestion* suggestion2 =
+      static_cast<ActorFormSuggestion*>([[NSObject alloc] init]);
+  __block ActorFormSuggestion* selected = nil;
+  __block BOOL stored = YES;
+  [mediator_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion1, suggestion2 ]
+          completionHandler:^(ActorFormSuggestion* s, BOOL storePermission) {
+            selected = s;
+            stored = storePermission;
+          }];
+  // TODO(crbug.com/571139088): Update expectation once credential picker is
+  // impelemented.
+  EXPECT_EQ(selected, suggestion1);
+  EXPECT_FALSE(stored);
+}

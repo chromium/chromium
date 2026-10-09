@@ -26,6 +26,7 @@
 #import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -49,6 +50,13 @@
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+@interface EngineFakeInterventionDelegate
+    : NSObject <ActorTaskInterventionDelegate>
+@end
+
+@implementation EngineFakeInterventionDelegate
+@end
 
 namespace actor {
 namespace {
@@ -236,6 +244,19 @@ TEST_F(ActorEngineTest, ToolDelegateForwardingAndOwnership) {
   EXPECT_EQ(&tool_delegate->GetJournal(), journal_.get());
   EXPECT_EQ(&tool_delegate->GetToolFactory(), tool_factory_.get());
   EXPECT_NE(tool_delegate->GetActorTaskFormFillingHandler(), nullptr);
+}
+
+// Tests that setting an intervention delegate on `ActorTask` initializes the
+// form filling handler on `ActorEngine`.
+TEST_F(ActorEngineTest, SetInterventionDelegateForwarding) {
+  EngineFakeInterventionDelegate* delegate =
+      [[EngineFakeInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+
+  ToolDelegate* tool_delegate = engine_.get();
+  EXPECT_NE(tool_delegate->GetActorTaskFormFillingHandler(), nullptr);
+
+  task_->SetInterventionDelegate(nil);
 }
 
 // Tests that ToolDelegate InterruptFromTool and UninterruptFromTool change

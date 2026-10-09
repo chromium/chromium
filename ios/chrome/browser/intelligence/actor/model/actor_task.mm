@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
@@ -317,6 +318,10 @@ void ActorTask::Resume() {
 void ActorTask::SetInterventionDelegate(
     id<ActorTaskInterventionDelegate> delegate) {
   intervention_delegate_ = delegate;
+  if (engine_) {
+    engine_->GetActorTaskFormFillingHandler()->SetInterventionDelegate(
+        base::PassKey<ActorTask>(), delegate);
+  }
 }
 
 void ActorTask::Interrupt(ActorTaskInterruptReason interrupt_reason,

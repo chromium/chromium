@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler+Testing.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -126,6 +127,9 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
 
 }  // namespace
 
+@interface TTCActuationHandler () <ActorTaskInterventionDelegate>
+@end
+
 @implementation TTCActuationHandler {
   SEQUENCE_CHECKER(_sequenceChecker);
 
@@ -225,6 +229,7 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
   actorService->AddControlledWebState(taskID, activeWebState);
+  actorService->SetTaskInterventionDelegate(taskID, self);
   _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
   return taskID;
 }
@@ -378,6 +383,26 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
                                : base::SysUTF8ToNSString(errorMessage)
                     callID:callID];
     std::move(actuation.callback).Run(response);
+  }
+}
+
+#pragma mark - ActorTaskInterventionDelegate
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+        completionHandler:
+            (void (^)(ActorFormSuggestion* selectedSuggestion,
+                      BOOL shouldStorePermission))completionHandler {
+  completionHandler(suggestions.firstObject, NO);
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  if (completionHandler) {
+    completionHandler();
   }
 }
 

@@ -17,8 +17,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
 
-@class ActorTaskInterventionHandler;
-
 namespace origin_gating {
 class OriginGatingChecker;
 class OriginGatingConfiguration;
@@ -223,12 +221,6 @@ class ActorEngine : public ToolDelegate {
 
   // The handler for form filling and login tasks.
   std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
-
-  // Handler object that intercepts task UI interventions.
-  // TODO(crbug.com/548051839): Consolidate intervention handling into a single
-  // `ActorTaskInterventionDelegate` (e.g., `ActuationWorklogMediator` via
-  // `ActorTask`) and remove `ActorTaskInterventionHandler`.
-  __strong ActorTaskInterventionHandler* intervention_handler_ = nil;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorEngine> weak_ptr_factory_{this};
