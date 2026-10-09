@@ -167,6 +167,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/field_info_manager_factory.h"
+#include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/factories/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
@@ -387,7 +388,6 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/password_manager/factories/bulk_leak_check_service_factory.h"
-#include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_factory.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service_factory.h"
@@ -1261,9 +1261,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   password_manager::PasswordRequirementsServiceFactory::GetInstance();
   PasswordFieldClassificationModelHandlerFactory::GetInstance();
   PasswordChangeServiceFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
   PasswordCounterFactory::GetInstance();
-#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   PasswordManagerBlocklistPolicyFactory::GetInstance();

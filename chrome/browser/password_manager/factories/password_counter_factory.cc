@@ -7,12 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_counter.h"
+#include "ui/base/device_form_factor.h"
 
 PasswordCounterFactory::PasswordCounterFactory()
     : ProfileKeyedServiceFactory(
@@ -44,6 +48,15 @@ bool PasswordCounterFactory::ServiceIsCreatedWithBrowserContext() const {
 std::unique_ptr<KeyedService>
 PasswordCounterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    return nullptr;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kAndroidSelectPasswordContextMenu)) {
+    return nullptr;
+  }
+#endif
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<password_manager::PasswordCounter>(
       ProfilePasswordStoreFactory::GetForProfile(

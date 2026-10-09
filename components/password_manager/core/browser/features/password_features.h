@@ -41,6 +41,12 @@ BASE_DECLARE_FEATURE(kActorLoginSyncsPasswordPermissions);
 BASE_DECLARE_FEATURE(kActorLoginQualityLogs);
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables the "Select password" option in the right-click context menu on
+// Android.
+BASE_DECLARE_FEATURE(kAndroidSelectPasswordContextMenu);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables using clientside form classifier predictions for password forms.
 BASE_DECLARE_FEATURE(kApplyClientsideModelPredictionsForPasswordTypes);
 

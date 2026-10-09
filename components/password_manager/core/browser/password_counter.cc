@@ -8,7 +8,6 @@
 #include <ranges>
 
 #include "base/check_op.h"
-#include "base/notreached.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -99,7 +98,15 @@ void PasswordCounter::OnLoginsChanged(PasswordStoreInterface* store,
 void PasswordCounter::OnLoginsRetained(
     PasswordStoreInterface* store,
     const std::vector<StoredCredential>& retained_credentials) {
-  NOTREACHED() << "Needs to be implemented for Android if needed";
+  size_t& counter = profile_observer_.IsObservingSource(store)
+                        ? profile_passwords_
+                        : account_passwords_;
+  const size_t old_value = counter;
+  counter =
+      std::ranges::count_if(retained_credentials, &IsAutofillableCredential);
+  if (old_value != counter) {
+    NotifyObservers();
+  }
 }
 
 void PasswordCounter::NotifyObservers() {

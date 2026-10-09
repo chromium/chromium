@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -244,6 +246,40 @@ TEST_F(PasswordCounterTest, IgnoreDeleteBlocklisted) {
   RunUntilIdle();
   EXPECT_EQ(counter.autofillable_passwords(), 1u);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordCounterTest, OnLoginsRetained) {
+  PasswordCounter counter(profile_store(), account_store());
+  counter.AddObserver(&observer());
+  absl::Cleanup remove([&] { counter.RemoveObserver(&observer()); });
+  base::RunLoop init_run_loop;
+  EXPECT_CALL(observer(), OnPasswordCounterChanged)
+      .WillOnce(testing::Return())
+      .WillOnce([&init_run_loop] { init_run_loop.Quit(); });
+  init_run_loop.Run();
+  EXPECT_EQ(counter.autofillable_passwords(), 0u);
+
+  std::vector<StoredCredential> profile_creds;
+  profile_creds.push_back(CreateTestPasswordForm("user1", "123"));
+  profile_creds.push_back(CreateBlocklistedForm("https://abc.com/"));
+  base::RunLoop profile_run_loop;
+  EXPECT_CALL(observer(), OnPasswordCounterChanged)
+      .WillOnce([&profile_run_loop] { profile_run_loop.Quit(); });
+  profile_store()->TriggerOnLoginsRetainedForAndroid(profile_creds);
+  profile_run_loop.Run();
+  EXPECT_EQ(counter.autofillable_passwords(), 1u);
+
+  std::vector<StoredCredential> account_creds;
+  account_creds.push_back(CreateTestPasswordForm("user2", "456"));
+  account_creds.push_back(CreateTestPasswordForm("user3", "789"));
+  base::RunLoop account_run_loop;
+  EXPECT_CALL(observer(), OnPasswordCounterChanged)
+      .WillOnce([&account_run_loop] { account_run_loop.Quit(); });
+  account_store()->TriggerOnLoginsRetainedForAndroid(account_creds);
+  account_run_loop.Run();
+  EXPECT_EQ(counter.autofillable_passwords(), 3u);
+}
+#endif
 
 }  // namespace
 }  // namespace password_manager
