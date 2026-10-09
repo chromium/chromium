@@ -32,7 +32,6 @@ import org.chromium.base.FieldTrialList;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -292,19 +291,6 @@ public final class StartupTasks {
                 () -> {
                     WebViewCachedFlags.get().onStartupCompleted();
                 });
-
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)
-                && !AwFeatureMap.getInstance()
-                        .getFieldTrialParamByFeatureAsBoolean(
-                                AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
-                                "WebViewPrefetchFromRenderer",
-                                true)) {
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT,
-                    () -> {
-                        LibraryPrefetcher.prefetchNativeLibraryForWebView();
-                    });
-        }
 
         if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS)) {
             PostTask.postDelayedTask(

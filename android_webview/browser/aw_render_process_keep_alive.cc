@@ -70,8 +70,7 @@ void AwRenderProcessKeepAlive::AddAwContents() {
     base::UmaHistogramLongTimes100(
         "Android.WebView.RendererKeepAlive.TimeToReuse",
         base::TimeTicks::Now() - keep_alive_start_time_);
-    if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
-        features::kWebViewPrefetchFromRenderer.Get()) {
+    if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary)) {
       AwRenderProcess* aw_render_process =
           AwRenderProcess::GetInstanceForRenderProcessHost(
               render_process_host_);

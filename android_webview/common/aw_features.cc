@@ -330,10 +330,6 @@ BASE_FEATURE(kWebViewPrefetchAheadOfPrerender,
 // Prefetches the native WebView code to memory during startup.
 BASE_FEATURE(kWebViewPrefetchNativeLibrary, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// A parameter to trigger the prefetch from the renderer instead of the browser.
-const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
-    &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", true};
-
 // This enables to start main resource prefetch request from off the main thread
 // for WebView Prefetch API. See crbug.com/452406598, crbug.com/452389538 for
 // more details. Only takes effect if `kPrefetchOffTheMainThread` is enabled

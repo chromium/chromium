@@ -82,11 +82,7 @@ void AwContentRendererClient::RenderThreadStarted() {
       blink::Platform::Current()->GetBrowserInterfaceBroker();
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  bool shouldPrefetchNativeLibrary =
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
-      features::kWebViewPrefetchFromRenderer.Get();
-
-  if (shouldPrefetchNativeLibrary) {
+  if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary)) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::BindOnce([] {
           base::android::NativeLibraryPrefetcher::PrefetchNativeLibrary();

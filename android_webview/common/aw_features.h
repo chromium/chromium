@@ -84,7 +84,6 @@ BASE_DECLARE_FEATURE(kWebViewPersistentMetricsInNoBackupDir);
 BASE_DECLARE_FEATURE(kWebViewPersistHttpServerProperties);
 BASE_DECLARE_FEATURE(kWebViewPrefetchAheadOfPrerender);
 BASE_DECLARE_FEATURE(kWebViewPrefetchNativeLibrary);
-extern const base::FeatureParam<bool> kWebViewPrefetchFromRenderer;
 BASE_DECLARE_FEATURE(kWebViewPrefetchOffTheMainThread);
 BASE_DECLARE_FEATURE(kWebViewPrefetchPruneStaleWrappers);
 BASE_DECLARE_FEATURE(kWebViewPreloadServingMetrics);
