@@ -395,67 +395,74 @@ message DecryptedEntity {
 }
 
 message DecryptedReference {
-  reserved 2 to 9, 13 to 21, 23 to 47;
+  reserved 1 to 8, 13 to 17, 19 to 47;
 
   oneof reference {
-    DecryptedGmailMessage gmail_message = 1;
-    DecryptedPhotosPhoto photo = 10;
-    DecryptedPhotosVideo video = 11;
-    DecryptedPhotosAlbum photos_album = 12;
-    DecryptedDriveFile drive_file = 22;
+    DecryptedPhotosPhoto photo = 9;
+    DecryptedPhotosVideo video = 10;
+    DecryptedPhotosAlbum photos_album = 11;
+    DecryptedGmailMessage gmail_message = 12;
+    DecryptedDriveFile drive_file = 18;
   }
 }
 
 message DecryptedGmailMessage {
-  reserved 1, 3, 4, 9 to 12;
+  reserved 2 to 9, 13 to 38;
 
   // Subject of the message.
-  string subject = 2;
+  string subject = 1;
 
   // Timestamp of the message.
-  Timestamp timestamp = 5;
-
-  // URL to the email message. Prefer using message_urls if populated.
-  string message_url = 6;
+  Timestamp timestamp = 10;
 
   // Gmail storage id.
-  int64 message_id = 7;
+  int64 message_id = 11;
 
   // Gmail thread id.
-  int64 thread_id = 8;
+  int64 thread_id = 12;
+
+  message MessageUrls {
+    // Desktop web URL linking to the email message in Gmail UI in Web in
+    // contrast to Gmail App deeplink UI.
+    string desktop_web_url = 1;
+
+    // Mobile web URL linking to the email message in Gmail UI in Web in
+    // contrast to Gmail App deeplink UI.
+    string mobile_web_url = 2;
+  }
 
   // URLs for desktop and mobile web environments.
-  MessageUrls message_urls = 13;
+  MessageUrls message_urls = 39;
 }
 
 message DecryptedPhotosPhoto {
-  reserved 1, 2, 4, 5, 7 to 11;
+  reserved 1, 2, 3, 5, 6, 7, 8, 9, 11;
 
   // Timestamp of the photo.
-  Timestamp timestamp = 3;
+  Timestamp timestamp = 4;
 
   // The deeplink url of the photo.
-  string deeplink_url = 6;
+  string deeplink_url = 10;
 }
 
 message DecryptedPhotosVideo {
-  reserved 1 to 3, 5, 6, 8 to 12;
+  reserved 1 to 3, 5 to 9;
 
   // Timestamp of the video.
   Timestamp timestamp = 4;
 
   // The deeplink url of the video.
-  string deeplink_url = 7;
+  string deeplink_url = 10;
 }
 
 message DecryptedPhotosAlbum {
-  reserved 1, 2, 4 to 8, 10 to 14;
+  reserved 1 to 4, 6, 7 to 11;
 
   // Start timestamp of the album.
-  Timestamp start_time = 3;
+  Timestamp start_time = 5;
 
   // The deeplink url of the album.
-  string deeplink_url = 9;
+  string deeplink_url = 12;
 }
 
 message DecryptedDriveFile {
