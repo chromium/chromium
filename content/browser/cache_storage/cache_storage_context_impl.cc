@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -31,7 +32,10 @@ namespace content {
 
 CacheStorageContextImpl::CacheStorageContextImpl(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
-    : quota_manager_proxy_(std::move(quota_manager_proxy)) {
+    : cache_manager_(nullptr,
+                     base::OnTaskRunnerDeleter(
+                         base::SequencedTaskRunner::GetCurrentDefault())),
+      quota_manager_proxy_(std::move(quota_manager_proxy)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -39,17 +43,11 @@ CacheStorageContextImpl::~CacheStorageContextImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!origins_to_purge_on_shutdown_.empty()) {
-    cache_manager_->DeleteOriginData(
+    CacheStorageManager* ptr = cache_manager_.get();
+    ptr->DeleteOriginData(
         origins_to_purge_on_shutdown_,
         storage::mojom::CacheStorageOwner::kCacheAPI,
-
-        // Retain a reference to the manager until the deletion is
-        // complete, since it internally uses weak pointers for
-        // the various stages of deletion and nothing else will
-        // keep it alive during shutdown.
-        base::BindOnce([](scoped_refptr<CacheStorageManager> cache_manager,
-                          blink::mojom::QuotaStatusCode) {},
-                       cache_manager_));
+        base::DoNothingWithBoundArgs(std::move(cache_manager_)));
   }
 }
 
@@ -77,19 +75,20 @@ void CacheStorageContextImpl::Init(
       std::make_unique<CacheStorageDispatcherHost>(this, quota_manager_proxy_);
 
   CHECK(!cache_manager_, base::NotFatalUntil::M158);
-  cache_manager_ = CacheStorageManager::Create(
+  cache_manager_.reset(new CacheStorageManager(
       user_data_directory, std::move(cache_task_runner), quota_manager_proxy_,
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)),
-      dispatcher_host_->AsWeakPtr());
+      dispatcher_host_->AsWeakPtr()));
 
+  mojo::MakeSelfOwnedReceiver(std::make_unique<CacheStorageQuotaClient>(
+                                  cache_manager_->GetWeakPtr(),
+                                  storage::mojom::CacheStorageOwner::kCacheAPI),
+                              std::move(cache_storage_client_remote));
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CacheStorageQuotaClient>(
-          cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI),
-      std::move(cache_storage_client_remote));
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CacheStorageQuotaClient>(
-          cache_manager_, storage::mojom::CacheStorageOwner::kBackgroundFetch),
+          cache_manager_->GetWeakPtr(),
+          storage::mojom::CacheStorageOwner::kBackgroundFetch),
       std::move(background_fetch_client_remote));
 }
 

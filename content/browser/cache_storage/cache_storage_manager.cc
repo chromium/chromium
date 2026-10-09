@@ -310,26 +310,9 @@ bool BucketMatchesOriginsForDeletion(
 }  // namespace
 
 // static
-scoped_refptr<CacheStorageManager> CacheStorageManager::Create(
-    const base::FilePath& profile_path,
-    scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-    base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host) {
-  CHECK(cache_task_runner, base::NotFatalUntil::M158);
-  CHECK(quota_manager_proxy, base::NotFatalUntil::M158);
-  CHECK(blob_storage_context, base::NotFatalUntil::M158);
-
-  return base::MakeRefCounted<CacheStorageManager>(
-      profile_path, std::move(cache_task_runner),
-      std::move(quota_manager_proxy), std::move(blob_storage_context),
-      std::move(cache_storage_dispatcher_host));
-}
-
-// static
-scoped_refptr<CacheStorageManager> CacheStorageManager::CreateForTesting(
+std::unique_ptr<CacheStorageManager> CacheStorageManager::CreateForTesting(
     CacheStorageManager* old_manager) {
-  return base::MakeRefCounted<CacheStorageManager>(
+  return std::make_unique<CacheStorageManager>(
       old_manager->profile_path(), old_manager->cache_task_runner(),
       old_manager->quota_manager_proxy_, old_manager->blob_storage_context_,
       old_manager->cache_storage_dispatcher_host_);
@@ -388,6 +371,10 @@ bool CacheStorageManager::ConflictingInstanceExistsInMap(
     return true;
   }
   return false;
+}
+
+base::WeakPtr<CacheStorageManager> CacheStorageManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 CacheStorageHandle CacheStorageManager::OpenCacheStorage(
@@ -737,9 +724,7 @@ CacheStorageManager::CacheStorageManager(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host)
-    : base::RefCountedDeleteOnSequence<CacheStorageManager>(
-          base::SequencedTaskRunner::GetCurrentDefault()),
-      profile_path_(profile_path),
+    : profile_path_(profile_path),
       cache_task_runner_(std::move(cache_task_runner)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       blob_storage_context_(std::move(blob_storage_context)),

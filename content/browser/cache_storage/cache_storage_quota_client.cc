@@ -11,22 +11,17 @@
 namespace content {
 
 CacheStorageQuotaClient::CacheStorageQuotaClient(
-    scoped_refptr<CacheStorageManager> cache_manager,
+    base::WeakPtr<CacheStorageManager> cache_manager,
     storage::mojom::CacheStorageOwner owner)
-    : cache_manager_(std::move(cache_manager)), owner_(owner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+    : cache_manager_(std::move(cache_manager)), owner_(owner) {}
 
-CacheStorageQuotaClient::~CacheStorageQuotaClient() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+CacheStorageQuotaClient::~CacheStorageQuotaClient() = default;
 
 void CacheStorageQuotaClient::GetBucketUsage(
     const storage::BucketLocator& bucket,
     GetBucketUsageCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
+  if (!cache_manager_ ||
+      !CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
     std::move(callback).Run(0);
     return;
   }
@@ -36,17 +31,18 @@ void CacheStorageQuotaClient::GetBucketUsage(
 
 void CacheStorageQuotaClient::GetDefaultStorageKeys(
     GetDefaultStorageKeysCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  cache_manager_->GetStorageKeys(owner_, std::move(callback));
+  if (cache_manager_) {
+    cache_manager_->GetStorageKeys(owner_, std::move(callback));
+  } else {
+    std::move(callback).Run({});
+  }
 }
 
 void CacheStorageQuotaClient::DeleteBucketData(
     const storage::BucketLocator& bucket,
     DeleteBucketDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
+  if (!cache_manager_ ||
+      !CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
@@ -56,7 +52,6 @@ void CacheStorageQuotaClient::DeleteBucketData(
 
 void CacheStorageQuotaClient::PerformStorageCleanup(
     PerformStorageCleanupCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
 }
 

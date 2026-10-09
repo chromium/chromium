@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_QUOTA_CLIENT_H_
 
-#include "base/sequence_checker.h"
+#include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
@@ -27,7 +27,7 @@ class CacheStorageManager;
 class CONTENT_EXPORT CacheStorageQuotaClient
     : public storage::mojom::QuotaClient {
  public:
-  CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
+  CacheStorageQuotaClient(base::WeakPtr<CacheStorageManager> cache_manager,
                           storage::mojom::CacheStorageOwner owner);
 
   CacheStorageQuotaClient(const CacheStorageQuotaClient&) = delete;
@@ -47,10 +47,8 @@ class CONTENT_EXPORT CacheStorageQuotaClient
       storage::mojom::CacheStorageOwner owner);
 
  private:
-  const scoped_refptr<CacheStorageManager> cache_manager_;
+  const base::WeakPtr<CacheStorageManager> cache_manager_;
   const storage::mojom::CacheStorageOwner owner_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

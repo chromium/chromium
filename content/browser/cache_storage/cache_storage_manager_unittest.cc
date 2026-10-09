@@ -405,15 +405,14 @@ class CacheStorageManagerTest : public testing::Test {
         bucket_locator2_,
         GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName));
 
-    cache_manager_ = CacheStorageManager::Create(
+    cache_manager_ = std::make_unique<CacheStorageManager>(
         temp_dir_path, base::SingleThreadTaskRunner::GetCurrentDefault(),
         quota_manager_proxy_, blob_storage_context_, nullptr);
   }
 
   void RecreateStorageManager() {
     DCHECK(cache_manager_);
-    auto* legacy_manager =
-        static_cast<CacheStorageManager*>(cache_manager_.get());
+    CacheStorageManager* legacy_manager = cache_manager_.get();
     cache_manager_ = CacheStorageManager::CreateForTesting(legacy_manager);
   }
 
@@ -868,7 +867,7 @@ class CacheStorageManagerTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
   scoped_refptr<storage::MockQuotaManager> mock_quota_manager_;
   scoped_refptr<MockCacheStorageQuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<CacheStorageManager> cache_manager_;
+  std::unique_ptr<CacheStorageManager> cache_manager_;
 
   CacheStorageCacheHandle callback_cache_handle_;
   int callback_bool_ = false;
@@ -1013,31 +1012,6 @@ class CacheStorageManagerStorageKeyAndBucketTestP
 
 TEST_F(CacheStorageManagerTest, TestsRunOnIOThread) {
   EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::IO));
-}
-
-// A final release on another sequence used to destroy the manager's bound Mojo
-// remote off-sequence, triggering a sequence-affinity check during shutdown.
-TEST_F(CacheStorageManagerTest, ManagerDestroyedOnSchedulerSequence) {
-  auto other_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-
-  // Send a message to bind the remote's lazy endpoint client to this sequence.
-  mojo::Remote<storage::mojom::BlobStorageContext> clone;
-  blob_storage_context_->context()->Clone(clone.BindNewPipeAndPassReceiver());
-  blob_storage_context_->context().FlushForTesting();
-
-  auto observer = CreateObserver();
-  base::RunLoop loop;
-  observer->receiver_.set_disconnect_handler(loop.QuitClosure());
-
-  // Keep the wrapper alive only through the manager.
-  blob_storage_context_.reset();
-  ASSERT_TRUE(other_task_runner->PostTask(
-      FROM_HERE, base::BindOnce([](scoped_refptr<CacheStorageManager>) {},
-                                std::move(cache_manager_))));
-
-  // The observer disconnects only when the manager destroys its remote set.
-  loop.Run();
 }
 
 TEST_P(CacheStorageManagerTestP, OpenCache) {
@@ -2809,7 +2783,8 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
   void SetUp() override {
     CacheStorageManagerTest::SetUp();
     quota_client_ = std::make_unique<CacheStorageQuotaClient>(
-        cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
+        cache_manager_->GetWeakPtr(),
+        storage::mojom::CacheStorageOwner::kCacheAPI);
   }
 
   void QuotaUsageCallback(base::RunLoop* run_loop, int64_t usage) {
@@ -2944,7 +2919,8 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
   // Create a new CacheStorageManager that hasn't yet loaded the origin.
   RecreateStorageManager();
   quota_client_ = std::make_unique<CacheStorageQuotaClient>(
-      cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
+      cache_manager_->GetWeakPtr(),
+      storage::mojom::CacheStorageOwner::kCacheAPI);
 
   EXPECT_TRUE(QuotaDeleteBucketData(bucket_locator1_));
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));

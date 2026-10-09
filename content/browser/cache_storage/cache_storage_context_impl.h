@@ -80,9 +80,9 @@ class CONTENT_EXPORT CacheStorageContextImpl
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;
 
-  scoped_refptr<CacheStorageManager> cache_manager() {
+  CacheStorageManager* cache_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return cache_manager_;
+    return cache_manager_.get();
   }
 
   bool is_incognito() const { return is_incognito_; }
@@ -108,8 +108,10 @@ class CONTENT_EXPORT CacheStorageContextImpl
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
 
-  // Released during Shutdown() or the destructor.
-  scoped_refptr<CacheStorageManager> cache_manager_;
+  // This is necessary because the sequence `this` runs on is
+  // SKIP_ON_SHUTDOWN.
+  std::unique_ptr<CacheStorageManager, base::OnTaskRunnerDeleter>
+      cache_manager_;
 
   mojo::ReceiverSet<storage::mojom::CacheStorageControl> receivers_;
 
