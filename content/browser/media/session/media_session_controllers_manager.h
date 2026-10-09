@@ -67,9 +67,10 @@ class CONTENT_EXPORT MediaSessionControllersManager {
       const MediaPlayerId& id,
       const media_session::MediaPosition& position);
 
-  // Called when entering/leaving Picture-in-Picture for the associated
-  // WebContents.
-  void PictureInPictureStateChanged(bool is_picture_in_picture);
+  // Called when entering/leaving Picture-in-Picture for the given media
+  // player.
+  void PictureInPictureStateChanged(const MediaPlayerId& id,
+                                    bool is_picture_in_picture);
 
   // Called when the WebContents was muted or unmuted.
   void WebContentsMutedStateChanged(bool muted);

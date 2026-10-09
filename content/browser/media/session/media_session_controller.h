@@ -157,6 +157,7 @@ class CONTENT_EXPORT MediaSessionController
   bool has_audio_ = false;
   bool has_video_ = false;
   bool is_picture_in_picture_available_ = false;
+  bool is_in_picture_in_picture_ = false;
   bool is_video_frame_available_ = false;
   bool has_sufficiently_visible_video_ = false;
   std::string audio_output_sink_id_ =

@@ -88,6 +88,8 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
   // media player is destroyed while the session is still active.
   void OnPlayerGone();
 
+  void NotifyPictureInPictureStateChanged(bool is_picture_in_picture);
+
   // Returns the WebContentsImpl associated with this Picture-in-Picture
   // session. It relies on the WebContents associated with the |service_|.
   WebContentsImpl* GetWebContentsImpl();

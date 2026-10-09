@@ -333,10 +333,11 @@ MediaWebContentsObserver::GetFullscreenVideoMediaPlayerId() const {
   return fullscreen_player_;
 }
 
-void MediaWebContentsObserver::MediaPictureInPictureChanged(
+void MediaWebContentsObserver::OnPictureInPictureStateChanged(
+    const MediaPlayerId& player_id,
     bool is_picture_in_picture) {
   session_controllers_manager_->PictureInPictureStateChanged(
-      is_picture_in_picture);
+      player_id, is_picture_in_picture);
 }
 
 void MediaWebContentsObserver::DidUpdateAudioMutingState(bool muted) {

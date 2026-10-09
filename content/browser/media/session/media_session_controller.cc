@@ -219,6 +219,7 @@ void MediaSessionController::OnPlaybackPaused(bool reached_end_of_stream) {
 
 void MediaSessionController::PictureInPictureStateChanged(
     bool is_picture_in_picture) {
+  is_in_picture_in_picture_ = is_picture_in_picture;
   AddOrRemovePlayer();
 }
 
@@ -271,8 +272,9 @@ void MediaSessionController::OnVideoFrameAvailabilityChanged(bool available) {
 }
 
 bool MediaSessionController::IsMediaSessionNeeded() const {
-  if (web_contents_->HasPictureInPictureVideo())
+  if (is_in_picture_in_picture_) {
     return true;
+  }
 
   if (!is_playback_in_progress_)
     return false;

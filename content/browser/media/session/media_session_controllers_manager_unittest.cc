@@ -360,6 +360,41 @@ TEST_P(MediaSessionControllersManagerTest,
   observer.WaitForExpectedActions(GetDefaultActions());
 }
 
+TEST_P(MediaSessionControllersManagerTest,
+       PictureInPictureStateChangedOnlyAffectsTargetPlayer) {
+  if (!IsMediaSessionEnabled()) {
+    return;
+  }
+
+  // Player 1 is paused in the main frame.
+  manager_->OnMetadata(media_player_id_, /*has_audio=*/true, /*has_video=*/true,
+                       media::MediaContentType::kPersistent);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  manager_->OnPause(media_player_id_, /*reached_end_of_stream=*/false);
+  ASSERT_FALSE(media_session()->IsActive());
+
+  // Player 2 is playing without audio. It should not activate the session.
+  manager_->OnMetadata(media_player_id2_, /*has_audio=*/false,
+                       /*has_video=*/true,
+                       media::MediaContentType::kPersistent);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id2_));
+  EXPECT_FALSE(media_session()->IsActive());
+
+  // Player 1 enters Picture-in-Picture while still paused. Player 2 must not be
+  // added to the MediaSession, so the session remains inactive (paused).
+  manager_->PictureInPictureStateChanged(media_player_id_, true);
+  EXPECT_FALSE(media_session()->IsActive());
+  EXPECT_TRUE(media_session()->IsControllable());
+
+  // Player 2 entering Picture-in-Picture while playing activates the session.
+  manager_->PictureInPictureStateChanged(media_player_id_, false);
+  manager_->PictureInPictureStateChanged(media_player_id2_, true);
+  EXPECT_TRUE(media_session()->IsActive());
+
+  manager_->PictureInPictureStateChanged(media_player_id2_, false);
+  EXPECT_FALSE(media_session()->IsActive());
+}
+
 TEST_P(MediaSessionControllersManagerTest, SufficientlyVisibleVideo) {
   if (!IsMediaSessionEnabled()) {
     return;

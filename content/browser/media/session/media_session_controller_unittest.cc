@@ -13,7 +13,9 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_impl.h"
+#include "content/browser/media/session/mock_media_session_service_impl.h"
 #include "content/public/browser/media_device_id.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/test/mock_agent_scheduling_group_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -711,6 +713,7 @@ TEST_F(MediaSessionControllerTest,
 TEST_F(MediaSessionControllerTest,
        AddPlayerInitiallyPictureInPictureWithNoAudio) {
   contents()->SetHasPictureInPictureVideo(true);
+  controller_->PictureInPictureStateChanged(true);
 
   controller_->SetMetadata(
       /* has_audio = */ false, /* has_video = */ true,
@@ -722,6 +725,49 @@ TEST_F(MediaSessionControllerTest,
   controller_->PictureInPictureStateChanged(false);
 
   EXPECT_FALSE(media_session()->IsActive());
+}
+
+TEST_F(MediaSessionControllerTest,
+       SubframePlayerWithNoAudioNotAddedWhenMainFrameInPictureInPicture) {
+  contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
+  contents()->NavigateAndCommit(GURL("http://www.example.com"));
+  id_ = MediaPlayerId(contents()->GetPrimaryMainFrame()->GetGlobalId(), 0);
+  controller_ = CreateController();
+
+  TestRenderFrameHost* subframe =
+      contents()->GetPrimaryMainFrame()->AppendChild("subframe");
+  subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("http://www.other.com"), subframe));
+  MockMediaSessionServiceImpl subframe_service(subframe);
+  subframe_service.EnableAction(
+      media_session::mojom::MediaSessionAction::kToggleMicrophone);
+
+  // Main frame player is playing with audio and enters Picture-in-Picture,
+  // without a MediaSessionService on the main frame.
+  controller_->SetMetadata(
+      /*has_audio=*/true, /*has_video=*/true,
+      media::MediaContentType::kPersistent);
+  ASSERT_TRUE(controller_->OnPlaybackStarted());
+  contents()->SetHasPictureInPictureVideo(true);
+  controller_->PictureInPictureStateChanged(true);
+  ASSERT_TRUE(media_session()->IsActive());
+  ASSERT_FALSE(media_session()->ShouldRouteAction(
+      media_session::mojom::MediaSessionAction::kToggleMicrophone));
+
+  // A muted (no-audio) player in the cross-origin subframe starts playing.
+  // Because it is not the Picture-in-Picture player and has no audio, it must
+  // not be added to the MediaSession, and the subframe's MediaSessionService
+  // must not be routed.
+  MediaPlayerId subframe_player_id(subframe->GetGlobalId(), 0);
+  auto subframe_controller =
+      std::make_unique<MediaSessionController>(subframe_player_id, contents());
+  subframe_controller->SetMetadata(
+      /*has_audio=*/false, /*has_video=*/true,
+      media::MediaContentType::kPersistent);
+  ASSERT_TRUE(subframe_controller->OnPlaybackStarted());
+  EXPECT_FALSE(media_session()->ShouldRouteAction(
+      media_session::mojom::MediaSessionAction::kToggleMicrophone));
 }
 
 TEST_F(MediaSessionControllerTest,

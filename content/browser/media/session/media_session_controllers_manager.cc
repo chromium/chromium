@@ -89,12 +89,22 @@ void MediaSessionControllersManager::OnMediaPositionStateChanged(
 }
 
 void MediaSessionControllersManager::PictureInPictureStateChanged(
+    const MediaPlayerId& id,
     bool is_picture_in_picture) {
-  if (!IsMediaSessionEnabled())
+  if (!IsMediaSessionEnabled()) {
     return;
+  }
 
-  for (auto& entry : controllers_map_)
-    entry.second->PictureInPictureStateChanged(is_picture_in_picture);
+  if (!is_picture_in_picture) {
+    auto it = controllers_map_.find(id);
+    if (it != controllers_map_.end()) {
+      it->second->PictureInPictureStateChanged(false);
+    }
+    return;
+  }
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->PictureInPictureStateChanged(true);
 }
 
 void MediaSessionControllersManager::WebContentsMutedStateChanged(bool muted) {

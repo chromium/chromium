@@ -28,6 +28,7 @@ PictureInPictureSession::PictureInPictureSession(
       &PictureInPictureSession::OnConnectionError, base::Unretained(this)));
   media_player_remote_.set_disconnect_handler(base::BindOnce(
       &PictureInPictureSession::OnPlayerGone, base::Unretained(this)));
+  NotifyPictureInPictureStateChanged(true);
 }
 
 PictureInPictureSession::~PictureInPictureSession() {
@@ -44,8 +45,10 @@ void PictureInPictureSession::Update(
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
+  NotifyPictureInPictureStateChanged(false);
   player_id_ =
       MediaPlayerId(service_->render_frame_host().GetGlobalId(), player_id);
+  NotifyPictureInPictureStateChanged(true);
 
   media_player_remote_.reset();
   media_player_remote_.Bind(std::move(player_remote));
@@ -62,8 +65,20 @@ void PictureInPictureSession::UpdateMediaPosition(
 }
 
 void PictureInPictureSession::OnPlayerGone() {
+  if (!is_stopping_) {
+    NotifyPictureInPictureStateChanged(false);
+  }
   player_id_.reset();
   GetController().SetPlaybackControlsVisibility(false);
+}
+
+void PictureInPictureSession::NotifyPictureInPictureStateChanged(
+    bool is_picture_in_picture) {
+  if (!player_id_.has_value()) {
+    return;
+  }
+  GetController().OnPictureInPictureStateChanged(*player_id_,
+                                                 is_picture_in_picture);
 }
 
 void PictureInPictureSession::NotifyWindowResized(const gfx::Size& size) {
@@ -85,6 +100,7 @@ void PictureInPictureSession::Disconnect() {
     return;
 
   is_stopping_ = true;
+  NotifyPictureInPictureStateChanged(false);
   observer_->OnStopped();
 }
 
@@ -101,6 +117,7 @@ void PictureInPictureSession::StopInternal(StopCallback callback) {
   DCHECK(!is_stopping_);
 
   is_stopping_ = true;
+  NotifyPictureInPictureStateChanged(false);
 
   // `OnStopped()` should only be called if there is no callback to run, as a
   // contract in the API.

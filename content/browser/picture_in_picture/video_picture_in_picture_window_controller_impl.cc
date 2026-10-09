@@ -425,6 +425,15 @@ void VideoPictureInPictureWindowControllerImpl::SetPlaybackControlsVisibility(
   }
 }
 
+void VideoPictureInPictureWindowControllerImpl::OnPictureInPictureStateChanged(
+    const MediaPlayerId& player_id,
+    bool is_picture_in_picture) {
+  if (WebContentsImpl* web_contents = GetWebContentsImpl()) {
+    web_contents->media_web_contents_observer()->OnPictureInPictureStateChanged(
+        player_id, is_picture_in_picture);
+  }
+}
+
 void VideoPictureInPictureWindowControllerImpl::SkipAd() {
   if (media_session_action_skip_ad_handled_)
     MediaSession::Get(web_contents())->SkipAd();

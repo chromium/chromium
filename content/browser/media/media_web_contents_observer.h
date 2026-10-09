@@ -127,11 +127,14 @@ class CONTENT_EXPORT MediaWebContentsObserver
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
-  void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
   void DidUpdateAudioMutingState(bool muted) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
+
+  // Called when entering/leaving Picture-in-Picture for the given media player.
+  void OnPictureInPictureStateChanged(const MediaPlayerId& player_id,
+                                      bool is_picture_in_picture);
 
   // Called when an audibility bypass grant is revoked.
   void OnAudibilityBypassRevoked(const MediaPlayerId& id);
