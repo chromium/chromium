@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.tips.TipsPromoProperties.ScreenType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -49,7 +50,7 @@ public class TipsPromoViewBinderUnitTest {
 
     private Activity mActivity;
     private PropertyModel mModel;
-    private View mView;
+    private TipsPromoView mView;
     private ButtonCompat mMainPagePositiveButtonView;
     private ButtonCompat mDetailPagePositiveButtonView;
     private TextView mTitleView;
@@ -62,13 +63,14 @@ public class TipsPromoViewBinderUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mView =
-                LayoutInflater.from(mActivity)
-                        .inflate(R.layout.tips_promo_bottom_sheet, null, false);
-        mMainPagePositiveButtonView = mView.findViewById(R.id.tips_promo_settings_button);
-        mDetailPagePositiveButtonView = mView.findViewById(R.id.tips_promo_details_settings_button);
-        mTitleView = mView.findViewById(R.id.main_page_title_text);
-        mDescriptionView = mView.findViewById(R.id.main_page_description_text);
-        mDetailsTitleView = mView.findViewById(R.id.details_page_title_text);
+                (TipsPromoView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.tips_promo_bottom_sheet, null, false);
+        mMainPagePositiveButtonView = mView.getMainPagePositiveButtonForTesting();
+        mDetailPagePositiveButtonView = mView.getDetailPagePositiveButtonForTesting();
+        mTitleView = mView.getMainPageTitleForTesting();
+        mDescriptionView = mView.getMainPageDescriptionForTesting();
+        mDetailsTitleView = mView.getDetailPageTitleForTesting();
 
         mModel = TipsPromoProperties.createDefaultModel();
         PropertyModelChangeProcessor.create(mModel, mView, TipsPromoViewBinder::bind);
@@ -76,6 +78,23 @@ public class TipsPromoViewBinderUnitTest {
 
     private void onActivity(TestActivity activity) {
         mActivity = activity;
+    }
+
+    @Test
+    public void testInflationAndChildViewCaching() {
+        assertNotNull(mView.getMainPagePositiveButtonForTesting());
+        assertNotNull(mView.getDetailPagePositiveButtonForTesting());
+        assertNotNull(mView.getMainPageTitleForTesting());
+        assertNotNull(mView.getMainPageDescriptionForTesting());
+        assertNotNull(mView.getDetailPageTitleForTesting());
+        assertNotNull(mView.getDetailsButtonForTesting());
+        assertNotNull(mView.getBackButtonForTesting());
+    }
+
+    @Test
+    public void testCurrentScreen() {
+        mModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.DETAIL_SCREEN);
+        assertEquals(ScreenType.DETAIL_SCREEN, mView.getDisplayedChild());
     }
 
     @Test
@@ -99,13 +118,10 @@ public class TipsPromoViewBinderUnitTest {
     @Test
     public void testDetailsButtonClickListener() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        OnClickListener clickListener =
-                (view) -> {
-                    callbackHelper.notifyCalled();
-                };
+        OnClickListener clickListener = (view) -> callbackHelper.notifyCalled();
 
         mModel.set(TipsPromoProperties.DETAILS_BUTTON_CLICK_LISTENER, clickListener);
-        View onClickListener = mView.findViewById(R.id.tips_promo_details_button);
+        View onClickListener = mView.getDetailsButtonForTesting();
         assertNotNull(onClickListener);
         onClickListener.performClick();
         callbackHelper.waitForOnly();
@@ -117,13 +133,12 @@ public class TipsPromoViewBinderUnitTest {
         OnClickListener clickListener = (view) -> callbackHelper.notifyCalled();
 
         mModel.set(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER, clickListener);
-        View settingsOnClickListener = mView.findViewById(R.id.tips_promo_settings_button);
+        View settingsOnClickListener = mView.getMainPagePositiveButtonForTesting();
         assertNotNull(settingsOnClickListener);
         settingsOnClickListener.performClick();
         callbackHelper.waitForNext();
 
-        View settingsDetailsOnClickListener =
-                mView.findViewById(R.id.tips_promo_details_settings_button);
+        View settingsDetailsOnClickListener = mView.getDetailPagePositiveButtonForTesting();
         assertNotNull(settingsDetailsOnClickListener);
         settingsDetailsOnClickListener.performClick();
         callbackHelper.waitForNext();
@@ -132,13 +147,10 @@ public class TipsPromoViewBinderUnitTest {
     @Test
     public void testBackButtonClickListener() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        OnClickListener clickListener =
-                (view) -> {
-                    callbackHelper.notifyCalled();
-                };
+        OnClickListener clickListener = (view) -> callbackHelper.notifyCalled();
 
         mModel.set(TipsPromoProperties.BACK_BUTTON_CLICK_LISTENER, clickListener);
-        View onClickListener = mView.findViewById(R.id.details_page_back_button);
+        View onClickListener = mView.getBackButtonForTesting();
         assertNotNull(onClickListener);
         onClickListener.performClick();
         callbackHelper.waitForOnly();

@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tips/TipsPromoHandler.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoHandlerFactory.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoProperties.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoView.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoViewBinder.java",
     "java/src/org/chromium/chrome/browser/tips/TipsUtils.java",
   ]

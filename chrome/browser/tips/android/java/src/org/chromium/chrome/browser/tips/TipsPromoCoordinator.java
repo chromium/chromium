@@ -11,11 +11,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
@@ -44,11 +42,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -102,8 +98,7 @@ public class TipsPromoCoordinator {
     private final TipsPromoSheetContent mSheetContent;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mChangeProcessor;
-    private final ViewFlipper mViewFlipperView;
-    private final View mContentView;
+    private final TipsPromoView mContentView;
     private final @TipsNotificationsFeatureType int mFeatureType;
     private final boolean mIsUserSignedIn;
     private LensController mLensController;
@@ -142,8 +137,9 @@ public class TipsPromoCoordinator {
         mFeatureType = featureType;
 
         mContentView =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.tips_promo_bottom_sheet, /* root= */ null);
+                (TipsPromoView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.tips_promo_bottom_sheet, /* root= */ null);
         mSheetContent =
                 new TipsPromoSheetContent(
                         mContentView, mPropertyModel, mBottomSheetController, featureType);
@@ -151,15 +147,6 @@ public class TipsPromoCoordinator {
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mPropertyModel, mContentView, TipsPromoViewBinder::bind);
-
-        mViewFlipperView = mContentView.findViewById(R.id.tips_promo_bottom_sheet_view_flipper);
-        mPropertyModel.addObserver(
-                (_, propertyKey) -> {
-                    if (TipsPromoProperties.CURRENT_SCREEN == propertyKey) {
-                        mViewFlipperView.setDisplayedChild(
-                                mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
-                    }
-                });
 
         mIsUserSignedIn =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
@@ -250,12 +237,6 @@ public class TipsPromoCoordinator {
             stepContent.setText(steps.get(i));
             stepsContainer.addView(stepView);
         }
-
-        if (LocalizationUtils.isLayoutRtl()) {
-            // Flip the image horizontally, so that the arrow points the right way for RTL.
-            ImageView backArrow = mContentView.findViewById(R.id.details_page_back_button);
-            backArrow.setScaleX(-1);
-        }
     }
 
     private void performFeatureAction() {
@@ -319,11 +300,12 @@ public class TipsPromoCoordinator {
     @NullMarked
     private static class TipsPromoCustomizerImpl implements TipsPromoCustomizer {
         private final Context mContext;
-        private final View mContentView;
+        private final TipsPromoView mContentView;
         private final LottieAnimationView mLogoView;
         private boolean mHasCustomAnimation;
 
-        TipsPromoCustomizerImpl(Context context, View contentView, LottieAnimationView logoView) {
+        TipsPromoCustomizerImpl(
+                Context context, TipsPromoView contentView, LottieAnimationView logoView) {
             mContext = context;
             mContentView = contentView;
             mLogoView = logoView;
@@ -345,14 +327,12 @@ public class TipsPromoCoordinator {
 
         @Override
         public void setDetailsButtonVisibility(boolean visible) {
-            ButtonCompat settingsButton = mContentView.findViewById(R.id.tips_promo_details_button);
-            settingsButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+            mContentView.setDetailsButtonVisibility(visible);
         }
 
         @Override
         public void setDescriptionVisibility(boolean visible) {
-            TextView descriptionText = mContentView.findViewById(R.id.main_page_description_text);
-            descriptionText.setVisibility(visible ? View.VISIBLE : View.GONE);
+            mContentView.setDescriptionVisibility(visible);
         }
 
         boolean hasCustomAnimation() {
@@ -362,7 +342,7 @@ public class TipsPromoCoordinator {
 
     @NullMarked
     protected class TipsPromoSheetContent implements BottomSheetContent {
-        private final View mContentView;
+        private final TipsPromoView mContentView;
         private final PropertyModel mModel;
         private final BottomSheetController mController;
         private final BottomSheetObserver mBottomSheetOpenedObserver;
@@ -372,7 +352,7 @@ public class TipsPromoCoordinator {
         private final ScrollView mScrollView;
 
         TipsPromoSheetContent(
-                View contentView,
+                TipsPromoView contentView,
                 PropertyModel model,
                 BottomSheetController controller,
                 @TipsNotificationsFeatureType int featureTipType) {

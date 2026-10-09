@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<ViewFlipper
+<org.chromium.chrome.browser.tips.TipsPromoView
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
@@ -14,8 +14,7 @@ found in the LICENSE file.
   android:layout_height="wrap_content"
   android:measureAllChildren="false"
   android:inAnimation="@anim/view_flipper_fade_in"
-  android:outAnimation="@anim/view_flipper_fade_out"
-  android:orientation="vertical">
+  android:outAnimation="@anim/view_flipper_fade_out">
 
     <include
         android:id="@+id/tips_promo_main_sheet"
@@ -23,4 +22,4 @@ found in the LICENSE file.
     <include
         android:id="@+id/tips_promo_detail_sheet"
         layout="@layout/tips_promo_detail_sheet" />
-</ViewFlipper>
+</org.chromium.chrome.browser.tips.TipsPromoView>
