@@ -540,7 +540,9 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
+MessagingBackendServiceImpl::~MessagingBackendServiceImpl() {
+  ClearAllUserData();
+}
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {

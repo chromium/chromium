@@ -3067,4 +3067,45 @@ TEST_F(MessagingBackendServiceImplTest, TruncateTabTitle) {
                 kMultiGraphemeCharacter));
 }
 
+TEST_F(MessagingBackendServiceImplTest, UserDataDestroyedBeforeMembers) {
+  CreateAndInitializeService();
+
+  class BridgeLikeUserData
+      : public base::SupportsUserData::Data,
+        public MessagingBackendService::PersistentMessageObserver,
+        public MessagingBackendService::InstantMessageDelegate {
+   public:
+    explicit BridgeLikeUserData(MessagingBackendService* service)
+        : service_(service) {
+      service_->AddPersistentMessageObserver(this);
+      service_->SetInstantMessageDelegate(this);
+    }
+    ~BridgeLikeUserData() override {
+      service_->SetInstantMessageDelegate(nullptr);
+      service_->RemovePersistentMessageObserver(this);
+    }
+    void OnMessagingBackendServiceInitialized() override {}
+    void DisplayPersistentMessage(PersistentMessage message) override {}
+    void HidePersistentMessage(PersistentMessage message) override {}
+    void DisplayInstantaneousMessage(
+        InstantMessage message,
+        SuccessCallback success_callback) override {}
+    void HideInstantaneousMessage(
+        const std::set<base::Uuid>& message_ids) override {}
+
+   private:
+    raw_ptr<MessagingBackendService> service_;
+  };
+
+  static const char kBridgeKey = 0;
+  service_->SetUserData(&kBridgeKey,
+                        std::make_unique<BridgeLikeUserData>(service_.get()));
+  ds_notifier_observer_ = nullptr;
+  tg_notifier_observer_ = nullptr;
+  unowned_messaging_backend_store_ = nullptr;
+  unowned_data_sharing_change_notifier_ = nullptr;
+  unowned_tab_group_change_notifier_ = nullptr;
+  service_.reset();
+}
+
 }  // namespace collaboration::messaging
