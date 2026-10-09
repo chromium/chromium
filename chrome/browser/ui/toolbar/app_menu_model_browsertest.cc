@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -51,6 +53,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
@@ -536,6 +539,7 @@ class SkillsAndExtensionsMenuModelTest : public AppMenuModelTest {
   ~SkillsAndExtensionsMenuModelTest() override = default;
 
  private:
+  glic::GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -595,6 +599,43 @@ IN_PROC_BROWSER_TEST_F(SkillsAndExtensionsMenuModelTest,
   EXPECT_FALSE(skills_and_extensions_submenu->GetIconAt(1).IsEmpty());
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsAndExtensionsMenuModelTest,
+                       SkillsAndExtensionsMenuHiddenWhenGlicDisabled) {
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+
+  actions::ActionItem* root_action =
+      BrowserActions::From(browser())->root_action_item();
+  auto* skills_and_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionSkillsAndExtensionsSubmenu, root_action);
+  ASSERT_NE(skills_and_extensions_action, nullptr);
+  EXPECT_FALSE(skills_and_extensions_action->GetVisible());
+
+  auto* extensions_action = actions::ActionManager::Get().FindAction(
+      kActionExtensionsSubmenu, root_action);
+  ASSERT_NE(extensions_action, nullptr);
+  EXPECT_TRUE(extensions_action->GetVisible());
+
+  auto* find_extensions_action = actions::ActionManager::Get().FindAction(
+      kActionFindExtensions, root_action);
+  ASSERT_NE(find_extensions_action, nullptr);
+  EXPECT_TRUE(find_extensions_action->GetVisible());
+
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       AppMenuModel::kSkillsAndExtensionsMenuPlaceholder)
+                   .has_value());
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(AppMenuModel::kExtensionsSubmenuPlaceholder)
+          .has_value() ||
+      model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS).has_value());
+}
+
 class SkillsAndExtensionsMenuModelDisabledTest : public AppMenuModelTest {
  public:
   SkillsAndExtensionsMenuModelDisabledTest() {
@@ -603,6 +644,7 @@ class SkillsAndExtensionsMenuModelDisabledTest : public AppMenuModelTest {
   ~SkillsAndExtensionsMenuModelDisabledTest() override = default;
 
  private:
+  glic::GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -648,6 +690,7 @@ class SkillsAndExtensionsMenuModelSkillsDisabledTest : public AppMenuModelTest {
   ~SkillsAndExtensionsMenuModelSkillsDisabledTest() override = default;
 
  private:
+  glic::GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList feature_list_;
 };
 

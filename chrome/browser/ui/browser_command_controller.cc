@@ -51,6 +51,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -2859,6 +2860,22 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
         action->SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile()));
       }
     }
+  }
+
+  const bool show_skills_and_extensions =
+      profile()->IsRegularProfile() &&
+      skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile()) &&
+      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu) &&
+      glic::GlicEnabling::IsEnabledForProfile(profile());
+  if (auto* const action =
+          FindAction(kActionSkillsAndExtensionsSubmenu, browser_)) {
+    action->SetVisible(show_skills_and_extensions);
+  }
+  if (auto* const action = FindAction(kActionExtensionsSubmenu, browser_)) {
+    action->SetVisible(!show_skills_and_extensions);
+  }
+  if (auto* const action = FindAction(kActionFindExtensions, browser_)) {
+    action->SetVisible(!show_skills_and_extensions);
   }
 }
 

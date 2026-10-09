@@ -370,6 +370,13 @@ const gfx::VectorIcon& GetLensOverlayHomeworkIcon(Profile* profile) {
 #endif
 }
 
+bool ShouldShowSkillsAndExtensions(Profile* profile) {
+  return profile && profile->IsRegularProfile() &&
+         skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile) &&
+         base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu) &&
+         glic::GlicEnabling::IsEnabledForProfile(profile);
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(BrowserActions);
@@ -4797,10 +4804,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               ui::kColorMenuIconOnEmphasizedBackground))
           .Build());
   const bool show_skills_and_extensions =
-      profile_->IsRegularProfile() &&
-      skills::SkillsServiceFactory::IsSkillsEnabledForProfile(
-          base::to_address(profile_)) &&
-      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
+      ShouldShowSkillsAndExtensions(base::to_address(profile_));
   root_action_item_->AddChild(
       ChromeMenuAction(
           base::BindRepeating(
@@ -5443,10 +5447,7 @@ void BrowserActions::InitializeSubmenuActions() {
           .Build());
 
   const bool show_skills_and_extensions =
-      profile_->IsRegularProfile() &&
-      skills::SkillsServiceFactory::IsSkillsEnabledForProfile(
-          base::to_address(profile_)) &&
-      base::FeatureList::IsEnabled(features::kSkillsAndExtensionsAppMenu);
+      ShouldShowSkillsAndExtensions(base::to_address(profile_));
 
   root_action_item_->AddChild(
       ChromeMenuAction(

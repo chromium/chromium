@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -18,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -46,8 +48,10 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/crx_file/id_util.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/features.h"
 #include "components/supervised_user/core/common/features.h"
@@ -393,20 +397,37 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
 }
 
 class AppMenuModelSkillsAndExtensionsInteractiveTest
-    : public AppMenuModelInteractiveTest {
+    : public AppMenuModelInteractiveTest,
+      public testing::WithParamInterface<bool> {
  public:
   AppMenuModelSkillsAndExtensionsInteractiveTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSkillsEnabled, features::kSkillsAndExtensionsAppMenu}, {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kSkillsEnabled, features::kSkillsAndExtensionsAppMenu};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(features::kAppMenuGlowUp);
+    } else {
+      disabled_features.push_back(features::kAppMenuGlowUp);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~AppMenuModelSkillsAndExtensionsInteractiveTest() override = default;
 
  private:
+  glic::GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         AppMenuModelSkillsAndExtensionsInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& param) {
+                           return param.param ? "GlowUpEnabled"
+                                              : "GlowUpDisabled";
+                         });
+
+IN_PROC_BROWSER_TEST_P(AppMenuModelSkillsAndExtensionsInteractiveTest,
                        ManageSkills) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
@@ -428,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
                                      MENU_ACTION_MANAGE_SKILLS, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AppMenuModelSkillsAndExtensionsInteractiveTest,
                        ManageExtensions) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
@@ -447,6 +468,17 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
                                     1);
   histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
                                      MENU_ACTION_MANAGE_EXTENSIONS, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(AppMenuModelSkillsAndExtensionsInteractiveTest,
+                       GlicDisabledShowsExtensionsMenu) {
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+  RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
+                  EnsureNotPresent(AppMenuModel::kSkillsAndExtensionsMenuItem),
+                  EnsurePresent(AppMenuModel::kExtensionsMenuItem));
 }
 
 class PasswordManagerMenuItemInteractiveTest

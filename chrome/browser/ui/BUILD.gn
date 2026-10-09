@@ -729,6 +729,7 @@ if (!is_android) {
       "//chrome/browser/sharing_hub",
       "//chrome/browser/shortcuts",
       "//chrome/browser/signin",
+      "//chrome/browser/skills",
       "//chrome/browser/sync",
       "//chrome/browser/translate",
       "//chrome/browser/ui/actions",
