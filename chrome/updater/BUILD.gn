@@ -1235,6 +1235,7 @@ if (is_win || is_mac || is_linux) {
         "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/launcher",
         "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Info.plist",
         "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/MacOS/GoogleUpdater",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Resources/app.icns",
         "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/_CodeSignature",
       ]
 
