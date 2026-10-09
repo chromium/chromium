@@ -624,12 +624,12 @@ IsAsync AtMemoryManager::FillSearchResult(
       case MemoryDataType::kIban: {
         std::visit(absl::Overload{
                        [&](const Iban::Guid& guid) {
-                         FillIban(bam, guid, form_id, field_id, suggestion,
+                         FillIban(bam, guid, form_id, field_id,
                                   std::move(metrics));
                        },
                        [&](const Iban::InstrumentId& instrument_id) {
                          FillIban(bam, instrument_id, form_id, field_id,
-                                  suggestion, std::move(metrics));
+                                  std::move(metrics));
                        },
                        [](std::monostate) { NOTREACHED(); },
                        [](const std::string&) { NOTREACHED(); },
@@ -642,7 +642,7 @@ IsAsync AtMemoryManager::FillSearchResult(
       case MemoryDataType::kCreditCardSecurityCode: {
         CHECK(std::holds_alternative<std::string>(payload.identifier));
         FillCreditCard(bam, std::get<std::string>(payload.identifier), form_id,
-                       field_id, suggestion, std::move(metrics));
+                       field_id, payload.memory_data_type, std::move(metrics));
         return IsAsync(false);
       }
       case MemoryDataType::kPassportNumber:
@@ -1180,7 +1180,6 @@ void AtMemoryManager::FillIban(
     const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
-    const Suggestion& suggestion,
     std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
   Suggestion::Payload iban_payload;
   if (const Iban::Guid* guid = std::get_if<Iban::Guid>(&identifier)) {
@@ -1205,7 +1204,6 @@ void AtMemoryManager::FillIban(
           [](base::WeakPtr<AtMemoryManager> manager,
              base::WeakPtr<BrowserAutofillManager> bam,
              const FormGlobalId& form_id, const FieldGlobalId& field_id,
-             const Suggestion& suggestion,
              std::unique_ptr<AtMemoryMetricsRecorder> metrics,
              std::variant<Iban::Guid, Iban::InstrumentId> identifier,
              base::expected<std::u16string, IbanAccessManager::FailureReason>
@@ -1240,7 +1238,7 @@ void AtMemoryManager::FillIban(
             manager->FillField(*bam, form_id, field_id, *unmasked_value);
           },
           fill_weak_ptr_factory_.GetWeakPtr(),
-          bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id, suggestion,
+          bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id,
           std::move(metrics), identifier));
 }
 
@@ -1249,7 +1247,7 @@ void AtMemoryManager::FillCreditCard(
     const std::string& guid,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
-    const Suggestion& suggestion,
+    MemoryDataType memory_data_type,
     std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
   CreditCardAccessManager* credit_card_access_manager =
       bam.GetCreditCardAccessManager();
@@ -1279,7 +1277,7 @@ void AtMemoryManager::FillCreditCard(
           [](base::WeakPtr<AtMemoryManager> manager,
              base::WeakPtr<BrowserAutofillManager> bam,
              const FormGlobalId& form_id, const FieldGlobalId& field_id,
-             const Suggestion& suggestion,
+             MemoryDataType memory_data_type,
              std::unique_ptr<AtMemoryMetricsRecorder> metrics,
              const CreditCard& fetched_card) {
             if (!manager || !bam) {
@@ -1292,10 +1290,8 @@ void AtMemoryManager::FillCreditCard(
             manager->client_->GetPersonalDataManager()
                 .payments_data_manager()
                 .RecordUseOfCard(fetched_card);
-            const Suggestion::AtMemoryPayload& payload =
-                suggestion.GetPayload<Suggestion::AtMemoryPayload>();
             std::u16string fill_value;
-            switch (payload.memory_data_type) {
+            switch (memory_data_type) {
               case MemoryDataType::kCreditCardNumber:
                 fill_value = fetched_card.number();
                 break;
@@ -1308,8 +1304,8 @@ void AtMemoryManager::FillCreditCard(
             manager->FillField(*bam, form_id, field_id, fill_value);
           },
           fill_weak_ptr_factory_.GetWeakPtr(),
-          bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id, suggestion,
-          std::move(metrics)));
+          bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id,
+          memory_data_type, std::move(metrics)));
 }
 
 IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
@@ -1354,14 +1350,13 @@ IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
       base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(),
                      bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id,
-                     suggestion, *attribute_type, std::move(metrics))));
+                     *attribute_type, std::move(metrics))));
 }
 
 void AtMemoryManager::OnAutofillAiFetched(
     base::WeakPtr<BrowserAutofillManager> bam,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
-    const Suggestion& suggestion,
     AttributeType attribute_type,
     std::unique_ptr<AtMemoryMetricsRecorder> metrics,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>

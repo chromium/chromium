@@ -278,7 +278,6 @@ class AtMemoryManager : public AutofillManager::Observer {
                 const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
                 const FormGlobalId& form_id,
                 const FieldGlobalId& field_id,
-                const Suggestion& suggestion,
                 std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
   // Fills the unmasked credit card value after fetching it.
@@ -286,7 +285,7 @@ class AtMemoryManager : public AutofillManager::Observer {
                       const std::string& credit_card_guid,
                       const FormGlobalId& form_id,
                       const FieldGlobalId& field_id,
-                      const Suggestion& suggestion,
+                      MemoryDataType memory_data_type,
                       std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
   // Fills sensitive Autofill AI identity data. Returns `IsAsync(true)` if the
@@ -303,7 +302,6 @@ class AtMemoryManager : public AutofillManager::Observer {
       base::WeakPtr<BrowserAutofillManager> bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
-      const Suggestion& suggestion,
       AttributeType data_type,
       std::unique_ptr<AtMemoryMetricsRecorder> metrics,
       base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
