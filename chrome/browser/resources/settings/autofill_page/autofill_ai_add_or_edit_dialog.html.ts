@@ -15,7 +15,7 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
 
     ${this.shouldShowWalletBranding_() ? html`
       <if expr="_google_chrome">
-        ${this.isWalletPassBranding2026Enabled_ ? html`
+        ${this.shouldShowStandaloneWalletIcon_() ? html`
           <div class="title-icon-container-standalone">
             <img srcset="${this.getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON')}"
                 alt=""

@@ -240,9 +240,9 @@ ui::ImageModel CreateWalletIcon() {
 #endif
 }
 
-std::unique_ptr<views::View> CreateWalletBubbleTitleView(std::u16string title) {
-  const bool is_branding_2026 =
-      base::FeatureList::IsEnabled(features::kAutofillAiWalletPassBranding2026);
+std::unique_ptr<views::View> CreateWalletBubbleTitleView(
+    std::u16string title,
+    bool is_branding_2026) {
   auto title_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)

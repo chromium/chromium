@@ -333,16 +333,6 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
   api_type.type_name = std::to_underlying(entity_type.name());
   api_type.type_name_as_string =
       base::UTF16ToUTF8(entity_type.GetNameForI18n());
-  api_type.add_entity_type_string = autofill::GetAddEntityTypeStringForI18n(
-      entity_type,
-      /*is_wallet_branded=*/supports_wallet_storage &&
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillAiWalletPassBranding2026));
-  api_type.edit_entity_type_string =
-      autofill::GetEditEntityTypeStringForI18n(entity_type);
-  api_type.delete_entity_type_string =
-      autofill::GetDeleteEntityTypeStringForI18n(entity_type);
-  api_type.supports_wallet_storage = supports_wallet_storage;
   switch (entity_type.name()) {
     case EntityTypeName::kPassport:
     case EntityTypeName::kDriversLicense:
@@ -360,6 +350,18 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
       // pass_type is unset for non-pass type entities.
       break;
   }
+  const bool is_wallet_branded =
+      api_type.pass_type == autofill_private::EntityPassType::kPrivatePass &&
+      supports_wallet_storage &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWalletPassBranding2026);
+  api_type.add_entity_type_string =
+      autofill::GetAddEntityTypeStringForI18n(entity_type, is_wallet_branded);
+  api_type.edit_entity_type_string =
+      autofill::GetEditEntityTypeStringForI18n(entity_type);
+  api_type.delete_entity_type_string =
+      autofill::GetDeleteEntityTypeStringForI18n(entity_type);
+  api_type.supports_wallet_storage = supports_wallet_storage;
   return api_type;
 }
 

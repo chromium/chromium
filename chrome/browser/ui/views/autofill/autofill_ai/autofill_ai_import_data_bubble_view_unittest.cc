@@ -16,6 +16,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -217,6 +218,8 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
   EXPECT_CALL(mock_controller(), IsWalletableEntity())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsBranding2026FeatureEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
       .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
@@ -225,7 +228,38 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
   CreateViewAndShow();
 
   ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
-  EXPECT_EQ(view()->GetBubbleFrameView()->title()->children().size(), 0u);
+  views::View* title_view = view()->GetBubbleFrameView()->title();
+  EXPECT_EQ(title_view->children().size(), 0u);
+}
+
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       WalletIconShownWhenBrandingEnabledForVehicleSavePrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillAiWalletPassBranding2026);
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_CALL(mock_controller(), IsWalletableEntity())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsBranding2026FeatureEnabled())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_controller(), GetAutofillAiData())
+      .WillRepeatedly(Return(vehicle_entity));
+  EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
+      .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE));
+  EXPECT_CALL(mock_controller(), GetNoticeStringId())
+      .WillRepeatedly(
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
+  CreateViewAndShow();
+
+  ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
+  views::BoxLayoutView* title_view = views::AsViewClass<views::BoxLayoutView>(
+      view()->GetBubbleFrameView()->title());
+  ASSERT_NE(title_view, nullptr);
+  EXPECT_EQ(title_view->children().size(), 2u);
+  EXPECT_EQ(title_view->GetCrossAxisAlignment(),
+            views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest,
@@ -236,13 +270,15 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
   EXPECT_CALL(mock_controller(), IsWalletableEntity())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_controller(), IsBranding2026FeatureEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
       .WillRepeatedly(
           Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
   CreateViewAndShow();
 
   ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
-  auto* title_view = views::AsViewClass<views::BoxLayoutView>(
+  views::BoxLayoutView* title_view = views::AsViewClass<views::BoxLayoutView>(
       view()->GetBubbleFrameView()->title());
   ASSERT_NE(title_view, nullptr);
   EXPECT_EQ(title_view->children().size(), 2u);

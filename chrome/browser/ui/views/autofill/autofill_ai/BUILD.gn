@@ -35,6 +35,7 @@ source_set("impl") {
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
     "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/strings",
     "//components/vector_icons",

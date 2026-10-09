@@ -101,6 +101,9 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
                                           /*is_wallet_branded=*/true),
             l10n_util::GetStringUTF8(
                 IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_BRANDED));
+  EXPECT_EQ(GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kVehicle),
+                                          /*is_wallet_branded=*/true),
+            l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY));
 
   // Verify string serving for variant 1 across entity types.
   {
@@ -119,11 +122,9 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
         l10n_util::GetStringUTF8(
             IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_VARIANT_1_BRANDED));
     EXPECT_EQ(
-        GetAddEntityTypeStringForI18n(
-            EntityType(EntityTypeName::kVehicle),
-            /*is_wallet_branded=*/true),
-        l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_1_BRANDED));
+        GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kVehicle),
+                                      /*is_wallet_branded=*/true),
+        l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kNationalIdCard),
@@ -161,11 +162,9 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
         l10n_util::GetStringUTF8(
             IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_VARIANT_2_SECURELY));
     EXPECT_EQ(
-        GetAddEntityTypeStringForI18n(
-            EntityType(EntityTypeName::kVehicle),
-            /*is_wallet_branded=*/true),
-        l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_2_SECURELY));
+        GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kVehicle),
+                                      /*is_wallet_branded=*/true),
+        l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kNationalIdCard),

@@ -228,7 +228,8 @@ void WalletablePassSaveBubbleView::AddedToWidget() {
 
   // Set title view
   GetBubbleFrameView()->SetTitleView(autofill::CreateWalletBubbleTitleView(
-      l10n_util::GetStringUTF16(GetDialogTitleResourceId())));
+      l10n_util::GetStringUTF16(GetDialogTitleResourceId()),
+      /*is_branding_2026=*/false));
 }
 
 std::unique_ptr<views::StyledLabel>

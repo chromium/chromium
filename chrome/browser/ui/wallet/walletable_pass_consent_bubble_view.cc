@@ -125,9 +125,10 @@ void WalletablePassConsentBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 
   // Set title view
-  GetBubbleFrameView()->SetTitleView(
-      autofill::CreateWalletBubbleTitleView(l10n_util::GetStringUTF16(
-          IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE)));
+  GetBubbleFrameView()->SetTitleView(autofill::CreateWalletBubbleTitleView(
+      l10n_util::GetStringUTF16(
+          IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE),
+      /*is_branding_2026=*/false));
 }
 
 int WalletablePassConsentBubbleView::GetHeaderImageResourceId() const {

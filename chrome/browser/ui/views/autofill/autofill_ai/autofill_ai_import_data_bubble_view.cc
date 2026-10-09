@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -61,6 +62,11 @@ AutofillClient::AutofillAiBubbleResult GetAutofillAiBubbleResultFromWidget(
   }
 }
 
+bool IsWalletPassBrandingSavePrompt(
+    const AutofillAiImportDataController& controller) {
+  return controller.IsSavePrompt() && controller.IsBranding2026FeatureEnabled();
+}
+
 }  // namespace
 
 AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
@@ -75,9 +81,7 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
   set_margins(GetAutofillAiBubbleInnerMargins());
   SetAccessibleTitle(controller_->GetSaveUpdateDialogTitle());
   if (!controller_->IsWalletableEntity() ||
-      (controller_->IsSavePrompt() &&
-       base::FeatureList::IsEnabled(
-           features::kAutofillAiWalletPassBranding2026))) {
+      IsWalletPassBrandingSavePrompt(*controller_)) {
     SetTitle(controller_->GetSaveUpdateDialogTitle());
   }
   auto* main_content_wrapper =
@@ -299,11 +303,10 @@ void AutofillAiImportDataBubbleView::AddedToWidget() {
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
   if (controller_->IsWalletableEntity() &&
-      (!controller_->IsSavePrompt() ||
-       !base::FeatureList::IsEnabled(
-           features::kAutofillAiWalletPassBranding2026))) {
-    GetBubbleFrameView()->SetTitleView(
-        CreateWalletBubbleTitleView(controller_->GetSaveUpdateDialogTitle()));
+      !IsWalletPassBrandingSavePrompt(*controller_)) {
+    GetBubbleFrameView()->SetTitleView(CreateWalletBubbleTitleView(
+        controller_->GetSaveUpdateDialogTitle(),
+        controller_->IsBranding2026FeatureEnabled()));
   }
 }
 

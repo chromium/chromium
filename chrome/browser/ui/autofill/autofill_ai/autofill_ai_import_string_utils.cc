@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
@@ -204,6 +205,9 @@ std::u16string GetPromptTitle(EntityTypeName type_name,
                               bool is_server_wallet) {
   const bool is_wallet_branded =
       !is_banner_prompt && is_server_wallet &&
+      GetWalletPassType(EntityType(type_name),
+                        EntityInstance::RecordType::kServerWallet) ==
+          EntityInstance::WalletPassType::kPrivate &&
       base::FeatureList::IsEnabled(features::kAutofillAiWalletPassBranding2026);
 
   TitleResources resources = GetResourcesForType(type_name);

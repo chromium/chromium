@@ -119,13 +119,6 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
       return {
           .section_title_id = IDS_AUTOFILL_AI_VEHICLES_TITLE,
           .add_entity_id = IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
-          .add_entity_branded_id = ResolveStringIdsForWalletPass2026Experiment(
-              IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_BRANDED,
-              IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_1_BRANDED,
-              IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_2_SECURELY),
-#endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY,
       };

@@ -176,7 +176,49 @@ TEST(AutofillAiImportStringUtilsTest, GetPromptTitleBrandedVariants) {
   }
 }
 
-// Tests that GetPrimaryButtonTextId returns appropriate string IDs for save and update prompts.
+// Tests that GetPromptTitle returns unbranded strings for vehicles even when
+// kAutofillAiWalletPassBranding2026 is enabled across all variants.
+TEST(AutofillAiImportStringUtilsTest,
+     GetPromptTitleVehicleExcludedFromBranding) {
+  for (const std::string& variant : {"0", "1", "2", "99"}) {
+    base::test::ScopedFeatureList feature_list;
+    if (variant == "0") {
+      feature_list.InitAndEnableFeature(
+          features::kAutofillAiWalletPassBranding2026);
+    } else {
+      feature_list.InitAndEnableFeatureWithParameters(
+          features::kAutofillAiWalletPassBranding2026,
+          {{"string_variant", variant}});
+    }
+
+    // Vehicle save prompt must return unbranded title.
+    EXPECT_EQ(
+        GetPromptTitle(EntityTypeName::kVehicle, /*is_save_prompt=*/true,
+                       /*is_banner_prompt=*/false, /*is_server_wallet=*/true),
+        l10n_util::GetStringUTF16(
+#if BUILDFLAG(IS_ANDROID)
+            IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_ANDROID
+#else
+            IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE
+#endif
+            ));
+
+    // Vehicle update prompt must return unbranded title.
+    EXPECT_EQ(
+        GetPromptTitle(EntityTypeName::kVehicle, /*is_save_prompt=*/false,
+                       /*is_banner_prompt=*/false, /*is_server_wallet=*/true),
+        l10n_util::GetStringUTF16(
+#if BUILDFLAG(IS_ANDROID)
+            IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE_ANDROID
+#else
+            IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE
+#endif
+            ));
+  }
+}
+
+// Tests that GetPrimaryButtonTextId returns appropriate string IDs for save and
+// update prompts.
 TEST(AutofillAiImportStringUtilsTest, GetPrimaryButtonTextId) {
   EXPECT_EQ(
       GetPrimaryButtonTextId(/*is_save_prompt=*/true),

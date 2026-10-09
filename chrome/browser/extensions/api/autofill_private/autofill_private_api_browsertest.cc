@@ -1268,6 +1268,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTestWithWalletPassBranding,
       api_type_branded.add_entity_type_string,
       l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY));
 #endif
+
+  autofill::EntityType vehicle_entity_type(autofill::EntityTypeName::kVehicle);
+  extensions::api::autofill_private::EntityType vehicle_api_type =
+      extensions::autofill_ai_util::EntityTypeToPrivateApiEntityType(
+          vehicle_entity_type, /*supports_wallet_storage=*/true);
+  EXPECT_EQ(vehicle_api_type.add_entity_type_string,
+            l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \

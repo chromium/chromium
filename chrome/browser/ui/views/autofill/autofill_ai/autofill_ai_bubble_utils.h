@@ -34,7 +34,8 @@ inline constexpr int kAutofillAiBubbleWidth = 320;
 ui::ImageModel CreateWalletIcon();
 
 // Creates a title view for a Wallet bubble.
-std::unique_ptr<views::View> CreateWalletBubbleTitleView(std::u16string title);
+std::unique_ptr<views::View> CreateWalletBubbleTitleView(std::u16string title,
+                                                         bool is_branding_2026);
 
 // Returns the inner margins for the autofill ai bubble.
 gfx::Insets GetAutofillAiBubbleInnerMargins();

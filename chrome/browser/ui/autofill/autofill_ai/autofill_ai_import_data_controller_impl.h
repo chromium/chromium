@@ -60,6 +60,7 @@ class AutofillAiImportDataControllerImpl
   int GetSaveUpdateDialogTitleImagesResourceId() const override;
   std::u16string GetPrimaryAccountEmail() const override;
   bool IsWalletableEntity() const override;
+  bool IsBranding2026FeatureEnabled() const override;
   void OnGoToWalletLinkClicked() override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
       const override;
