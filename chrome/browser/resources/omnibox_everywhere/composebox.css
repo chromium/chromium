@@ -168,6 +168,10 @@ cr-composebox-submit::part(submit) {
   margin-inline-start: 4px;
 }
 
+#bottomControls:has(cr-composebox-submit) {
+  padding-inline-end: 12px;
+}
+
 #bottomControls .context-menu-container {
   padding-block: 0;
   padding-inline-start: 0;
@@ -175,7 +179,6 @@ cr-composebox-submit::part(submit) {
 
 #bottomControls #contextEntrypoint {
   --button-height: 32px;
-  margin-inline-start: 0.5px;
   padding-inline-start: 0;
 }
 

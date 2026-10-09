@@ -553,6 +553,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     const bottomControlsStyle = window.getComputedStyle(bottomControls);
     assertEquals('4px', bottomControlsStyle.paddingTop);
     assertEquals('12px', bottomControlsStyle.paddingBottom);
+    assertEquals('12px', bottomControlsStyle.paddingInlineStart);
+    assertEquals('16px', bottomControlsStyle.paddingInlineEnd);
 
     const composeButton =
         omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
@@ -1543,6 +1545,30 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertEquals('', args[2]);
     assertFalse(args[3]);
     assertEquals(null, composebox.result);
+  });
+
+  test('aligns plus button and submit button in bottomControls', async () => {
+    const bottomControls =
+        composebox.shadowRoot.querySelector<HTMLElement>('#bottomControls');
+    assertTrue(!!bottomControls);
+    const entrypoint =
+        composebox.shadowRoot.querySelector<HTMLElement>('#contextEntrypoint');
+    assertTrue(!!entrypoint);
+
+    assertEquals(
+        '12px', window.getComputedStyle(bottomControls).paddingInlineStart);
+    assertEquals(
+        '16px', window.getComputedStyle(bottomControls).paddingInlineEnd);
+    assertEquals('0px', window.getComputedStyle(entrypoint).marginInlineStart);
+    assertEquals('0px', window.getComputedStyle(entrypoint).paddingInlineStart);
+
+    composebox.searchboxNextEnabled = true;
+    composebox.setInputText('test query');
+    await microtasksFinished();
+
+    assertTrue(!!composebox.shadowRoot.querySelector('cr-composebox-submit'));
+    assertEquals(
+        '12px', window.getComputedStyle(bottomControls).paddingInlineEnd);
   });
 });
 
