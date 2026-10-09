@@ -53,6 +53,12 @@ struct DecorationGeometry {
   float wavy_offset = 0;
   WaveDefinition wavy_wave;
 
+  // Only used for kWavyStroke lines: inline distance from the wavy pattern
+  // anchor (the start of the decorating box) to the origin of `line`.
+  // Painting shifts the pattern by this amount (modulo the wavelength) so
+  // that the wave phase continues across fragments sharing a decorating box.
+  float wavy_pattern_shift = 0;
+
   bool antialias = false;
 };
 
