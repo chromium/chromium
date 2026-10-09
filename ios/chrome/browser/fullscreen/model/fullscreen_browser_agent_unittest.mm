@@ -352,6 +352,62 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   agent->RemoveObserver(&observer2);
 }
 
+// Tests that IncrementalScroll synchronizes progress when only the bottom inset
+// has a non-zero range (e.g. bottom omnibox), and ignores scroll while
+// animating.
+TEST_F(FullscreenBrowserAgentTest, IncrementalScrollBottomOnly) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  TestFullscreenBrowserAgentObserver base_observer;
+  RangeTestFullscreenBrowserAgentObserver top_observer(UIRectEdgeTop, 50.0,
+                                                       50.0);
+  RangeTestFullscreenBrowserAgentObserver bottom_observer(UIRectEdgeBottom,
+                                                          20.0, 80.0);
+
+  agent->AddObserver(&base_observer);
+  agent->AddObserver(&top_observer);
+  agent->AddObserver(&bottom_observer);
+
+  // Initialize ranges. Top delta = 0, Bottom delta = 60.
+  agent->InvalidateInsetRange();
+
+  EXPECT_EQ(1.0, agent->top_progress());
+  EXPECT_EQ(1.0, agent->bottom_progress());
+
+  // Scroll down partially (amount = 30 out of 60).
+  agent->IncrementalScroll(30.0, 0.0, PassKey());
+
+  EXPECT_EQ(0.5, agent->top_progress());
+  EXPECT_EQ(0.5, agent->bottom_progress());
+  EXPECT_EQ(50.0, agent->insets().top);
+  EXPECT_EQ(50.0, agent->insets().bottom);
+
+  // Scroll down to fully collapse.
+  agent->IncrementalScroll(30.0, 0.0, PassKey());
+
+  EXPECT_EQ(0.0, agent->top_progress());
+  EXPECT_EQ(0.0, agent->bottom_progress());
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+
+  // Start animated exit fullscreen.
+  agent->ExitFullscreen(
+      PassKey(), FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode,
+      /*animated=*/true);
+  EXPECT_TRUE(agent->is_animating());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->settled_state());
+
+  // IncrementalScroll while animating must be ignored.
+  agent->IncrementalScroll(15.0, 0.0, PassKey());
+  EXPECT_EQ(1.0, agent->top_progress());
+  EXPECT_EQ(1.0, agent->bottom_progress());
+
+  agent->RemoveObserver(&base_observer);
+  agent->RemoveObserver(&top_observer);
+  agent->RemoveObserver(&bottom_observer);
+}
+
 // Tests that EnterFullscreen and ExitFullscreen correctly update progress.
 TEST_F(FullscreenBrowserAgentTest, EnterExitFullscreen) {
   base::HistogramTester histogram_tester;

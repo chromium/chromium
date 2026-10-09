@@ -151,7 +151,7 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount,
     return;
   }
 
-  if (IsFullscreenEasedTransitionsEnabled() && is_animating_) {
+  if (is_animating_) {
     return;
   }
 
@@ -174,12 +174,16 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount,
     bottom_progress_ = top_progress_;
   } else {
     CGFloat top_delta = max_insets_.top - min_insets_.top;
-    UpdateProgress(top_progress_, amount, top_delta);
     CGFloat bottom_delta = max_insets_.bottom - min_insets_.bottom;
-    if (bottom_delta > 0) {
+    if (top_delta > 0 && bottom_delta > 0) {
+      UpdateProgress(top_progress_, amount, top_delta);
       UpdateProgress(bottom_progress_, amount, bottom_delta);
-    } else {
+    } else if (top_delta > 0) {
+      UpdateProgress(top_progress_, amount, top_delta);
       bottom_progress_ = top_progress_;
+    } else if (bottom_delta > 0) {
+      UpdateProgress(bottom_progress_, amount, bottom_delta);
+      top_progress_ = bottom_progress_;
     }
   }
 
