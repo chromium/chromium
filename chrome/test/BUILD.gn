@@ -2091,8 +2091,6 @@ if (!is_android) {
     ]
 
     if (is_win) {
-      sources += [ "../browser/ui/views/device_id/pen_id_browsertest_win.cc" ]
-
       # encrypted_media_browsertest uses Windows Media Foundation APIs.
       libs = [
         "mfuuid.lib",

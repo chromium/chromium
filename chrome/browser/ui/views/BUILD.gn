@@ -1828,6 +1828,7 @@ source_set("browser_tests") {
 
   if (is_win) {
     sources += [
+      "device_id/pen_id_browsertest_win.cc",
       "sync/inline_login_ui_browsertest.cc",
       "tab_search_bubble_ui_browsertest.cc",
 
