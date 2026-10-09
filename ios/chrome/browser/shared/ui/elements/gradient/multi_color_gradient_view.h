@@ -6,17 +6,29 @@
 #define IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_GRADIENT_MULTI_COLOR_GRADIENT_VIEW_H_
 
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
 // A multi color gradient supporting two or more colors with custom stop
-// locations.
+// locations and gradient types (e.g. `kCAGradientLayerAxial`,
+// `kCAGradientLayerRadial`).
 @interface MultiColorGradientView : UIView
 
-// Initializes the view with the a gradient starting at `startPoint` and ending
-// at 'endPoint'. `startPoint` and `endPoint` are defined in the unit coordinate
-// space ([0, 1]) and then mapped to the view's bounds rectangle when drawn.
-// `colors` defines the array of colors for each gradient stop, and `locations`
-// defines the relative position (0 to 1) of each stop.
+// Initializes the view with a gradient starting at `startPoint` and ending
+// at `endPoint`, with the specified gradient `type`. `startPoint` and
+// `endPoint` are defined in the unit coordinate space ([0, 1]) and then mapped
+// to the view's bounds rectangle when drawn. `colors` defines the array of
+// colors for each gradient stop, and `locations` defines the relative position
+// (0 to 1) of each stop.
+- (instancetype)initWithColors:(NSArray<UIColor*>*)colors
+                     locations:(NSArray<NSNumber*>*)locations
+                    startPoint:(CGPoint)startPoint
+                      endPoint:(CGPoint)endPoint
+                          type:(CAGradientLayerType)type
+    NS_DESIGNATED_INITIALIZER;
+
+// Initializes the view with an axial (linear) gradient starting at `startPoint`
+// and ending at `endPoint`.
 - (instancetype)initWithColors:(NSArray<UIColor*>*)colors
                      locations:(NSArray<NSNumber*>*)locations
                     startPoint:(CGPoint)startPoint

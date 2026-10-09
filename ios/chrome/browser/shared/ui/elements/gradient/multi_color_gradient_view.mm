@@ -16,9 +16,11 @@
 - (instancetype)initWithColors:(NSArray<UIColor*>*)colors
                      locations:(NSArray<NSNumber*>*)locations
                     startPoint:(CGPoint)startPoint
-                      endPoint:(CGPoint)endPoint {
+                      endPoint:(CGPoint)endPoint
+                          type:(CAGradientLayerType)type {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.gradientLayer.type = type;
     self.gradientLayer.startPoint = startPoint;
     self.gradientLayer.endPoint = endPoint;
     self.gradientLayer.locations = locations;
@@ -40,6 +42,17 @@
     [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
+}
+
+- (instancetype)initWithColors:(NSArray<UIColor*>*)colors
+                     locations:(NSArray<NSNumber*>*)locations
+                    startPoint:(CGPoint)startPoint
+                      endPoint:(CGPoint)endPoint {
+  return [self initWithColors:colors
+                    locations:locations
+                   startPoint:startPoint
+                     endPoint:endPoint
+                         type:kCAGradientLayerAxial];
 }
 
 - (void)updateColors:(NSArray<UIColor*>*)colors {
