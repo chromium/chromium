@@ -179,6 +179,7 @@ export class OmniboxPopupSearchboxElement extends
       },
       aimButtonVisible_: {
         type: Boolean,
+        reflect: true,
       },
       aimButtonConfig_: {
         type: Object,
@@ -1363,8 +1364,16 @@ export class OmniboxPopupSearchboxElement extends
     if (isFullSelection && isLogicallyFocused) {
       this.getInputElement().select();
     } else {
-      this.$.input.setSelectionRange(
-          Math.min(start, end), Math.max(start, end));
+      const selStart = Math.min(start, end);
+      const selEnd = Math.max(start, end);
+      this.$.input.setSelectionRange(selStart, selEnd);
+      const inputEl = this.getInputElement().inputElement;
+      if (selStart === inputEl.value.length &&
+          selEnd === inputEl.value.length) {
+        inputEl.scrollLeft = inputEl.scrollWidth;
+      } else if (selStart === 0 && selEnd === 0) {
+        inputEl.scrollLeft = 0;
+      }
     }
   }
 
@@ -1379,6 +1388,7 @@ export class OmniboxPopupSearchboxElement extends
     this.lastInputSelection_ = {start: len, end: len};
     this.textfieldModel_.setInitialText(this.fullUrl_, {start: len, end: len});
     this.updateEditHistoryState_();
+    this.updateAimButtonCollapse_();
   }
 
   protected onInputFocusin_() {
@@ -1635,6 +1645,7 @@ export class OmniboxPopupSearchboxElement extends
     if (e.key === 'Escape') {
       e.preventDefault();
       this.handleEscapeKey_();
+      this.updateAimButtonCollapse_();
       return;
     }
 
