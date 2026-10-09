@@ -138,8 +138,9 @@ SandboxGrantResult MaybeCopyData(const base::FilePath& old_path,
     return SandboxGrantResult::kSuccess;
 
   // Check both paths exist, and are directories.
-  CHECK(base::DirectoryExists(old_path) && base::DirectoryExists(new_path),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/571728864): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(base::DirectoryExists(old_path) && base::DirectoryExists(new_path));
 
   base::FilePath old_file_path = old_path.Append(*filename);
   base::FilePath new_file_path = new_path.Append(*filename);
