@@ -99,8 +99,7 @@ public class ClosableTabListEditorTest {
                                     /* itemPickerSelectionHandler= */ null,
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentId= */ null,
-                                    TabListEditorCoordinator.UNLIMITED_SELECTION,
-                                    /* isSingleContextMode= */ false);
+                                    TabListEditorCoordinator.UNLIMITED_SELECTION);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

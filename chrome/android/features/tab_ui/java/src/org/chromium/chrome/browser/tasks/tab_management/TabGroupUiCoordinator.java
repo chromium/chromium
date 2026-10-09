@@ -234,9 +234,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* allowDragAndDrop= */ false,
                             /* tabSwitcherDragHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
-                            null,
-                            0,
-                            /* isSingleContextMode= */ false);
+                            /* snackbarManager= */ null,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
             mTabStripCoordinator.initWithNative(
                     assumeNonNull(mTabModelSelector.getModel(false).getProfile()));
 

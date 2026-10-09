@@ -139,8 +139,7 @@ public class TabListEditorManager {
                             /* itemPickerSelectionHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
                             /* componentId= */ null,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION,
-                            false);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }

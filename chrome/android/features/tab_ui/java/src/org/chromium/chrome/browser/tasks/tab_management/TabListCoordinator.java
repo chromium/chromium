@@ -215,8 +215,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
-            int allowedSelectionCount,
-            boolean isSingleContextMode) {
+            int allowedSelectionCount) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mActivity = activity;
@@ -364,7 +363,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         undoBarExplicitTrigger,
                         snackbarManager,
                         allowedSelectionCount,
-                        isSingleContextMode,
                         onDragStateChangedListener);
 
         try (TraceEvent _ = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {

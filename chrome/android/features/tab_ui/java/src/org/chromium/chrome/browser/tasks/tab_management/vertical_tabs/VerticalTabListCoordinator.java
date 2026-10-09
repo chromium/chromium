@@ -638,7 +638,6 @@ public class VerticalTabListCoordinator {
                         /* undoBarExplicitTrigger */ null,
                         /* snackbarManager */ null,
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
-                        /* isSingleContextMode */ false,
                         /* onDragStateChangedListener */ CallbackUtils.emptyRunnable());
 
         mMediator.initWithNative(profile.getOriginalProfile());

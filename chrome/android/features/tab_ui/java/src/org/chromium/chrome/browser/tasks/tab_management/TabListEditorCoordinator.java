@@ -344,7 +344,6 @@ public class TabListEditorCoordinator {
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @TabComponentId int mComponentId;
     private final int mAllowedSelectionCount;
-    private final boolean mIsSingleContextMode;
     private final SnackbarManager mSnackbarManager;
 
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
@@ -382,9 +381,6 @@ public class TabListEditorCoordinator {
      *     this tab list.
      * @param allowedSelectionCount The maximum number of tabs that can be selected at once. If
      *     equal to UNLIMITED_SELECTION, then unlimited.
-     * @param isSingleContextMode Whether the picker is operating in a mode where only one item can
-     *     be selected at a time. If true, selecting a new tab will replace the current selection
-     *     instead of appending to it.
      */
     public TabListEditorCoordinator(
             Activity activity,
@@ -406,8 +402,7 @@ public class TabListEditorCoordinator {
             @Nullable ItemPickerSelectionHandler itemPickerSelectionHandler,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @TabComponentId @Nullable Integer componentId,
-            int allowedSelectionCount,
-            boolean isSingleContextMode) {
+            int allowedSelectionCount) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mActivity = activity;
             mRootView = rootView;
@@ -425,7 +420,6 @@ public class TabListEditorCoordinator {
             mUndoBarExplicitTrigger = undoBarExplicitTrigger;
             mComponentId = componentId == null ? TabComponentId.TAB_LIST_EDITOR : componentId;
             mAllowedSelectionCount = allowedSelectionCount;
-            mIsSingleContextMode = isSingleContextMode;
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
@@ -434,9 +428,6 @@ public class TabListEditorCoordinator {
                             .findViewById(R.id.selectable_list);
             mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
 
-            if (creationMode == CreationMode.ITEM_PICKER && mIsSingleContextMode) {
-                mSelectionDelegate.setSingleSelectionMode();
-            }
             mTabListEditorMediator =
                     new TabListEditorMediator(
                             activity,
@@ -678,8 +669,7 @@ public class TabListEditorCoordinator {
                         /* tabSwitcherDragHandler= */ null,
                         mUndoBarExplicitTrigger,
                         mSnackbarManager,
-                        mAllowedSelectionCount,
-                        mIsSingleContextMode);
+                        mAllowedSelectionCount);
 
         // Note: The TabListEditorCoordinator is always created after native is initialized.
         mTabListCoordinator.initWithNative(regularProfile);

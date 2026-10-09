@@ -127,8 +127,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
                         rootView,
                         containerView,
                         new ArrayList<Integer>(),
-                        TabListEditorCoordinator.UNLIMITED_SELECTION,
-                        false);
+                        TabListEditorCoordinator.UNLIMITED_SELECTION);
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
         mCachedTabIds = new HashSet<>();
     }

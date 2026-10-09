@@ -74,10 +74,6 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
                 IntentUtils.safeGetIntExtra(
                         getIntent(), ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, 0);
 
-        boolean isSingleContextMode =
-                IntentUtils.safeGetBooleanExtra(
-                        getIntent(), ChromeItemPickerExtras.EXTRA_IS_SINGLE_CONTEXT_MODE, false);
-
         mItemPickerCoordinator =
                 new TabItemPickerCoordinator(
                         getProfileSupplier(),
@@ -87,8 +83,7 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
                         rootView,
                         containerView,
                         preselectedIds,
-                        allowedSelectionCount,
-                        isSingleContextMode);
+                        allowedSelectionCount);
 
         mItemPickerCoordinator.showTabItemPicker(this::handlePickerShowAttempt);
     }

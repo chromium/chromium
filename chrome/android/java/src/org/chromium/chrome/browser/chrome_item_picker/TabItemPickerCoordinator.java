@@ -90,7 +90,6 @@ public class TabItemPickerCoordinator {
     private final ArrayList<Integer> mPreselectedTabIds;
     private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
     private final int mAllowedSelectionCount;
-    private final boolean mIsSingleContextMode;
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
     private @Nullable Callback<Boolean> mSuccessCallback;
     private @Nullable TabModelSelector mTabModelSelector;
@@ -107,8 +106,7 @@ public class TabItemPickerCoordinator {
             ViewGroup rootView,
             ViewGroup containerView,
             ArrayList<Integer> preselectedTabIds,
-            int allowedSelectionCount,
-            boolean isSingleContextMode) {
+            int allowedSelectionCount) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -118,7 +116,6 @@ public class TabItemPickerCoordinator {
         mContainerView = containerView;
         mPreselectedTabIds = preselectedTabIds;
         mAllowedSelectionCount = allowedSelectionCount;
-        mIsSingleContextMode = isSingleContextMode;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -868,8 +865,7 @@ public class TabItemPickerCoordinator {
                         mNavigationProvider,
                         /* undoBarExplicitTrigger= */ null,
                         TabComponentId.TAB_LIST_EDITOR,
-                        mAllowedSelectionCount,
-                        mIsSingleContextMode);
+                        mAllowedSelectionCount);
 
         controllerSupplier.set(coordinator.getController());
         coordinator.getController().setNavigationProvider(mNavigationProvider);

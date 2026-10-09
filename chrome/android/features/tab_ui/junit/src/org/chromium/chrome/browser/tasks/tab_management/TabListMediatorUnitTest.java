@@ -528,7 +528,6 @@ public class TabListMediatorUnitTest {
                     mUndoBarExplicitTrigger,
                     mSnackbarManager,
                     mAllowedSelectionCount,
-                    /* isSingleContextMode= */ false,
                     /* onDragStateChangedListener= */ CallbackUtils.emptyRunnable());
         }
     }

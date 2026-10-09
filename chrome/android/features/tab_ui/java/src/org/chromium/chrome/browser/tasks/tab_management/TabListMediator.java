@@ -385,7 +385,6 @@ public class TabListMediator implements TabListNotificationHandler {
             mRailCollapseStateSupplier;
     private final @Nullable Callback<@RailCollapseState Integer> mRailCollapseStateObserver;
     private final int mAllowedSelectionCount;
-    private final boolean mIsSingleContextMode;
     private final @TabListLayoutType int mLayoutType;
     private final TabListConfig mTabListConfig;
     private final @Nullable TabUnderlineManager mTabUnderlineManager;
@@ -470,8 +469,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     if (model == null) return;
 
                     boolean wasSelected = model.get(TabProperties.IS_SELECTED);
-                    if (!mIsSingleContextMode
-                            && !wasSelected
+                    if (!wasSelected
                             && mAllowedSelectionCount > 0
                             && getCurrentSelectionCount() >= mAllowedSelectionCount) {
                         showLimitSnackbar();
@@ -561,7 +559,6 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param undoBarExplicitTrigger Interface to explicitly trigger the undo closure snackbar.
      * @param snackbarManager The manager to show snackbars.
      * @param allowedSelectionCount The maximum number of tabs that can be selected at once.
-     * @param isSingleContextMode Whether this mediator runs in a single context mode.
      * @param onDragStateChangedListener Listener for drag state changes.
      */
     public TabListMediator(
@@ -585,7 +582,6 @@ public class TabListMediator implements TabListNotificationHandler {
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
             int allowedSelectionCount,
-            boolean isSingleContextMode,
             Runnable onDragStateChangedListener) {
         mActivity = activity;
         mModelList = modelList;
@@ -610,7 +606,6 @@ public class TabListMediator implements TabListNotificationHandler {
         mUndoBarExplicitTrigger = undoBarExplicitTrigger;
         mSnackbarManager = snackbarManager;
         mAllowedSelectionCount = allowedSelectionCount;
-        mIsSingleContextMode = isSingleContextMode;
         mMultiSelectHelper =
                 tabListConfig.supportsModifierMultiSelect
                         ? new TabMultiSelectHelper(
