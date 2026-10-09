@@ -354,11 +354,15 @@ message FormFillingRequest {
 // This AttemptFormFillingAction in development and future changes are possible
 // once the model constraings/performance are understood.
 //
-// Next ID: 3
+// Next ID: 4
 message AttemptFormFillingAction {
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 
   repeated FormFillingRequest form_filling_requests = 2;
+
+  // Opaque token representing an authorized token for credit card fetching for
+  // autofill without additional user prompting in Chrome.
+  string credit_card_opaque_token = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Attempts to fill One-Time Password (OTP) /verification codes in the tab. This

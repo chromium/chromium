@@ -279,7 +279,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 30
+// Next ID: 31
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -314,6 +314,9 @@ message ContentAttributes {
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE_ROW.
     TableRowData table_row_data = 13;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_MATH.
+    MathData math_data = 30;
   }
 
   // A unique identifier for the DOM node which generated this ContentNode.
@@ -985,6 +988,23 @@ message ScriptToolResult {
 
 message TableRowData {
   TableRowType type = 1 [features = { field_presence: EXPLICIT }];
+}
+
+message MathData {
+  // The <math> subtree, re-serialized with only known MathML tags (unknown
+  // MathML tags become <mrow>; non-MathML tags are unwrapped) and the alttext,
+  // mathvariant, rowspan and columnspan attributes, minus annotations. `&`,
+  // `<`, `>` and `$` are XML-escaped. Unset if the markup would exceed 65536
+  // bytes or 128 levels of nesting.
+  //
+  // For backward compatibility, the node's descendants also carry the formula
+  // as rendered text.
+  string stripped_mathml = 1 [features = { field_presence: EXPLICIT }];
+
+  // Whether the formula is laid out as a block rather than inline (from
+  // computed style, so CSS `display: block math` without a `display="block"`
+  // attribute is also covered).
+  bool is_block = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents the interaction information for the page. This is for top-level
@@ -2467,7 +2487,7 @@ enum AnnotatedPageContentMode {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 30
+// Next ID: 31
 enum ContentAttributeType {
   // Unknown is not a valid attribute type and should never be used by the
   // client. You can consider discarding ContentNodes with this attribute type.
@@ -2519,6 +2539,9 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_DIALOG_MODAL = 28;
 
   CONTENT_ATTRIBUTE_DIALOG_MODELESS = 29;
+
+  // MathML formulas.
+  CONTENT_ATTRIBUTE_MATH = 30;
 
   reserved 12, 13, 14, 15, 16, 17, 18, 19;
 }
