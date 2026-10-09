@@ -77,7 +77,7 @@ BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWallpaperSearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistorySearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHistorySearchMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProductSpecificationsMqlsLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);

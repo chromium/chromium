@@ -20,7 +20,7 @@ BASE_FEATURE(kComposeSettingsVisibility, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperSearchSettingsVisibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHistorySearchSettingsVisibility,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFindsSettingsVisibility, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPasswordChangeSubmission,
              "PasswordChangeSubmissionSettingsVisibility",

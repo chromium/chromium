@@ -49,15 +49,8 @@ bool IsCountryAndLocale(const std::string& country, const std::string& locale) {
 
 }  // namespace
 
-constexpr auto kEnabledByDefaultForDesktopOnly =
-#if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#endif
-
 // These are the kill switches for the launched history embeddings features.
-BASE_FEATURE(kLaunchedHistoryEmbeddings, kEnabledByDefaultForDesktopOnly);
+BASE_FEATURE(kLaunchedHistoryEmbeddings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
   if (!IsHistoryEmbeddingsFeatureEnabled()) {
