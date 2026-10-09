@@ -10,8 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 
 namespace ash {
@@ -26,12 +24,11 @@ class WebContents;
 
 // TabClusterUIClient:
 // Collects tab info from browser.
-// `TabClusterUIClient` observes tab strip and generates
+// `TabClusterUIClient` observes browser tabs and generates
 // `ash::TabClusterUIItem::Info` according to the tabs opened in the browser.
 // The `ash::TabClusterUIItem` is created based on the info and sent to
 // `ash::TabClusterUIController` for management.
-class TabClusterUIClient : public TabStripModelObserver,
-                           public ash::BrowserController::TabObserver {
+class TabClusterUIClient : public ash::BrowserController::TabObserver {
  public:
   explicit TabClusterUIClient(ash::TabClusterUIController* controller);
   TabClusterUIClient(TabClusterUIClient&) = delete;
@@ -39,13 +36,15 @@ class TabClusterUIClient : public TabStripModelObserver,
 
   ~TabClusterUIClient() override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // ash::BrowserController::TabObserver:
+  void OnTabInserted(ash::BrowserDelegate* browser,
+                     content::WebContents* contents) override;
+  void OnTabRemoved(ash::BrowserDelegate* browser,
+                    content::WebContents* contents,
+                    bool will_delete) override;
+  void OnTabReplaced(ash::BrowserDelegate* browser,
+                     content::WebContents* old_contents,
+                     content::WebContents* new_contents) override;
   void OnTabLoadingStateChanged(ash::BrowserDelegate* browser,
                                 content::WebContents* contents) override;
 
@@ -53,7 +52,6 @@ class TabClusterUIClient : public TabStripModelObserver,
   class TrackedTab;
 
   raw_ptr<ash::TabClusterUIController> controller_;
-  BrowserTabStripTracker browser_tab_strip_tracker_;
   base::ScopedObservation<ash::BrowserController,
                           ash::BrowserController::TabObserver>
       tab_observation_{this};

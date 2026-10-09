@@ -50,8 +50,8 @@ class TabClusterUIClient::TrackedTab : public content::WebContentsObserver {
     const ash::TabClusterUIItem::Info& current_info = item_->current_info();
     // Reuse the browser window determined at insertion. It can't change while
     // the tab is tracked: moving the tab to another browser untracks it
-    // (kRemoved) and tracks it anew (kInserted), and replacing its contents
-    // (kReplaced) keeps it in the same tab strip.
+    // (OnTabRemoved) and tracks it anew (OnTabInserted), and replacing its
+    // contents (OnTabReplaced) keeps it in the same browser.
     ash::TabClusterUIItem::Info new_info =
         GenerateTabItemInfo(web_contents(), current_info.browser_window);
     if (new_info.title == current_info.title &&
@@ -83,62 +83,42 @@ class TabClusterUIClient::TrackedTab : public content::WebContentsObserver {
 };
 
 TabClusterUIClient::TabClusterUIClient(ash::TabClusterUIController* controller)
-    : controller_(controller), browser_tab_strip_tracker_(this, nullptr) {
-  browser_tab_strip_tracker_.Init();
+    : controller_(controller) {
   tab_observation_.Observe(ash::BrowserController::GetInstance());
 }
 
 TabClusterUIClient::~TabClusterUIClient() = default;
 
-void TabClusterUIClient::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  switch (change.type()) {
-    case TabStripModelChange::kInserted:
-      // Add new items corresponding to the inserted web contents.
-      for (const auto& contents : change.GetInsert()->contents) {
-        content::WebContents* web_contents = contents.contents;
-        ash::BrowserDelegate* browser =
-            ash::BrowserController::GetInstance()->GetBrowserForTab(
-                web_contents);
-        CHECK(browser);
-        auto* item =
-            controller_->AddTabItem(std::make_unique<ash::TabClusterUIItem>(
-                GenerateTabItemInfo(web_contents, browser->GetNativeWindow())));
-        auto tracked = std::make_unique<TrackedTab>(this, item);
-        tracked->Observe(web_contents);
-        tabs_[web_contents] = std::move(tracked);
-      }
-      break;
-    case TabStripModelChange::kRemoved:
-      // Remove the items corresponding to the removed web contents.
-      for (const auto& contents : change.GetRemove()->contents) {
-        content::WebContents* web_contents = contents.contents;
-        auto it = tabs_.find(web_contents);
-        CHECK(it != tabs_.end());
-        ash::TabClusterUIItem* item = it->second->item();
-        tabs_.erase(it);
-        controller_->RemoveTabItem(item);
-      }
-      break;
-    case TabStripModelChange::kReplaced: {
-      // Update the item whose corresponding contents are replaced.
-      auto* replace = change.GetReplace();
-      auto old_contents_it = tabs_.find(replace->old_contents);
-      CHECK(old_contents_it != tabs_.end());
-      std::unique_ptr<TrackedTab> tracked = std::move(old_contents_it->second);
-      tabs_.erase(old_contents_it);
+void TabClusterUIClient::OnTabInserted(ash::BrowserDelegate* browser,
+                                       content::WebContents* contents) {
+  auto* item = controller_->AddTabItem(std::make_unique<ash::TabClusterUIItem>(
+      GenerateTabItemInfo(contents, browser->GetNativeWindow())));
+  auto tracked = std::make_unique<TrackedTab>(this, item);
+  tracked->Observe(contents);
+  tabs_[contents] = std::move(tracked);
+}
 
-      tracked->Observe(replace->new_contents);
-      tracked->Update();
-      tabs_[replace->new_contents] = std::move(tracked);
-      break;
-    }
-    case TabStripModelChange::kMoved:
-    case TabStripModelChange::kSelectionOnly:
-      break;
-  }
+void TabClusterUIClient::OnTabRemoved(ash::BrowserDelegate* browser,
+                                      content::WebContents* contents,
+                                      bool will_delete) {
+  auto it = tabs_.find(contents);
+  CHECK(it != tabs_.end());
+  ash::TabClusterUIItem* item = it->second->item();
+  tabs_.erase(it);
+  controller_->RemoveTabItem(item);
+}
+
+void TabClusterUIClient::OnTabReplaced(ash::BrowserDelegate* browser,
+                                       content::WebContents* old_contents,
+                                       content::WebContents* new_contents) {
+  auto it = tabs_.find(old_contents);
+  CHECK(it != tabs_.end());
+  std::unique_ptr<TrackedTab> tracked = std::move(it->second);
+  tabs_.erase(it);
+
+  tracked->Observe(new_contents);
+  tracked->Update();
+  tabs_[new_contents] = std::move(tracked);
 }
 
 void TabClusterUIClient::OnTabLoadingStateChanged(
