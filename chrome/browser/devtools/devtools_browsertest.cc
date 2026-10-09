@@ -6005,3 +6005,164 @@ INSTANTIATE_TEST_SUITE_P(,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Enabled" : "Disabled";
                          });
+
+class DevToolsPopupOpenerTest : public PlatformBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kCustomDevtoolsFrontend,
+        embedded_test_server()->GetURL("/devtools/").spec());
+  }
+
+ protected:
+  void VerifyRemoteOpenerHasRestrictedBindings(WebContents* opener) {
+    ASSERT_EQ("object", content::EvalJs(opener, "typeof DevToolsHost"));
+    auto* opener_bindings = DevToolsUIBindings::ForWebContents(opener);
+    ASSERT_TRUE(opener_bindings);
+    ASSERT_TRUE(opener_bindings->has_frontend_host_for_testing());
+
+    // Confirm the opener is classified as a remote frontend by checking that
+    // loading a file:// resource is rejected with 403.
+    EXPECT_EQ(403, content::EvalJs(opener, R"(
+      new Promise(resolve => {
+        window.DevToolsAPI = {
+          embedderMessageAck(id, res) {
+            resolve(res ? res.statusCode : -1);
+          },
+          streamWrite() {},
+        };
+        DevToolsHost.sendMessageToEmbedder(JSON.stringify({
+          id: 1,
+          method: 'loadNetworkResource',
+          params: ['file:///etc/passwd', '', 0],
+        }));
+      })
+    )"));
+  }
+
+  WebContents* OpenPopupFrom(WebContents* opener,
+                             const std::string& url,
+                             bool noopener = false) {
+    content::WebContentsAddedObserver popup_observer;
+    std::string script =
+        noopener ? content::JsReplace("window.open($1, '_blank', 'noopener');",
+                                      url)
+                 : content::JsReplace("window.open($1);", url);
+    EXPECT_TRUE(content::ExecJs(opener, script));
+    WebContents* popup = popup_observer.GetWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(popup));
+    return popup;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
+                       LocalFrontendPopupInheritsFrontendHost) {
+  WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      opener, GURL("devtools://devtools/bundled/empty.html")));
+  ASSERT_EQ("object", content::EvalJs(opener, "typeof DevToolsHost"));
+
+  WebContents* popup = OpenPopupFrom(opener, "devtools://devtools/blank");
+  ASSERT_TRUE(popup);
+  EXPECT_EQ("object", content::EvalJs(popup, "typeof DevToolsHost"));
+  auto* popup_bindings = DevToolsUIBindings::ForWebContents(popup);
+  ASSERT_TRUE(popup_bindings);
+  EXPECT_TRUE(popup_bindings->has_frontend_host_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
+                       RemoteFrontendPopupDoesNotGetFrontendHost) {
+  WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      opener,
+      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+  VerifyRemoteOpenerHasRestrictedBindings(opener);
+
+  WebContents* popup = OpenPopupFrom(opener, "devtools://devtools/blank");
+  ASSERT_TRUE(popup);
+  EXPECT_EQ("undefined", content::EvalJs(popup, "typeof DevToolsHost"));
+  auto* popup_bindings = DevToolsUIBindings::ForWebContents(popup);
+  ASSERT_TRUE(popup_bindings);
+  EXPECT_FALSE(popup_bindings->has_frontend_host_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
+                       RemoteFrontendNoopenerPopupDoesNotGetFrontendHost) {
+  WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      opener,
+      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+  VerifyRemoteOpenerHasRestrictedBindings(opener);
+
+  WebContents* popup =
+      OpenPopupFrom(opener, "devtools://devtools/blank", /*noopener=*/true);
+  ASSERT_TRUE(popup);
+  EXPECT_EQ("undefined", content::EvalJs(popup, "typeof DevToolsHost"));
+  auto* popup_bindings = DevToolsUIBindings::ForWebContents(popup);
+  ASSERT_TRUE(popup_bindings);
+  EXPECT_FALSE(popup_bindings->has_frontend_host_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
+                       RemoteFrontendBundledPopupDoesNotGetFrontendHost) {
+  WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      opener,
+      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+  VerifyRemoteOpenerHasRestrictedBindings(opener);
+
+  WebContents* popup =
+      OpenPopupFrom(opener, "devtools://devtools/bundled/devtools_app.html");
+  ASSERT_TRUE(popup);
+  EXPECT_EQ("undefined", content::EvalJs(popup, "typeof DevToolsHost"));
+  auto* popup_bindings = DevToolsUIBindings::ForWebContents(popup);
+  ASSERT_TRUE(popup_bindings);
+  EXPECT_FALSE(popup_bindings->has_frontend_host_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPopupOpenerTest,
+                       RemoteFrontendSelfNavigationDoesNotGrantLocalBindings) {
+  WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      opener,
+      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+  VerifyRemoteOpenerHasRestrictedBindings(opener);
+
+  content::TestNavigationObserver nav_observer(opener);
+  ASSERT_TRUE(
+      content::ExecJs(opener, "location.href = 'devtools://devtools/blank';"));
+  nav_observer.Wait();
+
+  VerifyRemoteOpenerHasRestrictedBindings(opener);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsPopupOpenerTest,
+    RemoteFrontendPopupWithClosedOpenerDoesNotGetFrontendHost) {
+  WebContents* opener = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      opener,
+      GURL("devtools://devtools/remote/serve_rev/@12345/empty.html")));
+  VerifyRemoteOpenerHasRestrictedBindings(opener);
+
+  WebContents* popup = OpenPopupFrom(opener, "about:blank");
+  ASSERT_TRUE(popup);
+
+  content::WebContentsDestroyedWatcher destroyed_watcher(opener);
+  opener->Close();
+  destroyed_watcher.Wait();
+  EXPECT_FALSE(popup->HasLiveOriginalOpenerChain());
+
+  content::TestNavigationObserver nav_observer(popup);
+  ASSERT_TRUE(
+      content::ExecJs(popup, "location.href = 'devtools://devtools/blank';"));
+  nav_observer.Wait();
+
+  EXPECT_EQ("undefined", content::EvalJs(popup, "typeof DevToolsHost"));
+  auto* popup_bindings = DevToolsUIBindings::ForWebContents(popup);
+  ASSERT_TRUE(popup_bindings);
+  EXPECT_FALSE(popup_bindings->has_frontend_host_for_testing());
+}
+

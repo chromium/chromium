@@ -518,6 +518,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   base::UnguessableToken session_id_for_logging_;
   bool is_local_frontend_ = false;
+  bool has_committed_non_local_frontend_ = false;
+  bool has_previous_frontend_host_ = false;
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };
 
