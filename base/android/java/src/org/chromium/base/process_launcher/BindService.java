@@ -6,7 +6,6 @@ package org.chromium.base.process_launcher;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
@@ -234,11 +233,7 @@ public final class BindService {
                             Handler.class,
                             UserHandle.class);
         }
-        // No need for null checks or worry about infinite looping here. Otherwise a regular calls
-        // into the ContextWrapper would lead to problems as well.
-        while (context instanceof ContextWrapper) {
-            context = ((ContextWrapper) context).getBaseContext();
-        }
+        context = ContextUtils.getBaseContext(context);
         return (Boolean)
                 sBindServiceAsUserMethod.invoke(
                         context, intent, connection, flags, handler, Process.myUserHandle());

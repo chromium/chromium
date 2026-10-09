@@ -6348,6 +6348,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/CollectionUtilTest.java",
       "android/junit/src/org/chromium/base/CommandLineTest.java",
       "android/junit/src/org/chromium/base/ContentUriUtilsUnitTest.java",
+      "android/junit/src/org/chromium/base/ContextUtilsUnitTest.java",
       "android/junit/src/org/chromium/base/DeviceInfoUnitTest.java",
       "android/junit/src/org/chromium/base/DiscardableReferencePoolTest.java",
       "android/junit/src/org/chromium/base/FeatureOverridesUnitTest.java",

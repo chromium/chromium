@@ -1676,7 +1676,6 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/DetailedPaneSearchControllerTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/MultiColumnTitleUpdaterTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsMenuHelperUnitTest.java",
-      "src/org/chromium/chrome/browser/settings/ActivityUtilUnitTest.java",
       "src/org/chromium/chrome/browser/settings/ChromeBaseSettingsFragmentTest.java",
       "src/org/chromium/chrome/browser/settings/FragmentDependencyProviderTest.java",
       "src/org/chromium/chrome/browser/settings/MultiColumnSettingsUnitTest.java",

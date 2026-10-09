@@ -801,7 +801,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             }
             return false;
         } else if (key.equals(PREF_DEFAULT_BROWSER)) {
-            Activity activity = ActivityUtil.getActivityFromContext(context);
+            Activity activity = ContextUtils.activityFromContext(context);
             assumeNonNull(activity);
             showDefaultBrowserSettings(activity);
             return false;

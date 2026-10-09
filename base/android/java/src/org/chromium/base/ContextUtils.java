@@ -194,23 +194,55 @@ public class ContextUtils {
     public static @Nullable Activity activityFromContext(@Nullable Context context) {
         // Only retrieves the base context if the supplied context is a ContextWrapper but not an
         // Activity, because Activity is a subclass of ContextWrapper.
-        while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) return (Activity) context;
+        while (context instanceof ContextWrapper wrapper) {
+            if (context instanceof Activity activity) return activity;
 
-            context = ((ContextWrapper) context).getBaseContext();
+            context = wrapper.getBaseContext();
         }
 
         return null;
     }
 
     /**
+     * Unwraps any {@link ContextWrapper} instances to retrieve the innermost base {@link Context}.
+     *
+     * @param context The context to unwrap.
+     * @return The innermost base context.
+     */
+    public static Context getBaseContext(Context context) {
+        Context current = context;
+        while (current instanceof ContextWrapper wrapper) {
+            Context base = wrapper.getBaseContext();
+            if (base == null) break;
+            current = base;
+        }
+        return current;
+    }
+
+    /**
+     * Checks whether two {@link Context} instances belong to the same {@link Activity}.
+     *
+     * @param context1 The first context to compare.
+     * @param context2 The second context to compare.
+     * @return True if both contexts belong to the same non-null Activity.
+     */
+    public static boolean isSameActivity(@Nullable Context context1, @Nullable Context context2) {
+        Activity activity1 = activityFromContext(context1);
+        return activity1 != null && activity1 == activityFromContext(context2);
+    }
+
+    /**
      * Register a broadcast receiver that may only accept protected broadcasts.
      *
-     * You should (only) use this method when:
-     * <p><ul>
-     * <li>You need to receive protected broadcasts.
-     * </ul><p>
-     * This method does not presently verify that the provided IntentFilter covers only protected
+     * <p>You should (only) use this method when:
+     *
+     * <p>
+     *
+     * <ul>
+     *   <li>You need to receive protected broadcasts.
+     * </ul>
+     *
+     * <p>This method does not presently verify that the provided IntentFilter covers only protected
      * broadcasts, so you should make sure that the broadcasts you register for are in fact
      * protected broadcasts. The Android platform's <a
      * href="https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/core/res/AndroidManifest.xml">
@@ -219,8 +251,8 @@ public class ContextUtils {
      * in the platform's manifest, as they may not be protected on all devices. Different versions
      * or builds of Android may have different sets of protected broadcasts, so add appropriate
      * guards if needed.
-     * <p>
-     * You can unregister receivers using the normal {@link Context#unregisterReceiver} method.
+     *
+     * <p>You can unregister receivers using the normal {@link Context#unregisterReceiver} method.
      */
     public static @Nullable Intent registerProtectedBroadcastReceiver(
             Context context, @Nullable BroadcastReceiver receiver, IntentFilter filter) {

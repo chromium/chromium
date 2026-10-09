@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -207,7 +208,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             boolean addToBackStack,
             @Nullable String tag) {
         if (useSettingsInTab(context)) {
-            Activity activity = ActivityUtil.getActivityFromContext(context);
+            Activity activity = ContextUtils.activityFromContext(context);
             // Some components pass a non-Activity context (e.g. AccessibilitySettings).
             if (activity == null) {
                 activity = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -521,7 +522,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         if (mUseSettingsActivityForTesting) {
             return false;
         }
-        Activity activity = ActivityUtil.getActivityFromContext(context);
+        Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             activity = ApplicationStatus.getLastTrackedFocusedActivity();
         }

@@ -80,7 +80,6 @@ android_library("settings_in_tab_java") {
 
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/settings/ActivityUtil.java",
     "android/java/src/org/chromium/chrome/browser/settings/ChromeBaseSettingsFragment.java",
     "android/java/src/org/chromium/chrome/browser/settings/ChromeManagedPreferenceDelegate.java",
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",

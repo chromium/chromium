@@ -183,9 +183,7 @@ public class BundleUtils {
 
     /** Replaces the ClassLoader of the passed in Context. */
     public static void replaceClassLoader(Context baseContext, ClassLoader classLoader) {
-        while (baseContext instanceof ContextWrapper) {
-            baseContext = ((ContextWrapper) baseContext).getBaseContext();
-        }
+        baseContext = ContextUtils.getBaseContext(baseContext);
 
         try {
             // baseContext should now be an instance of ContextImpl.
