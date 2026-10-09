@@ -48,9 +48,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 @Override
                 public void run() {
                     mStopServiceDelayed = false;
-                    if (mKeyedService == null
-                            || mKeyedService.getActiveTasksCount() == 0
-                            || mActiveTaskIds.isEmpty()) {
+                    if (!hasActiveOrPendingTasks()) {
                         if (mNotificationService != null
                                 && mNotificationService.hasPendingDemotions()) {
                             postMaybeStopServiceRunnable();
@@ -61,6 +59,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 }
             };
 
+    private final Set<Integer> mActiveTaskIds = new HashSet<>();
+    private int mPendingTaskCount;
     private boolean mStopServiceDelayed;
     // This is true when context.bindService has been called and before context.unbindService.
     private boolean mIsServiceBound;
@@ -72,7 +72,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     @Nullable private ActorTaskTimeoutManager mTimeoutManager;
     private int mPinnedNotificationId = INVALID_NOTIFICATION_ID;
     @Nullable private Notification mPinnedNotification;
-    private final Set<Integer> mActiveTaskIds = new HashSet<>();
 
     private @Nullable Runnable mStopCallbackForTesting;
 
@@ -125,6 +124,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mKeyedService.removeObserver(ActorMetrics.getInstance());
             // If we are switching or clearing, clear state.
             mActiveTaskIds.clear();
+            mPendingTaskCount = 0;
             if (mNotificationService != null) {
                 mNotificationService.clearAll();
             }
@@ -133,6 +133,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (mKeyedService != null) {
             mKeyedService.addObserver(this);
             mKeyedService.addObserver(ActorMetrics.getInstance());
+            mPendingTaskCount = mKeyedService.getPendingTasksCount();
             if (mNotificationService == null) {
                 mNotificationService = new ActorNotificationService(mKeyedService);
             }
@@ -219,6 +220,12 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         processTaskUpdateQueue();
     }
 
+    @Override
+    public void onPendingTaskCountChanged(int pendingCount) {
+        mPendingTaskCount = pendingCount;
+        processTaskUpdateQueue();
+    }
+
     /**
      * Returns true if there is a visible Chrome activity that has one of the tabs, the given task
      * is acting on.
@@ -229,15 +236,28 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         return task != null && getServiceController().isActivityVisibleForTabs(task.getTabs());
     }
 
+    /** Returns true if there are any active tasks currently being tracked. */
+    public boolean hasActiveTasks() {
+        return !mActiveTaskIds.isEmpty();
+    }
+
+    /** Returns true if there are any pending tasks. */
+    public boolean hasPendingTasks() {
+        return mPendingTaskCount > 0;
+    }
+
+    /** Returns true if there are any active or pending tasks. */
+    public boolean hasActiveOrPendingTasks() {
+        return hasActiveTasks() || hasPendingTasks();
+    }
+
     /** Process the current task state and initiate any needed service actions. */
     @VisibleForTesting
     void processTaskUpdateQueue() {
         if (mKeyedService == null || mNotificationService == null) return;
-        int activeTaskCount = mKeyedService.getActiveTasksCount();
-        boolean hasActiveTasks = activeTaskCount > 0 && !mActiveTaskIds.isEmpty();
 
         if (!mIsServiceBound) {
-            if (!hasActiveTasks) return;
+            if (!hasActiveOrPendingTasks()) return;
             startAndBindService();
             return;
         }
@@ -246,7 +266,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             return;
         }
 
-        if (hasActiveTasks) {
+        if (hasActiveTasks()) {
             // Check if we are allowed to start the foreground state. Updates are always allowed
             // if the service is already in foreground.
             if (!mStartForegroundCalled && !canStartForeground()) {
@@ -273,11 +293,28 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
                 startOrUpdateForegroundService(notificationId, notification);
             }
+        } else if (hasPendingTasks()) {
+            if (!mStartForegroundCalled && !canStartForeground()) {
+                return;
+            }
+            mHandler.removeCallbacks(mMaybeStopServiceRunnable);
+            mStopServiceDelayed = false;
+
+            if (mPinnedNotificationId
+                    != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
+                Notification placeholder =
+                        ActorNotificationFactory.buildTaskStartsSoonNotification().getNotification();
+                startOrUpdateForegroundService(
+                        ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID, placeholder);
+            }
         } else {
-            // No active tasks. Update the foreground service with the latest notification
-            // (e.g. Success/Failed status), or transfer the pin to the next task awaiting
-            // demotion, before we wait to stop it.
+            // No active or pending tasks. Update the foreground service with the latest
+            // notification (e.g. Success/Failed status), or transfer the pin to the next task
+            // awaiting demotion, before we wait to stop it.
             int notificationIdToPin = mPinnedNotificationId;
+            if (notificationIdToPin == ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
+                notificationIdToPin = INVALID_NOTIFICATION_ID;
+            }
             Set<Integer> pendingDemotionIds = mNotificationService.getPendingDemotionTaskIds();
             if (!pendingDemotionIds.isEmpty()
                     && !pendingDemotionIds.contains(notificationIdToPin)) {
@@ -358,7 +395,10 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
 
-        if (pinnedNotificationId != INVALID_NOTIFICATION_ID && mNotificationService != null) {
+        if (pinnedNotificationId != INVALID_NOTIFICATION_ID
+                && pinnedNotificationId
+                        != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID
+                && mNotificationService != null) {
             mNotificationService.repostNotification(pinnedNotificationId);
         }
 
@@ -390,7 +430,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
      * Otherwise, updates the pinned notification to the next task that still needs the service.
      */
     public void maybeStopServiceNow() {
-        if (mActiveTaskIds.isEmpty()
+        if (!hasActiveOrPendingTasks()
                 && (mNotificationService == null || !mNotificationService.hasPendingDemotions())) {
             mHandler.removeCallbacks(mMaybeStopServiceRunnable);
             stopAndUnbindService();
@@ -485,12 +525,17 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
     void resetForTesting() {
         mActiveTaskIds.clear();
+        mPendingTaskCount = 0;
         mStopServiceDelayed = false;
         mIsServiceBound = false;
         mStartForegroundCalled = false;
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
         mHandler.removeCallbacks(mMaybeStopServiceRunnable);
+    }
+
+    int getPendingTaskCountForTesting() {
+        return mPendingTaskCount;
     }
 
     /** Returns the {@link ActorNotificationService} managed by this instance. */

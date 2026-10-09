@@ -17,6 +17,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -675,5 +676,168 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
         assertFalse(mManager.isServiceBoundForTesting());
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+    }
+
+    @Test
+    public void testOnPendingTaskCountChanged_StartsServiceWithPlaceholderNotification() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(1, mManager.getPendingTaskCountForTesting());
+        assertTrue(mManager.hasActiveOrPendingTasks());
+        assertFalse(mManager.hasActiveTasks());
+        assertTrue(mManager.hasPendingTasks());
+        assertTrue("Service should be bound on pending task.", mManager.isServiceBoundForTesting());
+        verify(mServiceController).startAndBindService(any());
+        verify(mServiceController)
+                .startOrUpdateForegroundService(
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        any(),
+                        anyInt(),
+                        anyBoolean());
+    }
+
+    @Test
+    public void testHandoffFromPendingToActive_UpdatesNotification() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        // 1. Pending task starts service
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        // 2. Task transitions to active (pending -> 0, active -> 1)
+        when(mKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mTask.isCompleted()).thenReturn(false);
+        mManager.onPendingTaskCountChanged(0);
+        mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(mManager.isServiceBoundForTesting());
+        verify(mServiceController)
+                .startOrUpdateForegroundService(
+                        eq(1),
+                        eq(mNotification),
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        eq(true));
+    }
+
+    @Test
+    public void testTaskCompleted_PendingTaskRemaining_KeepsServiceAlive() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+
+        // Active task completes, but 1 pending task remains.
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+
+        ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
+
+        assertTrue(
+                "Service should remain bound because pending tasks > 0.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController, never()).stopActorForegroundService(anyInt());
+    }
+
+    @Test
+    public void testPendingTaskRemoved_NoActiveTasks_StopsService() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        // Pending task cancelled/removed
+        mManager.onPendingTaskCountChanged(0);
+        ShadowLooper.idleMainLooper(30, TimeUnit.SECONDS);
+
+        assertFalse(
+                "Service should be unbound when all pending and active tasks are 0.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+    }
+
+    @Test
+    public void testMaybeStopServiceNow_PendingTasksRemain_DoesNotStopService() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        // Attempt immediate stop (e.g. from demotion or notification dismissal) while pending task
+        // exists.
+        mManager.maybeStopServiceNow();
+
+        assertTrue(
+                "Service should remain bound because pending tasks > 0.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController, never()).stopActorForegroundService(anyInt());
+        verify(mServiceController, never()).unbindService();
+    }
+
+    @Test
+    public void testOnPendingTaskCountChanged_MultipleTimes_DoesNotRecreatePlaceholder() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+
+        verify(mServiceController, times(1))
+                .startOrUpdateForegroundService(
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        any(),
+                        anyInt(),
+                        anyBoolean());
+
+        // Incrementing pending count while placeholder is already pinned should not re-trigger
+        // startOrUpdateForegroundService for the placeholder notification.
+        mManager.onPendingTaskCountChanged(2);
+        ShadowLooper.idleMainLooper();
+
+        verify(mServiceController, times(1))
+                .startOrUpdateForegroundService(
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        any(),
+                        anyInt(),
+                        anyBoolean());
+    }
+
+    @Test
+    public void testTaskCompleted_PendingTaskRemaining_DemotesCompletedNotification() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+
+        // Active task completes while pending tasks remain.
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+        ShadowLooper.idleMainLooper();
+
+        // Pin transfers to the placeholder notification. The previously pinned task notification
+        // is removed with the foreground state and immediately demoted.
+        verify(mServiceController)
+                .startOrUpdateForegroundService(
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        any(),
+                        eq(taskId),
+                        eq(true));
+        verify(mNotificationService).demoteNow(taskId);
     }
 }
