@@ -4,6 +4,7 @@
  */
 
 :root {
+  --bg-hover: rgba(0, 0, 255, 0.15);
   --body-padding: 5px;
   --color-sep: #888;
   --splitter-size: 7px;
@@ -167,6 +168,7 @@ label:has(#sel-zoom) {
 #div-screenshot-info {
   background-color: #f8f9fa;
   box-sizing: border-box;
+  contain: strict;
   display: flex;
   flex-shrink: 0;
   font-family: monospace;
@@ -258,6 +260,7 @@ label:has(#sel-zoom) {
 }
 
 #div-view-tree {
+  contain: content;
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px;
@@ -272,6 +275,10 @@ label:has(#sel-zoom) {
     font-family: monospace;
     height: 24px;
     white-space: nowrap;
+
+    &.hovered-view {
+      background-color: var(--bg-hover);
+    }
 
     &.expanded {
       .tree-toggle span {
@@ -330,6 +337,7 @@ label:has(#sel-zoom) {
   background-color: #f8f9fa;
   border-top: solid 1px var(--color-sep);
   box-sizing: border-box;
+  contain: strict;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -338,7 +346,36 @@ label:has(#sel-zoom) {
   justify-content: flex-start;
   padding: 10px;
   user-select: none;
+  white-space: nowrap;
   width: 100%;
+
+  .view-info .view-class,
+  .hint-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .view-info {
+    display: flex;
+    flex-direction: column;
+
+    .view-class {
+      font-weight: bold;
+    }
+
+    .view-dims {
+      align-items: flex-start;
+      color: #007bff;
+      display: inline-flex;
+      gap: 15px;
+      flex-direction: row;
+      justify-content: flex-start;
+
+      .size-dp {
+        font-weight: bold;
+      }
+    }
+  }
 
   .hint-text {
     color: #666;

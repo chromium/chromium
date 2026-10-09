@@ -6,14 +6,35 @@
 
 /******** InfoBarVis ********/
 /**
- * Manages the status bar shown at the bottom, displaying contextual hints.
+ * Manages the status bar shown at the bottom, displaying View Info and
+ * contextual hints.
  */
 class InfoBarVis {
+  /** @param {!Element} divInfoBar */
   constructor(divInfoBar) {
     this.el = {
       root: divInfoBar,
+      viewInfo: divInfoBar.querySelector('.view-info'),
+      viewClass: divInfoBar.querySelector('.view-class'),
+      sizePx: divInfoBar.querySelector('.size-px'),
+      sizeDp: divInfoBar.querySelector('.size-dp'),
       infoHint: divInfoBar.querySelector('.hint-text'),
     };
+  }
+
+  renderAndShowViewInfo(view, visOpts) {
+    this.el.viewClass.textContent = view.className;
+    const wPx = view.rect.width();
+    const hPx = view.rect.height();
+    this.el.sizePx.textContent = `${wPx}x${hPx}px`;
+    const wDp = capFixed(visOpts.pxToDp(wPx), 2);
+    const hDp = capFixed(visOpts.pxToDp(hPx), 2);
+    this.el.sizeDp.textContent = `${wDp}x${hDp}dp`;
+    this.el.viewInfo.classList.remove('hidden');
+  }
+
+  hideViewInfo() {
+    this.el.viewInfo.classList.add('hidden');
   }
 
   setHintText(hintText) {
@@ -32,7 +53,7 @@ const HINT = checkEnum({
 });
 
 const HINT_STRINGS = {
-  [HINT.IDLE]: '',
+  [HINT.IDLE]: 'Hover over a View or control to see info.',
   [HINT.CTRL_LOAD]: 'Fetch UI hierarchy and screenshot from device.',
   [HINT.CTRL_ZOOM]: 'Change display scale of the screenshot.',
   [HINT.LAYOUT_SPLITTER]: 'Drag: Resize | Double-Click: Auto-Resize',
@@ -40,6 +61,7 @@ const HINT_STRINGS = {
 
 /******** HintController ********/
 class HintController {
+  /** @param {!InfoBarVis} infoBarVis */
   constructor(infoBarVis) {
     this.infoBarVis = infoBarVis;
     this.currentHint = HINT.UNINITIALIZED;
@@ -64,6 +86,16 @@ class HintController {
  * itself.
  */
 class DragHandler {
+  /**
+   * @param {!Element} dragEl
+   * @param {!Object} callbacks
+   * @param {function(!PointerEvent)=} callbacks.onDragStart
+   * @param {function(!PointerEvent, number, number)=} callbacks.onDrag
+   * @param {function(!PointerEvent)=} callbacks.onDragEnd
+   * @param {function(!(PointerEvent|KeyboardEvent))=} callbacks.onDragCancel
+   * @param {function(!MouseEvent)=} callbacks.onDoubleClick
+   * @param {string=} callbacks.pointerStyle
+   */
   constructor(dragEl, {
     onDragStart,
     onDrag,
@@ -170,6 +202,7 @@ class DragHandler {
  * Changes, Errors).
  */
 class OverlayVis {
+  /** @param {!Element} divOverlay */
   constructor(divOverlay) {
     this.el = {
       root: divOverlay,

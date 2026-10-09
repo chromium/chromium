@@ -106,3 +106,28 @@ class Dims2D extends Point2D {
   set h(t) { this[1] = t; }
   // clang-format on
 }
+
+/******** Rectangle ********/
+/**
+ * An axis-aligned rectangle with inclusive top-left and exclusive bottom-right.
+ */
+class Rectangle {
+  /**
+   * @param {!PointXY} topLeft
+   * @param {!PointXY} bottomRight
+   */
+  constructor(topLeft, bottomRight) {
+    this.topLeft = topLeft;
+    this.bottomRight = bottomRight;
+  }
+
+  /** @return {!Rectangle} */
+  static fromComponents(x1, y1, x2, y2) {
+    return new Rectangle(new PointXY(x1, y1), new PointXY(x2, y2));
+  }
+
+  // clang-format off
+  width() { return this.bottomRight.x - this.topLeft.x; }
+  height() { return this.bottomRight.y - this.topLeft.y; }
+  // clang-format on
+}

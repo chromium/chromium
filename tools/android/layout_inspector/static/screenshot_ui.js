@@ -19,7 +19,7 @@ const SS_INFO_SHOW = {
 class ScreenshotInfoVis {
   /**
    * @param {!Element} divScreenshotInfo Container element for the info bar.
-   * @param {!VisOptions} visOpts Global visualization options.
+   * @param {!VisOptions} visOpts
    */
   constructor(divScreenshotInfo, visOpts) {
     this.el = {
@@ -73,7 +73,7 @@ class ScreenshotVis {
   /**
    * @param {!Element} divScreenshot Viewport element for the screenshot.
    * @param {!Element} divScreenshotInfo Info bar element.
-   * @param {!VisOptions} visOpts Global visualization options.
+   * @param {!VisOptions} visOpts
    */
   constructor(divScreenshot, divScreenshotInfo, visOpts) {
     this.el = {
@@ -160,7 +160,7 @@ class ScreenshotVis {
 /******** ScreenshotController ********/
 class ScreenshotController {
   /**
-   * @param {!MainModel} model The main data model.
+   * @param {!MainModel} model
    * @param {!Element} divScreenshot Viewport element for the screenshot.
    * @param {!Element} divScreenshotInfo Info bar element.
    * @param {!Object} callbacks

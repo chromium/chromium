@@ -7,21 +7,30 @@
 /******** TreeVis ********/
 /** Renders and manages the interactive, hierarchical DOM-based View list. */
 class TreeVis {
+  /**
+   * @param {!Element} divViewTree
+   * @param {!MainModel} model
+   */
   constructor(divViewTree, model) {
     this.el = {
       root: divViewTree,
     };
     this.model = model;
 
-    this.expandedMap = [];
-
+    /** @type {!Array<!Element>} View Row (by index) DOM element cache. */
     this.viewRows = [];
+    /** @type {!Array<boolean>} View Row (by index) expansion state. */
+    this.expandedMap = [];
+    /** @type {?number} Nullable index of the View Row with hover visuals. */
+    this.hoverIndex = null;
   }
 
   clear() {
+    // No need to call `_renderHover(false)`.
     this.el.root.innerHTML = '';
-    this.viewRows.length = 0;
+    this.hoverIndex = null;
     this.expandedMap.length = 0;
+    this.viewRows.length = 0;
   }
 
   updateVisibility() {
@@ -132,18 +141,54 @@ class TreeVis {
       }
     }
   }
+
+  /**
+   * Shows / hides hover visuals based on `hoverIndex`.
+   * @param {boolean} enable
+   */
+  _renderHover(enable) {
+    if (this.hoverIndex == null) return;
+
+    this.viewRows[this.hoverIndex].classList.toggle('hovered-view', enable);
+  }
+
+  /**
+   * Transactional wrapper to temporarily remove hover visuals, run state
+   * changes that would affect DOM and Vis states, then restore (if needed).
+   * @param {function()} fun The state mutation transaction callback.
+   */
+  withTransaction(fun) {
+    this._renderHover(false);
+    fun();
+    this._renderHover(true);
+  }
+
+  /**
+   * Assigns the stored hover index.
+   * @param {?number} index
+   */
+  setHover(index) {
+    if (this.hoverIndex === index) return;
+
+    this.withTransaction(() => {
+      this.hoverIndex = index;
+    });
+  }
 }
 
 /******** TreeController ********/
 /** Orchestrates UI interaction events for the View Tree. */
 class TreeController {
   /**
-   * @param {!MainModel} model The main data model.
+   * @param {!MainModel} model
    * @param {!Element} divViewTree Container Element for the View Tree.
+   * @param {!Object} callbacks Interaction callbacks to the owner.
+   * @param {function(?number)} callbacks.onHover
    */
-  constructor(model, divViewTree) {
+  constructor(model, divViewTree, {onHover}) {
     this.model = model;
     this.vis = new TreeVis(divViewTree, this.model);
+    this.onHover = onHover;
 
     this.bindAll();
   }
@@ -152,14 +197,20 @@ class TreeController {
     this.vis.clear();
   }
 
+  setHover(index) {
+    this.vis.setHover(index);
+  }
+
   /**
    * @param {Number} index Index of to View Row expand / collapse.
    * @param {boolean} includeDescendants Whether to expand / collapse all
    *     descendant nodes.
    */
   _onToggleExpansion(index, includeDescendants) {
-    this.vis.toggleRowExpansion(index, includeDescendants);
-    this.vis.updateVisibility();
+    this.vis.withTransaction(() => {
+      this.vis.toggleRowExpansion(index, includeDescendants);
+      this.vis.updateVisibility();
+    });
   }
 
   populate() {
@@ -167,13 +218,41 @@ class TreeController {
   }
 
   bindAll() {
-    const {root} = this.vis.el;
+    const root = this.vis.el.root;
     const views = this.model.views;
 
+    // Resolves the View Row index for an event target within the tree. Examine
+    // `relatedTarget` to reject spurious `pointerover` / `pointerout`
+    // transitions between `.view-row` and its internal `.tree-toggle`.
+    const getRowIndex = (e) => {
+      const row = e.target.closest('.view-row');
+      if (!row || (e.relatedTarget && row.contains(e.relatedTarget))) {
+        return null;
+      }
+      return parseInt(row.dataset.index, 10);
+    };
+
+    root.addEventListener('pointerover', (e) => {
+      const index = getRowIndex(e);
+      if (index !== null) this.onHover(index);
+    });
+
+    root.addEventListener('pointerout', (e) => {
+      const index = getRowIndex(e);
+      // Skip unhovering if moving directly into another View Row.
+      if (index !== null && !e.relatedTarget?.closest('.view-row')) {
+        this.onHover(null);
+      }
+    });
+
     root.addEventListener('click', (e) => {
-      if (e.target.classList.contains('tree-toggle')) {
-        const index = parseInt(e.target.parentNode.dataset.index, 10);
-        this._onToggleExpansion(index, e.altKey);
+      const index = getRowIndex(e);
+      if (index !== null) {
+        if (e.target.classList.contains('tree-toggle')) {
+          this._onToggleExpansion(index, e.altKey);
+        } else {
+          // TODO: Handle direct Tree Row click for selection.
+        }
       }
     });
   }

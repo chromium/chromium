@@ -31,6 +31,10 @@ class MainElements {
  * Screenshot, or View Tree). Modifies the DOM but has no layout logic.
  */
 class MainVis {
+  /**
+   * @param {!MainElements} el
+   * @param {!MainModel} model
+   */
   constructor(el, model) {
     this.el = el;
     this.model = model;
@@ -61,6 +65,19 @@ class MainVis {
     }
     fitOption.text = text;
   }
+
+  updateViewInfo() {
+    if (this.model.engaged.hover != null) {
+      this.infoBarVis.renderAndShowViewInfo(
+          this.model.views[this.model.engaged.hover], this.model.visOpts);
+    } else {
+      this.infoBarVis.hideViewInfo();
+    }
+  }
+
+  clear() {
+    this.infoBarVis.hideViewInfo();
+  }
 }
 
 /******** MainController ********/
@@ -69,6 +86,10 @@ class MainVis {
  * layout or visual updates to child controllers.
  */
 class MainController {
+  /**
+   * @param {!MainModel} model
+   * @param {!MainVis} vis
+   */
   constructor(model, vis) {
     this.model = model;
     this.vis = vis;
@@ -86,15 +107,19 @@ class MainController {
           onResize: () => this.vis.updateZoomFitLabel(),
         });
 
-    this.treeCtrl = new TreeController(this.model, this.el.divViewTree);
+    this.treeCtrl = new TreeController(this.model, this.el.divViewTree, {
+      onHover: (index) => this.handleHover(index),
+    });
   }
 
+  // Helper Methods.
   clearUI() {
     this.screenshotCtrl.clear();
     this.treeCtrl.clear();
+    this.vis.clear();
   }
 
-  // Event Handlers - File Operations/Markup
+  // Event Handlers - File Operations / Markup.
   async handleLoad() {
     this.clearUI();
     this.vis.overlayVis.show('overlay-loading', 'Loading...');
@@ -124,6 +149,14 @@ class MainController {
     } finally {
       this.vis.overlayVis.hide();
     }
+  }
+
+  handleHover(index) {
+    if (this.model.engaged.hover === index) return;
+
+    this.model.engaged.hover = index;
+    this.treeCtrl.setHover(index);
+    this.vis.updateViewInfo();
   }
 
   bindAll() {
