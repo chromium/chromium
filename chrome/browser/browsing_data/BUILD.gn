@@ -110,6 +110,7 @@ source_set("impl") {
     "//chrome/browser/downgrade",
     "//chrome/browser/download",
     "//chrome/browser/external_protocol",
+    "//chrome/browser/favicon",
     "//chrome/browser/file_system_access",
     "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",

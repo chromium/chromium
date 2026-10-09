@@ -2193,6 +2193,82 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ExpireBookmarkFavicons) {
   EXPECT_TRUE(favicon_tester.HasExpiredFaviconForPageURL(bookmarked_page));
 }
 
+// Test that clearing the cache forgets favicons that failed to download.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       ClearCacheClearsUnableToDownloadFavicons) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(favicon_service);
+  const GURL icon_url("https://example.com/missing.ico");
+  favicon_service->UnableToDownloadFavicon(icon_url);
+  ASSERT_TRUE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_CACHE,
+                                false);
+  EXPECT_FALSE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+}
+
+// Same as above, but for an origin-filtered cache deletion.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       ClearCacheForOriginClearsUnableToDownloadFavicons) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(favicon_service);
+  const GURL icon_url("https://example.com/missing.ico");
+  favicon_service->UnableToDownloadFavicon(icon_url);
+  ASSERT_TRUE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+
+  std::unique_ptr<BrowsingDataFilterBuilder> filter(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  filter->AddRegisterableDomain("example.com");
+  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                              content::BrowsingDataRemover::DATA_TYPE_CACHE,
+                              std::move(filter));
+  EXPECT_FALSE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+}
+
+// Test that clearing the cache forgets favicons that failed to download
+// regardless of the requested time range. The set of favicons that failed to
+// download is not timestamped, so it is cleared even when the deletion range
+// does not cover the time at which the failure was recorded.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       ClearCacheClearsUnableToDownloadFaviconsIgnoringTimeRange) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(favicon_service);
+  const GURL icon_url("https://example.com/missing.ico");
+  favicon_service->UnableToDownloadFavicon(icon_url);
+  ASSERT_TRUE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+
+  // Delete a time range that ended an hour ago, i.e. one that excludes the
+  // moment the download failure was recorded.
+  BlockUntilBrowsingDataRemoved(base::Time(), AnHourAgo(),
+                                content::BrowsingDataRemover::DATA_TYPE_CACHE,
+                                false);
+  EXPECT_FALSE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+}
+
+// Test that clearing history forgets favicons that failed to download.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       ClearHistoryClearsUnableToDownloadFavicons) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(favicon_service);
+  const GURL icon_url("https://example.com/missing.ico");
+  favicon_service->UnableToDownloadFavicon(icon_url);
+  ASSERT_TRUE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+  EXPECT_FALSE(favicon_service->WasUnableToDownloadFavicon(icon_url));
+}
+
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarks) {
   GURL bookmarked_page("http://a");
 
