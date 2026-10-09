@@ -72,6 +72,9 @@ enum class AutofillAIEntityEditMode;
 // Returns the URL to manage the Server Wallet item.
 - (GURL)walletManagementURL;
 
+// Disconnects the mediator and logs metrics if the flow ended without saving.
+- (void)disconnect;
+
 @property(nonatomic, weak) id<AutofillAIEntityEditMediatorDelegate> delegate;
 
 @end
