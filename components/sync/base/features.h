@@ -266,6 +266,11 @@ BASE_DECLARE_FEATURE(kSyncWipeAppsAndAppSettingsData);
 // Enables the "Device tab visibility" subpage in Chrome Settings to choose
 // which synced devices appear in cross-device tab lists.
 BASE_DECLARE_FEATURE(kDeviceTabVisibilitySettings);
+
+// Adds a top-level "Device tabs" entry to the desktop app menu that lists open
+// tabs from the user's other devices, and removes them from the History
+// submenu.
+BASE_DECLARE_FEATURE(kCrossDeviceTabsInAppMenu);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace syncer

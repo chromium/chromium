@@ -4198,6 +4198,7 @@ constexpr char kWebUIToolbarDisableFeatures[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 constexpr char kTabsFromOtherDevicesEnhancementFeatures[] =
+    "CrossDeviceTabsInAppMenu,"
     "DeviceTabVisibilitySettings";
 
 const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopGeneral[] = {
