@@ -14,8 +14,6 @@ static_library("babelorca") {
     "caption_bubble_context_boca.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//chrome/browser/ash/accessibility/live_caption",

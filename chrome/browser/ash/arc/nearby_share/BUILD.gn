@@ -16,10 +16,7 @@ static_library("nearby_share") {
     "share_info_file_stream_adapter.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/sharesheet",
-  ]
+  public_deps = [ "//chrome/browser/sharesheet" ]
 
   deps = [
     "//ash/public/cpp",

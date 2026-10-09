@@ -14,8 +14,6 @@ static_library("auth") {
     "legacy_fingerprint_engine.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//base",

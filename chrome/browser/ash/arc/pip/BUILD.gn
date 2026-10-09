@@ -12,8 +12,6 @@ static_library("pip") {
     "arc_pip_bridge.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/picture_in_picture",

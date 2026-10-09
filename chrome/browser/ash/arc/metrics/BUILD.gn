@@ -10,8 +10,6 @@ static_library("metrics") {
     "arc_metrics_service_proxy.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser:browser_process",

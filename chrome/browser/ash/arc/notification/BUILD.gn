@@ -14,8 +14,6 @@ static_library("notification") {
     "arc_provision_notification_service.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

@@ -20,11 +20,6 @@ static_library("vmm") {
     "vmm_metrics_provider.h",
   ]
 
-  # We should keep this because of the circular dependencies on:
-  # - //chrome/browser/ash/arc/session
-  # - //chrome/browser/ash/arc/instance_throttle
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//base",

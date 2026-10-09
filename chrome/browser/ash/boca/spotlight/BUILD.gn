@@ -12,8 +12,6 @@ static_library("spotlight") {
     "spotlight_oauth_token_fetcher_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",

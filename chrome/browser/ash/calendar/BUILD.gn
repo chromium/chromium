@@ -14,8 +14,6 @@ static_library("calendar") {
     "calendar_keyed_service_factory.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//base",

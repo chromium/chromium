@@ -14,8 +14,6 @@ static_library("print_spooler") {
     "print_session_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/ash/arc:arc_util",
