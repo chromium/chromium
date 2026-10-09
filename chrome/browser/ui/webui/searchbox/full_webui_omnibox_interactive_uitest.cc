@@ -831,6 +831,44 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
       WaitForVisibleOmniboxUnfocused());
 }
 
+// Verifies that after typing a draft and clicking outside (leaving the popup
+// visible but unfocused), clicking back into the WebUI input and typing again
+// reopens the results dropdown, and pressing Enter navigates to a search for
+// the most recently typed text. All within a single tab.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RetypeAfterUnfocusedDraftNavigatesToLatestQuery) {
+  RunTestSequence(
+      // Open Tab 1 and focus Omnibox to open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // Type a draft and verify the results dropdown shows.
+      InputWebUIText("ffffff"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // Click on the webpage body to blur the Omnibox.
+      ClickWebPageBody(kTab1),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      // Verify popup remains visible but unfocused.
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForVisibleOmniboxUnfocused(),
+      // Click back into the visible-but-unfocused WebUI input to refocus it.
+      InAnyContext(MoveMouseTo(kPopupWebView, kWebUIInput)),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
+      WaitForOmniboxFocus(true),
+      // Type a new query and verify the results dropdown shows again.
+      InputWebUIText("hello"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // Press Enter and verify navigation is a search for the latest query.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_NONE),
+      WaitForGoogleSearch(kTab1, {{"q", "hello"}}));
+}
+
 // Verifies focusing the omnibox without typing a draft, selecting a portion of
 // the URL text, switching away to another tab, and switching back restores
 // focus to the omnibox and preserves the selection range without opening
