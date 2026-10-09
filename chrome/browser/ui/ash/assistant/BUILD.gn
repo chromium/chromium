@@ -10,8 +10,6 @@ static_library("assistant") {
     "assistant_browser_delegate_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

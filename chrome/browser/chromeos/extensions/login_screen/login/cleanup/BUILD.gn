@@ -27,8 +27,6 @@ static_library("cleanup") {
     "web_app_cleanup_handler.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/ash/printing/print_management",
@@ -61,6 +59,7 @@ static_library("test_support") {
 
   deps = [
     ":cleanup",
+    "//base",
     "//testing/gmock",
   ]
 }

@@ -17,7 +17,6 @@ static_library("dialogs") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//components/strings:components_strings",
     "//components/vector_icons",
     "//ui/aura",

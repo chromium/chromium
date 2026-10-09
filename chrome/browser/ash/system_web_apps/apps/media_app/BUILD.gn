@@ -18,7 +18,6 @@ static_library("media_app") {
     "//ash/webui/media_app_ui",
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//content/public/browser",

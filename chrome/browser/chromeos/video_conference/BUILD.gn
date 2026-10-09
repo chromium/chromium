@@ -18,8 +18,6 @@ static_library("video_conference") {
     "video_conference_web_app.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//base",

@@ -20,7 +20,6 @@ static_library("video_conference") {
     "//ash",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/camera_mic",
     "//components/services/app_service",
     "//components/services/app_service/public/cpp:instance_update",
