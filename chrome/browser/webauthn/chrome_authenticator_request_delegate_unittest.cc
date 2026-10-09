@@ -1819,6 +1819,43 @@ TEST_F(
                                    device::AuthenticatorType::kICloudKeychain);
 }
 
+// Tests that a HaT survey is triggered when a WebAuthn sign-in or creation
+// offer is dismissed by the user.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       TriggerPersonalizationAndTrustSurvey_WebAuthnDismissed) {
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
+  MockPasswordManagerClient* client =
+      MockPasswordManagerClient::Create(web_contents());
+
+  EXPECT_CALL(*client, TriggerPersonalizationAndTrustSurvey(
+                           "WebAuthn credential sign-in offer dismissed"));
+  EXPECT_CALL(*client, TriggerPersonalizationAndTrustSurvey(
+                           "WebAuthn credential creation offer dismissed"));
+
+  auto cancel_request_at_step =
+      [&](AuthenticatorRequestDialogModel::Step step,
+          device::FidoRequestType request_type =
+              device::FidoRequestType::kGetAssertion,
+          std::vector<device::DiscoverableCredentialMetadata> creds = {}) {
+        ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+        delegate.RegisterActionCallbacks(
+            base::DoNothing(), base::DoNothing(), base::DoNothing(),
+            base::DoNothing(), base::DoNothing(), base::DoNothing(),
+            base::DoNothing(), base::DoNothing(), base::DoNothing());
+        delegate.dialog_model()->request_type = request_type;
+        delegate.dialog_model()->SetStep(step);
+        delegate.dialog_model()->creds = std::move(creds);
+        delegate.OnCancelRequest();
+      };
+
+  cancel_request_at_step(AuthenticatorRequestDialogModel::Step::kSelectAccount,
+                         device::FidoRequestType::kGetAssertion,
+                         {device::DiscoverableCredentialMetadata()});
+  cancel_request_at_step(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey,
+      device::FidoRequestType::kMakeCredential);
+}
+
 }  // namespace
 
 #if BUILDFLAG(IS_MAC)

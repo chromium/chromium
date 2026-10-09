@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -284,6 +285,103 @@ bool HasChromeUiInteractionForHats(device::AuthenticatorType type) {
       return false;
   }
   NOTREACHED();
+}
+
+std::optional<std::string_view>
+GetWebAuthnDismissedFillingAssistanceStringForHats(
+    const AuthenticatorRequestDialogModel& dialog_model) {
+  using Step = AuthenticatorRequestDialogModel::Step;
+  switch (dialog_model.step()) {
+    // Software passkey creation flows.
+    case Step::kGPMCreatePasskey:
+    case Step::kChromeProfileCreatePasskey:
+    case Step::kGPMCreatePin:
+    case Step::kGPMCreateArbitraryPin:
+    case Step::kGPMTrustThisComputerCreation:
+    case Step::kResidentCredentialConfirmation:
+      return "WebAuthn credential creation offer dismissed";
+
+    // Software passkey sign-in flows with discovered accounts.
+    case Step::kSelectAccount:
+    case Step::kPreSelectAccount:
+    case Step::kGPMEnterPin:
+    case Step::kGPMEnterArbitraryPin:
+    case Step::kGPMTouchID:
+    case Step::kGPMTrustThisComputerAssertion:
+      return "WebAuthn credential sign-in offer dismissed";
+
+    // Physical security keys and hybrid (phone) prompts.
+    case Step::kUsbInsertAndActivate:
+    case Step::kClientPinEntry:
+    case Step::kClientPinSetup:
+    case Step::kClientPinTapAgain:
+    case Step::kCableV2QRCode:
+    case Step::kCableV2Connecting:
+      return dialog_model.request_type ==
+                     device::FidoRequestType::kMakeCredential
+                 ? "WebAuthn credential creation offer dismissed"
+                 : "WebAuthn credential sign-in offer dismissed";
+
+    // Selection sheets: may offer passkeys, security keys, phones, or
+    // passwords.
+    case Step::kSelectPriorityMechanism:
+    case Step::kMechanismSelection:
+      if (dialog_model.request_type ==
+          device::FidoRequestType::kMakeCredential) {
+        return "WebAuthn credential creation offer dismissed";
+      }
+      if (!dialog_model.creds.empty() ||
+          std::ranges::any_of(
+              dialog_model.mechanisms,
+              [](const AuthenticatorRequestDialogModel::Mechanism& m) {
+                using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
+                return !std::holds_alternative<Mechanism::Password>(m.type) &&
+                       !std::holds_alternative<Mechanism::SignInAgain>(m.type);
+              })) {
+        return "WebAuthn credential sign-in offer dismissed";
+      }
+      break;
+
+    // Errors, timeouts, autofill (handled outside modal dialog), or terminal
+    // steps.
+    case Step::kNotStarted:
+    case Step::kPasskeyAutofill:
+    case Step::kPasskeyUpgrade:
+    case Step::kErrorNoAvailableTransports:
+    case Step::kErrorNoPasskeys:
+    case Step::kErrorGpmDisabled:
+    case Step::kErrorInternalUnrecognized:
+    case Step::kErrorWindowsHelloNotEnabled:
+    case Step::kTimedOut:
+    case Step::kKeyNotRegistered:
+    case Step::kKeyAlreadyRegistered:
+    case Step::kMissingCapability:
+    case Step::kStorageFull:
+    case Step::kClosed:
+    case Step::kBlePowerOnAutomatic:
+    case Step::kBlePowerOnManual:
+    case Step::kBlePermissionMac:
+    case Step::kOffTheRecordInterstitial:
+    case Step::kCableV2Connected:
+    case Step::kCableV2Error:
+    case Step::kClientPinChange:
+    case Step::kClientPinErrorSoftBlock:
+    case Step::kClientPinErrorHardBlock:
+    case Step::kClientPinErrorAuthenticatorRemoved:
+    case Step::kInlineBioEnrollment:
+    case Step::kRetryInternalUserVerification:
+    case Step::kGPMChangePin:
+    case Step::kGPMChangeArbitraryPin:
+    case Step::kGPMError:
+    case Step::kGPMConnecting:
+    case Step::kGPMRecoverSecurityDomain:
+    case Step::kGPMReauthForPinReset:
+    case Step::kGPMLockedPin:
+    case Step::kPasswordOsAuth:
+    case Step::kPlatformAuthenticator:
+      break;
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -951,6 +1049,14 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
 void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kUserCancelled);
+
+  if (std::optional<std::string_view> filling_assistance =
+          GetWebAuthnDismissedFillingAssistanceStringForHats(*dialog_model_)) {
+    TriggerWebAuthnHatsSurvey(
+        content::RenderFrameHost::FromID(render_frame_host_id_),
+        *filling_assistance);
+  }
+
   // |cancel_callback_| must be invoked at most once as invocation of
   // |cancel_callback_| will destroy |this|.
   DCHECK(cancel_callback_);
