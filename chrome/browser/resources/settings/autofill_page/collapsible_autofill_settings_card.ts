@@ -307,5 +307,3 @@ declare global {
 customElements.define(
     CollapsibleAutofillSettingsCardElement.is,
     CollapsibleAutofillSettingsCardElement);
-
-export type CollapsibleCardElement = CollapsibleAutofillSettingsCardElement;

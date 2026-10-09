@@ -220,8 +220,6 @@ export class SettingsIdentityDocsPageElement extends
   }
 }
 
-export type IdentityDocsPageElement = SettingsIdentityDocsPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-identity-docs-page': SettingsIdentityDocsPageElement;

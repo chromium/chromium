@@ -29,9 +29,6 @@ export interface SettingsWalletablePassDetectionToggleElement {
   };
 }
 
-export type WalletablePassDetectionToggleElement =
-    SettingsWalletablePassDetectionToggleElement;
-
 export class SettingsWalletablePassDetectionToggleElement extends CrLitElement {
   static get is() {
     return 'settings-walletable-pass-detection-toggle';

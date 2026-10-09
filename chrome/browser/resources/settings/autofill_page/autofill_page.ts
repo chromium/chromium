@@ -611,5 +611,3 @@ declare global {
 
 customElements.define(
     SettingsAutofillPageElement.is, SettingsAutofillPageElement);
-
-export type AutofillPageElement = SettingsAutofillPageElement;

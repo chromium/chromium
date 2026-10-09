@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsAutofillAiAddOrEditDialogElement} from './autofill_ai_add_or_edit_dialog.js';
+
+export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" close-text="$i18n{close}"
     @cancel="${this.onDialogCancel_}">
   <div slot="title" class="title-container">
@@ -182,3 +192,5 @@
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}

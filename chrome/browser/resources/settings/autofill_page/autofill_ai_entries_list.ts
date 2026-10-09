@@ -470,8 +470,6 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 }
 
-export type AutofillAiEntriesListElement = SettingsAutofillAiEntriesListElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-autofill-ai-entries-list': SettingsAutofillAiEntriesListElement;

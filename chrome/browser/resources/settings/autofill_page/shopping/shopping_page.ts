@@ -212,8 +212,6 @@ export class SettingsShoppingPageElement extends
   }
 }
 
-export type ShoppingPageElement = SettingsShoppingPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-shopping-page': SettingsShoppingPageElement;

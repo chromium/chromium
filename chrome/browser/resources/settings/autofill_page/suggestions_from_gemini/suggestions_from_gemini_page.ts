@@ -39,9 +39,6 @@ export interface SettingsSuggestionsFromGeminiPageElement {
   };
 }
 
-export type SuggestionsFromGeminiPageElement =
-    SettingsSuggestionsFromGeminiPageElement;
-
 export class SettingsSuggestionsFromGeminiPageElement extends
     SettingsSuggestionsFromGeminiPageElementBase {
   static get is() {

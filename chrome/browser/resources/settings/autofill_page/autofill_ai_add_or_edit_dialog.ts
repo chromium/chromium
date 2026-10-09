@@ -779,9 +779,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 }
 
-export type AutofillAiAddOrEditDialogElement =
-    SettingsAutofillAiAddOrEditDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-autofill-ai-add-or-edit-dialog':

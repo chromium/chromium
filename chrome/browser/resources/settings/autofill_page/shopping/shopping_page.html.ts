@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsShoppingPageElement} from './shopping_page.js';
+
+export function getHtml(this: SettingsShoppingPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{shoppingCardTitle}" class="multi-card">
   <div class="card">
     <settings-toggle-button id="optInToggle"
@@ -40,3 +50,5 @@
     </settings-autofill-ai-entries-list>
   </div>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

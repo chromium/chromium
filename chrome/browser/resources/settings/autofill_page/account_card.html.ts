@@ -1,9 +1,17 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
 // <if expr="not is_chromeos">
 import {ChromeSigninAccessPoint} from '/shared/settings/people_page/sync_browser_proxy.js';
 // </if>
-#html_wrapper_imports_end -->
 
+import type {SettingsAccountCardElement} from './account_card.js';
+
+export function getHtml(this: SettingsAccountCardElement) {
+  return html`<!--_html_template_start_-->
 <if expr="not is_chromeos">
   ${this.shouldShowSyncAccountControl_() ? html`
     <div id="account-card">
@@ -65,3 +73,5 @@ import {ChromeSigninAccessPoint} from '/shared/settings/people_page/sync_browser
     </div>
   </div>
 </if>
+<!--_html_template_end_-->`;
+}

@@ -289,5 +289,3 @@ declare global {
 
 customElements.define(
     SettingsAccountCardElement.is, SettingsAccountCardElement);
-
-export type AccountCardElement = SettingsAccountCardElement;

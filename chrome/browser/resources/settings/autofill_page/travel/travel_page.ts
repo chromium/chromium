@@ -227,8 +227,6 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   }
 }
 
-export type TravelPageElement = SettingsTravelPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-travel-page': SettingsTravelPageElement;

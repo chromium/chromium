@@ -138,5 +138,3 @@ declare global {
 
 customElements.define(
     SettingsAutofillPageIndexElement.is, SettingsAutofillPageIndexElement);
-
-export type AutofillPageIndexElement = SettingsAutofillPageIndexElement;

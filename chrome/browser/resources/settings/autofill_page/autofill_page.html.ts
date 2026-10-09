@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsAutofillPageElement} from './autofill_page.js';
+
+export function getHtml(this: SettingsAutofillPageElement) {
+  return html`<!--_html_template_start_-->
 <h1 id="title">$i18n{autofillPageTitle}</h1>
 <div id="subtitle" class="secondary">$i18n{yourSavedInfoPageDescription}</div>
 <settings-account-card></settings-account-card>
@@ -74,3 +84,5 @@
     </cr-link-row>
   </div>
 </settings-section>
+<!--_html_template_end_-->`;
+}
