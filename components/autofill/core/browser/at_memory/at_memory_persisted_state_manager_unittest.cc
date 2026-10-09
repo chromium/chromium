@@ -591,6 +591,36 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
+// Tests that automatic history expiration does not clear active search state
+// or previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       ScopedHistoryDeletionsDoNotClearState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  state_manager().OnSuggestionAccepted(s1);
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"ongoing_query");
+  ASSERT_TRUE(state_manager().IsSearching());
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  const base::Time begin = base::Time::Now() - base::Hours(25);
+  const base::Time end = base::Time::Now() - base::Hours(24);
+  state_manager().OnHistoryDeletions(
+      /*history_service=*/nullptr,
+      history::DeletionInfo(history::DeletionTimeRange(begin, end),
+                            /*is_from_expiration=*/true,
+                            /*deleted_rows=*/{},
+                            /*favicon_urls=*/{},
+                            /*restrict_urls=*/std::nullopt));
+
+  EXPECT_TRUE(state_manager().IsSearching());
+  EXPECT_TRUE(
+      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  EXPECT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Tests that signing out clears persisted search state and previously filled
 // suggestions.

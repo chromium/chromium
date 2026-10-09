@@ -240,6 +240,12 @@ void AtMemoryPersistedStateManager::StopSearching() {
 void AtMemoryPersistedStateManager::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  if (deletion_info.is_from_expiration() ||
+      deletion_info.deletion_reason() ==
+          history::DeletionInfo::Reason::kDeleteAllForeignVisits ||
+      !deletion_info.time_range().IsValid()) {
+    return;
+  }
   Reset();
 }
 
