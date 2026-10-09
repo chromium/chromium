@@ -269,6 +269,11 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
 }
 
 - (void)setTaskCompletedWithSuccess:(BOOL)success {
+  [self setTaskCompletedWithSuccess:success fillProgress:YES];
+}
+
+- (void)setTaskCompletedWithSuccess:(BOOL)success
+                       fillProgress:(BOOL)fillProgress {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_completed) {
     DLOG(WARNING) << "Attempted to complete already completed task: "
@@ -276,7 +281,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
     return;
   }
 
-  if (success) {
+  if (success && fillProgress) {
     [self setCompletedUnits:_progress.totalUnitCount];
   }
 

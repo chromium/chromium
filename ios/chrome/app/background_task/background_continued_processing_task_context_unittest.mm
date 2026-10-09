@@ -557,7 +557,125 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   EXPECT_EQ(failureContext.completedUnits, unitsBeforeFailure);
 }
 
+// Tests that completing the task with success without filling progress leaves
+// progress unchanged, marks the context completed and runs the finish handler.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestTaskCompletedWithSuccessWithoutFillingProgress) {
+  __block int finishHandlerCallCount = 0;
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateTestContext(@"success.no.fill.test.id",
+                        ^{
+                        },
+                        ^{
+                          ++finishHandlerCallCount;
+                        });
+
+  [context incrementStepProgress];
+  const int64_t unitsBeforeCompletion = context.completedUnits;
+  ASSERT_GT(unitsBeforeCompletion, 0);
+  ASSERT_LT(unitsBeforeCompletion, kDefaultTotalUnitsOfProgress);
+
+  [context setTaskCompletedWithSuccess:YES fillProgress:NO];
+  EXPECT_TRUE(context.isCompleted);
+  EXPECT_EQ(context.completedUnits, unitsBeforeCompletion);
+  EXPECT_LT(context.fractionCompleted, 1.0);
+  EXPECT_EQ(finishHandlerCallCount, 1);
+}
+
+// Tests that repeated completion calls after completing without filling
+// progress are no-ops: progress is not filled by a later default completion
+// and the finish handler does not run again.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestTaskCompletedWithoutFillingProgressIsIdempotent) {
+  __block int finishHandlerCallCount = 0;
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateTestContext(@"success.no.fill.idempotent.test.id",
+                        ^{
+                        },
+                        ^{
+                          ++finishHandlerCallCount;
+                        });
+
+  [context incrementStepProgress];
+  const int64_t unitsBeforeCompletion = context.completedUnits;
+
+  [context setTaskCompletedWithSuccess:YES fillProgress:NO];
+  [context setTaskCompletedWithSuccess:YES fillProgress:NO];
+  [context setTaskCompletedWithSuccess:YES fillProgress:YES];
+  [context setTaskCompletedWithSuccess:YES];
+  [context setTaskCompletedWithSuccess:NO];
+
+  EXPECT_TRUE(context.isCompleted);
+  EXPECT_EQ(context.completedUnits, unitsBeforeCompletion);
+  EXPECT_EQ(finishHandlerCallCount, 1);
+}
+
+// Tests that explicitly filling progress, as well as the default completion
+// method, still fill progress to `totalUnits` upon success, and that filling
+// has no effect upon failure.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestTaskCompletedWithFillProgressFillsOnlyOnSuccess) {
+  BackgroundContinuedProcessingTaskContext* explicitFillContext =
+      CreateTestContext(@"success.explicit.fill.test.id");
+  [explicitFillContext incrementStepProgress];
+  [explicitFillContext setTaskCompletedWithSuccess:YES fillProgress:YES];
+  EXPECT_EQ(explicitFillContext.completedUnits, kDefaultTotalUnitsOfProgress);
+
+  BackgroundContinuedProcessingTaskContext* defaultContext =
+      CreateTestContext(@"success.default.fill.test.id");
+  [defaultContext incrementStepProgress];
+  [defaultContext setTaskCompletedWithSuccess:YES];
+  EXPECT_EQ(defaultContext.completedUnits, kDefaultTotalUnitsOfProgress);
+
+  BackgroundContinuedProcessingTaskContext* failureContext =
+      CreateTestContext(@"failure.explicit.fill.test.id");
+  [failureContext incrementStepProgress];
+  const int64_t unitsBeforeFailure = failureContext.completedUnits;
+  [failureContext setTaskCompletedWithSuccess:NO fillProgress:YES];
+  EXPECT_EQ(failureContext.completedUnits, unitsBeforeFailure);
+}
+
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+// Tests that completing with success without filling progress completes the
+// attached OS task with success, leaves the OS task's progress unchanged and
+// runs the finish handler.
+TEST_F(BackgroundContinuedProcessingTaskContextTest,
+       TestTaskCompletedWithoutFillingProgressCompletesOSTask) {
+  if (!@available(iOS 26.0, *)) {
+    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
+  }
+
+  if (@available(iOS 26.0, *)) {
+    __block BOOL finishHandlerCalled = NO;
+    BackgroundContinuedProcessingTaskContext* context =
+        CreateTestContext(@"success.no.fill.os.test.id",
+                          ^{
+                          },
+                          ^{
+                            finishHandlerCalled = YES;
+                          });
+
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    NSProgress* taskProgress =
+        [NSProgress progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress];
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
+        .andReturn(taskProgress);
+    OCMExpect([mockTask setTaskCompletedWithSuccess:YES]);
+
+    [context attachUnderlyingTask:mockTask];
+    [context incrementStepProgress];
+    const int64_t unitsBeforeCompletion = taskProgress.completedUnitCount;
+    ASSERT_GT(unitsBeforeCompletion, 0);
+
+    [context setTaskCompletedWithSuccess:YES fillProgress:NO];
+
+    EXPECT_OCMOCK_VERIFY(mockTask);
+    EXPECT_EQ(taskProgress.completedUnitCount, unitsBeforeCompletion);
+    EXPECT_TRUE(finishHandlerCalled);
+    EXPECT_TRUE(context.isCompleted);
+  }
+}
+
 // Tests that updating progress syncs to the underlying OS task when attached.
 TEST_F(BackgroundContinuedProcessingTaskContextTest,
        TestProgressSyncsToUnderlyingTask) {
