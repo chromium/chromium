@@ -2181,7 +2181,14 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
       // **important**: this call must come before the node traversal remove
       // below since that could remove a child which would cause it to not point
       // to its image parent, making it impossible to notify the parent.
-      NotifyParentChildrenChanged(image_ax_object);
+      if (lifecycle_.GetState() ==
+          AXObjectCacheLifecycle::kProcessDeferredUpdates) {
+        if (AXObject* ancestor = InvalidateChildren(image_ax_object)) {
+          ancestor->ChildrenChangedWithCleanLayout();
+        }
+      } else {
+        NotifyParentChildrenChanged(image_ax_object);
+      }
     }
   }
 
