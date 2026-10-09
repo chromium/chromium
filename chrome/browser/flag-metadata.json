@@ -1062,6 +1062,11 @@
     "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 146
   },
+  {
+    "name": "autofill-card-scanning-bugfixes",
+    "owners": [ "benphillips@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
   { "name": "autofill-disable-bnpl-country-check-for-testing",
     "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 155

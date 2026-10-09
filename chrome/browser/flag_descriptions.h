@@ -900,6 +900,14 @@ inline constexpr char kAutofillAmbientAutofillName[] =
 inline constexpr char kAutofillAmbientAutofillDescription[] =
     "Enables Ambient Autofill.";
 
+inline constexpr char kAutofillCardScanningBugfixesName[] =
+    "Enable Autofill credit card scanning bug fixes";
+inline constexpr char kAutofillCardScanningBugfixesDescription[] =
+    "When enabled, applies bug fixes to the Autofill credit card scanner on "
+    "Android, including matching the scanner theme to the Chrome theme and "
+    "preventing a crash when camera permissions change after the scan card "
+    "suggestion is selected.";
+
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingName[] =
     "Disable the country check for BNPL testing";
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingDescription[] =

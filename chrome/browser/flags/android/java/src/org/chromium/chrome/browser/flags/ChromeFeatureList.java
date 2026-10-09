@@ -376,6 +376,7 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW =
             "AutofillAndroidKeyboardAccessoryHoverPreview";
     public static final String AUTOFILL_AT_MEMORY = "AutofillAtMemory";
+    public static final String AUTOFILL_CARD_SCANNING_BUGFIXES = "AutofillCardScanningBugfixes";
     public static final String AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION =
             "AutofillEnableAiBasedAmountExtraction";
     public static final String AUTOFILL_ENABLE_BUY_NOW_PAY_LATER = "AutofillEnableBuyNowPayLater";

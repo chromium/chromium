@@ -20,6 +20,8 @@ BASE_DECLARE_FEATURE(kAllowReentryFromRespondToDelegate);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillCardScanningBugfixes);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDisableBnplCountryCheckForTesting);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAiBasedAmountExtraction);

@@ -14048,6 +14048,13 @@ const FeatureEntry kFeatureEntries[] = {
          switches::kDisableFeatures,
          kTabsFromOtherDevicesEnhancementFeatures)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-card-scanning-bugfixes",
+     flag_descriptions::kAutofillCardScanningBugfixesName,
+     flag_descriptions::kAutofillCardScanningBugfixesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillCardScanningBugfixes)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

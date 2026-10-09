@@ -17,6 +17,12 @@ BASE_FEATURE(kAllowReentryFromRespondToDelegate,
 BASE_FEATURE(kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for bug fixes to the credit card scanner. When enabled, scanner
+// availability is no longer cached for the lifetime of the process, and a null
+// OCR intent (e.g. after the camera permission is revoked) cancels the scan
+// instead of being launched.
+BASE_FEATURE(kAutofillCardScanningBugfixes, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables testing BNPL in countries where it would otherwise be disabled. This
 // is a testing flag that should never be enabled.
 BASE_FEATURE(kAutofillDisableBnplCountryCheckForTesting,

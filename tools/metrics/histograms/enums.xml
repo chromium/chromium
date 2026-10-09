@@ -17426,6 +17426,7 @@ from previous Chrome versions.
   <int value="743124458" label="OmniboxSuggestionAnswerMigration:disabled"/>
   <int value="743696247" label="RedInterstitialFacelift:enabled"/>
   <int value="743714331" label="HelpAppLauncherSearch:enabled"/>
+  <int value="744044754" label="AutofillCardScanningBugfixes:disabled"/>
   <int value="744050521" label="FedCmDelegation:disabled"/>
   <int value="744050675" label="PrivacySandboxPrivacyGuideAdTopics:disabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
@@ -19336,6 +19337,7 @@ from previous Chrome versions.
   <int value="1318824686"
       label="FedCmActiveModeMultipleIdentityProviders:disabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>
+  <int value="1319062545" label="AutofillCardScanningBugfixes:enabled"/>
   <int value="1319068611" label="SecondaryUiMd:disabled"/>
   <int value="1319498514" label="NewMacNotificationAPI:disabled"/>
   <int value="1319537010"

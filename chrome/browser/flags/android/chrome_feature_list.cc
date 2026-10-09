@@ -144,6 +144,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillAndroidKeyboardAccessoryDynamicPositioning,
     &autofill::features::kAutofillAndroidKeyboardAccessoryHoverPreview,
     &autofill::features::kAutofillAtMemory,
+    &autofill::features::kAutofillCardScanningBugfixes,
     &autofill::features::kAutofillEnableAiBasedAmountExtraction,
     &autofill::features::kAutofillEnableBuyNowPayLater,
     &autofill::features::kAutofillEnableGradientGoogleLogos,
