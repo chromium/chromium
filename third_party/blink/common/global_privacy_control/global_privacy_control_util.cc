@@ -22,22 +22,21 @@ inline constexpr double kGlobalPrivacyControlSourceHistogramSampleProbability =
 }  // namespace
 
 bool IsGlobalPrivacyControlFeatureEnabled() {
-  // `kGlobalPrivacyControlForce` is kept for testing.
+  // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables
+  // this but it should be removed once we have a real setting to test.
   return base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce) ||
-         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlApi);
+         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlTest);
 }
 
 bool IsGlobalPrivacyControlFeatureAndSettingEnabled(
     const RendererPreferences& renderer_preferences) {
-  // `kGlobalPrivacyControlForce` is kept for testing.
+  // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables
+  // this but it should be removed once we have a real setting to test.
   if (base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce)) {
     return true;
   }
-
-  // The setting should only be populated by the embedder when the feature is
-  // enabled (or via the DevTools override, which also requires it).
-  return IsGlobalPrivacyControlFeatureEnabled() &&
-         renderer_preferences.is_global_privacy_control_setting_enabled;
+  return renderer_preferences.is_global_privacy_control_setting_enabled &&
+         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlTest);
 }
 
 void MaybeRecordGlobalPrivacyControlSourceMetric(

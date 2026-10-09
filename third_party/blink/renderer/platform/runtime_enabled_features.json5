@@ -3607,22 +3607,17 @@
     {
       name: "GlobalPrivacyControl",
       implied_by: [
-        "GlobalPrivacyControlApi",
-        "GlobalPrivacyControlForce"
+        "GlobalPrivacyControlForce",
+        "GlobalPrivacyControlTest"
       ],
       base_feature: "none",
     },
     {
-      // Gates the navigator.globalPrivacyControl JavaScript API.
-      // Chrome enables this in ChromeContentRendererClient when both
-      // universal_optout::features::kUniversalOptOut and
-      // universal_optout::features::kUniversalOptOutSettings are enabled.
-      name: "GlobalPrivacyControlApi",
-      public: true,
-      status: "experimental",
+      name: "GlobalPrivacyControlForce",
     },
     {
-      name: "GlobalPrivacyControlForce",
+      name: "GlobalPrivacyControlTest",
+      status: "experimental",
     },
     {
       name: "GraphemeClusterBoundsCheck",

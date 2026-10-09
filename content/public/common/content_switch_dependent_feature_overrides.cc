@@ -69,7 +69,7 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(blink::features::kResponsiveIframes),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(blink::features::kGlobalPrivacyControlApi),
+       std::cref(blink::features::kGlobalPrivacyControlTest),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(blink::features::kSpecCompliantXmlMimeTypes),
