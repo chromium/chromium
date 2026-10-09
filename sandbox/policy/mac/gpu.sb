@@ -156,6 +156,10 @@
 ; TODO(https://crbug.com/491422244): Remove file-write-owner needed by WebNN.
 (if (param-true? restrict-gpu-darwin-user-dirs)
   (begin
+    (allow file-read* file-write-create
+      (subpath
+        (string-append
+          (param darwin-user-temp-dir) "/com.apple.MetalPerformanceShadersGraph")))
     (if (param-defined? bundle-id)
       (allow-metal-shader-cache
         (string-append (param darwin-user-cache-dir) "/" (param bundle-id))))
@@ -173,17 +177,23 @@
     (subpath (param darwin-user-dir))
     (subpath (param darwin-user-temp-dir))))
 
-; TODO(https://crbug.com/491422244): Remove file-write-owner needed by WebNN.
-; This may be resolved by compiling CoreML models in a separate process, see
-; https://crbug.com/524263705.
 (define (allow-webnn-temp-dir)
   (begin
     ; Needed by NSFileManager's URLForDirectory with NSItemReplacementDirectory.
-    (allow file-read* file-write-create file-write-data file-write-owner
-      (subpath (string-append (param darwin-user-temp-dir) "/TemporaryItems/")))
-    ; Needed by MLModel's compileModelAtURL family of functions.
-    (allow file-read* file-write-create file-write-unlink
-      (subpath (param darwin-user-temp-dir)))))
+    (allow file-read*
+      file-write-create
+      file-write-data
+      file-write-owner
+      file-write-unlink
+      (subpath
+        (string-append (param darwin-user-temp-dir) "/TemporaryItems")))
+    (if (param-true? webnn-compiler-process)
+      (allow file-read* file-write-unlink
+        (subpath
+          (string-append (param darwin-user-temp-dir) "/webnn_gpu_protected")))
+      ; Needed by MLModel's compileModelAtURL family of functions.
+      (allow file-read* file-write-create file-write-unlink
+        (subpath (param darwin-user-temp-dir))))))
 (if (param-true? restrict-gpu-darwin-user-dirs) (allow-webnn-temp-dir))
 
 ; Metal issues a sandbox extension to permit MTLCompilerService to read source

@@ -354,9 +354,7 @@ MULTIPROCESS_TEST_MAIN(GpuMetalCacheRestrictedProcess) {
   std::string unauth_file =
       base::StrCat({"test_unauth_file_", helper_bundle_id});
   test_denied_file(cache_dir.Append(unauth_file));
-  // TODO: uncomment the following line once WebNN model compilation has been
-  // moved to a separate sandbox (https://crbug.com/524263705).
-  // test_denied_file(temp_dir.Append(unauth_file));
+  test_denied_file(temp_dir.Append(unauth_file));
   test_denied_file(user_dir.Append(unauth_file));
 
   return 0;

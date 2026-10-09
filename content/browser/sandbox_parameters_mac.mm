@@ -33,6 +33,7 @@
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
+#include "services/webnn/public/mojom/features.mojom-features.h"
 
 namespace content {
 
@@ -199,6 +200,11 @@ bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,
   CHECK(serializer->SetBooleanParameter(
       sandbox::policy::kParamRestrictGpuDarwinUserDirs,
       base::FeatureList::IsEnabled(kMacSandboxRestrictGpuDarwinUserDirs)));
+
+  CHECK(serializer->SetBooleanParameter(
+      sandbox::policy::kParamWebnnCompilerProcess,
+      base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebNNCompilerProcess)));
 
   // The helper may not be contained in an app bundle for unit tests.
   // In that case `kParamHelperBundleId` will remain unset.
