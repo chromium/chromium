@@ -46,7 +46,8 @@ class VerticalTabStripSegmentedControl : public views::View,
   ~VerticalTabStripSegmentedControl() override;
 
   // views::View:
-  void OnThemeChanged() override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -76,6 +77,7 @@ class VerticalTabStripSegmentedControl : public views::View,
   raw_ptr<views::ImageButton> organizer_button_ = nullptr;
 
   base::CallbackListSubscription organizer_state_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;

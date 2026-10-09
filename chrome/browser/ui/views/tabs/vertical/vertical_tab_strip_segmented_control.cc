@@ -27,19 +27,21 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
-constexpr int kBorderThickness = 1;
-constexpr auto kInsideBorderInsets = gfx::Insets(1);
+constexpr auto kInsideBorderInsets = gfx::Insets(3);
+constexpr int kBetweenChildSpacing = 4;
 
 }  // namespace
 
@@ -56,16 +58,12 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
 
   const int button_size = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripTopContainerButtonSize);
-  const int total_height =
-      button_size + (kBorderThickness + kInsideBorderInsets.top()) * 2;
-  const float corner_radius = total_height / 2.0f;
 
   SetBackground(views::CreatePillBackground(ui::kColorSysSurface));
-  SetBorder(views::CreateRoundedRectBorder(kBorderThickness, corner_radius,
-                                           ui::kColorSysOutline));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets, 0));
+      views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets,
+      kBetweenChildSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
@@ -80,7 +78,13 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
     button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     button->GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+    button->SetHasInkDropActionOnClick(true);
     views::InstallCircleHighlightPathGenerator(button.get());
+    auto* const ink_drop = views::InkDrop::Get(button.get());
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+    ink_drop->SetLayerRegion(views::LayerRegion::kAbove);
+    ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
+    ink_drop->SetHighlightOpacity(1.0f);
     views::ImageButton* button_ptr = AddChildView(std::move(button));
     layout->SetFlexForView(button_ptr, 1);
     return button_ptr;
@@ -94,6 +98,9 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
   organizer_button_->set_context_menu_controller(this);
 
   if (auto* controller = OrganizerPanelController::From(browser_)) {
+    if (controller->IsOrganizerPanelVisible()) {
+      active_segment_ = Segment::kOrganizer;
+    }
     organizer_state_subscription_ = controller->RegisterOnStateChanged(
         base::IgnoreArgs<OrganizerPanelController*>(
             base::BindRepeating(&VerticalTabStripSegmentedControl::
@@ -101,17 +108,22 @@ VerticalTabStripSegmentedControl::VerticalTabStripSegmentedControl(
                                 base::Unretained(this))));
   }
 
-  UpdateActiveSegmentFromController();
   UpdateButtonIcons();
   UpdateSegmentBackgrounds();
 }
 
 VerticalTabStripSegmentedControl::~VerticalTabStripSegmentedControl() = default;
 
-void VerticalTabStripSegmentedControl::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateButtonIcons();
+void VerticalTabStripSegmentedControl::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &VerticalTabStripSegmentedControl::UpdateSegmentBackgrounds,
+          base::Unretained(this)));
   UpdateSegmentBackgrounds();
+}
+
+void VerticalTabStripSegmentedControl::RemovedFromWidget() {
+  paint_as_active_subscription_ = {};
 }
 
 views::ImageButton* VerticalTabStripSegmentedControl::GetButton(
@@ -161,7 +173,7 @@ void VerticalTabStripSegmentedControl::UpdateActiveSegmentFromController() {
 }
 
 void VerticalTabStripSegmentedControl::UpdateButtonIcons() {
-  if (!GetWidget() || !tab_strip_button_ || !organizer_button_) {
+  if (!tab_strip_button_ || !organizer_button_) {
     return;
   }
 
@@ -186,12 +198,15 @@ void VerticalTabStripSegmentedControl::UpdateButtonIcons() {
 }
 
 void VerticalTabStripSegmentedControl::UpdateSegmentBackgrounds() {
+  const ui::ColorId active_bg_color =
+      GetWidget() && GetWidget()->ShouldPaintAsActive()
+          ? ui::kColorFrameActive
+          : ui::kColorFrameInactive;
   auto update_segment_background = [&](Segment segment) {
     if (views::ImageButton* button = GetButton(segment)) {
-      button->SetBackground(
-          active_segment_ == segment
-              ? views::CreatePillBackground(ui::kColorSysTonalContainer)
-              : nullptr);
+      button->SetBackground(active_segment_ == segment
+                                ? views::CreatePillBackground(active_bg_color)
+                                : nullptr);
     }
   };
 

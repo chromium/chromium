@@ -22,10 +22,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -81,10 +85,12 @@ class VerticalTabStripSegmentedControlTest : public ChromeViewsTestBase {
 };
 
 TEST_F(VerticalTabStripSegmentedControlTest, PreferredSize) {
-  constexpr auto kTotalInsets = gfx::Insets(2);
+  constexpr auto kTotalInsets = gfx::Insets(3);
+  constexpr int kBetweenChildSpacing = 4;
   const int button_size = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripTopContainerButtonSize);
-  const int expected_width = (button_size * 2) + kTotalInsets.width();
+  const int expected_width =
+      (button_size * 2) + kBetweenChildSpacing + kTotalInsets.width();
   const int expected_height = button_size + kTotalInsets.height();
   EXPECT_EQ(control()->GetPreferredSize(),
             gfx::Size(expected_width, expected_height));
@@ -102,6 +108,12 @@ TEST_F(VerticalTabStripSegmentedControlTest, DefaultActiveSegmentAndButtons) {
             kVerticalTabStripTabStripButtonElementId);
   EXPECT_EQ(tab_strip_btn->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_TAB_STRIP_BUTTON_TOOLTIP));
+  EXPECT_TRUE(tab_strip_btn->GetHasInkDropActionOnClick());
+  EXPECT_EQ(views::InkDrop::Get(tab_strip_btn)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+  EXPECT_EQ(views::InkDrop::Get(tab_strip_btn)->GetBaseColor(),
+            tab_strip_btn->GetColorProvider()->GetColor(
+                ui::kColorSysStateHoverOnSubtle));
 
   auto* organizer_btn = control()->GetButton(
       VerticalTabStripSegmentedControl::Segment::kOrganizer);
@@ -111,6 +123,12 @@ TEST_F(VerticalTabStripSegmentedControlTest, DefaultActiveSegmentAndButtons) {
             kTabSearchButtonElementId);
   EXPECT_EQ(organizer_btn->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
+  EXPECT_TRUE(organizer_btn->GetHasInkDropActionOnClick());
+  EXPECT_EQ(views::InkDrop::Get(organizer_btn)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+  EXPECT_EQ(views::InkDrop::Get(organizer_btn)->GetBaseColor(),
+            organizer_btn->GetColorProvider()->GetColor(
+                ui::kColorSysStateHoverOnSubtle));
 }
 
 TEST_F(VerticalTabStripSegmentedControlTest,
