@@ -1971,26 +1971,19 @@ Vector<T, kInlineCapacity, Allocator>::Vector(base::span<const U> other)
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
 template <typename Range, typename Proj>
   requires VectorCanAssignFromRange<T, kInlineCapacity, Allocator, Range, Proj>
-Vector<T, kInlineCapacity, Allocator>::Vector(Range&& other, Proj proj) {
-  wtf_size_t other_size =
-      base::checked_cast<wtf_size_t>(std::ranges::size(other));
-  if (other_size > capacity()) {
-    AllocateBuffer(other_size, VectorOperationOrigin::kConstruction);
-    // Note that `size(other)` may become smaller if `other` is a hash table
-    // with WeakMember keys and `AllocateBuffer` above caused GC which
-    // removed some entries from `other`, see crbug.com/40448463. This won't
-    // cause problems as long as we won't use the old `size(other)` in the
-    // following code.
-    const wtf_size_t new_other_size =
-        base::checked_cast<wtf_size_t>(std::ranges::size(other));
-    CHECK_LE(new_other_size, other_size);
-    other_size = new_other_size;
-  }
-  UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), other_size));
+Vector<T, kInlineCapacity, Allocator>::Vector(Range&& other, Proj proj)
+    : Base(base::checked_cast<wtf_size_t>(std::ranges::size(other))) {
+  // Note that `size(other)` may become smaller if `other` is a hash table
+  // with WeakMember keys and `Base(size(other))` above caused GC which
+  // removed some entries from `other`, see crbug.com/40448463. This won't
+  // cause problems as long as we won't use the old `size(other)` in the
+  // following code.
+  UNSAFE_TODO(
+      ANNOTATE_NEW_BUFFER(data(), capacity(), std::ranges::size(other)));
   TypeOperations::UninitializedTransform(
       std::ranges::begin(other), std::ranges::end(other), data(),
       VectorOperationOrigin::kConstruction, std::move(proj));
-  size_ = other_size;
+  size_ = base::checked_cast<wtf_size_t>(std::ranges::size(other));
 }
 
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
@@ -2062,7 +2055,7 @@ template <typename Range, typename Proj>
   requires VectorCanAssignFromRange<T, kInlineCapacity, Allocator, Range, Proj>
 void Vector<T, kInlineCapacity, Allocator>::assign(Range&& other, Proj proj) {
   this->RegisterModification();
-  wtf_size_t other_size =
+  const wtf_size_t other_size =
       base::checked_cast<wtf_size_t>(std::ranges::size(other));
   if (other_size > capacity()) {
     clear();
@@ -2071,10 +2064,6 @@ void Vector<T, kInlineCapacity, Allocator>::assign(Range&& other, Proj proj) {
     // with `WeakMember` keys and `reserve` caused GC which removed some
     // entries from `other`, see crbug.com/40448463. This won't cause problems
     // as long as we won't use the old `size(other)` in the following code.
-    const wtf_size_t new_other_size =
-        base::checked_cast<wtf_size_t>(std::ranges::size(other));
-    CHECK_LE(new_other_size, other_size);
-    other_size = new_other_size;
   } else {
     if (other_size < size()) {
       Shrink(other_size);
@@ -2824,11 +2813,7 @@ void Vector<T, kInlineCapacity, Allocator>::ReallocateBuffer(
     return;
   }
   // Shrinking/resizing to out-of-line buffer.
-  const wtf_size_t old_size = size_;
   auto temp_buffer = Base::AllocateTemporaryBuffer(new_capacity);
-  // Allocating the temporary buffer may trigger Oilpan lazy sweeping and invoke
-  // finalizers; ensure they did not re-entrantly mutate this vector.
-  CHECK_EQ(old_size, size_);
   UNSAFE_TODO(
       ANNOTATE_NEW_BUFFER(temp_buffer.Buffer(), temp_buffer.capacity(), size_));
   // If there was a new out-of-line buffer allocated, there is no need in
