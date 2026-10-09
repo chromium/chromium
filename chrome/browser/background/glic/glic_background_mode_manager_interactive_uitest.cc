@@ -32,7 +32,6 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -295,10 +294,6 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
 // session.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
-  // TODO(crbug.com/527717763): Re-enable this test
-  if (!base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "InitialWebUI is disabled.";
-  }
   GlicBackgroundModeManager* const background_mode_manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
