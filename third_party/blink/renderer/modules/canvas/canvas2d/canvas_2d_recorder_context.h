@@ -602,7 +602,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                          const gfx::RectF& src_rect,
                          const gfx::RectF& dst_rect,
                          const SkSamplingOptions&,
-                         const cc::PaintFlags*);
+                         const cc::PaintFlags*,
+                         RespectImageOrientationEnum);
   void ClipInternal(const Path&,
                     const V8CanvasFillRule& winding_rule,
                     cc::UsePaintCache);
