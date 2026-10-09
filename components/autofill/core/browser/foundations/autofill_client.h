@@ -37,6 +37,10 @@
 #include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
+#endif
+
 namespace net {
 class SchemefulSite;
 }
@@ -807,6 +811,11 @@ class AutofillClient {
   // Closes the dialog that informs the user that their data is being fetched
   // from the server to fill the form.
   virtual void DismissAutofillAiLoadingDialog();
+
+  // Shows tapjacking protection for sensitive autofill actions.
+  virtual void ShowTapjackingProtector(
+      AutofillTapjackingProtector::AuthorizationType authorization_type,
+      AutofillTapjackingProtector::AuthorizationCallback callback);
 #endif
 
 #if BUILDFLAG(IS_IOS)

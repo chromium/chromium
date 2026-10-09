@@ -94,6 +94,8 @@
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
+#include "components/autofill/core/browser/ui/mock_autofill_tapjacking_protector.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -1297,6 +1299,22 @@ TEST_F(ChromeAutofillClientTest,
 
   // Triggering the action callback should invoke on_undo_clicked.
   snackbar_controller->OnActionClicked();
+}
+
+TEST_F(ChromeAutofillClientTest, ShowTapjackingProtector) {
+  auto mock_protector = std::make_unique<MockAutofillTapjackingProtector>();
+  EXPECT_CALL(
+      *mock_protector,
+      Show(AutofillTapjackingProtector::AuthorizationType::kPayments, _));
+
+  client()->SetAutofillTapjackingProtectorImplForTesting(
+      std::move(mock_protector));
+
+  base::MockCallback<AutofillTapjackingProtector::AuthorizationCallback>
+      callback;
+  client()->ShowTapjackingProtector(
+      AutofillTapjackingProtector::AuthorizationType::kPayments,
+      callback.Get());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

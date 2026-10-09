@@ -51,6 +51,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
+#include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -267,6 +268,10 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // from the server to fill the form.
   void DismissAutofillAiLoadingDialog() final;
 
+  void ShowTapjackingProtector(
+      AutofillTapjackingProtector::AuthorizationType authorization_type,
+      AutofillTapjackingProtector::AuthorizationCallback callback) final;
+
   bool ShowAmbientAutofillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
   bool ShowPrivateInferenceNoticeBottomSheet(
@@ -361,6 +366,12 @@ class ChromeAutofillClient : public ContentAutofillClient {
           autofill_snackbar_controller_impl) {
     autofill_snackbar_controller_impl_ =
         std::move(autofill_snackbar_controller_impl);
+  }
+  void SetAutofillTapjackingProtectorImplForTesting(
+      std::unique_ptr<AutofillTapjackingProtector>
+          autofill_tapjacking_protector_impl) {
+    autofill_tapjacking_protector_impl_ =
+        std::move(autofill_tapjacking_protector_impl);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // defined(UNIT_TEST)
@@ -467,6 +478,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
       touch_to_fill_autofill_controller_;
   std::unique_ptr<EmailVerificationBottomSheetBridge>
       email_verification_bottom_sheet_bridge_;
+  std::unique_ptr<AutofillTapjackingProtector>
+      autofill_tapjacking_protector_impl_;
 #else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;

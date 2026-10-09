@@ -213,6 +213,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
+#include "chrome/browser/ui/autofill/autofill_tapjacking_protector_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -1173,6 +1174,18 @@ void ChromeAutofillClient::ShowAutofillAiLoadingDialog() {
 
 void ChromeAutofillClient::DismissAutofillAiLoadingDialog() {
   GetAutofillDialogController()->Dismiss();
+}
+
+void ChromeAutofillClient::ShowTapjackingProtector(
+    AutofillTapjackingProtector::AuthorizationType authorization_type,
+    AutofillTapjackingProtector::AuthorizationCallback callback) {
+  if (!autofill_tapjacking_protector_impl_) {
+    autofill_tapjacking_protector_impl_ =
+        std::make_unique<AutofillTapjackingProtectorImpl>(
+            GetAutofillDialogController());
+  }
+  autofill_tapjacking_protector_impl_->Show(authorization_type,
+                                            std::move(callback));
 }
 
 AutofillDialogController* ChromeAutofillClient::GetAutofillDialogController() {

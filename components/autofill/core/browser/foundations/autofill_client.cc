@@ -42,6 +42,10 @@
 #include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
+#endif
+
 namespace autofill {
 
 AutofillClient::PopupOpenArgs::PopupOpenArgs() = default;
@@ -309,6 +313,12 @@ void AutofillClient::ShowAutofillAiLoadingDialog() {
 }
 
 void AutofillClient::DismissAutofillAiLoadingDialog() {
+  NOTIMPLEMENTED();
+}
+
+void AutofillClient::ShowTapjackingProtector(
+    AutofillTapjackingProtector::AuthorizationType authorization_type,
+    AutofillTapjackingProtector::AuthorizationCallback callback) {
   NOTIMPLEMENTED();
 }
 #endif
