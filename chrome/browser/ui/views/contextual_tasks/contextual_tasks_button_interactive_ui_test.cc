@@ -48,6 +48,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -148,6 +149,23 @@ class FakeContextualTasksEligibilityManager
       return false;
     }
     return true;
+  }
+
+  bool IsSidePanelAvailable() const override {
+    if (!contextual_tasks::IsContextualTasksUIEnabled()) {
+      return false;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            contextual_tasks::kContextualTasksForceEntryPointEligibility)) {
+      return true;
+    }
+
+    if (mock_identity_eligible_) {
+      return true;
+    }
+
+    return lens::features::IsLensSidePanelUnificationAllowSignedOut();
   }
 
  protected:

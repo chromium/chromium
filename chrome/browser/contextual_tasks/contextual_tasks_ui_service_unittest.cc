@@ -4397,7 +4397,7 @@ TEST_F(
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_AimNotEligible_Redirects_WhenLensSessionUnderUnification) {
+    HandleNavigation_WebUI_AimNotEligible_NoRedirect_WhenLensSessionUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {contextual_tasks::kContextualTasks,
@@ -4428,9 +4428,9 @@ TEST_F(
   real_service_->AddPendingSessionHandleForTesting(task_id,
                                                    std::move(session_handle));
 
-  // When AIM is not eligible, IsSidePanelAvailable() is false, so the
-  // navigation should be redirected.
-  EXPECT_TRUE(real_service_->HandleNavigation(
+  // When AIM is not eligible, IsSidePanelAvailable() is true, so the
+  // navigation should not be redirected.
+  EXPECT_FALSE(real_service_->HandleNavigation(
       CreateOpenUrlParams(webui_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
