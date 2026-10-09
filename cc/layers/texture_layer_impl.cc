@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
+#include "cc/paint/tone_map_util.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -218,7 +219,8 @@ void TextureLayerImpl::ReleaseResources() {
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
-  if (transferable_resource_.hdr_metadata.HasAgtm()) {
+  if (ToneMapUtil::IsHDR(transferable_resource_.GetColorSpace(),
+                         transferable_resource_.hdr_metadata)) {
     return gfx::ContentColorUsage::kHDR;
   }
   return transferable_resource_.GetColorSpace().GetContentColorUsage();

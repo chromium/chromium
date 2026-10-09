@@ -39,16 +39,24 @@ struct ToneMapInfo {
   float max_headroom = 0.f;
   float min_headroom = 0.f;
 
-  bool UseGlobalToneMappingFilter() const {
+  bool UseGlobalToneMappingFilter(
+      std::optional<float> targeted_hdr_headroom) const {
+    // If the white point must be scaled, then the tone mapping shader is
+    // employed to do this.
+    if (white_scale_factor != 1.f) {
+      return true;
+    }
+    // If `targeted_hdr_headroom` is specified, then clamp it to the range of
+    // available headrooms. If that equals the baseline headroom, then no tone
+    // mapping is needed.
+    if (targeted_hdr_headroom.has_value()) {
+      return std::clamp(targeted_hdr_headroom.value(), min_headroom,
+                        max_headroom) != baseline_headroom;
+    }
     // If there are two different image representations that use two different
     // headrooms, then the tone mapping filter should be used to map between
     // them.
     if (min_headroom != max_headroom) {
-      return true;
-    }
-    // If the white point must be scaled, then the tone mapping shader is
-    // employed to do this.
-    if (white_scale_factor != 1.f) {
       return true;
     }
     return false;
@@ -112,22 +120,25 @@ ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
 
 }  // namespace
 
-bool ToneMapUtil::UseGlobalToneMapFilter(const SkImage* image,
-                                         const gfx::HDRMetadata& metadata) {
-  if (!image) {
-    return false;
-  }
-  return UseGlobalToneMapFilter(image->colorSpace(), metadata);
-}
-
-bool ToneMapUtil::UseGlobalToneMapFilter(const SkColorSpace* cs,
-                                         const gfx::HDRMetadata& metadata) {
+bool ToneMapUtil::UseGlobalToneMapFilter(
+    const SkColorSpace* cs,
+    const gfx::HDRMetadata& metadata,
+    std::optional<float> targeted_hdr_headroom) {
   if (!cs) {
     return false;
   }
   skcms_TransferFunction fn;
   cs->transferFn(&fn);
-  return ComputeToneMapInfo(fn, metadata).UseGlobalToneMappingFilter();
+  return ComputeToneMapInfo(fn, metadata)
+      .UseGlobalToneMappingFilter(targeted_hdr_headroom);
+}
+
+bool ToneMapUtil::UseGlobalToneMapFilter(
+    const gfx::ColorSpace& cs,
+    const gfx::HDRMetadata& metadata,
+    std::optional<float> targeted_hdr_headroom) {
+  return UseGlobalToneMapFilter(cs.ToSkColorSpace().get(), metadata,
+                                targeted_hdr_headroom);
 }
 
 float ToneMapUtil::GetMaxHdrHeadroom(const SkColorSpace* cs,
@@ -143,6 +154,16 @@ float ToneMapUtil::GetMaxHdrHeadroom(const SkColorSpace* cs,
 float ToneMapUtil::GetMaxHdrHeadroom(const gfx::ColorSpace& cs,
                                      const gfx::HDRMetadata& metadata) {
   return GetMaxHdrHeadroom(cs.ToSkColorSpace().get(), metadata);
+}
+
+bool ToneMapUtil::IsHDR(const SkColorSpace* cs,
+                        const gfx::HDRMetadata& metadata) {
+  return GetMaxHdrHeadroom(cs, metadata) > 0.f;
+}
+
+bool ToneMapUtil::IsHDR(const gfx::ColorSpace& cs,
+                        const gfx::HDRMetadata& metadata) {
+  return GetMaxHdrHeadroom(cs, metadata) > 0.f;
 }
 
 void ToneMapUtil::AddGlobalToneMapFilterToPaint(

@@ -19,6 +19,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skia_paint_image_generator.h"
 #include "cc/paint/texture_backing.h"
+#include "cc/paint/tone_map_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -383,18 +384,13 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
   }
 
   const auto* color_space = GetSkImageInfo().colorSpace();
+  if (ToneMapUtil::IsHDR(color_space, hdr_metadata_)) {
+    return gfx::ContentColorUsage::kHDR;
+  }
 
   // Assume the image will be sRGB if we don't know yet.
   if (!color_space || color_space->isSRGB()) {
     return gfx::ContentColorUsage::kSRGB;
-  }
-
-  skcms_TransferFunction fn;
-  color_space->transferFn(&fn);
-  if (skcms_TransferFunction_isPQish(&fn) ||
-      skcms_TransferFunction_isHLGish(&fn) ||
-      skcms_TransferFunction_isPQ(&fn) || skcms_TransferFunction_isHLG(&fn)) {
-    return gfx::ContentColorUsage::kHDR;
   }
 
   // If it's not HDR and not SRGB, report it as WCG.
@@ -513,15 +509,10 @@ std::string PaintImage::FrameKey::ToString() const {
 float PaintImage::GetMaximumRenderedHdrHeadroom() const {
   if (HasGainmapInfo()) {
     const SkGainmapInfo& gainmap_info = GetGainmapInfo();
-    float max_ratio = std::max({gainmap_info.fGainmapRatioMax[0],
-                                gainmap_info.fGainmapRatioMax[1],
-                                gainmap_info.fGainmapRatioMax[2]});
-    return std::log2(max_ratio);
+    return std::log2(
+        std::max(gainmap_info.fDisplayRatioSdr, gainmap_info.fDisplayRatioHdr));
   }
-  if (color_space() && gfx::ColorSpace(*color_space()).IsHDR()) {
-    return std::log2(gfx::HDRMetadata::kDefaultHdrHeadroom);
-  }
-  return 0.0f;
+  return ToneMapUtil::GetMaxHdrHeadroom(color_space(), hdr_metadata_);
 }
 
 }  // namespace cc

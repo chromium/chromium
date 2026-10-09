@@ -18,6 +18,7 @@
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/layers/texture_layer_impl.h"
+#include "cc/paint/tone_map_util.h"
 #include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
@@ -143,20 +144,8 @@ bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
     return false;
   }
 
-  // If the HDR headroom is changed, then tonemapped resources will need to
-  // re-draw.
   const auto& resource = resource_holder_.Read(*this)->resource();
-  if (resource.GetColorSpace().IsToneMappedByDefault()) {
-    return true;
-  }
-
-  // Content with AGTM metadata also needs to be re-composited to adapt itself
-  // to the new headroom.
-  if (resource.hdr_metadata.HasAgtm()) {
-    return true;
-  }
-
-  return false;
+  return ToneMapUtil::IsHDR(resource.GetColorSpace(), resource.hdr_metadata);
 }
 
 bool TextureLayer::Update() {

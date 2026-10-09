@@ -2699,21 +2699,27 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       overlay_color_space.value_or(resource_provider()
                                        ->GetColorSpace(quad->resource_id)
                                        .GetAsFullRangeRGB());
-  const gfx::HDRMetadata& src_hdr_metadata =
+  // Use the current SDR slider white level for PQ HDR videos on
+  // Windows, so that they look similar when rendered by the
+  // compositor and when rendered as an overlay (HDR10 MPO). Do not adjust
+  // the white level of content that has AGTM metadata.
+  // https://crbug.com/1492817
+  gfx::HDRMetadata hdr_metadata =
       resource_provider()->GetHDRMetadata(quad->resource_id);
-
-  const bool needs_tone_map = [&]() {
-    if (quad->is_video_frame && src_color_space.IsHDR()) {
-      return true;
-    }
-    if (src_color_space.IsToneMappedByDefault()) {
-      return true;
-    }
-    if (src_hdr_metadata.HasAgtm()) {
-      return true;
-    }
-    return false;
-  }();
+  if (quad->is_video_frame &&
+      src_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
+      !hdr_metadata.HasAgtm() &&
+      base::FeatureList::IsEnabled(features::kUseDisplaySDRMaxLuminanceNits)) {
+    hdr_metadata =
+        gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(hdr_metadata);
+    hdr_metadata.SetHdrReferenceWhite(
+        current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
+  }
+  const float targeted_hdr_headroom =
+      quad->dynamic_range_limit.ComputeEffectiveHdrHeadroom(
+          current_frame()->display_color_spaces.GetHdrHeadroom());
+  const bool needs_tone_map = cc::ToneMapUtil::UseGlobalToneMapFilter(
+      src_color_space, hdr_metadata, targeted_hdr_headroom);
 
   sk_sp<SkColorSpace> override_color_space;
   if (overlay_color_space) {
@@ -2775,26 +2781,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
 
   if (needs_tone_map) {
-    // Use the current SDR slider white level for PQ HDR videos on
-    // Windows, so that they look similar when rendered by the
-    // compositor and when rendered as an overlay (HDR10 MPO). Do not adjust
-    // the white level of content that has AGTM metadata.
-    // https://crbug.com/1492817
-    auto hdr_metadata = src_hdr_metadata;
-    if (quad->is_video_frame &&
-        src_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
-        !src_hdr_metadata.HasAgtm() &&
-        base::FeatureList::IsEnabled(
-            features::kUseDisplaySDRMaxLuminanceNits)) {
-      hdr_metadata =
-          gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
-      hdr_metadata.SetHdrReferenceWhite(
-          current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
-    }
-    cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(
-        paint, image, hdr_metadata,
-        quad->dynamic_range_limit.ComputeEffectiveHdrHeadroom(
-            current_frame()->display_color_spaces.GetHdrHeadroom()));
+    cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, image, hdr_metadata,
+                                                   targeted_hdr_headroom);
   }
 
   // From gl_renderer, the final src color will be
