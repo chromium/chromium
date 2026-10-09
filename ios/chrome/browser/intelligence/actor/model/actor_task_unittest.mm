@@ -1176,7 +1176,7 @@ TEST_F(ActorTaskBackgroundingTest,
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
 
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
 
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
 
@@ -1196,7 +1196,7 @@ TEST_F(ActorTaskBackgroundingTest, BackgroundTaskStoppedByUser) {
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
 
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
   TriggerOnWillExecuteTool(ToolType::kClick,
                            web::WebStateID::FromSerializedValue(1));
   EXPECT_LT(context.fractionCompleted, 1.0);
@@ -1213,7 +1213,7 @@ TEST_F(ActorTaskBackgroundingTest, BackgroundTaskSubtitleUpdate) {
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
 
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
   EXPECT_EQ(context.subtitleUpdateCount, 0);
 
   // Empty update should not send a subtitle update.
@@ -1247,8 +1247,8 @@ TEST_F(ActorTaskBackgroundingTest, BackgroundTaskSubtitleUpdate) {
   EXPECT_EQ(context.subtitleUpdateCount, 2);
 }
 
-// Test that registering a background task context via
-// `SetBackgroundTaskContext()` applies the latest cached non-empty task update.
+// Test that setting a background task context on the task's worker applies
+// the latest cached non-empty task update.
 TEST_F(ActorTaskBackgroundingTest,
        BackgroundTaskContextUsesCachedTaskUpdateOnRegistration) {
   // Execute an action with a non-empty update, followed by one with an empty
@@ -1259,9 +1259,18 @@ TEST_F(ActorTaskBackgroundingTest,
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
 
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
   EXPECT_NSEQ(context.subtitle, @"Foo");
   EXPECT_EQ(context.subtitleUpdateCount, 1);
+}
+
+// Test that `background_worker()` is non-null and reflects the task's ID
+// and title.
+TEST_F(ActorTaskTest, BackgroundWorkerReflectsTask) {
+  ActorTaskBackgroundWorker* worker = task_->background_worker();
+  ASSERT_NE(nullptr, worker);
+  EXPECT_EQ(task_->task_id(), worker->task_id());
+  EXPECT_EQ(task_->title(), worker->title());
 }
 
 // Test that when backgrounding is disabled (via the killswitch that
@@ -1273,7 +1282,7 @@ TEST_F(ActorTaskTest, BackgroundingInertWhenDisabled) {
 
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebFrame* main_frame = AttachMainWebFrame(web_state.get());
@@ -1300,7 +1309,7 @@ TEST_F(ActorTaskBackgroundingTest, BackgroundTaskStoppedWithShutdown) {
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
 
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
 
   FakeActorTaskUpdatesObserver* observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
@@ -1324,7 +1333,7 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()));
-  task->SetBackgroundTaskContext(context);
+  task->background_worker()->SetContext(context);
   EXPECT_FALSE(context.completed);
 
   task.reset();
@@ -1338,7 +1347,7 @@ TEST_F(ActorTaskBackgroundingTest, WaitingOnUserCompletesBackgroundTask) {
   task_->Act({}, "Act", base::DoNothing());
   TestBackgroundContinuedProcessingTaskContext* context =
       CreateBackgroundTaskContext();
-  task_->SetBackgroundTaskContext(context);
+  task_->background_worker()->SetContext(context);
 
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];

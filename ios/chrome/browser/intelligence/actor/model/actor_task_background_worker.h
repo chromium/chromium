@@ -48,6 +48,9 @@ class ActorTaskBackgroundWorker {
     // Returns the task's current state.
     virtual ActorTaskState GetTaskState() const = 0;
 
+    // Returns the task's title, used as the background task title.
+    virtual const std::string& GetTaskTitle() const = 0;
+
     // Returns the latest task update, used as the background task subtitle.
     virtual const std::string& GetLastTaskUpdate() const = 0;
   };
@@ -61,6 +64,20 @@ class ActorTaskBackgroundWorker {
   ActorTaskBackgroundWorker(const ActorTaskBackgroundWorker&) = delete;
   ActorTaskBackgroundWorker& operator=(const ActorTaskBackgroundWorker&) =
       delete;
+
+  // Returns the owning task's ID.
+  ActorTaskId task_id() const { return task_id_; }
+
+  // Returns the owning task's title.
+  const std::string& title() const;
+
+  // Returns a weak pointer to this worker.
+  base::WeakPtr<ActorTaskBackgroundWorker> GetWeakPtr();
+
+  // Returns whether a background task should be requested for the owning task
+  // now: backgrounding is enabled, no live context is held and the task's
+  // current state should keep a background task alive.
+  bool ShouldRequestBackgroundTask() const;
 
   // Sets the background task context and applies the latest task update as its
   // subtitle. No-op if `GeminiActorBackgrounding` is disabled.

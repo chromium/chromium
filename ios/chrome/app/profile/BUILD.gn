@@ -38,6 +38,7 @@ source_set("profile_controller") {
     "profile_controller.mm",
   ]
   deps = [
+    ":actor_profile_agent",
     ":application_storage_metrics",
     ":certificate_policy_profile_agent",
     ":features",
@@ -73,6 +74,7 @@ source_set("profile_controller") {
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/level_up/model:promo",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/ntp/model:home_background_customization_promo",
@@ -123,6 +125,23 @@ source_set("features") {
     "features.mm",
   ]
   deps = [ "//base" ]
+}
+
+source_set("actor_profile_agent") {
+  sources = [
+    "actor_profile_agent.h",
+    "actor_profile_agent.mm",
+  ]
+  public_deps = [
+    ":profile",
+    "//ios/chrome/app/background_task",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
 }
 
 source_set("application_storage_metrics") {
@@ -425,6 +444,7 @@ source_set("test_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_profile_agent_unittest.mm",
     "certificate_policy_profile_agent_unittest.mm",
     "first_run_profile_agent_unittest.mm",
     "observing_profile_agent_unittest.mm",
@@ -436,6 +456,7 @@ source_set("unit_tests") {
     "welcome_back_screen_profile_agent_unittest.mm",
   ]
   deps = [
+    ":actor_profile_agent",
     ":certificate_policy_profile_agent",
     ":first_run_profile_agent",
     ":post_restore_profile_agent",
@@ -445,6 +466,7 @@ source_set("unit_tests") {
     ":test_utils",
     ":welcome_back_profile_agent",
     "//base/test:test_support",
+    "//components/actor/core",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/prefs",
@@ -455,10 +477,16 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/app/background_task",
+    "//ios/chrome/app/background_task:features",
     "//ios/chrome/app/profile/test:test_support",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
@@ -493,6 +521,7 @@ source_set("unit_tests") {
     "//ios/web/public/security",
     "//ios/web/public/session",
     "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

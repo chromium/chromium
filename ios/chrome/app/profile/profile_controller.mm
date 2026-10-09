@@ -40,6 +40,7 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
+#import "ios/chrome/app/profile/actor_profile_agent.h"
 #import "ios/chrome/app/profile/application_storage_metrics.h"
 #import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 #import "ios/chrome/app/profile/features.h"
@@ -67,6 +68,7 @@
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/level_up/model/level_up_promo_profile_agent.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/ntp/model/home_background_customization_promo_profile_agent.h"
@@ -634,6 +636,10 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
   if (base::FeatureList::IsEnabled(
           webauthn::features::kFetchDeviceAuthorizationKeys)) {
     [_state addAgent:[[DeviceAuthorizationProfileAgent alloc] init]];
+  }
+
+  if (IsGeminiActorBackgroundingEnabled()) {
+    [_state addAgent:[[ActorProfileAgent alloc] init]];
   }
 }
 

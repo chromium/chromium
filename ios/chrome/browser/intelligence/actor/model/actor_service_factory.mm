@@ -19,6 +19,12 @@ ActorService* ActorServiceFactory::GetForProfile(ProfileIOS* profile) {
 }
 
 // static
+ActorService* ActorServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<ActorService>(profile,
+                                                             /*create=*/false);
+}
+
+// static
 ActorServiceFactory* ActorServiceFactory::GetInstance() {
   static base::NoDestructor<ActorServiceFactory> instance;
   return instance.get();

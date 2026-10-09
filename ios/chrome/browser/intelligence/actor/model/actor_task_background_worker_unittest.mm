@@ -49,12 +49,14 @@ class FakeTaskStateDelegate
     return live_web_states;
   }
   ActorTaskState GetTaskState() const override { return state; }
+  const std::string& GetTaskTitle() const override { return title; }
   const std::string& GetLastTaskUpdate() const override {
     return last_task_update;
   }
 
   std::vector<base::WeakPtr<web::WebState>> web_states;
   ActorTaskState state = ActorTaskState::kInit;
+  std::string title = "Test Task";
   std::string last_task_update;
 };
 
@@ -307,6 +309,83 @@ TEST_F(ActorTaskBackgroundWorkerTest, InertWhenBackgroundingDisabled) {
   worker_->OnStopped(/*success=*/true);
   EXPECT_FALSE(context.completed);
   EXPECT_NSEQ(@"", context.subtitle);
+}
+
+#pragma mark - Accessors
+
+// Tests that `task_id()` reflects the constructor argument and `title()` the
+// delegate's title.
+TEST_F(ActorTaskBackgroundWorkerTest, TaskIdAndTitleAccessors) {
+  EXPECT_EQ(ActorTaskId(1), worker_->task_id());
+  EXPECT_EQ("Test Task", worker_->title());
+
+  delegate_.title = "Renamed";
+  EXPECT_EQ("Renamed", worker_->title());
+}
+
+// Tests that a weak pointer to the worker is invalidated by its
+// destruction.
+TEST_F(ActorTaskBackgroundWorkerTest, WeakPtrInvalidatedOnDestruction) {
+  base::WeakPtr<ActorTaskBackgroundWorker> weak_worker = worker_->GetWeakPtr();
+  ASSERT_TRUE(weak_worker);
+  EXPECT_EQ(worker_.get(), weak_worker.get());
+
+  worker_.reset();
+
+  EXPECT_FALSE(weak_worker);
+}
+
+#pragma mark - ShouldRequestBackgroundTask
+
+// Tests that a background task is requested only in states that keep one
+// alive (init, acting, reflecting).
+TEST_F(ActorTaskBackgroundWorkerTest, ShouldRequestBackgroundTaskPerState) {
+  const struct {
+    ActorTaskState state;
+    bool expected;
+  } kCases[] = {
+      {ActorTaskState::kInit, true},
+      {ActorTaskState::kActing, true},
+      {ActorTaskState::kReflecting, true},
+      {ActorTaskState::kWaitingOnUser, false},
+      {ActorTaskState::kPausedByActor, false},
+      {ActorTaskState::kPausedByUser, false},
+      {ActorTaskState::kCancelled, false},
+      {ActorTaskState::kFinished, false},
+      {ActorTaskState::kFailed, false},
+  };
+  for (const auto& test_case : kCases) {
+    delegate_.state = test_case.state;
+    EXPECT_EQ(test_case.expected, worker_->ShouldRequestBackgroundTask())
+        << "state: " << static_cast<int>(test_case.state);
+  }
+}
+
+// Tests that a live context blocks a new request, while a completed (e.g.
+// expired) context does not.
+TEST_F(ActorTaskBackgroundWorkerTest,
+       ShouldRequestBackgroundTaskDependsOnContextLiveness) {
+  ASSERT_TRUE(worker_->ShouldRequestBackgroundTask());
+
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  worker_->SetContext(context);
+  EXPECT_FALSE(worker_->ShouldRequestBackgroundTask());
+
+  [context setTaskCompletedWithSuccess:NO];
+  EXPECT_TRUE(worker_->ShouldRequestBackgroundTask());
+}
+
+// Tests that no background task is requested when backgrounding is disabled,
+// even in a state that keeps one alive.
+TEST_F(ActorTaskBackgroundWorkerTest,
+       ShouldRequestBackgroundTaskFalseWhenDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(
+      kEnableBackgroundContinuedProcessing);
+  ASSERT_FALSE(IsGeminiActorBackgroundingEnabled());
+  delegate_.state = ActorTaskState::kActing;
+
+  EXPECT_FALSE(worker_->ShouldRequestBackgroundTask());
 }
 
 #pragma mark - Heartbeat

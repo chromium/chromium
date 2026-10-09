@@ -27,7 +27,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
-@class BackgroundContinuedProcessingTaskContext;
 @class PostedObserverList<ObserverType>;
 @protocol ActorTaskInterventionDelegate;
 @protocol ActorTaskUpdatesObserver;
@@ -169,11 +168,11 @@ class ActorTask : public web::WebStateObserver,
   // Returns whether this task allows actuating on incognito WebStates.
   bool allow_incognito_web_states() const;
 
-  // Sets the background continued processing task context and updates its
-  // subtitle with the latest cached task update, if any. No-op if
-  // `GeminiActorBackgrounding` is disabled.
-  void SetBackgroundTaskContext(
-      BackgroundContinuedProcessingTaskContext* background_task_context);
+  // Returns the worker of this task's background work. Owned by this task
+  // and valid for its lifetime.
+  ActorTaskBackgroundWorker* background_worker() const {
+    return background_worker_.get();
+  }
 
   // web::WebStateObserver overrides.
   void DidStopLoading(web::WebState* web_state) override;
@@ -238,6 +237,7 @@ class ActorTask : public web::WebStateObserver,
   // ActorTaskBackgroundWorker::TaskStateDelegate.
   std::vector<web::WebState*> GetControlledWebStates() override;
   ActorTaskState GetTaskState() const override;
+  const std::string& GetTaskTitle() const override;
   const std::string& GetLastTaskUpdate() const override;
 
   // Returns the Browser associated with the given `window_id`.

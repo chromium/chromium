@@ -19,6 +19,15 @@ inline constexpr int64_t kDefaultTotalUnitsOfProgress = 1000;
 // the stepped incremental progress.
 inline constexpr int64_t kDefaultExpectedStepCount = 18;
 
+// How the scheduler handles a continued processing request it cannot start
+// immediately. Mapped to the BackgroundTasks SDK by the app agent.
+enum class BackgroundContinuedProcessingSubmissionStrategy {
+  // The system queues the request until it can run.
+  kQueue,
+  // Submission fails if the task cannot start now.
+  kFail,
+};
+
 // Configuration object containing the parameters required to request a
 // background continued processing task.
 @interface BackgroundContinuedProcessingTaskConfiguration : NSObject
@@ -47,13 +56,12 @@ inline constexpr int64_t kDefaultExpectedStepCount = 18;
 // considered stalled. Defaults to zero, which disables the heartbeat.
 @property(nonatomic) base::TimeDelta progressHeartbeatInterval;
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-// (Optional) The submission strategy for the scheduler to abide by. Defaults to
-// `BGContinuedProcessingTaskRequestSubmissionStrategyQueue`.
+// (Optional) How the scheduler handles a request it cannot start immediately.
+// Defaults to `kQueue`.
 @property(nonatomic)
-    BGContinuedProcessingTaskRequestSubmissionStrategy strategy API_AVAILABLE(
-        ios(26.0));
+    BackgroundContinuedProcessingSubmissionStrategy submissionStrategy;
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // (Optional) Special system resources required for the task. Defaults to
 // `BGContinuedProcessingTaskRequestResourcesDefault`.
 @property(nonatomic)

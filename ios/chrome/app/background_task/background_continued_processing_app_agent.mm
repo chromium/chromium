@@ -41,6 +41,20 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
                                     g_next_task_sequence_number.GetNext()];
 }
 
+// Returns an equivalent `BGContinuedProcessingTaskRequestSubmissionStrategy`
+// from a `BackgroundContinuedProcessingSubmissionStrategy`.
+BGContinuedProcessingTaskRequestSubmissionStrategy
+ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
+    BackgroundContinuedProcessingSubmissionStrategy strategy)
+    API_AVAILABLE(ios(26.0)) {
+  switch (strategy) {
+    case BackgroundContinuedProcessingSubmissionStrategy::kQueue:
+      return BGContinuedProcessingTaskRequestSubmissionStrategyQueue;
+    case BackgroundContinuedProcessingSubmissionStrategy::kFail:
+      return BGContinuedProcessingTaskRequestSubmissionStrategyFail;
+  }
+}
+
 }  // namespace
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
@@ -138,7 +152,9 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
             initWithIdentifier:taskIdentifier
                          title:configuration.title
                       subtitle:configuration.subtitle];
-    request.strategy = configuration.strategy;
+    request.strategy =
+        ConvertToBGContinuedProcessingTaskRequestSubmissionStrategy(
+            configuration.submissionStrategy);
     request.requiredResources = configuration.requiredResources;
 
     NSError* error = nil;

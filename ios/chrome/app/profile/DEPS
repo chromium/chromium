@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "actor_profile_agent_unittest\\.mm": [
+    "+components/actor/core/task_source_info.h",
+  ],
   "first_run_profile_agent.mm": [
     "+components/signin/public/base/signin_switches.h",
   ],

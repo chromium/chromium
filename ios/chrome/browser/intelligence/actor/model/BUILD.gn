@@ -37,9 +37,7 @@ source_set("model") {
     "//components/origin_gating/core",
 
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
-    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/background_task",
-    "//ios/chrome/app/profile",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -53,9 +51,7 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/origin_gating/model",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser:utils",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -107,10 +103,8 @@ source_set("unit_tests") {
     "//components/origin_gating/core",
 
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
-    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/background_task",
     "//ios/chrome/app/background_task:features",
-    "//ios/chrome/app/profile",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -125,7 +119,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:page_context_extractor_feature",
     "//ios/chrome/browser/origin_gating/model",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

@@ -59,6 +59,25 @@ ActorTaskBackgroundWorker::~ActorTaskBackgroundWorker() {
   FinalizeBackgroundTask(/*success=*/false);
 }
 
+const std::string& ActorTaskBackgroundWorker::title() const {
+  return delegate_->GetTaskTitle();
+}
+
+base::WeakPtr<ActorTaskBackgroundWorker>
+ActorTaskBackgroundWorker::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+bool ActorTaskBackgroundWorker::ShouldRequestBackgroundTask() const {
+  if (!IsGeminiActorBackgroundingEnabled()) {
+    return false;
+  }
+  if (background_task_context_ && !background_task_context_.completed) {
+    return false;
+  }
+  return ShouldKeepBackgroundTaskAlive(delegate_->GetTaskState());
+}
+
 void ActorTaskBackgroundWorker::SetContext(
     BackgroundContinuedProcessingTaskContext* context) {
   if (!IsGeminiActorBackgroundingEnabled()) {

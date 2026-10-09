@@ -19,6 +19,8 @@ class ActorService;
 class ActorServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static ActorService* GetForProfile(ProfileIOS* profile);
+  // Returns the service for `profile` without creating it, or null.
+  static ActorService* GetForProfileIfExists(ProfileIOS* profile);
   static ActorServiceFactory* GetInstance();
 
  private:

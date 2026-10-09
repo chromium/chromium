@@ -486,11 +486,6 @@ bool ActorTask::allow_incognito_web_states() const {
   return allow_incognito_web_states_;
 }
 
-void ActorTask::SetBackgroundTaskContext(
-    BackgroundContinuedProcessingTaskContext* background_task_context) {
-  background_worker_->SetContext(background_task_context);
-}
-
 #pragma mark - web::WebStateObserver
 
 void ActorTask::DidStopLoading(web::WebState* web_state) {
@@ -686,6 +681,10 @@ std::vector<web::WebState*> ActorTask::GetControlledWebStates() {
 
 ActorTaskState ActorTask::GetTaskState() const {
   return state_;
+}
+
+const std::string& ActorTask::GetTaskTitle() const {
+  return title_;
 }
 
 const std::string& ActorTask::GetLastTaskUpdate() const {

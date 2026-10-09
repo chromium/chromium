@@ -496,6 +496,9 @@ TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
     ASSERT_NE(captured_request, nil);
     EXPECT_NSEQ(captured_request.title, kTestTaskTitle);
     EXPECT_NSEQ(captured_request.subtitle, kTestTaskSubtitle);
+    // The default configuration strategy maps to the SDK's queue strategy.
+    EXPECT_EQ(BGContinuedProcessingTaskRequestSubmissionStrategyQueue,
+              captured_request.strategy);
     ASSERT_NE(captured_launch_handler, nil);
 
     NSString* expected_segment = [NSString
@@ -513,6 +516,42 @@ TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
     [context setTaskCompletedWithSuccess:YES];
 
     EXPECT_OCMOCK_VERIFY(mock_task);
+  }
+}
+
+// Tests that a configuration whose submission strategy is `kFail` is submitted
+// to the system with the SDK's fail strategy.
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
+       TestRequestTaskSubmitsFailStrategy) {
+  if (@available(iOS 26.0, *)) {
+    __block BGContinuedProcessingTaskRequest* captured_request = nil;
+    OCMStub([mock_scheduler_
+                registerForTaskWithIdentifier:[OCMArg any]
+                                   usingQueue:dispatch_get_main_queue()
+                                launchHandler:[OCMArg any]])
+        .andReturn(YES);
+    OCMStub([mock_scheduler_
+                submitTaskRequest:[OCMArg checkWithBlock:^BOOL(id value) {
+                  captured_request = value;
+                  return [value
+                      isKindOfClass:[BGContinuedProcessingTaskRequest class]];
+                }]
+                            error:[OCMArg setTo:nil]])
+        .andReturn(YES);
+    OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
+    BackgroundContinuedProcessingTaskConfiguration* config =
+        CreateTestConfiguration();
+    config.submissionStrategy =
+        BackgroundContinuedProcessingSubmissionStrategy::kFail;
+
+    BackgroundContinuedProcessingTaskContext* context =
+        [agent_ requestTaskWithIdentifier:kTestTaskId configuration:config];
+
+    ASSERT_NE(context, nil);
+    ASSERT_NE(captured_request, nil);
+    EXPECT_EQ(BGContinuedProcessingTaskRequestSubmissionStrategyFail,
+              captured_request.strategy);
+    [context setTaskCompletedWithSuccess:YES];
   }
 }
 

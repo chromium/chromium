@@ -14,19 +14,14 @@
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/location.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
-#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
-#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
-#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -40,11 +35,9 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
@@ -116,8 +109,6 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   auto task = std::make_unique<ActorTask>(
       task_id, title, source_info, allow_incognito_web_states, journal_.get(),
       tool_factory_.get(), browser_list);
-
-  RegisterBackgroundTask(task.get());
 
   for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
     if (observer) {
@@ -367,6 +358,16 @@ void ActorService::AddControlledWebState(ActorTaskId task_id,
   }
 }
 
+std::vector<base::WeakPtr<ActorTaskBackgroundWorker>>
+ActorService::GetWeakTaskBackgroundWorkers() {
+  std::vector<base::WeakPtr<ActorTaskBackgroundWorker>> workers;
+  workers.reserve(active_tasks_.size());
+  for (const auto& [task_id, task] : active_tasks_) {
+    workers.push_back(task->background_worker()->GetWeakPtr());
+  }
+  return workers;
+}
+
 #pragma mark - Private
 
 void ActorService::OnPageContextExtractionComplete(
@@ -505,69 +506,6 @@ web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
 
   return browser_and_index.browser->GetWebStateList()->GetWebStateAt(
       browser_and_index.tab_index);
-}
-
-bool ActorService::RegisterBackgroundTask(ActorTask* task) {
-  CHECK(task);
-  const ActorTaskId task_id = task->task_id();
-  if (!IsGeminiActorBackgroundingEnabled()) {
-    LogJournalEvent(*journal_, GURL(), task_id,
-                    "ActorService::RegisterBackgroundTask",
-                    {{"status", "feature_disabled"}});
-    return false;
-  }
-
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
-  Browser* browser =
-      browser_list_utils::GetMostActiveSceneBrowser(browser_list);
-  SceneState* scene_state = browser ? browser->GetSceneState() : nil;
-  if (!scene_state) {
-    LogJournalEvent(*journal_, GURL(), task_id,
-                    "ActorService::RegisterBackgroundTask",
-                    {{"status", "no_active_scene"}});
-    return false;
-  }
-  AppState* app_state = scene_state.profileState.appState;
-
-  BackgroundContinuedProcessingAppAgent* agent =
-      [BackgroundContinuedProcessingAppAgent agentFromApp:app_state];
-  if (!agent) {
-    LogJournalEvent(*journal_, GURL(), task_id,
-                    "ActorService::RegisterBackgroundTask",
-                    {{"status", "no_backgrounding_task_app_agent"}});
-    return false;
-  }
-
-  base::WeakPtr<ActorService> weak_service = weak_ptr_factory_.GetWeakPtr();
-
-  void (^expiration_handler)(void) = ^{
-    if (weak_service) {
-      weak_service->StopTask(task_id, ActorTaskStoppedReason::kShutdown);
-    }
-  };
-
-  BackgroundContinuedProcessingTaskConfiguration* config =
-      [[BackgroundContinuedProcessingTaskConfiguration alloc]
-              initWithTitle:base::SysUTF8ToNSString(task->title())
-                   subtitle:@""
-          expirationHandler:expiration_handler];
-
-  std::string task_id_string = base::NumberToString(task_id.value());
-  BackgroundContinuedProcessingTaskContext* context =
-      [agent requestTaskWithIdentifier:base::SysUTF8ToNSString(task_id_string)
-                         configuration:config];
-  if (!context) {
-    LogJournalEvent(*journal_, GURL(), task_id,
-                    "ActorService::RegisterBackgroundTask",
-                    {{"status", "request_background_task_rejected"}});
-    return false;
-  }
-
-  task->SetBackgroundTaskContext(context);
-  LogJournalEvent(*journal_, GURL(), task_id,
-                  "ActorService::RegisterBackgroundTask",
-                  {{"status", "success (not guaranteed to be executed)"}});
-  return true;
 }
 
 }  // namespace actor

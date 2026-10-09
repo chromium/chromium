@@ -34,6 +34,7 @@ class WebState;
 namespace actor {
 
 class ActorTask;
+class ActorTaskBackgroundWorker;
 class ActorToolRequest;
 class ActorToolFactory;
 class AggregatedJournal;
@@ -142,6 +143,10 @@ class ActorService : public KeyedService {
   // Adds a WebState to the set of controlled WebStates for the given task.
   void AddControlledWebState(ActorTaskId task_id, web::WebState* web_state);
 
+  // Returns a weak pointer to the background worker of each active task.
+  std::vector<base::WeakPtr<ActorTaskBackgroundWorker>>
+  GetWeakTaskBackgroundWorkers();
+
   // Returns a weak pointer to this service instance.
   base::WeakPtr<ActorService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -199,12 +204,6 @@ class ActorService : public KeyedService {
   // if it cannot be found.
   web::WebState* GetWebState(web::WebStateID web_state_id,
                              bool allows_incognito);
-
-  // Creates and registers a background continued processing task with the
-  // system for `task`, and sets the context on `task` if available. Returns
-  // whether registration was successful (does not guarantee the task will be
-  // executed by the system).
-  bool RegisterBackgroundTask(ActorTask* task);
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;
