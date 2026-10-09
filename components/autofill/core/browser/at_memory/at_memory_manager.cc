@@ -1394,9 +1394,7 @@ void AtMemoryManager::OnAutofillAiFetched(
     metrics->MarkFilled();
   }
 
-  if (EntityDataManager* edm = client_->GetEntityDataManager()) {
-    edm->RecordEntityUsed(fetched_entity.guid(), base::Time::Now());
-  }
+  RecordAutofillAiEntityUse(fetched_entity.guid());
 
   FillField(*bam, form_id, field_id, *attribute_fill_value);
 }
