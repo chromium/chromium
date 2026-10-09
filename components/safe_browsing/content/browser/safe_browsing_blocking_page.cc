@@ -275,20 +275,20 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // When an interstitial tab is closed on Android, the WebContents is
-  // synchronously destroyed, which aborts any asynchronous ThreatDetails
-  // collection in TriggerManager before the survey can launch. To ensure HaTS
-  // surveys are still triggered on tab close, assemble the minimal report
-  // metadata synchronously here and dispatch it directly to the UI manager.
+  // On Android, dispatch the HaTS survey report synchronously when the
+  // interstitial closes instead of waiting for TriggerManager's asynchronous
+  // ThreatDetails collection. When the user proceeds, ThreatDetails collection
+  // is delayed by threat_details_proceed_delay() (3s), during which post-
+  // interstitial navigations, redirects, or tab destruction can abort the
+  // survey before it launches.
   content::WebContents* wc = web_contents();
   bool is_tab_closed = wc ? wc->IsBeingDestroyed() : false;
-  if (is_hats_candidate && is_tab_closed) {
+  if (is_hats_candidate && wc) {
     std::unique_ptr<ClientSafeBrowsingReportRequest> survey_report =
         CreateFallbackReport(unsafe_resources()[0], did_proceed, num_visits,
                              &local_interactions);
-    ui_manager()->AttachThreatDetailsAndLaunchSurvey(wc->GetBrowserContext(),
-                                                     std::move(survey_report),
-                                                     /*is_tab_closed=*/true);
+    ui_manager()->AttachThreatDetailsAndLaunchSurvey(
+        wc->GetBrowserContext(), std::move(survey_report), is_tab_closed);
     is_hats_candidate = false;
   }
 #endif

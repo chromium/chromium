@@ -208,6 +208,7 @@ source_set("unit_tests") {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+      "//components/safe_browsing/content/browser/triggers",
       "//components/safe_browsing/core/browser/realtime:test_support",
       "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
       "//components/security_interstitials/content:security_interstitial_page",

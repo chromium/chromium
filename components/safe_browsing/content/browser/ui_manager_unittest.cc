@@ -9,14 +9,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
@@ -97,7 +101,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                                content::WebContents* web_contents,
                                const GURL& main_frame_url,
                                const UnsafeResourceList& unsafe_resources,
-                               bool is_proceed_anyway_disabled = false)
+                               bool is_proceed_anyway_disabled = false,
+                               TriggerManager* trigger_manager = nullptr)
       : SafeBrowsingBlockingPage(
             manager,
             web_contents,
@@ -132,7 +137,7 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             /*history_service=*/nullptr,
             /*navigation_observer_manager=*/nullptr,
             /*metrics_collector=*/nullptr,
-            /*trigger_manager=*/nullptr,
+            trigger_manager,
             is_proceed_anyway_disabled,
             /*is_safe_browsing_surveys_enabled=*/true,
             /*trust_safety_sentiment_service_trigger=*/base::NullCallback(),
@@ -142,6 +147,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
     SetThreatDetailsProceedDelayForTesting(0);
     DontCreateViewForTesting();
   }
+
+  using SafeBrowsingBlockingPage::OnInterstitialClosing;
 };
 
 // A factory that creates TestSafeBrowsingBlockingPages.
@@ -251,13 +258,45 @@ class TestSafeBrowsingUIManagerDelegate
   std::vector<UrlFilteringEventParams> url_filtering_event_params_;
 };
 
+class FakeSafeBrowsingUIManager : public SafeBrowsingUIManager {
+ public:
+  struct SurveyReportParams {
+    ClientSafeBrowsingReportRequest report;
+    bool is_tab_closed = false;
+  };
+
+  FakeSafeBrowsingUIManager(
+      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
+      const GURL& default_safe_page)
+      : SafeBrowsingUIManager(std::move(delegate),
+                              std::move(blocking_page_factory),
+                              default_safe_page) {}
+
+  void AttachThreatDetailsAndLaunchSurvey(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool is_tab_closed) override {
+    survey_reports_.push_back({*report, is_tab_closed});
+  }
+
+  const std::vector<SurveyReportParams>& survey_reports() const {
+    return survey_reports_;
+  }
+
+ private:
+  ~FakeSafeBrowsingUIManager() override = default;
+
+  std::vector<SurveyReportParams> survey_reports_;
+};
+
 class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
  public:
   SafeBrowsingUIManagerTest() {
     auto ui_manager_delegate =
         std::make_unique<TestSafeBrowsingUIManagerDelegate>();
     raw_ui_manager_delegate_ = ui_manager_delegate.get();
-    ui_manager_ = new SafeBrowsingUIManager(
+    ui_manager_ = base::MakeRefCounted<FakeSafeBrowsingUIManager>(
         std::move(ui_manager_delegate),
         std::make_unique<TestSafeBrowsingBlockingPageFactory>(),
         GURL("chrome://new-tab-page/"));
@@ -365,13 +404,13 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  SafeBrowsingUIManager* ui_manager() { return ui_manager_.get(); }
+  FakeSafeBrowsingUIManager* ui_manager() { return ui_manager_.get(); }
   TestSafeBrowsingUIManagerDelegate* ui_manager_delegate() {
     return raw_ui_manager_delegate_;
   }
 
  private:
-  scoped_refptr<SafeBrowsingUIManager> ui_manager_;
+  scoped_refptr<FakeSafeBrowsingUIManager> ui_manager_;
   raw_ptr<TestSafeBrowsingUIManagerDelegate> raw_ui_manager_delegate_ = nullptr;
 };
 
@@ -933,5 +972,72 @@ TEST(BaseBlockingPageReportingInfoTest, ClientSideDetectionBillingScamVerdict) {
   EXPECT_EQ(reporting_info.extra_extra_suffix,
             "scam_experiment_verdict_billing");
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class SafeBrowsingUIManagerAndroidHatsTest : public SafeBrowsingUIManagerTest {
+ protected:
+  SafeBrowsingUIManagerAndroidHatsTest()
+      : trigger_manager_(ui_manager(), /*local_state_prefs=*/nullptr) {
+    feature_list_.InitAndEnableFeature(kRedWarningSurveyAndroid);
+  }
+
+  TriggerManager* trigger_manager() { return &trigger_manager_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  TriggerManager trigger_manager_;
+};
+
+TEST_F(SafeBrowsingUIManagerAndroidHatsTest, FinishThreatDetails_Proceed) {
+  StartNavigation(kBadURL);
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  resource.threat_source = ThreatSource::ANDROID_SAFEBROWSING;
+  TestSafeBrowsingBlockingPage blocking_page(
+      ui_manager(), web_contents(), GURL(kBadURL), {resource},
+      /*is_proceed_anyway_disabled=*/false, trigger_manager());
+
+  // Simulate the user clicking Proceed ("1" == CMD_PROCEED).
+  blocking_page.CommandReceived("1");
+  blocking_page.OnInterstitialClosing();
+
+  ASSERT_EQ(1u, ui_manager()->survey_reports().size());
+  const auto& [report, is_tab_closed] = ui_manager()->survey_reports()[0];
+  EXPECT_FALSE(is_tab_closed);
+  EXPECT_TRUE(report.did_proceed());
+  EXPECT_EQ(ClientSafeBrowsingReportRequest::URL_PHISHING, report.type());
+  EXPECT_EQ(GURL(kBadURL), GURL(report.url()));
+  ASSERT_EQ(1, report.interstitial_interactions_size());
+  EXPECT_EQ(
+      ClientSafeBrowsingReportRequest::InterstitialInteraction::CMD_PROCEED,
+      report.interstitial_interactions(0).security_interstitial_interaction());
+}
+
+TEST_F(SafeBrowsingUIManagerAndroidHatsTest, FinishThreatDetails_DontProceed) {
+  StartNavigation(kBadURL);
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  resource.threat_source = ThreatSource::ANDROID_SAFEBROWSING;
+  TestSafeBrowsingBlockingPage blocking_page(
+      ui_manager(), web_contents(), GURL(kBadURL), {resource},
+      /*is_proceed_anyway_disabled=*/false, trigger_manager());
+
+  // Simulate the user clicking Back to safety ("0" == CMD_DONT_PROCEED).
+  blocking_page.CommandReceived("0");
+  blocking_page.OnInterstitialClosing();
+
+  ASSERT_EQ(1u, ui_manager()->survey_reports().size());
+  const auto& [report, is_tab_closed] = ui_manager()->survey_reports()[0];
+  EXPECT_FALSE(is_tab_closed);
+  EXPECT_FALSE(report.did_proceed());
+  EXPECT_EQ(ClientSafeBrowsingReportRequest::URL_PHISHING, report.type());
+  EXPECT_EQ(GURL(kBadURL), GURL(report.url()));
+  ASSERT_EQ(1, report.interstitial_interactions_size());
+  EXPECT_EQ(
+      ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_DONT_PROCEED,
+      report.interstitial_interactions(0).security_interstitial_interaction());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing
