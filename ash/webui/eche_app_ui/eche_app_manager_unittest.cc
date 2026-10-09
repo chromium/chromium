@@ -16,7 +16,9 @@
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -28,7 +30,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -91,11 +92,7 @@ class FakeAccessibilityProviderProxy : public AccessibilityProviderProxy {
 
 }  // namespace
 
-const char kFakeDeviceName[] = "Someone's Chromebook";
-const char kFakeBoardName[] = "atlas";
-const GaiaId::Literal kFakeGaiaId("123");
 const size_t kNumTestDevices = 3;
-const char kFakeDeviceType[] = "Chromebook";
 
 class EcheAppManagerTest : public AshTestBase {
  public:
@@ -139,15 +136,9 @@ class EcheAppManagerTest : public AshTestBase {
         std::make_unique<FakePresenceMonitorClient>();
 
     manager_ = std::make_unique<EcheAppManager>(
-        &test_pref_service_,
-        SystemInfo::Builder()
-            .SetDeviceName(kFakeDeviceName)
-            .SetBoardName(kFakeBoardName)
-            .SetGaiaId(kFakeGaiaId)
-            .SetDeviceType(kFakeDeviceType)
-            .Build(),
-        fake_phone_hub_manager_.get(), fake_device_sync_client_.get(),
-        fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),
+        &test_pref_service_, /*user=*/nullptr, fake_phone_hub_manager_.get(),
+        fake_device_sync_client_.get(), fake_multidevice_setup_client_.get(),
+        fake_secure_channel_client_.get(),
         std::move(fake_presence_monitor_client),
         std::make_unique<FakeAccessibilityProviderProxy>(),
         base::BindRepeating(&LaunchEcheAppFunction),
@@ -265,6 +256,20 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_TRUE(stream_orientation_observer_remote());
   EXPECT_TRUE(connection_status_observer_remote());
   EXPECT_TRUE(keyboard_layout_handler_remote());
+}
+
+TEST_F(EcheAppManagerTest, GetSystemInfo) {
+  const char kLsbRelease[] =
+      "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
+      "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
+  const base::Time lsb_release_time(
+      base::Time::FromSecondsSinceUnixEpoch(12345.6));
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
+  std::unique_ptr<SystemInfo> system_info =
+      EcheAppManager::GetSystemInfo(/*user=*/nullptr);
+
+  EXPECT_EQ("1.2.3", system_info->GetOsVersion());
+  EXPECT_EQ("Chrome device", system_info->GetDeviceType());
 }
 
 }  // namespace ash::eche_app

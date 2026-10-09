@@ -17,12 +17,9 @@
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/eche_app_ui/eche_app_notification_controller.h"
-#include "ash/webui/eche_app_ui/system_info.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -277,20 +274,6 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   // Eche tray should be visible when streaming is active, not ative when
   // launch.
   EXPECT_FALSE(eche_tray()->is_active());
-}
-
-TEST_F(EcheAppManagerFactoryTest, GetSystemInfo) {
-  const char kLsbRelease[] =
-      "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
-      "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-  const base::Time lsb_release_time(
-      base::Time::FromSecondsSinceUnixEpoch(12345.6));
-  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
-  std::unique_ptr<SystemInfo> system_info =
-      EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());
-
-  EXPECT_EQ("1.2.3", system_info->GetOsVersion());
-  EXPECT_EQ("Chrome device", system_info->GetDeviceType());
 }
 
 }  // namespace eche_app

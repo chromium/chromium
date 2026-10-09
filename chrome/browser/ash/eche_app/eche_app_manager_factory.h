@@ -21,7 +21,6 @@ namespace eche_app {
 
 class EcheAppManager;
 class EcheAppNotificationController;
-class SystemInfo;
 class AppsLaunchInfoProvider;
 
 struct LaunchedAppInfo {
@@ -64,8 +63,6 @@ class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
 
   EcheAppManagerFactory(const EcheAppManagerFactory&) = delete;
   EcheAppManagerFactory& operator=(const EcheAppManagerFactory&) = delete;
-
-  std::unique_ptr<SystemInfo> GetSystemInfo(Profile* profile) const;
 
  private:
   friend base::NoDestructor<EcheAppManagerFactory>;

@@ -25,6 +25,10 @@
 
 class PrefService;
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace ash {
 
 namespace device_sync {
@@ -69,7 +73,7 @@ class EcheKeyboardLayoutHandler;
 class EcheAppManager : public KeyedService {
  public:
   EcheAppManager(PrefService* pref_service,
-                 std::unique_ptr<SystemInfo> system_info,
+                 const user_manager::User* user,
                  phonehub::PhoneHubManager*,
                  device_sync::DeviceSyncClient*,
                  multidevice_setup::MultiDeviceSetupClient*,
@@ -84,6 +88,9 @@ class EcheAppManager : public KeyedService {
 
   EcheAppManager(const EcheAppManager&) = delete;
   EcheAppManager& operator=(const EcheAppManager&) = delete;
+
+  static std::unique_ptr<SystemInfo> GetSystemInfo(
+      const user_manager::User* user);
 
   void BindSignalingMessageExchangerInterface(
       mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);

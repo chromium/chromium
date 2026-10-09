@@ -19,7 +19,6 @@
 #include "ash/webui/eche_app_ui/eche_app_notification_controller.h"
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
-#include "ash/webui/eche_app_ui/system_info.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -28,7 +27,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_accessibility_provider_proxy.h"
@@ -37,7 +35,6 @@
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -45,14 +42,9 @@
 #include "chromeos/ash/services/secure_channel/presence_monitor_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/user_manager/user_manager.h"
-#include "components/version_info/channel.h"
-#include "google_apis/gaia/gaia_id.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/devicetype_utils.h"
+#include "components/user_manager/user.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -270,16 +262,18 @@ EcheAppManagerFactory::BuildServiceInstanceForBrowserContext(
           secure_channel::PresenceMonitorClientImpl::Factory::Create(
               std::move(presence_monitor));
 
-  std::unique_ptr<EcheAppManager> eche_app_manager = std::make_unique<EcheAppManager>(
-      profile->GetPrefs(), GetSystemInfo(profile), phone_hub_manager,
-      device_sync_client, multidevice_setup_client, secure_channel_client,
-      std::move(presence_monitor_client),
-      std::make_unique<EcheAppAccessibilityProviderProxy>(),
-      base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
-      base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
-                          weak_ptr_factory_.GetMutableWeakPtr(), profile),
-      base::BindRepeating(&EcheAppManagerFactory::CloseNotification,
-                          weak_ptr_factory_.GetMutableWeakPtr(), profile));
+  std::unique_ptr<EcheAppManager> eche_app_manager =
+      std::make_unique<EcheAppManager>(
+          profile->GetPrefs(),
+          BrowserContextHelper::Get()->GetUserByBrowserContext(profile),
+          phone_hub_manager, device_sync_client, multidevice_setup_client,
+          secure_channel_client, std::move(presence_monitor_client),
+          std::make_unique<EcheAppAccessibilityProviderProxy>(),
+          base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
+          base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
+                              weak_ptr_factory_.GetMutableWeakPtr(), profile),
+          base::BindRepeating(&EcheAppManagerFactory::CloseNotification,
+                              weak_ptr_factory_.GetMutableWeakPtr(), profile));
 
   EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
                             ->GetStatusAreaWidget()
@@ -291,38 +285,6 @@ EcheAppManagerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return eche_app_manager;
-}
-
-std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
-    Profile* profile) const {
-  std::string device_name;
-  const std::string board_name = base::SysInfo::GetLsbReleaseBoard();
-  const std::u16string device_type = ui::GetChromeOSDeviceName();
-  const user_manager::User* user =
-      BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
-  GaiaId gaia_id;
-  if (user) {
-    std::u16string given_name = user->GetGivenName();
-    if (!given_name.empty()) {
-      device_name = l10n_util::GetStringFUTF8(
-          IDS_ECHE_APP_DEFAULT_DEVICE_NAME, user->GetGivenName(), device_type);
-    }
-    if (user->HasGaiaAccount()) {
-      const AccountId& account_id = user->GetAccountId();
-      gaia_id = account_id.GetGaiaId();
-    }
-  }
-
-  SystemInfo::Builder system_info;
-  system_info.SetDeviceName(device_name)
-      .SetBoardName(board_name)
-      .SetGaiaId(gaia_id)
-      .SetDeviceType(base::UTF16ToUTF8(device_type));
-
-  system_info.SetOsVersion(base::SysInfo::OperatingSystemVersion())
-      .SetChannel(chrome::GetChannelName(chrome::WithExtendedStable(true)));
-
-  return system_info.Build();
 }
 
 void EcheAppManagerFactory::SetLastLaunchedAppInfo(
