@@ -431,6 +431,81 @@ TEST_F(WebSocketStreamTest, AbortAfterHandshake) {
   EXPECT_FALSE(closed_tester.IsRejected());
 }
 
+TEST_F(WebSocketStreamTest, AbortBeforeHandshakeThenClose) {
+  V8TestingScope scope;
+
+  EXPECT_CALL(Channel(), ApplyBackpressure()).Times(AnyNumber());
+
+  auto* script_state = scope.GetScriptState();
+
+  auto* options = WebSocketStreamOptions::Create();
+  options->setSignal(AbortSignal::abort(script_state));
+
+  auto* stream = Create(script_state, "ws://example.com/echo", options,
+                        ASSERT_NO_EXCEPTION);
+
+  ASSERT_TRUE(stream);
+  EXPECT_FALSE(stream->HasPendingActivity());
+
+  stream->close(MakeGarbageCollected<WebSocketCloseInfo>(),
+                ASSERT_NO_EXCEPTION);
+
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
+  ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
+
+  opened_tester.WaitUntilSettled();
+  closed_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(opened_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+  EXPECT_TRUE(closed_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+}
+
+TEST_F(WebSocketStreamTest, AbortDuringHandshakeThenClose) {
+  V8TestingScope scope;
+
+  {
+    InSequence s;
+    EXPECT_CALL(Channel(), ApplyBackpressure());
+    EXPECT_CALL(Channel(), Connect(KURL("ws://example.com/echo"), _, _))
+        .WillOnce(Return(true));
+    EXPECT_CALL(Channel(), CancelHandshake());
+  }
+
+  auto* script_state = scope.GetScriptState();
+
+  auto* controller = AbortController::Create(script_state);
+  auto* options = WebSocketStreamOptions::Create();
+  options->setSignal(controller->signal());
+
+  auto* stream = Create(script_state, "ws://example.com/echo", options,
+                        ASSERT_NO_EXCEPTION);
+
+  ASSERT_TRUE(stream);
+
+  ScriptPromiseTester opened_tester(script_state, stream->opened(script_state));
+  ScriptPromiseTester closed_tester(script_state, stream->closed(script_state));
+
+  controller->abort(script_state);
+  EXPECT_FALSE(stream->HasPendingActivity());
+
+  stream->close(MakeGarbageCollected<WebSocketCloseInfo>(),
+                ASSERT_NO_EXCEPTION);
+
+  opened_tester.WaitUntilSettled();
+  closed_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(opened_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, opened_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+  EXPECT_TRUE(closed_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, closed_tester.Value(),
+                             DOMExceptionCode::kAbortError));
+}
+
 }  // namespace
 
 }  // namespace blink

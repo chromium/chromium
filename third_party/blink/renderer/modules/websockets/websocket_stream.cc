@@ -683,6 +683,8 @@ void WebSocketStream::Connect(ScriptState* script_state,
   if (options->hasSignal()) {
     auto* signal = options->signal();
     if (signal->aborted()) {
+      common_.SetState(WebSocketCommon::kClosed);
+      channel_ = nullptr;
       auto exception = V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kAbortError,
           "WebSocket handshake was aborted");
@@ -708,10 +710,13 @@ void WebSocketStream::Connect(ScriptState* script_state,
     case WebSocketCommon::ConnectResult::kException:
       DCHECK(exception_state.HadException());
       channel_ = nullptr;
+      abort_handle_.Clear();
       return;
 
     case WebSocketCommon::ConnectResult::kAsyncError:
       DCHECK(!exception_state.HadException());
+      channel_ = nullptr;
+      abort_handle_.Clear();
       auto exception = V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kSecurityError,
           "An attempt was made to break through the security policy of the "
@@ -769,6 +774,7 @@ void WebSocketStream::OnAbort() {
     return;
   }
 
+  common_.SetState(WebSocketCommon::kClosed);
   channel_->CancelHandshake();
   channel_ = nullptr;
 
