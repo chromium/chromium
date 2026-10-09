@@ -2028,6 +2028,11 @@ TEST_F(AILanguageModelOpenLoopToolTest, InstanceInfoAdvertisesToolInputTypes) {
                   blink::mojom::AILanguageModelPromptType::kText,
                   blink::mojom::AILanguageModelPromptType::kToolCall,
                   blink::mojom::AILanguageModelPromptType::kToolResponse));
+  ASSERT_TRUE(result.value().info->output_types);
+  EXPECT_THAT(*result.value().info->output_types,
+              testing::UnorderedElementsAre(
+                  blink::mojom::AILanguageModelPromptType::kText,
+                  blink::mojom::AILanguageModelPromptType::kToolCall));
 }
 
 TEST_F(AILanguageModelOpenLoopToolTest, RejectMalformedToolCallInput) {

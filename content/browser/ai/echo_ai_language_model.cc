@@ -105,12 +105,14 @@ bool IsValidConstraintAndPrefix(
 EchoAILanguageModel::EchoAILanguageModel(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     base::flat_set<blink::mojom::AILanguageModelPromptType> input_types,
+    base::flat_set<blink::mojom::AILanguageModelPromptType> output_types,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     uint32_t initial_tokens_size,
     std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools)
     : current_tokens_(initial_tokens_size),
       sampling_params_(std::move(sampling_params)),
-      input_types_(input_types),
+      input_types_(std::move(input_types)),
+      output_types_(std::move(output_types)),
       initial_prompts_(std::move(initial_prompts)),
       tools_(std::move(tools)),
       pending_response_(base::StrCat(
@@ -296,14 +298,15 @@ void EchoAILanguageModel::Fork(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(
-          sampling_params_.Clone(), input_types_, std::move(prompts_copy),
-          current_tokens_, std::move(cloned_tools)),
+          sampling_params_.Clone(), input_types_, output_types_,
+          std::move(prompts_copy), current_tokens_, std::move(cloned_tools)),
       language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(
           EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
           sampling_params_->Clone(), base::ToVector(input_types_),
+          base::ToVector(output_types_),
           /*audio_sample_rate_hz=*/std::nullopt,
           /*audio_channel_count=*/std::nullopt,
           /*sampling_mode=*/std::nullopt));

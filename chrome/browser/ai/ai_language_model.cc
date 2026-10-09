@@ -773,6 +773,9 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
   base::flat_set<blink::mojom::AILanguageModelPromptType> input_types = {
       blink::mojom::AILanguageModelPromptType::kText  // Text always supported.
   };
+  base::flat_set<blink::mojom::AILanguageModelPromptType> output_types = {
+      blink::mojom::AILanguageModelPromptType::kText  // Text always supported.
+  };
   for (const auto capability : session_params_->capabilities) {
     switch (capability) {
       case on_device_model::CapabilityFlags::kImageInput:
@@ -787,6 +790,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
         input_types.insert(blink::mojom::AILanguageModelPromptType::kToolCall);
         input_types.insert(
             blink::mojom::AILanguageModelPromptType::kToolResponse);
+        output_types.insert(blink::mojom::AILanguageModelPromptType::kToolCall);
         break;
     }
   }
@@ -801,8 +805,9 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
       max_tokens, total_tokens,
       blink::mojom::AILanguageModelSamplingParams::New(
           session_params_->top_k, session_params_->temperature),
-      std::move(input_types).extract(), audio_sample_rate_hz,
-      audio_channel_count, /*sampling_mode=*/std::nullopt);
+      std::move(input_types).extract(), std::move(output_types).extract(),
+      audio_sample_rate_hz, audio_channel_count,
+      /*sampling_mode=*/std::nullopt);
 }
 
 mojo::PendingRemote<blink::mojom::AILanguageModel>

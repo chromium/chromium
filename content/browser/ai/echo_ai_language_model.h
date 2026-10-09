@@ -22,6 +22,7 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   explicit EchoAILanguageModel(
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
       base::flat_set<blink::mojom::AILanguageModelPromptType> input_types,
+      base::flat_set<blink::mojom::AILanguageModelPromptType> output_types,
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
       uint32_t initial_tokens_size,
       std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools = {});
@@ -92,6 +93,7 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   blink::mojom::AILanguageModelSamplingParamsPtr sampling_params_;
   // Prompt types supported by the language model in this session.
   base::flat_set<blink::mojom::AILanguageModelPromptType> input_types_;
+  base::flat_set<blink::mojom::AILanguageModelPromptType> output_types_;
 
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
 

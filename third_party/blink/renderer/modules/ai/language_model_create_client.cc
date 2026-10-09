@@ -293,6 +293,7 @@ void LanguageModelCreateClient::Create(
   // TODO(crbug.com/476192657): Process initialPrompts after getting real info.
   auto info = blink::mojom::blink::AILanguageModelInstanceInfo::New();
   info->input_types = {mojom::blink::AILanguageModelPromptType::kText};
+  info->output_types = {mojom::blink::AILanguageModelPromptType::kText};
   info->sampling_mode = sampling_mode_;
   Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options_->hasExpectedInputs()) {
@@ -355,6 +356,9 @@ void LanguageModelCreateClient::Create(
       if (expected->type ==
           mojom::blink::AILanguageModelPromptType::kToolCall) {
         has_tool_call_in_expected_outputs = true;
+      }
+      if (!info->output_types->Contains(expected->type)) {
+        info->output_types->push_back(expected->type);
       }
     }
   }

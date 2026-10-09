@@ -206,6 +206,13 @@ void EchoAIManagerImpl::CreateLanguageModel(
       enabled_input_types.insert(expected_input->type);
     }
   }
+  base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_output_types =
+      {blink::mojom::AILanguageModelPromptType::kText};
+  if (options->expected_outputs.has_value()) {
+    for (const auto& expected_output : options->expected_outputs.value()) {
+      enabled_output_types.insert(expected_output->type);
+    }
+  }
 
   // Extract tools from options, defaulting to an empty vector.
   std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools =
@@ -214,11 +221,12 @@ void EchoAIManagerImpl::CreateLanguageModel(
         return decltype(options->tools)(std::in_place);
       }));
 
-  auto return_language_model_callback = base::BindOnce(
-      &EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
-      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
-      std::move(options->sampling_params), enabled_input_types,
-      std::move(options->initial_prompts), initial_size, std::move(tools));
+  auto return_language_model_callback =
+      base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+                     std::move(options->sampling_params), enabled_input_types,
+                     enabled_output_types, std::move(options->initial_prompts),
+                     initial_size, std::move(tools));
 
   if (!IsModelDownloadedForCurrentReciever()) {
     // Simulate downloading the model; cache state for the current receiver.
@@ -490,6 +498,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
         client_remote,
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types,
+    base::flat_set<blink::mojom::AILanguageModelPromptType>
+        enabled_output_types,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     uint32_t initial_context_usage,
     std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools) {
@@ -505,7 +515,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(
           model_sampling_params->Clone(), enabled_input_types,
-          std::move(initial_prompts), initial_context_usage, std::move(tools)),
+          enabled_output_types, std::move(initial_prompts),
+          initial_context_usage, std::move(tools)),
       language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
@@ -514,6 +525,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
           std::move(model_sampling_params),
           std::vector<blink::mojom::AILanguageModelPromptType>(
               enabled_input_types.begin(), enabled_input_types.end()),
+          std::vector<blink::mojom::AILanguageModelPromptType>(
+              enabled_output_types.begin(), enabled_output_types.end()),
           /*audio_sample_rate_hz=*/std::nullopt,
           /*audio_channel_count=*/std::nullopt,
           /*sampling_mode=*/std::nullopt));

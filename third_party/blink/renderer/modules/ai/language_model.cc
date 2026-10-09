@@ -1059,15 +1059,18 @@ void LanguageModel::ResolvePromiseOnComplete(
     ScriptPromiseResolver<V8LanguageModelPromptResult>* resolver,
     const String& response,
     mojom::blink::ModelExecutionContextInfoPtr context_info) {
-  // Return type is dynamic based on actual response content.
-  // Return sequence format when tool calls are present, string otherwise.
-  if (!pending_tool_calls_.empty()) {
-    // Tool calls present - return structured message format.
-    // If the model output both text and tool calls, include text first.
+  bool has_non_text_output =
+      info_ && info_->output_types &&
+      std::ranges::any_of(*info_->output_types, [](const auto& type) {
+        return type != mojom::blink::AILanguageModelPromptType::kText;
+      });
+  // Return sequence format when the session is configured with non-text
+  // expected outputs (e.g., tool calls).
+  if (has_non_text_output) {
+    // Return structured message format: text first, then tool call.
     ScriptState* script_state = resolver->GetScriptState();
     HeapVector<Member<LanguageModelMessageContent>> messages;
 
-    // Add text content first if present.
     if (!response.empty()) {
       auto* text_content = LanguageModelMessageContent::Create();
       text_content->setType(
@@ -1076,19 +1079,19 @@ void LanguageModel::ResolvePromiseOnComplete(
           MakeGarbageCollected<V8LanguageModelMessageValue>(response));
       messages.push_back(text_content);
     }
-
-    // Then add tool call contents.
-    ExceptionState exception_state(script_state->GetIsolate());
-    messages.append_range(ConvertMojoToolCallsToMessages(
-        script_state, pending_tool_calls_, exception_state));
-    pending_tool_calls_.clear();
-    if (exception_state.HadException()) {
-      resolver->Reject();
-      return;
+    if (!pending_tool_calls_.empty()) {
+      ExceptionState exception_state(script_state->GetIsolate());
+      messages.append_range(ConvertMojoToolCallsToMessages(
+          script_state, pending_tool_calls_, exception_state));
+      pending_tool_calls_.clear();
+      if (exception_state.HadException()) {
+        resolver->Reject();
+        return;
+      }
     }
     resolver->Resolve(messages);
   } else {
-    // No tool calls - return simple string format.
+    // Text-only output: return DOMString format.
     resolver->Resolve(response);
   }
   OnResponseComplete(std::move(context_info));
