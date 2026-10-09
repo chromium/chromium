@@ -53,6 +53,8 @@ source_set("impl") {
     ]
   }
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps += [
     ":content_settings",
     "//chrome/app:generated_resources",

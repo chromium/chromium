@@ -154,6 +154,8 @@ source_set("impl") {
     "//services/network:network_service",
     "//skia",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

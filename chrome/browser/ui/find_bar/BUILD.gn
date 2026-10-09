@@ -49,6 +49,7 @@ source_set("impl") {
       "find_bar_platform_helper.cc",
       "find_bar_platform_helper.h",
     ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps += [
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_window_header",

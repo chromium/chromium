@@ -29,5 +29,6 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [ "//chromeos/components/kiosk" ]
     }
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }

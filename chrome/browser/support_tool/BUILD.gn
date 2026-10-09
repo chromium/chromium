@@ -58,7 +58,10 @@ if (!is_android) {
       "system_log_source_data_collector_adaptor.cc",
     ]
 
-    public_deps = [ ":support_tool" ]
+    public_deps = [
+      ":support_tool",
+      "//chrome/browser:browser_public_dependencies",
+    ]
 
     deps = [
       "//base",

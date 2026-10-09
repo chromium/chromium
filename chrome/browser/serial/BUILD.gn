@@ -90,6 +90,8 @@ source_set("impl") {
       "//chrome/browser/ui/android/device_dialog",
     ]
   }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

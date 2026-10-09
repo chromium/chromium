@@ -31,6 +31,7 @@ source_set("publishers") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/extensions",
