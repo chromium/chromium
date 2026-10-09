@@ -9,12 +9,16 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_segmented_control.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +34,24 @@
 namespace {
 constexpr int kSessionIDValue = 123;
 constexpr int kTopContainerWidth = 240;
+
+class TestVerticalTabStripDelegate
+    : public tabs::VerticalTabStripStateController::Delegate {
+ public:
+  void SetCollapsedStateUpdatedCallback(
+      base::RepeatingCallback<void(bool)> callback) override {
+    callback_ = std::move(callback);
+  }
+  bool IsCollapsing() override { return false; }
+  void RequestCollapse(bool collapse) override {
+    if (callback_) {
+      callback_.Run(collapse);
+    }
+  }
+
+ private:
+  base::RepeatingCallback<void(bool)> callback_;
+};
 }  // namespace
 
 class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
@@ -44,14 +66,15 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
         .WillRepeatedly(testing::Return(&profile_));
     EXPECT_CALL(std::as_const(mock_browser_window_interface_), GetProfile())
         .WillRepeatedly(testing::Return(&profile_));
-    tabs::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.SetBoolean(prefs::kVerticalTabsEnabled, true);
+    profile_.GetTestingPrefService()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                 true);
     controller_ = std::make_unique<tabs::VerticalTabStripStateControllerImpl>(
-        mock_browser_window_interface_, &pref_service_,
+        mock_browser_window_interface_, profile_.GetTestingPrefService(),
         /*root_action_item=*/nullptr,
         /*session_service=*/nullptr, test_session_id,
         /*restored_state_collapsed=*/std::nullopt,
         /*restored_state_uncollapsed_width=*/std::nullopt);
+    controller_->SetDelegate(&test_delegate_);
 
     action_item_ = actions::ActionItem::Builder().Build();
     action_item_->AddChild(
@@ -66,18 +89,26 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
             .Build());
 
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    top_container_ =
-        widget_->SetContentsView(std::make_unique<VerticalTabStripTopContainer>(
-            controller_.get(), action_item_.get(),
-            &mock_browser_window_interface_));
+    ResetTopContainer();
     widget_->Show();
   }
 
   void TearDown() override {
     top_container_ = nullptr;
     widget_.reset();
+    if (controller_) {
+      controller_->SetDelegate(nullptr);
+    }
     controller_.reset();
     ChromeViewsTestBase::TearDown();
+  }
+
+  void ResetTopContainer() {
+    top_container_ = nullptr;
+    top_container_ =
+        widget_->SetContentsView(std::make_unique<VerticalTabStripTopContainer>(
+            controller_.get(), action_item_.get(),
+            &mock_browser_window_interface_));
   }
 
  protected:
@@ -91,6 +122,19 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
     return top_container_->GetCollapseButton();
   }
 
+  VerticalTabStripSegmentedControl* segmented_control() {
+    return top_container_->GetSegmentedControl();
+  }
+
+  tabs::VerticalTabStripStateControllerImpl* controller() {
+    return static_cast<tabs::VerticalTabStripStateControllerImpl*>(
+        controller_.get());
+  }
+
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return profile_.GetTestingPrefService();
+  }
+
   void LayoutView() {
     // Pass an arbitrarily large height for the available size bounds so the
     // widget can adjust as needed.
@@ -102,8 +146,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<VerticalTabStripTopContainer> top_container_;
+  TestVerticalTabStripDelegate test_delegate_;
   std::unique_ptr<tabs::VerticalTabStripStateController> controller_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   TestingProfile profile_;
   MockBrowserWindowInterface mock_browser_window_interface_;
@@ -179,4 +223,78 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithPartialWidthExclusionZone) {
   // The collapse button should be to the left of the combo button.
   EXPECT_LT(collapse_bounds.CenterPoint().x(), combo_bounds.CenterPoint().x());
   EXPECT_EQ(collapse_bounds.CenterPoint().y(), combo_bounds.CenterPoint().y());
+}
+
+TEST_F(VerticalTabStripTopContainerTest, DefaultShowsComboButton) {
+  LayoutView();
+  EXPECT_TRUE(combo_button()->GetVisible());
+  EXPECT_EQ(segmented_control(), nullptr);
+}
+
+TEST_F(VerticalTabStripTopContainerTest, ShowsSegmentedControlWhenEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  top_container()->UpdateControlsVisibility();
+  LayoutView();
+
+  ASSERT_NE(segmented_control(), nullptr);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+  EXPECT_FALSE(combo_button()->GetVisible());
+
+  // Unpin tab search: segmented control should hide completely.
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, false);
+  top_container()->UpdateControlsVisibility();
+  EXPECT_FALSE(segmented_control()->GetVisible());
+  EXPECT_TRUE(combo_button()->GetVisible());
+}
+
+TEST_F(VerticalTabStripTopContainerTest,
+       CollapsedExpandOnHoverRendersSegmentedControlAtExpandedWidth) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  controller()->SetExpandOnHoverEnabled(true);
+  controller()->RequestCollapse(true);
+  EXPECT_TRUE(controller()->IsCollapsed());
+
+  top_container()->UpdateControlsVisibility();
+  ASSERT_NE(segmented_control(), nullptr);
+  EXPECT_TRUE(segmented_control()->GetVisible());
+  EXPECT_FALSE(combo_button()->GetVisible());
+
+  // When narrow (unhovered), segmented control is rendered based on the known
+  // uncollapsed width, outside of the narrow container width.
+  top_container()->SetSize(
+      gfx::Size(tabs::kVerticalTabStripCollapseSnapWidth - 10, 40));
+  views::ProposedLayout layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  auto it = std::ranges::find(layout.child_layouts, segmented_control(),
+                              &views::ChildLayout::child_view);
+  ASSERT_NE(it, layout.child_layouts.end());
+  EXPECT_TRUE(it->visible);
+  EXPECT_GT(it->bounds.x(), top_container()->width());
+
+  // When expanded, the segmented control fits within the container width.
+  top_container()->SetSize(gfx::Size(300, 40));
+  layout = top_container()->CalculateProposedLayout(
+      views::SizeBounds(top_container()->size()));
+  it = std::ranges::find(layout.child_layouts, segmented_control(),
+                         &views::ChildLayout::child_view);
+  ASSERT_NE(it, layout.child_layouts.end());
+  EXPECT_TRUE(it->visible);
+  EXPECT_LE(it->bounds.right(), top_container()->width());
+
+  // When expand on hover is disabled while collapsed, segmented control is
+  // hidden and combo button is shown.
+  controller()->SetExpandOnHoverEnabled(false);
+  top_container()->UpdateControlsVisibility();
+  EXPECT_FALSE(segmented_control()->GetVisible());
+  EXPECT_TRUE(combo_button()->GetVisible());
 }

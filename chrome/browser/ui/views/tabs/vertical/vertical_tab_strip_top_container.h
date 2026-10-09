@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 
+#include "base/callback_list.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -13,6 +15,7 @@
 
 class TabStripComboButton;
 class TabStripFlatEdgeButton;
+class VerticalTabStripSegmentedControl;
 class BrowserWindowInterface;
 class ExpandOnHoverLock;
 
@@ -58,8 +61,11 @@ class VerticalTabStripTopContainer : public views::View,
   views::LabelButton* AddChildButtonFor(actions::ActionId action_id);
 
   TabStripComboButton* GetComboButton();
+  VerticalTabStripSegmentedControl* GetSegmentedControl();
   views::LabelButton* GetCollapseButton() { return collapse_button_; }
   views::LabelButton* GetUnfocusButton() { return unfocus_button_; }
+
+  void UpdateControlsVisibility();
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
@@ -99,8 +105,14 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
+  raw_ptr<VerticalTabStripSegmentedControl> segmented_control_ = nullptr;
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
   raw_ptr<views::LabelButton> unfocus_button_ = nullptr;
+
+  PrefChangeRegistrar pref_registrar_;
+  base::CallbackListSubscription collapse_subscription_;
+  base::CallbackListSubscription expand_on_hover_subscription_;
+  base::CallbackListSubscription resizing_subscription_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 
