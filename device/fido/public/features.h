@@ -169,6 +169,11 @@ BASE_DECLARE_FEATURE(kWebAuthnSoftwareKeysWhenTpmAbsent);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnU2fFallbackRequiresPreferredEs256);
 
+// Filters the list of public key algorithms sent in makeCredential requests to
+// those advertised by the authenticator in its getInfo response.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnFilterAlgorithmsForAuthenticator);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

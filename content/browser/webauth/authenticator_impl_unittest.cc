@@ -210,6 +210,28 @@ constexpr char kTestSignClientDataJsonString[] =
     R"({"challenge":"aHE0loIi7BcgLkJQX47SsWriLxa7BbiMJdueYCZF8UE","origin":)"
     R"("https://a.google.com", "type":"webauthn.get"})";
 
+std::vector<device::PublicKeyCredentialParams::CredentialInfo>
+PublicKeyParametersFor(
+    const std::vector<device::CoseAlgorithmIdentifier>& algorithms) {
+  std::vector<device::PublicKeyCredentialParams::CredentialInfo> parameters;
+  for (device::CoseAlgorithmIdentifier algorithm : algorithms) {
+    parameters.push_back(
+        {device::CredentialType::kPublicKey, static_cast<int32_t>(algorithm)});
+  }
+  return parameters;
+}
+
+std::vector<device::CoseAlgorithmIdentifier> AlgorithmsIn(
+    const device::CtapMakeCredentialRequest& request) {
+  std::vector<device::CoseAlgorithmIdentifier> algorithms;
+  for (const auto& param :
+       request.public_key_credential_params.public_key_credential_params()) {
+    algorithms.push_back(
+        static_cast<device::CoseAlgorithmIdentifier>(param.algorithm));
+  }
+  return algorithms;
+}
+
 }  // namespace
 
 TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
@@ -4240,6 +4262,80 @@ TEST_F(AuthenticatorImplTest, AlgorithmsOmitted) {
     EXPECT_TRUE(touched);
   }
 }
+
+// Parameterized on whether kWebAuthnFilterAlgorithmsForAuthenticator is
+// enabled.
+class AuthenticatorImplFilterAlgorithmsTest
+    : public AuthenticatorImplTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        device::kWebAuthnFilterAlgorithmsForAuthenticator, GetParam());
+    AuthenticatorImplTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AuthenticatorImplFilterAlgorithmsTest, FilterAlgorithms) {
+  // When filtering is enabled, only algorithms advertised by the authenticator
+  // should be sent to it, in the order requested by the RP. Otherwise, the
+  // requested list should be sent unchanged.
+  using Alg = device::CoseAlgorithmIdentifier;
+  const struct {
+    const char* desc;
+    std::vector<Alg> advertised;
+    std::vector<Alg> requested;
+    std::vector<Alg> expected;
+  } kTests[] = {
+      {
+          .desc = "Removes unadvertised algorithms",
+          .advertised = {Alg::kEs256},
+          .requested = {Alg::kMlDsa65, Alg::kEdDSA, Alg::kEs256},
+          .expected = {Alg::kEs256},
+      },
+      {
+          .desc = "Preserves the RP's order",
+          .advertised = {Alg::kEs256, Alg::kEdDSA},
+          .requested = {Alg::kMlDsa65, Alg::kEdDSA, Alg::kEs256},
+          .expected = {Alg::kEdDSA, Alg::kEs256},
+      },
+      {
+          .desc = "No filtering without advertised algorithms",
+          .advertised = {},
+          .requested = {Alg::kMlDsa65, Alg::kEs256},
+          .expected = {Alg::kMlDsa65, Alg::kEs256},
+      },
+  };
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.desc);
+    device::VirtualCtap2Device::Config config;
+    config.advertised_algorithms = test.advertised;
+    virtual_device_factory_->SetCtap2Config(config);
+    virtual_device_factory_->mutable_state()->last_make_credential_request =
+        std::nullopt;
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->public_key_parameters = PublicKeyParametersFor(test.requested);
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+
+    const auto& request =
+        virtual_device_factory_->mutable_state()->last_make_credential_request;
+    ASSERT_TRUE(request);
+    EXPECT_EQ(AlgorithmsIn(*request),
+              GetParam() ? test.expected : test.requested);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AuthenticatorImplFilterAlgorithmsTest,
+                         testing::Bool());
 
 TEST_F(AuthenticatorImplTest,
        MakeCredentialEmptyPublicKeyParametersIsBadMessage) {

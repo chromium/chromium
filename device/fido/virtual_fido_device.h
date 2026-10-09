@@ -23,6 +23,7 @@
 #include "base/observer_list_types.h"
 #include "crypto/keypair.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/public/fido_constants.h"
@@ -295,6 +296,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // last_get_assertion_request contains the last get assertion request
     // received by the device.
     std::optional<CtapGetAssertionRequest> last_get_assertion_request;
+
+    // last_make_credential_request contains the last make credential request
+    // received by the device.
+    std::optional<CtapMakeCredentialRequest> last_make_credential_request;
 
     // exclude_list_history contains the exclude_list values that have been seen
     // in registration requests. This is for tests to confirm that the expected

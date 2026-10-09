@@ -1129,6 +1129,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
   CtapMakeCredentialRequest request = std::move(*opt_request);
 
+  mutable_state()->last_make_credential_request = request;
   mutable_state()->exclude_list_history.push_back(request.exclude_list);
 
   bool user_verified = false;
