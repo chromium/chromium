@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 
 class Profile;
 
@@ -50,15 +51,21 @@ class ClipboardToastTracker : public base::SupportsUserData::Data {
   // subsequent checks for this type return false.
   void RecordToastShown(CopyToastType type);
 
+  // Time the last copy toast was shown, used to tell a new copy apart from
+  // another format of the same copy.
+  base::TimeTicks last_toast_time() const { return last_toast_time_; }
+  void set_last_toast_time(base::TimeTicks time) { last_toast_time_ = time; }
+
  private:
   // Set of toast types that have been shown to the user in this session.
   base::flat_set<CopyToastType> shown_toasts_;
+  base::TimeTicks last_toast_time_;
 };
 
 // Surfaces an informational copy toast corresponding to `type` in the active
 // window hosting `web_contents`, provided it has not already been shown for
-// `profile` during this session.
-void MaybeShowCopyToast(Profile* profile,
+// `profile` during this session. Returns whether the toast was shown.
+bool MaybeShowCopyToast(Profile* profile,
                         content::WebContents* web_contents,
                         CopyToastType type);
 

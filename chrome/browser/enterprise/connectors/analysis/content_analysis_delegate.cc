@@ -85,6 +85,7 @@
 #include "chrome/browser/enterprise/data_protection/clipboard_toast_tracker.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #endif
 
 namespace enterprise_connectors {
@@ -690,18 +691,27 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
 #if !BUILDFLAG(IS_ANDROID)
     bool wait_for_verdict =
         data_.settings.block_until_verdict == BlockUntilVerdict::kBlock;
+    auto* tracker =
+        enterprise_data_protection::ClipboardToastTracker::GetForProfile(
+            profile_);
+    bool is_new_copy = creation_time_ > tracker->last_toast_time();
+    // Shows `toast_id`, unless it's already showing for the same copy.
+    auto maybe_show_toast = [&](ToastId toast_id) {
+      auto* toast_controller =
+          ToastController::MaybeGetForWebContents(web_contents_.get());
+      if (toast_controller && wait_for_verdict &&
+          (is_new_copy || toast_controller->GetCurrentToastId() != toast_id) &&
+          toast_controller->MaybeShowToast(ToastParams(toast_id))) {
+        tracker->set_last_toast_time(base::TimeTicks::Now());
+      }
+    };
     switch (final_result_) {
       case FinalContentAnalysisResult::WARNING:
         if (web_contents_) {
           // Set the delegate in the tracker so it can be found by the toast
           // controller later to bypass the copy warning.
           CopyWarningDelegateTracker::SetDelegate(web_contents_.get(), this);
-          auto* toast_controller =
-              ToastController::MaybeGetForWebContents(web_contents_.get());
-          if (toast_controller && wait_for_verdict) {
-            toast_controller->MaybeShowToast(
-                ToastParams(ToastId::kEnterpriseCopyWarning));
-          }
+          maybe_show_toast(ToastId::kEnterpriseCopyWarning);
           // Delay deleting the content analysis delegate until the toast is
           // clicked.
           return true;
@@ -716,21 +726,23 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
         return false;
       case FinalContentAnalysisResult::SUCCESS:
         if (web_contents_) {
-          enterprise_data_protection::MaybeShowCopyToast(
-              profile_, web_contents_.get(),
-              enterprise_data_protection::CopyToastType::kAudit);
+          if (enterprise_data_protection::MaybeShowCopyToast(
+                  profile_, web_contents_.get(),
+                  enterprise_data_protection::CopyToastType::kAudit)) {
+            tracker->set_last_toast_time(base::TimeTicks::Now());
+          } else if (is_new_copy && !data_.image.empty() &&
+                     toast_features::IsEnabled(
+                         toast_features::kImageCopiedToast)) {
+            // The image is only copied now that the scan allowed it.
+            maybe_show_toast(ToastId::kImageCopied);
+          }
         }
         return false;
       // TODO(b/325455508): Add separate handling for fail-closed results.
       case FinalContentAnalysisResult::FAIL_CLOSED:
       case FinalContentAnalysisResult::FAILURE:
         if (web_contents_) {
-          auto* toast_controller =
-              ToastController::MaybeGetForWebContents(web_contents_.get());
-          if (toast_controller && wait_for_verdict) {
-            toast_controller->MaybeShowToast(
-                ToastParams(ToastId::kEnterpriseCopyBlocked));
-          }
+          maybe_show_toast(ToastId::kEnterpriseCopyBlocked);
         }
         return false;
       case FinalContentAnalysisResult::CANCELLED:

@@ -42,15 +42,15 @@ void ClipboardToastTracker::RecordToastShown(CopyToastType type) {
   shown_toasts_.insert(type);
 }
 
-void MaybeShowCopyToast(Profile* profile,
+bool MaybeShowCopyToast(Profile* profile,
                         content::WebContents* web_contents,
                         CopyToastType type) {
   if (!profile || !web_contents) {
-    return;
+    return false;
   }
   auto* tracker = ClipboardToastTracker::GetForProfile(profile);
   if (!tracker || !tracker->ShouldShowToast(type)) {
-    return;
+    return false;
   }
   auto* toast_controller =
       ToastController::MaybeGetForWebContents(web_contents);
@@ -58,9 +58,10 @@ void MaybeShowCopyToast(Profile* profile,
     ToastId toast_id = (type == CopyToastType::kAudit)
                            ? ToastId::kEnterpriseCopyAudit
                            : ToastId::kEnterpriseCopyKeptInManagedChrome;
-    toast_controller->MaybeShowToast(ToastParams(toast_id));
     tracker->RecordToastShown(type);
+    return toast_controller->MaybeShowToast(ToastParams(toast_id));
   }
+  return false;
 }
 
 }  // namespace enterprise_data_protection

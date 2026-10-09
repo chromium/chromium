@@ -2436,6 +2436,17 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_FALSE(IsClipboardCopyAllowedByPolicyForUI(contents()));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DataControlsClipboardUtilsBrowserTest,
+    IsClipboardCopyAllowedByPolicyForUI_ContentAnalysisBlockUntilVerdict) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+  SetupDMToken();
+  SetupContentAnalysisToBlockCopy();
+
+  // The copy isn't made until the scan's verdict.
+  EXPECT_FALSE(IsClipboardCopyAllowedByPolicyForUI(contents()));
+}
+
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        ShouldAllowSearchWith_Allowed) {
   base::HistogramTester histogram_tester;
@@ -2864,6 +2875,69 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   EXPECT_TRUE(future.Wait());
+}
+
+// Copying an image scans its bitmap and its `<img>` markup separately. Their
+// verdicts should show one toast, and a new copy should show it again.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyContentAnalysisWarning_ImageShowsOneToastPerCopy) {
+  SetupDMToken();
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  int verdict_count = 0;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindLambdaForTesting([&verdict_count](const std::string&,
+                                                      const base::FilePath&) {
+            ++verdict_count;
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::WARN);
+          }),
+          "dm_token"));
+
+  auto source = CreateURLClipboardEndpoint("https://google.com");
+  content::ClipboardPasteData html_data;
+  html_data.html = std::u16string(100, 'a');
+  content::ClipboardPasteData bitmap_data;
+  bitmap_data.bitmap.allocN32Pixels(10, 10);
+  bitmap_data.bitmap.eraseColor(SK_ColorRED);
+
+  base::HistogramTester histogram_tester;
+  for (int copies = 1; copies <= 2; ++copies) {
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = html_data.size(),
+         .format_type = ui::ClipboardFormatType::HtmlType()},
+        html_data, base::DoNothing());
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = bitmap_data.size(),
+         .format_type = ui::ClipboardFormatType::BitmapType()},
+        bitmap_data, base::DoNothing());
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return verdict_count == 2 * copies; }));
+    histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                       ToastId::kEnterpriseCopyWarning, copies);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
@@ -3334,6 +3408,68 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto replacement = future.Get<2>();
   EXPECT_FALSE(replacement.has_value());
+}
+
+// Same as CopyContentAnalysisWarning_ImageShowsOneToastPerCopy, for allowed
+// copies. The first one shows the audit toast, and later ones "Image copied".
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Copy_ContentAnalysisAllowed_ImageShowsOneToastPerCopy) {
+  SetupDMToken();
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  int verdict_count = 0;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindLambdaForTesting(
+              [&verdict_count](const std::string&, const base::FilePath&) {
+                ++verdict_count;
+                return enterprise_connectors::test::
+                    FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+              }),
+          "dm_token"));
+
+  auto source = CreateURLClipboardEndpoint("https://google.com");
+  content::ClipboardPasteData html_data;
+  html_data.html = std::u16string(100, 'a');
+  content::ClipboardPasteData bitmap_data;
+  bitmap_data.bitmap.allocN32Pixels(10, 10);
+  bitmap_data.bitmap.eraseColor(SK_ColorRED);
+
+  base::HistogramTester histogram_tester;
+  for (int copies = 1; copies <= 3; ++copies) {
+    // The markup's verdict usually comes first, as images take longer to scan.
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = html_data.size(),
+         .format_type = ui::ClipboardFormatType::HtmlType()},
+        html_data, base::DoNothing());
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = bitmap_data.size(),
+         .format_type = ui::ClipboardFormatType::BitmapType()},
+        bitmap_data, base::DoNothing());
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return verdict_count == 2 * copies; }));
+    histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                       ToastId::kEnterpriseCopyAudit, 1);
+    histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                       ToastId::kImageCopied, copies - 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(

@@ -326,6 +326,19 @@ void OnCopyDeepScanComplete(
   std::move(callback).Run(format_type, std::move(clipboard_paste_data),
                           std::nullopt);
 }
+
+// Returns whether copies from `url` are scanned, filling `data` if so.
+bool IsCopyContentAnalysisEnabled(
+    Profile* profile,
+    const GURL& url,
+    enterprise_connectors::ContentAnalysisDelegate::Data* data) {
+  return base::FeatureList::IsEnabled(
+             enterprise_connectors::kContentAnalysisClipboardCopy) &&
+         enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+             profile, url, data,
+             enterprise_connectors::AnalysisConnector::DATA_COPIED);
+}
+
 void CopyIfAllowedByContentAnalysis(
     content::WebContents* web_contents,
     const content::ClipboardEndpoint& source,
@@ -340,9 +353,8 @@ void CopyIfAllowedByContentAnalysis(
   }
 
   enterprise_connectors::ContentAnalysisDelegate::Data delegate_data;
-  if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile, GetUrlFromEndpoint(source), &delegate_data,
-          enterprise_connectors::AnalysisConnector::DATA_COPIED)) {
+  if (!IsCopyContentAnalysisEnabled(profile, GetUrlFromEndpoint(source),
+                                    &delegate_data)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
   }
@@ -765,9 +777,7 @@ void IsCopyToOSClipboardRestricted(
   // Content analysis needs a tab: ContentAnalysisDelegate is created from a
   // WebContents and has no tab-free entry point, so a service worker copy is
   // not scanned.
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kContentAnalysisClipboardCopy) &&
-      source.web_contents()) {
+  if (source.web_contents()) {
     CopyIfAllowedByContentAnalysis(source.web_contents(), source, metadata,
                                    data, std::move(callback));
   } else {
@@ -1468,6 +1478,18 @@ bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents) {
       os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
     return false;
   }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // A copy that waits for a content analysis verdict isn't made until then, and
+  // the scan shows a toast if the copy is blocked, warned, or an allowed image.
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  if (IsCopyContentAnalysisEnabled(
+          Profile::FromBrowserContext(source->browser_context()), url, &data) &&
+      data.settings.block_until_verdict ==
+          enterprise_connectors::BlockUntilVerdict::kBlock) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   return true;
 }
