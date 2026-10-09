@@ -7,19 +7,24 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -63,6 +68,7 @@ class VerticalTabStripSegmentedControlTest : public ChromeViewsTestBase {
   OrganizerPanelController* state_controller() {
     return state_controller_.get();
   }
+  TestingProfile* profile() { return &profile_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
@@ -149,4 +155,43 @@ TEST_F(VerticalTabStripSegmentedControlTest, ButtonPressTogglesActiveSegment) {
                                    ui::EF_NONE));
   EXPECT_EQ(control()->active_segment(),
             VerticalTabStripSegmentedControl::Segment::kTabStrip);
+}
+
+TEST_F(VerticalTabStripSegmentedControlTest, ContextMenuOnlyOnOrganizerButton) {
+  auto* tab_strip_btn = control()->GetButton(
+      VerticalTabStripSegmentedControl::Segment::kTabStrip);
+  auto* organizer_btn = control()->GetButton(
+      VerticalTabStripSegmentedControl::Segment::kOrganizer);
+
+  EXPECT_EQ(tab_strip_btn->context_menu_controller(), nullptr);
+  EXPECT_EQ(organizer_btn->context_menu_controller(), control());
+
+  // Triggering context menu on tab strip button should not create menu model.
+  control()->ShowContextMenuForViewImpl(tab_strip_btn, gfx::Point(),
+                                        ui::mojom::MenuSourceType::kMouse);
+  EXPECT_EQ(control()->menu_model_for_testing(), nullptr);
+
+  // Triggering context menu on organizer button when pinned shows "Unpin".
+  profile()->GetPrefs()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  control()->ShowContextMenuForViewImpl(organizer_btn, gfx::Point(),
+                                        ui::mojom::MenuSourceType::kMouse);
+  auto* model = control()->menu_model_for_testing();
+  ASSERT_NE(model, nullptr);
+  EXPECT_EQ(model->GetItemCount(), 1u);
+  EXPECT_EQ(model->GetCommandIdAt(0), IDC_TAB_SEARCH_TOGGLE_PIN);
+  EXPECT_EQ(model->GetLabelAt(0),
+            l10n_util::GetStringUTF16(IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN));
+  EXPECT_EQ(model->GetElementIdentifierAt(0),
+            VerticalTabStripSegmentedControl::kTabSearchUnpinMenuItem);
+
+  // Triggering context menu when unpinned shows "Pin".
+  profile()->GetPrefs()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, false);
+  control()->ShowContextMenuForViewImpl(organizer_btn, gfx::Point(),
+                                        ui::mojom::MenuSourceType::kMouse);
+  model = control()->menu_model_for_testing();
+  ASSERT_NE(model, nullptr);
+  EXPECT_EQ(model->GetItemCount(), 1u);
+  EXPECT_EQ(model->GetCommandIdAt(0), IDC_TAB_SEARCH_TOGGLE_PIN);
+  EXPECT_EQ(model->GetLabelAt(0),
+            l10n_util::GetStringUTF16(IDS_TAB_SEARCH_BUTTON_CXMENU_PIN));
 }
