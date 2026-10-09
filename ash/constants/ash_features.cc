@@ -1865,10 +1865,6 @@ BASE_FEATURE(kDeviceMoveConfigSave, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDeviceWeeklyScheduledSuspendMgs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable peripheral notification to notify users when a input device is
-// connected to the user's chromebook for the first time.
-BASE_FEATURE(kPeripheralNotification, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables fwupd developer mode, disabling all firmware authentication checks.
 BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2730,10 +2726,6 @@ bool IsParentAccessJellyEnabled() {
 
 bool IsPerDeskShelfEnabled() {
   return base::FeatureList::IsEnabled(kPerDeskShelf);
-}
-
-bool IsPeripheralNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kPeripheralNotification);
 }
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {

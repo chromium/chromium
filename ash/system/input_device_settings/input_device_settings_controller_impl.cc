@@ -978,11 +978,6 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
 
-  if (!features::IsPeripheralNotificationEnabled()) {
-    pref_service->ClearPref(prefs::kPeripheralNotificationMiceSeen);
-    pref_service->ClearPref(prefs::kPeripheralNotificationGraphicsTabletsSeen);
-  }
-
   // If the flag is disabled, clear the new touchpad and keyboard settings from
   // all settings dictionaries and reset the notification prefs.
   if (!features::IsAltClickAndSixPackCustomizationEnabled() && pref_service) {
@@ -1088,17 +1083,15 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   // a task so other dependencies are updated first.
   ScheduleDeviceSettingsRefresh();
 
-  if (features::IsPeripheralNotificationEnabled()) {
-    // Delay showing the notification for already connected devices by 30
-    // seconds so on first login the user does not get bombarded by a bunch of
-    // notifications until after some delay.
-    sequenced_task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&InputDeviceSettingsControllerImpl::
-                           ShowFirstTimeConnectedNotifications,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(30));
-  }
+  // Delay showing the notification for already connected devices by 30
+  // seconds so on first login the user does not get bombarded by a bunch of
+  // notifications until after some delay.
+  sequenced_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&InputDeviceSettingsControllerImpl::
+                         ShowFirstTimeConnectedNotifications,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(30));
 }
 
 void InputDeviceSettingsControllerImpl::ShowFirstTimeConnectedNotifications() {
@@ -1964,7 +1957,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     InitializeMouseSettings(mojom_mouse.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_mouse->device_key, mojom_mouse->id);
-    } else if (features::IsPeripheralNotificationEnabled()) {
+    } else {
       notification_controller_->NotifyMouseFirstTimeConnected(*mojom_mouse);
     }
 
@@ -2011,7 +2004,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_graphics_tablet->device_key,
                      mojom_graphics_tablet->id);
-    } else if (features::IsPeripheralNotificationEnabled()) {
+    } else {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
           *mojom_graphics_tablet);
     }

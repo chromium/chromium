@@ -4388,14 +4388,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-peripheral-notification",
-    "owners": [
-      "dpad@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-phone-hub-call-notification",
     "owners": [ "jonmann@chromium.org", "crisrael@google.com" ],
     "expiry_milestone": 125

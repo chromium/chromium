@@ -2384,12 +2384,6 @@ inline constexpr char kEnableControlledFrameDescription[] =
     "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
-inline constexpr char kEnablePeripheralNotificationName[] =
-    "Enable peripheral notification";
-inline constexpr char kEnablePeripheralNotificationDescription[] =
-    "Enable peripheral notification to notify users when a input device is "
-    "connected to the user's Chromebook for the first time.";
-
 inline constexpr char kEnableNetworkLoggingToFileName[] =
     "Enable network logging to file";
 inline constexpr char kEnableNetworkLoggingToFileDescription[] =

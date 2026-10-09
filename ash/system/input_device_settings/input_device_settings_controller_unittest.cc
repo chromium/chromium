@@ -491,9 +491,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     image_downloader_ = std::make_unique<TestImageDownloader>();
     scoped_feature_list_.InitWithFeatures(
-        {features::kAltClickAndSixPackCustomization,
-         features::kPeripheralNotification},
-        {});
+        {features::kAltClickAndSixPackCustomization}, {});
     NoSessionAshTestBase::SetUp();
     Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);
     fake_device_manager_ = std::make_unique<FakeDeviceManager>();

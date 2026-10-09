@@ -8256,11 +8256,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},
 
-    {"enable-peripheral-notification",
-     flag_descriptions::kEnablePeripheralNotificationName,
-     flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},
-
     {"enable-accessibility-google-tts-automatic-reconnect",
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectName,
      flag_descriptions::kAccessibilityGoogleTtsAutomaticReconnectDescription,
