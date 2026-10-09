@@ -36,7 +36,6 @@ source_set("most_visited") {
     "//chrome/common/search:mojo_bindings",
     "//components/history/core/browser",
     "//components/ntp_tiles",
-    "//components/ntp_tiles:pref_names",
     "//components/page_load_metrics/browser",
     "//components/prefs",
     "//components/search",

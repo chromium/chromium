@@ -37,7 +37,6 @@
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
-#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/prefs/pref_service.h"

@@ -177,6 +177,7 @@ TEST_F(MostVisitedPrefObserverTest,
        EnterpriseShortcutsPolicy_InitSetsVisibilityIfUnset) {
   base::DictValue shortcut_item;
   shortcut_item.Set("url", "https://enterprise.test");
+  shortcut_item.Set("title", "Enterprise");
   base::ListValue policy_list;
   policy_list.Append(std::move(shortcut_item));
   prefs()->SetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
@@ -199,12 +200,40 @@ TEST_F(MostVisitedPrefObserverTest,
 
   base::DictValue shortcut_item;
   shortcut_item.Set("url", "https://enterprise.test");
+  shortcut_item.Set("title", "Enterprise");
   base::ListValue policy_list;
   policy_list.Append(std::move(shortcut_item));
   prefs()->SetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
                    std::move(policy_list));
 
   EXPECT_TRUE(prefs()->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
+}
+
+TEST_F(MostVisitedPrefObserverTest,
+       EnterpriseShortcutsPolicy_MalformedPolicyTreatedAsNoPolicy) {
+  // A policy entry without a title is not a valid enterprise shortcut, so the
+  // policy must be treated as if it was not set.
+  base::DictValue shortcut_item;
+  shortcut_item.Set("url", "https://enterprise.test");
+  base::ListValue policy_list;
+  policy_list.Append(std::move(shortcut_item));
+  prefs()->SetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+                   std::move(policy_list));
+  // Hiding personal shortcuts only has an effect if enterprise shortcuts are
+  // available.
+  prefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible, false);
+
+  EXPECT_CALL(mock_handler(),
+              EnableTileTypes(EnableTileTypesOptionsEq(
+                  ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+                      .with_custom_links(true)
+                      .with_top_sites(false)
+                      .with_enterprise_shortcuts(false))))
+      .Times(1);
+
+  MostVisitedPrefObserver observer(&profile(), &mock_handler());
+
+  EXPECT_FALSE(prefs()->HasPrefPath(ntp_prefs::kNtpEnterpriseShortcutsVisible));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

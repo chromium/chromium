@@ -95,7 +95,6 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"

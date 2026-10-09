@@ -142,7 +142,6 @@ source_set("impl") {
     "//components/history_clusters/core",
     "//components/lens",
     "//components/ntp_tiles",
-    "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/omnibox/common:features",

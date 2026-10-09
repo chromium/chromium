@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -40,15 +39,12 @@ MostVisitedPrefObserver::MostVisitedPrefObserver(Profile* profile,
       base::BindRepeating(
           &MostVisitedPrefObserver::OnTilesVisibilityPrefChanged,
           base::Unretained(this)));
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  pref_change_registrar_.Add(
-      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+  ntp_tiles::MostVisitedSites::AddEnterpriseShortcutsObserver(
+      pref_change_registrar_,
       base::BindRepeating(
           &MostVisitedPrefObserver::OnEnterpriseShortcutsPolicyChanged,
           base::Unretained(this)));
   MaybeEnableEnterpriseShortcutsVisibility();
-#endif
 
   UpdateMostVisitedTileTypes();
   handler_->SetShortcutsVisible(IsShortcutsVisible());
@@ -171,18 +167,14 @@ void MostVisitedPrefObserver::OnEnterpriseShortcutsPolicyChanged() {
 }
 
 void MostVisitedPrefObserver::MaybeEnableEnterpriseShortcutsVisibility() {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   // If enterprise shortcuts are available by policy and the user
   // has not previously set the visibility preference, then enable enterprise
   // shortcuts by default.
-  if (!profile_->GetPrefs()
-           ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
-           .empty() &&
+  if (ntp_tiles::MostVisitedSites::HasEnterpriseShortcuts(
+          *profile_->GetPrefs()) &&
       !profile_->GetPrefs()->HasPrefPath(
           ntp_prefs::kNtpEnterpriseShortcutsVisible)) {
     profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
                                      true);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }

@@ -56,10 +56,12 @@ const char kSampleUserEmail[] = "user@gmail.com";
 // TODO(b:514161985): Enable on Android once enterprise shortcuts are
 // implemented there. Only used by the enterprise shortcuts tests below.
 #if !BUILDFLAG(IS_ANDROID)
-base::ListValue CreatePolicyList(const std::string& name,
+// Returns the enterprise shortcuts policy pref value in the format that
+// NTPShortcutsPolicyHandler stores it.
+base::ListValue CreatePolicyList(const std::string& title,
                                  const std::string& url) {
   base::DictValue shortcut_item;
-  shortcut_item.Set("name", name);
+  shortcut_item.Set("title", title);
   shortcut_item.Set("url", url);
   base::ListValue policy_list;
   policy_list.Append(std::move(shortcut_item));
