@@ -725,6 +725,9 @@ ci.thin_tester(
                     shards = 20,
                 ),
             ),
+            "components_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "content_browsertests": targets.mixin(
                 ci_only = True,
             ),
