@@ -5,7 +5,11 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_INTELLIGENCE_TTC_API_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_INTELLIGENCE_TTC_API_H_
 
+#import <Foundation/Foundation.h>
+
 #include <string>
+
+@protocol TTCAudioEngineProtocol;
 
 namespace ios::provider {
 
@@ -41,6 +45,11 @@ struct TTCConfig {
 // Returns the TTC configuration if compiled with internal providers or test
 // mocks; returns empty fields in open-source Chromium builds.
 TTCConfig GetTTCConfig();
+
+// Creates and returns a provider-backed TTC audio engine instance, or nil if
+// the provider does not supply a custom engine (in which case the caller falls
+// back to the default public `TTCAudioEngine`).
+id<TTCAudioEngineProtocol> CreateTTCAudioEngine();
 
 }  // namespace ios::provider
 

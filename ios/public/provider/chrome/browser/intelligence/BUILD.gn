@@ -8,5 +8,6 @@ source_set("intelligence_api") {
     "page_classification_api.h",
     "page_context_wrapper_api.h",
     "ttc_api.h",
+    "ttc_audio_engine_protocol.h",
   ]
 }

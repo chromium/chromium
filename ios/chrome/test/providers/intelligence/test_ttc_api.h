@@ -15,6 +15,10 @@ void SetTTCConfigForTesting(TTCConfig config);
 // Resets the TTC configuration back to its default mock value.
 void ResetTTCConfigForTesting();
 
+// Overrides the audio engine returned by `CreateTTCAudioEngine()`. Pass nil to
+// restore the default behavior.
+void SetTTCAudioEngineForTesting(id<TTCAudioEngineProtocol> engine);
+
 }  // namespace ios::provider::test
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_INTELLIGENCE_TEST_TTC_API_H_

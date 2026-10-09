@@ -10,4 +10,8 @@ TTCConfig GetTTCConfig() {
   return {};
 }
 
+id<TTCAudioEngineProtocol> CreateTTCAudioEngine() {
+  return nil;
+}
+
 }  // namespace ios::provider

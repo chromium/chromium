@@ -28,6 +28,8 @@ std::optional<TTCConfig>& GetCustomConfig() {
   return *custom_config;
 }
 
+__strong id<TTCAudioEngineProtocol> custom_audio_engine = nil;
+
 }  // namespace
 
 namespace test {
@@ -40,10 +42,18 @@ void ResetTTCConfigForTesting() {
   GetCustomConfig().reset();
 }
 
+void SetTTCAudioEngineForTesting(id<TTCAudioEngineProtocol> engine) {
+  custom_audio_engine = engine;
+}
+
 }  // namespace test
 
 TTCConfig GetTTCConfig() {
   return GetCustomConfig().value_or(GetDefaultMockConfig());
+}
+
+id<TTCAudioEngineProtocol> CreateTTCAudioEngine() {
+  return custom_audio_engine;
 }
 
 }  // namespace ios::provider
