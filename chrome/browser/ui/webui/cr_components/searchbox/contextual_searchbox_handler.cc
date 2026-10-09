@@ -328,8 +328,15 @@ ContextualSearchboxHandler::GetRecentTabInfos(
     }
   }
 
-  // Sort the tabs by last active time.
-  auto cmp = [](const TabTime& a, const TabTime& b) { return a.time > b.time; };
+  // Sort the tabs by last active time, prioritizing the active tab.
+  auto cmp = [active_tab_interface](const TabTime& a, const TabTime& b) {
+    const bool a_is_active = a.tab == active_tab_interface;
+    const bool b_is_active = b.tab == active_tab_interface;
+    if (a_is_active != b_is_active) {
+      return a_is_active > b_is_active;
+    }
+    return a.time > b.time;
+  };
   if (max_tab_suggestions > 0) {
     int count =
         std::min(static_cast<int>(tab_times.size()), max_tab_suggestions);
@@ -344,11 +351,6 @@ ContextualSearchboxHandler::GetRecentTabInfos(
   // selection, which is a small subset of all tabs.
   const bool tab_deselection_enabled =
       omnibox::IsTabDeselectionInComposeboxEnabled();
-  const GURL active_tab_url =
-      active_web_contents ? (tab_deselection_enabled
-                                 ? active_web_contents->GetVisibleURL()
-                                 : active_web_contents->GetLastCommittedURL())
-                          : GURL();
 
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
   for (const TabTime& tab_time : tab_times) {
@@ -363,8 +365,7 @@ ContextualSearchboxHandler::GetRecentTabInfos(
     tab_data->title = base::UTF16ToUTF8(
         web_contents ? web_contents->GetTitle() : tab_time.tab->GetTitle());
     tab_data->url = url;
-    const bool show_in_current_tab_chip =
-        active_web_contents && active_tab_url == url;
+    const bool show_in_current_tab_chip = tab_time.tab == active_tab_interface;
     tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
 
     lens::TabContextualizationController* tab_context_controller =

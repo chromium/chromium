@@ -4227,6 +4227,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
 
   content::WebContentsTester::For(example_tab->GetContents())
       ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
+  ON_CALL(*tab_list(), GetActiveTab())
+      .WillByDefault(testing::Return(example_tab));
 
   {
     // Activate an older tab, and ensure it is returned first.
@@ -4236,6 +4238,28 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     EXPECT_EQ(tabs[0]->tab_id, example_tab->GetHandle().raw_value());
     EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
   }
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_ActiveTabPrioritizedOverNewerBackgroundTab) {
+  auto* active_tab = AddTab(GURL("https://www.example.com"));
+  // Simulate opening a duplicate URL tab in the background (e.g., via
+  // Ctrl+clicking a link), which initializes `LastActiveTimeTicks` on the new
+  // background WebContents to a newer timestamp while `active_tab` remains the
+  // active tab in the tab strip.
+  auto* background_tab = AddTab(GURL("https://www.example.com"));
+  ON_CALL(*tab_list(), GetActiveTab())
+      .WillByDefault(testing::Return(active_tab));
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+  handler().GetRecentTabs(future.GetCallback());
+  auto tabs = future.Take();
+
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->tab_id, active_tab->GetHandle().raw_value());
+  EXPECT_TRUE(tabs[0]->show_in_current_tab_chip);
+  EXPECT_EQ(tabs[1]->tab_id, background_tab->GetHandle().raw_value());
+  EXPECT_FALSE(tabs[1]->show_in_current_tab_chip);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,

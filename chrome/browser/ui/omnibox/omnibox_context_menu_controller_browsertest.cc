@@ -316,6 +316,27 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
     EXPECT_EQ(std::u16string(),
               controller.shared_tabs_menu_model()->GetMinorTextAt(1));
   }
+
+  // Case 3: Active tab is tab 1, and a new tab is opened in the background
+  // (which initializes a newer WebContents LastActiveTimeTicks). The active tab
+  // should still be sorted first and labeled as 'current tab'.
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  GURL url3(embedded_test_server()->GetURL("/title3.html"));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  {
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    ASSERT_TRUE(controller.shared_tabs_menu_model());
+    EXPECT_EQ(3u, GetVisibleItemCount(controller.shared_tabs_menu_model()));
+    EXPECT_EQ(browser()->GetTabStripModel()->GetWebContentsAt(1)->GetTitle(),
+              controller.shared_tabs_menu_model()->GetLabelAt(0));
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB),
+              controller.shared_tabs_menu_model()->GetMinorTextAt(0));
+    EXPECT_EQ(std::u16string(),
+              controller.shared_tabs_menu_model()->GetMinorTextAt(1));
+  }
 }
 
 // TODO(crbug.com/460910010): Flaky, especially on ASAN/LSAN bots and certain
