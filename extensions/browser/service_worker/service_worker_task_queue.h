@@ -63,6 +63,9 @@ class Extension;
 // browser. If there’s a registration record the registration is still verified
 // with the //content layer).
 //
+// The registration state of each activation is tracked in its
+// `ServiceWorkerState`, and only registered workers are started.
+//
 // Worker Started/Stopped:
 //
 // Starting:
@@ -591,12 +594,6 @@ class ServiceWorkerTaskQueue
   // New requests to register a service worker for the same extension will get
   // retried to allow the unregistration to complete first.
   std::set<ExtensionId> pending_unregistrations_;
-
-  // TODO(crbug.com/40276609): Do we need to track this by `SequencedContextId`
-  // or could we used `ExtensionId` instead?
-  // The activated extensions that have workers that are registered with the
-  // //content layer.
-  std::set<SequencedContextId> worker_registered_;
 
   base::WeakPtrFactory<ServiceWorkerTaskQueue> weak_factory_{this};
 };

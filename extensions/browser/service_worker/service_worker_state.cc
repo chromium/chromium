@@ -73,6 +73,11 @@ void ServiceWorkerState::SetRendererState(RendererState renderer_state) {
   renderer_state_ = renderer_state;
 }
 
+void ServiceWorkerState::SetRegistrationState(
+    RegistrationState registration_state) {
+  registration_state_ = registration_state;
+}
+
 void ServiceWorkerState::Reset() {
   const bool did_start_worker = browser_state_ == BrowserState::kActive;
 
@@ -118,6 +123,9 @@ void ServiceWorkerState::Reset() {
 }
 
 void ServiceWorkerState::ResetForStorageWipe() {
+  // The wipe deleted the worker's registration.
+  registration_state_ = RegistrationState::kNotRegistered;
+
   // A start request sent before the wipe is not aborted by
   // `DeleteAndStartOver()` and can finish after `OnStorageWipedSync()`. Drop
   // its callbacks so that its result can't fail tasks queued for the new
@@ -135,6 +143,10 @@ bool ServiceWorkerState::IsStarting() const {
 bool ServiceWorkerState::IsReady() const {
   return browser_state_ == BrowserState::kActive &&
          renderer_state_ == RendererState::kActive && worker_id_.has_value();
+}
+
+bool ServiceWorkerState::IsRegistered() const {
+  return registration_state_ == RegistrationState::kRegistered;
 }
 
 void ServiceWorkerState::SetWorkerId(const WorkerId& worker_id) {
