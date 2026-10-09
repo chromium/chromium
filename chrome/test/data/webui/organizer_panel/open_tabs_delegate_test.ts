@@ -159,6 +159,7 @@ suite('OpenTabsDelegateTest', () => {
       openTabs: 'Open Tabs',
       closeTab: 'Close tab',
       oneTab: '1 tab',
+      splitView: 'Split View',
       tabCount: '$1 tabs',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
@@ -316,7 +317,7 @@ suite('OpenTabsDelegateTest', () => {
 
     assertDeepEquals([youtubeTab.title], items[0]!.title);
     assertDeepEquals([googleTab.title], items[1]!.title);
-    assertDeepEquals([SPLIT_TAB_1_TITLE, SPLIT_TAB_2_TITLE], items[2]!.title);
+    assertDeepEquals([loadTimeData.getString('splitView')], items[2]!.title);
     assertTrue(isSplitTab(items[2]!.data!));
     assertTrue(isActive(items[2]!.data));
   });
@@ -496,9 +497,11 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const item = items[0]!;
-        assertDeepEquals([SPLIT_TAB_1_TITLE, SPLIT_TAB_2_TITLE], item.title);
-        assertEquals(1, item.description?.length);
+        assertDeepEquals([loadTimeData.getString('splitView')], item.title);
+        assertEquals(3, item.description?.length);
         assertDeepEquals({text: splitTab1ElapsedText}, item.description?.[0]);
+        assertDeepEquals({text: SPLIT_TAB_1_TITLE}, item.description?.[1]);
+        assertDeepEquals({text: SPLIT_TAB_2_TITLE}, item.description?.[2]);
         assertEquals(2, item.prefixIcon?.stackedFavicons?.urls?.length);
         assertEquals(
             SPLIT_TAB_1_URL, item.prefixIcon?.stackedFavicons?.urls?.[0]);
@@ -696,9 +699,11 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const description = items[0]!.description;
-        assertEquals(2, description?.length);
+        assertEquals(4, description?.length);
         assertDeepEquals({text: '3m ago'}, description?.[0]);
         assertEquals('Split Group', description?.[1]!.text);
+        assertDeepEquals({text: SPLIT_TAB_1_TITLE}, description?.[2]);
+        assertDeepEquals({text: SPLIT_TAB_2_TITLE}, description?.[3]);
 
         const container = document.createElement('div');
         document.body.appendChild(container);

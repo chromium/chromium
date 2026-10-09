@@ -262,11 +262,11 @@ export class OpenTabsDelegate implements
 
   private toSectionItem_(item: OpenTabsItem):
       OrganizerListSectionItem<OpenTabsItem> {
-    let tabs: Tab[];
+    let title: string[];
     let prefixIcon: OrganizerListSectionItemIcon;
 
     if (isSplitTab(item)) {
-      tabs = item.tabs;
+      title = [loadTimeData.getString('splitView')];
       prefixIcon = {
         stackedFavicons: {
           urls: [item.tabs[0].url, item.tabs[1].url],
@@ -274,11 +274,9 @@ export class OpenTabsDelegate implements
         },
       };
     } else {
-      tabs = [item.tab];
+      title = [item.tab.title];
       prefixIcon = {url: item.tab.url};
     }
-
-    const title = tabs.map(tab => tab.title);
 
     const description: OrganizerListSectionItemDescriptionPart[] = [];
     const elapsedText = getMostRecentTab(item).lastActiveElapsedText;
@@ -293,6 +291,10 @@ export class OpenTabsDelegate implements
         prefixElement: html`<tab-group-dot .color="${tabGroup.color}">
             </tab-group-dot>`,
       });
+    }
+
+    if (isSplitTab(item)) {
+      description.push({text: item.tabs[0].title}, {text: item.tabs[1].title});
     }
 
     return {
