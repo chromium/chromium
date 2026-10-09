@@ -72,8 +72,6 @@ source_set("impl") {
     "app_home_ui.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":app_home",
     ":mojo_bindings",

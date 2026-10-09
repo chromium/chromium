@@ -36,15 +36,6 @@ source_set("impl") {
     "//ui/base/mojom:ui_base_types",
     "//ui/views",
   ]
-
-  # storage_pressure_bubble_view.cc includes
-  # chrome/browser/ui/views/frame/browser_view.h to anchor the bubble at the
-  # app-menu button (BrowserView::GetBrowserViewForBrowser ->
-  # toolbar_button_provider), which is still compiled in //chrome/browser/ui:ui
-  # and has no BrowserWindowInterface accessor yet. Reach it via
-  # browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("browser_tests") {

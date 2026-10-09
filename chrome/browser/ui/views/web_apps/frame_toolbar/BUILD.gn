@@ -66,10 +66,7 @@ if (toolkit_views) {
 
   source_set("web_app_origin_text_impl") {
     sources = [ "web_app_origin_text.cc" ]
-    public_deps = [
-      ":web_app_origin_text",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":web_app_origin_text" ]
     deps = [
       ":web_app_toolbar_button_container",
       "//base",
@@ -100,10 +97,7 @@ if (toolkit_views) {
 
   source_set("window_controls_overlay_toggle_button_impl") {
     sources = [ "window_controls_overlay_toggle_button.cc" ]
-    public_deps = [
-      ":window_controls_overlay_toggle_button",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":window_controls_overlay_toggle_button" ]
     deps = [
       "//base",
       "//chrome/app:generated_resources",
@@ -129,10 +123,7 @@ if (toolkit_views) {
 
   source_set("web_app_navigation_button_container_impl") {
     sources = [ "web_app_navigation_button_container.cc" ]
-    public_deps = [
-      ":web_app_navigation_button_container",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":web_app_navigation_button_container" ]
     deps = [
       ":web_app_frame_toolbar_utils",
       "//base",
@@ -166,10 +157,7 @@ if (toolkit_views) {
 
   source_set("web_app_menu_button_impl") {
     sources = [ "web_app_menu_button.cc" ]
-    public_deps = [
-      ":web_app_menu_button",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":web_app_menu_button" ]
     deps = [
       ":web_app_toolbar_button_container",
       "//base",
@@ -212,10 +200,7 @@ if (toolkit_views) {
 
   source_set("web_app_toolbar_button_container_impl") {
     sources = [ "web_app_toolbar_button_container.cc" ]
-    public_deps = [
-      ":web_app_toolbar_button_container",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":web_app_toolbar_button_container" ]
     deps = [
       ":system_app_accessible_name",
       ":web_app_content_settings_container",
@@ -274,10 +259,7 @@ if (toolkit_views) {
 
   source_set("web_app_frame_toolbar_view_impl") {
     sources = [ "web_app_frame_toolbar_view.cc" ]
-    public_deps = [
-      ":web_app_frame_toolbar_view",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":web_app_frame_toolbar_view" ]
     deps = [
       ":web_app_content_settings_container",
       ":web_app_menu_button",

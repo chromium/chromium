@@ -52,7 +52,6 @@ source_set("side_panel") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/history_clusters",
     "//chrome/browser/optimization_guide",

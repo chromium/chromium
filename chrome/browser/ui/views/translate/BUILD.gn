@@ -76,7 +76,6 @@ source_set("impl") {
     "//services/network/public/cpp",
     "//ui/strings:ui_strings",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

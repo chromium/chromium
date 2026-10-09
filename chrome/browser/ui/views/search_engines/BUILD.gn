@@ -11,10 +11,7 @@ source_set("search_engines") {
 
 source_set("impl") {
   sources = [ "dse_reset_dialog.cc" ]
-  public_deps = [
-    ":search_engines",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":search_engines" ]
   deps = [
     "//base",
     "//chrome/app:branded_strings",

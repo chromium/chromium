@@ -5,7 +5,6 @@
 source_set("history_clusters") {
   sources = [ "history_clusters_util.cc" ]
   public = [ "history_clusters_util.h" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
     "//chrome/app:generated_resources_grit",

@@ -71,8 +71,6 @@ source_set("impl") {
     "//ui/menus",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("interactive_ui_tests") {

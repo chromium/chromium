@@ -24,10 +24,7 @@ source_set("supervised_user") {
 source_set("impl") {
   sources = [ "parent_permission_dialog_view.cc" ]
 
-  public_deps = [
-    ":supervised_user",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":supervised_user" ]
 
   deps = [
     "//chrome/app:generated_resources",

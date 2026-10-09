@@ -36,13 +36,6 @@ source_set("impl") {
     "//ui/strings",
     "//ui/views",
   ]
-
-  # render_view_context_menu_views.cc calls
-  # BrowserView::GetBrowserViewForBrowser() to expose the browser's
-  # AcceleratorProvider, which is still compiled in //chrome/browser/ui:ui.
-  # Reach it via browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("browser_tests") {

@@ -55,8 +55,6 @@ source_set("impl") {
     "infobar_internals_ui.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":infobar_internals",
     ":mojo_bindings",

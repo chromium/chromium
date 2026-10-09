@@ -82,7 +82,6 @@ source_set("impl") {
   deps = [
     ":page_info",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/file_system_access",
     "//chrome/browser/page_info",

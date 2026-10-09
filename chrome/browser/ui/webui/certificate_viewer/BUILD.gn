@@ -13,8 +13,6 @@ if (enable_webui_certificate_viewer) {
       "certificate_viewer_webui.h",
     ]
 
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
     deps = [
       "//base",
       "//chrome/browser:certificate_viewer",

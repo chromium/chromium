@@ -40,7 +40,6 @@ source_set("cookie_controls") {
 source_set("impl") {
   sources = []
   deps = [ ":cookie_controls" ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (toolkit_views) {
     sources += [

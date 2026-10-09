@@ -14,7 +14,6 @@ source_set("intent_picker_page_action") {
   ]
 
   deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
