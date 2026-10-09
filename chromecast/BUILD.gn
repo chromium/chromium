@@ -155,17 +155,6 @@ cast_test_group("cast_tests") {
 
   if (is_linux) {
     tests += [ "//chromecast/media/cma/backend:cast_audio_backend_unittests" ]
-    cast_audio_backend_unittests_filter = {
-      test_name = "cast_audio_backend_unittests"
-
-      # --test-launcher-jobs=1 => so mixer service receiver can bind.
-      args = [
-        "--test-launcher-jobs=1",
-        "--mixer-service-endpoint=/tmp/cast_audio_backend_unittest-mixer",
-        "--mixer-service-port=12855",
-      ]
-    }
-    filters += [ cast_audio_backend_unittests_filter ]
   }
 
   if (is_android) {

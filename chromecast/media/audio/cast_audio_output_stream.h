@@ -109,8 +109,6 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
     kPendingClose,
   };
 
-  class MixerServiceWrapper;
-
   void FinishClose();
 
   double volume_;

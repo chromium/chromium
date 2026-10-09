@@ -24,9 +24,6 @@ extern const char kCrashReportProductName[];
 // Disable Crash Reporting
 extern const char kDisableCrashReporter[];
 
-// Disable Crashpad forwarding
-extern const char kDisableCrashpadForwarding[];
-
 // Path to dumpstate binary to be used for crash reporting.
 // This gives Chromium's crash reporter the flexibility to switch
 // between multiple implementations of dumpstate tool.
@@ -45,18 +42,9 @@ extern const char kRequireWlan[];
 extern const char kLastLaunchedApp[];
 extern const char kPreviousApp[];
 
-// Cast Receiver switches
-extern const char kAcceptResourceProvider[];
-
 // ALSA-based CMA switches. (Only valid for audio products.)
-// TODO(sergeyu): kAlsaEnableUpsampling and kAlsaCheckCloseTimeout are
-// implemented in StreamMixer, which is not ALSA-specific - it's also used on
-// Fuchsia. Rename these flags.
 extern const char kAlsaAmpDeviceName[];
 extern const char kAlsaAmpElementName[];
-extern const char kAlsaCheckCloseTimeout[];
-extern const char kAlsaEnableUpsampling[];
-extern const char kAlsaFixedOutputSampleRate[];
 extern const char kAlsaMuteDeviceName[];
 extern const char kAlsaMuteElementName[];
 extern const char kAlsaOutputAvailMin[];
@@ -66,11 +54,6 @@ extern const char kAlsaOutputStartThreshold[];
 extern const char kAlsaVolumeDeviceName[];
 extern const char kAlsaVolumeElementName[];
 extern const char kAudioOutputChannels[];
-extern const char kAudioOutputSampleRate[];
-extern const char kMaxOutputVolumeDba1m[];
-extern const char kMixerEnableDynamicChannelCount[];
-extern const char kMixerSourceAudioReadyThresholdMs[];
-extern const char kMixerSourceInputQueueMs[];
 
 // Memory pressure switches
 extern const char kMemPressureSystemReservedKb[];
@@ -96,9 +79,6 @@ extern const char kManagedMode[];
 
 // Background color used when Chromium hasn't rendered anything yet.
 extern const char kCastAppBackgroundColor[];
-
-extern const char kMixerServiceEndpoint[];
-extern const char kMixerServicePort[];
 
 extern const char kCastMemoryPressureCriticalFraction[];
 extern const char kCastMemoryPressureModerateFraction[];
