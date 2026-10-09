@@ -2100,7 +2100,6 @@ void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
     syncer::DataType data_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::DeleteAllSyncMetadata");
   CHECK_EQ(data_type, syncer::PASSWORDS);
-  CHECK_EQ(data_type, syncer::PASSWORDS);
   ClearAllSyncMetadata(&login_db_->db_, data_type);
 }
 
