@@ -7,14 +7,12 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/completion_event.h"
-#include "cc/base/features.h"
 #include "cc/tiles/tile_task_manager.h"
 
 namespace cc {
@@ -497,9 +495,7 @@ ImageController::ImageDecodeResult ImageController::CompleteTaskForRequest(
   ImageDecodeResult result;
   if (!request.draw_image.paint_image().IsLazyGenerated()) {
     result = ImageDecodeResult::DECODE_NOT_REQUIRED;
-  } else if (request.too_large_to_pin &&
-             base::FeatureList::IsEnabled(
-                 features::kResolveLargeImageDecodes)) {
+  } else if (request.too_large_to_pin) {
     result = ImageDecodeResult::SUCCESS;
   } else if (!request.need_unref) {
     result = ImageDecodeResult::FAILURE;
