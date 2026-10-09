@@ -25,6 +25,14 @@ class ToolSchemaBuilder {
   // JSON Schema string format annotation for URI values.
   static constexpr std::string_view kFormatUri = "uri";
 
+  // JSON Schema type of the items in an array property.
+  enum class ArrayItemType {
+    kString,
+    kInteger,
+    kNumber,
+    kBoolean,
+  };
+
   ToolSchemaBuilder();
   ~ToolSchemaBuilder();
   ToolSchemaBuilder(const ToolSchemaBuilder&) = delete;
@@ -55,6 +63,12 @@ class ToolSchemaBuilder {
   // Adds a required boolean property to the schema.
   ToolSchemaBuilder& AddBooleanProperty(std::string_view name,
                                         std::string_view description);
+
+  // Adds a required array property whose items are of type `item_type` to the
+  // schema.
+  ToolSchemaBuilder& AddArrayProperty(std::string_view name,
+                                      std::string_view description,
+                                      ArrayItemType item_type);
 
   // Consumes the accumulated properties and returns the top-level JSON Schema
   // object dictionary. Call at most once: `Build()` moves out the builder's

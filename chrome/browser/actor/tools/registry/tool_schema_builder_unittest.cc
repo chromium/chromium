@@ -130,5 +130,47 @@ TEST(ToolSchemaBuilderTest, AddsBooleanProperty) {
   EXPECT_EQ(schema, expected);
 }
 
+TEST(ToolSchemaBuilderTest, AddsIntegerArrayProperty) {
+  base::DictValue schema =
+      ToolSchemaBuilder()
+          .AddArrayProperty("ids", "The IDs.",
+                            ToolSchemaBuilder::ArrayItemType::kInteger)
+          .Build();
+  base::DictValue expected =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "ids",
+                   base::DictValue()
+                       .Set("type", "array")
+                       .Set("description", "The IDs.")
+                       .Set("items", base::DictValue().Set("type", "integer"))))
+          .Set("required", base::ListValue().Append("ids"))
+          .Set("additionalProperties", false);
+  EXPECT_EQ(schema, expected);
+}
+
+TEST(ToolSchemaBuilderTest, AddsStringArrayProperty) {
+  base::DictValue schema =
+      ToolSchemaBuilder()
+          .AddArrayProperty("urls", "The URLs.",
+                            ToolSchemaBuilder::ArrayItemType::kString)
+          .Build();
+  base::DictValue expected =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "urls",
+                   base::DictValue()
+                       .Set("type", "array")
+                       .Set("description", "The URLs.")
+                       .Set("items", base::DictValue().Set("type", "string"))))
+          .Set("required", base::ListValue().Append("urls"))
+          .Set("additionalProperties", false);
+  EXPECT_EQ(schema, expected);
+}
+
 }  // namespace
 }  // namespace actor
