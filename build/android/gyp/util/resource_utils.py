@@ -847,18 +847,29 @@ packageIdTransform);
 
 def ExtractBinaryManifestValues(aapt2_path, apk_path):
     """Returns (version_code, version_name, package_name) for the given apk."""
-    cmd = [
-        aapt2_path,
-        'dump',
-        'xmltree',
-        apk_path,
-        '--file',
-        'AndroidManifest.xml',
-    ]
-    filter_func = lambda output: build_utils.FilterLines(  # noqa: E731
-        output, r'warn: unexpected chunk type'
-    )
-    output = build_utils.CheckOutput(cmd, stderr_filter=filter_func)
+    # Extract only AndroidManifest.xml into a small temporary zip so that
+    # `aapt2 dump xmltree` does not spend ~0.7s loading the 22 MB resources.arsc
+    # table inside android.jar.
+    with tempfile.NamedTemporaryFile(suffix='.zip') as temp_zip:
+        with (
+            zipfile.ZipFile(apk_path) as src_z,
+            zipfile.ZipFile(temp_zip.name, 'w') as dst_z,
+        ):
+            dst_z.writestr(
+                'AndroidManifest.xml', src_z.read('AndroidManifest.xml')
+            )
+        cmd = [
+            aapt2_path,
+            'dump',
+            'xmltree',
+            temp_zip.name,
+            '--file',
+            'AndroidManifest.xml',
+        ]
+        filter_func = lambda output: build_utils.FilterLines(  # noqa: E731
+            output, r'warn: unexpected chunk type'
+        )
+        output = build_utils.CheckOutput(cmd, stderr_filter=filter_func)
     version_code = re.search(r'versionCode.*?=(\d*)', output).group(1)
     version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
     package_name = re.search(r'package.*?="(.*?)"', output).group(1)

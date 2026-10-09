@@ -296,7 +296,7 @@ def _DeterminePlatformVersion(aapt2_path, jar_candidates):
     def maybe_extract_version(j):
         try:
             return resource_utils.ExtractBinaryManifestValues(aapt2_path, j)
-        except build_utils.CalledProcessError:
+        except (build_utils.CalledProcessError, KeyError):
             return None
 
     def is_sdk_jar(jar_name):
