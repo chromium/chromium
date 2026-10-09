@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -57,7 +58,6 @@
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #endif
-
 
 namespace autofill {
 namespace {
@@ -2737,6 +2737,18 @@ TEST_F(CreditCardAccessManagerTest,
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
   CreditCardAccessManagerTestBase::FetchCreditCard(&card);
+}
+
+TEST_F(CreditCardAccessManagerTest, RetrieveCreditCardForOpaqueToken) {
+  base::test::TestFuture<std::optional<CreditCard>> future;
+  credit_card_access_manager().RetrieveCreditCardForOpaqueToken(
+      "opaque_token_xyz", future.GetCallback());
+  std::optional<CreditCard> card = future.Take();
+  ASSERT_TRUE(card.has_value());
+  EXPECT_EQ(card->GetRawInfo(CREDIT_CARD_NAME_FULL), u"Mock User");
+  EXPECT_EQ(card->GetRawInfo(CREDIT_CARD_NUMBER), u"4111111111111111");
+  EXPECT_EQ(card->nickname(), u"Mock Card");
+  EXPECT_EQ(card->cvc(), u"123");
 }
 
 }  // namespace autofill

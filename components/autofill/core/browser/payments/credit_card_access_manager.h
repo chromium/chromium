@@ -99,6 +99,8 @@ class CreditCardAccessManager
 
   using OnCreditCardFetchedCallback =
       base::OnceCallback<void(const CreditCard&)>;
+  using OnCreditCardRetrievedForOpaqueTokenCallback =
+      base::OnceCallback<void(std::optional<CreditCard>)>;
   using OtpAuthenticationResponse =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
@@ -131,6 +133,20 @@ class CreditCardAccessManager
       const CreditCard* card,
       bool require_user_confirmation,
       OnCreditCardFetchedCallback on_credit_card_fetched);
+
+  // Retrieves the credit card associated with the given opaque token.
+  // The callback is invoked with std::nullopt if no card is found.
+  // Note: The returned card must be a `CreditCard::RecordType::kLocalCard`.
+  // If a `kFullServerCard` were returned without being listed in
+  // `unmasked_card_cache_`, subsequent form filling via `FetchCreditCard`
+  // would reach a `NOTREACHED()` because `FetchCreditCard` assumes full server
+  // cards only originate from a previous unmasking on the same page and are
+  // served through the cache.
+  // TODO(crbug.com/567655303): Replace mock implementation with actual service
+  // call.
+  virtual void RetrieveCreditCardForOpaqueToken(
+      const std::string& credit_card_opaque_token,
+      OnCreditCardRetrievedForOpaqueTokenCallback callback);
 
   // Checks whether we should offer risk-based authentication for masked server
   // card retrieval.

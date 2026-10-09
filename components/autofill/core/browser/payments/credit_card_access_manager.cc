@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -434,6 +435,32 @@ void CreditCardAccessManager::FetchCreditCard(
       // card should flow through the cache and not reach here.
       NOTREACHED();
   }
+}
+
+void CreditCardAccessManager::RetrieveCreditCardForOpaqueToken(
+    const std::string& credit_card_opaque_token,
+    OnCreditCardRetrievedForOpaqueTokenCallback callback) {
+  // Stubbed out: return a dummy credit card with mock data asynchronously.
+  // Note: The returned card must be a `CreditCard::RecordType::kLocalCard`.
+  // If a `kFullServerCard` were returned without being listed in
+  // `unmasked_card_cache_`, subsequent form filling via `FetchCreditCard`
+  // would reach a `NOTREACHED()` because `FetchCreditCard` assumes full server
+  // cards only originate from a previous unmasking on the same page and are
+  // served through the cache.
+  // TODO(crbug.com/567655303): Replace mock implementation with actual service
+  // call.
+
+  CreditCard dummy_card;
+  dummy_card.set_record_type(CreditCard::RecordType::kLocalCard);
+  dummy_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Mock User");
+  dummy_card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  dummy_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
+  dummy_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2030");
+  dummy_card.SetNickname(u"Mock Card");
+  dummy_card.set_cvc(u"123");
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(dummy_card)));
 }
 
 bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
