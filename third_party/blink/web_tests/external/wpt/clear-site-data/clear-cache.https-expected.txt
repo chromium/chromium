@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
 [FAIL] clear cache: Image-Cache gets cleared
-  assert_not_equals: got disallowed value "724x75-157x681"
+  assert_false: first and last value should differ (cache was cleared) expected false got true
 [FAIL] clear cache: CSS-Cache gets cleared
-  assert_not_equals: got disallowed value "02dbb514-6a96-4c63-83b0-10203f8d3d65"
+  assert_false: first and last value should differ (cache was cleared) expected false got true
 [FAIL] clear cache: JS-Cache gets cleared
-  assert_not_equals: got disallowed value "754686cf-be52-4095-af41-5cd4aeba1d18"
+  assert_false: first and last value should differ (cache was cleared) expected false got true
 Harness: the test ran to completion.
 
