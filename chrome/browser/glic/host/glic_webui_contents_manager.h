@@ -60,6 +60,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
 
   const base::TimeTicks creation_time_ = base::TimeTicks::Now();
   base::TimeTicks navigation_commit_time_;
+  bool has_recorded_load_complete_ = false;
   const raw_ptr<Profile> profile_;
   GlicWebClientManager web_client_manager_;
   std::unique_ptr<content::WebContents> web_contents_;

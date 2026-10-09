@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
@@ -85,6 +86,28 @@ IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
   run_loop.Run();
   EXPECT_FALSE(instance->host().IsWebClientConnected());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
+                       RecordsNavigationCommitAndLoadCompleteMetricsOnce) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(instance).has_value());
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime2", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime2", 1);
+
+  // Trigger a second navigation on the WebUI WebContents.
+  content::WebContents* webui_contents = instance->host().webui_contents();
+  ASSERT_TRUE(webui_contents);
+  webui_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                         /*check_for_repost=*/false);
+  EXPECT_TRUE(content::WaitForLoadStop(webui_contents));
+
+  // The metrics must not be recorded again for subsequent navigations.
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime2", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime2", 1);
 }
 
 }  // namespace glic

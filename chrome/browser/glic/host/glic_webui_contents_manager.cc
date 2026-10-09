@@ -125,13 +125,16 @@ void GlicWebUIContentsManager::AttachModalDialogManagerDelegate(
 
 void GlicWebUIContentsManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame()) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument() &&
+      navigation_commit_time_.is_null()) {
     TRACE_EVENT_INSTANT(
         "glic",
         "GlicWebUIContentsManager::DidFinishNavigation - PrimaryMainFrame",
         perfetto::Flow::FromPointer(this));
     navigation_commit_time_ = base::TimeTicks::Now();
-    base::UmaHistogramTimes("Glic.Contents.NavigationCommitTime",
+    base::UmaHistogramTimes("Glic.Contents.NavigationCommitTime2",
                             navigation_commit_time_ - creation_time_);
   }
   if (!host_ || !navigation_handle->IsInPrimaryMainFrame() ||
@@ -162,8 +165,11 @@ void GlicWebUIContentsManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
       "glic",
       "GlicWebUIContentsManager::DocumentOnLoadCompletedInPrimaryMainFrame",
       perfetto::Flow::FromPointer(this));
-  base::UmaHistogramTimes("Glic.Contents.LoadCompleteTime",
-                          base::TimeTicks::Now() - navigation_commit_time_);
+  if (!navigation_commit_time_.is_null() && !has_recorded_load_complete_) {
+    has_recorded_load_complete_ = true;
+    base::UmaHistogramTimes("Glic.Contents.LoadCompleteTime2",
+                            base::TimeTicks::Now() - navigation_commit_time_);
+  }
 }
 
 void GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone(
