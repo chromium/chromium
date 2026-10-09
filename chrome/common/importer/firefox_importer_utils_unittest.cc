@@ -28,9 +28,9 @@ using testing::UnorderedElementsAre;
 namespace {
 
 struct GetPrefsJsValueCase {
-  std::string prefs_content;
-  std::string pref_name;
-  std::string pref_value;
+  const char* prefs_content;
+  const char* pref_name;
+  const char* pref_value;
 };
 auto GetPrefsJsValueCases = std::to_array<GetPrefsJsValueCase>({
     // Basic case. Single pref, unquoted value.
@@ -49,13 +49,13 @@ auto GetPrefsJsValueCases = std::to_array<GetPrefsJsValueCase>({
     {"user_pref(\"foo.bar\", 1);\n"
      "user_pref(\"foo.baz\", 2;\n"
      "user_pref(\"foo.bag\", 3);",
-     "foo.baz", std::string()},
+     "foo.baz", ""},
     // Malformed content.
-    {"uesr_pref(\"foo.bar\", 1);", "foo.bar", std::string()},
+    {"uesr_pref(\"foo.bar\", 1);", "foo.bar", ""},
 });
 
 struct GetFirefoxImporterNameCase {
-  std::string app_ini_content;
+  const char* app_ini_content;
   int resource_id;
 };
 auto GetFirefoxImporterNameCases = std::to_array<GetFirefoxImporterNameCase>({
@@ -103,7 +103,7 @@ auto GetFirefoxImporterNameCases = std::to_array<GetFirefoxImporterNameCase>({
      "Version=10.0.6\n",
      IDS_IMPORT_FROM_ICEWEASEL},
     // Empty file
-    {std::string(), IDS_IMPORT_FROM_FIREFOX},
+    {"", IDS_IMPORT_FROM_FIREFOX},
 });
 
 }  // anonymous namespace

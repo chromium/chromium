@@ -33,3 +33,18 @@ source_set("platform_apps") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+  if (is_chromeos) {
+    sources += [ "media_galleries_permission_unittest.cc" ]
+    deps += [
+      ":platform_apps",
+      "//base",
+      "//extensions/common",
+      "//testing/gtest",
+    ]
+  }
+}

@@ -135,4 +135,18 @@ if (!is_android) {
       "//testing/gmock",
     ]
   }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "firefox_importer_utils_unittest.cc" ]
+    deps = [
+      ":importer",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+  }
 }

@@ -3018,10 +3018,6 @@ test("unit_tests") {
 
   sources = []
 
-  if (enable_webui_certificate_viewer) {
-    sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
-  }
-
   # Support v8_unwinder_unittest on Android.
   if (is_android && enable_arm_cfi_table) {
     configs -= [ "//build/config/compiler:default_symbols" ]
@@ -3317,6 +3313,7 @@ test("unit_tests") {
     "//chrome/browser/webid:unit_tests",
     "//chrome/common:test_support",
     "//chrome/common:unit_tests",
+    "//chrome/common/net:unit_tests",
     "//chrome/common/profiler:unit_tests",
     "//chrome/common/themes:unit_tests",
     "//chrome/renderer:unit_tests",
@@ -3476,11 +3473,10 @@ test("unit_tests") {
   }
 
   if (enable_compose) {
-    sources += [ "../common/compose/type_conversions_unittest.cc" ]
     deps += [
       "//chrome/browser/compose:unit_tests",
       "//chrome/browser/ui/views/compose:unit_tests",
-      "//chrome/common/compose",
+      "//chrome/common/compose:unit_tests",
       "//components/compose/core/browser",
     ]
   }
@@ -3900,10 +3896,8 @@ test("unit_tests") {
       deps += [ "//chrome/browser/ui/webui/updater:unit_tests" ]
     }
 
-    sources += [
-      # The importer code is not used on Android.
-      "../common/importer/firefox_importer_utils_unittest.cc",
-    ]
+    # The importer code is not used on Android.
+    deps += [ "//chrome/common/importer:unit_tests" ]
 
     if (!is_mac) {
       data_deps += [ "//chrome:packed_resources" ]
@@ -4269,13 +4263,9 @@ test("unit_tests") {
     }
 
     if (is_chromeos) {
-      sources += [
-        "../common/apps/platform_apps/media_galleries_permission_unittest.cc",
-      ]
-
       deps += [
         "//chrome/browser/chromeos/extensions/wm:unit_tests",
-        "//chrome/common/apps/platform_apps",
+        "//chrome/common/apps/platform_apps:unit_tests",
         "//chrome/common/chromeos/extensions:unit_tests",
       ]
     } else {
@@ -4566,9 +4556,6 @@ test("unit_tests") {
         "//ui/views:test_support",
       ]
     }
-  }
-  if (!is_android && use_nss_certs) {
-    sources += [ "../common/net/x509_certificate_model_nss_unittest.cc" ]
   }
 
   if (enable_lens_desktop_google_branded_features) {

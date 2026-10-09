@@ -18,6 +18,17 @@ source_set("compose") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "type_conversions_unittest.cc" ]
+  deps = [
+    ":compose",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "compose.mojom" ]
   public_deps = [
