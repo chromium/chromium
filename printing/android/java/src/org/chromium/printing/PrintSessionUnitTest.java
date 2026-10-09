@@ -42,19 +42,25 @@ public class PrintSessionUnitTest {
                     .build();
 
     private static class FakePdfPrintable implements Printable {
-        private final InputStream mPdfInputStream;
+        private final @Nullable InputStream mPdfInputStream;
+        boolean mIsPdf = true;
+        int mInitiatePrintCount;
+        int mPrintCount;
+        int mGetPdfInputStreamCount;
 
-        FakePdfPrintable(InputStream pdfInputStream) {
+        FakePdfPrintable(@Nullable InputStream pdfInputStream) {
             mPdfInputStream = pdfInputStream;
         }
 
         @Override
         public boolean initiatePrint(int renderProcessId, int renderFrameId) {
+            mInitiatePrintCount++;
             return true;
         }
 
         @Override
         public boolean print(int renderProcessId, int renderFrameId) {
+            mPrintCount++;
             return false;
         }
 
@@ -78,7 +84,13 @@ public class PrintSessionUnitTest {
 
         @Override
         public @Nullable InputStream getPdfInputStream() {
+            mGetPdfInputStreamCount++;
             return mPdfInputStream;
+        }
+
+        @Override
+        public boolean isPdf() {
+            return mIsPdf;
         }
     }
 
@@ -215,5 +227,64 @@ public class PrintSessionUnitTest {
         assertEquals(1, writeCallback.mFailedCount);
         assertEquals(0, writeCallback.mFinishedCount);
         assertEquals(0, writeCallback.mCancelledCount);
+    }
+
+    @Test
+    public void testOnStartSkipsStreamAndInitiatePrintForPdf() throws IOException {
+        FakePdfPrintable printable =
+                new FakePdfPrintable(new ByteArrayInputStream(new byte[] {1, 2, 3}));
+        PrintSession session =
+                new PrintSession(
+                        printable,
+                        mPrintManager,
+                        /* renderProcessId= */ -1,
+                        /* renderFrameId= */ -1);
+        session.onStart();
+
+        assertEquals(0, printable.mInitiatePrintCount);
+        assertEquals(0, printable.mGetPdfInputStreamCount);
+
+        // Even if the underlying tab navigates away from the PDF while the dialog is up
+        // and onStart() runs again, the PDF state latched by the first onStart() is preserved.
+        printable.mIsPdf = false;
+        session.onStart();
+        assertEquals(0, printable.mInitiatePrintCount);
+
+        RecordingWriteCallback writeCallback = new RecordingWriteCallback();
+        session.onWrite(
+                new PageRange[] {PageRange.ALL_PAGES},
+                openDestination(),
+                new CancellationSignal(),
+                writeCallback);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(1, printable.mGetPdfInputStreamCount);
+        assertEquals(0, printable.mPrintCount);
+        assertEquals(1, writeCallback.mFinishedCount);
+        session.destroy();
+    }
+
+    @Test
+    public void testNullPdfInputStreamFailsWithoutCallingPrint() throws IOException {
+        FakePdfPrintable printable = new FakePdfPrintable(/* pdfInputStream= */ null);
+        PrintSession session =
+                new PrintSession(
+                        printable,
+                        mPrintManager,
+                        /* renderProcessId= */ -1,
+                        /* renderFrameId= */ -1);
+        session.onStart();
+
+        RecordingWriteCallback writeCallback = new RecordingWriteCallback();
+        session.onWrite(
+                new PageRange[] {PageRange.ALL_PAGES},
+                openDestination(),
+                new CancellationSignal(),
+                writeCallback);
+
+        assertEquals(1, printable.mGetPdfInputStreamCount);
+        assertEquals(0, printable.mPrintCount);
+        assertEquals(1, writeCallback.mFailedCount);
+        session.destroy();
     }
 }

@@ -38,6 +38,14 @@ public interface Printable {
     /** Check if the current Printable can print. */
     boolean canPrint();
 
-    /** Get the InputStream if the print job is already a pdf. Otherwise return null. */
+    /**
+     * Opens a new {@link InputStream} for the PDF document when {@link #isPdf()} is true. The
+     * caller owns the returned stream and must close it.
+     */
     @Nullable InputStream getPdfInputStream();
+
+    /** Returns whether this Printable represents an existing PDF document. */
+    default boolean isPdf() {
+        return false;
+    }
 }

@@ -80,6 +80,7 @@ class PrintSession implements PdfGenerator {
 
     private @Nullable Runnable mPendingPrintCallback;
 
+    private boolean mIsPdf;
     private boolean mPrintInitiated;
     private boolean mIsBusy;
     private boolean mDestroyed;
@@ -215,12 +216,14 @@ class PrintSession implements PdfGenerator {
     }
 
     private void initiatePrintIfNeeded() {
-        if (!mPrintInitiated
-                && mPrintable != null
-                && mPrintable.canPrint()
-                && mPrintable.getPdfInputStream() == null) {
-            mPrintInitiated = mPrintable.initiatePrint(mRenderProcessId, mRenderFrameId);
-        }
+        if (mIsPdf || mPrintInitiated || mPrintable == null || !mPrintable.canPrint()) return;
+
+        // Latch whether the printable is a PDF document so onWrite() uses the same path even if
+        // the underlying tab navigates while the print dialog is open. PDF documents are streamed
+        // straight to the framework in onWrite(), so the renderer never enters printing mode.
+        mIsPdf = mPrintable.isPdf();
+        if (mIsPdf) return;
+        mPrintInitiated = mPrintable.initiatePrint(mRenderProcessId, mRenderFrameId);
     }
 
     @Override
@@ -312,19 +315,25 @@ class PrintSession implements PdfGenerator {
             }
         }
         mPages = convertPageRangesToIntegerArray(ranges);
-        InputStream pdfInputStream = (mPrintable != null) ? mPrintable.getPdfInputStream() : null;
-
-        if (pdfInputStream == null) {
-            if (mPrintable != null && mPrintable.print(mRenderProcessId, mRenderFrameId)) {
-                mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
+        if (mIsPdf) {
+            InputStream pdfInputStream =
+                    (mPrintable != null) ? mPrintable.getPdfInputStream() : null;
+            if (pdfInputStream != null) {
+                onWriteForPdfPage(pdfInputStream, cancellationSignal);
             } else {
                 closeFileDescriptor();
                 mOnWriteCallback.onWriteFailed(mErrorMessage);
                 resetCallbacks();
             }
+            return;
+        }
+
+        if (mPrintable != null && mPrintable.print(mRenderProcessId, mRenderFrameId)) {
+            mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
         } else {
-            // The print job is already a pdf. Copy to destination from the provided InputStream.
-            onWriteForPdfPage(pdfInputStream, cancellationSignal);
+            closeFileDescriptor();
+            mOnWriteCallback.onWriteFailed(mErrorMessage);
+            resetCallbacks();
         }
     }
 
