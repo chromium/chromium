@@ -64,3 +64,18 @@ source_set("delay_load_failure_support") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "delay_load_failure_hook_unittest.cc",
+    "delay_load_notify_hook_unittest.cc",
+  ]
+  deps = [
+    ":delay_load_hooks",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
