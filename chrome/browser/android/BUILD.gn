@@ -254,6 +254,7 @@ source_set("tabs_impl") {
     "//components/search",
     "//components/sensitive_content",
     "//components/sensitive_content:features",
+    "//components/site_engagement/content",
     "//components/tabs:public",
     "//components/webapps/browser",
     "//content/public/browser",

@@ -71,6 +71,7 @@
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -186,6 +187,8 @@
 #include "components/multistep_filter/core/features.h"
 #include "components/payments/core/features.h"
 #include "components/search/search.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/skills/features.h"
 #include "content/public/browser/navigation_controller.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1284,6 +1287,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 
   PrefsTabHelper::CreateForWebContents(tab.GetContents());
+
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
+    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
+        tab.GetContents(),
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            profile));
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1879,6 +1889,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
 
   PrefsTabHelper::CreateForWebContents(new_contents);
+
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
+    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
+        new_contents,
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            profile));
+  }
 }
 
 customize_chrome::SidePanelController*

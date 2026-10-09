@@ -31,7 +31,6 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
@@ -71,8 +70,6 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/site_engagement/content/site_engagement_helper.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -246,12 +243,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
-  if (site_engagement::SiteEngagementService::IsEnabled()) {
-    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
-        web_contents,
-        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            profile));
-  }
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
