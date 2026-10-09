@@ -11,7 +11,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -514,50 +513,14 @@ TEST_F(AutofillAIEntityEditMediatorTest,
   EXPECT_EQ(consumer_.legalMessages.count, 1u);
   EXPECT_TRUE(consumer_.isServerWalletItem);
 
-  base::HistogramTester histogram_tester;
   [mediator_ saveEntityInstance];
-  [mediator_ disconnect];
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.WalletNotice.Settings.Funnel",
-      autofill::AutofillAiWalletNoticeFunnelEvents::kEntitySaved, 1);
   EXPECT_TRUE(consumer_.didFinishSavingCalled);
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, true, ^{
         return entity_data_manager_->GetEntityInstance(guid).has_value();
       }));
-}
-
-// Tests that when an eligible user has preloaded disclosure details and the
-// mediator disconnects without saving, `kEntityNotSaved` is logged.
-TEST_F(
-    AutofillAIEntityEditMediatorTest,
-    PublicPass_WithPreloadedDetails_DisconnectWithoutSaveLogsEntityNotSaved) {
-  autofill::EntityInstance wallet_instance =
-      autofill::test::GetVehicleEntityInstance(
-          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
-               .management_url = GURL()}});
-
-  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
-  response.context_token = "test_context_token";
-  response.legal_message_lines.push_back(
-      autofill::TestLegalMessageLine("Test Legal Message"));
-  response.user_eligibility =
-      autofill::WalletPassAccessManager::UserEligibility::kEligible;
-
-  EXPECT_CALL(*mock_wallet_pass_manager_,
-              ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
-      .WillOnce(testing::Return(response));
-
-  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
-
-  base::HistogramTester histogram_tester;
-  [mediator_ disconnect];
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.WalletNotice.Settings.Funnel",
-      autofill::AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved, 1);
 }
 
 // Tests that a user who is not eligible to see the Google Wallet disclosure

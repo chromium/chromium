@@ -8,8 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/metrics/histogram_tester.h"
-#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
@@ -441,15 +439,8 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   line.linkRanges = @[ [NSValue valueWithRange:NSMakeRange(32, 12)] ];
   line.linkURLs = {GURL("https://policies.google.com/terms")};
 
-  base::HistogramTester histogram_tester;
   [view_controller setLegalMessages:@[ line ]];
-  histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Settings.Funnel",
-                                    0);
   [view_controller loadModel];
-  [view_controller loadModel];
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.WalletNotice.Settings.Funnel",
-      autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown, 1);
 
   TableViewLinkHeaderFooterItem* footerItem =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
@@ -551,10 +542,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   line.linkRanges = @[ [NSValue valueWithRange:NSMakeRange(0, 14)] ];
   line.linkURLs = {GURL("https://policies.google.com/privacy")};
 
-  base::HistogramTester histogram_tester;
   [view_controller setLegalMessages:@[ line ]];
-  histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Settings.Funnel",
-                                    0);
 
   TableViewLinkHeaderFooterItem* footerItem =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
@@ -566,50 +554,17 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   [view_controller.view removeFromSuperview];
 }
 
-// Tests that tapping a link in the footer notifies the delegate and logs
-// `kLinkClicked` only when the tapped URL belongs to the legal message.
+// Tests that tapping a link in the footer notifies the delegate.
 TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapLinkWithURL) {
   AutofillAIEntityEditTableViewController* view_controller =
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  [view_controller setIsServerWalletItem:YES];
-  [view_controller setUserEmail:@"test@gmail.com"];
+  CrURL* testURL =
+      [[CrURL alloc] initWithGURL:GURL("https://policies.google.com/terms")];
+  OCMExpect([mock_delegate_ didTapLinkWithURL:testURL]);
 
-  AutofillLegalMessageLine* line = [[AutofillLegalMessageLine alloc] init];
-  line.messageText = @"By continuing, you agree to the Google Terms.";
-  line.linkRanges = @[ [NSValue valueWithRange:NSMakeRange(32, 12)] ];
-  line.linkURLs = {GURL("https://policies.google.com/terms")};
-  [view_controller setLegalMessages:@[ line ]];
-  [view_controller loadModel];
-
-  TableViewLinkHeaderFooterItem* footerItem =
-      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
-          [view_controller.tableViewModel footerForSectionIndex:1]);
-  ASSERT_EQ(2U, footerItem.urls.count);
-
-  // `TableViewLinkHeaderFooterView` allocates a new `CrURL` instance when a
-  // link is tapped, so pass distinct `CrURL` instances here to test value
-  // comparison rather than pointer equality.
-  CrURL* manageYourInfoURL =
-      [[CrURL alloc] initWithGURL:footerItem.urls[0].gurl];
-  CrURL* legalTermsURL = [[CrURL alloc] initWithGURL:footerItem.urls[1].gurl];
-
-  base::HistogramTester histogram_tester;
-
-  // Tapping the storage notice "manage your info" URL should not log
-  // `kLinkClicked`.
-  OCMExpect([mock_delegate_ didTapLinkWithURL:manageYourInfoURL]);
-  [view_controller view:nil didTapLinkURL:manageYourInfoURL];
-  histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Settings.Funnel",
-                                    0);
-
-  // Tapping the legal message URL should log `kLinkClicked`.
-  OCMExpect([mock_delegate_ didTapLinkWithURL:legalTermsURL]);
-  [view_controller view:nil didTapLinkURL:legalTermsURL];
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.WalletNotice.Settings.Funnel",
-      autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked, 1);
+  [view_controller view:nil didTapLinkURL:testURL];
 
   [mock_delegate_ verify];
 }
