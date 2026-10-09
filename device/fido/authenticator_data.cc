@@ -88,7 +88,7 @@ std::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
     if (!extensions->is_map()) {
       FIDO_LOG(ERROR)
           << "Incorrect CBOR structure of authenticator data extensions: "
-          << cbor::DiagnosticWriter::Write(*extensions);
+          << cbor::WriteDiagnostic(*extensions);
       return std::nullopt;
     }
   } else if (!auth_data.empty()) {

@@ -442,7 +442,7 @@ std::optional<std::string> ParseWrappedPinFromCbor(
       response_map.find(cbor::Value(enclave::kResponseSuccessKey))->second;
   if (!ok_response.is_map()) {
     FIDO_LOG(ERROR) << "PIN change response is not a map: "
-                    << cbor::DiagnosticWriter::Write(response);
+                    << cbor::WriteDiagnostic(response);
     return std::nullopt;
   }
   const cbor::Value::MapValue& ok_response_map = ok_response.GetMap();
@@ -2106,7 +2106,7 @@ class EnclaveManager::StateMachine {
         std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "Registration resulted in error response: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::
                kDoRegisteringWithEnclaveFailedEnclaveRegistrationError);
       return;
@@ -2118,7 +2118,7 @@ class EnclaveManager::StateMachine {
                        .find(cbor::Value(enclave::kResponseSuccessKey))
                        ->second)) {
       FIDO_LOG(ERROR) << "Wrapped member key was invalid: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::kDoRegisteringWithEnclaveFailedWrappedKeyWasInvalid);
       return;
     }
@@ -2181,7 +2181,7 @@ class EnclaveManager::StateMachine {
         std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, new_security_domain_secrets.size())) {
       FIDO_LOG(ERROR) << "Wrapping resulted in error response: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::kDoWrappingSecretsFailedWrappingResultedInError);
       return;
     }
@@ -2465,7 +2465,7 @@ class EnclaveManager::StateMachine {
         std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "PIN wrapping resulted in error response: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::kDoWrappingPINAndSecretFailedErrorResponse);
       return;
     }
@@ -2599,7 +2599,7 @@ class EnclaveManager::StateMachine {
             user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
             base::span_from_ref(wrapping_response_->GetArray()[1]))) {
       FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed response: "
-                      << cbor::DiagnosticWriter::Write(*wrapping_response_);
+                      << cbor::WriteDiagnostic(*wrapping_response_);
       Stop(ActionOutcome::
                kDoJoiningPINToDomainFailedSecretWrappingMalformedResponse);
       return;
@@ -2658,7 +2658,7 @@ class EnclaveManager::StateMachine {
         std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 1)) {
       FIDO_LOG(ERROR) << "PIN change resulted in error response: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::kDoSettingPINFailedPinChangeResultedInErrorResponse);
       return;
     }
@@ -2715,7 +2715,7 @@ class EnclaveManager::StateMachine {
     }
     if (!IsAllOk(response, 1)) {
       FIDO_LOG(ERROR) << "PIN renewal resulted in error response: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::kDoRenewingPINFailedErrorResponse);
       return;
     }
@@ -2770,7 +2770,7 @@ class EnclaveManager::StateMachine {
         std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 1)) {
       FIDO_LOG(ERROR) << "Unregister request resulted in error response: "
-                      << cbor::DiagnosticWriter::Write(response);
+                      << cbor::WriteDiagnostic(response);
       Stop(ActionOutcome::kDoUnregisteringFailedEnclaveResponseError);
       return;
     }

@@ -21,17 +21,6 @@ class Value;
 CBOR_EXPORT std::string WriteDiagnostic(const Value& node,
                                         size_t rough_max_output_bytes = 4096);
 
-// Deprecated: Use `WriteDiagnostic()` instead.
-class DiagnosticWriter {
- public:
-  static std::string Write(const Value& node,
-                           size_t rough_max_output_bytes = 4096) {
-    return WriteDiagnostic(node, rough_max_output_bytes);
-  }
-
-  DiagnosticWriter() = delete;
-};
-
 }  // namespace cbor
 
 #endif  // COMPONENTS_CBOR_DIAGNOSTIC_WRITER_H_

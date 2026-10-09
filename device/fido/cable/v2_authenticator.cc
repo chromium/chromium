@@ -594,7 +594,7 @@ class CTAP2Processor : public Transaction {
         return Platform::Error::INVALID_CTAP;
       }
       FIDO_LOG(DEBUG) << "<- (" << base::HexEncode(command) << ") "
-                      << cbor::DiagnosticWriter::Write(*payload);
+                      << cbor::WriteDiagnostic(*payload);
     } else {
       FIDO_LOG(DEBUG) << "<- (" << base::HexEncode(command) << ") <no payload>";
     }

@@ -89,7 +89,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     // GetId().
     if (request.second) {
       FIDO_LOG(DEBUG) << "<- " << request.first << " "
-                      << cbor::DiagnosticWriter::Write(*request.second);
+                      << cbor::WriteDiagnostic(*request.second);
       std::optional<std::vector<uint8_t>> cbor_bytes =
           cbor::Writer::Write(*request.second);
       DCHECK(cbor_bytes);
@@ -183,10 +183,10 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
       response = std::move(std::move(device_response_parser_).Run(cbor));
       cbor::Value redacted = std::move(cbor_response_redacter_).Run(*cbor);
       if (response) {
-        FIDO_LOG(DEBUG) << "-> " << cbor::DiagnosticWriter::Write(redacted);
+        FIDO_LOG(DEBUG) << "-> " << cbor::WriteDiagnostic(redacted);
       } else {
         FIDO_LOG(ERROR) << "-> (rejected CBOR structure) "
-                        << cbor::DiagnosticWriter::Write(redacted);
+                        << cbor::WriteDiagnostic(redacted);
       }
     } else {
       response =

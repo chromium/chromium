@@ -400,7 +400,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   if (!decoded_response->is_map())
     return std::nullopt;
 
-  FIDO_LOG(DEBUG) << "-> " << cbor::DiagnosticWriter::Write(*decoded_response);
+  FIDO_LOG(DEBUG) << "-> " << cbor::WriteDiagnostic(*decoded_response);
   const auto& response_map = decoded_response->GetMap();
 
   auto it = response_map.find(CBOR(0x01));

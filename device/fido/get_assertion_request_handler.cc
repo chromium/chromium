@@ -162,7 +162,7 @@ bool ResponseValid(
     if (extensions &&
         !ValidateResponseExtensions(request, options, response, *extensions)) {
       FIDO_LOG(ERROR) << "assertion response invalid due to extensions block: "
-                      << cbor::DiagnosticWriter::Write(*extensions);
+                      << cbor::WriteDiagnostic(*extensions);
       return false;
     }
 

@@ -313,7 +313,7 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
   if (extensions && !ValidateResponseExtensions(request, options, authenticator,
                                                 response, *extensions)) {
     FIDO_LOG(ERROR) << "Invalid extensions block: "
-                    << cbor::DiagnosticWriter::Write(*extensions);
+                    << cbor::WriteDiagnostic(*extensions);
     return false;
   }
 

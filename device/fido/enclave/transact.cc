@@ -151,8 +151,7 @@ class Transaction : public EnclaveTransaction {
       }
 
       FIDO_LOG(EVENT) << "<- "
-                      << cbor::DiagnosticWriter::Write(
-                             RedactEnclaveRequest(request_));
+                      << cbor::WriteDiagnostic(RedactEnclaveRequest(request_));
       BuildCommandRequestBody(std::move(request_), std::move(signing_callback_),
                               *handshake_hash_,
                               base::BindOnce(&Transaction::RequestReady,
@@ -176,7 +175,7 @@ class Transaction : public EnclaveTransaction {
       }
 
       FIDO_LOG(EVENT) << "-> "
-                      << cbor::DiagnosticWriter::Write(
+                      << cbor::WriteDiagnostic(
                              RedactEnclaveResponse(*response));
       if (!response->is_map()) {
         RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
