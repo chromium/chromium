@@ -80,12 +80,13 @@ CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style) {
 #pragma mark UIViewAnimating
 
 - (void)stopAnimation:(BOOL)withoutFinishing {
+  if (self.state != UIViewAnimatingStateActive) {
+    return;
+  }
   // Record the progress value when transitioning from the active to stopped
   // state.  This allows `currentProgress` to return the correct value after
   // stopping, as `fractionComplete` is reset to 0.0 for stopped animators.
-  if (self.state == UIViewAnimatingStateActive) {
-    _progressUponStopping = self.currentProgress;
-  }
+  _progressUponStopping = self.currentProgress;
   if (_progressUponStopping == _startProgress) {
     return;
   }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
@@ -111,4 +112,15 @@ TEST_F(LegacyFullscreenMediatorTest, ObserveViewportInsets) {
       observer().current_viewport_insets(),
       UIEdgeInsetsMake(kExpandedTopToolbarHeight, 0,
                        kExpandedBottomToolbarHeight, 0)));
+}
+
+// Tests that stopping an inactive animator does not crash and safely returns.
+TEST_F(LegacyFullscreenMediatorTest, StopInactiveAnimatorDoesNotCrash) {
+  FullscreenAnimator* animator = [[FullscreenAnimator alloc]
+      initWithStartProgress:1.0
+                      style:FullscreenAnimatorStyle::ENTER_FULLSCREEN];
+  EXPECT_EQ(animator.state, UIViewAnimatingStateInactive);
+  // Stopping an inactive animator should safely return without crashing.
+  [animator stopAnimation:YES];
+  EXPECT_EQ(animator.state, UIViewAnimatingStateInactive);
 }
