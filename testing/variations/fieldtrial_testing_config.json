@@ -737,21 +737,6 @@
             ]
         }
     ],
-    "AndroidResizeLargeNotificationBitmaps": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidResizeLargeNotificationBitmaps"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidResourceMemoryOptimization": [
         {
             "platforms": [
