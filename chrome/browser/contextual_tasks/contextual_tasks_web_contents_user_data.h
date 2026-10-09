@@ -15,6 +15,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,8 @@
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -44,6 +47,7 @@ class AddedContext;
 class ClientToSearchMessage;
 struct ContextualInputData;
 enum class LensOverlayDismissalSource;
+enum class MimeType;
 class SearchToClientMessage_UpdateThreadContextLibrary;
 }  // namespace lens
 
@@ -54,7 +58,9 @@ struct InputState;
 namespace contextual_tasks {
 
 class ContextualTasksWebContentsUserData
-    : public content::WebContentsUserData<ContextualTasksWebContentsUserData> {
+    : public content::WebContentsUserData<ContextualTasksWebContentsUserData>,
+      public contextual_search::ContextualSearchContextController::
+          ContextUploadStatusObserver {
  public:
   enum class InjectedInputType {
     kContextLibrary,
@@ -135,6 +141,18 @@ class ContextualTasksWebContentsUserData
   void SendInjectChromeInput(InjectedInputType type, bool is_active);
   void SendMountContextLibrary();
   void UpdateContextLibraryInputState();
+  void OnTabContextUploadStarted(const base::UnguessableToken& context_token);
+  void OnTabContextRemoved(const base::UnguessableToken& context_token);
+
+  // contextual_search::ContextualSearchContextController::
+  //     ContextUploadStatusObserver:
+  void OnContextUploadStatusChanged(
+      const base::UnguessableToken& context_token,
+      lens::MimeType mime_type,
+      contextual_search::ContextUploadStatus context_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) override;
+
   void HandleOnSubmitQueryRequest();
   void HandleOpenLinkInSidePanelMode(std::string_view url);
   // Syncs this thread's context library from AIM Search Web's tab history
@@ -191,6 +209,11 @@ class ContextualTasksWebContentsUserData
       int32_t session_tab_id) const;
 
  private:
+  enum class ContextState {
+    kNone,
+    kUploading,
+    kReady,
+  };
   struct PageSearchState;
 
   explicit ContextualTasksWebContentsUserData(content::WebContents* contents);
@@ -199,6 +222,10 @@ class ContextualTasksWebContentsUserData
   void SubscribeToInputStateModel(
       base::WeakPtr<contextual_search::InputStateModel> model);
   void OnInputStateChanged(const omnibox::InputState& state);
+  void ObserveContextController(
+      contextual_search::ContextualSearchContextController* controller);
+  ContextState ComputeContextState();
+  void UpdateContextState();
   void RecordTimeToHandshakeComplete();
   void AppendTabContextsToOnSubmitQueryResponse(
       lens::ClientToSearchMessage* response_message,
@@ -216,12 +243,16 @@ class ContextualTasksWebContentsUserData
   base::WeakPtr<contextual_search::InputStateModel> last_active_model_;
   base::WeakPtr<contextual_search::InputStateModel> subscribed_model_;
   base::CallbackListSubscription input_state_subscription_;
+  base::WeakPtr<contextual_search::ContextualSearchContextController>
+      observed_controller_;
 
   // A pending task associated with this web contents.
   std::optional<base::Uuid> pending_task_id_;
   std::optional<base::Uuid> task_id_;
 
   std::vector<ExtensionFrameInfo> extension_frames_;
+  base::flat_set<base::UnguessableToken> pending_context_uploads_;
+  base::flat_set<base::UnguessableToken> failed_context_uploads_;
 
   base::TimeTicks last_handled_submit_interaction_time_;
 

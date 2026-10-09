@@ -52,6 +52,20 @@ message ClientToSearchMessage {
     repeated RemovedContext removed_contexts = 2;
   }
 
+  // Reports the state of the context added for the next turn (tabs and Lens
+  // chip). Context from previous turns is not included.
+  message OnContextStateChanged {
+    enum ContextState {
+      // No context was added.
+      CONTEXT_STATE_NONE = 0;
+      // Added context is still uploading.
+      CONTEXT_STATE_UPLOADING = 1;
+      // Added context finished uploading.
+      CONTEXT_STATE_READY = 2;
+    }
+    ContextState context_state = 1;
+  }
+
   oneof event_message {
     // Initial handshake ping sent by an extension iframe upon mounting.
     HandshakePing handshake_ping = 1;
@@ -63,6 +77,9 @@ message ClientToSearchMessage {
     // Response to an OnSubmitQueryRequest, returning the finalized contexts
     // for the query being submitted.
     OnSubmitQueryResponse on_submit_query_response = 3;
+
+    // Reports the state of the context added for the next turn.
+    OnContextStateChanged on_context_state_changed = 5;
   }
 }
 
