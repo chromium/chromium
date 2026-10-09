@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_management_test_util.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/web_applications/test",
   "+chrome/common",
   "+chrome/test",
   "+components/webapps/isolated_web_apps/scheme.h",

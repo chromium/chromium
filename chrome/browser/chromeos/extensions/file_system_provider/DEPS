@@ -16,8 +16,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/common",
 ]
 
 # This DEPS violation is a temporary workaround to continue supporting Chrome
