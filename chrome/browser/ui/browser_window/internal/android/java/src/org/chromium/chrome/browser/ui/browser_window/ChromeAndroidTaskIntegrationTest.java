@@ -1390,7 +1390,7 @@ public class ChromeAndroidTaskIntegrationTest {
                                     .getPendingActionManagerForTesting()
                                     .getFutureBoundsInDp(),
                             Matchers.nullValue());
-                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
+                    checkBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
                 });
     }
 
@@ -1582,16 +1582,16 @@ public class ChromeAndroidTaskIntegrationTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     var newActivityWindowAndroid = newTask.getTopActivityWindowAndroid();
-                    assertNotNull(newActivityWindowAndroid);
+                    Criteria.checkThat(newActivityWindowAndroid, Matchers.notNullValue());
 
-                    var newActivity = newActivityWindowAndroid.getActivity().get();
-                    assertNotNull(newActivity);
+                    var newActivity = assumeNonNull(newActivityWindowAndroid).getActivity().get();
+                    Criteria.checkThat(newActivity, Matchers.notNullValue());
 
-                    var windowManager = newActivity.getWindowManager();
+                    var windowManager = assumeNonNull(newActivity).getWindowManager();
                     var currentBounds = windowManager.getCurrentWindowMetrics().getBounds();
                     var maximizedBounds =
                             ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(windowManager);
-                    assertEquals(maximizedBounds, currentBounds);
+                    Criteria.checkThat(currentBounds, Matchers.is(maximizedBounds));
                 });
 
         // Cleanup.
@@ -1638,6 +1638,21 @@ public class ChromeAndroidTaskIntegrationTest {
                         expected,
                         actual),
                 areBoundsCloseEnough(expected, actual));
+    }
+
+    /**
+     * Like {@link #assertBoundsCloseEnoughInDp}, but throws {@link CriteriaNotSatisfiedException}
+     * so it can be retried inside {@link CriteriaHelper#pollUiThread}.
+     */
+    private static void checkBoundsCloseEnoughInDp(Rect expected, Rect actual) {
+        Criteria.checkThat(
+                String.format(
+                        Locale.US,
+                        "Bounds not close enough. Expected: %s; Actual: %s",
+                        expected,
+                        actual),
+                areBoundsCloseEnough(expected, actual),
+                Matchers.is(true));
     }
 
     private AppTask getAppTask(Activity activity) {
