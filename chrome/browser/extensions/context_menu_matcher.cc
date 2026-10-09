@@ -419,8 +419,10 @@ void ContextMenuMatcher::SetExtensionIcon(
   CHECK_GT(count, 0u, base::NotFatalUntil::M161);
 
   gfx::Image icon = menu_manager->GetIconForExtensionKey(extension_key);
-  CHECK_EQ(gfx::kFaviconSize, icon.Width(), base::NotFatalUntil::M161);
-  CHECK_EQ(gfx::kFaviconSize, icon.Height(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/571465042): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(gfx::kFaviconSize, icon.Width());
+  DCHECK_EQ(gfx::kFaviconSize, icon.Height());
   menu_model_->SetIcon(count - 1, ui::ImageModel::FromImage(icon));
 }
 
