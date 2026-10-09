@@ -1009,6 +1009,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
                        GetDetailsForUpsertPass_NoOpsForIneligibleEntityType) {
   EXPECT_CALL(wallet_manager(), ExtractPreloadedDetailsForUpsertPass).Times(0);
 
+  // Test both a valid but ineligible entity type (`kPassport`) and an invalid
+  // out-of-bounds raw enum value (`-1`).
   for (int entity_type_name :
        {std::to_underlying(autofill::EntityTypeName::kPassport), -1}) {
     auto function = base::MakeRefCounted<
@@ -1046,15 +1048,18 @@ IN_PROC_BROWSER_TEST_F(
     PreloadDetailsForUpsertPass_NoOpsForIneligibleEntityType) {
   EXPECT_CALL(wallet_manager(), PreloadDetailsForUpsertPass).Times(0);
 
-  auto function = base::MakeRefCounted<
-      extensions::AutofillPrivatePreloadDetailsForUpsertPassFunction>();
-  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+  // Test both a valid but ineligible entity type (`kPassport`) and an invalid
+  // out-of-bounds raw enum value (`-1`).
+  for (int entity_type_name :
+       {std::to_underlying(autofill::EntityTypeName::kPassport), -1}) {
+    auto function = base::MakeRefCounted<
+        extensions::AutofillPrivatePreloadDetailsForUpsertPassFunction>();
+    function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
 
-  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
-      function.get(),
-      base::StringPrintf(
-          "[%d]", std::to_underlying(autofill::EntityTypeName::kPassport)),
-      profile()));
+    ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+        function.get(), base::StringPrintf("[%d]", entity_type_name),
+        profile()));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
