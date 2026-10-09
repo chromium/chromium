@@ -6119,16 +6119,6 @@
       "expiry_milestone": 165
     },
   {
-    "name": "history-embeddings",
-    "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 170
-  },
-  {
-    "name": "history-embeddings-answers",
-    "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 170
-  },
-  {
     "name": "history-journeys",
     "owners": [ "tommycli@chromium.org", "chrome-journeys@google.com" ],
     "expiry_milestone": 125

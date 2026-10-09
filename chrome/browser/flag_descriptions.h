@@ -2974,16 +2974,6 @@ inline constexpr char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
     "this makes the intervention deterministic. Defaults to enabled.";
 
-inline constexpr char kHistoryEmbeddingsName[] = "History Embeddings";
-inline constexpr char kHistoryEmbeddingsDescription[] =
-    "When enabled, the history embeddings feature may operate.";
-
-inline constexpr char kHistoryEmbeddingsAnswersName[] =
-    "History Embeddings Answers";
-inline constexpr char kHistoryEmbeddingsAnswersDescription[] =
-    "When enabled, the history embeddings feature may answer some queries. "
-    "Has no effect if the History Embeddings feature is disabled.";
-
 inline constexpr char kTabAudioMutingName[] = "Tab audio muting UI control";
 inline constexpr char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "
