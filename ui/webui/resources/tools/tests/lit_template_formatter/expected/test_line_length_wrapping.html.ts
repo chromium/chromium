@@ -44,6 +44,19 @@ export function getHtml(this: DummyTestElement) {
       aria-label="${this.buttonLabel}" @click="${this.onClick}">
     ${this.buttonText}
   </dummy-button>
+
+  <!-- Case 8: Text node with expressions exceeding 80 chars -->
+  <div id="fetchSuccessMessage" class="success-message" aria-live="polite">
+    Manifest loaded successfully: ${this.versionOptions_.length} version${
+        this.versionOptions_.length === 1 ? '' : 's'} available.
+  </div>
+
+  <!-- Case 9: Text node with expression and long trailing static text -->
+  <div>
+    Initial prefix text: ${
+        this.someCondition ? 'first-option-text' : 'second-option-text'
+    } and trailing static text.
+  </div>
 </div>
 <!--_html_template_end_-->`;
 }

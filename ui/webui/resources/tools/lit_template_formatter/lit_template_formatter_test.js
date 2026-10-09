@@ -266,5 +266,29 @@ suite('lit_template_formatter', () => {
     } longer-static-class-2 \${this.someOtherClass}">
 </div>`;
     assert.strictEqual(mixedSerialized, expectedMixed);
+
+    // Test 4: Text nodes with static text and expressions exceeding 80 chars
+    const mixedTextTemplate = `
+      <div>
+        Manifest loaded successfully: ${EXPR_PREFIX}-1 version${
+        EXPR_PREFIX}-2 available.
+      </div>
+    `;
+    const mixedTextMap = new Map([
+      [`${EXPR_PREFIX}-1`, {code: '${this.versionOptions_.length}'}],
+      [
+        `${EXPR_PREFIX}-2`,
+        {code: '${this.versionOptions_.length === 1 ? \'\' : \'s\'}'},
+      ],
+    ]);
+    const mixedTextAst = prepareHtmlAst(mixedTextTemplate, mixedTextMap);
+    const mixedTextSerialized =
+        serializeHtmlAst(mixedTextAst, mixedTextMap, false);
+    const expectedMixedText = `
+<div>
+  Manifest loaded successfully: \${this.versionOptions_.length} version\${
+      this.versionOptions_.length === 1 ? '' : 's'} available.
+</div>`;
+    assert.strictEqual(mixedTextSerialized, expectedMixedText);
   });
 });

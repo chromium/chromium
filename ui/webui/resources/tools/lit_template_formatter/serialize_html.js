@@ -138,16 +138,145 @@ function analyzeChildNodes(node, tagName, placeholderMap) {
 }
 
 /**
- * Resolves placeholders in an attribute and wraps lines to respect the
+ * Resolves expression placeholders within a string (either an attribute value
+ * or a text node) and wraps lines at '${' and '}' boundaries to respect the
  * 80-character line limit.
  *
- * Because modifying whitespace within static attribute text could alter the
- * attribute's runtime value, we cannot insert line breaks inside static text
- * chunks. However, whitespace inside JavaScript template expressions (`${...}`)
- * has no effect at runtime. Therefore, the only safe points where line breaks
- * can be introduced (beyond any breaks already produced by clang-format within
- * the expression itself) are immediately after the opening '${' and
- * immediately before the closing '}'.
+ * Because modifying whitespace within static attribute values or HTML text
+ * nodes could alter runtime behavior, we cannot insert line breaks inside
+ * static text chunks. However, whitespace inside JavaScript template
+ * expressions (`${...}`) has no effect at runtime. Therefore, the only safe
+ * points where line breaks can be introduced (beyond any breaks already
+ * produced by clang-format within the expression itself) are immediately after
+ * the opening '${' and immediately before the closing '}'.
+ *
+ * @param {Array<string>} parts The string split on `(${EXPR_PREFIX}-\\d+)`.
+ * @param {string} baseIndentStr Indentation for the containing attribute or
+ *     text node line.
+ * @param {Map<string, Object>} placeholderMap Map of placeholders to code.
+ * @param {string} [attrName] The resolved attribute name, if formatting an
+ *     attribute.
+ * @return {string} The resolved and wrapped string.
+ */
+function wrapPlaceholders(
+    parts, baseIndentStr, placeholderMap, attrName = undefined) {
+  const isAttribute = attrName !== undefined;
+  const exprIndentStr = baseIndentStr + ' '.repeat(WRAPPED_LINE_INDENT_SIZE);
+  const wrappedIndent = ' '.repeat(WRAPPED_LINE_INDENT_SIZE);
+  let result = isAttribute ? ` ${attrName}="${parts[0]}` : parts[0];
+  let currentLineLen = parts[0].includes('\n') ?
+      parts[0].split('\n').at(-1).length :
+      baseIndentStr.length + (isAttribute ? attrName.length + 2 : 0) +
+          parts[0].length;
+  // Track whether the current line has any non-whitespace static content (or
+  // attribute prefix) before the next '${'. If a line in a text node starts
+  // directly with '${', breaking after '${' would only indent the expression
+  // further to the right without shortening the line.
+  let hasContentOnLine = isAttribute ||
+      (parts[0].includes('\n') ? parts[0].split('\n').at(-1).trim() !== '' :
+                                 parts[0].trim() !== '');
+
+  for (let i = 1; i < parts.length; i += 2) {
+    const placeholder = parts[i];
+    const nextStatic = parts[i + 1];
+    const exprCode = placeholderMap.get(placeholder).code;
+    assert.ok(exprCode.startsWith('${') && exprCode.endsWith('}'));
+    const innerExpr = exprCode.substring(2, exprCode.length - 1);
+
+    result += '${';
+    currentLineLen += 2;
+
+    // Account for closing '}' (1 char) and any static text that remains on the
+    // same line after '}'. If `nextStatic` does not contain a newline, also
+    // account for the next '${' (2 chars) if another expression follows, or
+    // the closing '">' (2 chars) if this is the end of an attribute.
+    const staticLines = nextStatic.split('\n');
+    const staticOnSameLine = staticLines[0];
+    const staticHasNewline = staticLines.length > 1;
+    const hasFollowingExpr = i + 2 < parts.length;
+    const trailingTokenLen = hasFollowingExpr || isAttribute ? 2 : 0;
+    const suffixAndClosingLen =
+        1 + staticOnSameLine.length + (staticHasNewline ? 0 : trailingTokenLen);
+
+    const exprLines = innerExpr.split('\n');
+    const isMultilineExpr = exprLines.length > 1;
+    const firstLineCheckLen = isMultilineExpr ?
+        exprLines[0].length :
+        innerExpr.length + suffixAndClosingLen;
+
+    if (innerExpr.startsWith('\n')) {
+      // Case 1: The expression was already wrapped across multiple lines by
+      // formatTsExpressions (e.g. a long ternary or multiline call) and
+      // already starts with a newline and indentation.
+      result += innerExpr;
+      currentLineLen = exprLines.at(-1).length;
+    } else if (
+        hasContentOnLine &&
+        currentLineLen + firstLineCheckLen > LINE_LENGTH_LIMIT) {
+      // Case 2: The expression fits on its own wrapped line, but exceeds 80
+      // characters when combined with the preceding attribute name, static
+      // prefix, or trailing static suffix. Break the line immediately after
+      // '${' and indent the first line of the expression. For multiline
+      // attribute expressions, indent the first line by the attribute prefix
+      // length (`attr="${`) so it starts at the exact column clang-format
+      // aligned subsequent lines against. For multiline text expressions,
+      // shift all lines of the expression by WRAPPED_LINE_INDENT_SIZE.
+      if (isMultilineExpr && !isAttribute) {
+        const indentedExpr = [
+          `${exprIndentStr}${exprLines[0]}`,
+          ...exprLines.slice(1).map(l => `${wrappedIndent}${l}`),
+        ].join('\n');
+        result += `\n${indentedExpr}`;
+        currentLineLen = exprLines.at(-1).length + WRAPPED_LINE_INDENT_SIZE;
+      } else {
+        const firstLineIndent = isMultilineExpr ?
+            baseIndentStr + ' '.repeat(attrName.length + 4) :
+            exprIndentStr;
+        result += `\n${firstLineIndent}${innerExpr}`;
+        currentLineLen = isMultilineExpr ?
+            exprLines.at(-1).length :
+            firstLineIndent.length + innerExpr.length;
+      }
+    } else {
+      // Case 3: The expression (or its first line) fits on the current line
+      // without needing a line break after '${'.
+      result += innerExpr;
+      currentLineLen = isMultilineExpr ? exprLines.at(-1).length :
+                                         currentLineLen + innerExpr.length;
+    }
+
+    if (staticOnSameLine !== '' &&
+        currentLineLen + suffixAndClosingLen > LINE_LENGTH_LIMIT) {
+      // Even with the expression on its own line, the static suffix following
+      // '}' would push the expression's last line past 80 characters. Move the
+      // closing '}' and the static suffix onto a new line aligned with the
+      // base indentation before continuing to the next expression.
+      result += `\n${baseIndentStr}}${nextStatic}`;
+      // Reset `currentLineLen` to the indentation of the new line so the
+      // shared update below adds `1 + staticOnSameLine.length` onto the new
+      // line's indent rather than the previous expression line's length.
+      currentLineLen = baseIndentStr.length;
+    } else {
+      // The closing '}' and any following static text fit on the same line as
+      // the end of the expression.
+      result += `}${nextStatic}`;
+    }
+    // Advance `currentLineLen` past '}' and `nextStatic`. If `nextStatic`
+    // itself contains newlines, the active line is now the last line of
+    // `nextStatic`; otherwise add '}' (1 char) plus `staticOnSameLine`.
+    currentLineLen = staticHasNewline ?
+        staticLines.at(-1).length :
+        currentLineLen + 1 + staticOnSameLine.length;
+    hasContentOnLine =
+        isAttribute || !staticHasNewline || staticLines.at(-1).trim() !== '';
+  }
+
+  return isAttribute ? result + '"' : result;
+}
+
+/**
+ * Resolves placeholders in an attribute and wraps lines to respect the
+ * 80-character line limit.
  *
  * @param {Object} attr The attribute AST object ({name, value}).
  * @param {string} attrIndentStr The indentation string for a wrapped attribute
@@ -169,91 +298,31 @@ function formatAttributeWithPlaceholders(attr, attrIndentStr, placeholderMap) {
     return resolvePlaceholders(` ${attr.name}="${attr.value}"`, placeholderMap);
   }
 
-  const exprIndentStr = attrIndentStr + ' '.repeat(WRAPPED_LINE_INDENT_SIZE);
-  let result = ` ${attrName}="${parts[0]}`;
-  let currentLineLen = parts[0].includes('\n') ?
-      parts[0].split('\n').at(-1).length :
-      attrIndentStr.length + attrName.length + 2 + parts[0].length;
+  return wrapPlaceholders(parts, attrIndentStr, placeholderMap, attrName);
+}
 
-  for (let i = 1; i < parts.length; i += 2) {
-    const placeholder = parts[i];
-    const nextStatic = parts[i + 1];
-    const exprCode = placeholderMap.get(placeholder).code;
-    assert.ok(exprCode.startsWith('${') && exprCode.endsWith('}'));
-    const innerExpr = exprCode.substring(2, exprCode.length - 1);
-
-    result += '${';
-    currentLineLen += 2;
-
-    // Account for closing '}' (1 char) and any static text that remains on the
-    // same line after '}'. If `nextStatic` does not contain a newline, also
-    // account for either the next '${' (2 chars) or closing '">' (2 chars).
-    const staticLines = nextStatic.split('\n');
-    const staticOnSameLine = staticLines[0];
-    const staticHasNewline = staticLines.length > 1;
-    const suffixAndClosingLen =
-        1 + staticOnSameLine.length + (staticHasNewline ? 0 : 2);
-
-    const exprLines = innerExpr.split('\n');
-    const isMultilineExpr = exprLines.length > 1;
-    const firstLineCheckLen = isMultilineExpr ?
-        exprLines[0].length :
-        innerExpr.length + suffixAndClosingLen;
-
-    if (innerExpr.startsWith('\n')) {
-      // Case 1: The expression was already wrapped across multiple lines by
-      // formatTsExpressions (e.g. a long ternary or multiline call) and
-      // already starts with a newline and indentation.
-      result += innerExpr;
-      currentLineLen = exprLines.at(-1).length;
-    } else if (currentLineLen + firstLineCheckLen > LINE_LENGTH_LIMIT) {
-      // Case 2: The expression fits on its own wrapped line, but exceeds 80
-      // characters when combined with the preceding attribute name, static
-      // prefix, or trailing static suffix. Break the line immediately after
-      // '${' and indent the first line of the expression. For multiline
-      // expressions, indent the first line by the attribute prefix length
-      // (`attr="${`) so it starts at the exact column clang-format aligned
-      // subsequent lines against.
-      const firstLineIndent = isMultilineExpr ?
-          attrIndentStr + ' '.repeat(attrName.length + 4) :
-          exprIndentStr;
-      result += `\n${firstLineIndent}${innerExpr}`;
-      currentLineLen = isMultilineExpr ?
-          exprLines.at(-1).length :
-          firstLineIndent.length + innerExpr.length;
-    } else {
-      // Case 3: The expression (or its first line) fits on the current line
-      // without needing a line break after '${'.
-      result += innerExpr;
-      currentLineLen = isMultilineExpr ? exprLines.at(-1).length :
-                                         currentLineLen + innerExpr.length;
-    }
-
-    if (staticOnSameLine !== '' &&
-        currentLineLen + suffixAndClosingLen > LINE_LENGTH_LIMIT) {
-      // Even with the expression on its own line, the static suffix following
-      // '}' would push the expression's last line past 80 characters. Move the
-      // closing '}' and the static suffix onto a new line aligned with the
-      // attribute indentation before continuing to the next expression.
-      result += `\n${attrIndentStr}}${nextStatic}`;
-      // Reset `currentLineLen` to the indentation of the new line so the
-      // shared update below adds `1 + staticOnSameLine.length` onto the new
-      // line's indent rather than the previous expression line's length.
-      currentLineLen = attrIndentStr.length;
-    } else {
-      // The closing '}' and any following static text fit on the same line as
-      // the end of the expression.
-      result += `}${nextStatic}`;
-    }
-    // Advance `currentLineLen` past '}' and `nextStatic`. If `nextStatic`
-    // itself contains newlines, the active line is now the last line of
-    // `nextStatic`; otherwise add '}' (1 char) plus `staticOnSameLine`.
-    currentLineLen = staticHasNewline ?
-        staticLines.at(-1).length :
-        currentLineLen + 1 + staticOnSameLine.length;
+/**
+ * Resolves placeholders in a text node and wraps lines to respect the
+ * 80-character line limit.
+ *
+ * @param {string} text The text node value (with '<' and '>' escaped).
+ * @param {number} depth The current nesting depth.
+ * @param {Map<string, Object>} placeholderMap Map of placeholders to code.
+ * @return {string} The resolved text node string.
+ */
+function formatTextWithPlaceholders(text, depth, placeholderMap) {
+  const parts = text.split(new RegExp(`(${EXPR_PREFIX}-\\d+)`, 'g'));
+  // If there are no expression placeholders, or if the text node is a single
+  // pure expression with no surrounding static text, resolve directly.
+  if (parts.length === 1 ||
+      (parts.length === 3 && parts[0].trim() === '' &&
+       parts[2].trim() === '') ||
+      parts.some((p, idx) => idx % 2 === 1 && placeholderMap.get(p)?.nested)) {
+    return resolvePlaceholders(text, placeholderMap);
   }
 
-  return result + '"';
+  const textIndentStr = ' '.repeat(depth > 0 ? (depth - 1) * INDENT_SIZE : 0);
+  return wrapPlaceholders(parts, textIndentStr, placeholderMap);
 }
 
 /**
@@ -381,7 +450,7 @@ export function serializeNode(
     // Re-escape '<' and '>' which parse5 unescapes into raw characters when
     // parsing HTML text nodes.
     const text = node.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-    return resolvePlaceholders(text, placeholderMap);
+    return formatTextWithPlaceholders(text, depth, placeholderMap);
   }
 
   if (node.nodeName === '#comment') {
