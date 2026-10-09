@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.searchwidget.SearchActivitySession;
 import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
 import org.chromium.chrome.browser.searchwidget.SearchBoxDataProvider;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
@@ -84,8 +85,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -773,7 +772,7 @@ public class TabSearchOverlayCoordinator
         mBackPressStateSupplier.set(true);
         onSearchQueryStarted("");
         assumeNonNull(mSearchUiCoordinator)
-                .beginQuery(IntentOrigin.HUB, SearchType.TEXT, /* query= */ null, mWindowAndroid);
+                .beginQuery(SearchActivitySession.forHub(/* query= */ null), mWindowAndroid);
         updateExclusionRects();
     }
 

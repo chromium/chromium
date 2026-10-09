@@ -40,6 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -88,6 +89,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
@@ -137,6 +139,7 @@ public class SearchActivityUnitTest {
     private @Mock UrlBarCoordinator mUrlCoordinator;
     private @Mock StatusCoordinator mStatusCoordinator;
     private @Mock BackPressManager mBackPressManager;
+    private @Captor ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -928,6 +931,55 @@ public class SearchActivityUnitTest {
         assertEquals("Search the web in Chrome", mUrlBar.getHint());
         verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
         assertEquals("", captor.getValue().getUserText());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void handleNewIntent_aiModeRequestType_flagEnabled() {
+        var intent =
+                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
+                        .setRequestType(AutocompleteRequestType.AI_MODE)
+                        .build();
+        mActivity.handleNewIntent(intent, false);
+        verify(mLocationBarCoordinator).setUrlBarFocus(mAutocompleteInputCaptor.capture());
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                mAutocompleteInputCaptor.getValue().getRequestType());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void handleNewIntent_aiModeRequestType_flagDisabled() {
+        var intent =
+                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
+                        .setRequestType(AutocompleteRequestType.AI_MODE)
+                        .build();
+        mActivity.handleNewIntent(intent, false);
+        verify(mLocationBarCoordinator).setUrlBarFocus(mAutocompleteInputCaptor.capture());
+        assertEquals(
+                AutocompleteRequestType.SEARCH,
+                mAutocompleteInputCaptor.getValue().getRequestType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
+    public void handleNewIntent_requestTypeDoesNotCarryOverToNextSession() {
+        var intent =
+                newIntentBuilder(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, TEST_URL)
+                        .setRequestType(AutocompleteRequestType.AI_MODE)
+                        .build();
+        mActivity.handleNewIntent(intent, false);
+        verify(mLocationBarCoordinator).setUrlBarFocus(mAutocompleteInputCaptor.capture());
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                mAutocompleteInputCaptor.getValue().getRequestType());
+        clearInvocations(mLocationBarCoordinator);
+
+        mActivity.onNewIntent(buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET));
+        verify(mLocationBarCoordinator).setUrlBarFocus(mAutocompleteInputCaptor.capture());
+        assertEquals(
+                AutocompleteRequestType.SEARCH,
+                mAutocompleteInputCaptor.getValue().getRequestType());
     }
 
     @Test

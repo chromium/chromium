@@ -283,16 +283,23 @@ public class AutocompleteInputUnitTest {
     @Test
     public void getPageClassification_forFuseboxRequests() {
         Map<@PageClassification Integer, @PageClassification Integer> testCases =
-                Map.of(
+                Map.ofEntries(
                         // NTP
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-                        PageClassification.NTP_OMNIBOX_COMPOSEBOX,
+                        Map.entry(
+                                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                                PageClassification.NTP_OMNIBOX_COMPOSEBOX),
                         // SRP
-                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-                        PageClassification.SRP_OMNIBOX_COMPOSEBOX,
+                        Map.entry(
+                                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                                PageClassification.SRP_OMNIBOX_COMPOSEBOX),
                         // Web
-                        PageClassification.OTHER, //
-                        PageClassification.OTHER_OMNIBOX_COMPOSEBOX);
+                        Map.entry(
+                                PageClassification.OTHER,
+                                PageClassification.OTHER_OMNIBOX_COMPOSEBOX),
+                        // SearchActivity
+                        Map.entry(
+                                PageClassification.ANDROID_SHORTCUTS_WIDGET,
+                                PageClassification.OTHER_OMNIBOX_COMPOSEBOX));
 
         for (@AutocompleteRequestType
         int requestType :

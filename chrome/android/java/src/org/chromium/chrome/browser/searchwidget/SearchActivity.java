@@ -344,9 +344,9 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     /* package */ void handleNewIntent(Intent intent, boolean activityPresent) {
         setIntent(intent);
-        mCurrentSession = new SearchActivitySession(intent);
-        @IntentOrigin int intentOrigin = mCurrentSession.getIntentOrigin();
-        @SearchType int searchType = mCurrentSession.getSearchType();
+        mCurrentSession = SearchActivityUtils.getIntentSession(intent);
+        @IntentOrigin int intentOrigin = mCurrentSession.intentOrigin;
+        @SearchType int searchType = mCurrentSession.searchType;
 
         if (mUmaActivityObserver != null) mUmaActivityObserver.endUmaSession();
         mUmaActivityObserver =
@@ -477,7 +477,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private void finishNativeInitializationWithProfile(Profile profile) {
         refinePageClassWithProfile(profile);
 
-        if (mCurrentSession.getIntentOrigin() == IntentOrigin.HUB) {
+        if (mCurrentSession.intentOrigin == IntentOrigin.HUB) {
             setHubSearchBoxUrlBarElements();
         }
 
@@ -527,8 +527,7 @@ public class SearchActivity extends AsyncInitializationActivity
     void finishDeferredInitialization() {
         mSearchUiCoordinator
                 .getSearchBox()
-                .onDeferredStartup(
-                        mCurrentSession.getSearchType(), assertNonNull(getWindowAndroid()));
+                .onDeferredStartup(mCurrentSession.searchType, assertNonNull(getWindowAndroid()));
         getActivityDelegate().onFinishDeferredInitialization();
     }
 
@@ -564,7 +563,7 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResumeWithNative() {
         // Start a new UMA session for the new activity.
         umaSessionResume();
-        if (mCurrentSession.getIntentOrigin() == IntentOrigin.CUSTOM_TAB
+        if (mCurrentSession.intentOrigin == IntentOrigin.CUSTOM_TAB
                 && ChromeFeatureList.sSearchinCctApplyReferrerId.getValue()) {
             var referrer = SearchActivityUtils.getReferrer(getIntent());
             var referrerValid = !TextUtils.isEmpty(referrer);
@@ -596,16 +595,10 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void beginQuery() {
-        var query = SearchActivityUtils.getIntentQuery(getIntent());
-
         RecordHistogram.recordBooleanHistogram(
-                HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(query));
+                HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(mCurrentSession.query));
 
-        mSearchUiCoordinator.beginQuery(
-                mCurrentSession.getIntentOrigin(),
-                mCurrentSession.getSearchType(),
-                query,
-                getWindowAndroid());
+        mSearchUiCoordinator.beginQuery(mCurrentSession, getWindowAndroid());
     }
 
     @SuppressWarnings("NullAway")
@@ -657,7 +650,7 @@ public class SearchActivity extends AsyncInitializationActivity
         Intent intent = SearchActivityUtils.createIntentForStartActivity(params);
         if (intent == null) return;
 
-        if (mCurrentSession.getIntentOrigin() == IntentOrigin.SEARCH_WIDGET) {
+        if (mCurrentSession.intentOrigin == IntentOrigin.SEARCH_WIDGET) {
             intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
         }
 
@@ -825,7 +818,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         if (mCurrentSession != null) {
             String suffix =
-                    switch (mCurrentSession.getIntentOrigin()) {
+                    switch (mCurrentSession.intentOrigin) {
                         case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
                         case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
                         case IntentOrigin.LAUNCHER -> ".Launcher";
@@ -940,7 +933,7 @@ public class SearchActivity extends AsyncInitializationActivity
         // For hub search use in split screen and multi window mode, search activity should be
         // dismissed when focus is lost to prevent focus from causing the suggestion list to flicker
         // on window toggling.
-        if (!isTopResumedActivity && mCurrentSession.getIntentOrigin() == IntentOrigin.HUB) {
+        if (!isTopResumedActivity && mCurrentSession.intentOrigin == IntentOrigin.HUB) {
             finish(TerminationReason.ACTIVITY_FOCUS_LOST, null);
             return;
         }

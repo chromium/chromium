@@ -284,16 +284,11 @@ public class SearchUiCoordinator {
     /**
      * Begins a search query execution and focuses the Omnibox.
      *
-     * @param intentOrigin The origin of the search intent.
-     * @param searchType The type of search requested.
-     * @param query Optional initial query text.
+     * @param session The search session defining the origin, search type, request type and initial
+     *     query.
      * @param windowAndroid Optional window container.
      */
-    public void beginQuery(
-            int intentOrigin,
-            int searchType,
-            @Nullable String query,
-            @Nullable WindowAndroid windowAndroid) {
+    public void beginQuery(SearchActivitySession session, @Nullable WindowAndroid windowAndroid) {
         assertNonNull(mLocationBarCoordinator);
         assertNonNull(mSearchBox);
 
@@ -301,9 +296,10 @@ public class SearchUiCoordinator {
 
         mLocationBarCoordinator.setUrlBarFocus(
                 new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP)
-                        .setUserText(query != null ? query : "")
-                        .setSelection(TextSelection.SELECT_ALL));
-        mSearchBox.beginQuery(intentOrigin, searchType, windowAndroid);
+                        .setUserText(session.query != null ? session.query : "")
+                        .setSelection(TextSelection.SELECT_ALL)
+                        .setRequestType(session.requestType));
+        mSearchBox.beginQuery(session.intentOrigin, session.searchType, windowAndroid);
     }
 
     /**

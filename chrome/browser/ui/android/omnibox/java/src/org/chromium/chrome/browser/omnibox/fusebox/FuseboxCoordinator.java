@@ -41,6 +41,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
@@ -397,6 +398,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                             PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             PageClassification.OTHER ->
                             true;
+                    case PageClassification.ANDROID_SHORTCUTS_WIDGET ->
+                            ChromeFeatureList.sOneStepAimAccess.isEnabled();
                     // LINT.ThenChange(/components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteInput.java:FuseboxSupportedPageClassifications)
                     default -> false;
                 };

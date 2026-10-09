@@ -193,7 +193,11 @@ public class SearchActivityClientImplUnitTest {
                 mClient.newIntentBuilder().setRequestType(AutocompleteRequestType.AI_MODE).build();
 
         assertEquals(
-                AutocompleteRequestType.AI_MODE, SearchActivityUtils.getIntentRequestType(intent));
+                AutocompleteRequestType.AI_MODE,
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        SearchActivityExtras.EXTRA_REQUEST_TYPE,
+                        AutocompleteRequestType.SEARCH));
         // PendingIntent equality ignores extras, so the action must carry the request type.
         assertEquals(
                 String.format(

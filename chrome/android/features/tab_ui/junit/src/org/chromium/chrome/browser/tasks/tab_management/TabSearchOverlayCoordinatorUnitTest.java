@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.searchwidget.SearchActivitySession;
 import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -103,7 +104,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordina
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -174,6 +174,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
     @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
     @Captor private ArgumentCaptor<OmniboxActionDelegateImpl> mOmniboxActionDelegateCaptor;
+    @Captor private ArgumentCaptor<SearchActivitySession> mSessionCaptor;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -289,9 +290,9 @@ public class TabSearchOverlayCoordinatorUnitTest {
     public void testShow_inflatesAndShowsOverlay() {
         showOverlay();
         verifySearchUiCoordinatorInitialized();
-        verify(mSearchUiCoordinator)
-                .beginQuery(
-                        eq(IntentOrigin.HUB), eq(SearchType.TEXT), eq(null), eq(mWindowAndroid));
+        verify(mSearchUiCoordinator).beginQuery(mSessionCaptor.capture(), eq(mWindowAndroid));
+        assertEquals(IntentOrigin.HUB, mSessionCaptor.getValue().intentOrigin);
+        assertNull(mSessionCaptor.getValue().query);
     }
 
     @Test

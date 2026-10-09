@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -144,9 +145,13 @@ public class SearchActivityUtils {
         return SearchType.TEXT;
     }
 
-    /** Returns the requested AutocompleteRequestType, or SEARCH if the intent is untrusted. */
+    /**
+     * Returns the request type the Omnibox should begin in. Honored only when the intent is trusted
+     * and One Step AIM Access is enabled; otherwise SEARCH.
+     */
     /* package */ static @AutocompleteRequestType int getIntentRequestType(Intent intent) {
-        if (IntentUtils.isTrustedIntentFromSelf(intent)) {
+        if (ChromeFeatureList.sOneStepAimAccess.isEnabled()
+                && IntentUtils.isTrustedIntentFromSelf(intent)) {
             return IntentUtils.safeGetIntExtra(
                     intent,
                     SearchActivityExtras.EXTRA_REQUEST_TYPE,
@@ -154,6 +159,15 @@ public class SearchActivityUtils {
         }
 
         return AutocompleteRequestType.SEARCH;
+    }
+
+    /** Builds the {@link SearchActivitySession} describing the search requested by the intent. */
+    /* package */ static SearchActivitySession getIntentSession(Intent intent) {
+        return new SearchActivitySession(
+                getIntentOrigin(intent),
+                getIntentSearchType(intent),
+                getIntentRequestType(intent),
+                getIntentQuery(intent));
     }
 
     /**

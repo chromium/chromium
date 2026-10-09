@@ -62,6 +62,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
@@ -341,15 +342,34 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @DisableFeatures(ChromeFeatureList.ONE_STEP_AIM_ACCESS)
     public void testToolbarVisibility_basedOnPageClassification() {
-        mCoordinator.beginInput(mSession);
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        mCoordinator.setMediatorForTesting(mMediator);
-        final Set<@PageClassification Integer> supportedPageClassifications =
+        verifyToolbarVisibilityForPageClassifications(
                 Set.of(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
                         PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-                        PageClassification.OTHER);
+                        PageClassification.OTHER));
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT,
+        ChromeFeatureList.ONE_STEP_AIM_ACCESS
+    })
+    public void testToolbarVisibility_basedOnPageClassification_oneStepAimAccess() {
+        verifyToolbarVisibilityForPageClassifications(
+                Set.of(
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                        PageClassification.OTHER,
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET));
+    }
+
+    private void verifyToolbarVisibilityForPageClassifications(
+            Set<@PageClassification Integer> supportedPageClassifications) {
+        mCoordinator.beginInput(mSession);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        mCoordinator.setMediatorForTesting(mMediator);
 
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
                 pageClass <= PageClassification.MAX_VALUE;
