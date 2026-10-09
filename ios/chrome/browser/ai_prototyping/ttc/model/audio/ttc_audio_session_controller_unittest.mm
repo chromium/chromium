@@ -138,7 +138,7 @@
 
 @interface FakeTTCAudioSessionManager : TTCAudioSessionManager
 @property(nonatomic, assign) BOOL mockHasHardwareAEC;
-@property(nonatomic, assign) TTCAudioOutputDestination mockOutputDestination;
+@property(nonatomic, assign) BOOL mockOutputRoutedToSpeaker;
 @property(nonatomic, strong) NSError* mockConfigureError;
 @property(nonatomic, assign) NSUInteger configureCallCount;
 @property(nonatomic, assign) NSUInteger restoreCallCount;
@@ -151,8 +151,8 @@
   return self.mockHasHardwareAEC;
 }
 
-- (TTCAudioOutputDestination)outputDestination {
-  return self.mockOutputDestination;
+- (BOOL)isOutputRoutedToSpeaker {
+  return self.mockOutputRoutedToSpeaker;
 }
 
 - (NSError*)configureAudioSession {
@@ -592,14 +592,12 @@ TEST_F(TTCAudioSessionControllerTest, TestDisconnectClearsDelegates) {
   EXPECT_TRUE(fake_session_manager_.didDisconnect);
 }
 
-// Tests that isOutputRoutedToSpeaker forwards destination from session manager.
+// Tests that isOutputRoutedToSpeaker forwards state from session manager.
 TEST_F(TTCAudioSessionControllerTest, TestOutputRoutedToSpeaker) {
-  fake_session_manager_.mockOutputDestination =
-      TTCAudioOutputDestination::kSpeaker;
+  fake_session_manager_.mockOutputRoutedToSpeaker = YES;
   EXPECT_TRUE(controller_.isOutputRoutedToSpeaker);
 
-  fake_session_manager_.mockOutputDestination =
-      TTCAudioOutputDestination::kEarpiece;
+  fake_session_manager_.mockOutputRoutedToSpeaker = NO;
   EXPECT_FALSE(controller_.isOutputRoutedToSpeaker);
 }
 

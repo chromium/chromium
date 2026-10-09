@@ -124,8 +124,7 @@ NSError* CreateControllerError(TTCAudioSessionControllerErrorCode code,
 
 - (BOOL)isOutputRoutedToSpeaker {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  return self.sessionManager.outputDestination ==
-         TTCAudioOutputDestination::kSpeaker;
+  return self.sessionManager.isOutputRoutedToSpeaker;
 }
 
 #pragma mark - Lifecycle
