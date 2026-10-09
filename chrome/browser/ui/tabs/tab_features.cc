@@ -51,6 +51,7 @@
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -1300,6 +1301,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   SafetyTipWebContentsObserver::CreateForWebContents(tab.GetContents());
 
   HttpsOnlyModeTabHelper::CreateForWebContents(tab.GetContents());
+
+  login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
+      tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1906,6 +1910,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   SafetyTipWebContentsObserver::CreateForWebContents(new_contents);
 
   HttpsOnlyModeTabHelper::CreateForWebContents(new_contents);
+
+  login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
+      new_contents);
 }
 
 customize_chrome::SidePanelController*

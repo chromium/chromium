@@ -55,6 +55,7 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
@@ -685,6 +686,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
 
   HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
+
+  login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
+      web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

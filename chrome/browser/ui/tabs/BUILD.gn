@@ -565,6 +565,7 @@ if (!is_android) {
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",
       "//chrome/browser/lifetime",
+      "//chrome/browser/login_detection",
       "//chrome/browser/lookalikes",
       "//chrome/browser/media",
       "//chrome/browser/media/webrtc",
