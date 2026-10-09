@@ -44,6 +44,13 @@ bool IsKeyEvent(WPARAM message_type) {
   return message_type == WM_KEYDOWN || message_type == WM_KEYUP;
 }
 
+// Allow a slight offset: targets are never one pixel wide and pixel math is
+// imprecise (see SendMouseMoveImpl()).
+bool AreMouseLocationsWithinAPixel(const gfx::Point& a, const gfx::Point& b) {
+  const gfx::Vector2d offset = a - b;
+  return std::abs(offset.x()) + std::abs(offset.y()) < 2;
+}
+
 // Last screen position (in physical pixels) sent via SendMouseMoveImpl().
 // Used by QueueDragUnblockNudge() instead of ::GetCursorPos() so that hardware
 // cursor jitter on bots cannot desynchronize the nudge coordinates from the
@@ -388,19 +395,29 @@ void InputDispatcher::DispatchedMessage(
   if (message_id == message_waiting_for_) {
     bool definitively_done = false;
     if (message_id == WM_MOUSEMOVE) {
-      // Allow a slight offset, targets are never one pixel wide and pixel math
-      // is imprecise (see SendMouseMoveImpl()).
-      gfx::Point actual_location(mouse_hook_struct->pt);
-      auto offset = expected_mouse_location_ - actual_location;
-      definitively_done = std::abs(offset.x()) + std::abs(offset.y()) < 2;
+      definitively_done = AreMouseLocationsWithinAPixel(
+          expected_mouse_location_, gfx::Point(mouse_hook_struct->pt));
 
-      // Verify that the mouse ended up at the desired location.
-      LOG_IF(ERROR, !definitively_done)
-          << "Mouse moved to (" << mouse_hook_struct->pt.x << ", "
-          << mouse_hook_struct->pt.y << ") rather than ("
-          << expected_mouse_location_.x() << ", "
-          << expected_mouse_location_.y()
-          << "); check the math in SendMouseMoveImpl.";
+      if (!definitively_done) {
+        // Showing or moving a window under the cursor (e.g., detaching a tab
+        // into a new browser window) causes Windows to synthesize a duplicate
+        // `WM_MOUSEMOVE` at the previous cursor position. If the OS cursor is
+        // already at `expected_mouse_location_`, ignore the stale event and
+        // wait for the pending `WM_MOUSEMOVE` at `expected_mouse_location_`.
+        POINT cursor_pos = {};
+        if (::GetCursorPos(&cursor_pos) &&
+            AreMouseLocationsWithinAPixel(expected_mouse_location_,
+                                   gfx::Point(cursor_pos))) {
+          return;
+        }
+
+        // Verify that the mouse ended up at the desired location.
+        LOG(ERROR) << "Mouse moved to (" << mouse_hook_struct->pt.x << ", "
+                   << mouse_hook_struct->pt.y << ") rather than ("
+                   << expected_mouse_location_.x() << ", "
+                   << expected_mouse_location_.y()
+                   << "); check the math in SendMouseMoveImpl.";
+      }
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
