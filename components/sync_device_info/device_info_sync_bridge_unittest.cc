@@ -868,7 +868,7 @@ TEST_F(DeviceInfoSyncBridgeTest, TestWithLocalDataAndMetadata) {
   InitializeAndPump();
 
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_THAT(*bridge()->GetDeviceInfo(local_specifics.cache_guid()),
+  EXPECT_THAT(*bridge()->GetChromeDeviceInfo(local_specifics.cache_guid()),
               ModelEqualsSpecifics(local_specifics));
   EXPECT_TRUE(bridge()->IsPulseTimerRunningForTest());
 }
@@ -885,9 +885,9 @@ TEST_F(DeviceInfoSyncBridgeTest, TestWithMultipleLocalDataAndMetadata) {
   InitializeAndPump();
 
   EXPECT_EQ(2u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_THAT(*bridge()->GetDeviceInfo(local_specifics.cache_guid()),
+  EXPECT_THAT(*bridge()->GetChromeDeviceInfo(local_specifics.cache_guid()),
               ModelEqualsSpecifics(local_specifics));
-  EXPECT_THAT(*bridge()->GetDeviceInfo(remote_specifics.cache_guid()),
+  EXPECT_THAT(*bridge()->GetChromeDeviceInfo(remote_specifics.cache_guid()),
               ModelEqualsSpecifics(remote_specifics));
 }
 
@@ -1002,7 +1002,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   EXPECT_FALSE(error_on_add);
-  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info =
+      bridge()->GetChromeDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
   EXPECT_EQ(2, change_count());
@@ -1014,7 +1015,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
 
   EXPECT_FALSE(error_on_delete);
-  EXPECT_FALSE(bridge()->GetDeviceInfo(specifics.cache_guid()));
+  EXPECT_FALSE(bridge()->GetChromeDeviceInfo(specifics.cache_guid()));
   EXPECT_EQ(3, change_count());
 }
 
@@ -1038,7 +1039,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesStore) {
                                 /*entities=*/IsEmpty())));
   RestartBridge();
 
-  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info =
+      bridge()->GetChromeDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
 }
@@ -1047,8 +1049,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesWithLocalGuid) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1, change_count());
 
-  ASSERT_TRUE(
-      bridge()->GetDeviceInfo(local_device()->GetLocalDeviceInfo()->guid()));
+  ASSERT_TRUE(bridge()->GetChromeDeviceInfo(
+      local_device()->GetLocalDeviceInfo()->guid()));
   ASSERT_EQ(1, change_count());
 
   // The bridge should ignore updates using this specifics because its guid will
@@ -1332,7 +1334,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   ASSERT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
   ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
-  ASSERT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(1)), NotNull());
+  ASSERT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(1)), NotNull());
 
   // If the Chrome version is not present, it should not be exposed as Chrome
   // device.
@@ -1347,7 +1349,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
               Not(Contains(Pointee(HasCacheGuid(CacheGuidForSuffix(2))))));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
-  EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(2)), IsNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(2)), IsNull());
 
   // If only the non-legacy field is present, the device should still be exposed
   // in DeviceInfoTracker.
@@ -1361,7 +1363,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   EXPECT_THAT(bridge()->GetAllChromeDeviceInfo(), SizeIs(3));
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3}}),
             bridge()->CountActiveDevicesByType());
-  EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(3)), NotNull());
+  EXPECT_THAT(bridge()->GetChromeDeviceInfo(CacheGuidForSuffix(3)), NotNull());
 }
 
 // Tests that local device info is pulsed when requested in full sync mode.
@@ -1836,11 +1838,13 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
   InitializeAndPump();
 
   // Test LINUX desktop device info.
-  EXPECT_EQ(bridge()->GetDeviceInfo(local_specifics.cache_guid())->os_type(),
-            kLocalDeviceOS);
-  EXPECT_THAT(
-      bridge()->GetDeviceInfo(local_specifics.cache_guid())->form_factor(),
-      kLocalDeviceFormFactor);
+  EXPECT_EQ(
+      bridge()->GetChromeDeviceInfo(local_specifics.cache_guid())->os_type(),
+      kLocalDeviceOS);
+  EXPECT_THAT(bridge()
+                  ->GetChromeDeviceInfo(local_specifics.cache_guid())
+                  ->form_factor(),
+              kLocalDeviceFormFactor);
 
   // Test Android phone device info.
   {
@@ -1849,11 +1853,12 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
     bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                           EntityAddList({remote_specifics}));
     EXPECT_THAT(
-        bridge()->GetDeviceInfo(remote_specifics.cache_guid())->os_type(),
+        bridge()->GetChromeDeviceInfo(remote_specifics.cache_guid())->os_type(),
         DeviceInfo::OsType::kAndroid);
-    EXPECT_THAT(
-        bridge()->GetDeviceInfo(remote_specifics.cache_guid())->form_factor(),
-        DeviceInfo::FormFactor::kPhone);
+    EXPECT_THAT(bridge()
+                    ->GetChromeDeviceInfo(remote_specifics.cache_guid())
+                    ->form_factor(),
+                DeviceInfo::FormFactor::kPhone);
   }
 
   // Test IOS phone device info specifying the manufacturer.
@@ -1864,11 +1869,12 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
     bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                           EntityAddList({remote_specifics}));
     EXPECT_THAT(
-        bridge()->GetDeviceInfo(remote_specifics.cache_guid())->os_type(),
+        bridge()->GetChromeDeviceInfo(remote_specifics.cache_guid())->os_type(),
         DeviceInfo::OsType::kIOS);
-    EXPECT_THAT(
-        bridge()->GetDeviceInfo(remote_specifics.cache_guid())->form_factor(),
-        DeviceInfo::FormFactor::kPhone);
+    EXPECT_THAT(bridge()
+                    ->GetChromeDeviceInfo(remote_specifics.cache_guid())
+                    ->form_factor(),
+                DeviceInfo::FormFactor::kPhone);
   }
 }
 
@@ -1928,7 +1934,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   EXPECT_FALSE(error_on_add);
-  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info =
+      bridge()->GetChromeDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
   EXPECT_EQ(kServerDeterminedModelName,
@@ -1949,7 +1956,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
           bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   ASSERT_FALSE(error_on_add);
-  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info =
+      bridge()->GetChromeDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
   ASSERT_TRUE(info->personal_context_info().has_value());

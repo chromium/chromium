@@ -195,7 +195,7 @@ std::optional<std::string> TabGroupsPageHandler::GetDeviceName(
   }
 
   const syncer::DeviceInfo* device_info =
-      device_info_tracker->GetDeviceInfo(cache_guid.value());
+      device_info_tracker->GetChromeDeviceInfo(cache_guid.value());
   if (!device_info) {
     return std::nullopt;
   }

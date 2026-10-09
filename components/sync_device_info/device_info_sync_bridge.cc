@@ -769,7 +769,7 @@ bool DeviceInfoSyncBridge::IsSyncing() const {
   return change_processor()->IsTrackingMetadata() && !all_data_.empty();
 }
 
-const DeviceInfo* DeviceInfoSyncBridge::GetDeviceInfo(
+const DeviceInfo* DeviceInfoSyncBridge::GetChromeDeviceInfo(
     const std::string& client_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const ClientIdToDeviceInfo::const_iterator iter = all_data_.find(client_id);

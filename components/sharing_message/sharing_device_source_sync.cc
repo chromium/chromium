@@ -64,7 +64,7 @@ std::optional<SharingTargetDeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
   }
 
   const syncer::DeviceInfo* device_info =
-      device_info_tracker_->GetDeviceInfo(guid);
+      device_info_tracker_->GetChromeDeviceInfo(guid);
   if (!device_info) {
     return std::nullopt;
   }

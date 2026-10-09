@@ -65,7 +65,7 @@ void SharingChannelSender::SendFcmMessageToDevice(
   TRACE_EVENT0("sharing", "SharingChannelSender::SendFcmMessageToDevice");
 
   const syncer::DeviceInfo* device_info =
-      device_info_tracker_->GetDeviceInfo(device.guid());
+      device_info_tracker_->GetChromeDeviceInfo(device.guid());
   if (!device_info) {
     std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
                             /*message_id=*/std::nullopt,
@@ -99,7 +99,7 @@ void SharingChannelSender::SendIosPushMessageToDevice(
   TRACE_EVENT0("sharing", "SharingChannelSender::SendIosPushMessageToDevice");
 
   const syncer::DeviceInfo* target_device_info =
-      device_info_tracker_->GetDeviceInfo(device.guid());
+      device_info_tracker_->GetChromeDeviceInfo(device.guid());
 
   sharing_message::MessageType message_type =
       SharingPayloadCaseToMessageType(message.payload_case());

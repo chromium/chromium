@@ -22,9 +22,9 @@ bool FakeDeviceInfoTracker::IsSyncing() const {
   return is_syncing_override_.value_or(!devices_.empty());
 }
 
-const DeviceInfo* FakeDeviceInfoTracker::GetDeviceInfo(
+const DeviceInfo* FakeDeviceInfoTracker::GetChromeDeviceInfo(
     const std::string& client_id) const {
-  for (const DeviceInfo* device : devices_) {
+  for (const DeviceInfo* device : GetAllChromeDeviceInfo()) {
     if (device->guid() == client_id) {
       return device;
     }
@@ -42,7 +42,13 @@ std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllDeviceInfo() const {
 
 std::vector<const DeviceInfo*> FakeDeviceInfoTracker::GetAllChromeDeviceInfo()
     const {
-  return GetAllDeviceInfo();
+  std::vector<const DeviceInfo*> chrome_devices;
+  for (const DeviceInfo* device : devices_) {
+    if (!device->chrome_version().empty()) {
+      chrome_devices.push_back(device);
+    }
+  }
+  return chrome_devices;
 }
 
 void FakeDeviceInfoTracker::AddObserver(Observer* observer) {
@@ -60,7 +66,7 @@ FakeDeviceInfoTracker::CountActiveDevicesByType() const {
   }
 
   absl::flat_hash_map<DeviceInfo::FormFactor, int> count_by_type;
-  for (const syncer::DeviceInfo* device : devices_) {
+  for (const syncer::DeviceInfo* device : GetAllChromeDeviceInfo()) {
     count_by_type[device->form_factor()]++;
   }
   return count_by_type;
@@ -130,7 +136,7 @@ void FakeDeviceInfoTracker::SetIsSyncingOverride(
 
 void FakeDeviceInfoTracker::SetLocalCacheGuid(const std::string& cache_guid) {
   // ensure that this cache guid is present in the tracker.
-  DCHECK(GetDeviceInfo(cache_guid));
+  DCHECK(GetChromeDeviceInfo(cache_guid));
   local_device_cache_guid_ = cache_guid;
 }
 

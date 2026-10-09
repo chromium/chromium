@@ -148,7 +148,8 @@ void GetDeviceNameAndType(const syncer::DeviceInfoTracker* tracker,
   DCHECK(tracker);
   DCHECK(tracker->IsSyncing());
 
-  const syncer::DeviceInfo* device_info = tracker->GetDeviceInfo(client_id);
+  const syncer::DeviceInfo* device_info =
+      tracker->GetChromeDeviceInfo(client_id);
   if (device_info) {
     *name = device_info->client_name();
     switch (device_info->form_factor()) {

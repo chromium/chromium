@@ -577,7 +577,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
   syncer::DeviceInfo::FormFactor target_form_factor =
       syncer::DeviceInfo::FormFactor::kUnknown;
   const syncer::DeviceInfo* target_device =
-      device_info_tracker_->GetDeviceInfo(target_device_cache_guid);
+      device_info_tracker_->GetChromeDeviceInfo(target_device_cache_guid);
   if (target_device) {
     target_form_factor = target_device->form_factor();
   }
@@ -999,7 +999,7 @@ const syncer::DeviceInfo* SendTabToSelfBridge::GetLocalDeviceInfo() const {
   if (!change_processor()->IsTrackingMetadata()) {
     return nullptr;
   }
-  return device_info_tracker_->GetDeviceInfo(
+  return device_info_tracker_->GetChromeDeviceInfo(
       change_processor()->TrackedCacheGuid());
 }
 

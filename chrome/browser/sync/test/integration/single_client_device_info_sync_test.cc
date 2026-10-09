@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithServerDeterminedName,
 
   // Get the remote device info.
   const syncer::DeviceInfo* remote_device =
-      GetDeviceInfoTracker()->GetDeviceInfo(CacheGuidForSuffix(1));
+      GetDeviceInfoTracker()->GetChromeDeviceInfo(CacheGuidForSuffix(1));
   ASSERT_TRUE(remote_device);
   EXPECT_EQ(remote_device->server_determined_model_name(),
             kServerDeterminedModelName);
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   // Verify that the local DeviceInfo in the tracker contains the personal
   // context info.
   const syncer::DeviceInfo* local_device =
-      GetDeviceInfoTracker()->GetDeviceInfo(GetLocalCacheGuid());
+      GetDeviceInfoTracker()->GetChromeDeviceInfo(GetLocalCacheGuid());
   ASSERT_TRUE(local_device);
   ASSERT_TRUE(local_device->personal_context_info().has_value());
   EXPECT_EQ(local_device->personal_context_info()->serialized_tink_keyset,
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   ASSERT_TRUE(SetupSync());
 
   const syncer::DeviceInfo* local_device =
-      GetDeviceInfoTracker()->GetDeviceInfo(GetLocalCacheGuid());
+      GetDeviceInfoTracker()->GetChromeDeviceInfo(GetLocalCacheGuid());
   ASSERT_TRUE(local_device);
 
   // Clear existing private key from prefs to simulate first-time generation.
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 
   const syncer::DeviceInfo* remote_device =
-      GetDeviceInfoTracker()->GetDeviceInfo(CacheGuidForSuffix(1));
+      GetDeviceInfoTracker()->GetChromeDeviceInfo(CacheGuidForSuffix(1));
   ASSERT_TRUE(remote_device);
   ASSERT_TRUE(remote_device->personal_context_info().has_value());
   EXPECT_EQ(remote_device->personal_context_info()->serialized_tink_keyset,

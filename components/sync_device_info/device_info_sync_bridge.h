@@ -101,7 +101,8 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
 
   // DeviceInfoTracker implementation.
   bool IsSyncing() const override;
-  const DeviceInfo* GetDeviceInfo(const std::string& client_id) const override;
+  const DeviceInfo* GetChromeDeviceInfo(
+      const std::string& client_id) const override;
   std::vector<const DeviceInfo*> GetAllDeviceInfo() const override;
   std::vector<const DeviceInfo*> GetAllChromeDeviceInfo() const override;
   void AddObserver(Observer* observer) override;

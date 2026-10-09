@@ -187,7 +187,7 @@ TEST_F(CrossDeviceThemeTrackerTest, DeviceInfoChange) {
 
   // Now simulate a change in device info (e.g. name change).
   const syncer::DeviceInfo* old_device =
-      fake_device_info_tracker_.GetDeviceInfo(cache_guid);
+      fake_device_info_tracker_.GetChromeDeviceInfo(cache_guid);
   ASSERT_TRUE(old_device);
   fake_device_info_tracker_.Remove(old_device);
 
@@ -208,7 +208,7 @@ TEST_F(CrossDeviceThemeTrackerTest, DeviceInfoChange) {
   EXPECT_EQ(themes[0].os_type, syncer::DeviceInfo::OsType::kAndroid);
 
   // Now simulate a change in OS type.
-  old_device = fake_device_info_tracker_.GetDeviceInfo(cache_guid);
+  old_device = fake_device_info_tracker_.GetChromeDeviceInfo(cache_guid);
   ASSERT_TRUE(old_device);
   fake_device_info_tracker_.Remove(old_device);
 

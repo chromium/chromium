@@ -100,9 +100,12 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
   void AddDevice(
       const std::string& guid,
       bool is_local,
-      syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux) {
+      syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux,
+      const std::string& chrome_version = "chrome_version") {
     syncer::TestDeviceInfoBuilder builder(os_type);
-    builder.WithGuid(guid).WithLastUpdatedTimestamp(base::Time::Now());
+    builder.WithGuid(guid)
+        .WithChromeVersion(chrome_version)
+        .WithLastUpdatedTimestamp(base::Time::Now());
     auto device = builder.Build();
     device_info_tracker()->Add(std::move(device));
     if (is_local) {
@@ -120,7 +123,7 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
       switches::kCrossDeviceSigninFromDesktop};
 };
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_FeatureFlagDisabled) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoFeatureFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kCrossDeviceSigninFromDesktop);
 
@@ -134,7 +137,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_FeatureFlagDisabled) {
       CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_SignedOut) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoSignedOut) {
   base::HistogramTester histogram_tester;
   // Setup: User is signed out.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
@@ -147,7 +150,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_SignedOut) {
       CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_AuthError) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoAuthError) {
   base::HistogramTester histogram_tester;
   // Setup: User is signed in but has a persistent error.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -164,7 +167,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_AuthError) {
       CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HasMobileDevice) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoHasMobileDevice) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device added, remote device added.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -182,7 +185,26 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HasMobileDevice) {
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,
-       ShouldShowPromo_HasOtherDesktopDevices) {
+       ShouldShowPromoHasMobileDeviceNotSignedInToChrome) {
+  base::HistogramTester histogram_tester;
+  // Setup: Signed in, local device added, remote mobile device added that is
+  // not signed in to Chrome (only signed in to the device).
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  AddDevice("remote_device_guid", /*is_local=*/false,
+            syncer::DeviceInfo::OsType::kAndroid, /*chrome_version=*/"");
+  SetHistoryAndTabsSyncingPreference(true);
+
+  EXPECT_TRUE(ShouldShowCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       ShouldShowPromoHasOtherDesktopDevices) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device added, remote desktop device added.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -199,7 +221,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
       CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HistorySyncDisabled) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoHistorySyncDisabled) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, only local device, history sync disabled.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -214,7 +236,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HistorySyncDisabled) {
       CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HistorySyncEnabled) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoHistorySyncEnabled) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, only local device, history sync enabled.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -230,7 +252,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HistorySyncEnabled) {
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,
-       ShouldShowPromo_ProfileMenuEntryIgnoreHistorySync) {
+       ShouldShowPromoProfileMenuEntryIgnoreHistorySync) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, only local device, history sync disabled.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -247,7 +269,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
       CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_ShownLimitReached) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoShownLimitReached) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device, history sync enabled.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -281,7 +303,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_ShownLimitReached) {
       CrossDeviceSigninPromoShouldShowResult::kShownLimitReached, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_DismissedCooldown) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoDismissedCooldown) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device, history sync enabled.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -328,7 +350,7 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_DismissedCooldown) {
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,
-       ShouldShowPromo_ShownAfterDismissalLimit) {
+       ShouldShowPromoShownAfterDismissalLimit) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device, history sync enabled.
   identity_test_env()->MakePrimaryAccountAvailable(

@@ -145,7 +145,7 @@ DeviceData GetBestMatchDeviceData(
 
     // 2. Ensure the device info exists.
     const syncer::DeviceInfo* device_info =
-        device_info_tracker->GetDeviceInfo(guid);
+        device_info_tracker->GetChromeDeviceInfo(guid);
     if (!device_info) {
       VLOG_IF(1, debug_logs_enabled)
           << "XplatSyncedSetup, " << __func__ << ": skipping guid " << guid
@@ -199,7 +199,7 @@ DeviceData GetBestMatchDeviceData(
 
   if (debug_logs_enabled) {
     const syncer::DeviceInfo* best_device_info =
-        device_info_tracker->GetDeviceInfo(best_guid);
+        device_info_tracker->GetChromeDeviceInfo(best_guid);
 
     if (best_device_info) {
       VLOG(1) << "XplatSyncedSetup, " << __func__ << ": selected device "

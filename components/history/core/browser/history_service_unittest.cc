@@ -117,7 +117,7 @@ void TestVisitDelegate::AddVisitedLink(const VisitedLink& link) {
 class TestDeviceInfoTracker : public syncer::DeviceInfoTracker {
  public:
   bool IsSyncing() const override { return true; }
-  const syncer::DeviceInfo* GetDeviceInfo(
+  const syncer::DeviceInfo* GetChromeDeviceInfo(
       const std::string& client_id) const override {
     return nullptr;
   }

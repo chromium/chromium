@@ -40,11 +40,12 @@ class DeviceInfoTracker {
 
   // Returns true when DeviceInfo datatype is enabled and syncing.
   virtual bool IsSyncing() const = 0;
-  // Gets DeviceInfo the synced device with specified client ID.
-  // Returns null if device with the given |client_id| hasn't been synced.
+  // Gets DeviceInfo for the synced Chrome device with specified client ID.
+  // Returns null if a Chrome device with the given |client_id| hasn't been
+  // synced.
   // The returned pointer is meant to be short-lived (i.e. use only within the
   // ongoing task) and may be dangling otherwise.
-  virtual const DeviceInfo* GetDeviceInfo(
+  virtual const DeviceInfo* GetChromeDeviceInfo(
       const std::string& client_id) const = 0;
   // Gets DeviceInfo for all synced devices (including the local one). The
   // returned pointers are meant to be short-lived (i.e. use only within the

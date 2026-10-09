@@ -260,7 +260,8 @@ SendTabToSelfDeviceDisabledChecker::~SendTabToSelfDeviceDisabledChecker() =
 bool SendTabToSelfDeviceDisabledChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   *os << "Waiting for device to have send_tab_to_self disabled";
-  const syncer::DeviceInfo* device_info = tracker_->GetDeviceInfo(device_guid_);
+  const syncer::DeviceInfo* device_info =
+      tracker_->GetChromeDeviceInfo(device_guid_);
   return device_info && !device_info->send_tab_to_self_receiving_enabled();
 }
 

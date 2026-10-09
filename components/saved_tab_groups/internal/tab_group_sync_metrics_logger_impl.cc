@@ -216,7 +216,8 @@ DeviceType TabGroupSyncMetricsLoggerImpl::GetDeviceTypeFromCacheGuid(
     return DeviceType::kLocal;
   }
 
-  auto* device_info = device_info_tracker_->GetDeviceInfo(cache_guid.value());
+  auto* device_info =
+      device_info_tracker_->GetChromeDeviceInfo(cache_guid.value());
   if (!device_info) {
     return DeviceType::kUnknown;
   }

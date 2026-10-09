@@ -175,7 +175,7 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
 void SharingBrowserTest::CheckLastReceiver(
     const SharingTargetDeviceInfo& device) const {
   const syncer::DeviceInfo* device_info =
-      fake_device_info_tracker_.GetDeviceInfo(device.guid());
+      fake_device_info_tracker_.GetChromeDeviceInfo(device.guid());
   ASSERT_TRUE(device_info);
 
   auto fcm_configuration = GetFCMChannel(*device_info);

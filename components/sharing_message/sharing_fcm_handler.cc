@@ -174,7 +174,7 @@ SharingFCMHandler::GetServerChannel(
 SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
     const components_sharing_message::SharingMessage& original_message) {
   const syncer::DeviceInfo* device_info =
-      device_info_tracker_->GetDeviceInfo(original_message.sender_guid());
+      device_info_tracker_->GetChromeDeviceInfo(original_message.sender_guid());
   if (!device_info) {
     return SharingDevicePlatform::kUnknown;
   }

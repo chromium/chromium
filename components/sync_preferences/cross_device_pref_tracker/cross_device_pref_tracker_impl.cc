@@ -497,7 +497,7 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
 
   for (const auto [cache_guid, entry_value] : cross_device_dict) {
     const syncer::DeviceInfo* device_info =
-        device_info_tracker->GetDeviceInfo(cache_guid);
+        device_info_tracker->GetChromeDeviceInfo(cache_guid);
 
     if (!device_info) {
       VLOG_IF(1, debug_logs_enabled)
@@ -976,7 +976,7 @@ void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
       // Remote change detected.
 
       const syncer::DeviceInfo* device_info =
-          device_info_tracker->GetDeviceInfo(cache_guid);
+          device_info_tracker->GetChromeDeviceInfo(cache_guid);
 
       if (!device_info) {
         // Device info not available yet. Skip notification for now.
@@ -1004,7 +1004,7 @@ void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
     // Remote deletion detected.
 
     const syncer::DeviceInfo* device_info =
-        device_info_tracker->GetDeviceInfo(cache_guid);
+        device_info_tracker->GetChromeDeviceInfo(cache_guid);
 
     if (!device_info) {
       // `DeviceInfo` for the device that previously held the pref is
