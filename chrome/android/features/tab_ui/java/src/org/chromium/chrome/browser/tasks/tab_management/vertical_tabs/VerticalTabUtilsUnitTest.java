@@ -161,19 +161,6 @@ public class VerticalTabUtilsUnitTest {
     }
 
     @Test
-    public void testIsExpandOnHoverEnabled() {
-        setDeviceForExpandOnHover(/* isDesktop= */ true, /* hasPrecisionPointer= */ true);
-        assertFalse(VerticalTabUtils.isExpandOnHoverFeatureEnabled());
-        assertFalse(VerticalTabUtils.isExpandOnHoverEnabled());
-
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
-        assertTrue(VerticalTabUtils.isExpandOnHoverFeatureEnabled());
-        // On by default.
-        assertTrue(VerticalTabUtils.isExpandOnHoverEnabled());
-    }
-
-    @Test
     public void testIsExpandOnHoverEnabled_RespectsUserSetting() {
         setDeviceForExpandOnHover(/* isDesktop= */ true, /* hasPrecisionPointer= */ true);
         FeatureOverrides.overrideParam(

@@ -743,15 +743,18 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testSupportsManualResize() {
-        // Off by default.
-        assertFalse(mCoordinator.supportsManualResize());
-
-        enableManualResize();
+        // On by default.
         assertTrue(mCoordinator.supportsManualResize());
 
         // A user-collapsed rail can still be manually resized.
         mCollapseController.toggleCollapseState();
         assertTrue(mCoordinator.supportsManualResize());
+
+        // Can be turned off via the feature param.
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", false)
+                .apply();
+        assertFalse(mCoordinator.supportsManualResize());
     }
 
     @Test

@@ -227,9 +227,7 @@ public class VerticalTabUtils {
      */
     public static boolean isManualResizeEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                "manual_resize",
-                /* defaultValue= */ false);
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", /* defaultValue= */ true);
     }
 
     /**
@@ -321,7 +319,7 @@ public class VerticalTabUtils {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.ANDROID_VERTICAL_TABS,
                         "expand_on_hover",
-                        /* defaultValue= */ false);
+                        /* defaultValue= */ true);
     }
 
     /**
