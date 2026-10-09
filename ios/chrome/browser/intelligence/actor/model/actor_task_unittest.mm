@@ -1313,7 +1313,8 @@ TEST_F(ActorTaskBackgroundingTest, BackgroundTaskStoppedWithShutdown) {
 
   task_->Stop(ActorTaskStoppedReason::kShutdown);
 
-  EXPECT_TRUE(observer.didStopCalled);
+  // The stop notification is posted.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.didStopCalled; }));
   EXPECT_EQ(observer.finalState, ActorTaskState::kCancelled);
   EXPECT_TRUE(context.completed);
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
