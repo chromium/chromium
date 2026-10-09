@@ -149,21 +149,21 @@ export class ActionDispatcher {
     await Promise.allSettled(promises);
   }
 
+  /** Must be called while holding `InputState.queue`. */
   async dispatchActions(
     optionsByTick: readonly (readonly Readonly<ActionOption>[])[],
   ): Promise<void> {
-    await this.#inputState.queue.run(async () => {
-      try {
-        for (const options of optionsByTick) {
-          await this.dispatchTickActions(options);
-        }
-      } finally {
-        // Ensure any trailing deferred `mouseMoved` commands settle before `performActions` completes.
-        await this.#flushPendingMovePromises();
+    try {
+      for (const options of optionsByTick) {
+        await this.dispatchTickActions(options);
       }
-    });
+    } finally {
+      // Ensure any trailing deferred `mouseMoved` commands settle before `performActions` completes.
+      await this.#flushPendingMovePromises();
+    }
   }
 
+  /** Must be called while holding `InputState.queue`. */
   async dispatchTickActions(
     options: readonly Readonly<ActionOption>[],
   ): Promise<void> {

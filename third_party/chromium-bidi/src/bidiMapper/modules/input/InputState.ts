@@ -122,4 +122,11 @@ export class InputState {
   get queue(): Mutex {
     return this.#mutex;
   }
+
+  reset(): void {
+    // Clear pending cancel actions after releaseActions completes.
+    this.cancelList = [];
+    // Clear active input sources while keeping the queue mutex intact.
+    this.#sources.clear();
+  }
 }

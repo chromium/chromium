@@ -45,13 +45,20 @@ export class InputProcessor {
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     const inputState = this.#inputStateManager.get(context.top);
-    const actionsByTick = this.#getActionsByTick(params, inputState);
-    const dispatcher = new ActionDispatcher(
-      inputState,
-      this.#browsingContextStorage,
-      params.context,
-    );
-    await dispatcher.dispatchActions(actionsByTick);
+    // Serialize tick building and dispatch on the actions queue so an in-flight
+    // releaseActions resets state before the next performActions mutates sources.
+    await inputState.queue.run(async () => {
+      // Build ticks inside the queue after earlier queued commands finish.
+      const actionsByTick = this.#getActionsByTick(params, inputState);
+      // Create the dispatcher for this queued performActions invocation.
+      const dispatcher = new ActionDispatcher(
+        inputState,
+        this.#browsingContextStorage,
+        params.context,
+      );
+      // Dispatch all ticks while holding the top-level actions queue.
+      await dispatcher.dispatchActions(actionsByTick);
+    });
     return {};
   }
 
@@ -61,13 +68,22 @@ export class InputProcessor {
     const context = this.#browsingContextStorage.getContext(params.context);
     const topContext = context.top;
     const inputState = this.#inputStateManager.get(topContext);
-    const dispatcher = new ActionDispatcher(
-      inputState,
-      this.#browsingContextStorage,
-      params.context,
-    );
-    await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
-    this.#inputStateManager.delete(topContext);
+    // Serialize on the actions queue like WebDriver Classic "Release Actions"
+    // (step 5); required by WPT bidi/input/release_actions/queue.py.
+    await inputState.queue.run(async () => {
+      // Copy and reverse pending cancel actions; reset() clears cancelList after dispatch succeeds.
+      const cancelActions = [...inputState.cancelList].reverse();
+      // Create the dispatcher to execute the reversed cancel actions.
+      const dispatcher = new ActionDispatcher(
+        inputState,
+        this.#browsingContextStorage,
+        params.context,
+      );
+      // Dispatch all cancel actions as a single tick.
+      await dispatcher.dispatchTickActions(cancelActions);
+      // Reset sources and cancelList without deleting the InputState queue mutex.
+      inputState.reset();
+    });
     return {};
   }
 
