@@ -109,7 +109,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // with other items.
       return gfx::Insets::VH(0, 12);
     case INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON:
-      return gfx::Insets::VH(11, 0);
+      return gfx::Insets::VH(11, 6);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }

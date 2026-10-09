@@ -681,6 +681,10 @@ are declared in tools/grit/grit_args.gni.
           New &amp;Incognito window
         </message>
 
+        <message name="IDS_NEW_ISOLATED_WINDOW" desc="The text label of a menu item for opening a new Isolated window">
+          New &amp;isolated window
+        </message>
+
         <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
           Incognito
         </message>
@@ -1552,9 +1556,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SHOW_AS_TAB" desc="The text label for the Show As tab menu item">
             &amp;Show as tab
           </message>
-          <message name="IDS_NEW_ISOLATED_WINDOW" desc="The text label of a menu item for opening a new Isolated window">
-            New &amp;Isolated window
-          </message>
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL" desc="Label that lets the user know what email they are signed into their profile as.">
             Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
           </message>
@@ -1637,11 +1638,6 @@ are declared in tools/grit/grit_args.gni.
         <if expr="use_titlecase">
           <message name="IDS_SHOW_AS_TAB" desc="In Title Case: The text label for the Show As tab menu item">
             &amp;Show As Tab
-          </message>
-
-
-          <message name="IDS_NEW_ISOLATED_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Isolated window">
-            New &amp;Isolated Window
           </message>
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL" desc="In Title Case: Label that lets the user know what email they are signed into their profile as.">
             Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
@@ -1759,7 +1755,7 @@ are declared in tools/grit/grit_args.gni.
         New Incognito &amp;tab
       </message>
       <message name="IDS_NEW_ISOLATED_TAB" desc="The text label of a menu item for opening a new isolated tab">
-        New Isolated &amp;tab
+        New isolated &amp;tab
       </message>
       <if expr="not use_titlecase">
         <message name="IDS_VIEW_SOURCE" desc="The text label of the View Page Source menu item">

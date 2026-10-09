@@ -442,7 +442,7 @@ TEST_F(ActionAppMenuManagerTest,
   std::u16string* text_override =
       new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(text_override, nullptr);
-  EXPECT_EQ(*text_override, u"New Isolated tab");
+  EXPECT_EQ(*text_override, u"New isolated tab");
 
   ASSERT_GE(block_section->GetChildren().children().size(), 3u);
   actions::BaseAction* isolated_window_action =
