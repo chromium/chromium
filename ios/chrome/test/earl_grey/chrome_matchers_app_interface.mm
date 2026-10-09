@@ -507,9 +507,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)navigationBarCancelButton {
+  NSMutableArray<id<GREYMatcher>>* ancestors = [NSMutableArray
+      arrayWithObject:grey_ancestor(grey_kindOfClass([UINavigationBar class]))];
+  Class floatingBarClass = NSClassFromString(@"_UIFloatingBarContainerView");
+  if (floatingBarClass) {
+    [ancestors addObject:grey_ancestor(grey_kindOfClass(floatingBarClass))];
+  }
+
   return grey_allOf(
-      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-      [self cancelButton], grey_userInteractionEnabled(),
+      grey_anyOfMatchers(ancestors), [self cancelButton],
+      grey_userInteractionEnabled(),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
@@ -518,9 +525,16 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)navigationBarSaveButton {
+  NSMutableArray<id<GREYMatcher>>* ancestors = [NSMutableArray
+      arrayWithObject:grey_ancestor(grey_kindOfClass([UINavigationBar class]))];
+  Class floatingBarClass = NSClassFromString(@"_UIFloatingBarContainerView");
+  if (floatingBarClass) {
+    [ancestors addObject:grey_ancestor(grey_kindOfClass(floatingBarClass))];
+  }
+
   return grey_allOf(
-      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-      [self saveButton], grey_userInteractionEnabled(),
+      grey_anyOfMatchers(ancestors), [self saveButton],
+      grey_userInteractionEnabled(),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
