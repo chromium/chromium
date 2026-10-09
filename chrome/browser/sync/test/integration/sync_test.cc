@@ -525,7 +525,7 @@ std::vector<raw_ptr<Profile, VectorExperimental>> SyncTest::GetAllProfiles() {
     // Profile can be null if it was destroyed earlier (e.g. in
     // OnProfileWillBeDestroyed).
     if (client.profile) {
-      profiles.push_back(client.profile);
+      profiles.push_back(client.profile.get());
     }
   }
   return profiles;
@@ -960,11 +960,18 @@ void SyncTest::TearDownOnMainThread() {
     fake_server_.reset();
   }
 
-  for (const SyncClientState& client : clients_) {
+  for (SyncClientState& client : clients_) {
     Profile* profile = client.profile;
     // Profile could be removed earlier.
     if (profile) {
       profile->RemoveObserver(this);
+
+      // Clear `harness` and `profile` now since `this` is no longer observing
+      // `profile` (so `OnProfileWillBeDestroyed()` will not be called), and
+      // closing the browsers below may destroy `profile` before `clients_` is
+      // cleared.
+      client.harness.reset();
+      client.profile = nullptr;
 
 #if BUILDFLAG(IS_ANDROID)
       // In Android browser tests, the Profile and thus the SyncService does not
