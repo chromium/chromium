@@ -650,16 +650,24 @@ public class LocationBarMediatorUnitTest {
     }
 
     private void assertDraftingNoFocusProperties() {
+        assertDraftingNoFocusProperties(mMediator);
+    }
+
+    private void assertDraftingNoFocusProperties(LocationBarMediator mediator) {
         assertTrue(mSessionState.isSessionActive());
         assertDisplayState(DisplayState.DRAFTING_NO_FOCUS);
         assertAutocompleteState(AutocompleteState.STANDBY);
-        assertFalse(mMediator.isUrlBarFocused());
+        assertFalse(mediator.isUrlBarFocused());
     }
 
     private void beginInput(AutocompleteInput input) {
-        mMediator.onFinishNativeInitialization();
+        beginInput(mMediator, input);
+    }
+
+    private void beginInput(LocationBarMediator mediator, AutocompleteInput input) {
+        mediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        mMediator.beginInput(input);
+        mediator.beginInput(input);
     }
 
     /** Sets up a session in {@code displayState}, with user text that differs from the initial. */
@@ -668,13 +676,18 @@ public class LocationBarMediatorUnitTest {
     }
 
     private void setupSession(@DisplayState int displayState, boolean textDiffers) {
+        setupSession(mMediator, displayState, textDiffers);
+    }
+
+    private void setupSession(
+            LocationBarMediator mediator, @DisplayState int displayState, boolean textDiffers) {
         String userText = TEST_USER_TEXT;
         String initialText = textDiffers ? TEST_INITIAL_USER_TEXT : userText;
         AutocompleteInput input = new AutocompleteInput().setDisplayState(displayState);
-        beginInput(input);
+        beginInput(mediator, input);
         // We set the text after beginInput so that they aren't overwritten on activation.
         mSessionState.getAutocompleteInput().setUserText(userText).setInitialUserText(initialText);
-        assertEquals(textDiffers, mMediator.userTextDiffersFromInitial());
+        assertEquals(textDiffers, mediator.userTextDiffersFromInitial());
         assertDisplayState(displayState);
     }
 
@@ -5037,15 +5050,33 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testOnScrimClicked_suggestionsTextDiffers_enterDraftingNoFocus() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        beginInput(
-                new AutocompleteInput()
-                        .setDisplayState(DisplayState.SUGGESTIONS)
-                        .setUserText(TEST_USER_TEXT)
-                        .setInitialUserText(TEST_INITIAL_USER_TEXT));
+        setupSession(DisplayState.SUGGESTIONS, /* textDiffers= */ true);
 
         mMediator.onScrimClicked();
 
         assertDraftingNoFocusProperties();
+    }
+
+    @Test
+    public void testOnScrimClicked_tablet_suggestionsTextDiffers_enterDraftingNoFocus() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        setupSession(mTabletMediator, DisplayState.SUGGESTIONS, /* textDiffers= */ true);
+
+        mTabletMediator.onScrimClicked();
+
+        assertDraftingNoFocusProperties(mTabletMediator);
+    }
+
+    @Test
+    public void testOnScrimClicked_tablet_textMatches_endsInput() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        setupSession(mTabletMediator, DisplayState.SUGGESTIONS, /* textDiffers= */ false);
+
+        mTabletMediator.onScrimClicked();
+
+        assertFalse(mSessionState.isSessionActive());
+        assertAutocompleteState(AutocompleteState.DISABLED);
+        assertFalse(mTabletMediator.isUrlBarFocused());
     }
 
     @Test
@@ -5065,12 +5096,9 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void testOnScrimClicked_nonDesktop_endsInput() {
+    public void testOnScrimClicked_phone_endsInput() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
-        beginInput(
-                new AutocompleteInput()
-                        .setDisplayState(DisplayState.SUGGESTIONS)
-                        .setAutocompleteState(AutocompleteState.ENABLED));
+        setupSession(DisplayState.SUGGESTIONS, /* textDiffers= */ true);
 
         mMediator.onScrimClicked();
 
@@ -5087,6 +5115,17 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(/* hasFocus= */ false);
 
         assertDraftingNoFocusProperties();
+    }
+
+    @Test
+    public void testOnUrlFocusChange_losingFocus_phone_draftingTextDiffers_endsSession() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        setupSession(DisplayState.DRAFTING, /* textDiffers= */ true);
+
+        mMediator.onUrlFocusChange(/* hasFocus= */ false);
+
+        assertFalse(mSessionState.isSessionActive());
+        assertFalse(mMediator.isUrlBarFocused());
     }
 
     @Test
@@ -5186,8 +5225,7 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void testOnUrlChanged_desktop_endsDraftingSession() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+    public void testOnUrlChanged_endsDraftingNoFocusSession() {
         AutocompleteInput input =
                 new AutocompleteInput()
                         .setDisplayState(DisplayState.DRAFTING_NO_FOCUS)

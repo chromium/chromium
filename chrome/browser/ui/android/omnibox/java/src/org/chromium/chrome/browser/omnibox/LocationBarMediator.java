@@ -1779,7 +1779,7 @@ public class LocationBarMediator
             // because different focus change causes need to be handled differently. E.g., defocus
             // via scrim click should not detach the session, while defocus via tab change should.
         } else {
-            if (userTextDiffersFromInitial()) {
+            if (devicePermitsDraftingNoFocus() && userTextDiffersFromInitial()) {
                 enterDraftingNoFocus();
             } else if (!displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
                 endInput();
@@ -3006,11 +3006,9 @@ public class LocationBarMediator
                 maybeShowOrClearCursorInLocationBar();
             }
         } else {
-            // TODO(b/548102100): See if we can remove this desktop guard.
             // When the url changes via a link click, page reload, home button press, etc, we want
             // to end the input session and exit drafting w/o focus mode.
-            if (OmniboxCapabilities.isDesktopPlatform()
-                    && displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
+            if (displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
                 endInput();
             }
             updateUrl();
@@ -3200,11 +3198,15 @@ public class LocationBarMediator
 
     @Override
     public void onScrimClicked() {
-        if (OmniboxCapabilities.isDesktopPlatform() && userTextDiffersFromInitial()) {
+        if (devicePermitsDraftingNoFocus() && userTextDiffersFromInitial()) {
             enterDraftingNoFocus();
         } else {
             endInput();
         }
+    }
+
+    private boolean devicePermitsDraftingNoFocus() {
+        return mIsTablet || OmniboxCapabilities.isDesktopPlatform();
     }
 
     /** Enter the DRAFTING_NO_FOCUS state, executing all necessary and convenient pre-processing. */
