@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -312,7 +313,8 @@ TEST_F(TTCSessionControllerTest, TestCustomConversationInjection) {
       [[TTCSessionController alloc] initWithConversation:conversation];
 
   EXPECT_EQ(controller.conversation, conversation);
-  EXPECT_EQ(conversation.delegate, (id<TTCConversationDelegate>)controller);
+  EXPECT_EQ(conversation.delegate,
+            static_cast<id<TTCConversationDelegate>>(controller));
   [controller disconnect];
 }
 
@@ -367,8 +369,9 @@ TEST_F(TTCSessionControllerTest, TestConversationEnergyForwardedToObserver) {
   [controller startSession];
 
   // Conversation delegate invokes didUpdateAudioEnergy.
-  [(id<TTCConversationDelegate>)controller conversation:conversation
-                                   didUpdateAudioEnergy:0.75f];
+  [static_cast<id<TTCConversationDelegate>>(controller)
+              conversation:conversation
+      didUpdateAudioEnergy:0.75f];
 
   EXPECT_EQ(observer.audioLevelUpdateCount, 1);
   EXPECT_FLOAT_EQ(observer.lastAudioLevel, 0.75f);
@@ -376,7 +379,8 @@ TEST_F(TTCSessionControllerTest, TestConversationEnergyForwardedToObserver) {
   [controller disconnect];
 }
 
-// Tests that conversation errors are forwarded to session observers.
+// Tests that conversation errors are forwarded to session observers and stop
+// the session when fatal.
 TEST_F(TTCSessionControllerTest, TestConversationErrorForwardedToObserver) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
@@ -388,14 +392,49 @@ TEST_F(TTCSessionControllerTest, TestConversationErrorForwardedToObserver) {
       [[FakeTTCSessionControllerObserver alloc] init];
   [controller addObserver:observer];
 
-  NSError* error = [NSError errorWithDomain:@"TestConvError"
-                                       code:-42
-                                   userInfo:nil];
-  [(id<TTCConversationDelegate>)controller conversation:conversation
-                                      didEncounterError:error];
+  [controller startSession];
+  NSError* error = CreateTTCError(ttc::ErrorCode::kInternalBackendError);
+  [static_cast<id<TTCConversationDelegate>>(controller)
+           conversation:conversation
+      didEncounterError:error];
 
   EXPECT_EQ(observer.errorCount, 1);
   EXPECT_NSEQ(observer.lastError, error);
+  EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kFinished);
+  EXPECT_TRUE(fake_audio.didStopCapture);
+
+  // Subsequent fatal errors must be ignored once a fatal error is reported.
+  [static_cast<id<TTCConversationDelegate>>(controller)
+           conversation:conversation
+      didEncounterError:CreateTTCError(ttc::ErrorCode::kSessionExpired)];
+  EXPECT_EQ(observer.errorCount, 1);
+
+  [controller disconnect];
+}
+
+// Tests that conversationDidClose stops the session and transitions lifecycle
+// to kFinished.
+TEST_F(TTCSessionControllerTest, TestConversationDidCloseStopsSession) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+  FakeTTCSessionControllerObserver* observer =
+      [[FakeTTCSessionControllerObserver alloc] init];
+  [controller addObserver:observer];
+
+  [controller startSession];
+  [controller onSessionInitialized];
+  EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kLive);
+
+  [static_cast<id<TTCConversationDelegate>>(controller)
+      conversationDidClose:conversation];
+
+  EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kFinished);
+  EXPECT_EQ(observer.lastLifecycle, TTCSessionLifecycle::kFinished);
+  EXPECT_TRUE(fake_audio.didStopCapture);
 
   [controller disconnect];
 }
@@ -437,7 +476,7 @@ TEST_F(TTCSessionControllerTest,
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kInitializing);
   EXPECT_EQ(observer.lifecycleChangeCount, 0);
 
-  [(id<TTCConversationDelegate>)controller
+  [static_cast<id<TTCConversationDelegate>>(controller)
       conversationDidInitialize:conversation];
 
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kLive);

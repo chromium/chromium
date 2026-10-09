@@ -11,20 +11,21 @@
 
 // Delegate protocol for observing initialization, energy updates, and errors
 // from a `TTCConversation`.
-@protocol TTCConversationDelegate <NSObject>
-
-@optional
+@protocol TTCConversationDelegate
 
 // Invoked when the conversation backend has initialized and the session is
 // ready for user interaction.
 - (void)conversationDidInitialize:(TTCConversation*)conversation;
+
+// Invoked when the conversation backend session has closed cleanly.
+- (void)conversationDidClose:(TTCConversation*)conversation;
 
 // Invoked on the UI thread when the input perceptual RMS energy level
 // in [0.0, 1.0] has been updated.
 - (void)conversation:(TTCConversation*)conversation
     didUpdateAudioEnergy:(float)energy;
 
-// Invoked on the UI thread when an unrecoverable audio or capture error occurs.
+// Invoked on the UI thread when an audio or backend error occurs.
 - (void)conversation:(TTCConversation*)conversation
     didEncounterError:(NSError*)error;
 

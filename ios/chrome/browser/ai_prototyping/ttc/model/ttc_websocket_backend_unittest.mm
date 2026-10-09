@@ -284,7 +284,7 @@ TEST_F(TTCWebSocketBackendTest, TestParseTranscriptions) {
 // corresponding error to the delegate.
 TEST_F(TTCWebSocketBackendTest, TestParseServerErrorResponse) {
   OCMExpect([delegate_mock_ backend:backend_
-                   didFailWithError:TTCErrorCode::kRateLimited]);
+                   didFailWithError:ttc::ErrorCode::kRateLimited]);
 
   NSDictionary* message = @{
     @"error" : @{
@@ -303,12 +303,12 @@ TEST_F(TTCWebSocketBackendTest, TestParseServerErrorResponse) {
 }
 
 // Tests that attempting to connect with an invalid or missing API key
-// dispatches `kMissingConfiguration` error.
+// dispatches `kInternalBackendError` error.
 TEST_F(TTCWebSocketBackendTest, TestConnectWithoutValidConfig) {
   ios::provider::test::SetTTCConfigForTesting(ios::provider::TTCConfig{});
 
   OCMExpect([delegate_mock_ backend:backend_
-                   didFailWithError:TTCErrorCode::kMissingConfiguration]);
+                   didFailWithError:ttc::ErrorCode::kInternalBackendError]);
 
   [backend_ connect];
 
@@ -420,7 +420,7 @@ TEST_F(TTCWebSocketBackendTest,
 // dispatches `kInternalBackendError`.
 TEST_F(TTCWebSocketBackendTest, TestParseServerErrorWithNonDictionaryPayload) {
   OCMExpect([delegate_mock_ backend:backend_
-                   didFailWithError:TTCErrorCode::kInternalBackendError]);
+                   didFailWithError:ttc::ErrorCode::kInternalBackendError]);
 
   NSDictionary* message = @{@"error" : @"An internal server error occurred."};
   NSData* payload = [NSJSONSerialization dataWithJSONObject:message
@@ -460,8 +460,9 @@ TEST_F(TTCWebSocketBackendTest, TestBackpressureLimit) {
 // Tests that session cancellation error (NSURLErrorCancelled) or errors
 // arriving after disconnect do not notify the delegate of a failure.
 TEST_F(TTCWebSocketBackendTest, TestDisconnectCancellationNoError) {
-  [[delegate_mock_ reject] backend:backend_
-                  didFailWithError:TTCErrorCode::kNetworkError];
+  [[delegate_mock_ reject]
+               backend:backend_
+      didFailWithError:ttc::ErrorCode::kExecutionSessionCreationFailed];
 
   NSError* cancelError = [NSError errorWithDomain:NSURLErrorDomain
                                              code:NSURLErrorCancelled
@@ -481,8 +482,9 @@ TEST_F(TTCWebSocketBackendTest, TestDisconnectCancellationNoError) {
 // Tests that a fatal error transitions state to failed and notifies the
 // delegate.
 TEST_F(TTCWebSocketBackendTest, TestFatalErrorTriggersDelegateFailure) {
-  OCMExpect([delegate_mock_ backend:backend_
-                   didFailWithError:TTCErrorCode::kNetworkError]);
+  OCMExpect([delegate_mock_
+               backend:backend_
+      didFailWithError:ttc::ErrorCode::kExecutionSessionCreationFailed]);
 
   [backend_ simulateHandshakingStateForTesting];
 
@@ -496,7 +498,7 @@ TEST_F(TTCWebSocketBackendTest, TestFatalErrorTriggersDelegateFailure) {
 }
 
 // Tests that connecting with an invalid or non-ws/wss URL scheme fails
-// gracefully with kMissingConfiguration without throwing an exception.
+// gracefully with kInternalBackendError without throwing an exception.
 TEST_F(TTCWebSocketBackendTest, TestConnectFailsGracefullyWithInvalidScheme) {
   ios::provider::TTCConfig invalid_config{
       .system_instruction = kTestSystemInstruction,
@@ -508,7 +510,7 @@ TEST_F(TTCWebSocketBackendTest, TestConnectFailsGracefullyWithInvalidScheme) {
   ios::provider::test::SetTTCConfigForTesting(invalid_config);
 
   OCMExpect([delegate_mock_ backend:backend_
-                   didFailWithError:TTCErrorCode::kMissingConfiguration]);
+                   didFailWithError:ttc::ErrorCode::kInternalBackendError]);
 
   [backend_ connect];
 
@@ -519,8 +521,9 @@ TEST_F(TTCWebSocketBackendTest, TestConnectFailsGracefullyWithInvalidScheme) {
 // Tests that duplicate fatal error calls do not trigger multiple delegate
 // notifications.
 TEST_F(TTCWebSocketBackendTest, TestDuplicateFatalErrorIgnored) {
-  OCMExpect([delegate_mock_ backend:backend_
-                   didFailWithError:TTCErrorCode::kNetworkError]);
+  OCMExpect([delegate_mock_
+               backend:backend_
+      didFailWithError:ttc::ErrorCode::kExecutionSessionCreationFailed]);
 
   [backend_ simulateHandshakingStateForTesting];
 

@@ -26,7 +26,7 @@ class GURL;
 
 // Called when the backend encountered an unrecoverable error.
 - (void)backend:(id<TTCBackend>)backend
-    didFailWithError:(TTCErrorCode)errorCode;
+    didFailWithError:(ttc::ErrorCode)errorCode;
 
 // Called when synthesized linear PCM audio arrives from the model.
 - (void)backend:(id<TTCBackend>)backend

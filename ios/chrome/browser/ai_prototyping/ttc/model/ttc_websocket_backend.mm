@@ -207,7 +207,7 @@ enum class WebSocketState {
   if (!_config.is_valid() || _config.api_key.empty()) {
     _state = WebSocketState::kFailed;
     [self.delegate backend:self
-          didFailWithError:TTCErrorCode::kMissingConfiguration];
+          didFailWithError:ttc::ErrorCode::kInternalBackendError];
     return;
   }
 
@@ -215,7 +215,7 @@ enum class WebSocketState {
   if (!endpointGURL.is_valid() || !endpointGURL.SchemeIsWSOrWSS()) {
     _state = WebSocketState::kFailed;
     [self.delegate backend:self
-          didFailWithError:TTCErrorCode::kMissingConfiguration];
+          didFailWithError:ttc::ErrorCode::kInternalBackendError];
     return;
   }
 
@@ -232,7 +232,7 @@ enum class WebSocketState {
   if (!endpointUrl) {
     _state = WebSocketState::kFailed;
     [self.delegate backend:self
-          didFailWithError:TTCErrorCode::kMissingConfiguration];
+          didFailWithError:ttc::ErrorCode::kInternalBackendError];
     return;
   }
 
@@ -449,11 +449,12 @@ enum class WebSocketState {
   _state = WebSocketState::kFailed;
   _isReceiving = NO;
   _inFlightSends = 0;
-  [self.delegate backend:self didFailWithError:TTCErrorCode::kNetworkError];
+  [self.delegate backend:self
+        didFailWithError:ttc::ErrorCode::kExecutionSessionCreationFailed];
 }
 
 // Handles explicit server-level error frames (e.g., HTTP 429 quota exhaustion).
-- (void)handleServerError:(TTCErrorCode)errorCode {
+- (void)handleServerError:(ttc::ErrorCode)errorCode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self stopHeartbeat];
   if (_task) {
@@ -679,9 +680,9 @@ enum class WebSocketState {
         code = [codeObj intValue];
       }
     }
-    TTCErrorCode ttcErrorCode = (code == kHTTPStatusTooManyRequests)
-                                    ? TTCErrorCode::kRateLimited
-                                    : TTCErrorCode::kInternalBackendError;
+    ttc::ErrorCode ttcErrorCode = (code == kHTTPStatusTooManyRequests)
+                                      ? ttc::ErrorCode::kRateLimited
+                                      : ttc::ErrorCode::kInternalBackendError;
     [self handleServerError:ttcErrorCode];
     return;
   }

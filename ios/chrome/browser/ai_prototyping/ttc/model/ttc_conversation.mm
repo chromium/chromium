@@ -13,8 +13,6 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 
-NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
-
 @interface TTCConversation () <TTCAudioControllerDelegate, TTCBackendDelegate>
 @end
 
@@ -108,10 +106,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 - (void)audioController:(id<TTCAudioController>)controller
     didUpdateInputEnergy:(float)energy {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if ([self.delegate
-          respondsToSelector:@selector(conversation:didUpdateAudioEnergy:)]) {
-    [self.delegate conversation:self didUpdateAudioEnergy:energy];
-  }
+  [self.delegate conversation:self didUpdateAudioEnergy:energy];
 }
 
 - (void)audioController:(id<TTCAudioController>)controller
@@ -129,24 +124,18 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
 - (void)backendDidInitialize:(id<TTCBackend>)backend {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if ([self.delegate
-          respondsToSelector:@selector(conversationDidInitialize:)]) {
-    [self.delegate conversationDidInitialize:self];
-  }
+  [self.delegate conversationDidInitialize:self];
 }
 
 - (void)backendDidClose:(id<TTCBackend>)backend {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self stop];
+  [self.delegate conversationDidClose:self];
 }
 
 - (void)backend:(id<TTCBackend>)backend
-    didFailWithError:(TTCErrorCode)errorCode {
+    didFailWithError:(ttc::ErrorCode)errorCode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSError* error = [NSError errorWithDomain:kTTCErrorDomain
-                                       code:static_cast<NSInteger>(errorCode)
-                                   userInfo:nil];
-  [self handleError:error];
+  [self handleError:CreateTTCError(errorCode)];
 }
 
 - (void)backend:(id<TTCBackend>)backend
@@ -193,14 +182,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
   if (!success) {
     if (!error) {
-      error = [NSError
-          errorWithDomain:kTTCConversationErrorDomain
-                     code:static_cast<NSInteger>(
-                              TTCConversationErrorCode::kAudioCaptureFailure)
-                 userInfo:@{
-                   NSLocalizedDescriptionKey :
-                       @"Audio controller failed to start capture."
-                 }];
+      error = CreateTTCError(ttc::ErrorCode::kAudioUnknownError);
     }
     [self handleError:error];
   }
@@ -208,12 +190,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
 - (void)handleError:(NSError*)error {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self stop];
-
-  if ([self.delegate
-          respondsToSelector:@selector(conversation:didEncounterError:)]) {
-    [self.delegate conversation:self didEncounterError:error];
-  }
+  [self.delegate conversation:self didEncounterError:error];
 }
 
 @end

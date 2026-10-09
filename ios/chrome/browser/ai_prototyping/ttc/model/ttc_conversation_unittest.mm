@@ -135,6 +135,7 @@
 @property(nonatomic, assign) float lastEnergy;
 @property(nonatomic, strong) NSError* lastError;
 @property(nonatomic, assign) BOOL didInitialize;
+@property(nonatomic, assign) BOOL didClose;
 
 @end
 
@@ -155,6 +156,10 @@
 
 - (void)conversationDidInitialize:(TTCConversation*)conversation {
   self.didInitialize = YES;
+}
+
+- (void)conversationDidClose:(TTCConversation*)conversation {
+  self.didClose = YES;
 }
 
 - (void)conversation:(TTCConversation*)conversation
@@ -261,7 +266,7 @@ TEST_F(TTCConversationTest, TestBargeInDisallowedDuringPlayback) {
   EXPECT_FLOAT_EQ(delegate_.lastEnergy, 0.95f);
 }
 
-// Tests that audio controller errors halt the conversation and notify the
+// Tests that audio controller errors are forwarded to the conversation
 // delegate.
 TEST_F(TTCConversationTest, TestAudioControllerErrorHandling) {
   [conversation_ start];
@@ -272,7 +277,6 @@ TEST_F(TTCConversationTest, TestAudioControllerErrorHandling) {
   [conversation_ audioController:fake_audio_controller_
                didEncounterError:error];
 
-  EXPECT_TRUE(fake_audio_controller_.didStopCapture);
   EXPECT_NSEQ(delegate_.lastError, error);
 }
 
@@ -341,6 +345,15 @@ TEST_F(TTCConversationTest, TestBackendDidInitializeForwardsToDelegate) {
   EXPECT_TRUE(delegate_.didInitialize);
 }
 
+// Tests that backend closure forwards to conversation delegate.
+TEST_F(TTCConversationTest, TestBackendDidCloseForwardsToDelegate) {
+  EXPECT_FALSE(delegate_.didClose);
+
+  [conversation_ backendDidClose:fake_backend_];
+
+  EXPECT_TRUE(delegate_.didClose);
+}
+
 // Tests that receiving audio output from the backend plays audio.
 TEST_F(TTCConversationTest, TestBackendAudioOutputPlaysResponseAudio) {
   [conversation_ start];
@@ -371,17 +384,18 @@ TEST_F(TTCConversationTest, TestBackendGenerationInterruptedClearsPlayback) {
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
 }
 
-// Tests that backend errors stop the conversation and notify the delegate.
-TEST_F(TTCConversationTest, TestBackendErrorHaltsConversation) {
+// Tests that backend errors notify the conversation delegate with the mapped
+// `ttc::ErrorCode`.
+TEST_F(TTCConversationTest, TestBackendErrorForwardsToDelegate) {
   [conversation_ start];
 
   [conversation_ backend:fake_backend_
-        didFailWithError:TTCErrorCode::kNetworkError];
+        didFailWithError:ttc::ErrorCode::kInternalBackendError];
 
   ASSERT_TRUE(delegate_.lastError != nil);
   EXPECT_NSEQ(delegate_.lastError.domain, kTTCErrorDomain);
   EXPECT_EQ(delegate_.lastError.code,
-            static_cast<NSInteger>(TTCErrorCode::kNetworkError));
+            static_cast<NSInteger>(ttc::ErrorCode::kInternalBackendError));
 }
 
 // Tests that microphone chunks captured by the audio controller are suppressed

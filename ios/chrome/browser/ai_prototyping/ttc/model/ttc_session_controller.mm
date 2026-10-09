@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 
 @interface TTCSessionController () <TTCConversationDelegate>
@@ -16,6 +17,7 @@
 
 @implementation TTCSessionController {
   NSHashTable<id<TTCSessionControllerObserver>>* _observers;
+  BOOL _fatalErrorReported;
 }
 
 - (instancetype)initWithConversation:(TTCConversation*)conversation {
@@ -26,6 +28,7 @@
     _conversation.delegate = self;
     _lifecycle = TTCSessionLifecycle::kInitializing;
     _observers = [NSHashTable weakObjectsHashTable];
+    _fatalErrorReported = NO;
     [self registerBackgroundObserver];
   }
   return self;
@@ -84,6 +87,10 @@
   [self onSessionInitialized];
 }
 
+- (void)conversationDidClose:(TTCConversation*)conversation {
+  [self stopSession];
+}
+
 - (void)conversation:(TTCConversation*)conversation
     didUpdateAudioEnergy:(float)energy {
   [self userAudioLevelDidUpdate:energy];
@@ -123,8 +130,12 @@
     });
     return;
   }
-  if (_lifecycle == TTCSessionLifecycle::kFinished || !_observers.count) {
+  if (_lifecycle == TTCSessionLifecycle::kFinished || _fatalErrorReported) {
     return;
+  }
+  const bool isFatal = IsFatalTTCError(error);
+  if (isFatal) {
+    _fatalErrorReported = YES;
   }
   NSHashTable<id<TTCSessionControllerObserver>>* observers = [_observers copy];
   for (id<TTCSessionControllerObserver> observer in observers) {
@@ -133,6 +144,9 @@
                                    sessionController:didFailWithError:)]) {
       [observer sessionController:self didFailWithError:error];
     }
+  }
+  if (isFatal) {
+    [self stopSession];
   }
 }
 

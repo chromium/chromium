@@ -11,14 +11,6 @@
 @protocol TTCBackend;
 @protocol TTCConversationDelegate;
 
-// Error domain for `TTCConversation` errors.
-extern NSString* const kTTCConversationErrorDomain;
-
-// Error codes associated with `kTTCConversationErrorDomain`.
-enum class TTCConversationErrorCode {
-  kAudioCaptureFailure = -1,
-};
-
 // Coordinates between audio input/output and the transport session for TTC on
 // iOS.
 @interface TTCConversation : NSObject
