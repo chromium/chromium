@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -753,12 +754,22 @@ public class KeyboardShortcutsTest {
         verify(mockMenuButton, times(1)).requestFocus();
     }
 
-    /** Test that pressing F7 triggers the caret browsing dialog. */
+    /** Tests that F7 is not consumed before reaching web content. */
+    @Test
+    @SmallTest
+    public void testF7NotHandledBeforeWebContent() {
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_F7, 0));
+
+        verify(mMenuOrKeyboardActionController, never())
+                .onMenuOrKeyboardAction(eq(R.id.toggle_caret_browsing), eq(false));
+    }
+
+    /** Tests that an unhandled F7 requests caret browsing in post-target handling. */
     @Test
     @SmallTest
     public void testToggleCaretBrowsing() {
         // Ensure we handle F7 key (this was previously ignored)
-        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_F7, 0));
+        assertTrue(keyDown(KeyEvent.KEYCODE_F7, 0, true));
 
         // Ensure we trigger the caret browsing dialog
         verify(mMenuOrKeyboardActionController)

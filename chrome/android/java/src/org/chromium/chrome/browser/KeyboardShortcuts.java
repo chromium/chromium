@@ -895,14 +895,6 @@ public class KeyboardShortcuts {
                     }
                 }
                 return true;
-            case KeyEvent.KEYCODE_F7:
-                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-                    if (menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                            R.id.toggle_caret_browsing, false)) {
-                        return true;
-                    }
-                }
-                return true;
             case KeyEvent.KEYCODE_TAB:
             case KeyEvent.KEYCODE_PAGE_DOWN:
             case KeyEvent.KEYCODE_PAGE_UP:
@@ -1358,7 +1350,10 @@ public class KeyboardShortcuts {
                         currentTab.goForward();
                     }
                     return true;
-
+                case KeyboardShortcutsSemanticMeaning.TOGGLE_CARET_BROWSING:
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.toggle_caret_browsing, false);
+                    return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
