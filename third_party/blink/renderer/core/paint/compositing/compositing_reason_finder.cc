@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
@@ -388,14 +389,28 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   auto* element = DynamicTo<Element>(object.GetNode());
 
-  if (element && element->IsInCanvasSubtree() &&
-      !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
-    if (object.CanvasForDrawingLayoutObject()) {
-      reasons.Put(CompositingReason::kCanvasDrawableElement);
+  if (element && element->IsInCanvasSubtree()) [[unlikely]] {
+    bool top_layer = false;
+    if (auto* canvas = object.CanvasForDrawingLayoutObject()) {
+      for (auto* ancestor = &object; ancestor != canvas;
+           ancestor = ancestor->Parent()) {
+        if (auto* ancestor_element = DynamicTo<Element>(ancestor->GetNode())) {
+          if (ancestor->StyleRef().IsRenderedInTopLayer(*ancestor_element)) {
+            top_layer = true;
+            break;
+          }
+        }
+      }
+      if (!top_layer) {
+        reasons.Put(CompositingReason::kCanvasDrawableElement);
+      }
     }
-    // In canvas subtrees, only drawable elements can have a compositing
-    // reason (kCanvasDrawableElement), and no other compositing reasons apply.
-    return reasons;
+    if (!top_layer) {
+      // In canvas subtrees, only drawable elements can have a compositing
+      // reason (kCanvasDrawableElement), and no other compositing reasons
+      // apply.
+      return reasons;
+    }
   }
 
   reasons.PutAll(CompositingReasonsFor3DSceneLeaf(object));
