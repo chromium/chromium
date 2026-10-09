@@ -262,7 +262,9 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
       color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
       color_params_.GetGfxHdrMetadata(),
       SharedGpuContext::ContextProviderWrapper(), raster_mode,
-      shared_image_usage_flags, Host());
+      shared_image_usage_flags,
+      blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                      WrapWeakPersistent(Host())));
 }
 
 void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
@@ -271,7 +273,9 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
           Host()->Size(), color_params_.GetSharedImageFormat(),
           color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
           color_params_.GetGfxHdrMetadata(),
-          SharedGpuContext::SharedImageInterfaceProvider(), Host());
+          SharedGpuContext::SharedImageInterfaceProvider(),
+          blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                          WrapWeakPersistent(Host())));
 }
 
 void BaseRenderingContext2D::SetSharedImageProviderForTesting(

@@ -604,9 +604,7 @@ void CanvasRenderingContext2DTestBase::TearDown() {
 
 class FakeCanvasResourceProvider : public Canvas2DResourceProvider {
  public:
-  FakeCanvasResourceProvider(gfx::Size size,
-                             RasterModeHint hint,
-                             CanvasResourceProviderDelegate* delegate)
+  FakeCanvasResourceProvider(gfx::Size size, RasterModeHint hint)
       : Canvas2DResourceProvider(
             size,
             GetN32FormatForCanvas(),
@@ -616,8 +614,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProvider {
             SharedGpuContext::ContextProviderWrapper(),
             /*is_accelerated=*/hint != RasterModeHint::kPreferCPU,
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
-            delegate) {
+                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE) {
     ON_CALL(*this, Snapshot)
         .WillByDefault([this](ImageOrientation orientation) {
           return UnacceleratedSnapshot(orientation);
@@ -776,7 +773,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement());
+      size, RasterModeHint::kPreferGPU);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
   CanvasElement().SetIsDisplayed(true);
@@ -797,7 +794,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement());
+      size, RasterModeHint::kPreferGPU);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
   CanvasElement().SetIsDisplayed(true);
@@ -822,7 +819,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement());
+      size, RasterModeHint::kPreferGPU);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
   ASSERT_TRUE(Context2D()->IsComposited());
   ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerForCanvas2DIfNeeded());
@@ -883,7 +880,7 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferCPU, &CanvasElement());
+      size, RasterModeHint::kPreferCPU);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 
@@ -1363,7 +1360,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement());
+      size, RasterModeHint::kPreferGPU);
 
   // The recording will be cleared, so nothing will be rastered before
   // `WritePixels` is called.
@@ -1391,7 +1388,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement());
+      size, RasterModeHint::kPreferGPU);
 
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
   // `WritePixels` is called.
@@ -1496,8 +1493,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   gfx::Size size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
-      std::make_unique<FakeCanvasResourceProvider>(
-          size, RasterModeHint::kPreferGPU, &CanvasElement());
+      std::make_unique<FakeCanvasResourceProvider>(size,
+                                                   RasterModeHint::kPreferGPU);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   Context2D()->SetCanvas2DResourceProviderForTesting(
       std::move(fake_resource_provider), size);
@@ -1521,8 +1518,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
                                            attributes);
   gfx::Size size2(10, 5);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
-      std::make_unique<FakeCanvasResourceProvider>(
-          size2, RasterModeHint::kPreferGPU, &CanvasElement());
+      std::make_unique<FakeCanvasResourceProvider>(size2,
+                                                   RasterModeHint::kPreferGPU);
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   auto* second_canvas_context =
       static_cast<CanvasRenderingContext2D*>(anotherCanvas->RenderingContext());
@@ -3342,7 +3339,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
 
   gfx::Size size(200, 200);
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement());
+      size, RasterModeHint::kPreferGPU);
 
   // Recorded draw ops are resterized on hibernation. The provider gets replaced
   // when getting out of hibernation, so this mock will not see the later calls

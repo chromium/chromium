@@ -640,7 +640,7 @@ Canvas2DResourceProvider::CreateWithClear(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate) {
+    base::OnceClosure context_lost_callback) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -737,7 +737,7 @@ Canvas2DResourceProvider::CreateWithClear(
   auto provider = base::WrapUnique(new Canvas2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
       context_provider_wrapper, is_accelerated, shared_image_usage_flags,
-      delegate));
+      std::move(context_lost_callback)));
   if (!provider->IsValid()) {
     return nullptr;
   }
@@ -770,7 +770,7 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    CanvasResourceProviderDelegate* delegate) {
+    base::OnceClosure context_lost_callback) {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     return nullptr;
   }
@@ -780,7 +780,7 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
 
   auto provider = base::WrapUnique(new Canvas2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
-      shared_image_interface_provider, delegate));
+      shared_image_interface_provider, std::move(context_lost_callback)));
   if (provider->IsValid()) {
     provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
@@ -793,11 +793,10 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
 
 void Canvas2DResourceProvider::NotifyGpuContextLostTask(
     base::WeakPtr<Canvas2DResourceProvider> provider) {
-  if (provider && provider->delegate_) {
+  if (provider && provider->context_lost_callback_) {
     // Move `provider` as hint that it shouldn't be reused after this point.
-    // The `delegate` owns the provider and can delete it in
-    // `NotifyGpuContextLost()`.
-    std::move(provider)->delegate_->NotifyGpuContextLost();
+    // The owner of the provider can delete it in `context_lost_callback_`.
+    std::move(std::move(provider)->context_lost_callback_).Run();
   }
 }
 
@@ -810,7 +809,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate)
+    base::OnceClosure context_lost_callback)
     : is_accelerated_(is_accelerated),
       is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
@@ -819,7 +818,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      delegate_(delegate),
+      context_lost_callback_(std::move(context_lost_callback)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
@@ -941,7 +940,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    CanvasResourceProviderDelegate* delegate)
+    base::OnceClosure context_lost_callback)
     : is_accelerated_(false),
       is_software_(true),
       shared_image_interface_provider_(
@@ -953,7 +952,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      delegate_(delegate),
+      context_lost_callback_(std::move(context_lost_callback)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
