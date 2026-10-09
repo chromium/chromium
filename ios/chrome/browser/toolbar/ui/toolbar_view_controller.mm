@@ -577,8 +577,8 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
                    withAction:@selector(sizeClassDidChange)];
 
   [self registerForTraitChanges:
-            @[ UITraitUserInterfaceStyle.class, NewTabPageTrait.class ]
-                     withAction:@selector(userInterfaceStyleDidChange)];
+            @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                     withAction:@selector(updateBackgroundColors)];
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1432,10 +1432,13 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
       // In light mode, matches the default light blue NTP background
       // color to prevent the white pinned omnibox from blending into a white
       // toolbar. In dark mode, matches standard `kBackgroundColor`.
-      if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-        return [UIColor colorNamed:kBackgroundColor];
-      }
-      return [UIColor colorNamed:kNTPBackgroundColor];
+      return [UIColor colorWithDynamicProvider:^UIColor*(
+                          UITraitCollection* traitCollection) {
+        if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+          return [UIColor colorNamed:kBackgroundColor];
+        }
+        return [UIColor colorNamed:kNTPBackgroundColor];
+      }];
     }
   }
   return [UIColor colorNamed:kBackgroundColor];
@@ -2464,11 +2467,6 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     _bannerPromoBackgroundHeightConstraint.constant = [self
         bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
   }
-}
-
-// Handles user interface style trait collection changes.
-- (void)userInterfaceStyleDidChange {
-  [self updateBackgroundColors];
 }
 
 // Safely updates a layout guide by either referencing `view` or unreferencing
