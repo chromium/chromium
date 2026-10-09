@@ -2200,6 +2200,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
   EXPECT_EQ("http://www.google.com/search?q=" + std::string(2500, 'a') +
                 "&oq=" + std::string(2500, 'a') + "&",
             url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+  EXPECT_FALSE(search_terms.is_oq_truncated.has_value());
 
   // 2. When feature is enabled with default param (2048), oq is truncated to
   // 2048 chars.
@@ -2210,6 +2211,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
         "http://www.google.com/search?q=" + std::string(2500, 'a') +
             "&oq=" + std::string(2048, 'a') + "&",
         url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
 
     // A query shorter than 2048 chars is not truncated.
     std::u16string short_query = u"short";
@@ -2218,6 +2220,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
     EXPECT_EQ(
         "http://www.google.com/search?q=short&oq=short&",
         url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(false));
   }
 
   // 3. When feature is enabled with custom param length.
@@ -2233,6 +2236,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
     EXPECT_EQ(
         "http://www.google.com/search?q=abcdefghijklmno&oq=abcdefghij&",
         url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
 
     std::u16string query_3 = u"abc";
     search_terms.search_terms = query_3;
@@ -2240,6 +2244,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
     EXPECT_EQ(
         "http://www.google.com/search?q=abc&oq=abc&",
         url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(false));
   }
 
   // 4. When feature is enabled with custom param length of 0.
@@ -2255,6 +2260,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
     EXPECT_EQ(
         "http://www.google.com/search?q=abc&oq=&",
         url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
   }
 
   // 5. Multi-byte UTF-8 and percent-encoded characters are not cut
@@ -2277,6 +2283,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=a%F0%9F%98%80&oq=a&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
 
     // Length 13 keeps the complete emoji.
@@ -2288,6 +2295,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=a%F0%9F%98%80&oq=a%F0%9F%98%80&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(false));
     }
 
     // A query with a percent character that escapes to "%25".
@@ -2306,6 +2314,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=abc%25d&oq=abc&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
 
     // Truncating at length 6 keeps "%25".
@@ -2317,6 +2326,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=abc%25d&oq=abc%25&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
 
     // A 2-byte UTF-8 sequence: "café" ('é' encodes to "%C3%A9", 6 chars).
@@ -2333,6 +2343,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=caf%C3%A9&oq=caf&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
     {
       base::test::ScopedFeatureList feature_list;
@@ -2342,6 +2353,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=caf%C3%A9&oq=caf%C3%A9&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(false));
     }
 
     // A 3-byte UTF-8 sequence: "a\u4E16" (CJK '世' encodes to "%E4%B8%96", 9
@@ -2358,6 +2370,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=a%E4%B8%96&oq=a&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
     {
       base::test::ScopedFeatureList feature_list;
@@ -2367,6 +2380,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=a%E4%B8%96&oq=a%E4%B8%96&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(false));
     }
 
     // Escaped ASCII character '&' encodes to "%26" (values < 0x80).
@@ -2383,6 +2397,7 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=a%26b&oq=a&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
     {
       base::test::ScopedFeatureList feature_list;
@@ -2392,7 +2407,42 @@ TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
       EXPECT_EQ(
           "http://www.google.com/search?q=a%26b&oq=a%26&",
           url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+      EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(true));
     }
+  }
+
+  // 6. When feature is enabled with negative param length (-1), truncation is
+  // disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kTruncateSearchSuggestOq,
+        {{"truncate_search_suggest_oq_length", "-1"}});
+    search_terms.search_terms = long_query;
+    search_terms.original_query = long_query;
+    EXPECT_EQ(
+        "http://www.google.com/search?q=" + std::string(2500, 'a') +
+            "&oq=" + std::string(2500, 'a') + "&",
+        url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+    EXPECT_EQ(search_terms.is_oq_truncated, std::optional<bool>(false));
+  }
+
+  // 7. Output flag is reset when template URL lacks original query parameter.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kTruncateSearchSuggestOq);
+    TemplateURLData no_oq_data;
+    no_oq_data.SetURL("{google:baseURL}search?q={searchTerms}");
+    TemplateURL no_oq_url(no_oq_data);
+
+    search_terms.search_terms = long_query;
+    search_terms.original_query = long_query;
+    url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_);
+    EXPECT_TRUE(search_terms.is_oq_truncated.has_value());
+
+    // Replacing against a URL without oq resets is_oq_truncated.
+    no_oq_url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_);
+    EXPECT_FALSE(search_terms.is_oq_truncated.has_value());
   }
 }
 

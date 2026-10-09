@@ -313,6 +313,10 @@ class TemplateURLRef {
     // The method in which the last input was entered. This is an enum that
     // gets mapped to third_party/omnibox_proto/chrome_searchbox_stats.proto.
     int input_method = 0;
+
+    // Output flag set during TemplateURLRef::HandleReplacements indicating
+    // whether the original query ("oq") parameter value was truncated.
+    mutable std::optional<bool> is_oq_truncated;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);
