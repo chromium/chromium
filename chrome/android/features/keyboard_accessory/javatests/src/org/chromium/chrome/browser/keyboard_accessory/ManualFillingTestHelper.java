@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
@@ -21,7 +20,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.text.method.PasswordTransformationMethod;
@@ -640,17 +638,6 @@ public class ManualFillingTestHelper {
     public static ViewInteraction whenDisplayed(
             Matcher<View> matcher, @IntRange(from = 1, to = 100) int atLeast) {
         return onViewWaiting(matcher, ViewElement.displayingAtLeastOption(atLeast));
-    }
-
-    public ViewInteraction waitForViewOnRoot(View root, Matcher<View> matcher) {
-        waitForView((ViewGroup) root, allOf(matcher, isDisplayed()));
-        return onView(matcher);
-    }
-
-    public ViewInteraction waitForViewOnActivityRoot(Matcher<View> matcher) {
-        return waitForViewOnRoot(
-                mActivityTestRule.getActivity().findViewById(android.R.id.content).getRootView(),
-                matcher);
     }
 
     public static void waitToBeHidden(Matcher<View> matcher) {

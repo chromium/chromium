@@ -823,6 +823,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/InternalViewFinder.java",
       "android/javatests/src/org/chromium/base/test/transit/LogicalElement.java",
       "android/javatests/src/org/chromium/base/test/transit/MoreViewConditions.java",
+      "android/javatests/src/org/chromium/base/test/transit/MoreViewMatchers.java",
       "android/javatests/src/org/chromium/base/test/transit/NotDisplayedAnymoreCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/OptionalViewElement.java",
       "android/javatests/src/org/chromium/base/test/transit/PayloadCallbackCondition.java",

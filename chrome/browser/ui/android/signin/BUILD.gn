@@ -309,6 +309,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:supplier_java",
+    "//base/test:public_transit_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/browsing_data/android:java",
     "//chrome/browser/first_run/android:java",

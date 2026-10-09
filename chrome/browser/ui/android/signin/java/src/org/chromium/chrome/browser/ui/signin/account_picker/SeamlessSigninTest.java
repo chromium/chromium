@@ -25,15 +25,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
-import android.view.ViewGroup;
+import android.view.View;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -778,8 +780,7 @@ public class SeamlessSigninTest {
     }
 
     private void waitForManagementNoticeSheet() {
-        waitForView(
-                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
+        waitForBottomSheetView(
                 allOf(
                         withId(R.id.account_picker_continue_as_button),
                         isDescendantOfA(withId(R.id.account_picker_state_confirm_management))));
@@ -789,27 +790,25 @@ public class SeamlessSigninTest {
                         .getActivity()
                         .getString(R.string.managed_signin_with_user_policy_subtitle, TEST_DOMAIN);
 
-        waitForView(
-                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
+        waitForBottomSheetView(
                 allOf(
                         withId(R.id.account_picker_confirm_management_description),
-                        isDisplayed(),
                         withText(expectedPolicyText)));
     }
 
     private void waitForSignInInProgressSheet() {
-        waitForView(
-                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
+        waitForBottomSheetView(
                 allOf(
                         withId(R.id.account_picker_signin_spinner_view),
-                        isDescendantOfA(withId(R.id.account_picker_state_signin_in_progress)),
-                        isDisplayed()));
+                        isDescendantOfA(withId(R.id.account_picker_state_signin_in_progress))));
     }
 
     private void waitForErrorSheet() {
-        waitForView(
-                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
-                allOf(withId(R.id.account_picker_general_error_title), isDisplayed()));
+        waitForBottomSheetView(withId(R.id.account_picker_general_error_title));
+    }
+
+    private void waitForBottomSheetView(Matcher<View> matcher) {
+        waitForView(matcher, isDescendantOf(mCoordinator.getBottomSheetViewForTesting()));
     }
 
     private void clickContinueButtonManagementNotice() {

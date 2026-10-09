@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.hamcrest.Matchers.allOf;
+
 import static org.chromium.base.test.transit.Triggers.noopTo;
 
 import android.app.Activity;
@@ -133,6 +135,16 @@ public class ViewFinder {
     }
 
     /**
+     * Waits for a View that matches all |matchers| in any root.
+     *
+     * @return A {@link ViewPresence} to get/interact with the View.
+     */
+    @SafeVarargs
+    public static ViewPresence<View> waitForView(Matcher<View>... matchers) {
+        return waitForView(View.class, allOf(matchers));
+    }
+
+    /**
      * Expects a View of a specific subclass of View that matches |matcher| in one of the
      * |activity|'s subwindows immediately.
      *
@@ -235,6 +247,16 @@ public class ViewFinder {
      */
     public static ViewPresence<View> expectView(Matcher<View> matcher) {
         return expectView(View.class, matcher);
+    }
+
+    /**
+     * Expects a View that matches all |matchers| in any root immediately.
+     *
+     * @return A {@link ViewPresence} to get/interact with the View.
+     */
+    @SafeVarargs
+    public static ViewPresence<View> expectView(Matcher<View>... matchers) {
+        return expectView(View.class, allOf(matchers));
     }
 
     /** Waits for a View that matches |matcher| to no longer be displayed. */

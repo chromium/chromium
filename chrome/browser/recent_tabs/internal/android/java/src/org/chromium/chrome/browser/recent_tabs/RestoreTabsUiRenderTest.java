@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DEVICE_MODEL_LIST;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.NUM_TABS_DESELECTED;
@@ -60,7 +62,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.IOException;
@@ -169,7 +170,7 @@ public class RestoreTabsUiRenderTest {
                     mModel.set(CURRENT_SCREEN, HOME_SCREEN);
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_promo_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_promo_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -207,7 +208,7 @@ public class RestoreTabsUiRenderTest {
                     mModel.set(CURRENT_SCREEN, HOME_SCREEN);
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_promo_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_promo_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -257,7 +258,7 @@ public class RestoreTabsUiRenderTest {
                     mView.findViewById(R.id.restore_tabs_selected_device_view).performClick();
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_detail_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -315,7 +316,7 @@ public class RestoreTabsUiRenderTest {
                     mView.findViewById(R.id.restore_tabs_selected_device_view).performClick();
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_detail_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -370,7 +371,7 @@ public class RestoreTabsUiRenderTest {
                     mView.findViewById(R.id.restore_tabs_button_review_tabs).performClick();
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_detail_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -408,7 +409,7 @@ public class RestoreTabsUiRenderTest {
                     mView.findViewById(R.id.restore_tabs_button_review_tabs).performClick();
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_detail_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -441,7 +442,7 @@ public class RestoreTabsUiRenderTest {
                     mModel.set(NUM_TABS_DESELECTED, 1);
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_detail_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
@@ -498,7 +499,7 @@ public class RestoreTabsUiRenderTest {
                     recyclerView.scrollToPosition(tabs.size() - 1);
                 });
 
-        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        waitForView(withId(R.id.restore_tabs_detail_screen_sheet), isDescendantOf(mRootView));
         // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
         // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);

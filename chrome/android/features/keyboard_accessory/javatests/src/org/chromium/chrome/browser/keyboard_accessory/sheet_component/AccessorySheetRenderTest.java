@@ -8,6 +8,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
@@ -73,7 +75,6 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -549,6 +550,6 @@ public class AccessorySheetRenderTest {
                     mSheetModel.set(ACTIVE_TAB_INDEX, 0);
                     mSheetModel.set(VISIBLE, true);
                 });
-        ViewUtils.waitForView(mContentView, withId(R.id.keyboard_accessory_sheet_frame));
+        waitForView(withId(R.id.keyboard_accessory_sheet_frame), isDescendantOf(mContentView));
     }
 }

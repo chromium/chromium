@@ -4,10 +4,8 @@
 
 package org.chromium.ui.test.util;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
@@ -18,7 +16,6 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.espresso.NoMatchingViewException;
@@ -51,17 +48,6 @@ public class ViewUtils {
      */
     public static void waitForVisibleView(Matcher<View> viewMatcher) {
         ViewFinder.waitForView(viewMatcher);
-    }
-
-    /**
-     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
-     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * @param root The view group to search in.
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     */
-    public static void waitForView(ViewGroup root, Matcher<View> viewMatcher) {
-        ViewFinder.waitForView(allOf(viewMatcher, isDescendantOfA(is(root))));
     }
 
     /**
