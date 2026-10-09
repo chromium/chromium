@@ -84,13 +84,13 @@ std::unique_ptr<D3DDecoderConfigurator> D3DDecoderConfigurator::Create(
     uint8_t bit_depth,
     VideoChromaSampling chroma_sampling,
     MediaLog* media_log,
-    bool use_shared_handle,
     ComD3D11Device device) {
-  // Decoder swap chains do not support shared resources. More info in
-  // https://crbug.com/911847. To enable Kaby Lake+ systems for using shared
-  // handle, we disable decode swap chain support if shared handle is enabled.
+  // Whether the decode swap chain is supported on this device. Note that the
+  // shared handle decision is not known here; decoder swap chains do not
+  // support shared resources (https://crbug.com/911847), so shared handle
+  // textures take precedence in CreateD3D11OutputTexture() when it is set.
   const bool supports_nv12_decode_swap_chain =
-      gl::DirectCompositionDecodeSwapChainSupported() && !use_shared_handle;
+      gl::DirectCompositionDecodeSwapChainSupported();
 
   DXGI_FORMAT decoder_dxgi_format =
       GetOutputDXGIFormat(bit_depth, chroma_sampling);
@@ -172,8 +172,10 @@ D3DDecoderConfigurator::CreateD3D11OutputTexture(ComD3D11Device device,
 
   if (use_shared_handle) {
     // Update the decoder output texture usage to support shared handle
-    // if required. SwapChain should be disabled.
-    DCHECK(!supports_swap_chain_);
+    // if required. Decoder swap chains do not support shared resources
+    // (https://crbug.com/911847), so the swap chain cannot be used for this
+    // texture. The shared handle decision is not known when the configurator
+    // is created, so it is applied here instead.
     output_texture_desc_.MiscFlags =
         D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
   } else if (supports_swap_chain_) {

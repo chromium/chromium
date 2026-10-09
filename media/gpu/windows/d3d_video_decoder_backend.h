@@ -69,7 +69,6 @@ class D3DVideoDecoderBackend {
                             VideoChromaSampling chroma_sampling,
                             const gpu::GpuPreferences& gpu_preferences,
                             const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-                            bool use_shared_handle,
                             MediaLog* media_log) = 0;
 
   virtual D3DStatus::Or<std::unique_ptr<TextureSelector>> CreateTextureSelector(

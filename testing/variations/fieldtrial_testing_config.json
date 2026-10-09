@@ -5298,6 +5298,21 @@
             ]
         }
     ],
+    "D3D11VideoDecoderUseSharedHandle": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "D3D11VideoDecoderUseSharedHandle"
+                    ]
+                }
+            ]
+        }
+    ],
     "D3D12VideoEncodeAccelerator": [
         {
             "platforms": [

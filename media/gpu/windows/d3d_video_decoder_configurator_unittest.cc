@@ -41,9 +41,9 @@ class D3DDecoderConfiguratorUnittest : public ::testing::Test {
     workarounds.disable_dxgi_zero_copy_video = false;
     VideoChromaSampling chroma_sampling = VideoChromaSampling::k420;
     auto media_log = std::make_unique<NullMediaLog>();
-    return D3DDecoderConfigurator::Create(
-        prefs, workarounds, config, bit_depth, chroma_sampling, media_log.get(),
-        /*use_shared_handle=*/false, MakeComPtr<D3D11DeviceMock>());
+    return D3DDecoderConfigurator::Create(prefs, workarounds, config, bit_depth,
+                                          chroma_sampling, media_log.get(),
+                                          MakeComPtr<D3D11DeviceMock>());
   }
 };
 

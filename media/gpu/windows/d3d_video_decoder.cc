@@ -227,21 +227,12 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
 
   auto decoder_configurator_result = backend_->CreateDecoderConfigurator(
       bit_depth, config_, chroma_sampling_, gpu_preferences_, gpu_workarounds_,
-      use_shared_handle_, media_log_.get());
+      media_log_.get());
   if (!decoder_configurator_result.has_value()) {
     NotifyError(std::move(decoder_configurator_result).error().AddHere());
     return false;
   }
   auto decoder_configurator = std::move(decoder_configurator_result).value();
-
-  auto texture_selector_result = backend_->CreateTextureSelector(
-      decoder_configurator.get(), config_, gpu_workarounds_, use_shared_handle_,
-      media_log_.get());
-  if (!texture_selector_result.has_value()) {
-    NotifyError(std::move(texture_selector_result).error().AddHere());
-    return false;
-  }
-  auto texture_selector = std::move(texture_selector_result).value();
 
   auto video_decoder_wrapper_result = backend_->CreateVideoDecoderWrapper(
       get_d3d_device_cb_, decoder_configurator.get(), config_, bit_depth,
@@ -263,6 +254,14 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
                  "GetSingleTextureRecommended failed"});
     return false;
   }
+
+  // For single texture decoders the decode swap chain is already unavailable,
+  // so shared handles come for free.
+  use_shared_handle_ =
+      base::FeatureList::IsEnabled(kD3D12VideoDecoder) ||
+      (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
+       use_single_texture.value());
+
   use_single_video_decoder_texture_ =
       use_single_texture.value() || use_shared_handle_ ||
       gpu_workarounds_.disable_decode_into_array_texture;
@@ -271,6 +270,18 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
   } else {
     MEDIA_LOG(INFO, media_log_) << "D3DVideoDecoder is using array texture";
   }
+  if (use_shared_handle_) {
+    MEDIA_LOG(INFO, media_log_) << "D3DVideoDecoder is using shared handle";
+  }
+
+  auto texture_selector_result = backend_->CreateTextureSelector(
+      decoder_configurator.get(), config_, gpu_workarounds_, use_shared_handle_,
+      media_log_.get());
+  if (!texture_selector_result.has_value()) {
+    NotifyError(std::move(texture_selector_result).error().AddHere());
+    return false;
+  }
+  auto texture_selector = std::move(texture_selector_result).value();
 
   // Replace the re-created members after all error-checking passes.
   bit_depth_ = bit_depth;
