@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//components/signin/features.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -322,6 +323,7 @@ if (enable_webui_ntp && !is_android) {
       "//chrome/browser/ui/views:find_bar_views",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:contents_web_view",
+      "//chrome/browser/ui/views/frame:top_container_view",
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
       "//chrome/browser/ui/webui/test_support",
@@ -346,5 +348,8 @@ if (enable_webui_ntp && !is_android) {
       "//ui/shell_dialogs",
       "//ui/views",
     ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }
