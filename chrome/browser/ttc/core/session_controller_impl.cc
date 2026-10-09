@@ -161,13 +161,12 @@ void SessionControllerImpl::OnError(ErrorCode error) {
                                    .Add("fatal", is_fatal)
                                    .Build());
 
-  if (fatal_error_reported_) {
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
     return;
   }
 
   if (is_fatal) {
     EndSessionAsync();
-    fatal_error_reported_ = true;
   }
 
   session_view_->OnError(error);

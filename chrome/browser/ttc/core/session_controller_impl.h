@@ -94,8 +94,6 @@ class SessionControllerImpl : public SessionController,
 
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
 
-  bool fatal_error_reported_ = false;
-
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };
 

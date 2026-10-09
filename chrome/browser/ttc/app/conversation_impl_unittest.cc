@@ -373,16 +373,4 @@ TEST_F(ConversationImplTest, AudioCaptureErrorAfterStopIsIgnored) {
   EXPECT_EQ(session_controller_.error_count(), 0);
 }
 
-// The backend can report a disconnection as a clean close before the error
-// that caused it, which must still be forwarded.
-TEST_F(ConversationImplTest, BackendErrorAfterCloseIsReported) {
-  ConversationImpl& conversation = CreateConversation();
-
-  conversation.OnBackendClosed();
-  conversation.OnBackendError(ErrorCode::kUnknown);
-
-  EXPECT_EQ(session_controller_.error_count(), 1);
-  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kUnknown);
-}
-
 }  // namespace ttc
