@@ -52,46 +52,6 @@ const char kLastLaunchedApp[] = "last-launched-app";
 // started.
 const char kPreviousApp[] = "previous-app";
 
-// Name of the device the amp mixer should be opened on. If this flag is not
-// specified it will default to the same device as kAlsaVolumeDeviceName.
-const char kAlsaAmpDeviceName[] = "alsa-amp-device-name";
-
-// Name of the simple mixer control element that the ALSA-based media library
-// should use to toggle powersave mode on the system.
-const char kAlsaAmpElementName[] = "alsa-amp-element-name";
-
-// Name of the device the mute mixer should be opened on. If this flag is not
-// specified it will default to the same device as kAlsaVolumeDeviceName.
-const char kAlsaMuteDeviceName[] = "alsa-mute-device-name";
-
-// Name of the simple mixer control element that the ALSA-based media library
-// should use to mute the system.
-const char kAlsaMuteElementName[] = "alsa-mute-element-name";
-
-// Minimum number of available frames for scheduling a transfer.
-const char kAlsaOutputAvailMin[] = "alsa-output-avail-min";
-
-// Size of the ALSA output buffer in frames. This directly sets the latency of
-// the output device. Latency can be calculated by multiplying the sample rate
-// by the output buffer size.
-const char kAlsaOutputBufferSize[] = "alsa-output-buffer-size";
-
-// Size of the ALSA output period in frames. The period of an ALSA output device
-// determines how many frames elapse between hardware interrupts.
-const char kAlsaOutputPeriodSize[] = "alsa-output-period-size";
-
-// How many frames need to be in the output buffer before output starts.
-const char kAlsaOutputStartThreshold[] = "alsa-output-start-threshold";
-
-// Name of the device the volume control mixer should be opened on. Will use the
-// same device as kAlsaOutputDevice and fall back to "default" if
-// kAlsaOutputDevice is not supplied.
-const char kAlsaVolumeDeviceName[] = "alsa-volume-device-name";
-
-// Name of the simple mixer control element that the ALSA-based media library
-// should use to control the volume.
-const char kAlsaVolumeElementName[] = "alsa-volume-element-name";
-
 // Number of audio output channels. This will be used to send audio buffer with
 // specific number of channels to ALSA and generate loopback audio. Default
 // value is 2.

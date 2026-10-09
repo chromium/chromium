@@ -42,17 +42,7 @@ extern const char kRequireWlan[];
 extern const char kLastLaunchedApp[];
 extern const char kPreviousApp[];
 
-// ALSA-based CMA switches. (Only valid for audio products.)
-extern const char kAlsaAmpDeviceName[];
-extern const char kAlsaAmpElementName[];
-extern const char kAlsaMuteDeviceName[];
-extern const char kAlsaMuteElementName[];
-extern const char kAlsaOutputAvailMin[];
-extern const char kAlsaOutputBufferSize[];
-extern const char kAlsaOutputPeriodSize[];
-extern const char kAlsaOutputStartThreshold[];
-extern const char kAlsaVolumeDeviceName[];
-extern const char kAlsaVolumeElementName[];
+// Audio output switches.
 extern const char kAudioOutputChannels[];
 
 // Memory pressure switches
