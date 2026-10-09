@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -42,10 +44,16 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "media/base/media_switches.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -75,7 +83,13 @@ class FakeThemeService : public ThemeService {
 class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
  public:
   GlassFrameServiceInteractiveTest() {
+#if BUILDFLAG(IS_MAC)
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlassFrame},
+        /*disabled_features=*/{media::kUseSCContentSharingPicker});
+#else
     scoped_feature_list_.InitAndEnableFeature(features::kGlassFrame);
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -421,6 +435,53 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
   EXPECT_EQ(GlassFrameService::GetInstance(), nullptr);
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       WindowCaptureIneligible) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+  BrowserWindowInterface* const browser1 = browser();
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+
+  scoped_refptr<MediaStreamCaptureIndicator> indicator =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator();
+  ASSERT_TRUE(indicator);
+
+  blink::mojom::StreamDevices devices;
+  blink::MediaStreamDevice window_video_device(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, "window_device",
+      "window_device");
+  window_video_device.display_media_info =
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::WINDOW,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr, /*initial_zoom_level=*/100);
+  devices.video_device = window_video_device;
+
+  // Start capturing a window from browser1's active WebContents. Glass frame
+  // should become disallowed while window capture is active.
+  std::unique_ptr<content::MediaStreamUI> stream_ui =
+      indicator->RegisterMediaStream(
+          browser1->GetTabStripModel()->GetActiveWebContents(), devices);
+  stream_ui->OnStarted(base::DoNothing(),
+                       content::MediaStreamUI::SourceCallback(),
+                       /*label=*/std::string(), /*screen_capture_ids=*/{},
+                       content::MediaStreamUI::StateChangeCallback());
+
+  EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+
+  // Stop capturing the window. Browser1 should become eligible again.
+  stream_ui.reset();
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+}
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, BatterySaverMode) {
   if (!features::IsGlassFrameEnabled()) {

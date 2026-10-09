@@ -14,12 +14,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 class BrowserProcess;
 class BrowserWindowInterface;
@@ -32,6 +37,7 @@ class PrefRegistrySimple;
 class GlassFrameService : public BrowserCollectionObserver,
                           public performance_manager::user_tuning::
                               BatterySaverModeManager::Observer,
+                          public MediaStreamCaptureIndicator::Observer,
                           public ThemeServiceObserver {
  public:
   DECLARE_USER_DATA(GlassFrameService);
@@ -76,6 +82,10 @@ class GlassFrameService : public BrowserCollectionObserver,
   // BatterySaverModeManager::Observer:
   void OnBatterySaverActiveChanged(bool is_active) override;
   void OnBatterySaverModeManagerDestroyed() override;
+
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingWindowChanged(content::WebContents* web_contents,
+                                  bool is_capturing_window) override;
 
   // ThemeServiceObserver:
   void OnThemeChanged() override;
@@ -122,6 +132,8 @@ class GlassFrameService : public BrowserCollectionObserver,
   base::flat_set<raw_ptr<BrowserWindowInterface>> tracked_browsers_;
   // Set of browsers currently eligible to display the glass frame.
   base::flat_set<raw_ptr<BrowserWindowInterface>> eligible_browsers_;
+  // Set of WebContents currently capturing a window.
+  base::flat_set<raw_ptr<content::WebContents>> window_capturing_web_contents_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
@@ -129,6 +141,9 @@ class GlassFrameService : public BrowserCollectionObserver,
       performance_manager::user_tuning::BatterySaverModeManager,
       performance_manager::user_tuning::BatterySaverModeManager::Observer>
       battery_saver_observation_{this};
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      media_stream_capture_observation_{this};
   base::ScopedMultiSourceObservation<ThemeService, ThemeServiceObserver>
       theme_observations_{this};
 

@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -41,6 +42,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "media/base/media_switches.h"
 #endif
 
 namespace {
@@ -48,7 +50,6 @@ namespace {
 // The interval at which the DailyEvent::CheckInterval function should be
 // called.
 constexpr base::TimeDelta kDailyEventIntervalTimeDelta = base::Minutes(30);
-
 }  // namespace
 
 class GlassFrameMetricsReporter {
@@ -134,6 +135,22 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
   is_battery_saver_mode_active_ = bsm_manager->IsBatterySaverActive();
   battery_saver_observation_.Observe(bsm_manager);
 
+#if BUILDFLAG(IS_MAC)
+  // When `kUseSCContentSharingPicker` is disabled, Chrome window capture on
+  // macOS uses `ViewsWidgetVideoCaptureDeviceMac` (Viz `FrameSink` capture)
+  // instead of `ScreenCaptureKitDeviceMac`. Because the glass frame is rendered
+  // by a native AppKit `NSGlassEffectView` behind the transparent
+  // `ui::Compositor` frame area, Viz `FrameSink` capture misses the glass
+  // background and renders the frame area as black. Observe window capture so
+  // we can fall back to the opaque frame while a window is being captured.
+  if (!base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker)) {
+    media_stream_capture_observation_.Observe(
+        MediaCaptureDevicesDispatcher::GetInstance()
+            ->GetMediaStreamCaptureIndicator()
+            .get());
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   // Pre-populate the deque with the most recently activated browsers.
   browser_collection->ForEach(
       [this](BrowserWindowInterface* browser) {
@@ -179,7 +196,8 @@ bool GlassFrameService::HasMultipleOpenProfiles() const {
 }
 
 bool GlassFrameService::IsGlassFrameAllowed() {
-  return is_glass_frame_enabled_ && !is_battery_saver_mode_active_;
+  return is_glass_frame_enabled_ && !is_battery_saver_mode_active_ &&
+         window_capturing_web_contents_.empty();
 }
 
 void GlassFrameService::OnBrowserCreated(BrowserWindowInterface* browser) {
@@ -224,6 +242,20 @@ void GlassFrameService::OnBatterySaverModeManagerDestroyed() {
   battery_saver_observation_.Reset();
   is_battery_saver_mode_active_ = false;
   OnEligibleStateChanged();
+}
+
+void GlassFrameService::OnIsCapturingWindowChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_window) {
+  const bool was_capturing_any_window = !window_capturing_web_contents_.empty();
+  if (is_capturing_window) {
+    window_capturing_web_contents_.insert(web_contents);
+  } else {
+    window_capturing_web_contents_.erase(web_contents);
+  }
+  if (was_capturing_any_window != !window_capturing_web_contents_.empty()) {
+    OnEligibleStateChanged();
+  }
 }
 
 void GlassFrameService::OnThemeChanged() {
