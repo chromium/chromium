@@ -186,6 +186,8 @@ const CGSize kAssistantShadowOffset = {0, 8};
   grabberButton.layer.cornerRadius = kGrabberHeight / 2.0;
 
   grabberButton.isAccessibilityElement = YES;
+  grabberButton.accessibilityIdentifier =
+      kAssistantContainerGrabberAccessibilityIdentifier;
   grabberButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_LABEL);
   grabberButton.accessibilityHint = l10n_util::GetNSString(

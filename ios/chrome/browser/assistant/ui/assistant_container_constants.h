@@ -10,4 +10,7 @@
 // Accessibility identifier for the Assistant container view.
 extern NSString* const kAssistantContainerAccessibilityIdentifier;
 
+// Accessibility identifier for the Assistant container grabber button.
+extern NSString* const kAssistantContainerGrabberAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_CONSTANTS_H_

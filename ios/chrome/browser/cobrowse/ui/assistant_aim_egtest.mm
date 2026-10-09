@@ -89,6 +89,17 @@ void WaitForDetent(AssistantContainerDetent detent) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:matcher];
 }
 
+// Taps the grabber, which moves the assistant to the next taller detent, or
+// from the tallest detent back to the smallest one, then waits for the
+// assistant to reach `detent`.
+void TapGrabberAndWaitForDetent(AssistantContainerDetent detent) {
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kAssistantContainerGrabberAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  WaitForDetent(detent);
+}
+
 // Opens the composebox, attaches the current tab, and waits for the send button
 // to be enabled.
 void OpenCoBrowse(const GURL& url) {
@@ -663,6 +674,21 @@ void RemoveSharedTab(NSString* title) {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   WaitForDetent(AssistantContainerDetent::kMinimized);
+}
+
+// Tests that tapping the grabber cycles the assistant through all its detents,
+// including from Minimized to Medium. EarlGrey swipes always run to the window
+// edge, so they can't reliably stop at the Medium detent.
+- (void)testGrabberCyclesDetents {
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant to appear in the Medium detent.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  WaitForDetent(AssistantContainerDetent::kMedium);
+
+  TapGrabberAndWaitForDetent(AssistantContainerDetent::kLarge);
+  TapGrabberAndWaitForDetent(AssistantContainerDetent::kMinimized);
+  TapGrabberAndWaitForDetent(AssistantContainerDetent::kMedium);
 }
 
 // Tests that the Loaded AIM URL debugger view controller is presented

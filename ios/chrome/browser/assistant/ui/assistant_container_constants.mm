@@ -6,3 +6,6 @@
 
 NSString* const kAssistantContainerAccessibilityIdentifier =
     @"AssistantContainerAccessibilityIdentifier";
+
+NSString* const kAssistantContainerGrabberAccessibilityIdentifier =
+    @"AssistantContainerGrabberAccessibilityIdentifier";
