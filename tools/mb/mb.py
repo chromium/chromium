@@ -1063,7 +1063,9 @@ class MetaBuildWrapper:
       vals = self.Lookup()
       # Re-run gn gen in order to ensure the config is consistent with the
       # build dir.
-      self.RunGNGen(vals)
+      ret = self.RunGNGen(vals)
+      if ret != 0:
+        raise MBErr('GN gen failed: %d' % ret, retcode=ret)
       return vals
 
     toolchain_path = self.PathJoin(self.ToAbsPath(build_dir), 'toolchain.ninja')

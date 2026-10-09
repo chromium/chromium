@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import textwrap
 import unittest
 
@@ -971,6 +972,41 @@ class UnitTest(unittest.TestCase):
     self.check(
       ['isolate', '//out/Default', 'base_unittests'], files=files, ret=0
     )
+
+  def test_get_config_stops_on_gn_gen_failure(self):
+    selectors = [
+      ['-m', 'fake_builder_group', '-b', 'fake_debug_builder'],
+      ['-c', 'debug_remoteexec'],
+    ]
+    with tempfile.TemporaryDirectory() as directory:
+      archive = os.path.join(directory, 'tests.zip')
+      commands = [
+        (['zip'], ['foo_unittests', archive]),
+        (['zip', '--no-build'], ['foo_unittests', archive]),
+        (['isolate'], ['foo_unittests']),
+        (['isolate', '--no-build'], ['foo_unittests']),
+        (['run', '--force'], ['foo_unittests']),
+        (['run', '--force', '--no-build'], ['foo_unittests']),
+        (['isolate-everything'], []),
+        (['get-swarming-command'], ['foo_unittests']),
+      ]
+      for win32 in (False, True):
+        for command, extra_args in commands:
+          for selector in selectors:
+            with self.subTest(win32=win32, command=command, selector=selector):
+              mbw = self.fake_mbw(win32=win32)
+              mbw.cmds.append((7, 'GN include check failed\n', ''))
+              self.check(
+                command + selector + ['//out/Default'] + extra_args,
+                mbw=mbw,
+                ret=7,
+              )
+              self.assertEqual(len(mbw.calls), 1)
+              self.assertEqual(mbw.calls[0][1], 'gen')
+              self.assertIn('GN include check failed', mbw.out)
+              self.assertIn('GN gen failed: 7', mbw.err)
+              self.assertNotIn('AttributeError', mbw.err)
+              self.assertFalse(os.path.exists(archive))
 
   def test_dedup_runtime_deps(self):
     files = {
