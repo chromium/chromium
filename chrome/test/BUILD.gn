@@ -3592,12 +3592,6 @@ test("unit_tests") {
     # but when we tried to pull it up to the common.gypi level, it broke
     # other things like the ui and startup tests. *shrug*
     ldflags = [ "-Wl,-ObjC" ]
-  } else {
-    # !is_mac
-    deps += [
-      "//chrome/tools/convert_dict:lib",
-      "//third_party/hunspell",
-    ]
   }
 
   if (enable_paint_preview) {
@@ -4216,24 +4210,9 @@ test("unit_tests") {
     deps += [ "//chrome/browser/spellchecker:unit_tests" ]
 
     if (!is_mac) {
-      sources += [
-        # This tests Chrome's spellchecker which Mac doesn't use.
-        "../tools/convert_dict/aff_reader_unittest.cc",
-        "../tools/convert_dict/convert_dict_unittest.cc",
-      ]
+      # This tests Chrome's spellchecker which Mac doesn't use.
+      deps += [ "//chrome/tools/convert_dict:unit_tests" ]
     }
-
-    data += [
-      "data/convert_dict/affix-flags.aff",
-      "data/convert_dict/description.aff",
-      "data/convert_dict/empty.aff",
-      "data/convert_dict/indexed-affix.aff",
-      "data/convert_dict/leading-comment.aff",
-      "data/convert_dict/other-commands.aff",
-      "data/convert_dict/prefix-suffix.aff",
-      "data/convert_dict/rep.aff",
-      "data/convert_dict/tab-separated.aff",
-    ]
   }
 
   # Unit tests that run on Win/Mac/Linux and Android desktop. Note that most

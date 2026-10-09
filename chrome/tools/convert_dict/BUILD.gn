@@ -21,6 +21,34 @@ source_set("lib") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "aff_reader_unittest.cc",
+    "convert_dict_unittest.cc",
+  ]
+  deps = [
+    ":lib",
+    "//base",
+    "//base:i18n",
+    "//chrome/common:constants",
+    "//testing/gtest",
+    "//third_party/hunspell",
+  ]
+  data = [
+    "//chrome/test/data/convert_dict/affix-flags.aff",
+    "//chrome/test/data/convert_dict/description.aff",
+    "//chrome/test/data/convert_dict/empty.aff",
+    "//chrome/test/data/convert_dict/indexed-affix.aff",
+    "//chrome/test/data/convert_dict/leading-comment.aff",
+    "//chrome/test/data/convert_dict/other-commands.aff",
+    "//chrome/test/data/convert_dict/prefix-suffix.aff",
+    "//chrome/test/data/convert_dict/rep.aff",
+    "//chrome/test/data/convert_dict/tab-separated.aff",
+  ]
+}
+
 executable("convert_dict") {
   # Production code shouldn't be depending on this.
   testonly = true
