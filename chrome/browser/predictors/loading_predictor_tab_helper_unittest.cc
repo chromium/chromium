@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -92,8 +93,8 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness,
   // Owned elsewhere.
   raw_ptr<NiceMock<MockOptimizationGuideKeyedService>, DanglingUntriaged>
       mock_optimization_guide_keyed_service_;
-  // Owned by |web_contents()|.
-  raw_ptr<LoadingPredictorTabHelper, DanglingUntriaged> tab_helper_;
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<LoadingPredictorTabHelper> tab_helper_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -111,8 +112,8 @@ void LoadingPredictorTabHelperTest::SetUp() {
                     return std::make_unique<
                         NiceMock<MockOptimizationGuideKeyedService>>();
                   })));
-  LoadingPredictorTabHelper::CreateForWebContents(web_contents());
-  tab_helper_ = LoadingPredictorTabHelper::FromWebContents(web_contents());
+  tab_helper_ =
+      std::make_unique<LoadingPredictorTabHelper>(mock_tab_, web_contents());
 
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -133,6 +134,7 @@ void LoadingPredictorTabHelperTest::SetUp() {
 }
 
 void LoadingPredictorTabHelperTest::TearDown() {
+  tab_helper_.reset();
   loading_predictor_->Shutdown();
   ChromeRenderViewHostTestHarness::TearDown();
 }
@@ -845,8 +847,8 @@ class LoadingPredictorTabHelperTestCollectorTest
 void LoadingPredictorTabHelperTestCollectorTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   CreateSessionServiceTabHelper(web_contents());
-  LoadingPredictorTabHelper::CreateForWebContents(web_contents());
-  tab_helper_ = LoadingPredictorTabHelper::FromWebContents(web_contents());
+  tab_helper_ =
+      std::make_unique<LoadingPredictorTabHelper>(mock_tab_, web_contents());
 
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);

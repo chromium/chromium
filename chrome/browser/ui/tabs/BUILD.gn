@@ -575,6 +575,7 @@ if (!is_android) {
       "//chrome/browser/payments",
       "//chrome/browser/permissions",
       "//chrome/browser/picture_in_picture",
+      "//chrome/browser/predictors",
       "//chrome/browser/preloading/bookmarkbar_preload",
       "//chrome/browser/preloading/new_tab_page_preload",
       "//chrome/browser/preloading/prefetch:zero_suggest_prefetch",

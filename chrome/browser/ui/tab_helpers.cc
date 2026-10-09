@@ -32,8 +32,6 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -228,9 +226,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // The PopupBlockerTabHelper has an implicit dependency on
   // ChromeSubresourceFilterClient being available in its constructor.
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
-  if (predictors::LoadingPredictorFactory::GetForProfile(profile)) {
-    predictors::LoadingPredictorTabHelper::CreateForWebContents(web_contents);
-  }
   PrefsTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(IS_ANDROID)
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(

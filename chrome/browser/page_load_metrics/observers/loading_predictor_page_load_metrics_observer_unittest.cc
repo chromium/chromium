@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +50,8 @@ class LoadingPredictorPageLoadMetricsObserverTest
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     collector_ = std::make_unique<LoadingDataCollector>(predictor_.get(),
                                                         nullptr, config);
-    predictors::LoadingPredictorTabHelper::CreateForWebContents(web_contents());
+    tab_helper_ = std::make_unique<predictors::LoadingPredictorTabHelper>(
+        mock_tab_, web_contents());
     timing_.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing_.parse_timing->parse_start = base::Milliseconds(10);
     timing_.paint_timing->first_paint = base::Seconds(2);
@@ -58,12 +60,15 @@ class LoadingPredictorPageLoadMetricsObserverTest
     PopulateRequiredTimingFields(&timing_);
   }
 
+  void TearDown() override {
+    tab_helper_.reset();
+    page_load_metrics::PageLoadMetricsObserverTestHarness::TearDown();
+  }
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<LoadingPredictorPageLoadMetricsObserver>(
-            predictor_.get(),
-            predictors::LoadingPredictorTabHelper::FromWebContents(
-                web_contents())));
+            predictor_.get(), tab_helper_.get()));
   }
 
   void TestHistogramsRecorded(bool is_preconnectable) {
@@ -86,6 +91,8 @@ class LoadingPredictorPageLoadMetricsObserverTest
       predictor_;
   page_load_metrics::mojom::PageLoadTiming timing_;
   std::unique_ptr<LoadingDataCollector> collector_;
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<predictors::LoadingPredictorTabHelper> tab_helper_;
 };
 
 TEST_F(LoadingPredictorPageLoadMetricsObserverTest, PreconnectableIsRecorded) {

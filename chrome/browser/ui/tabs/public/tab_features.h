@@ -247,6 +247,10 @@ namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
 
+namespace predictors {
+class LoadingPredictorTabHelper;
+}  // namespace predictors
+
 namespace prerender {
 class NoStatePrefetchTabHelper;
 }  // namespace prerender
@@ -1056,6 +1060,9 @@ class TabFeatures {
 
   std::unique_ptr<OneTimePermissionsTrackerHelper>
       one_time_permissions_tracker_helper_;
+
+  std::unique_ptr<predictors::LoadingPredictorTabHelper>
+      loading_predictor_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

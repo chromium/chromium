@@ -118,6 +118,10 @@ namespace payments {
 class WebPaymentsObserver;
 }  // namespace payments
 
+namespace predictors {
+class LoadingPredictorTabHelper;
+}  // namespace predictors
+
 namespace prerender {
 class NoStatePrefetchTabHelper;
 }  // namespace prerender
@@ -348,6 +352,8 @@ class TabFeatures {
       mixed_content_settings_tab_helper_;
   std::unique_ptr<OneTimePermissionsTrackerHelper>
       one_time_permissions_tracker_helper_;
+  std::unique_ptr<predictors::LoadingPredictorTabHelper>
+      loading_predictor_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

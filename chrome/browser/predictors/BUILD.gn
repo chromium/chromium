@@ -57,11 +57,13 @@ source_set("predictors") {
     "//components/network_hints/common:mojo_bindings",
     "//components/optimization_guide/core",
     "//components/sqlite_proto",
+    "//components/tabs:public",
     "//content/public/browser",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/mojom",
     "//third_party/blink/public/common:headers",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 }
@@ -174,6 +176,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/sessions",
+    "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//components/variations",
     "//content/test:test_support",

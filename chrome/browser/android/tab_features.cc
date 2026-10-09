@@ -71,6 +71,8 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -649,6 +651,13 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   // Track one-time permissions for the tab.
   one_time_permissions_tracker_helper_ =
       std::make_unique<OneTimePermissionsTrackerHelper>(web_contents);
+
+  if (predictors::LoadingPredictorFactory::GetForProfile(profile)) {
+    loading_predictor_tab_helper_ =
+        GetUserDataFactory()
+            .CreateInstance<predictors::LoadingPredictorTabHelper>(
+                *tab, *tab, web_contents);
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

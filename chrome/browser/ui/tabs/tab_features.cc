@@ -66,6 +66,8 @@
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
@@ -1266,6 +1268,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // Track one-time permissions for the tab.
   one_time_permissions_tracker_helper_ =
       std::make_unique<OneTimePermissionsTrackerHelper>(tab.GetContents());
+
+  if (predictors::LoadingPredictorFactory::GetForProfile(profile)) {
+    loading_predictor_tab_helper_ =
+        GetUserDataFactory()
+            .CreateInstance<predictors::LoadingPredictorTabHelper>(
+                tab, tab, tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1847,6 +1856,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   one_time_permissions_tracker_helper_.reset();
   one_time_permissions_tracker_helper_ =
       std::make_unique<OneTimePermissionsTrackerHelper>(new_contents);
+
+  if (loading_predictor_tab_helper_) {
+    loading_predictor_tab_helper_.reset();
+    loading_predictor_tab_helper_ =
+        GetUserDataFactory()
+            .CreateInstance<predictors::LoadingPredictorTabHelper>(
+                *tab, *tab, new_contents);
+  }
 }
 
 customize_chrome::SidePanelController*

@@ -45,10 +45,9 @@ LoadingPredictorPageLoadMetricsObserver::
         predictors::ResourcePrefetchPredictor* predictor,
         predictors::LoadingPredictorTabHelper* predictor_tab_helper)
     : predictor_(predictor),
-      predictor_tab_helper_(predictor_tab_helper),
       record_histogram_preconnectable_(false) {
   CHECK(predictor_, base::NotFatalUntil::M161);
-  CHECK(predictor_tab_helper_, base::NotFatalUntil::M161);
+  CHECK(predictor_tab_helper, base::NotFatalUntil::M161);
 }
 
 LoadingPredictorPageLoadMetricsObserver::

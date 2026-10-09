@@ -29,6 +29,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -355,10 +356,13 @@ LoadingPredictorTabHelper::NavigationPageDataHolder::NavigationPageDataHolder(
 LoadingPredictorTabHelper::NavigationPageDataHolder::
     ~NavigationPageDataHolder() = default;
 
+DEFINE_USER_DATA(LoadingPredictorTabHelper);
+
 LoadingPredictorTabHelper::LoadingPredictorTabHelper(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<LoadingPredictorTabHelper>(*web_contents) {
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* predictor = LoadingPredictorFactory::GetForProfile(profile);
@@ -376,6 +380,20 @@ LoadingPredictorTabHelper::LoadingPredictorTabHelper(
 }
 
 LoadingPredictorTabHelper::~LoadingPredictorTabHelper() = default;
+
+// static
+LoadingPredictorTabHelper* LoadingPredictorTabHelper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+LoadingPredictorTabHelper* LoadingPredictorTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
 
 void LoadingPredictorTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -745,6 +763,5 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
     LoadingPredictorTabHelper::NavigationPageDataHolder);
 DOCUMENT_USER_DATA_KEY_IMPL(LoadingPredictorTabHelper::DocumentPageDataHolder);
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LoadingPredictorTabHelper);
 
 }  // namespace predictors

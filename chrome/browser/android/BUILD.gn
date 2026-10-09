@@ -191,6 +191,7 @@ source_set("tabs_impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/plugins",
+    "//chrome/browser/predictors",
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles",
