@@ -237,10 +237,11 @@ void BrowserDelegateImpl::SetSkipWarningUserOnClose(bool skip) {
   }
 }
 
-void BrowserDelegateImpl::AddTab(const GURL& url,
-                                 std::optional<size_t> index,
-                                 TabDisposition disposition,
-                                 ui::PageTransition transition) {
+content::WebContents* BrowserDelegateImpl::AddTab(
+    const GURL& url,
+    std::optional<size_t> index,
+    TabDisposition disposition,
+    ui::PageTransition transition) {
   const GURL resolved_url =
       url.is_empty() ? chrome::GetNewTabURL(&browser_.get()) : url;
   NavigateParams params(&browser_.get(), resolved_url, transition);
@@ -253,6 +254,7 @@ void BrowserDelegateImpl::AddTab(const GURL& url,
   params.web_app_navigation_data.emplace();
   params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
   Navigate(&params);
+  return params.navigated_or_inserted_contents;
 }
 
 void BrowserDelegateImpl::CloseWebContentsAt(size_t index,

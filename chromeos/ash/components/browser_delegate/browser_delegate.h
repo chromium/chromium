@@ -184,11 +184,12 @@ class BrowserDelegate {
   // If the `url` is empty the new tab-page is loaded.
   // If an `index` is given, the tab is placed at the corresponding position in
   // the tab strip. Otherwise it is added to the end.
+  // Returns the new tab's WebContents, or nullptr if no tab was added.
   enum class TabDisposition { kForeground, kBackground };
-  virtual void AddTab(const GURL& url,
-                      std::optional<size_t> index,
-                      TabDisposition disposition,
-                      ui::PageTransition transition) = 0;
+  virtual content::WebContents* AddTab(const GURL& url,
+                                       std::optional<size_t> index,
+                                       TabDisposition disposition,
+                                       ui::PageTransition transition) = 0;
 
   // Closes the contents at the given index, triggering its destruction.
   // Runs any beforeunload/unload handlers, which may prompt the user and can

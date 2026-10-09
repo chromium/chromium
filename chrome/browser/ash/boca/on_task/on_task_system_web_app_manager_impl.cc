@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
+#include <optional>
+
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/check_op.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -34,7 +34,6 @@
 #include "content/public/common/url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
@@ -293,12 +292,9 @@ SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
   }
   // Stop the window tracker while adding tabs before resuming it.
   window_tracker->set_can_start_navigation_throttle(false);
-  NavigateParams navigate_params(&browser->GetBrowser(), url,
-                                 ui::PAGE_TRANSITION_FROM_API);
-  navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  Navigate(&navigate_params);
-  content::WebContents* const tab =
-      navigate_params.navigated_or_inserted_contents;
+  content::WebContents* const tab = browser->AddTab(
+      url, /*index=*/std::nullopt, BrowserDelegate::TabDisposition::kBackground,
+      ui::PAGE_TRANSITION_FROM_API);
   window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
       tab, url, restriction_level);
   window_tracker->set_can_start_navigation_throttle(true);

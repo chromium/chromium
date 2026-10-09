@@ -39,7 +39,6 @@ static_library("on_task") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
-    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/boca",
