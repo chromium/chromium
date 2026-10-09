@@ -389,9 +389,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetScrollbarTypeOverrideParams(command.params),
         );
       case 'emulation.setTextLayoutModeOverride':
-        this.#parser.parseSetTextLayoutModeOverrideParams(command.params);
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setTextLayoutModeOverride(
+          this.#parser.parseSetTextLayoutModeOverrideParams(command.params),
         );
       case 'emulation.setTimezoneOverride':
         return await this.#emulationProcessor.setTimezoneOverride(

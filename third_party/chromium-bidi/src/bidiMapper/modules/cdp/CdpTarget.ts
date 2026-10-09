@@ -674,6 +674,7 @@ export class CdpTarget {
     screenArea: Emulation.ScreenArea | null,
     scrollbarType: 'classic' | 'overlay' | null = null,
     viewportMeta: true | null = null,
+    textLayoutMode: Emulation.TextLayoutMode | null = null,
   ): Promise<void> {
     if (!this.#isPageTarget) {
       // Device metrics overrides are only supported on top-level page targets.
@@ -685,7 +686,8 @@ export class CdpTarget {
       screenOrientation === null &&
       screenArea === null &&
       scrollbarType === null &&
-      viewportMeta === null
+      viewportMeta === null &&
+      textLayoutMode === null
     ) {
       await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
       return;
@@ -703,6 +705,7 @@ export class CdpTarget {
         screenHeight: screenArea?.height,
         scrollbarType: scrollbarType === 'overlay' ? 'overlay' : 'default',
         viewportMeta: viewportMeta === true ? 'enable' : 'default',
+        textLayoutMode: textLayoutMode === 'mobile' ? 'mobile' : 'default',
       };
 
     await this.cdpClient.sendCommand(
@@ -739,7 +742,8 @@ export class CdpTarget {
         config.screenOrientation !== undefined ||
         config.screenArea !== undefined ||
         config.scrollbarType !== undefined ||
-        config.viewportMeta !== undefined
+        config.viewportMeta !== undefined ||
+        config.textLayoutMode !== undefined
       ) {
         promises.push(
           this.setDeviceMetricsOverride(
@@ -749,6 +753,7 @@ export class CdpTarget {
             config.screenArea ?? null,
             config.scrollbarType ?? null,
             config.viewportMeta ?? null,
+            config.textLayoutMode ?? null,
           ).catch(() => {
             // Ignore CDP errors if the target does not support metrics override.
           }),

@@ -157,6 +157,34 @@ describe('ContextConfigStorage', () => {
         expected: {viewportMeta: true as const},
         name: 'viewportMeta true in browsing context should override null in user context',
       },
+      {
+        global: {textLayoutMode: 'mobile' as const},
+        expected: {textLayoutMode: 'mobile' as const},
+        name: 'should return global textLayoutMode config',
+      },
+      {
+        global: [{textLayoutMode: 'mobile' as const}, {textLayoutMode: null}],
+        expected: {},
+        name: 'null should remove previously set global textLayoutMode value',
+      },
+      {
+        global: {textLayoutMode: 'mobile' as const},
+        user: {textLayoutMode: null},
+        expected: {textLayoutMode: 'mobile' as const},
+        name: 'null in user context should fall back to global textLayoutMode value',
+      },
+      {
+        user: {textLayoutMode: 'mobile' as const},
+        browsing: {textLayoutMode: null},
+        expected: {textLayoutMode: 'mobile' as const},
+        name: 'null in browsing context should fall back to user context textLayoutMode value',
+      },
+      {
+        user: {textLayoutMode: null},
+        browsing: {textLayoutMode: 'mobile' as const},
+        expected: {textLayoutMode: 'mobile' as const},
+        name: 'textLayoutMode in browsing context should override null in user context',
+      },
     ].forEach(({name, global, user, browsing, expected}) => {
       it(name, () => {
         if (global) {

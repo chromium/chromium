@@ -1249,6 +1249,7 @@ export class BrowsingContextImpl {
       config.screenArea ?? null,
       config.scrollbarType ?? null,
       config.viewportMeta ?? null,
+      config.textLayoutMode ?? null,
     );
   }
 
@@ -2128,6 +2129,7 @@ export class BrowsingContextImpl {
       config.screenArea ?? null,
       scrollbarType,
       config.viewportMeta ?? null,
+      config.textLayoutMode ?? null,
     );
   }
 
@@ -2143,6 +2145,25 @@ export class BrowsingContextImpl {
       config.screenArea ?? null,
       config.scrollbarType ?? null,
       viewportMeta,
+      config.textLayoutMode ?? null,
+    );
+  }
+
+  async setTextLayoutModeOverride(
+    textLayoutMode: Emulation.TextLayoutMode | null,
+  ): Promise<void> {
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+    await this.cdpTarget.setDeviceMetricsOverride(
+      config.viewport ?? null,
+      config.devicePixelRatio ?? null,
+      config.screenOrientation ?? null,
+      config.screenArea ?? null,
+      config.scrollbarType ?? null,
+      config.viewportMeta ?? null,
+      textLayoutMode,
     );
   }
 }

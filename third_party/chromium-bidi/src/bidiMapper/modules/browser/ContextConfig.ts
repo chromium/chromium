@@ -59,6 +59,7 @@ export class ContextConfig {
   screenOrientation?: Emulation.ScreenOrientation | null;
   scriptingEnabled?: false | null;
   scrollbarType?: 'classic' | 'overlay' | null;
+  textLayoutMode?: Emulation.TextLayoutMode | null;
   // Timezone is kept in CDP format with GMT prefix for offset values.
   timezone?: string | null;
   userAgent?: string | null;

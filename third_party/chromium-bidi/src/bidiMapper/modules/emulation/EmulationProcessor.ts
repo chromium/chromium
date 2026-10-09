@@ -759,6 +759,50 @@ export class EmulationProcessor {
     );
     return {};
   }
+
+  async setTextLayoutModeOverride(
+    params: Emulation.SetTextLayoutModeOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          textLayoutMode: params.textLayoutMode,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        textLayoutMode: params.textLayoutMode,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        textLayoutMode: params.textLayoutMode,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setTextLayoutModeOverride(config.textLayoutMode ?? null);
+      }),
+    );
+    return {};
+  }
 }
 
 // Export for testing.
