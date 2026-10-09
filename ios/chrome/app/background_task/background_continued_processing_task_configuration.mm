@@ -55,4 +55,10 @@
   _expectedStepCount = expectedStepCount;
 }
 
+- (void)setProgressHeartbeatInterval:
+    (base::TimeDelta)progressHeartbeatInterval {
+  CHECK(!progressHeartbeatInterval.is_negative());
+  _progressHeartbeatInterval = progressHeartbeatInterval;
+}
+
 @end

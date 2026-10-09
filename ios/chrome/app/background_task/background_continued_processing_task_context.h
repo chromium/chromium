@@ -61,6 +61,11 @@
 // `totalUnits`).
 - (void)incrementStepProgress;
 
+// Advances progress by one unit, up to `totalUnits` - 1. Always increments
+// when called; invoked by the heartbeat timer, which only runs when
+// `progressHeartbeatInterval` is non-zero.
+- (void)incrementHeartbeatProgress;
+
 // Signals task completion to the OS and manager. Equivalent to
 // `-[BackgroundContinuedProcessingTaskContext
 // setTaskCompletedWithSuccess:fillProgress:]` with `fillProgress` set to YES.

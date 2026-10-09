@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
+#import "base/time/time.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 
 // Default total units of progress for a continued processing task.
@@ -41,6 +42,10 @@ inline constexpr int64_t kDefaultExpectedStepCount = 18;
 // progress phase. Must be strictly positive. Defaults to
 // `kDefaultExpectedStepCount`.
 @property(nonatomic) int64_t expectedStepCount;
+
+// (Optional) Interval at which progress advances by one unit so the task isn't
+// considered stalled. Defaults to zero, which disables the heartbeat.
+@property(nonatomic) base::TimeDelta progressHeartbeatInterval;
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // (Optional) The submission strategy for the scheduler to abide by. Defaults to

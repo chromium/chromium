@@ -6,9 +6,12 @@
 
 #import <BackgroundTasks/BackgroundTasks.h>
 
+#import <cmath>
+
 #import "base/test/gtest_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/time/time.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +31,10 @@ NSString* const kTestTaskSubtitle = @"Bar";
 
 class BackgroundContinuedProcessingTaskContextTest : public PlatformTest {
  public:
-  BackgroundContinuedProcessingTaskContextTest() {
+  explicit BackgroundContinuedProcessingTaskContextTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_(time_source) {
     mock_scheduler_ = OCMClassMock([BGTaskScheduler class]);
     OCMStub([mock_scheduler_ sharedScheduler]).andReturn(mock_scheduler_);
   }
@@ -846,6 +852,243 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     }
 
     EXPECT_OCMOCK_VERIFY(mockTask);
+  }
+}
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
+#pragma mark - BackgroundContinuedProcessingTaskContextHeartbeatTest
+
+namespace {
+
+constexpr base::TimeDelta kTestHeartbeatInterval = base::Seconds(5);
+
+// Units after `step` linear steps with the default configuration.
+int64_t DefaultLinearUnitsForStep(int64_t step) {
+  return static_cast<int64_t>(
+      std::round(step * 700.0 / kDefaultExpectedStepCount));
+}
+
+}  // namespace
+
+// Uses mock time to drive heartbeat ticks.
+class BackgroundContinuedProcessingTaskContextHeartbeatTest
+    : public BackgroundContinuedProcessingTaskContextTest {
+ public:
+  BackgroundContinuedProcessingTaskContextHeartbeatTest()
+      : BackgroundContinuedProcessingTaskContextTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  BackgroundContinuedProcessingTaskContext* CreateHeartbeatContext(
+      NSString* taskId,
+      base::TimeDelta interval = kTestHeartbeatInterval,
+      int64_t totalUnits = kDefaultTotalUnitsOfProgress) {
+    BackgroundContinuedProcessingTaskConfiguration* config =
+        [[BackgroundContinuedProcessingTaskConfiguration alloc]
+                initWithTitle:kTestTaskTitle
+                     subtitle:kTestTaskSubtitle
+            expirationHandler:^{
+            }];
+    config.progressHeartbeatInterval = interval;
+    config.totalUnits = totalUnits;
+    return [[BackgroundContinuedProcessingTaskContext alloc]
+        initWithTaskIdentifier:taskId
+                 configuration:config
+                 finishHandler:nil];
+  }
+
+  void FastForwardHeartbeats(int count) {
+    task_environment_.FastForwardBy(kTestHeartbeatInterval * count);
+  }
+};
+
+// Tests that each interval adds exactly one unit.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestHeartbeatTicksOneUnitPerInterval) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateHeartbeatContext(@"heartbeat.interval.test.id");
+
+  task_environment_.FastForwardBy(kTestHeartbeatInterval -
+                                  base::Milliseconds(1));
+  EXPECT_EQ(context.completedUnits, 0);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(context.completedUnits, 1);
+
+  FastForwardHeartbeats(10);
+  EXPECT_EQ(context.completedUnits, 11);
+
+  [context setTaskCompletedWithSuccess:NO];
+}
+
+// Tests that the heartbeat is off by default and with a zero interval, and
+// that negative intervals are rejected.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestZeroHeartbeatIntervalDisablesHeartbeat) {
+  BackgroundContinuedProcessingTaskConfiguration* config =
+      [[BackgroundContinuedProcessingTaskConfiguration alloc]
+              initWithTitle:kTestTaskTitle
+                   subtitle:kTestTaskSubtitle
+          expirationHandler:^{
+          }];
+  EXPECT_TRUE(config.progressHeartbeatInterval.is_zero());
+  EXPECT_DEATH_IF_SUPPORTED(
+      config.progressHeartbeatInterval = base::Seconds(-1), "");
+
+  BackgroundContinuedProcessingTaskContext* zeroContext =
+      CreateHeartbeatContext(@"heartbeat.zero.test.id", base::TimeDelta());
+  BackgroundContinuedProcessingTaskContext* defaultContext =
+      CreateTestContext(@"heartbeat.default.test.id");
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_EQ(zeroContext.completedUnits, 0);
+  EXPECT_EQ(defaultContext.completedUnits, 0);
+
+  [zeroContext setTaskCompletedWithSuccess:NO];
+  [defaultContext setTaskCompletedWithSuccess:NO];
+}
+
+// Tests that heartbeats continue past the asymptotic ceiling (980) but stop at
+// `totalUnits` - 1, and never decrease progress.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestHeartbeatContinuesPastCeilingButNeverReachesTotal) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateHeartbeatContext(@"heartbeat.ceiling.test.id");
+
+  [context setCompletedUnits:979];
+  FastForwardHeartbeats(2);
+  EXPECT_EQ(context.completedUnits, 981);
+
+  FastForwardHeartbeats(100);
+  EXPECT_EQ(context.completedUnits, kDefaultTotalUnitsOfProgress - 1);
+  EXPECT_LT(context.fractionCompleted, 1.0);
+
+  // Progress already at `totalUnits` is left untouched.
+  [context setCompletedUnits:kDefaultTotalUnitsOfProgress];
+  FastForwardHeartbeats(1);
+  EXPECT_EQ(context.completedUnits, kDefaultTotalUnitsOfProgress);
+
+  [context setTaskCompletedWithSuccess:NO];
+}
+
+// Tests that the heartbeat stops after completion, with either outcome.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestHeartbeatStopsAfterCompletion) {
+  BackgroundContinuedProcessingTaskContext* failureContext =
+      CreateHeartbeatContext(@"heartbeat.failure.test.id");
+  FastForwardHeartbeats(3);
+  [failureContext setTaskCompletedWithSuccess:NO];
+  FastForwardHeartbeats(10);
+  EXPECT_EQ(failureContext.completedUnits, 3);
+
+  BackgroundContinuedProcessingTaskContext* successContext =
+      CreateHeartbeatContext(@"heartbeat.success.test.id");
+  FastForwardHeartbeats(3);
+  [successContext setTaskCompletedWithSuccess:YES];
+  FastForwardHeartbeats(10);
+  EXPECT_EQ(successContext.completedUnits, kDefaultTotalUnitsOfProgress);
+}
+
+// Tests that a running heartbeat doesn't outlive its context.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestHeartbeatSafeAfterContextDeallocation) {
+  @autoreleasepool {
+    BackgroundContinuedProcessingTaskContext* context =
+        CreateHeartbeatContext(@"heartbeat.dealloc.test.id");
+    FastForwardHeartbeats(1);
+    EXPECT_EQ(context.completedUnits, 1);
+    context = nil;
+  }
+  FastForwardHeartbeats(10);
+}
+
+// Tests that steps interleaved with heartbeats of more than half a step still
+// land on every linear step boundary, without skipping one.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestInterleavedHeartbeatsKeepStepBoundaries) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateHeartbeatContext(@"heartbeat.interleaved.test.id");
+
+  for (int64_t step = 1; step <= kDefaultExpectedStepCount; ++step) {
+    FastForwardHeartbeats(30);
+    EXPECT_EQ(context.completedUnits, DefaultLinearUnitsForStep(step - 1) + 30);
+    [context incrementStepProgress];
+    EXPECT_EQ(context.completedUnits, DefaultLinearUnitsForStep(step));
+  }
+  EXPECT_EQ(context.completedUnits, 700);
+
+  // Asymptotic steps use the current units: 710 + (980 - 710) / 25 = 720.
+  FastForwardHeartbeats(10);
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, 720);
+
+  [context setTaskCompletedWithSuccess:NO];
+}
+
+// Tests that a step after heartbeats crossed step boundaries moves to the next
+// boundary strictly above current units, and is a no-op past the asymptotic
+// ceiling.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestStepAfterHeartbeatsResumesAtNextBoundary) {
+  BackgroundContinuedProcessingTaskContext* context =
+      CreateHeartbeatContext(@"heartbeat.resume.test.id");
+
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, DefaultLinearUnitsForStep(1));
+
+  // 39 + 50 = 89 is past step 2 (78): the next step lands on step 3 (117).
+  FastForwardHeartbeats(50);
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, DefaultLinearUnitsForStep(3));
+
+  // Exactly on step 4 (156): the next step lands on step 5 (194).
+  FastForwardHeartbeats(39);
+  EXPECT_EQ(context.completedUnits, DefaultLinearUnitsForStep(4));
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, DefaultLinearUnitsForStep(5));
+
+  // Past the asymptotic ceiling (980), steps don't change progress.
+  [context setCompletedUnits:978];
+  FastForwardHeartbeats(5);
+  EXPECT_EQ(context.completedUnits, 983);
+  [context incrementStepProgress];
+  EXPECT_EQ(context.completedUnits, 983);
+
+  [context setTaskCompletedWithSuccess:NO];
+}
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+// Tests that the heartbeat syncs to the OS task and stops upon expiration.
+TEST_F(BackgroundContinuedProcessingTaskContextHeartbeatTest,
+       TestHeartbeatStopsAfterExpiration) {
+  if (!@available(iOS 26.0, *)) {
+    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
+  }
+
+  if (@available(iOS 26.0, *)) {
+    BackgroundContinuedProcessingTaskContext* context =
+        CreateHeartbeatContext(@"heartbeat.expiration.test.id");
+
+    __block void (^capturedExpirationHandler)(void) = nil;
+    id mockTask = OCMClassMock([BGContinuedProcessingTask class]);
+    NSProgress* taskProgress =
+        [NSProgress progressWithTotalUnitCount:kDefaultTotalUnitsOfProgress];
+    OCMStub([(BGContinuedProcessingTask*)mockTask progress])
+        .andReturn(taskProgress);
+    OCMStub(
+        [mockTask setExpirationHandler:[OCMArg checkWithBlock:^BOOL(id value) {
+                    capturedExpirationHandler = [value copy];
+                    return YES;
+                  }]]);
+
+    [context attachUnderlyingTask:mockTask];
+    ASSERT_NE(capturedExpirationHandler, nil);
+
+    FastForwardHeartbeats(3);
+    EXPECT_EQ(taskProgress.completedUnitCount, 3);
+
+    capturedExpirationHandler();
+    EXPECT_TRUE(context.isCompleted);
+    FastForwardHeartbeats(10);
+    EXPECT_EQ(context.completedUnits, 3);
   }
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
