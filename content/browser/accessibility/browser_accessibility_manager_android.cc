@@ -304,8 +304,9 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
 
   // When focusing a node on Android, we want to ensure that we clear the
   // Java-side cache for the previously focused node as well.
+  ui::AXNode* last_focused_ax_node = GetLastFocusedNode();
   if (ui::BrowserAccessibility* last_focused_node =
-          GetFromAXNode(GetLastFocusedNode())) {
+          GetFromAXNode(last_focused_ax_node)) {
     BrowserAccessibilityAndroid* android_last_focused_node =
         static_cast<BrowserAccessibilityAndroid*>(last_focused_node);
     ClearNodeInfoCacheForGivenId(android_last_focused_node->GetUniqueId());
@@ -316,6 +317,28 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
   wcax->HandleFocusChanged(
       android_node->GetUniqueId(),
       android_node->manager()->GetBrowserAccessibilityRoot() == android_node);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityExtendedSelection)) {
+    return;
+  }
+  // TODO(crbug.com/481134054): Fire a selection changed event on the root of
+  // the main frame when the focused frame changes or is removed, since the
+  // selection of the page is the selection of the focused frame, and remove the
+  // following.
+  // Until then, the root's cached node info, which exposes that selection, is
+  // at least refreshed when the focus moves to another frame. The last focused
+  // node is not updated yet at this point, so comparing trees detects that.
+  if (!last_focused_ax_node || last_focused_ax_node->tree() != node->tree()) {
+    auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
+        GetManagerForRootFrame());
+    if (root_manager) {
+      if (auto* android_root_object = static_cast<BrowserAccessibilityAndroid*>(
+              root_manager->GetBrowserAccessibilityRoot())) {
+        wcax->ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
+      }
+    }
+  }
 }
 
 void BrowserAccessibilityManagerAndroid::FireLocationChanged(
@@ -368,8 +391,28 @@ void BrowserAccessibilityManagerAndroid::FireSourceEvent(
   }
 }
 
+void BrowserAccessibilityManagerAndroid::FireSelectionChangedOnMainFrameRoot(
+    WebContentsAccessibilityAndroid* wcax) {
+  auto* target_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
+      GetManagerForRootFrame());
+  if (!target_manager) {
+    return;
+  }
+  auto* android_root_object = static_cast<BrowserAccessibilityAndroid*>(
+      target_manager->GetBrowserAccessibilityRoot());
+  if (!android_root_object) {
+    return;
+  }
+
+  wcax->ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
+  wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
+}
+
 void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
     WebContentsAccessibilityAndroid* wcax) {
+  // TODO(crbug.com/481134054): Return early if this frame is not focused,
+  // since the selection exposed on Android is strictly that of the focused
+  // frame.
   std::optional<SelectionRange> selection = GetSelectionRange();
   const bool extended_selection_enabled =
       base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection);
@@ -380,10 +423,10 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
     bool should_send_to_root = false;
 
     if (expose_children_enabled) {
-      // Send the event to the root of the frame if selection should be
+      // Send the event to the root of the main frame if selection should be
       // cleared, or multiple nodes are selected, or
       // a non-atomic text field. Atomic text fields will continue to receive
-      // their event on them, the rest should go to the root web area.
+      // their event on them, the rest should go to the main frame's root.
       // Note that this is to support contenteditables, where the
       // contenteditable root itself is a non-atomic text field, and its
       // children may be editable.
@@ -391,7 +434,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
                             selection->focus.node != selection->anchor.node ||
                             !selection->focus.node->IsAtomicTextField();
     } else {
-      // Send the event to the root of the frame if selection should be
+      // Send the event to the root of the main frame if selection should be
       // cleared, or multiple nodes are selected, or the node is not editable.
       should_send_to_root = !selection.has_value() ||
                             selection->focus.node != selection->anchor.node ||
@@ -399,11 +442,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
     }
 
     if (should_send_to_root) {
-      BrowserAccessibilityAndroid* android_root_object =
-          static_cast<BrowserAccessibilityAndroid*>(
-              GetFromAXNode(ax_tree()->root()));
-      ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
-      wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
+      FireSelectionChangedOnMainFrameRoot(wcax);
       return;
     }
   } else if (!selection.has_value()) {
@@ -416,6 +455,19 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
   // Send event to the focus node.
   CHECK(selection->focus.node);
   wcax->HandleTextSelectionChanged(selection->focus.node->GetUniqueId());
+  if (extended_selection_enabled) {
+    // The event is sent to the text field, but the extended selection which is
+    // exposed on the root of the main frame is the page selection, and now must
+    // be updated.
+    auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
+        GetManagerForRootFrame());
+    if (root_manager) {
+      if (auto* android_root_object = static_cast<BrowserAccessibilityAndroid*>(
+              root_manager->GetBrowserAccessibilityRoot())) {
+        wcax->ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
+      }
+    }
+  }
 }
 
 bool isNodeLikelyKnownForExperiment(WebContentsAccessibilityAndroid* wcax,
@@ -1053,6 +1105,47 @@ BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
   return selection_range;
 }
 
+BrowserAccessibilityManagerAndroid*
+BrowserAccessibilityManagerAndroid::GetManagerForFocusedFrame() const {
+  ui::BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
+  if (!root_manager) {
+    return nullptr;
+  }
+  // `GetFocus()` can only be null if the root frame has no tree yet.
+  ui::BrowserAccessibility* focus = root_manager->GetFocus();
+  return static_cast<BrowserAccessibilityManagerAndroid*>(
+      focus ? focus->manager() : root_manager);
+}
+
+std::optional<BrowserAccessibilityManagerAndroid::SelectionRange>
+BrowserAccessibilityManagerAndroid::GetSelectionRangeOfFocusedFrame() const {
+  BrowserAccessibilityManagerAndroid* focused_manager =
+      GetManagerForFocusedFrame();
+  if (!focused_manager) {
+    return std::nullopt;
+  }
+  return focused_manager->GetSelectionRange();
+}
+
+void BrowserAccessibilityManagerAndroid::ClearSelection() {
+  ui::BrowserAccessibility* root = GetBrowserAccessibilityRoot();
+  if (!root) {
+    return;
+  }
+
+  // The selection is cleared by anchoring both endpoints on the root of this
+  // frame with `kNoSelectionOffset`. Selection positions are not used here,
+  // since normalizing them to a leaf can move them into a subframe, whose nodes
+  // cannot be resolved by the renderer of this frame.
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetSelection;
+  action_data.anchor_node_id = root->GetId();
+  action_data.anchor_offset = ax::mojom::kNoSelectionOffset;
+  action_data.focus_node_id = root->GetId();
+  action_data.focus_offset = ax::mojom::kNoSelectionOffset;
+  SetSelection(action_data);
+}
+
 std::optional<BrowserAccessibilityManagerAndroid::AndroidPosition>
 BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     ui::AXNodeID node_id,
@@ -1076,6 +1169,18 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
       is_backward ? ui::AXPositionAdjustmentBehavior::kMoveForward
                   : ui::AXPositionAdjustmentBehavior::kMoveBackward,
       /*force_convert_leaf_to_text=*/false);
+
+  // Moving to the nearest unignored node can leave this frame, because leaf
+  // traversal in `AXPosition` crosses frame boundaries. If such a position is
+  // sent back to Chrome as part of a selection, the selection would be
+  // rejected as the endpoints are in different frames.
+  // To avoid this, move the position up to the node that hosts the frame that
+  // it descended into, which is in `this` frame.
+  // A position that moved into an ancestor frame instead has no such equivalent
+  // and the loop ends with a null position.
+  while (!position->IsNullPosition() && position->tree_id() != GetTreeID()) {
+    position = position->CreateParentPosition();
+  }
   if (position->IsNullPosition()) {
     return std::nullopt;
   }

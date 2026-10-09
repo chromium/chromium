@@ -232,6 +232,12 @@ public class WebContentsAccessibilityTest {
             "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
     private static final String TEXT_TRAVERSAL_ERROR = "Expected to receive a traversal event";
     private static final String TEXT_SELECTION_ERROR = "Expected to receive a selection text event";
+    // A paragraph in the root frame, followed by a subframe with another paragraph.
+    private static final String PARAGRAPH_AND_SUBFRAME_HTML =
+            """
+            <p id='p1'>Paragraph 1</p>
+            <iframe id='f1' srcdoc="<p id='p2'>Paragraph 2</p>"></iframe>
+            """;
     private static final String TEXT_SELECTION_AND_TRAVERSAL_ERROR =
             "Expected to receive both a traversal and selection text event";
     private static final String BOUNDING_BOX_ERROR =
@@ -775,6 +781,24 @@ public class WebContentsAccessibilityTest {
                 TEXT_SELECTION_ERROR);
     }
 
+    /**
+     * Clears the extended selection from the root of the main frame's tree, and asserts that no
+     * selection is reported afterwards.
+     */
+    private void clearAndAssertNoExtendedSelection(int rootVvid) throws ExecutionException {
+        clearSelectionOnUiThreadAndWaitForSelectionEvent(rootVvid);
+        Assert.assertNull(getExtendedSelectionOnUiThread(rootVvid));
+    }
+
+    /** Runs `script` in the page, and waits for the selection changed event that it causes. */
+    private void executeJSAndWaitForSelectionEvent(String script) throws Exception {
+        mTestData.setReceivedSelectionEvent(false);
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(), script);
+        CriteriaHelper.pollUiThread(
+                () -> mTestData.hasReceivedSelectionEvent(), TEXT_SELECTION_ERROR);
+    }
+
     private void setAndAssertExtendedSelection(
             int rootVvid,
             int startNodeId,
@@ -825,7 +849,6 @@ public class WebContentsAccessibilityTest {
                         endNodeId,
                         endOffset,
                         endOffsetType));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
 
         assertExtendedSelection(
                 rootVvid,
@@ -846,37 +869,101 @@ public class WebContentsAccessibilityTest {
             int expectedEndOffset,
             int expectedEndOffsetType)
             throws ExecutionException {
-        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+        // Setting a selection in a frame that is not focused also moves the focus to that frame.
+        // The selection changed event of that frame can be received before the focused frame of
+        // the root is updated, so the exposed selection is polled rather than read once.
+        //
+        // Both mWcax.getExtendedSelection and createAccessibilityNodeInfo are checked:
+        // 1. getExtendedSelection directly verifies the native extended selection data
+        //    (endpoint nodes, offsets, and offset types), which is necessary on Android
+        //    versions below API 36.1 where AccessibilityNodeInfoCompat.getSelection()
+        //    returns null and extras only expose the offset types.
+        // 2. createAccessibilityNodeInfo verifies that the AccessibilityNodeInfo attributes
+        //    exposed to accessibility services are populated and that the root node's
+        //    cache entry was properly invalidated when the selection changed.
+        CriteriaHelper.pollUiThreadLongTimeout(
+                null,
+                () -> {
+                    Object[] selection = mActivityTestRule.mWcax.getExtendedSelection(rootVvid);
+                    Criteria.checkThat(PERFORM_ACTION_ERROR, selection, Matchers.notNullValue());
+                    checkExtendedSelectionEndpoint(
+                            "Start",
+                            (AccessibilityNodeInfoCompat)
+                                    selection[WebContentsAccessibilityImpl.EXT_SEL_START_NODE],
+                            (int) selection[WebContentsAccessibilityImpl.EXT_SEL_START_OFFSET],
+                            (int) selection[WebContentsAccessibilityImpl.EXT_SEL_START_OFFSET_TYPE],
+                            expectedStartNodeId,
+                            expectedStartOffset,
+                            expectedStartOffsetType);
+                    checkExtendedSelectionEndpoint(
+                            "End",
+                            (AccessibilityNodeInfoCompat)
+                                    selection[WebContentsAccessibilityImpl.EXT_SEL_END_NODE],
+                            (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET],
+                            (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET_TYPE],
+                            expectedEndNodeId,
+                            expectedEndOffset,
+                            expectedEndOffsetType);
 
-        AccessibilityNodeInfoCompat startNode =
-                (AccessibilityNodeInfoCompat)
-                        selection[WebContentsAccessibilityImpl.EXT_SEL_START_NODE];
-        int actualStartOffset = (int) selection[WebContentsAccessibilityImpl.EXT_SEL_START_OFFSET];
-        int actualStartOffsetType =
-                (int) selection[WebContentsAccessibilityImpl.EXT_SEL_START_OFFSET_TYPE];
-        AccessibilityNodeInfoCompat endNode =
-                (AccessibilityNodeInfoCompat)
-                        selection[WebContentsAccessibilityImpl.EXT_SEL_END_NODE];
-        int actualEndOffset = (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET];
-        int actualEndOffsetType =
-                (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET_TYPE];
+                    // Verify that the values are also correctly read from the root node.
+                    AccessibilityNodeInfoCompat rootNode = createAccessibilityNodeInfo(rootVvid);
+                    Criteria.checkThat("Root node", rootNode, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Start offset type in root extras",
+                            rootNode.getExtras()
+                                    .getInt(
+                                            AccessibilityNodeInfoBuilder
+                                                    .EXTRA_SELECTION_START_OFFSET_TYPE),
+                            Matchers.is(expectedStartOffsetType));
+                    Criteria.checkThat(
+                            "End offset type in root extras",
+                            rootNode.getExtras()
+                                    .getInt(
+                                            AccessibilityNodeInfoBuilder
+                                                    .EXTRA_SELECTION_END_OFFSET_TYPE),
+                            Matchers.is(expectedEndOffsetType));
+                    SelectionCompat selectionCompat = rootNode.getSelection();
+                    if (selectionCompat != null) {
+                        Criteria.checkThat(
+                                "Root selection start offset",
+                                selectionCompat.getStart().getOffset(),
+                                Matchers.is(expectedStartOffset));
+                        Criteria.checkThat(
+                                "Root selection start offset type",
+                                selectionCompat.getStart().getOffsetType(),
+                                Matchers.is(expectedStartOffsetType));
+                        Criteria.checkThat(
+                                "Root selection end offset",
+                                selectionCompat.getEnd().getOffset(),
+                                Matchers.is(expectedEndOffset));
+                        Criteria.checkThat(
+                                "Root selection end offset type",
+                                selectionCompat.getEnd().getOffsetType(),
+                                Matchers.is(expectedEndOffsetType));
+                    }
+                });
+    }
 
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(expectedStartNodeId), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, expectedStartOffset, actualStartOffset);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, expectedStartOffsetType, actualStartOffsetType);
-        if (actualStartOffsetType == OFFSET_TYPE_TEXT) {
-            Assert.assertTrue(PERFORM_ACTION_ERROR, startNode.isTextSelectable());
-        }
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(expectedEndNodeId), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, expectedEndOffset, actualEndOffset);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, expectedEndOffsetType, actualEndOffsetType);
-        if (actualEndOffsetType == OFFSET_TYPE_TEXT) {
-            Assert.assertTrue(PERFORM_ACTION_ERROR, endNode.isTextSelectable());
+    private static void checkExtendedSelectionEndpoint(
+            String endpoint,
+            AccessibilityNodeInfoCompat node,
+            int offset,
+            int offsetType,
+            int expectedNodeId,
+            int expectedOffset,
+            int expectedOffsetType) {
+        Criteria.checkThat(endpoint + " node", node, Matchers.notNullValue());
+        Criteria.checkThat(
+                endpoint + " node id",
+                node.getUniqueId(),
+                Matchers.is(String.valueOf(expectedNodeId)));
+        Criteria.checkThat(endpoint + " offset", offset, Matchers.is(expectedOffset));
+        Criteria.checkThat(endpoint + " offset type", offsetType, Matchers.is(expectedOffsetType));
+        if (offsetType == OFFSET_TYPE_TEXT) {
+            Criteria.checkThat(
+                    endpoint + " node is text selectable",
+                    node.isTextSelectable(),
+                    Matchers.is(true));
         }
     }
 
@@ -4886,30 +4973,332 @@ public class WebContentsAccessibilityTest {
     /**
      * Test extended selection when an ignored tree position adjusts backward into a childless
      * iframe root whose unignored parent within its own AXTree is null.
+     *
+     * <p>The adjusted position is in the tree of the subframe, and is moved back to the frame that
+     * owns the selection, where it is reported as a child offset after the subframe.
      */
     @Test
     @SmallTest
-    public void testGetExtendedSelection_allDescendantsIgnored() throws Throwable {
+    public void testGetExtendedSelection_adjustedIntoChildlessSubframeRoot() throws Throwable {
         setupTestWithHTML(
                 """
-                <iframe id='f'></iframe>
+                <iframe id='f' srcdoc='<script>document.documentElement.remove()</script>'></iframe>
                 <p id='p' aria-hidden='true'>Hello</p>
                 """);
 
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
 
-        mTestData.setReceivedSelectionEvent(false);
+        executeJSAndWaitForSelectionEvent(
+                "window.getSelection().collapse(document.getElementById('p'), 0);");
+
+        // The collapsed selection is reported as a child offset after the subframe, on the
+        // root of the frame that owns it.
+        assertExtendedSelection(
+                rootVvid, rootVvid, 1, OFFSET_TYPE_CHILD, rootVvid, 1, OFFSET_TYPE_CHILD);
+    }
+
+    /**
+     * Test setting and clearing the extended selection when both endpoints are inside the same
+     * subframe.
+     *
+     * <p>The actions are performed on the root of the main frame's tree, while the selection
+     * belongs to the subframe. The selection must still be applied, reported back, and cleared.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setAndClearExtendedSelection_withinSubframe() throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Selection fully contained in the subframe.
+        setAndAssertExtendedSelection(
+                rootVvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p2Vvid, 5, OFFSET_TYPE_TEXT);
+
+        // Clear the selection from the root of the main frame's tree.
+        clearAndAssertNoExtendedSelection(rootVvid);
+    }
+
+    /**
+     * Test that a selection that moves from a subframe to the root frame is reported on the root
+     * frame afterwards, and that the previous selection of the subframe is not reported once the
+     * selection is cleared.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_movingAcrossFrames() throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Selection in the subframe.
+        setAndAssertExtendedSelection(
+                rootVvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p2Vvid, 5, OFFSET_TYPE_TEXT);
+
+        // Selection moved to the root frame.
+        setAndAssertExtendedSelection(
+                rootVvid, p1Vvid, 1, OFFSET_TYPE_TEXT, p1Vvid, 5, OFFSET_TYPE_TEXT);
+
+        // The subframe keeps its previous selection, which must not be reported once the
+        // selection of the root frame is cleared.
+        clearAndAssertNoExtendedSelection(rootVvid);
+    }
+
+    /**
+     * Test clearing the extended selection when the first content of the focused frame is a
+     * subframe.
+     *
+     * <p>The first leaf of the focused frame is in the tree of the subframe. The selection must
+     * still be cleared from the focused frame, both when the root frame and when the subframe owns
+     * the selection.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_clearExtendedSelection_subframeFirst() throws Throwable {
+        setupTestWithHTML(
+                """
+                  <iframe id='f1' srcdoc="<p id='p2'>Paragraph 2</p>"></iframe>
+                  <p id='p1'>Paragraph 1</p>
+                """);
+
+        // Find nodes. The content of the subframe is awaited, since the first leaf of the root
+        // frame is inside it.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Selection in the root frame, cleared from the root frame.
+        setAndAssertExtendedSelection(
+                rootVvid, p1Vvid, 1, OFFSET_TYPE_TEXT, p1Vvid, 5, OFFSET_TYPE_TEXT);
+        clearAndAssertNoExtendedSelection(rootVvid);
+
+        // Selection in the subframe, cleared from the subframe.
+        setAndAssertExtendedSelection(
+                rootVvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p2Vvid, 5, OFFSET_TYPE_TEXT);
+        clearAndAssertNoExtendedSelection(rootVvid);
+    }
+
+    /** Test clearing the extended selection when no selection exists on the page. */
+    @Test
+    @SmallTest
+    public void testPerformAction_clearExtendedSelection_noSelection() throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        Assert.assertNull(getExtendedSelectionOnUiThread(rootVvid));
+
+        // Clearing an empty selection succeeds without error.
+        Assert.assertTrue(mActivityTestRule.clearSelectionOnUiThread(rootVvid));
+        Assert.assertNull(getExtendedSelectionOnUiThread(rootVvid));
+    }
+
+    /**
+     * Test that the selection of a subframe is not exposed while another frame is focused, and that
+     * it is exposed after the focus moves to the subframe, including in the node info of the root
+     * of the main frame's tree that was cached before the focus moved.
+     */
+    @Test
+    @SmallTest
+    public void testExtendedSelection_focusMovingToSubframeExposesItsSelection() throws Throwable {
+        setupTestWithHTML("<button id='b'>Button</button>" + PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "b");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Focus an element of the root frame other than its root. Otherwise the root would be the
+        // previously focused node when the focus moves to the subframe, and its node info would
+        // be invalidated as such, regardless of the frame change.
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        buttonVvid,
+                        ACTION_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(buttonVvid).isFocused()));
+
+        // Select in the subframe while the root frame is focused.
+        // The wait relies on the selection changed event fired for the selection change of the
+        // subframe itself, although the subframe is not focused and the exposed selection does not
+        // change. TODO(crbug.com/481134054): Revisit this sync if that event is no longer fired.
+        executeJSAndWaitForSelectionEvent(
+                """
+                const p2 = document.getElementById('f1').contentDocument.getElementById('p2');
+                p2.ownerDocument.getSelection().setBaseAndExtent(
+                    p2.firstChild, 1, p2.firstChild, 5);
+                """);
+        Assert.assertNull(getExtendedSelectionOnUiThread(rootVvid));
+
+        // Pre-cache the root node info while focus is on the button in the main frame.
+        createAccessibilityNodeInfo(rootVvid);
+
+        // Move the focus to the subframe, and wait until its selection is exposed.
+        // TODO(crbug.com/481134054): Moving the focus to another frame should fire a selection
+        // changed event, since it changes the exposed selection.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 mActivityTestRule.getWebContents(),
-                """
-                document.getElementById('f').contentDocument.documentElement.remove();
-                window.getSelection().collapse(document.getElementById('p'), 0);
-                """);
-        CriteriaHelper.pollUiThread(
-                () -> mTestData.hasReceivedSelectionEvent(), TEXT_SELECTION_ERROR);
+                "document.getElementById('f1').contentWindow.focus();");
+        assertExtendedSelection(rootVvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p2Vvid, 5, OFFSET_TYPE_TEXT);
+    }
 
-        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNull(selection);
+    /**
+     * Test that setting the extended selection is rejected when the action is performed on a node
+     * other than the root of the main frame's tree.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_rejectedOnNonMainFrameRoot()
+            throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+        int frameVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "f1");
+
+        // The selection of the page is only exposed on the root of the main frame's tree, so the
+        // action is only accepted on that node, whether the other node belongs to the root
+        // frame or to a subframe.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        p1Vvid, p1Vvid, 1, OFFSET_TYPE_TEXT, p1Vvid, 5, OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        p2Vvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p2Vvid, 5, OFFSET_TYPE_TEXT));
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        frameVvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p2Vvid, 5, OFFSET_TYPE_TEXT));
+
+        // No selection was applied.
+        Assert.assertNull(getExtendedSelectionOnUiThread(rootVvid));
+    }
+
+    /**
+     * Test that setting the extended selection across frame boundaries from a subframe to the main
+     * frame is rejected.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_crossFrame_subframeToMain()
+            throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Setting selection from subframe node p2 to main frame node p1 must be rejected.
+        Assert.assertFalse(
+                mActivityTestRule.setSelectionOnUiThread(
+                        rootVvid, p2Vvid, 1, OFFSET_TYPE_TEXT, p1Vvid, 5, OFFSET_TYPE_TEXT));
+        Assert.assertNull(getExtendedSelectionOnUiThread(rootVvid));
+    }
+
+    /**
+     * Test that clearing the extended selection is rejected when the action is performed on a node
+     * other than the root of the main frame's tree.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_clearExtendedSelection_rejectedOnNonMainFrameRoot()
+            throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+        int frameVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "f1");
+
+        setAndAssertExtendedSelection(
+                rootVvid, p1Vvid, 1, OFFSET_TYPE_TEXT, p1Vvid, 5, OFFSET_TYPE_TEXT);
+
+        // The action is rejected and the selection is left untouched.
+        Assert.assertFalse(mActivityTestRule.clearSelectionOnUiThread(p1Vvid));
+        Assert.assertFalse(mActivityTestRule.clearSelectionOnUiThread(p2Vvid));
+        Assert.assertFalse(mActivityTestRule.clearSelectionOnUiThread(frameVvid));
+        assertExtendedSelection(rootVvid, p1Vvid, 1, OFFSET_TYPE_TEXT, p1Vvid, 5, OFFSET_TYPE_TEXT);
+    }
+
+    /**
+     * Test that a selection endpoint that normalizes into a subframe is reported on the frame that
+     * owns the selection.
+     *
+     * <p>A selection never spans frames, but normalizing an endpoint to a leaf position can move it
+     * into a subframe. Such an endpoint has to be moved back to the frame that owns the selection,
+     * otherwise the reported selection is rejected when it is set back, since the endpoints of a
+     * selection cannot be in two frames.
+     */
+    @Test
+    @SmallTest
+    public void testExtendedSelection_endpointNormalizingIntoSubframe() throws Throwable {
+        setupTestWithHTML(PARAGRAPH_AND_SUBFRAME_HTML);
+
+        // Find nodes. The content of the subframe is awaited, since the anchor of the selection
+        // normalizes into it.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Select backwards, from just after the subframe to the start of the paragraph of the
+        // root frame. The anchor can be normalized into the text of the subframe, but is reported
+        // back unchanged on the root of the frame that owns the selection.
+        setAndAssertExtendedSelection(
+                rootVvid, rootVvid, 2, OFFSET_TYPE_CHILD, p1Vvid, 0, OFFSET_TYPE_TEXT);
+    }
+
+    /**
+     * Test that the node info of the root of the main frame's tree exposes a selection that is
+     * within a single text field of a subframe.
+     *
+     * <p>The selection changed event for such a selection is sent to the text field rather than to
+     * the root, while the selection is exposed on the root of the main frame's tree, so the node
+     * info of that root that was cached before must still be invalidated. The text field is in a
+     * subframe, since the content changed event that comes with any selection change is sent on the
+     * root of the frame that owns the selection, which would invalidate the node info of the root
+     * on its own if that frame were the main frame.
+     */
+    @Test
+    @SmallTest
+    public void testExtendedSelection_withinTextFieldInSubframeRefreshesRootNodeInfo()
+            throws Throwable {
+        setupTestWithHTML(
+                """
+                <iframe id='f1' srcdoc="<button id='b'>Button</button>
+                    <input id='input1' type='text' value='EditableText'>"></iframe>
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "b");
+        int inputVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input1");
+
+        // Focus an element of the subframe other than its root. This focuses the subframe, so
+        // that setting the selection does not move the focus to another frame, which would
+        // invalidate the node info of the root on its own. Setting the selection may still move
+        // the focus to the text field, which stays within the subframe and has no effect on the
+        // node info of the root of the main frame's tree.
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        buttonVvid,
+                        ACTION_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(buttonVvid).isFocused()));
+
+        // Pre-cache the root node info while focus is on the subframe button.
+        createAccessibilityNodeInfo(rootVvid);
+
+        // A selection within the text field, whose event is sent to the text field.
+        setAndAssertExtendedSelection(
+                rootVvid, inputVvid, 1, OFFSET_TYPE_TEXT, inputVvid, 5, OFFSET_TYPE_TEXT);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */

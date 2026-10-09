@@ -69,6 +69,19 @@ namespace {
 
 using RangePairs = AXStyleData::RangePairs;
 
+// Returns the manager of the main frame if `node` is the root of the main
+// frame's accessibility tree (the node directly under the Android WebView),
+// and nullptr otherwise. `IsRootFrameManager()` holds for every node of the
+// main frame, so the node is also compared with the root of its manager.
+BrowserAccessibilityManagerAndroid* GetRootManagerIfMainFrameRoot(
+    const BrowserAccessibilityAndroid* node) {
+  if (!node || !node->manager()->IsRootFrameManager() ||
+      node != node->manager()->GetBrowserAccessibilityRoot()) {
+    return nullptr;
+  }
+  return static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+}
+
 // This map contains key value pairs of a string to a tree search predicate. The
 // set of keys represents the ways in which an AT can navigate a page by HTML
 // element (by next or previous navigation). A Java-side AT sends a key with a
@@ -1984,29 +1997,16 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     return;
   }
 
-  // When children are exposed for contenteditables, we fetch the top-level
-  // manager, so we can set the extended selection data in the top-level root
-  // node that represents the web view.
-  BrowserAccessibilityManagerAndroid* root_manager;
-  if (base::FeatureList::IsEnabled(
-          features::kAccessibilityExposeNonAtomicTextFieldChildren)) {
-    root_manager = GetRootBrowserAccessibilityManager();
-  } else {
-    root_manager =
-        static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-  }
-
+  // The selection of the whole page is only exposed on the root of the main
+  // frame's tree.
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootManagerIfMainFrameRoot(node);
   if (!root_manager) {
     return;
   }
 
-  // Set the extended selection only on the frame roots.
-  if (node != root_manager->GetBrowserAccessibilityRoot()) {
-    return;
-  }
-
   std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
-      root_manager->GetSelectionRange();
+      root_manager->GetSelectionRangeOfFocusedFrame();
 
   if (selection.has_value()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
@@ -2048,10 +2048,25 @@ WebContentsAccessibilityAndroid::GetExtendedSelection(JNIEnv* env,
     return nullptr;
   }
 
-  auto* root_manager =
-      static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+  // This getter mirrors the extended selection attributes set by
+  // `PopulateAccessibilityNodeInfoSelection`, which expose the selection of the
+  // whole page on the root of the main frame. The selection of the page is the
+  // selection of the focused frame, so it is returned independently of the
+  // frame that `unique_id` belongs to. `unique_id` is only used to confirm that
+  // the node is still alive.
+  // Unlike the actions that change the selection, this getter accepts any node
+  // rather than only the root of the main frame's tree, because
+  // `AccessibilityNodeInfoUtils#toString` calls it for every node, to annotate
+  // a node that is an endpoint of the selection. The returned selection is the
+  // same for every node.
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return nullptr;
+  }
+
   std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
-      root_manager->GetSelectionRange();
+      root_manager->GetSelectionRangeOfFocusedFrame();
   if (!selection.has_value()) {
     return nullptr;
   }
@@ -2090,11 +2105,20 @@ WebContentsAccessibilityAndroid::GetSelectionAsTextOffsetsForNode(
     return ToJavaIntArray(env, selection_data);
   }
 
-  auto* root_manager =
-      static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return nullptr;
+  }
   std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
-      root_manager->GetSelectionRange();
+      root_manager->GetSelectionRangeOfFocusedFrame();
   if (!selection.has_value()) {
+    return nullptr;
+  }
+
+  // Only a node of the frame that owns the selection can report offsets for it.
+  // Both endpoints are inside that frame, so either one identifies it.
+  if (selection->anchor.node->manager() != node->manager()) {
     return nullptr;
   }
 
@@ -2387,8 +2411,12 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(id);
-  if (!node) {
+  // The selection of the whole page is exposed on the root of the main frame's
+  // tree. The action is only accepted on that node, so that it is performed on
+  // the same node that the selection is read from.
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootManagerIfMainFrameRoot(GetAXFromUniqueID(id));
+  if (!root_manager) {
     return false;
   }
 
@@ -2413,11 +2441,6 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  BrowserAccessibilityManagerAndroid* root_manager =
-      GetRootBrowserAccessibilityManager();
-  if (!root_manager) {
-    return false;
-  }
   ui::BrowserAccessibility::AXPosition start_position =
       root_manager->ConvertAndroidSelectionPositionToChrome(
           start_node, start_node_offset, *start_offset_enum);
@@ -2441,7 +2464,33 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
+  ui::BrowserAccessibilityManager* selection_manager =
+      ui::BrowserAccessibilityManager::FromID(start_position->tree_id());
+  if (!selection_manager) {
+    return false;
+  }
+
+  // The exposed selection is the selection of the focused frame, so the frame
+  // that owns the new selection is focused first, as selecting with a pointer
+  // would do. The frame is only focused if it is not focused already, to avoid
+  // blurring an element that is focused in it. Both actions are sent to the
+  // same renderer frame, which performs them in order.
+  // TODO(crbug.com/481134054): Consider focusing the frame in the renderer, as
+  // part of applying the selection. That would make the two steps atomic, so
+  // that the focus does not move when the renderer rejects the selection, and
+  // would close the same gap for assistive technologies on other platforms.
+  // It would however change the behavior of setting the selection on all
+  // platforms, and needs changes in Blink.
+  if (root_manager->GetManagerForFocusedFrame() != selection_manager) {
+    ui::BrowserAccessibility* frame_root =
+        selection_manager->GetBrowserAccessibilityRoot();
+    if (!frame_root) {
+      return false;
+    }
+    selection_manager->SetFocus(*frame_root);
+  }
+
+  selection_manager->SetSelection(ui::BrowserAccessibility::AXRange(
       std::move(start_position), std::move(end_position)));
   return true;
 }
@@ -2451,18 +2500,24 @@ bool WebContentsAccessibilityAndroid::ClearExtendedSelection(JNIEnv* env,
   CHECK(
       base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection));
 
-  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(id);
-  if (!node) {
+  // The action is only accepted on the root of the main frame's tree, for the
+  // same reason as in `SetExtendedSelection`.
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootManagerIfMainFrameRoot(GetAXFromUniqueID(id));
+  if (!root_manager) {
     return false;
   }
 
-  ui::BrowserAccessibility::AXPosition start_position =
-      node->CreatePositionForSelectionAt(ax::mojom::kNoSelectionOffset);
-  ui::BrowserAccessibility::AXPosition end_position =
-      node->CreatePositionForSelectionAt(ax::mojom::kNoSelectionOffset);
+  // The exposed selection is the selection of the focused frame, so that is the
+  // frame to clear it from, otherwise the action reaches a renderer frame that
+  // does not own the exposed selection.
+  BrowserAccessibilityManagerAndroid* focused_manager =
+      root_manager->GetManagerForFocusedFrame();
+  if (!focused_manager || !focused_manager->GetBrowserAccessibilityRoot()) {
+    return false;
+  }
 
-  node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
-      std::move(start_position), std::move(end_position)));
+  focused_manager->ClearSelection();
   return true;
 }
 

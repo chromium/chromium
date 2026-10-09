@@ -372,7 +372,9 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
             AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher,
             T element) {
         AccessibilityNodeInfoCompat node = mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
-        Assert.assertNotEquals(node, null);
+        // The node may not be available yet, e.g. before the frame info is initialized. Returning
+        // View.NO_ID allows callers that poll (such as waitForNodeMatching()) to retry.
+        if (node == null) return View.NO_ID;
         if (matcher.matches(node, element)) return virtualViewId;
 
         for (int i = 0; i < node.getChildCount(); i++) {
@@ -529,9 +531,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * Helper method to clear extended selection.
      *
      * @param viewId int virtualViewId of the node from which selection is cleared.
+     * @return boolean whether the action was accepted.
      */
-    public void clearSelectionOnUiThread(int viewId) throws ExecutionException {
-        ThreadUtils.runOnUiThreadBlocking(
+    public boolean clearSelectionOnUiThread(int viewId) throws ExecutionException {
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         WebContentsAccessibilityImplJni.get()
                                 .clearExtendedSelection(mWcax.mNativeObj, viewId));
