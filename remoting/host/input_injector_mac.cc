@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/input_injector.h"
+#include "remoting/host/input_injector_mac.h"
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
@@ -20,10 +20,12 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/notimplemented.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/proto/internal.pb.h"
@@ -109,118 +111,14 @@ using protocol::MouseEvent;
 using protocol::TextEvent;
 using protocol::TouchEvent;
 
-// A class to generate events on Mac.
-class InputInjectorMac : public InputInjector {
- public:
-  explicit InputInjectorMac(
-      scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
-
-  InputInjectorMac(const InputInjectorMac&) = delete;
-  InputInjectorMac& operator=(const InputInjectorMac&) = delete;
-
-  ~InputInjectorMac() override;
-
-  // ClipboardStub interface.
-  void InjectClipboardEvent(const ClipboardEvent& event) override;
-
-  // InputStub interface.
-  void InjectKeyEvent(const KeyEvent& event) override;
-  void InjectTextEvent(const TextEvent& event) override;
-  void InjectMouseEvent(const MouseEvent& event) override;
-  void InjectTouchEvent(const TouchEvent& event) override;
-
-  // InputInjector interface.
-  void Start(
-      std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
-
- private:
-  // The actual implementation resides in InputInjectorMac::Core class.
-  class Core : public base::RefCountedThreadSafe<Core> {
-   public:
-    explicit Core(
-        scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
-        scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
-
-    Core(const Core&) = delete;
-    Core& operator=(const Core&) = delete;
-
-    // Mirrors the ClipboardStub interface.
-    void InjectClipboardEvent(const ClipboardEvent& event);
-
-    // Mirrors the InputStub interface.
-    void InjectKeyEvent(const KeyEvent& event);
-    void InjectTextEvent(const TextEvent& event);
-    void InjectMouseEvent(const MouseEvent& event);
-
-    // Mirrors the InputInjector interface.
-    void Start(std::unique_ptr<protocol::ClipboardStub> client_clipboard);
-
-    void Stop();
-
-   private:
-    friend class base::RefCountedThreadSafe<Core>;
-    virtual ~Core();
-
-    void WakeUpDisplay();
-
-    scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner_;
-    scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
-    webrtc::DesktopVector mouse_pos_;
-    uint32_t mouse_button_state_;
-    std::unique_ptr<Clipboard> clipboard_;
-    uint64_t left_modifiers_;
-    uint64_t right_modifiers_;
-    base::TimeTicks last_time_display_woken_;
-  };
-
-  scoped_refptr<Core> core_;
-};
+}  // namespace
 
 InputInjectorMac::InputInjectorMac(
     scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner) {
-  core_ = new Core(input_thread_task_runner, ui_thread_task_runner);
-}
-
-InputInjectorMac::~InputInjectorMac() {
-  core_->Stop();
-}
-
-void InputInjectorMac::InjectClipboardEvent(const ClipboardEvent& event) {
-  core_->InjectClipboardEvent(event);
-}
-
-void InputInjectorMac::InjectKeyEvent(const KeyEvent& event) {
-  core_->InjectKeyEvent(event);
-}
-
-void InputInjectorMac::InjectTextEvent(const TextEvent& event) {
-  core_->InjectTextEvent(event);
-}
-
-void InputInjectorMac::InjectMouseEvent(const MouseEvent& event) {
-  core_->InjectMouseEvent(event);
-}
-
-void InputInjectorMac::InjectTouchEvent(const TouchEvent& event) {
-  NOTIMPLEMENTED() << "Raw touch event injection not implemented for Mac.";
-}
-
-void InputInjectorMac::Start(
-    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  core_->Start(std::move(client_clipboard));
-}
-
-InputInjectorMac::Core::Core(
-    scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
-    : input_thread_task_runner_(input_thread_task_runner),
-      ui_thread_task_runner_(ui_thread_task_runner),
-      mouse_button_state_(0),
-      clipboard_(Clipboard::Create()),
-      left_modifiers_(0),
-      right_modifiers_(0) {
+    : ui_thread_task_runner_(std::move(ui_thread_task_runner)),
+      clipboard_(std::move(input_thread_task_runner), Clipboard::Create()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ensure that local hardware events are not suppressed after injecting
   // input events.  This allows LocalInputMonitor to detect if the local mouse
   // is being moved whilst a remote user is connected.
@@ -235,18 +133,18 @@ InputInjectorMac::Core::Core(
 #pragma clang diagnostic pop
 }
 
-void InputInjectorMac::Core::InjectClipboardEvent(const ClipboardEvent& event) {
-  if (!input_thread_task_runner_->BelongsToCurrentThread()) {
-    input_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::InjectClipboardEvent, this, event));
-    return;
-  }
-
-  // |clipboard_| will ignore unknown MIME-types, and verify the data's format.
-  clipboard_->InjectClipboardEvent(event);
+InputInjectorMac::~InputInjectorMac() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
+void InputInjectorMac::InjectClipboardEvent(const ClipboardEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // |clipboard_| will ignore unknown MIME-types, and verify the data's format.
+  clipboard_.AsyncCall(&Clipboard::InjectClipboardEvent).WithArgs(event);
+}
+
+void InputInjectorMac::InjectKeyEvent(const KeyEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // HostEventDispatcher should filter events missing the pressed field.
   if (!event.has_pressed() || !event.has_usb_keycode()) {
     return;
@@ -296,7 +194,8 @@ void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
                                 flags, std::u16string()));
 }
 
-void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
+void InputInjectorMac::InjectTextEvent(const TextEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(event.has_text());
 
   WakeUpDisplay();
@@ -341,7 +240,8 @@ void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
   }
 }
 
-void InputInjectorMac::Core::InjectMouseEvent(const MouseEvent& event) {
+void InputInjectorMac::InjectMouseEvent(const MouseEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WakeUpDisplay();
 
   if (event.has_x() && event.has_y()) {
@@ -381,29 +281,19 @@ void InputInjectorMac::Core::InjectMouseEvent(const MouseEvent& event) {
   }
 }
 
-void InputInjectorMac::Core::Start(
+void InputInjectorMac::InjectTouchEvent(const TouchEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED() << "Raw touch event injection not implemented for Mac.";
+}
+
+void InputInjectorMac::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  if (!input_thread_task_runner_->BelongsToCurrentThread()) {
-    input_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Core::Start, this, std::move(client_clipboard)));
-    return;
-  }
-
-  clipboard_->Start(std::move(client_clipboard));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  clipboard_.AsyncCall(&Clipboard::Start).WithArgs(std::move(client_clipboard));
 }
 
-void InputInjectorMac::Core::Stop() {
-  if (!input_thread_task_runner_->BelongsToCurrentThread()) {
-    input_thread_task_runner_->PostTask(FROM_HERE,
-                                        base::BindOnce(&Core::Stop, this));
-    return;
-  }
-
-  clipboard_.reset();
-}
-
-void InputInjectorMac::Core::WakeUpDisplay() {
+void InputInjectorMac::WakeUpDisplay() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_time_display_woken_ <
       base::Milliseconds(kWakeUpDisplayIntervalMs)) {
@@ -428,10 +318,6 @@ void InputInjectorMac::Core::WakeUpDisplay() {
     IOPMAssertionRelease(power_assertion_id);
   }
 }
-
-InputInjectorMac::Core::~Core() {}
-
-}  // namespace
 
 // static
 std::unique_ptr<InputInjector> InputInjector::Create(

@@ -768,6 +768,7 @@ static_library("common") {
       "disconnect_window_mac.h",
       "disconnect_window_mac.mm",
       "input_injector_mac.cc",
+      "input_injector_mac.h",
       "keyboard_layout_monitor_mac.cc",
       "pairing_registry_delegate_mac.cc",
       "usage_stats_consent_mac.cc",
