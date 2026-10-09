@@ -122,6 +122,12 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
     NOTREACHED();
   }
 
+  void ExportKeyingMaterial(
+      network::mojom::blink::WebTransportKeyingMaterialParamsPtr params,
+      ExportKeyingMaterialCallback callback) override {
+    NOTREACHED();
+  }
+
   void CreateStream(
       mojo::ScopedDataPipeConsumerHandle output_consumer,
       mojo::ScopedDataPipeProducerHandle input_producer,

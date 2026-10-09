@@ -41,6 +41,12 @@
   [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
   Promise<WebTransportConnectionStats> getStats();
 
+  [CallWith=ScriptState, NewObject, RuntimeEnabled=WebTransportExportKeyingMaterial]
+  Promise<Uint8Array> exportKeyingMaterial(
+      BufferSource label,
+      BufferSource context,
+      unsigned long outputLength);
+
   [RaisesException, RuntimeEnabled=WebTransportSendGroup]
   WebTransportSendGroup createSendGroup();
 

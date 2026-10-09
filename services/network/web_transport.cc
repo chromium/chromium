@@ -1003,6 +1003,18 @@ void WebTransport::ExpireNextDatagramForTesting(size_t index) {
   ExpirePendingDatagrams();
 }
 
+void WebTransport::ExportKeyingMaterial(
+    const WebTransportKeyingMaterialParams& params,
+    ExportKeyingMaterialCallback callback) {
+  if (torn_down_ || closing_ || transport_ == nullptr) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(transport_->ExportKeyingMaterial(
+      params.label, params.context, params.output_length));
+}
+
 void WebTransport::CreateStream(
     mojo::ScopedDataPipeConsumerHandle readable,
     mojo::ScopedDataPipeProducerHandle writable,

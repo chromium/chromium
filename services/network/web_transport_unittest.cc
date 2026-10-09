@@ -1456,6 +1456,87 @@ TEST_F(WebTransportTest, SessionCloseClosesDatagramWritables) {
             disconnect_reason);
 }
 
+TEST_F(WebTransportTest, ExportKeyingMaterial) {
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://example.org/")),
+                     std::move(handshake_client));
+  run_loop_for_handshake.Run();
+
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+  mojo::Remote<mojom::WebTransport> transport_remote(
+      test_handshake_client.PassTransport());
+
+  const auto export_keying_material = [&transport_remote](
+                                          std::vector<uint8_t> label,
+                                          std::vector<uint8_t> context,
+                                          uint32_t output_length) {
+    std::optional<std::vector<uint8_t>> result;
+    base::RunLoop run_loop;
+    WebTransportKeyingMaterialParams params{std::move(label),
+                                            std::move(context), output_length};
+    transport_remote->ExportKeyingMaterial(
+        params,
+        base::BindOnce(
+            [](std::optional<std::vector<uint8_t>>* result,
+               base::RunLoop* run_loop,
+               const std::optional<std::vector<uint8_t>>& keying_material) {
+              *result = keying_material;
+              run_loop->Quit();
+            },
+            &result, &run_loop));
+    run_loop.Run();
+    return result;
+  };
+
+  auto result = export_keying_material(std::vector<uint8_t>{1, 2, 3},
+                                       std::vector<uint8_t>{4, 5}, 32);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->size(), 32u);
+}
+
+TEST_F(WebTransportTest, ExportKeyingMaterialRejectsInvalidParameters) {
+  const auto expect_bad_message = [this](std::vector<uint8_t> label,
+                                         std::vector<uint8_t> context,
+                                         uint32_t output_length) {
+    mojo::FakeMessageDispatchContext dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    base::RunLoop run_loop_for_handshake;
+    mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+    TestHandshakeClient test_handshake_client(
+        handshake_client.InitWithNewPipeAndPassReceiver(),
+        run_loop_for_handshake.QuitClosure());
+
+    CreateWebTransport(GetURL("/echo"),
+                       url::Origin::Create(GURL("https://example.org/")),
+                       std::move(handshake_client));
+    run_loop_for_handshake.Run();
+
+    ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+    mojo::Remote<mojom::WebTransport> transport_remote(
+        test_handshake_client.PassTransport());
+    WebTransportKeyingMaterialParams params{std::move(label),
+                                            std::move(context), output_length};
+    transport_remote->ExportKeyingMaterial(params, base::DoNothing());
+    EXPECT_FALSE(bad_message_observer.WaitForBadMessage().empty());
+  };
+
+  expect_bad_message(std::vector<uint8_t>{1}, std::vector<uint8_t>{2}, 0);
+  expect_bad_message(
+      std::vector<uint8_t>(mojom::kWebTransportExporterMaxInputLength + 1),
+      std::vector<uint8_t>{2}, 1);
+  expect_bad_message(
+      std::vector<uint8_t>{1},
+      std::vector<uint8_t>(mojom::kWebTransportExporterMaxInputLength + 1), 1);
+  expect_bad_message(std::vector<uint8_t>{1}, std::vector<uint8_t>{2},
+                     mojom::kWebTransportExporterMaxOutputLength + 1);
+}
+
 TEST_F(WebTransportTest, SendToolargeDatagram) {
   base::RunLoop run_loop_for_handshake;
   mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;

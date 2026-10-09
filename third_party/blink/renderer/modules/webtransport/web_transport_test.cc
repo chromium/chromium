@@ -22,6 +22,7 @@
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fetch/headers.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -88,8 +90,11 @@ namespace blink {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::Mock;
+using ::testing::Pointee;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
 using ::testing::Truly;
@@ -97,6 +102,10 @@ using ::testing::Unused;
 
 constexpr char kInvalidStateMessage[] =
     "The WebTransport connection is not open.";
+
+bool IsRangeError(ScriptState* script_state,
+                  ScriptValue value,
+                  const String& message);
 
 class WebTransportConnector final : public mojom::blink::WebTransportConnector {
  public:
@@ -257,6 +266,13 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
     OnDatagramWritableCreated(datagram_writables_.back().get(),
                               std::move(priority));
   }
+
+  MOCK_METHOD(
+      void,
+      ExportKeyingMaterial,
+      (network::mojom::blink::WebTransportKeyingMaterialParamsPtr params,
+       ExportKeyingMaterialCallback callback),
+      (override));
 
   MOCK_METHOD4(
       CreateStream,
@@ -1066,6 +1082,206 @@ TEST_F(WebTransportTest, SendDatagram) {
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_TRUE(tester.Value().IsUndefined());
+}
+
+TEST_F(WebTransportTest, ExportKeyingMaterial) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kWebTransportExportKeyingMaterial));
+  std::array<uint8_t, 3> label_data = {1, 2, 3};
+  std::array<uint8_t, 2> context_data = {4, 5};
+  auto* label = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(label_data)));
+  auto* context = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(context_data)));
+
+  EXPECT_CALL(*mock_web_transport_,
+              ExportKeyingMaterial(
+                  Pointee(AllOf(
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::label,
+                            ElementsAre(1, 2, 3)),
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::context,
+                            ElementsAre(4, 5)),
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::output_length,
+                            16))),
+                  _))
+      .WillOnce([](network::mojom::blink::WebTransportKeyingMaterialParamsPtr,
+                   MockWebTransport::ExportKeyingMaterialCallback callback) {
+        std::move(callback).Run(Vector<uint8_t>(16, 0x42));
+      });
+
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             web_transport->exportKeyingMaterial(
+                                 scope.GetScriptState(), label, context, 16));
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kWebTransportExportKeyingMaterial));
+  ASSERT_TRUE(tester.IsFulfilled());
+  ASSERT_TRUE(tester.Value().V8Value()->IsUint8Array());
+  v8::Local<v8::Uint8Array> result =
+      tester.Value().V8Value().As<v8::Uint8Array>();
+  ASSERT_EQ(result->ByteLength(), 16u);
+  v8::Local<v8::Context> context_handle = scope.GetScriptState()->GetContext();
+  EXPECT_EQ(result->Get(context_handle, 0)
+                .ToLocalChecked()
+                ->Uint32Value(context_handle)
+                .FromJust(),
+            0x42u);
+  EXPECT_EQ(result->Get(context_handle, 15)
+                .ToLocalChecked()
+                ->Uint32Value(context_handle)
+                .FromJust(),
+            0x42u);
+}
+
+TEST_F(WebTransportTest, ExportKeyingMaterialWaitsForConnection) {
+  V8TestingScope scope;
+  auto* web_transport = Create(scope, "https://example.com", EmptyOptions());
+  auto make_buffer_source = [](uint8_t value) {
+    return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+        NotShared<DOMUint8Array>(
+            DOMUint8Array::Create(base::span_from_ref(value))));
+  };
+
+  ScriptPromiseTester first_tester(
+      scope.GetScriptState(), web_transport->exportKeyingMaterial(
+                                  scope.GetScriptState(), make_buffer_source(1),
+                                  make_buffer_source(2), 8));
+  ScriptPromiseTester second_tester(
+      scope.GetScriptState(), web_transport->exportKeyingMaterial(
+                                  scope.GetScriptState(), make_buffer_source(3),
+                                  make_buffer_source(4), 16));
+  ConnectSuccessfullyWithoutRunningPendingTasks(web_transport);
+  testing::InSequence sequence;
+  EXPECT_CALL(*mock_web_transport_,
+              ExportKeyingMaterial(
+                  Pointee(AllOf(
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::label,
+                            ElementsAre(1)),
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::context,
+                            ElementsAre(2)),
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::output_length,
+                            8))),
+                  _))
+      .WillOnce([](network::mojom::blink::WebTransportKeyingMaterialParamsPtr,
+                   MockWebTransport::ExportKeyingMaterialCallback callback) {
+        std::move(callback).Run(Vector<uint8_t>(8, 0x42));
+      });
+  EXPECT_CALL(*mock_web_transport_,
+              ExportKeyingMaterial(
+                  Pointee(AllOf(
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::label,
+                            ElementsAre(3)),
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::context,
+                            ElementsAre(4)),
+                      Field(&network::mojom::blink::
+                                WebTransportKeyingMaterialParams::output_length,
+                            16))),
+                  _))
+      .WillOnce([](network::mojom::blink::WebTransportKeyingMaterialParamsPtr,
+                   MockWebTransport::ExportKeyingMaterialCallback callback) {
+        std::move(callback).Run(Vector<uint8_t>(16, 0x42));
+      });
+
+  first_tester.WaitUntilSettled();
+  second_tester.WaitUntilSettled();
+  EXPECT_TRUE(first_tester.IsFulfilled());
+  EXPECT_TRUE(second_tester.IsFulfilled());
+}
+
+TEST_F(WebTransportTest, ExportKeyingMaterialValidatesLengths) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* empty = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(0)));
+  auto* oversized = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(256)));
+
+  ScriptPromiseTester oversized_label_tester(
+      scope.GetScriptState(), web_transport->exportKeyingMaterial(
+                                  scope.GetScriptState(), oversized, empty, 1));
+  ScriptPromiseTester oversized_context_tester(
+      scope.GetScriptState(), web_transport->exportKeyingMaterial(
+                                  scope.GetScriptState(), empty, oversized, 1));
+  ScriptPromiseTester zero_output_tester(
+      scope.GetScriptState(), web_transport->exportKeyingMaterial(
+                                  scope.GetScriptState(), empty, empty, 0));
+  ScriptPromiseTester oversized_output_tester(
+      scope.GetScriptState(), web_transport->exportKeyingMaterial(
+                                  scope.GetScriptState(), empty, empty, 4097));
+
+  oversized_label_tester.WaitUntilSettled();
+  oversized_context_tester.WaitUntilSettled();
+  zero_output_tester.WaitUntilSettled();
+  oversized_output_tester.WaitUntilSettled();
+  ScriptState* script_state = scope.GetScriptState();
+  EXPECT_TRUE(IsRangeError(script_state, oversized_label_tester.Value(),
+                           "The label must not exceed 255 bytes."));
+  EXPECT_TRUE(IsRangeError(script_state, oversized_context_tester.Value(),
+                           "The context must not exceed 255 bytes."));
+  EXPECT_TRUE(
+      IsRangeError(script_state, zero_output_tester.Value(),
+                   "The output length must be between 1 and 4096 bytes."));
+  EXPECT_TRUE(
+      IsRangeError(script_state, oversized_output_tester.Value(),
+                   "The output length must be between 1 and 4096 bytes."));
+}
+
+TEST_F(WebTransportTest, ExportKeyingMaterialRejectsWhenHandshakeFails) {
+  V8TestingScope scope;
+  auto* web_transport = Create(scope, "https://example.com", EmptyOptions());
+  auto* empty = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(0)));
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             web_transport->exportKeyingMaterial(
+                                 scope.GetScriptState(), empty, empty, 16));
+
+  test::RunPendingTasks();
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(args.size(), 1u);
+  mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
+      handshake_client(std::move(args[0].handshake_client));
+  handshake_client->OnHandshakeFailed(nullptr);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsRejected());
+  DOMException* exception =
+      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "InvalidStateError");
+}
+
+TEST_F(WebTransportTest, ExportKeyingMaterialRejectsAfterClose) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* empty = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(0)));
+  EXPECT_CALL(*mock_web_transport_, Close());
+
+  web_transport->close(nullptr);
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             web_transport->exportKeyingMaterial(
+                                 scope.GetScriptState(), empty, empty, 16));
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsRejected());
+  DOMException* exception =
+      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "InvalidStateError");
 }
 
 TEST_F(WebTransportTest, MaxDatagramSizeUpdatedOnConnect) {

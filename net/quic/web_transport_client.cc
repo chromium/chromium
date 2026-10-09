@@ -31,6 +31,12 @@ class FailedWebTransportClient : public WebTransportClient {
   void CloseIfNonceMatches(base::UnguessableToken nonce) override {
     NOTREACHED();
   }
+  std::optional<std::vector<uint8_t>> ExportKeyingMaterial(
+      base::span<const uint8_t> label,
+      base::span<const uint8_t> context,
+      size_t result_length) override {
+    return std::nullopt;
+  }
 
   quic::WebTransportSession* session() override { return nullptr; }
   std::optional<quic::QuicByteCount> GetMaxDatagramSize() const override {

@@ -162,6 +162,38 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
 
 }  // namespace
 
+class WebTransport::PendingExportKeyingMaterialRequest final
+    : public GarbageCollected<PendingExportKeyingMaterialRequest> {
+ public:
+  PendingExportKeyingMaterialRequest(
+      ScriptPromiseResolver<NotShared<DOMUint8Array>>* resolver,
+      Vector<uint8_t> label,
+      Vector<uint8_t> context,
+      uint32_t output_length)
+      : resolver_(resolver),
+        label_(std::move(label)),
+        context_(std::move(context)),
+        output_length_(output_length) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
+
+  ScriptPromiseResolver<NotShared<DOMUint8Array>>* resolver() const {
+    return resolver_.Get();
+  }
+  const Vector<uint8_t>& label() const { return label_; }
+  const Vector<uint8_t>& context() const { return context_; }
+  uint32_t output_length() const { return output_length_; }
+  bool sent() const { return sent_; }
+  void set_sent() { sent_ = true; }
+
+ private:
+  Member<ScriptPromiseResolver<NotShared<DOMUint8Array>>> resolver_;
+  Vector<uint8_t> label_;
+  Vector<uint8_t> context_;
+  uint32_t output_length_;
+  bool sent_ = false;
+};
+
 // RecentlyForgottenStreamIdSet implementation
 void WebTransport::RecentlyForgottenStreamIdSet::Insert(uint32_t stream_id) {
   auto result = id_set_.insert(stream_id);
@@ -1533,6 +1565,107 @@ ScriptPromise<WebTransportConnectionStats> WebTransport::getStats(
   return resolver->Promise();
 }
 
+ScriptPromise<NotShared<DOMUint8Array>> WebTransport::exportKeyingMaterial(
+    ScriptState* script_state,
+    const V8UnionArrayBufferOrArrayBufferView* label,
+    const V8UnionArrayBufferOrArrayBufferView* context,
+    uint32_t output_length) {
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kWebTransportExportKeyingMaterial);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<NotShared<DOMUint8Array>>>(
+          script_state);
+  auto promise = resolver->Promise();
+  const base::span<const uint8_t> label_bytes =
+      AsSpan<SharedBufferPolicy::kDisallow>(*label);
+  const base::span<const uint8_t> context_bytes =
+      AsSpan<SharedBufferPolicy::kDisallow>(*context);
+
+  if (label_bytes.size() >
+      network::mojom::blink::kWebTransportExporterMaxInputLength) {
+    resolver->Reject(V8ThrowException::CreateRangeError(
+        script_state->GetIsolate(), "The label must not exceed 255 bytes."));
+    return promise;
+  }
+  if (context_bytes.size() >
+      network::mojom::blink::kWebTransportExporterMaxInputLength) {
+    resolver->Reject(V8ThrowException::CreateRangeError(
+        script_state->GetIsolate(), "The context must not exceed 255 bytes."));
+    return promise;
+  }
+  if (output_length == 0 ||
+      output_length >
+          network::mojom::blink::kWebTransportExporterMaxOutputLength) {
+    resolver->Reject(V8ThrowException::CreateRangeError(
+        script_state->GetIsolate(),
+        "The output length must be between 1 and 4096 bytes."));
+    return promise;
+  }
+  if (cleanup_started_ ||
+      (!connection_pending_ && !transport_remote_.is_bound())) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot export keying material from a closed WebTransport.");
+    return promise;
+  }
+
+  Vector<uint8_t> label_copy(label_bytes);
+  Vector<uint8_t> context_copy(context_bytes);
+  auto* request = MakeGarbageCollected<PendingExportKeyingMaterialRequest>(
+      resolver, std::move(label_copy), std::move(context_copy), output_length);
+  pending_export_keying_material_requests_.insert(request);
+  if (transport_remote_.is_bound()) {
+    SendExportKeyingMaterialRequest(request);
+  }
+  return promise;
+}
+
+void WebTransport::SendExportKeyingMaterialRequest(
+    PendingExportKeyingMaterialRequest* request) {
+  CHECK(transport_remote_.is_bound());
+  CHECK(!request->sent());
+  request->set_sent();
+  transport_remote_->ExportKeyingMaterial(
+      network::mojom::blink::WebTransportKeyingMaterialParams::New(
+          request->label(), request->context(), request->output_length()),
+      BindOnce(&WebTransport::OnExportKeyingMaterialResponse,
+               WrapWeakPersistent(this), WrapPersistent(request)));
+}
+
+void WebTransport::OnExportKeyingMaterialResponse(
+    PendingExportKeyingMaterialRequest* request,
+    const std::optional<Vector<uint8_t>>& keying_material) {
+  auto it = pending_export_keying_material_requests_.find(request);
+  if (it == pending_export_keying_material_requests_.end()) {
+    return;
+  }
+  pending_export_keying_material_requests_.erase(it);
+
+  if (!keying_material) {
+    request->resolver()->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The WebTransport closed before keying material could be exported.");
+    return;
+  }
+  request->resolver()->Resolve(
+      NotShared(DOMUint8Array::Create(*keying_material)));
+}
+
+void WebTransport::RejectPendingExportKeyingMaterialRequests() {
+  HeapVector<Member<PendingExportKeyingMaterialRequest>> requests;
+  requests.ReserveInitialCapacity(
+      pending_export_keying_material_requests_.size());
+  for (auto& request : pending_export_keying_material_requests_) {
+    requests.push_back(request);
+  }
+  pending_export_keying_material_requests_.clear();
+  for (auto& request : requests) {
+    request->resolver()->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The WebTransport closed before keying material could be exported.");
+  }
+}
+
 void WebTransport::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::blink::WebTransport> web_transport,
     mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
@@ -1616,6 +1749,12 @@ void WebTransport::OnConnectionEstablished(
   connection_pending_ = false;
   ready_->ResolveWithUndefined();
   StartPendingStreamCreations();
+
+  for (auto& request : pending_export_keying_material_requests_) {
+    if (!request->sent()) {
+      SendExportKeyingMaterialRequest(request);
+    }
+  }
 
   HeapVector<Member<ScriptPromiseResolver<WebTransportConnectionStats>>>
       stats_resolvers;
@@ -1962,6 +2101,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
   visitor->Trace(pending_stream_creations_);
+  visitor->Trace(pending_export_keying_material_requests_);
   visitor->Trace(connector_);
   visitor->Trace(transport_remote_);
   visitor->Trace(handshake_client_receiver_);
@@ -2263,6 +2403,7 @@ void WebTransport::Dispose() {
   closed_potentially_pending_streams_.clear();
   pending_receive_stream_stats_callbacks_.clear();
   pending_stream_creations_.clear();
+  pending_export_keying_material_requests_.clear();
   send_groups_.clear();
   connector_.reset();
   transport_remote_.reset();
@@ -2286,6 +2427,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   RejectPendingStreamResolvers(stream_error);
   HandlePendingGetStatsResolvers(error);
   RunPendingReceiveStreamStatsCallbacks();
+  RejectPendingExportKeyingMaterialRequests();
   ScriptValue error_value(isolate, error);
   datagram_source_->Error(error);
   // Error() enters V8 and may trigger GC. Keep strong references so every sink

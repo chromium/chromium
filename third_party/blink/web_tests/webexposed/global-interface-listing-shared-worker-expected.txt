@@ -3572,6 +3572,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createBidirectionalStream
 [Worker]     method createSendGroup
 [Worker]     method createUnidirectionalStream
+[Worker]     method exportKeyingMaterial
 [Worker]     method getStats
 [Worker]     setter anticipatedConcurrentIncomingBidirectionalStreams
 [Worker]     setter anticipatedConcurrentIncomingUnidirectionalStreams

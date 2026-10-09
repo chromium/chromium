@@ -6855,6 +6855,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6038" label="SVGPathElementGetPathSegmentAtLength"/>
   <int value="6039" label="OpaqueRangeDisconnect"/>
   <int value="6040" label="HTMLSelectedContentElement"/>
+  <int value="6041" label="WebTransportExportKeyingMaterial"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

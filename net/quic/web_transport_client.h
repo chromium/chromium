@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
@@ -185,6 +186,15 @@ class NET_EXPORT WebTransportClient {
       const std::optional<WebTransportCloseInfo>& close_info) = 0;
 
   virtual void CloseIfNonceMatches(base::UnguessableToken nonce) = 0;
+
+  // Exports exactly `result_length` bytes of keying material scoped to this
+  // WebTransport session and the application-provided `label` and `context`.
+  // Returns nullopt if the session cannot export the requested material.
+  // Callers must enforce the protocol's input and output length limits.
+  virtual std::optional<std::vector<uint8_t>> ExportKeyingMaterial(
+      base::span<const uint8_t> label,
+      base::span<const uint8_t> context,
+      size_t result_length) = 0;
 
   // session() can be nullptr in states other than CONNECTED. Do not call
   // session()->GetMaxDatagramSize() directly because malformed peer settings

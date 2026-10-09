@@ -11,6 +11,14 @@ import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
+// Maximum byte length of each application-supplied exporter label and context.
+// The HTTP/3 exporter context encodes each length in one byte.
+const uint32 kWebTransportExporterMaxInputLength = 255;
+
+// Maximum requested exporter output in bytes. The WebTransport API permits an
+// implementation-defined limit of at least 4096 bytes; Chromium uses 4096.
+const uint32 kWebTransportExporterMaxOutputLength = 4096;
+
 // A hint for what kind of congestion control algorithm the application prefers.
 // https://w3c.github.io/webtransport/#enumdef-webtransportcongestioncontrol
 enum WebTransportCongestionControl {
@@ -52,6 +60,20 @@ struct WebTransportCertificateFingerprint {
 // (https://w3c.github.io/webtransport/#dom-webtransportoptions-headers).
 struct WebTransportHttpRequestHeaders {
   array<HttpRequestHeaderKeyValuePair> headers;
+};
+
+// The Web API accepts BufferSource values, so labels and contexts are opaque
+// bytes rather than text.
+struct WebTransportKeyingMaterialParams {
+  // Opaque application-provided bytes identifying the exported keying
+  // material.
+  array<uint8> label;
+
+  // Opaque application-provided bytes bound to the exporter derivation.
+  array<uint8> context;
+
+  // Number of keying material bytes requested by the application.
+  uint32 output_length;
 };
 
 // Data (possibly) attached when WebTransport is closed gracefully.
@@ -185,6 +207,14 @@ interface WebTransport {
   CreateDatagramWritable(
       pending_receiver<WebTransportDatagramWritable> writable,
       WebTransportStreamPriority priority);
+
+  // Exports |output_length| bytes of keying material scoped to this
+  // WebTransport session using the caller-provided |label| and |context|.
+  // Returns null if the session can no longer export keying material. Inputs
+  // exceeding the constants above are rejected as a bad message during
+  // deserialization.
+  ExportKeyingMaterial(WebTransportKeyingMaterialParams params)
+      => (array<uint8>? keying_material);
 
   // Stream creation initiated by the client. |succeeded| represents whether
   // the stream is created successfully, and |stream_id| is meaningful only

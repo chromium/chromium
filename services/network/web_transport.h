@@ -86,6 +86,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void CreateDatagramWritable(
       mojo::PendingReceiver<mojom::WebTransportDatagramWritable> writable,
       mojom::WebTransportStreamPriorityPtr priority) override;
+  void ExportKeyingMaterial(const WebTransportKeyingMaterialParams& params,
+                            ExportKeyingMaterialCallback callback) override;
   void CreateStream(mojo::ScopedDataPipeConsumerHandle readable,
                     mojo::ScopedDataPipeProducerHandle writable,
                     mojom::WebTransportStreamPriorityPtr priority,

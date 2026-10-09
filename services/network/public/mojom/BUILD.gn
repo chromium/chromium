@@ -1107,6 +1107,16 @@ mojom("url_loader_base") {
         "//services/network/public/cpp:ip_address_mojom_support",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.WebTransportKeyingMaterialParams"
+          cpp = "::network::WebTransportKeyingMaterialParams"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/web_transport_keying_material_params_mojom_traits.h" ]
+      traits_public_deps = [ "//base" ]
+    },
   ]
 
   if (is_linux) {

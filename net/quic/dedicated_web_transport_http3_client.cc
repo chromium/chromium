@@ -6,14 +6,18 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <limits>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/port_util.h"
@@ -31,6 +35,8 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_data_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/web_transport/web_transport_headers.h"
@@ -55,6 +61,35 @@ constexpr base::TimeDelta kMaxCloseTimeout = base::Seconds(2);
 constexpr uint32_t kMinimumIncomingWebTransportStreams = 100;
 static_assert(quic::kDefaultMaxStreamsPerConnection >=
               kMinimumIncomingWebTransportStreams);
+
+constexpr std::string_view kWebTransportExporterLabel = "EXPORTER-WebTransport";
+
+std::optional<std::string> SerializeWebTransportExporterContext(
+    uint64_t session_id,
+    base::span<const uint8_t> label,
+    base::span<const uint8_t> context) {
+  if (label.size() > std::numeric_limits<uint8_t>::max() ||
+      context.size() > std::numeric_limits<uint8_t>::max()) {
+    return std::nullopt;
+  }
+
+  size_t exporter_context_size;
+  if (!base::CheckAdd(sizeof(uint64_t), sizeof(uint8_t), label.size(),
+                      sizeof(uint8_t), context.size())
+           .AssignIfValid(&exporter_context_size)) {
+    return std::nullopt;
+  }
+  std::string exporter_context(exporter_context_size, '\0');
+  quic::QuicDataWriter writer(absl::MakeSpan(exporter_context));
+  if (!writer.WriteUInt64(session_id) ||
+      !writer.WriteUInt8(static_cast<uint8_t>(label.size())) ||
+      !writer.WriteStringPiece(base::as_string_view(label)) ||
+      !writer.WriteUInt8(static_cast<uint8_t>(context.size())) ||
+      !writer.WriteStringPiece(base::as_string_view(context))) {
+    return std::nullopt;
+  }
+  return exporter_context;
+}
 
 // Enables custom congestion control for WebTransport over HTTP/3.
 BASE_FEATURE(kWebTransportCongestionControl, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -576,6 +611,39 @@ DedicatedWebTransportHttp3Client::GetSendStreamStats(uint32_t stream_id) const {
       ->GetSendStreamStats(stream_id);
 }
 
+// static
+std::optional<std::string> DedicatedWebTransportHttp3Client::
+    SerializeExporterContextForTesting(  // IN-TEST
+        uint64_t session_id,
+        base::span<const uint8_t> label,
+        base::span<const uint8_t> context) {
+  return SerializeWebTransportExporterContext(session_id, label, context);
+}
+
+std::optional<std::vector<uint8_t>>
+DedicatedWebTransportHttp3Client::ExportKeyingMaterial(
+    base::span<const uint8_t> label,
+    base::span<const uint8_t> context,
+    size_t result_length) {
+  if (state_ != WebTransportState::CONNECTED || !connect_stream_id_ ||
+      !session_) {
+    return std::nullopt;
+  }
+  std::optional<std::string> exporter_context =
+      SerializeWebTransportExporterContext(*connect_stream_id_, label, context);
+  if (!exporter_context) {
+    return std::nullopt;
+  }
+  std::string result;
+  if (!session_->GetMutableCryptoStream()->ExportKeyingMaterial(
+          kWebTransportExporterLabel, *exporter_context, result_length,
+          &result) ||
+      result.size() != result_length) {
+    return std::nullopt;
+  }
+  return base::ToVector(base::as_byte_span(result));
+}
+
 void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
   do {
     ConnectState connect_state = next_connect_state_;
@@ -759,6 +827,7 @@ int DedicatedWebTransportHttp3Client::DoConnect() {
 void DedicatedWebTransportHttp3Client::CreateConnection() {
   // Delete the objects in the same order they would be normally deleted by the
   // destructor.
+  connect_stream_id_.reset();
   session_ = nullptr;
   packet_reader_ = nullptr;
 
@@ -921,6 +990,7 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   if (stream == nullptr) {
     return ERR_QUIC_PROTOCOL_ERROR;
   }
+  connect_stream_id_ = stream->id();
 
   quiche::HttpHeaderBlock headers;
   DCHECK_EQ(url_.GetScheme(), url::kHttpsScheme);

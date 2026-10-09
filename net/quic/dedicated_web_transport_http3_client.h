@@ -6,8 +6,11 @@
 #define NET_QUIC_DEDICATED_WEB_TRANSPORT_HTTP3_CLIENT_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,6 +33,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
 #include "url/gurl.h"
@@ -66,6 +70,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void Connect() override;
   void Close(const std::optional<WebTransportCloseInfo>& close_info) override;
   void CloseIfNonceMatches(base::UnguessableToken nonce) override;
+  std::optional<std::vector<uint8_t>> ExportKeyingMaterial(
+      base::span<const uint8_t> label,
+      base::span<const uint8_t> context,
+      size_t result_length) override;
 
   quic::WebTransportSession* session() override;
   std::optional<quic::QuicByteCount> GetMaxDatagramSize() const override;
@@ -73,6 +81,11 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void UnregisterSendStream(uint32_t stream_id) override;
   std::optional<WebTransportSendStreamStats> GetSendStreamStats(
       uint32_t stream_id) const override;
+
+  static std::optional<std::string> SerializeExporterContextForTesting(
+      uint64_t session_id,
+      base::span<const uint8_t> label,
+      base::span<const uint8_t> context);
 
   handles::NetworkHandle target_network() const { return target_network_; }
 
@@ -197,6 +210,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   bool retried_with_new_version_ = false;
   bool session_ready_ = false;
   bool safe_to_report_error_details_ = false;
+  // The CONNECT stream ID used to scope exported keying material to this
+  // WebTransport session. Set when the request is sent and reset when the
+  // underlying connection is recreated.
+  std::optional<quic::QuicStreamId> connect_stream_id_;
   std::unique_ptr<HttpResponseInfo> http_response_info_;
 
   ProxyInfo proxy_info_;

@@ -4,6 +4,7 @@
 
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -48,6 +49,37 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Optional;
 using ::testing::SaveArg;
+
+TEST(DedicatedWebTransportHttp3ClientTest, SerializeExporterContext) {
+  constexpr std::array<uint8_t, 3> label = {'f', 0, 0xff};
+  constexpr std::array<uint8_t, 3> context = {'b', 'a', 'r'};
+  std::string expected("\x01\x02\x03\x04\x05\x06\x07\x08", 8);
+  expected.push_back(3);
+  expected.push_back('f');
+  expected.push_back('\0');
+  expected.push_back('\xff');
+  expected.push_back(3);
+  expected.append("bar");
+
+  EXPECT_THAT(
+      DedicatedWebTransportHttp3Client::SerializeExporterContextForTesting(
+          0x0102030405060708, label, context),
+      Optional(expected));
+}
+
+TEST(DedicatedWebTransportHttp3ClientTest, ExporterContextInputLengthLimit) {
+  const std::vector<uint8_t> max_length_input(255, 'a');
+  const std::vector<uint8_t> over_length_input(256, 'b');
+  EXPECT_TRUE(
+      DedicatedWebTransportHttp3Client::SerializeExporterContextForTesting(
+          0, max_length_input, max_length_input));
+  EXPECT_FALSE(
+      DedicatedWebTransportHttp3Client::SerializeExporterContextForTesting(
+          0, over_length_input, {}));
+  EXPECT_FALSE(
+      DedicatedWebTransportHttp3Client::SerializeExporterContextForTesting(
+          0, {}, over_length_input));
+}
 
 class MockVisitor : public WebTransportClientVisitor {
  public:

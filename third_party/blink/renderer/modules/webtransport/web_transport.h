@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_reliability_mode.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/fetch/headers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -50,6 +51,7 @@ class IncomingStream;
 class OutgoingStream;
 class ReadableStream;
 class ScriptState;
+class V8UnionArrayBufferOrArrayBufferView;
 class WebTransportCloseInfo;
 class WebTransportDatagramsWritable;
 class WebTransportOptions;
@@ -104,6 +106,11 @@ class MODULES_EXPORT WebTransport final
   ScriptPromise<IDLUndefined> draining(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
+  ScriptPromise<NotShared<DOMUint8Array>> exportKeyingMaterial(
+      ScriptState*,
+      const V8UnionArrayBufferOrArrayBufferView* label,
+      const V8UnionArrayBufferOrArrayBufferView* context,
+      uint32_t output_length);
   const String& protocol();
   WebTransportSendGroup* createSendGroup(ExceptionState&);
   V8WebTransportReliabilityMode reliability() const;
@@ -235,6 +242,7 @@ class MODULES_EXPORT WebTransport final
   class ReceiveStreamVendor;
   class BidirectionalStreamVendor;
   class PendingStreamCreation;
+  class PendingExportKeyingMaterialRequest;
 
   WebTransport(ScriptState*, const String& url, ExecutionContext* context);
 
@@ -258,6 +266,12 @@ class MODULES_EXPORT WebTransport final
   void ForgetDatagramUnderlyingSink(DatagramUnderlyingSink*);
   void RetainDatagramUnderlyingSinkWithPendingWrites(DatagramUnderlyingSink*);
   void ReleaseDatagramUnderlyingSinkWithPendingWrites(DatagramUnderlyingSink*);
+  void SendExportKeyingMaterialRequest(
+      PendingExportKeyingMaterialRequest* request);
+  void OnExportKeyingMaterialResponse(
+      PendingExportKeyingMaterialRequest* request,
+      const std::optional<Vector<uint8_t>>& keying_material);
+  void RejectPendingExportKeyingMaterialRequests();
 
   // Result type for ExtractSendStreamOptions().
   struct SendStreamOptions {
@@ -401,6 +415,9 @@ class MODULES_EXPORT WebTransport final
       pending_receive_stream_stats_callbacks_;
   uint64_t next_receive_stream_stats_request_id_ = 0;
   bool cleanup_started_ = false;
+
+  HeapLinkedHashSet<Member<PendingExportKeyingMaterialRequest>>
+      pending_export_keying_material_requests_;
 
   // Tracks resolvers for in-progress createSendStream() and
   // createBidirectionalStream() operations so they can be rejected.
