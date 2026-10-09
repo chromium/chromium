@@ -5,16 +5,19 @@
 #ifndef REMOTING_HOST_INPUT_INJECTOR_MAC_H_
 #define REMOTING_HOST_INPUT_INJECTOR_MAC_H_
 
+#include <CoreGraphics/CGEventTypes.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/proto/internal.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace base {
@@ -32,6 +35,8 @@ class Clipboard;
 // `clipboard_` is bound to `input_thread_task_runner`.
 class InputInjectorMac : public InputInjector {
  public:
+  using CGEventPostFunction = base::RepeatingCallback<void(CGEventRef)>;
+
   InputInjectorMac(
       scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
@@ -54,7 +59,11 @@ class InputInjectorMac : public InputInjector {
   void Start(
       std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
 
+  void SetUseCGEventMouseInjectionForTesting(bool enable);
+  void SetCGEventPostFunctionForTesting(CGEventPostFunction func);
+
  private:
+  void InjectCGEventMouse(const protocol::MouseEvent& event);
   void WakeUpDisplay();
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -67,6 +76,14 @@ class InputInjectorMac : public InputInjector {
   uint64_t right_modifiers_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   base::TimeTicks last_time_display_woken_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  bool use_cg_event_mouse_injection_ GUARDED_BY_CONTEXT(sequence_checker_);
+  int64_t mouse_event_number_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int64_t click_state_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
+  protocol::MouseEvent::MouseButton last_click_button_ GUARDED_BY_CONTEXT(
+      sequence_checker_) = protocol::MouseEvent::BUTTON_UNDEFINED;
+  base::TimeTicks last_click_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  webrtc::DesktopVector last_click_pos_ GUARDED_BY_CONTEXT(sequence_checker_);
+  CGEventPostFunction cg_event_post_func_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace remoting

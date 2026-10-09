@@ -10,6 +10,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -19,6 +22,7 @@
 #include "base/i18n/break_iterator.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
@@ -37,15 +41,37 @@ namespace remoting {
 
 namespace {
 
+// Maximum time between consecutive mouse button-down events to be counted as
+// a double-click or triple-click. Matches the default macOS
+// +[NSEvent doubleClickInterval] of 500ms.
+constexpr base::TimeDelta kDoubleClickTimeThreshold = base::Milliseconds(500);
+
+// Maximum distance in DIPs (global display coordinates) along either axis
+// between consecutive clicks to be counted as a multi-click. Matches the
+// threshold in ui::MouseEvent::IsRepeatedClickEvent.
+constexpr int kDoubleClickMaxDistance = 2;
+
+bool ShouldUseCGEventMouseInjection() {
+  return base::mac::MacOSMajorVersion() >= 27;
+}
+
+bool IsWithinDoubleClickDistance(const webrtc::DesktopVector& a,
+                                 const webrtc::DesktopVector& b) {
+  return std::abs(a.x() - b.x()) <= kDoubleClickMaxDistance &&
+         std::abs(a.y() - b.y()) <= kDoubleClickMaxDistance;
+}
+
 void SetOrClearBit(uint64_t& value, uint64_t bit, bool set_bit) {
   value = set_bit ? (value | bit) : (value & ~bit);
 }
 
 // Must be called on UI thread.
-void CreateAndPostKeyEvent(int keycode,
-                           bool pressed,
-                           uint64_t flags,
-                           const std::u16string& unicode) {
+void CreateAndPostKeyEvent(
+    int keycode,
+    bool pressed,
+    uint64_t flags,
+    const std::u16string& unicode,
+    const InputInjectorMac::CGEventPostFunction& post_event_func) {
   base::apple::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
@@ -56,24 +82,44 @@ void CreateAndPostKeyEvent(int keycode,
           reinterpret_cast<const UniChar*>(unicode.data()));
     }
     VLOG(3) << "Injecting key " << (pressed ? "down" : "up") << " event.";
-    CGEventPost(kCGSessionEventTap, eventRef.get());
+    post_event_func.Run(eventRef.get());
   }
 }
 
 // Must be called on UI thread.
-void PostMouseEvent(int32_t x,
-                    int32_t y,
-                    bool left_down,
-                    bool right_down,
-                    bool middle_down) {
-  // We use the deprecated CGPostMouseEvent API because we receive low-level
-  // mouse events, whereas CGEventCreateMouseEvent is for injecting higher-level
-  // events. For example, the deprecated APIs will detect double-clicks or drags
-  // in a way that is consistent with how they would be generated using a local
-  // mouse, whereas the new APIs expect us to inject these higher-level events
-  // directly.
-  //
-  // See crbug.com/677857 for more details.
+void CreateAndPostMouseEvent(
+    CGEventType event_type,
+    CGPoint position,
+    CGMouseButton button,
+    uint64_t flags,
+    std::optional<int64_t> event_number,
+    std::optional<int64_t> click_state,
+    const InputInjectorMac::CGEventPostFunction& post_event_func) {
+  base::apple::ScopedCFTypeRef<CGEventRef> event_ref(
+      CGEventCreateMouseEvent(nullptr, event_type, position, button));
+  if (!event_ref) {
+    LOG(ERROR) << "CGEventCreateMouseEvent failed";
+    return;
+  }
+  CGEventSetFlags(event_ref.get(), static_cast<CGEventFlags>(flags));
+  if (event_number.has_value()) {
+    CGEventSetIntegerValueField(event_ref.get(), kCGMouseEventNumber,
+                                *event_number);
+  }
+  if (click_state.has_value()) {
+    CGEventSetIntegerValueField(event_ref.get(), kCGMouseEventClickState,
+                                *click_state);
+  }
+  post_event_func.Run(event_ref.get());
+}
+
+// Injects a mouse event using the deprecated CGPostMouseEvent API. Must be
+// called on the UI thread.
+void PostLegacyMouseEvent(int32_t x,
+                          int32_t y,
+                          bool left_down,
+                          bool right_down,
+                          bool middle_down) {
   CGPoint position = CGPointMake(x, y);
 
 #pragma clang diagnostic push
@@ -87,12 +133,15 @@ void PostMouseEvent(int32_t x,
 }
 
 // Must be called on UI thread.
-void CreateAndPostScrollWheelEvent(int32_t delta_x, int32_t delta_y) {
+void CreateAndPostScrollWheelEvent(
+    int32_t delta_x,
+    int32_t delta_y,
+    const InputInjectorMac::CGEventPostFunction& post_event_func) {
   base::apple::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2,
                                     delta_y, delta_x));
   if (eventRef) {
-    CGEventPost(kCGSessionEventTap, eventRef.get());
+    post_event_func.Run(eventRef.get());
   }
 }
 
@@ -117,20 +166,24 @@ InputInjectorMac::InputInjectorMac(
     scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
     : ui_thread_task_runner_(std::move(ui_thread_task_runner)),
-      clipboard_(std::move(input_thread_task_runner), Clipboard::Create()) {
+      clipboard_(std::move(input_thread_task_runner), Clipboard::Create()),
+      use_cg_event_mouse_injection_(ShouldUseCGEventMouseInjection()),
+      cg_event_post_func_(
+          base::BindRepeating(&CGEventPost, kCGSessionEventTap)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ensure that local hardware events are not suppressed after injecting
-  // input events.  This allows LocalInputMonitor to detect if the local mouse
-  // is being moved whilst a remote user is connected.
-  // This API is deprecated, but it is needed when using the deprecated
-  // injection APIs.
-  // If the non-deprecated injection APIs were used instead, the equivalent of
-  // this line would not be needed, as OS X defaults to _not_ suppressing local
-  // inputs in that case.
+  if (!use_cg_event_mouse_injection_) {
+    // Ensure that local hardware events are not suppressed after injecting
+    // input events. This allows LocalInputMonitor to detect if the local mouse
+    // is being moved whilst a remote user is connected.
+    // This API is deprecated, but it is needed when using the deprecated
+    // CGPostMouseEvent API. When using the non-deprecated CGEvent APIs, an
+    // equivalent call is not needed because macOS defaults to not suppressing
+    // local inputs in that case.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  CGSetLocalEventsSuppressionInterval(0.0);
+    CGSetLocalEventsSuppressionInterval(0.0);
 #pragma clang diagnostic pop
+  }
 }
 
 InputInjectorMac::~InputInjectorMac() {
@@ -191,7 +244,7 @@ void InputInjectorMac::InjectKeyEvent(const KeyEvent& event) {
 
   ui_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, keycode, event.pressed(),
-                                flags, std::u16string()));
+                                flags, std::u16string(), cg_event_post_func_));
 }
 
 void InputInjectorMac::InjectTextEvent(const TextEvent& event) {
@@ -221,21 +274,25 @@ void InputInjectorMac::InjectTextEvent(const TextEvent& event) {
       // specially.
       ui_thread_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, kVK_Return,
-                                    /*pressed=*/true, 0, std::u16string()));
+                                    /*pressed=*/true, 0, std::u16string(),
+                                    cg_event_post_func_));
       ui_thread_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, kVK_Return,
-                                    /*pressed=*/false, 0, std::u16string()));
+                                    /*pressed=*/false, 0, std::u16string(),
+                                    cg_event_post_func_));
     } else {
       // Applications that ignore UnicodeString field will see the text event as
       // Space key.
       ui_thread_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(CreateAndPostKeyEvent, kVK_Space,
-                         /*pressed=*/true, 0, std::u16string(grapheme)));
+                         /*pressed=*/true, 0, std::u16string(grapheme),
+                         cg_event_post_func_));
       ui_thread_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(CreateAndPostKeyEvent, kVK_Space,
-                         /*pressed=*/false, 0, std::u16string(grapheme)));
+                         /*pressed=*/false, 0, std::u16string(grapheme),
+                         cg_event_post_func_));
     }
   }
 }
@@ -248,6 +305,7 @@ void InputInjectorMac::InjectMouseEvent(const MouseEvent& event) {
     mouse_pos_.set(event.x(), event.y());
     VLOG(3) << "Moving mouse to " << mouse_pos_.x() << "," << mouse_pos_.y();
   }
+
   if (event.has_button() && event.has_button_down()) {
     if (event.button() >= 1 && event.button() <= 3) {
       VLOG(2) << "Button " << event.button()
@@ -267,17 +325,112 @@ void InputInjectorMac::InjectMouseEvent(const MouseEvent& event) {
     MiddleBit = 1 << (MouseEvent::BUTTON_MIDDLE - 1),
     RightBit = 1 << (MouseEvent::BUTTON_RIGHT - 1)
   };
-  ui_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(PostMouseEvent, mouse_pos_.x(), mouse_pos_.y(),
-                                (mouse_button_state_ & LeftBit) != 0,
-                                (mouse_button_state_ & RightBit) != 0,
-                                (mouse_button_state_ & MiddleBit) != 0));
+  if (use_cg_event_mouse_injection_) {
+    InjectCGEventMouse(event);
+  } else {
+    // On macOS 26 and earlier, we continue to use the deprecated
+    // CGPostMouseEvent API for safety as it is well-tested and known to work on
+    // those versions (letting the OS detect double-clicks and drags from
+    // low-level mouse state).
+    //
+    // See crbug.com/677857 for more details.
+    ui_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(PostLegacyMouseEvent, mouse_pos_.x(), mouse_pos_.y(),
+                       (mouse_button_state_ & LeftBit) != 0,
+                       (mouse_button_state_ & RightBit) != 0,
+                       (mouse_button_state_ & MiddleBit) != 0));
+  }
 
   if (event.has_wheel_delta_x() && event.has_wheel_delta_y()) {
     ui_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(CreateAndPostScrollWheelEvent, event.wheel_delta_x(),
-                       event.wheel_delta_y()));
+                       event.wheel_delta_y(), cg_event_post_func_));
+  }
+}
+
+void InputInjectorMac::InjectCGEventMouse(const MouseEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  enum {
+    LeftBit = 1 << (MouseEvent::BUTTON_LEFT - 1),
+    MiddleBit = 1 << (MouseEvent::BUTTON_MIDDLE - 1),
+    RightBit = 1 << (MouseEvent::BUTTON_RIGHT - 1)
+  };
+
+  CGPoint position = CGPointMake(mouse_pos_.x(), mouse_pos_.y());
+  uint64_t flags = left_modifiers_ | right_modifiers_;
+
+  if (event.has_button() && event.has_button_down()) {
+    CGEventType event_type;
+    CGMouseButton mouse_button;
+    switch (event.button()) {
+      case MouseEvent::BUTTON_LEFT:
+        event_type =
+            event.button_down() ? kCGEventLeftMouseDown : kCGEventLeftMouseUp;
+        mouse_button = kCGMouseButtonLeft;
+        break;
+      case MouseEvent::BUTTON_RIGHT:
+        event_type =
+            event.button_down() ? kCGEventRightMouseDown : kCGEventRightMouseUp;
+        mouse_button = kCGMouseButtonRight;
+        break;
+      case MouseEvent::BUTTON_MIDDLE:
+        event_type =
+            event.button_down() ? kCGEventOtherMouseDown : kCGEventOtherMouseUp;
+        mouse_button = kCGMouseButtonCenter;
+        break;
+      default:
+        return;
+    }
+
+    if (event.button_down()) {
+      ++mouse_event_number_;
+      base::TimeTicks now = base::TimeTicks::Now();
+      if (event.button() == last_click_button_ &&
+          (now - last_click_time_) <= kDoubleClickTimeThreshold &&
+          IsWithinDoubleClickDistance(mouse_pos_, last_click_pos_)) {
+        ++click_state_;
+      } else {
+        click_state_ = 1;
+        last_click_pos_ = mouse_pos_;
+        last_click_button_ = event.button();
+      }
+      last_click_time_ = now;
+    }
+
+    ui_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(CreateAndPostMouseEvent, event_type, position,
+                                  mouse_button, flags, mouse_event_number_,
+                                  click_state_, cg_event_post_func_));
+  } else if (event.has_x() && event.has_y()) {
+    CGEventType event_type;
+    CGMouseButton mouse_button;
+    if ((mouse_button_state_ & LeftBit) != 0) {
+      event_type = kCGEventLeftMouseDragged;
+      mouse_button = kCGMouseButtonLeft;
+    } else if ((mouse_button_state_ & RightBit) != 0) {
+      event_type = kCGEventRightMouseDragged;
+      mouse_button = kCGMouseButtonRight;
+    } else if ((mouse_button_state_ & MiddleBit) != 0) {
+      event_type = kCGEventOtherMouseDragged;
+      mouse_button = kCGMouseButtonCenter;
+    } else {
+      event_type = kCGEventMouseMoved;
+      mouse_button = kCGMouseButtonLeft;
+    }
+
+    std::optional<int64_t> event_number;
+    std::optional<int64_t> click_state;
+    if (mouse_button_state_ != 0) {
+      event_number = mouse_event_number_;
+      click_state = click_state_;
+    }
+
+    ui_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(CreateAndPostMouseEvent, event_type, position,
+                                  mouse_button, flags, event_number,
+                                  click_state, cg_event_post_func_));
   }
 }
 
@@ -290,6 +443,17 @@ void InputInjectorMac::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   clipboard_.AsyncCall(&Clipboard::Start).WithArgs(std::move(client_clipboard));
+}
+
+void InputInjectorMac::SetUseCGEventMouseInjectionForTesting(bool enable) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  use_cg_event_mouse_injection_ = enable;
+}
+
+void InputInjectorMac::SetCGEventPostFunctionForTesting(
+    CGEventPostFunction func) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cg_event_post_func_ = std::move(func);
 }
 
 void InputInjectorMac::WakeUpDisplay() {

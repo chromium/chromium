@@ -1055,6 +1055,7 @@ source_set("unit_tests") {
   }
 
   if (is_mac) {
+    sources += [ "input_injector_mac_unittest.cc" ]
     deps += [ "//remoting/host/mac:unit_tests" ]
   }
 
