@@ -8435,8 +8435,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
 
 void Element::RemoveAttributeInternal(wtf_size_t index,
                                       AttributeModificationReason reason) {
-  MutableAttributeCollection attributes =
-      EnsureUniqueElementData().Attributes();
+  AttributeCollection attributes = GetElementData()->Attributes();
   SECURITY_DCHECK(index < attributes.size());
 
   QualifiedName name = attributes[index].GetName();
@@ -8453,11 +8452,21 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
     }
   }
 
+  MutableAttributeCollection mutable_attributes =
+      EnsureUniqueElementData().Attributes();
   if (Attr* attr_node = AttrIfExists(name)) {
-    DetachAttrNodeFromElementWithValue(attr_node, attributes[index].Value());
+    DetachAttrNodeFromElementWithValue(attr_node, value_being_removed);
   }
 
-  attributes.Remove(index);
+  // WillModifyAttribute() may pause in the debugger and allow script to mutate
+  // attributes, invalidating `index`.
+  if (index >= mutable_attributes.size() ||
+      mutable_attributes[index].GetName() != name) {
+    index = mutable_attributes.FindIndex(name);
+  }
+  if (index != kNotFound) {
+    mutable_attributes.Remove(index);
+  }
 
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
@@ -14058,14 +14067,25 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
       DidModifyAttribute(existing_attribute_name, new_value, new_value, reason);
     }
   } else {
-    Attribute& new_attribute = EnsureUniqueElementData().Attributes().at(index);
-    AtomicString existing_attribute_value = std::move(new_attribute.Value());
+    AtomicString existing_attribute_value = existing_attribute.Value();
     if (reason !=
         AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
       WillModifyAttribute(existing_attribute_name, existing_attribute_value,
                           new_value);
     }
-    new_attribute.SetValue(new_value);
+    MutableAttributeCollection mutable_attributes =
+        EnsureUniqueElementData().Attributes();
+    // WillModifyAttribute() may pause in the debugger and allow script to
+    // mutate attributes, invalidating `index`.
+    if (index >= mutable_attributes.size() ||
+        mutable_attributes[index].GetName() != existing_attribute_name) {
+      index = mutable_attributes.FindIndex(existing_attribute_name);
+    }
+    if (index != kNotFound) {
+      mutable_attributes[index].SetValue(new_value);
+    } else {
+      mutable_attributes.Append(existing_attribute_name, new_value);
+    }
     if (reason !=
         AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
       DidModifyAttribute(existing_attribute_name, existing_attribute_value,

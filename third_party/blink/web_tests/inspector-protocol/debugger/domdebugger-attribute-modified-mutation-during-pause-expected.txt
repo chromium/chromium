@@ -1,0 +1,6 @@
+Tests reallocating element attribute vector while paused on an attribute-modified DOM breakpoint.
+t after grow: updated-after-grow
+t after shrink: updated-after-shrink
+t after remove during set: updated-after-remove
+has t after shrink during remove: false
+
