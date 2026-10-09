@@ -103,6 +103,9 @@ class ContentFaviconDriver
 
   GURL bypass_cache_page_url_;
 
+  // Whether INVALIDATE_TYPE_ICON has been sent for the current page.
+  bool notified_icon_available_ = false;
+
   base::WeakPtrFactory<ContentFaviconDriver> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

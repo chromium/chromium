@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/invalidate_type.h"
@@ -147,6 +149,17 @@ void BrowserUiController::ScheduleUIUpdate(content::WebContents* source,
     // The status bubble needs to be updated during INVALIDATE_TYPE_LOAD too,
     // but we do that asynchronously by not stripping INVALIDATE_TYPE_LOAD from
     // changed_flags.
+  }
+
+  if (changed_flags & content::INVALIDATE_TYPE_ICON) {
+    // Show the initial favicon synchronously after a navigation has committed.
+    // Otherwise a fast (e.g. fully cached) navigation shows the default icon
+    // for kUIUpdateCoalescingTime even though the favicon is already known,
+    // which makes the navigation feel slower than it really is.
+    if (base::FeatureList::IsEnabled(features::kFastFaviconDisplay)) {
+      NotifyTabUIChanged(tab, TabChangeType::kAll);
+    }
+    changed_flags &= ~content::INVALIDATE_TYPE_ICON;
   }
 
   // If the only updates were synchronously handled above, we're done.

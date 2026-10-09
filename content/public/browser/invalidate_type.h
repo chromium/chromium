@@ -24,8 +24,10 @@ enum InvalidateTypes {
                                    // inaudible.
                                    // TODO(crbug.com/41390955):
                                    // remove this.
+  INVALIDATE_TYPE_ICON = 1 << 5,   // The favicon became available after a
+                                   // navigation finished.
 
-  INVALIDATE_TYPE_ALL = (1 << 5) - 1,
+  INVALIDATE_TYPE_ALL = (1 << 6) - 1,
 };
 
 }  // namespace content

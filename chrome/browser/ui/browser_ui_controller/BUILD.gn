@@ -33,6 +33,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:status_bubble",
     "//chrome/browser/ui:tab_ui_helper",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/location_bar",

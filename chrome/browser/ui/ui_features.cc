@@ -44,6 +44,10 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 
 BASE_FEATURE(kCtrlTabMru, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Skip the UI update coalescing delay when the favicon arrives after a
+// navigation. Kill switch for crbug.com/554464784.
+BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInfoBarInlineLinks, base::FEATURE_ENABLED_BY_DEFAULT);

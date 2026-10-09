@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -95,8 +96,10 @@
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -140,6 +143,7 @@
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -148,6 +152,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -541,6 +546,40 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(test_title, tab_title);
+}
+
+namespace {
+
+class MockTabStripModelObserver : public TabStripModelObserver {
+ public:
+  MOCK_METHOD(void,
+              OnTabChangedAt,
+              (tabs::TabInterface * tab, TabChangeType change_type),
+              (override));
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BrowserTest, FirstIconUpdatesTabStripSynchronously) {
+  TabStripModel* const model = browser()->tab_strip_model();
+  content::WebContents* const contents = model->GetActiveWebContents();
+  BrowserUiController* const ui_controller =
+      BrowserUiController::From(browser());
+
+  testing::StrictMock<MockTabStripModelObserver> observer;
+  model->AddObserver(&observer);
+
+  // Due to coalescing, INVALIDATE_TYPE_TAB alone does not fire the observer.
+  ui_controller->ScheduleUIUpdate(contents, content::INVALIDATE_TYPE_TAB);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // With INVALIDATE_TYPE_ICON, the tab strip should update synchronously.
+  EXPECT_CALL(observer, OnTabChangedAt(testing::_, TabChangeType::kAll));
+  ui_controller->ScheduleUIUpdate(
+      contents, content::INVALIDATE_TYPE_TAB | content::INVALIDATE_TYPE_ICON);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  model->RemoveObserver(&observer);
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
