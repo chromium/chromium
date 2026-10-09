@@ -4,6 +4,8 @@ source_set("coordinator") {
     "gemini_settings_coordinator.mm",
     "gemini_settings_mediator.h",
     "gemini_settings_mediator.mm",
+    "gemini_suggestions_coordinator.h",
+    "gemini_suggestions_coordinator.mm",
   ]
   deps = [
     ":protocols",
@@ -44,6 +46,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/settings/ui_bundled/bwg/ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",

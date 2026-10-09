@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_dynamic_settings_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_consumer.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_suggestions_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -70,12 +71,10 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
                    prefName:prefs::kIOSGeminiCameraSetting];
     _cameraPref.observer = self;
 
-    if (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
-      _suggestionsPref = [[PrefBackedBoolean alloc]
-          initWithPrefService:prefService
-                     prefName:prefs::kIOSGeminiSuggestionsSetting];
-      _suggestionsPref.observer = self;
-    }
+    _suggestionsPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::kIOSGeminiSuggestionsSetting];
+    _suggestionsPref.observer = self;
 
     _closedCaptioningPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
@@ -136,6 +135,16 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   [_consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];
   [_consumer setMicrophoneEnabled:_microphonePref.value];
   [_consumer setPageContentSharingEnabled:_pageContentPref.value];
+}
+
+- (void)setSuggestionsConsumer:
+    (id<GeminiSuggestionsConsumer>)suggestionsConsumer {
+  if (_suggestionsConsumer == suggestionsConsumer) {
+    return;
+  }
+
+  _suggestionsConsumer = suggestionsConsumer;
+  [_suggestionsConsumer setSuggestionsEnabled:_suggestionsPref.value];
 }
 
 - (void)loadDynamicSettings {
@@ -213,6 +222,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
     [self.consumer setCameraPermissionEnabled:_cameraPref.value];
   } else if (observableBoolean == _suggestionsPref) {
     [self.consumer setGeminiSuggestionsEnabled:_suggestionsPref.value];
+    [self.suggestionsConsumer setSuggestionsEnabled:_suggestionsPref.value];
   } else if (observableBoolean == _closedCaptioningPref) {
     [self.consumer setClosedCaptioningEnabled:_closedCaptioningPref.value];
   } else if (observableBoolean == _microphonePref) {

@@ -116,6 +116,8 @@ TableViewTextHeaderFooterItem* HeaderItem(NSInteger item_type,
   BOOL _suggestionsEnabled;
 }
 
+#pragma mark - UIViewController
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier =
@@ -123,6 +125,13 @@ TableViewTextHeaderFooterItem* HeaderItem(NSInteger item_type,
   self.title =
       l10n_util::GetNSString(IDS_IOS_GEMINI_SETTINGS_SUGGESTIONS_TITLE);
   [self loadModel];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.presentationDelegate geminiSuggestionsViewControllerWasRemoved:self];
+  }
 }
 
 - (void)loadModel {
@@ -216,6 +225,8 @@ TableViewTextHeaderFooterItem* HeaderItem(NSInteger item_type,
   [model addItem:turningOffItem
       toSectionWithIdentifier:kSectionIdentifierThingsToConsider];
 }
+
+#pragma mark - GeminiSuggestionsConsumer
 
 - (void)setSuggestionsEnabled:(BOOL)enabled {
   _suggestionsEnabled = enabled;
