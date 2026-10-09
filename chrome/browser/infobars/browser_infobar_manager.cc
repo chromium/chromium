@@ -739,8 +739,11 @@ void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
   }
   instances.erase(instance);
 
+  // Use the delegate, not the owner: when called from ~InfoBarManager(), the
+  // owner's WebContentsObserver base is already destroyed.
   content::WebContents* web_contents =
-      ContentInfoBarManager::WebContentsFromInfoBar(infobar);
+      static_cast<RegistryInfoBarDelegate*>(infobar->delegate())
+          ->web_contents();
   tabs::TabInterface* tab =
       web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
                    : nullptr;

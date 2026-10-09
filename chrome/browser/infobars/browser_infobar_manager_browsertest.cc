@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -798,6 +799,26 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
       ->InfoBarDismissed();
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(InfoBarResult::kDismissed, results[0]);
+}
+
+// Regression test for crbug.com/571614059 (MSan use-after-dtor).
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalInstanceRemovedDuringTabDestruction) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+  ASSERT_TRUE(manager()->ShowGlobally(identifier));
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_EQ(1u, InfoBarCountIn(browser2));
+
+  // Skips fast shutdown, so the infobar is removed in ~InfoBarManager().
+  ui_test_utils::BrowserDestroyedObserver browser2_destroyed(browser2);
+  browser2->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
+  browser2_destroyed.Wait();
+
+  EXPECT_EQ(1u, InfoBarCountIn(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
