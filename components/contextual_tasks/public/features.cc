@@ -209,7 +209,7 @@ bool GetIsContextualTasksNonBlockingUrlNavigationEnabled() {
 }
 
 BASE_FEATURE(kAllowSignedOutUserInDesktopAndroid,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAllowSignedOutUserInDesktopAndroidEnabled() {
 #if BUILDFLAG(IS_ANDROID)
