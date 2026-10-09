@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 
 #import <algorithm>
+#import <variant>
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -519,7 +520,12 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
 
 - (GURL)walletManagementURL {
   CHECK(_entityInstance.has_value());
-  return GURL(autofill::GetWalletManagementURL(*_entityInstance));
+  CHECK(std::holds_alternative<EntityInstance::WalletRecordTypePayload>(
+      _entityInstance->record_type_data()));
+  return GURL(std::get<autofill::EntityInstance::WalletRecordTypePayload>(
+                  _entityInstance->record_type_data())
+                  .GetManagementUrlWithFallback(_entityInstance->type(),
+                                                _entityInstance->guid()));
 }
 
 #pragma mark - Private

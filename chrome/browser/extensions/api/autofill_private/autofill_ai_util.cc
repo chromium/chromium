@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -28,7 +29,6 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
-#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -108,8 +108,13 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
         entity_instance.record_type() ==
         EntityInstance::RecordType::kServerWallet;
     if (entity_instance_with_labels.stored_in_wallet) {
+      CHECK(std::holds_alternative<EntityInstance::WalletRecordTypePayload>(
+          entity_instance.record_type_data()));
       entity_instance_with_labels.wallet_entity_url =
-          autofill::GetWalletManagementURL(entity_instance);
+          std::get<EntityInstance::WalletRecordTypePayload>(
+              entity_instance.record_type_data())
+              .GetManagementUrlWithFallback(entity_instance.type(),
+                                            entity_instance.guid());
     }
     entity_instance_with_labels.is_read_only =
         entity_instance.are_attributes_read_only().value();

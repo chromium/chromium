@@ -24,7 +24,9 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -39,6 +41,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -48,6 +51,21 @@
 namespace autofill {
 
 namespace {
+
+// The URL to the overview of all passes stored in Google Wallet.
+constexpr char kWalletPassesPageURL[] =
+    "https://wallet.google.com/wallet/passes";
+
+// The URL to the management page of a specific private pass stored in Google
+// Wallet. The pass is identified by its pass ID, which needs to be URL encoded
+// into the placeholder in this URL.
+constexpr char kWalletPrivatePassPageURL[] =
+    "https://wallet.google.com/"
+    "wallet?p=walletpass&ppid=%s&utm_source=chrome&utm_medium=settings&utm_"
+    "campaign=enhanced_autofill";
+
+constexpr char kWalletTransactionsPageURL[] =
+    "https://wallet.google.com/wallet/transactions";
 
 // Returns the normalized value of the `attribute`. If `suffix_length` is
 // provided, only the suffix of that length is returned.
@@ -814,6 +832,47 @@ EntityInstance::RecordType EntityInstance::record_type() const {
                     record_type_data_);
 }
 
+std::string
+EntityInstance::WalletRecordTypePayload::GetManagementUrlWithFallback(
+    EntityType type,
+    const EntityId& guid) const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiWalletServerProvidedDeepLink) &&
+      // `management_url` is supposed to be either valid or empty.
+      // We revalidate it here to protect the code against, e.g.,
+      // reading corrupted data from the local entity database.
+      IsValidWalletManagementUrl(management_url)) {
+    return management_url.spec();
+  }
+  switch (type.name()) {
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kFlightReservation:
+      return kWalletPassesPageURL;
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      return kWalletTransactionsPageURL;
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      // Only deep link for private passes if the corresponding feature is
+      // enabled.
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillAiWalletPrivatePassesDeepLink)) {
+        return kWalletPassesPageURL;
+      }
+      // TODO(crbug.com/560061580): Remove guid from the parameters of
+      // `GetManagementUrlWithFallback` once
+      // kAutofillAiServerProvidedDeeplink is fully launched and supersedes
+      // kAutofillAiWalletPrivatePassesDeepLink.
+      return base::StringPrintf(
+          kWalletPrivatePassPageURL,
+          base::EscapeQueryParamValue(guid.value(), /*use_plus=*/false));
+  }
+  NOTREACHED();
+}
+
 EntityInstance EntityInstance::CopyWithUpdatedAttribute(
     AttributeInstance attribute) const {
   EntityInstance new_entity = *this;
@@ -849,6 +908,5 @@ bool EntityInstance::FrecencyOrder::operator()(
   return std::tuple(get_ranking_score(lhs), lhs.use_date()) >
          std::tuple(get_ranking_score(rhs), rhs.use_date());
 }
-
 
 }  // namespace autofill

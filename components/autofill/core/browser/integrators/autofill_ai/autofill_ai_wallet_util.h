@@ -6,8 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_WALLET_UTIL_H_
 
 #include <optional>
-#include <string>
-#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -38,9 +36,6 @@ void HandleWalletUpsertResponse(
     AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityInstance entity,
     std::optional<EntityInstance> wallet_response);
-
-// Returns the URL of a Wallet `entity`'s management page on wallet.google.com.
-std::string GetWalletManagementURL(const EntityInstance& entity);
 
 // Returns true if `url` is a valid, secure Google Wallet management URL
 // (i.e. valid GURL, HTTPS scheme, Google domain, and standard port).

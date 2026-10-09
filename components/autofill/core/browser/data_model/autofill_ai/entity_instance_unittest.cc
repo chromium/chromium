@@ -1011,5 +1011,82 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     AutofillEntityInstanceAmbientAutofillTest);
 
+struct GetManagementUrlWithFallbackTestCase {
+  std::string_view description;
+  EntityTypeName entity_type;
+  std::string_view stored_url;
+  std::string_view expected_url;
+};
+
+class GetManagementUrlWithFallbackTest
+    : public ::testing::TestWithParam<GetManagementUrlWithFallbackTestCase> {
+ public:
+  GetManagementUrlWithFallbackTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAiWalletPrivatePassesDeepLink,
+                              features::
+                                  kAutofillAiWalletServerProvidedDeepLink},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(GetManagementUrlWithFallbackTest, ResolvesExpectedUrl) {
+  const GetManagementUrlWithFallbackTestCase& test_case = GetParam();
+  const EntityInstance::WalletRecordTypePayload payload{
+      .management_url = GURL(test_case.stored_url)};
+  EXPECT_EQ(payload.GetManagementUrlWithFallback(
+                EntityType(test_case.entity_type),
+                EntityInstance::EntityId("123-456:789")),
+            test_case.expected_url)
+      << test_case.description;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillEntityInstanceTest,
+    GetManagementUrlWithFallbackTest,
+    ::testing::Values(
+        GetManagementUrlWithFallbackTestCase{
+            .description = "Public pass with valid server management URL",
+            .entity_type = EntityTypeName::kVehicle,
+            .stored_url = "https://wallet.google.com/wallet/passes/vehicle_123",
+            .expected_url =
+                "https://wallet.google.com/wallet/passes/vehicle_123"},
+        GetManagementUrlWithFallbackTestCase{
+            .description = "Public pass with empty management URL falls back "
+                           "to passes page",
+            .entity_type = EntityTypeName::kVehicle,
+            .stored_url = "",
+            .expected_url = "https://wallet.google.com/wallet/passes"},
+        GetManagementUrlWithFallbackTestCase{
+            .description = "Shopping entity with valid server management URL",
+            .entity_type = EntityTypeName::kOrder,
+            .stored_url =
+                "https://wallet.google.com/wallet/transactions/order_123",
+            .expected_url =
+                "https://wallet.google.com/wallet/transactions/order_123"},
+        GetManagementUrlWithFallbackTestCase{
+            .description = "Shopping entity with empty management URL falls "
+                           "back to transactions page",
+            .entity_type = EntityTypeName::kOrder,
+            .stored_url = "",
+            .expected_url = "https://wallet.google.com/wallet/transactions"},
+        GetManagementUrlWithFallbackTestCase{
+            .description = "Private pass with valid server management URL",
+            .entity_type = EntityTypeName::kPassport,
+            .stored_url = "https://wallet.google.com/server_private_pass",
+            .expected_url = "https://wallet.google.com/server_private_pass"},
+        GetManagementUrlWithFallbackTestCase{
+            .description = "Private pass with empty management URL falls back "
+                           "to client-constructed deep link",
+            .entity_type = EntityTypeName::kPassport,
+            .stored_url = "",
+            .expected_url =
+                "https://wallet.google.com/wallet?p=walletpass&"
+                "ppid=123-456%3A789&utm_source=chrome&utm_medium=settings&"
+                "utm_campaign=enhanced_autofill"}));
+
 }  // namespace
 }  // namespace autofill

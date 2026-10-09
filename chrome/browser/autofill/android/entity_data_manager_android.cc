@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <ranges>
+#include <variant>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -99,10 +100,9 @@ EntityDataManagerAndroid::~EntityDataManagerAndroid() = default;
 
 bool EntityDataManagerAndroid::IsPersonalContextPreferenceVisible(JNIEnv* env) {
   return autofill::ShouldShowPersonalContextAutofillSetting(
-      google_groups_manager_,
-      prefs_, &entity_data_manager(), identity_manager_, sync_service_,
-      IsWalletPublicPassStorageEnabledHelper(), is_off_the_record_,
-      entity_data_manager_->GetVariationCountryCode(),
+      google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
+      sync_service_, IsWalletPublicPassStorageEnabledHelper(),
+      is_off_the_record_, entity_data_manager_->GetVariationCountryCode(),
       personal_context_eligibility_service_, subscription_eligibility_service_);
 }
 
@@ -380,6 +380,9 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
          std::views::zip(entities_of_type, labels)) {
       const bool stored_in_wallet =
           entity->record_type() == EntityInstance::RecordType::kServerWallet;
+      CHECK(!stored_in_wallet ||
+            std::holds_alternative<EntityInstance::WalletRecordTypePayload>(
+                entity->record_type_data()));
       entities_with_labels.emplace_back(
           entity->guid().value(),
           EntityTypeAndroid(
@@ -390,8 +393,13 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
                   EntityInstance::WalletPassType::kPrivate),
           entity->type().GetNameForI18n(),
           base::JoinString(label, kLabelSeparator), stored_in_wallet,
-          stored_in_wallet ? std::make_optional(GetWalletManagementURL(*entity))
-                           : std::nullopt);
+          stored_in_wallet
+              ? std::make_optional(
+                    std::get<EntityInstance::WalletRecordTypePayload>(
+                        entity->record_type_data())
+                        .GetManagementUrlWithFallback(entity->type(),
+                                                      entity->guid()))
+              : std::nullopt);
     }
   }
   return entities_with_labels;
