@@ -1596,6 +1596,28 @@ public class FuseboxMediatorUnitTest {
         assertEquals(2, mAttachments.size());
         assertEquals("Doc 1", mAttachments.get(0).title);
         assertEquals("Doc 2", mAttachments.get(1).title);
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void onDrivePickerClicked_filesExceedLimit_showsLimitSnackbar() {
+        setDriveConsentStatus(DisclaimerStatus.ACCEPTED);
+        List<DriveAttachmentMetadata> files = new ArrayList<>();
+        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS + 1; i++) {
+            files.add(new DriveAttachmentMetadata("id_" + i, null, "Doc " + i, "application/pdf"));
+        }
+        doReturn(Promise.fulfilled(files))
+                .when(mDriveFilePickerClient)
+                .launchPicker(mWindowAndroid, mProfile, null, true);
+        doReturn("token")
+                .when(mComposeboxQueryControllerBridge)
+                .addDriveFile(any(), any(), any(), any());
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
+        verify(mSnackbarManager).showSnackbar(any());
     }
 
     @Test
@@ -2112,6 +2134,12 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testFailedUpload() {
         mMediator.onAttachmentUploadFailed();
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testAttachmentLimitReached() {
+        mMediator.onAttachmentLimitReached();
         verify(mSnackbarManager).showSnackbar(any());
     }
 

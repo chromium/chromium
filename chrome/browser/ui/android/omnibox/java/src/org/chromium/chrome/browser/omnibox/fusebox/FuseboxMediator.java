@@ -25,6 +25,8 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -125,6 +127,7 @@ import java.util.function.Supplier;
     private final Callback<List<SuggestedTabInfo>> mOnSuggestedTabsChanged =
             this::reconcileSuggestedTabs;
     private final SnackbarManager mSnackbarManager;
+    private final Snackbar mAttachmentLimitSnackbar;
     private final Snackbar mAttachmentUploadFailedSnackbar;
     private final ScrimManager mScrimManager;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
@@ -197,7 +200,13 @@ import java.util.function.Supplier;
         mUrlTextWrappingSupplier = urlTextWrappingSupplier;
         mUrlTextWrappingSupplier.addSyncObserver(mOnTextWrappingChanged);
 
-        // Create the upload failed snackbar.
+        mAttachmentLimitSnackbar =
+                Snackbar.make(
+                        context.getText(R.string.fusebox_max_attachments),
+                        /* controller= */ null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_FUSEBOX_MAX_ATTACHMENTS);
+
         mAttachmentUploadFailedSnackbar =
                 Snackbar.make(
                         context.getText(R.string.fusebox_upload_failed),
@@ -414,14 +423,18 @@ import java.util.function.Supplier;
 
     private void updateSnackbarStyling() {
         boolean isIncognito = mProfile != null && mProfile.isOffTheRecord();
-        mAttachmentUploadFailedSnackbar.setBackgroundColor(
-                ChromeColors.getInverseBgColor(mContext, isIncognito));
-
+        @ColorInt int inverseBgColor = ChromeColors.getInverseBgColor(mContext, isIncognito);
+        @StyleRes
         int textAppearanceResId =
                 isIncognito
                         ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
                         : R.style.TextAppearance_TextMedium_OnInverseSurface;
+
+        mAttachmentUploadFailedSnackbar.setBackgroundColor(inverseBgColor);
         mAttachmentUploadFailedSnackbar.setTextAppearance(textAppearanceResId);
+
+        mAttachmentLimitSnackbar.setBackgroundColor(inverseBgColor);
+        mAttachmentLimitSnackbar.setTextAppearance(textAppearanceResId);
     }
 
     /** Apply a variant of the branded color scheme to Fusebox UI elements. */
@@ -891,8 +904,13 @@ import java.util.function.Supplier;
     }
 
     @VisibleForTesting
-    /* package */ void onAttachmentUploadFailed() {
+    void onAttachmentUploadFailed() {
         mSnackbarManager.showSnackbar(mAttachmentUploadFailedSnackbar);
+    }
+
+    @VisibleForTesting
+    void onAttachmentLimitReached() {
+        mSnackbarManager.showSnackbar(mAttachmentLimitSnackbar);
     }
 
     /**
@@ -1225,7 +1243,10 @@ import java.util.function.Supplier;
                                     MobileFuseboxPickerOutcome.ATTACHMENT_ADDED);
                             try (var batchToken = mModelList.beginBatchEdit()) {
                                 for (var metadata : files) {
-                                    if (mModelList.getRemainingAttachments() == 0) break;
+                                    if (mModelList.getRemainingAttachments() == 0) {
+                                        onAttachmentLimitReached();
+                                        break;
+                                    }
                                     FuseboxMetrics.recordDriveDocumentType(
                                             metadata.mimeType, metadata.title);
                                     uploadAndAddAttachment(
