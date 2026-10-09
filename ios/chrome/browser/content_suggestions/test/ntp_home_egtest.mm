@@ -249,7 +249,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       [self isRunningTest:@selector(testNavigateInCustomizationMenu)]) {
     // TODO(crbug.com/537272655): Re-enable once the customization menu
     // coordinator is fully testable in the minimal UI test environment.
-    config.features_enabled.push_back(kOverflowMenuHomeCustomizationEntrypoint);
+    config.features_disabled.push_back(
+        kOverflowMenuHomeCustomizationEntrypoint);
   }
 
   return config;

@@ -299,7 +299,12 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
   // Verify that the forward button is visible but not enabled (or hidden under
   // Chrome Next IA).
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
+  BOOL forwardButtonHiddenWhenDisabled =
+      [ChromeEarlGrey isChromeNextEnabled] &&
+      (![ChromeEarlGrey isNextOldDesignEnabled] ||
+       ![ChromeEarlGrey isIPadIdiom]);
+
+  if (forwardButtonHiddenWhenDisabled) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_notVisible()];
   } else {

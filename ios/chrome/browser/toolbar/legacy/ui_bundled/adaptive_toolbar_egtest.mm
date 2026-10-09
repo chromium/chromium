@@ -361,7 +361,11 @@ void CheckButtonsVisibilityIPad() {
   if ([ChromeEarlGrey isChromeNextEnabled]) {
     CheckVisibilityInToolbar(ToolbarShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(LocationBarShareButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
+    if ([ChromeEarlGrey isNextOldDesignEnabled]) {
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
+    } else {
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
+    }
   } else {
     CheckVisibilityInToolbar(ToolbarShareButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
@@ -587,7 +591,12 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   [[EarlGrey selectElementWithMatcher:BackButton()]
       assertWithMatcher:grey_interactable()];
 
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
+  BOOL forwardButtonHiddenWhenDisabled =
+      [ChromeEarlGrey isChromeNextEnabled] &&
+      (![ChromeEarlGrey isNextOldDesignEnabled] ||
+       ![ChromeEarlGrey isIPadIdiom]);
+
+  if (forwardButtonHiddenWhenDisabled) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_notVisible()];
   } else {
@@ -616,7 +625,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   // Check the buttons status.
   [[EarlGrey selectElementWithMatcher:BackButton()]
       assertWithMatcher:grey_interactable()];
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
+  if (forwardButtonHiddenWhenDisabled) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_notVisible()];
   } else {
@@ -635,7 +644,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
       performAction:grey_tap()];
 
   // Check the buttons status.
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
+  if (forwardButtonHiddenWhenDisabled) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_notVisible()];
   } else {

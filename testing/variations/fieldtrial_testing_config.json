@@ -3569,9 +3569,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AppBarAssistantCustomization",
                         "ChromeNextIa",
                         "FullscreenRefactoring",
-                        "OverflowMenuHomeCustomizationEntrypoint",
+                        "LightAppBar",
+                        "NextOldDesign",
                         "OverflowMenuNTPRefactor",
                         "UseSceneViewController"
                     ]

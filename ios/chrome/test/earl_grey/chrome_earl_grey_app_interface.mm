@@ -1478,6 +1478,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsChromeNextIaEnabled();
 }
 
++ (BOOL)isNextOldDesignEnabled {
+  return IsNextOldDesignEnabled();
+}
+
 + (BOOL)isOverflowMenuNTPRefactorEnabled {
   return IsOverflowMenuNTPRefactorEnabled();
 }
