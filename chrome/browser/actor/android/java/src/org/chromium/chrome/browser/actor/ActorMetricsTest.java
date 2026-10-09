@@ -73,6 +73,90 @@ public class ActorMetricsTest {
     }
 
     @Test
+    public void testRecordBackgroundActuationTrigger() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Actor.BackgroundActuation.Trigger",
+                                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME)
+                        .expectIntRecord(
+                                "Actor.BackgroundActuation.Trigger",
+                                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM)
+                        .build();
+
+        ActorMetrics.recordBackgroundActuationTrigger(
+                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        ActorMetrics.recordBackgroundActuationTrigger(
+                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testMaybeRecordBackgroundActuationTrigger_Deduplicates() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+
+        int taskId = 100;
+        ActorMetrics.maybeRecordBackgroundActuationTrigger(
+                taskId, ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        // Second call with same taskId should not record again.
+        ActorMetrics.maybeRecordBackgroundActuationTrigger(
+                taskId, ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testMaybeRecordBackgroundActuationTrigger_ResetOnTaskCompleted() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Actor.BackgroundActuation.Trigger",
+                                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME,
+                                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME)
+                        .build();
+
+        int taskId = 100;
+        ActorMetrics.maybeRecordBackgroundActuationTrigger(
+                taskId, ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+
+        // Mark task completed so the recorded task ID is cleared.
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+
+        ActorMetrics.maybeRecordBackgroundActuationTrigger(
+                taskId, ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testMarkBackgroundActuationTriggerRecorded_PreventsRecording() {
+        int taskId = 100;
+        ActorMetrics.markBackgroundActuationTriggerRecorded(taskId);
+
+        var noRecordWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .build();
+        ActorMetrics.maybeRecordBackgroundActuationTrigger(
+                taskId, ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        noRecordWatcher.assertExpected();
+
+        // After task finishes, the taskId is cleared and can record again if reused.
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        var recordWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        ActorMetrics.maybeRecordBackgroundActuationTrigger(
+                taskId, ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        recordWatcher.assertExpected();
+    }
+
+    @Test
     public void testMaybeRecordMetricsFromIntent_PrioritizeService() {
         int taskId = 123;
         int intentState = ActorTaskState.ACTING;

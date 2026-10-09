@@ -10,6 +10,7 @@ import android.util.Pair;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -124,6 +125,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     private final Map<@ActorTaskId Integer, LatencyTracker> mTrackers = new HashMap<>();
     private final Map<@ActorTaskId Integer, Integer> mOmniboxClickCounts = new HashMap<>();
     private final Set<@ActorTaskId Integer> mStoppedTasks = new HashSet<>();
+    private final Set<@ActorTaskId Integer> mRecordedBackgroundActuationTaskIds = new HashSet<>();
     private @ActorMode int mCurrentGlobalMode = ActorMode.FOREGROUND;
 
     /**
@@ -137,6 +139,21 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         }
         return sInstance;
     }
+
+    // LINT.IfChange(ActorBackgroundActuationTrigger)
+
+    @IntDef({
+        ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME,
+        ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActorBackgroundActuationTrigger {
+        int TASK_INIT_BY_CHROME = 0;
+        int TASK_INIT_BY_FCM = 1;
+        int NUM_ENTRIES = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorBackgroundActuationTrigger)
 
     private ActorMetrics() {}
 
@@ -190,6 +207,43 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     public static void recordTimeBetweenWorklogUpdates(long durationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES, durationMs);
+    }
+
+    /** Records the trigger source that initiated background actuation. */
+    public static void recordBackgroundActuationTrigger(
+            @ActorBackgroundActuationTrigger int trigger) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Actor.BackgroundActuation.Trigger",
+                trigger,
+                ActorBackgroundActuationTrigger.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the trigger source that initiated background actuation for a task if not already
+     * recorded for that task.
+     *
+     * @param taskId The task ID to check and record for.
+     * @param trigger The trigger source.
+     */
+    public static void maybeRecordBackgroundActuationTrigger(
+            @ActorTaskId int taskId, @ActorBackgroundActuationTrigger int trigger) {
+        ThreadUtils.assertOnUiThread();
+        if (!getInstance().mRecordedBackgroundActuationTaskIds.add(taskId)) {
+            return;
+        }
+        recordBackgroundActuationTrigger(trigger);
+    }
+
+    /**
+     * Marks a task as having already had its background actuation trigger recorded (e.g. when the
+     * task was originally initiated via FCM) so subsequent foreground-to-background transitions do
+     * not record {@link ActorBackgroundActuationTrigger#TASK_INIT_BY_CHROME}.
+     *
+     * @param taskId The task ID to mark as recorded.
+     */
+    public static void markBackgroundActuationTriggerRecorded(@ActorTaskId int taskId) {
+        ThreadUtils.assertOnUiThread();
+        getInstance().mRecordedBackgroundActuationTaskIds.add(taskId);
     }
 
     /** Records the PiP status (Enter/Exit). */
@@ -346,6 +400,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         if (ActorUtils.isCompletedState(newState)) {
             tracker.recordTaskMetrics();
             mTrackers.remove(taskId);
+            mRecordedBackgroundActuationTaskIds.remove(taskId);
             if (!mStoppedTasks.contains(taskId)) {
                 @StoppedReason
                 int defaultReason =

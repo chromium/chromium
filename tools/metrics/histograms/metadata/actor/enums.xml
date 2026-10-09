@@ -179,6 +179,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ActorBackgroundActuationTrigger) -->
+
+<enum name="ActorBackgroundActuationTrigger">
+  <int value="0" label="TaskInitByChrome"/>
+  <int value="1" label="TaskInitByFcm"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/android/java/src/org/chromium/chrome/browser/actor/ActorMetrics.java:ActorBackgroundActuationTrigger) -->
+
 <!-- LINT.IfChange(ActorEngineState) -->
 
 <enum name="ActorEngineState">
