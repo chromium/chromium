@@ -16,7 +16,6 @@
       "build/gn_helpers.py",
       "build/toolchain/.*py",
       "build/util/lib/common/unittest_util.py",
-      "build/vs_toolchain.py",
       "DEPS",
       "infra/scripts/.*",
       "infra/orchestrator/BUILD.gn",
@@ -119,7 +118,8 @@
       "build/toolchain/win/rc/win/rc.exe.sha1",
       "build/toolchain/win/rc/rc.py",
       "build/toolchain/win/midl.py",
-      "build/toolchain/win/ml.py"
+      "build/toolchain/win/ml.py",
+      "build/vs_toolchain.py"
     ]
   }
 }
