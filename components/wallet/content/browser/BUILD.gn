@@ -12,10 +12,10 @@ static_library("browser") {
     "walletable_pass_barcode_detector_impl.cc",
     "walletable_pass_barcode_detector_impl.h",
   ]
+  public_deps = [ "//components/wallet/content/common/mojom" ]
   deps = [
     "//base",
     "//components/optimization_guide/content/browser",
-    "//components/wallet/content/common/mojom",
     "//components/wallet/core/browser",
     "//content/public/browser",
     "//services/shape_detection/public/mojom",

@@ -7,11 +7,26 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
+#include "components/wallet/content/common/mojom/image_extractor.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace wallet {
+
+namespace {
+
+// The minimum height and width of an image to be considered qualified for
+// barcode detection.
+// TODO(crbug.com/445386472): Use finch params to control.
+constexpr uint32_t kMinImageSize = 10;
+
+// The maximum aspect ratio of an image to be considered qualified for barcode
+// detection.
+// TODO(crbug.com/445386472): Use finch params to control.
+constexpr double kMaxAspectRatio = 15.0;
+
+}  // namespace
 
 ContentWalletablePassIngestionController::
     ContentWalletablePassIngestionController(content::WebContents* web_contents,
@@ -32,7 +47,11 @@ void ContentWalletablePassIngestionController::DidFinishLoad(
 
 void ContentWalletablePassIngestionController::DetectBarcodes(
     BarcodeDetectionCallback callback) {
-  barcode_detector_.Detect(web_contents(), std::move(callback));
+  barcode_detector_.Detect(
+      web_contents(),
+      mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
+                                         /*include_canvas=*/false),
+      std::move(callback));
 }
 
 std::string ContentWalletablePassIngestionController::GetPageTitle() const {

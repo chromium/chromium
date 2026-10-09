@@ -23,6 +23,7 @@ class WalletablePassBarcodeDetectorImpl : public WalletablePassBarcodeDetector {
 
   // WalletablePassBarcodeDetector:
   void Detect(content::WebContents* web_contents,
+              mojom::ImageExtractionOptionsPtr extraction_options,
               WalletBarcodeDetectionDetectCallback callback) override;
 
  private:
@@ -35,10 +36,13 @@ class WalletablePassBarcodeDetectorImpl : public WalletablePassBarcodeDetector {
   virtual mojo::Remote<shape_detection::mojom::BarcodeDetection>
   CreateAndBindBarcodeDetectorRemote();
 
-  // Takes a remote `ImageExtractor` and extracts images from the web contents.
-  // `callback` is only triggered once all the images are extracted.
-  void ExtractImageWithRemote(mojo::Remote<mojom::ImageExtractor> remote,
-                              WalletBarcodeDetectionDetectCallback callback);
+  // Takes a remote `ImageExtractor` and extracts the images that pass
+  // `extraction_options` from the web contents. `callback` is only triggered
+  // once all the images are extracted.
+  void ExtractImageWithRemote(
+      mojo::Remote<mojom::ImageExtractor> remote,
+      mojom::ImageExtractionOptionsPtr extraction_options,
+      WalletBarcodeDetectionDetectCallback callback);
 
   // Invoked when images have been extracted from the web contents. This method
   // will detect barcodes in the extracted images.

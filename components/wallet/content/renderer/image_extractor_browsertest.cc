@@ -64,6 +64,15 @@ std::string EncodeBitmapToDataURI(const SkBitmap& bitmap) {
   return "data:image/png;base64," + base::Base64Encode(*png_data);
 }
 
+// Wallet's filters, which most tests below were written against.
+constexpr uint32_t kWalletMinImageSize = 10;
+constexpr double kWalletMaxAspectRatio = 15.0;
+
+mojom::ImageExtractionOptionsPtr WalletOptions() {
+  return mojom::ImageExtractionOptions::New(
+      kWalletMinImageSize, kWalletMaxAspectRatio, /*include_canvas=*/false);
+}
+
 }  // namespace
 
 class ImageExtractorBrowserTest : public content::RenderViewTest {
@@ -121,6 +130,7 @@ TEST_F(ImageExtractorBrowserTest, ExtractBase64ImageElements) {
 
   base::RunLoop run_loop;
   image_extractor_remote_->ExtractImages(
+      WalletOptions(),
       base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
         // Verify that exactly two images were found.
         ASSERT_EQ(2u, images.size());
@@ -162,6 +172,7 @@ TEST_F(ImageExtractorBrowserTest, FilterSmallImages) {
 
   base::RunLoop run_loop;
   image_extractor_remote_->ExtractImages(
+      WalletOptions(),
       base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
         // Verify that the returned vector is empty.
         EXPECT_TRUE(images.empty());
@@ -191,6 +202,7 @@ TEST_F(ImageExtractorBrowserTest, FilterExtremeAspectRatioImages) {
 
   base::RunLoop run_loop;
   image_extractor_remote_->ExtractImages(
+      WalletOptions(),
       base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
         // Verify that the returned vector is empty.
         ASSERT_TRUE(images.empty());
@@ -215,6 +227,7 @@ TEST_F(ImageExtractorBrowserTest, RespectsImageLimit) {
 
   base::RunLoop run_loop;
   image_extractor_remote_->ExtractImages(
+      WalletOptions(),
       base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
         ASSERT_EQ(10u, images.size());
         run_loop.Quit();
@@ -237,9 +250,112 @@ TEST_F(ImageExtractorBrowserTest, NoImagesOnPage) {
 
   base::RunLoop run_loop;
   image_extractor_remote_->ExtractImages(
+      WalletOptions(),
       base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
         // Verify that the returned vector is empty.
         ASSERT_TRUE(images.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test verifies that the ImageExtractor uses the caller's minimum image
+// size rather than a fixed limit.
+TEST_F(ImageExtractorBrowserTest, RespectsMinImageSizeOption) {
+  static constexpr uint32_t kMinImageSize = 50;
+  const SkBitmap small_bitmap = CreateTestBitmap(20, 20);
+  const SkBitmap large_bitmap = CreateTestBitmap(60, 60);
+
+  const std::string html_string = base::StringPrintf(
+      "<!DOCTYPE html>"
+      "<body>"
+      "<img id='small' src='%s'>"
+      "<img id='large' src='%s'>"
+      "</body>",
+      EncodeBitmapToDataURI(small_bitmap).c_str(),
+      EncodeBitmapToDataURI(large_bitmap).c_str());
+  LoadHTML(html_string);
+
+  base::RunLoop run_loop;
+  image_extractor_remote_->ExtractImages(
+      mojom::ImageExtractionOptions::New(kMinImageSize, kWalletMaxAspectRatio,
+                                         /*include_canvas=*/false),
+      base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
+        ASSERT_EQ(1u, images.size());
+        EXPECT_EQ(60, images[0].width());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test verifies that the ImageExtractor uses the caller's maximum aspect
+// ratio rather than a fixed limit.
+TEST_F(ImageExtractorBrowserTest, RespectsMaxAspectRatioOption) {
+  static constexpr double kMaxAspectRatio = 1.2;
+  const SkBitmap square_bitmap = CreateTestBitmap(60, 60);
+  const SkBitmap tall_bitmap = CreateTestBitmap(30, 60);
+
+  const std::string html_string = base::StringPrintf(
+      "<!DOCTYPE html>"
+      "<body>"
+      "<img id='square' src='%s'>"
+      "<img id='tall' src='%s'>"
+      "</body>",
+      EncodeBitmapToDataURI(square_bitmap).c_str(),
+      EncodeBitmapToDataURI(tall_bitmap).c_str());
+  LoadHTML(html_string);
+
+  base::RunLoop run_loop;
+  image_extractor_remote_->ExtractImages(
+      mojom::ImageExtractionOptions::New(kWalletMinImageSize, kMaxAspectRatio,
+                                         /*include_canvas=*/false),
+      base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
+        ASSERT_EQ(1u, images.size());
+        EXPECT_EQ(60, images[0].height());
+        EXPECT_EQ(60, images[0].width());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// A 60x60 canvas with no drawing context. `RenderViewTest` has no GPU channel,
+// so drawing on a 2D context would crash; an undrawn canvas still snapshots to
+// a transparent bitmap of its size, which is enough to qualify.
+constexpr std::string_view kCanvasHtml = R"HTML(
+    <!DOCTYPE html>
+    <body>
+      <canvas id="qr" width="60" height="60"></canvas>
+    </body>
+  )HTML";
+
+// This test verifies that `<canvas>` elements are extracted when the caller
+// asks for them.
+TEST_F(ImageExtractorBrowserTest, ExtractsCanvasWhenIncluded) {
+  LoadHTML(kCanvasHtml);
+
+  base::RunLoop run_loop;
+  image_extractor_remote_->ExtractImages(
+      mojom::ImageExtractionOptions::New(
+          kWalletMinImageSize, kWalletMaxAspectRatio, /*include_canvas=*/true),
+      base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
+        ASSERT_EQ(1u, images.size());
+        EXPECT_EQ(60, images[0].width());
+        EXPECT_EQ(60, images[0].height());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test verifies that `<canvas>` elements are skipped by default, so that
+// Wallet keeps extracting `<img>` elements only.
+TEST_F(ImageExtractorBrowserTest, SkipsCanvasWhenNotIncluded) {
+  LoadHTML(kCanvasHtml);
+
+  base::RunLoop run_loop;
+  image_extractor_remote_->ExtractImages(
+      WalletOptions(),
+      base::BindLambdaForTesting([&](const std::vector<SkBitmap>& images) {
+        EXPECT_TRUE(images.empty());
         run_loop.Quit();
       }));
   run_loop.Run();

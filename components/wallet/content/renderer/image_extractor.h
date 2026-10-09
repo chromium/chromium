@@ -30,8 +30,8 @@ namespace wallet {
 // handle requests from the browser process. Its lifetime is tied to the
 // `RenderFrame` by being stored as `UserData`.
 //
-// It currently extracts images from `<img>` elements only and does not extract
-// images from other sources.
+// It extracts images from `<img>` elements, and from `<canvas>` elements when
+// the caller asks for them, and does not extract images from other sources.
 class ImageExtractor : public base::SupportsUserData::Data,
                        public wallet::mojom::ImageExtractor {
  public:
@@ -45,7 +45,8 @@ class ImageExtractor : public base::SupportsUserData::Data,
   ~ImageExtractor() override;
 
   // wallet::mojom::ImageExtractor:
-  void ExtractImages(ExtractImagesCallback callback) override;
+  void ExtractImages(mojom::ImageExtractionOptionsPtr options,
+                     ExtractImagesCallback callback) override;
 
  private:
   explicit ImageExtractor(content::RenderFrame* render_frame,
@@ -56,10 +57,12 @@ class ImageExtractor : public base::SupportsUserData::Data,
       mojo::PendingReceiver<wallet::mojom::ImageExtractor> receiver);
 
   std::vector<SkBitmap> ExtractQualifiedImageElements(
-      const blink::WebDocument& document) const;
+      const blink::WebDocument& document,
+      const mojom::ImageExtractionOptions& options) const;
 
-  // Checks if an image is qualified for barcode detection.
-  bool IsImageQualified(const SkBitmap& bitmap) const;
+  // Checks if an image passes the size and aspect ratio filters in `options`.
+  bool IsImageQualified(const SkBitmap& bitmap,
+                        const mojom::ImageExtractionOptions& options) const;
 
   // The RenderFrame to which this ImageExtractor is associated.
   raw_ptr<content::RenderFrame> render_frame_;

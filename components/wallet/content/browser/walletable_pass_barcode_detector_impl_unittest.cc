@@ -33,6 +33,14 @@ shape_detection::mojom::BarcodeDetectionResultPtr CreateBarcodeDetectionResult(
   return barcode;
 }
 
+// Any valid options; these tests don't depend on the filter values.
+mojom::ImageExtractionOptionsPtr TestOptions() {
+  static constexpr uint32_t kMinImageSize = 10;
+  static constexpr double kMaxAspectRatio = 15.0;
+  return mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
+                                            /*include_canvas=*/false);
+}
+
 class MockImageExtractor : public mojom::ImageExtractor {
  public:
   MockImageExtractor() = default;
@@ -44,7 +52,8 @@ class MockImageExtractor : public mojom::ImageExtractor {
 
   MOCK_METHOD(void,
               ExtractImages,
-              (ExtractImagesCallback callback),
+              (mojom::ImageExtractionOptionsPtr options,
+               ExtractImagesCallback callback),
               (override));
 
   void Disconnect() { receiver_.reset(); }
@@ -119,16 +128,41 @@ class WalletablePassBarcodeDetectorImplTest
 
 TEST_F(WalletablePassBarcodeDetectorImplTest, NoImagesFound) {
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce([](mojom::ImageExtractor::ExtractImagesCallback callback) {
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
         std::move(callback).Run({});
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(), base::BindLambdaForTesting(
-                                       [&](std::vector<WalletBarcode> results) {
-                                         EXPECT_TRUE(results.empty());
-                                         run_loop.Quit();
-                                       }));
+  detector_.Detect(
+      web_contents(), TestOptions(),
+      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+        EXPECT_TRUE(results.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Tests that the caller's extraction options are forwarded to the renderer.
+TEST_F(WalletablePassBarcodeDetectorImplTest, ForwardsExtractionOptions) {
+  static constexpr uint32_t kMinImageSize = 50;
+  static constexpr double kMaxAspectRatio = 1.2;
+  EXPECT_CALL(detector_.image_extractor(), ExtractImages)
+      .WillOnce([](mojom::ImageExtractionOptionsPtr options,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
+        EXPECT_EQ(kMinImageSize, options->min_image_size);
+        EXPECT_EQ(kMaxAspectRatio, options->max_aspect_ratio);
+        EXPECT_TRUE(options->include_canvas);
+        std::move(callback).Run({});
+      });
+
+  base::RunLoop run_loop;
+  detector_.Detect(
+      web_contents(),
+      mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
+                                         /*include_canvas=*/true),
+      base::BindLambdaForTesting(
+          [&](std::vector<WalletBarcode> results) { run_loop.Quit(); }));
   run_loop.Run();
 }
 
@@ -139,7 +173,8 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
 
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
       .WillOnce(
-          [images](mojom::ImageExtractor::ExtractImagesCallback callback) {
+          [images](mojom::ImageExtractionOptionsPtr,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
             std::move(callback).Run(images);
           });
 
@@ -149,11 +184,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
                        callback) { std::move(callback).Run({}); });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(), base::BindLambdaForTesting(
-                                       [&](std::vector<WalletBarcode> results) {
-                                         EXPECT_TRUE(results.empty());
-                                         run_loop.Quit();
-                                       }));
+  detector_.Detect(
+      web_contents(), TestOptions(),
+      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+        EXPECT_TRUE(results.empty());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -164,7 +200,8 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
 
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
       .WillOnce(
-          [images](mojom::ImageExtractor::ExtractImagesCallback callback) {
+          [images](mojom::ImageExtractionOptionsPtr,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
             std::move(callback).Run(images);
           });
 
@@ -182,7 +219,7 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
 
   base::RunLoop run_loop;
   detector_.Detect(
-      web_contents(),
+      web_contents(), TestOptions(),
       base::BindLambdaForTesting(
           [&](std::vector<WalletBarcode> results) {
             EXPECT_THAT(results, ElementsAre(WalletBarcode{
@@ -196,16 +233,18 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
 TEST_F(WalletablePassBarcodeDetectorImplTest,
        ImageExtractorRemoteDisconnected) {
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce([&](mojom::ImageExtractor::ExtractImagesCallback) {
+      .WillOnce([&](mojom::ImageExtractionOptionsPtr,
+                    mojom::ImageExtractor::ExtractImagesCallback) {
         detector_.image_extractor().Disconnect();
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(), base::BindLambdaForTesting(
-                                       [&](std::vector<WalletBarcode> results) {
-                                         EXPECT_TRUE(results.empty());
-                                         run_loop.Quit();
-                                       }));
+  detector_.Detect(
+      web_contents(), TestOptions(),
+      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+        EXPECT_TRUE(results.empty());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -217,7 +256,8 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
 
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
       .WillOnce(
-          [images](mojom::ImageExtractor::ExtractImagesCallback callback) {
+          [images](mojom::ImageExtractionOptionsPtr,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
             std::move(callback).Run(images);
           });
 
@@ -228,11 +268,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(), base::BindLambdaForTesting(
-                                       [&](std::vector<WalletBarcode> results) {
-                                         EXPECT_TRUE(results.empty());
-                                         run_loop.Quit();
-                                       }));
+  detector_.Detect(
+      web_contents(), TestOptions(),
+      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+        EXPECT_TRUE(results.empty());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -245,7 +286,8 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
 
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
       .WillOnce(
-          [images](mojom::ImageExtractor::ExtractImagesCallback callback) {
+          [images](mojom::ImageExtractionOptionsPtr,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
             std::move(callback).Run(images);
           });
 
@@ -269,7 +311,7 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
 
   base::RunLoop run_loop;
   detector_.Detect(
-      web_contents(),
+      web_contents(), TestOptions(),
       base::BindLambdaForTesting(
           [&](std::vector<WalletBarcode> results) {
             EXPECT_THAT(

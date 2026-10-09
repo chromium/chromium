@@ -6,15 +6,33 @@ module wallet.mojom;
 
 import "skia/public/mojom/bitmap.mojom"; // For SkBitmap serialization
 
+// Filters the renderer applies to page images before returning them. Each
+// consumer supplies its own values, since barcode and QR code detection need
+// different thresholds.
+struct ImageExtractionOptions {
+  // Images whose shorter side is smaller than this, in pixels, are skipped.
+  uint32 min_image_size;
+
+  // Images whose longer side is more than `max_aspect_ratio` times the shorter
+  // side are skipped.
+  double max_aspect_ratio;
+
+  // Whether `<canvas>` elements are extracted in addition to `<img>`. Payment
+  // QR codes are often drawn on a canvas by a JavaScript library.
+  bool include_canvas;
+};
+
 // Render-side handler for walletable pass image extractor.
 //
 // The renderer-side implementation of this interface is the
 // wallet::ImageExtractor class. It is a RenderFrameObserver, so it is tied
 // with a RenderFrame. And this is only created for the main RenderFrame.
 interface ImageExtractor {
-    // Extracts the images on a web page and returns SkBitmap objects
-    // containing the images.
+    // Extracts the images on a web page that pass the filters in `options`
+    // and returns SkBitmap objects containing the images.
     //
-    // Currently supports extracting images in <img> tags.
-    ExtractImages() => (array<skia.mojom.BitmapWithArbitraryBpp> images);
+    // Extracts <img> elements, and <canvas> elements if
+    // `options.include_canvas` is set.
+    ExtractImages(ImageExtractionOptions options)
+        => (array<skia.mojom.BitmapWithArbitraryBpp> images);
 };

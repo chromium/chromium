@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
+#include "components/wallet/content/common/mojom/image_extractor.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +27,11 @@ namespace {
 const char kBlackImage[] =
     "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAEklEQVR4nGNgGAWjYBSMgqELAA"
     "TEAAE0eCSYAAAAAElFTkSuQmCC";
+
+mojom::ImageExtractionOptionsPtr WalletOptions() {
+  return mojom::ImageExtractionOptions::New(10, 15.0, /*include_canvas=*/false);
+}
+
 }  // namespace
 
 class WalletablePassBarcodeDetectorBrowserTest : public InProcessBrowserTest {
@@ -55,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
 
   base::test::TestFuture<std::vector<wallet::WalletBarcode>> future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
-  detector->Detect(GetWebContents(), future.GetCallback());
+  detector->Detect(GetWebContents(), WalletOptions(), future.GetCallback());
 
   // TODO(crbug.com/438364540): Current implementation always return empty list.
   // Need to add another real test for barcode detection.
@@ -71,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
 
   base::test::TestFuture<std::vector<WalletBarcode>> future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
-  detector->Detect(GetWebContents(), future.GetCallback());
+  detector->Detect(GetWebContents(), WalletOptions(), future.GetCallback());
 
   // Close the tab, which should disconnect the ImageLoader pipe.
   GetWebContents()->Close();

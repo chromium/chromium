@@ -79,6 +79,7 @@ WalletablePassBarcodeDetectorImpl::CreateAndBindBarcodeDetectorRemote() {
 
 void WalletablePassBarcodeDetectorImpl::ExtractImageWithRemote(
     mojo::Remote<mojom::ImageExtractor> remote,
+    mojom::ImageExtractionOptionsPtr extraction_options,
     WalletBarcodeDetectionDetectCallback callback) {
   if (!remote) {
     std::move(callback).Run({});
@@ -100,6 +101,7 @@ void WalletablePassBarcodeDetectorImpl::ExtractImageWithRemote(
       weak_ptr_factory_.GetWeakPtr(), std::move(disconnected_cb)));
 
   image_extractor_remote_->ExtractImages(
+      std::move(extraction_options),
       base::BindOnce(&WalletablePassBarcodeDetectorImpl::OnImagesExtracted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(success_cb)));
 }
@@ -181,9 +183,10 @@ void WalletablePassBarcodeDetectorImpl::OnBarcodeDetectorDisconnected(
 
 void WalletablePassBarcodeDetectorImpl::Detect(
     content::WebContents* web_contents,
+    mojom::ImageExtractionOptionsPtr extraction_options,
     WalletBarcodeDetectionDetectCallback callback) {
   ExtractImageWithRemote(CreateAndBindImageExtractorRemote(web_contents),
-                         std::move(callback));
+                         std::move(extraction_options), std::move(callback));
 }
 
 }  // namespace wallet
