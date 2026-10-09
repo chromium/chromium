@@ -3871,5 +3871,46 @@ TEST_F(TemplateURLServiceTest, ResetOverriddenEditedPolicySiteSearchEngines) {
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"custom_work"));
 }
 
+TEST_F(TemplateURLServiceTest,
+       RemoveMultipleOverridablePolicySiteSearchEnginesAtOnce) {
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  const std::vector<std::u16string> keywords = {u"work1", u"work2", u"work3"};
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  for (const std::u16string& keyword : keywords) {
+    auto data = std::make_unique<TemplateURLData>();
+    data->SetShortName(keyword);
+    data->SetKeyword(keyword);
+    data->SetURL("https://" + base::UTF16ToUTF8(keyword) +
+                 ".com/q={searchTerms}");
+    data->policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+    data->enforced_by_policy = false;
+    data->is_active = TemplateURLData::ActiveStatus::kTrue;
+    data->safe_for_autoreplace = false;
+    enterprise_search_engines.push_back(std::move(data));
+  }
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
+
+  for (const std::u16string& keyword : keywords) {
+    const TemplateURL* turl = model()->GetTemplateURLForKeyword(keyword);
+    ASSERT_TRUE(turl);
+    EXPECT_TRUE(turl->CanPolicyBeOverridden());
+  }
+
+  // Drop every engine from the policy at once. Removing the first engine
+  // records its keyword as overridden, which synchronously re-enters
+  // `ApplyEnterpriseSearchChanges()` via the overridden keywords pref observer
+  // and removes the remaining engines before the outer removal loop reaches
+  // them. This must not crash.
+  SetManagedSearchSettingsPreference(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  for (const std::u16string& keyword : keywords) {
+    EXPECT_FALSE(model()->GetTemplateURLForKeyword(keyword));
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
