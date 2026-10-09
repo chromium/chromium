@@ -259,19 +259,6 @@ public class SigninTestRule implements TestRule {
                 accountId, TestAccounts.MINOR_MODE_REQUIRED);
     }
 
-    /**
-     * Adds and signs in an account with the default name.
-     *
-     * @deprecated Use the version with {@link AccountInfo}.
-     */
-    @Deprecated
-    public CoreAccountInfo addTestAccountThenSignin() {
-        AccountInfo accountInfo = TestAccounts.ACCOUNT1;
-        addAccount(accountInfo);
-        signin(accountInfo);
-        return accountInfo;
-    }
-
     /** Adds and signs in with the provided account. */
     public void addAccountThenSignin(AccountInfo accountInfo) {
         addAccount(accountInfo);

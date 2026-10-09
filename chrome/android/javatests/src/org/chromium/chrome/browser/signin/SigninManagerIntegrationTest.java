@@ -387,7 +387,7 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testClearPrimaryAccount_signsOut() {
         // Add accounts.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

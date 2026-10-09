@@ -163,7 +163,7 @@ public class QuickDeleteDialogDelegateTest {
     @Feature({"RenderTest"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288522
     public void testQuickDeleteDialogView_WithSignInOnly() throws IOException {
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSyncable(false);
 
         mPage = mPage.loadWebPageProgrammatically("https://www.google.com/");

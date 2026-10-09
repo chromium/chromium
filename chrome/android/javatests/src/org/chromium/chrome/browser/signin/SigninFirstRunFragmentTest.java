@@ -947,11 +947,7 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testDismissButtonWhenUserIsSignedIn() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
-        final CoreAccountInfo primaryAccount = mSigninTestRule.addTestAccountThenSignin();
-        Assert.assertNotEquals(
-                "The primary account should be a different account!",
-                TestAccounts.ACCOUNT2.getEmail(),
-                primaryAccount.getEmail());
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
 
         onScrollToView(withId(R.id.signin_fre_dismiss_button)).perform(click());
