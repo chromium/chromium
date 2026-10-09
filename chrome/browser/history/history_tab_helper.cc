@@ -603,8 +603,9 @@ void HistoryTabHelper::DidOpenRequestedURL(
   }
 
   // This should only be set once on a new tab helper.
-  CHECK(!new_history_tab_helper->opener_web_contents_,
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/571276287): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!new_history_tab_helper->opener_web_contents_);
   new_history_tab_helper->opener_web_contents_ = web_contents()->GetWeakPtr();
 }
 
