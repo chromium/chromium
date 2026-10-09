@@ -12,8 +12,6 @@ static_library("exo") {
     "chrome_security_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/public/cpp",
     "//base",

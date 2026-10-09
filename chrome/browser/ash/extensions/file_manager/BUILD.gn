@@ -64,7 +64,6 @@ static_library("file_manager") {
   ]
 
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/sharesheet",
     "//chromeos/ash/experiences/extensions/common/api",
     "//third_party/ced",

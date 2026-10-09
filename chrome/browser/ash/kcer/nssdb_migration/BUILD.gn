@@ -10,8 +10,6 @@ static_library("nssdb_migration") {
     "pkcs12_migrator.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//base",

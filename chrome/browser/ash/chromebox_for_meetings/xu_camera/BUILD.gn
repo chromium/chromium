@@ -24,7 +24,6 @@ static_library("xu_camera") {
   ]
 
   deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/media_device_salt:media_device_salt_service_provider",
     "//components/account_id",

@@ -35,7 +35,6 @@ static_library("fileapi") {
   public_deps = [
     "//base",
     "//base:i18n",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media_galleries/fileapi",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/drivefs/mojom",
@@ -112,7 +111,6 @@ source_set("impl") {
     "//third_party/blink/public/common:headers",
     "//ui/file_manager/base/gn:file_types_data_cpp",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

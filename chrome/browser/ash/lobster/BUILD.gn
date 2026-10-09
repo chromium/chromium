@@ -40,8 +40,6 @@ static_library("lobster") {
     "lobster_system_state_provider_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/public/cpp",
@@ -109,8 +107,6 @@ source_set("unit_tests") {
     "lobster_service_unittest.cc",
     "lobster_system_state_provider_impl_unittest.cc",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":lobster",
