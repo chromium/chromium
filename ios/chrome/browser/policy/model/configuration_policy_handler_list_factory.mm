@@ -276,13 +276,14 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
-  handlers->AddHandler(std::make_unique<
-                       policy::SimpleSchemaValidatingPolicyHandler>(
-      policy::key::kManagedClientCertificateForUserConfig,
-      client_certificates::prefs::kManagedClientCertificateForUserConfigPrefs,
-      chrome_schema, policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
-      policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-      policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyChecker>(
+      std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
+          policy::key::kManagedClientCertificateForUserConfig,
+          client_certificates::prefs::
+              kManagedClientCertificateForUserConfigPrefs,
+          chrome_schema, policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED)));
 
   handlers->AddHandler(
       std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(

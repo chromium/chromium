@@ -2560,11 +2560,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 const SchemaValidatingPolicyToPreferenceMapEntry kSchemaValidatingPolicyMap[] =
     {
   // Policies for all platforms - Start.
-  { key::kManagedClientCertificateForUserConfig,
-    client_certificates::prefs::kManagedClientCertificateForUserConfigPrefs,
-    SCHEMA_ALLOW_UNKNOWN,
-    SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-    SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED },
 #if !BUILDFLAG(IS_CHROMEOS)
   { key::kManagedClientCertificateForBrowserConfig,
     client_certificates::prefs::kManagedClientCertificateForBrowserConfigPrefs,
@@ -2780,6 +2775,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<
           enterprise_custom_headers::HttpHeaderInjectionPolicyHandler>(
           chrome_schema));
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
+      std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+          key::kManagedClientCertificateForUserConfig,
+          client_certificates::prefs::
+              kManagedClientCertificateForUserConfigPrefs,
+          chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED)));
   // Policies for all platforms - End
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

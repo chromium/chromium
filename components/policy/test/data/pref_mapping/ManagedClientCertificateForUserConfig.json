@@ -19,6 +19,27 @@
           "common_name_source": "computer_name"
         }
       ]
-    }
+    },
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ManagedClientCertificateForUserConfig": {
+            "common_name_source": "computer_name"
+          }
+        },
+        "policies_settings": {
+          "ManagedClientCertificateForUserConfig": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "client_certificates.managed_user_config.value": {
+            "location": "user_profile",
+            "default_value": {}
+          }
+        }
+      }
+    ]
   }
 ]
