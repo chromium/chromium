@@ -13,7 +13,6 @@
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
-#include "ui/gfx/color_utils.h"
 
 namespace android {
 

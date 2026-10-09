@@ -5,20 +5,14 @@
 #include "chrome/browser/android/overlay_panel/overlay_panel_content.h"
 
 #include <memory>
-#include <set>
 
 #include "base/android/jni_string.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
