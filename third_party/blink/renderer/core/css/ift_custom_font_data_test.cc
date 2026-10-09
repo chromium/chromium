@@ -31,6 +31,11 @@
 namespace blink {
 namespace {
 
+// Patch URLs for codepoints 'b' and 'c' in `roboto-ift.ttf`, resolved against
+// the font URL.
+constexpr char kPatchBUrl[] = "https://example.com/fonts/00.1.ift_gk";
+constexpr char kPatchCUrl[] = "https://example.com/fonts/04.1.ift_gk";
+
 class IftCustomFontDataTest : public SimTest {
  protected:
   void SetUp() override {
@@ -126,8 +131,22 @@ TEST_F(IftCustomFontDataTest, NewCodepointsTriggersCollection) {
             IftCustomFontData::State::kCollecting);
 }
 
-TEST_F(IftCustomFontDataTest, CollectingTransitionsToFetching) {
-  const IftCustomFontData* custom_font_data = LoadCustomFontData();
+TEST_F(IftCustomFontDataTest, CoveredCodepointsTransitionToIdle) {
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("a");
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kCollecting);
+
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kIdle);
+}
+
+TEST_F(IftCustomFontDataTest, MissingCodepointsFetchPatch) {
+  SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream");
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("b");
   ASSERT_NE(custom_font_data, nullptr);
 
   Compositor().BeginFrame();
@@ -137,6 +156,78 @@ TEST_F(IftCustomFontDataTest, CollectingTransitionsToFetching) {
   test::RunPendingTasks();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFetching);
+
+  patch_b.Complete("patch-b");
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetched);
+}
+
+TEST_F(IftCustomFontDataTest, FetchedAfterAllPatchesFetched) {
+  SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream");
+  SimSubresourceRequest patch_c(kPatchCUrl, "application/octet-stream");
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("bc");
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  patch_b.Complete("patch-b");
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  patch_c.Complete("patch-c");
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetched);
+}
+
+TEST_F(IftCustomFontDataTest, PatchFetchFailureFails) {
+  SimRequestBase::Params not_found;
+  not_found.response_http_status = 404;
+  SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream",
+                                not_found);
+  SimSubresourceRequest patch_c(kPatchCUrl, "application/octet-stream");
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("bc");
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFetching);
+
+  // A failed patch fails the font, even if other patches succeed.
+  patch_b.Complete();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFailed);
+
+  patch_c.Complete("patch-c");
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFailed);
+}
+
+TEST_F(IftCustomFontDataTest, AllPatchFetchesFailingFails) {
+  SimRequestBase::Params not_found;
+  not_found.response_http_status = 404;
+  SimSubresourceRequest patch_b(kPatchBUrl, "application/octet-stream",
+                                not_found);
+  SimSubresourceRequest patch_c(kPatchCUrl, "application/octet-stream",
+                                not_found);
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("bc");
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  patch_b.Complete();
+  patch_c.Complete();
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFailed);
 }
 
 TEST_F(IftCustomFontDataTest, DocumentDetachedBeforeCollectingFails) {
@@ -148,6 +239,20 @@ TEST_F(IftCustomFontDataTest, DocumentDetachedBeforeCollectingFails) {
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFailed);
 
+  test::RunPendingTasks();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kFailed);
+}
+
+TEST_F(IftCustomFontDataTest, DocumentDetachedBeforeFetchingFails) {
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("b");
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kCollecting);
+
+  GetDocument().Shutdown();
   test::RunPendingTasks();
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFailed);
