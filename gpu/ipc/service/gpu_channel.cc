@@ -47,7 +47,6 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -426,32 +425,16 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     const viz::SharedImageFormat& format,
     gfx::BufferUsage buffer_usage,
     CreateGpuMemoryBufferCallback callback) {
-  gfx::GpuMemoryBufferHandle handle;
-  if (SharedImageFactory::IsNativeBufferSupported(format, buffer_usage)) {
-#if BUILDFLAG(IS_ANDROID)
-    // Creation of native buffer handles is not supported on Android (the
-    // only way that a non-null GpuMemoryBufferHandle can be created on
-    // Android is by importing an external AHB).
-    std::move(callback).Run(std::move(handle));
-#else
-    base::AutoLock auto_lock(gpu_channel_lock_);
-    if (!gpu_channel_) {
-      std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-      return;
-    }
-
-    handle =
-        gpu_channel_->shared_image_stub()
-            ->factory()
-            ->CreateNativeGpuMemoryBufferHandle(size, format, buffer_usage);
-#endif
-  } else {
-    if (SharedMemoryImageBackingFactory::IsBufferUsageSupported(buffer_usage) &&
-        SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {
-      handle = SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
-          size, format);
-    }
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
   }
+
+  gfx::GpuMemoryBufferHandle handle =
+      gpu_channel_->shared_image_stub()->CreateGpuMemoryBufferHandle(
+          size, format, buffer_usage);
+
   if (handle.is_null()) {
     DLOG(ERROR) << "Buffer Handle is null.";
   }

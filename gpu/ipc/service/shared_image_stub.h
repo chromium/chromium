@@ -63,10 +63,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
                                   base::OnceCallback<void(bool)> callback);
 #endif
 
-  bool CopyNativeBufferToSharedMemoryAsync(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory);
-
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,
@@ -78,6 +74,16 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
   bool MakeContextCurrent(bool needs_gl = false);
 
   MemoryTracker* memory_tracker() { return memory_tracker_.get(); }
+
+  // These functions run on IO-Thread, caller guarantees that SharedImageStub is
+  // alive during the call.
+  bool CopyNativeBufferToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory);
+  gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      const gfx::Size& size,
+      const viz::SharedImageFormat& format,
+      gfx::BufferUsage buffer_usage);
 
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
