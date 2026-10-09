@@ -1119,9 +1119,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     ScopedRasterTimer timer(nullptr, nullptr);
     RasterRecordToSoftwareSurface(recording);
   }
-  if (Host() && Host()->RenderingContext()) {
-    animated_image_frame_index_maps_.clear();
-  }
+  animated_image_frame_index_maps_.clear();
   return recording;
 }
 
