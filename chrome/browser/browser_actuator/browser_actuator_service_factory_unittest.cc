@@ -77,6 +77,7 @@ TEST_F(BrowserActuatorServiceFactoryTest,
   BrowserActuatorService* service =
       BrowserActuatorServiceFactory::GetForProfile(profile.get());
   ASSERT_NE(nullptr, service);
+  EXPECT_NE(nullptr, service->GetStreamRecorderFactory());
   TransportHandlerFactory* factory =
       service->GetFactory(FactoryId::kSessionStreamRecorder);
   ASSERT_NE(nullptr, factory);
@@ -93,6 +94,7 @@ TEST_F(BrowserActuatorServiceFactoryTest,
   BrowserActuatorService* service =
       BrowserActuatorServiceFactory::GetForProfile(profile.get());
   ASSERT_NE(nullptr, service);
+  EXPECT_EQ(nullptr, service->GetStreamRecorderFactory());
   EXPECT_EQ(nullptr, service->GetFactory(FactoryId::kSessionStreamRecorder));
 }
 

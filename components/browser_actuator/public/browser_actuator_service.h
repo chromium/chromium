@@ -12,6 +12,7 @@
 
 namespace browser_actuator {
 
+class SessionStreamRecorderFactory;
 class TransportChannel;
 class TransportHandlerFactory;
 class TransportSession;
@@ -48,6 +49,10 @@ class BrowserActuatorService : public KeyedService {
   // embedder-layer concrete types. Callers that need the concrete type must
   // downcast and must own the `FactoryId` that identifies it.
   virtual TransportHandlerFactory* GetFactory(FactoryId id) = 0;
+
+  // Returns the session stream recorder factory owned by this service, or
+  // nullptr if session recording is not enabled.
+  virtual SessionStreamRecorderFactory* GetStreamRecorderFactory() = 0;
 
  protected:
   BrowserActuatorService();

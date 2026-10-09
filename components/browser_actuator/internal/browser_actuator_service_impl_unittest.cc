@@ -212,10 +212,11 @@ TEST_F(
                                      /*extra_factories=*/{});
 
   ASSERT_NE(service.GetChannel(), nullptr);
-  TransportHandlerFactory* factory =
-      service.GetFactory(FactoryId::kSessionStreamRecorder);
-  ASSERT_NE(factory, nullptr);
-  auto* recorder_factory = static_cast<SessionStreamRecorderFactory*>(factory);
+  SessionStreamRecorderFactory* recorder_factory =
+      service.GetStreamRecorderFactory();
+  ASSERT_NE(recorder_factory, nullptr);
+  EXPECT_EQ(service.GetFactory(FactoryId::kSessionStreamRecorder),
+            recorder_factory);
 
   TransportSession* session = service.GetOrCreateSession("s1");
   ASSERT_NE(session, nullptr);

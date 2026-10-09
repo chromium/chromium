@@ -193,6 +193,12 @@ TransportHandlerFactory* BrowserActuatorServiceImpl::GetFactory(FactoryId id) {
   return nullptr;
 }
 
+SessionStreamRecorderFactory*
+BrowserActuatorServiceImpl::GetStreamRecorderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return session_stream_recorder_factory_.get();
+}
+
 TransportSession* BrowserActuatorServiceImpl::GetOrCreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

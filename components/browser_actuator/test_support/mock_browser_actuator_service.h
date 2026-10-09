@@ -13,6 +13,7 @@
 
 namespace browser_actuator {
 
+class SessionStreamRecorderFactory;
 class TransportChannel;
 class TransportHandlerFactory;
 class TransportSession;
@@ -30,6 +31,10 @@ class MockBrowserActuatorService : public BrowserActuatorService {
               (override));
   MOCK_METHOD(TransportSession*, GetSession, (std::string_view), (override));
   MOCK_METHOD(TransportHandlerFactory*, GetFactory, (FactoryId), (override));
+  MOCK_METHOD(SessionStreamRecorderFactory*,
+              GetStreamRecorderFactory,
+              (),
+              (override));
 };
 
 }  // namespace browser_actuator

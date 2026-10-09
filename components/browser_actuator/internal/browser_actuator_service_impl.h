@@ -54,6 +54,7 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
   // (e.g. chrome://browser-actuator-internals) to retrieve concrete factories
   // by `id`.
   TransportHandlerFactory* GetFactory(FactoryId id) override;
+  SessionStreamRecorderFactory* GetStreamRecorderFactory() override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

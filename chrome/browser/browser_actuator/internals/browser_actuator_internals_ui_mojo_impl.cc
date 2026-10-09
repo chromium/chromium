@@ -12,8 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/browser_actuator/internal/session_stream_recorder.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
-#include "components/browser_actuator/public/common.h"
-#include "components/browser_actuator/public/transport_handler_factory.h"
 
 namespace browser_actuator {
 
@@ -44,10 +42,8 @@ void BrowserActuatorInternalsUIMojoImpl::GetSessionHistory(
   BrowserActuatorService* service =
       profile_ ? BrowserActuatorServiceFactory::GetForProfile(profile_)
                : nullptr;
-  SessionStreamRecorderFactory* recorder_factory =
-      service ? SessionStreamRecorderFactory::FromFactory(
-                    service->GetFactory(FactoryId::kSessionStreamRecorder))
-              : nullptr;
+  const SessionStreamRecorderFactory* recorder_factory =
+      service ? service->GetStreamRecorderFactory() : nullptr;
   if (!recorder_factory) {
     // No service (feature off, or a non-regular profile), or the internals
     // feature did not install the recorder.
