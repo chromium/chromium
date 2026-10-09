@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -39,9 +40,15 @@ void GCController::Install(blink::WebLocalFrame* frame) {
       .Check();
 }
 
-GCController::GCController(blink::WebLocalFrame* frame) : frame_(frame) {}
+GCController::GCController(blink::WebLocalFrame* frame)
+    : RenderFrameObserver(RenderFrame::FromWebFrame(frame)) {}
 
 GCController::~GCController() = default;
+
+void GCController::Dispose() {
+  RenderFrameObserver::Dispose();
+  weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
+}
 
 const gin::WrapperInfo* GCController::wrapper_info() const {
   return &kWrapperInfo;
@@ -77,6 +84,13 @@ void GCController::AsyncCollectAll(const gin::Arguments& args) {
         "v8::Function.");
     return;
   }
+
+  // Noop if the frame is gone, e.g. when called through a removed iframe's
+  // `GCController`.
+  if (!render_frame()) {
+    return;
+  }
+
   v8::UniquePersistent<v8::Function> js_callback(
       args.isolate(), v8::Local<v8::Function>::Cast(args.PeekNext()));
 
@@ -85,13 +99,21 @@ void GCController::AsyncCollectAll(const gin::Arguments& args) {
   base::OnceClosure run_async =
       base::BindOnce(&GCController::AsyncCollectAllWithEmptyStack,
                      weak_ptr_factory_.GetWeakPtr(), std::move(js_callback));
-  frame_->GetTaskRunner(blink::TaskType::kInternalTest)
+  render_frame()
+      ->GetTaskRunner(blink::TaskType::kInternalTest)
       ->PostTask(FROM_HERE, std::move(run_async));
 }
 
 void GCController::AsyncCollectAllWithEmptyStack(
     v8::UniquePersistent<v8::Function> callback) {
-  v8::Isolate* const isolate = frame_->GetAgentGroupScheduler()->Isolate();
+  // The frame may be detached while this task is pending, e.g. when navigating
+  // to about:blank after a web test. Detached frames still run pending tasks.
+  if (!render_frame()) {
+    return;
+  }
+
+  v8::Isolate* const isolate =
+      render_frame()->GetAgentGroupScheduler().Isolate();
 
   for (int i = 0; i < kNumberOfGCsForFullCollection; i++) {
     isolate->RequestGarbageCollectionForTesting(

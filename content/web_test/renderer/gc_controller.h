@@ -5,10 +5,11 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_GC_CONTROLLER_H_
 #define CONTENT_WEB_TEST_RENDERER_GC_CONTROLLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/prefinalizer.h"
 
 namespace blink {
 class WebLocalFrame;
@@ -20,7 +21,10 @@ class Arguments;
 
 namespace content {
 
-class GCController : public gin::Wrappable<GCController> {
+class GCController : public gin::Wrappable<GCController>,
+                     public RenderFrameObserver {
+  CPPGC_USING_PRE_FINALIZER(GCController, Dispose);
+
  public:
   static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
                                                     gin::kGCController};
@@ -35,6 +39,11 @@ class GCController : public gin::Wrappable<GCController> {
   explicit GCController(blink::WebLocalFrame* frame);
   ~GCController() override;
 
+  // Stops observing the `RenderFrame`, and cancels pending tasks. This is a
+  // pre-finalizer because cppgc may run the destructor lazily, after the
+  // `GCController` is unreachable.
+  void Dispose();
+
  private:
   // In the first GC cycle, a weak callback of the DOM wrapper is called back
   // and the weak callback disposes a persistent handle to the DOM wrapper.
@@ -48,6 +57,9 @@ class GCController : public gin::Wrappable<GCController> {
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
+  // RenderFrameObserver.
+  void OnDestruct() override {}
+
   void Collect(const gin::Arguments& args);
   void CollectAll(const gin::Arguments& args);
   void AsyncCollectAll(const gin::Arguments& args);
@@ -56,7 +68,6 @@ class GCController : public gin::Wrappable<GCController> {
   void AsyncCollectAllWithEmptyStack(
       v8::UniquePersistent<v8::Function> callback);
 
-  const raw_ptr<blink::WebLocalFrame> frame_;
   base::WeakPtrFactory<GCController> weak_ptr_factory_{this};
 };
 

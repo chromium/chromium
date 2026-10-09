@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// Makes sure `GCController.asyncCollectAll()` doesn't crash when its frame is
+// detached, either while a GC task is pending or before the call.
+
+function createIframeGCController() {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const gc = iframe.contentWindow.GCController;
+  assert_not_equals(gc, undefined, 'this test requires window.GCController');
+  return [iframe, gc];
+}
+
+promise_test(async () => {
+  const [iframe, gc] = createIframeGCController();
+
+  // Detach the frame while a GC task is pending.
+  gc.asyncCollectAll(() => {});
+  iframe.remove();
+
+  // Let the pending task run. Use `gc` afterwards, so that it stays alive and
+  // its pending task isn't cancelled.
+  await new Promise(resolve => GCController.asyncCollectAll(resolve));
+  assert_equals(typeof gc.asyncCollectAll, 'function');
+}, 'asyncCollectAll() does not crash if its frame is detached while a GC ' +
+   'task is pending');
+
+promise_test(async () => {
+  const [iframe, gc] = createIframeGCController();
+  iframe.remove();
+
+  gc.asyncCollectAll(() => {});
+  await new Promise(resolve => GCController.asyncCollectAll(resolve));
+}, 'asyncCollectAll() does not crash if called after its frame is detached');
+</script>
