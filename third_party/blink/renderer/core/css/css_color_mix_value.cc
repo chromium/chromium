@@ -130,6 +130,13 @@ bool CSSColorMixValue::HasRandomFunctions() const {
          (percentage2_ && percentage2_->HasRandomFunctions());
 }
 
+bool CSSColorMixValue::IsComputationallyIndependent() const {
+  return color1_->IsComputationallyIndependent() &&
+         color2_->IsComputationallyIndependent() &&
+         (!percentage1_ || percentage1_->IsComputationallyIndependent()) &&
+         (!percentage2_ || percentage2_->IsComputationallyIndependent());
+}
+
 void CSSColorMixValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(color1_);
   visitor->Trace(color2_);

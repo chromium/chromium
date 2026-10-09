@@ -282,6 +282,10 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // Checks if a CSS random() function is present in the value.
   bool HasRandomFunctions() const;
 
+  // Whether the value can be converted to a computed value without depending
+  // on another property value.
+  bool IsComputationallyIndependent() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
 

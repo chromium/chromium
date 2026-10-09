@@ -72,6 +72,7 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
                                    const CSSPrimitiveValue* p2);
 
   bool HasRandomFunctions() const;
+  bool IsComputationallyIndependent() const;
 
  private:
   Member<const CSSValue> color1_;

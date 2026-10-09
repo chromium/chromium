@@ -40,6 +40,7 @@ class CORE_EXPORT CSSRelativeColorValue : public CSSValue {
   const CSSValue* Alpha() const;
 
   bool HasRandomFunctions() const;
+  bool IsComputationallyIndependent() const;
 
  private:
   Member<const CSSValue> origin_color_;

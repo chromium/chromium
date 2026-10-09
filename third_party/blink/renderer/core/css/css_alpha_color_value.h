@@ -38,6 +38,11 @@ class CORE_EXPORT CSSAlphaColorValue : public CSSValue {
            (alpha_ && alpha_->HasRandomFunctions());
   }
 
+  bool IsComputationallyIndependent() const {
+    return origin_color_->IsComputationallyIndependent() &&
+           (!alpha_ || alpha_->IsComputationallyIndependent());
+  }
+
  private:
   Member<const CSSValue> origin_color_;
   Member<const CSSValue> alpha_;

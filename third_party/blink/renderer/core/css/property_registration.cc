@@ -79,33 +79,6 @@ void PropertyRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(interpolation_types_);
 }
 
-static bool ComputationallyIndependent(const CSSValue& value) {
-  DCHECK(!value.IsCSSWideKeyword());
-
-  if (auto* variable_reference_value =
-          DynamicTo<CSSUnparsedDeclarationValue>(value)) {
-    return !variable_reference_value->VariableDataValue()
-                ->NeedsVariableResolution();
-  }
-
-  if (auto* value_list = DynamicTo<CSSValueList>(value)) {
-    for (const CSSValue* inner_value : *value_list) {
-      if (!ComputationallyIndependent(*inner_value)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return primitive_value->IsComputationallyIndependent();
-  }
-
-  // TODO(timloh): Images values can also contain lengths.
-
-  return true;
-}
-
 std::optional<CSSSyntaxDefinition> PropertyRegistration::ConvertSyntax(
     const CSSValue* syntax_value) {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#the-syntax-descriptor
@@ -149,7 +122,7 @@ std::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
     if (!initial) {
       return {};
     }
-    if (!ComputationallyIndependent(*initial)) {
+    if (!initial->IsComputationallyIndependent()) {
       return {};
     }
   }
@@ -247,7 +220,7 @@ void PropertyRegistration::registerProperty(
           "The initial value provided does not parse for the given syntax.");
       return;
     }
-    if (!ComputationallyIndependent(*initial)) {
+    if (!initial->IsComputationallyIndependent()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
           "The initial value provided is not computationally independent.");

@@ -293,4 +293,11 @@ bool CSSUnresolvedColorValue::HasRandomFunctions() const {
          (alpha_ && alpha_->HasRandomFunctions());
 }
 
+bool CSSUnresolvedColorValue::IsComputationallyIndependent() const {
+  return (!channels_[0] || channels_[0]->IsComputationallyIndependent()) &&
+         (!channels_[1] || channels_[1]->IsComputationallyIndependent()) &&
+         (!channels_[2] || channels_[2]->IsComputationallyIndependent()) &&
+         (!alpha_ || alpha_->IsComputationallyIndependent());
+}
+
 }  // namespace blink::cssvalue

@@ -985,9 +985,10 @@ void Canvas2DRecorderContext::setStrokeStyle(v8::Isolate* isolate,
 ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
-  const ColorParseResult parse_result =
-      ParseCanvasColorString(color_string, color_scheme_, color,
-                             GetColorProvider(), IsInWebAppScope());
+  const ColorParseResult parse_result = ParseCanvasColorString(
+      color_string, color_scheme_, color, GetColorProvider(),
+      /*can_expose_accent_color=*/IsInWebAppScope(),
+      /*has_style_context=*/HostAsHTMLCanvasElement() != nullptr);
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
   }

@@ -51,6 +51,7 @@ class CORE_EXPORT CSSUnresolvedColorValue : public CSSValue {
   Color Resolve(const CSSLengthResolver& resolver) const;
 
   bool HasRandomFunctions() const;
+  bool IsComputationallyIndependent() const;
 
  private:
   const Color::ColorSpace color_space_;

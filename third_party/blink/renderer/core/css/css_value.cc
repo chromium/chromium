@@ -1188,6 +1188,47 @@ String CSSValue::ClassTypeToString() const {
 }
 #endif
 
+bool CSSValue::IsComputationallyIndependent() const {
+  DCHECK(!IsCSSWideKeyword());
+
+  if (const auto* variable_reference_value =
+          DynamicTo<CSSUnparsedDeclarationValue>(this)) {
+    return !variable_reference_value->VariableDataValue()
+                ->NeedsVariableResolution();
+  }
+
+  if (const auto* value_list = DynamicTo<CSSValueList>(this)) {
+    for (const CSSValue* inner_value : *value_list) {
+      if (!inner_value->IsComputationallyIndependent()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(this)) {
+    return primitive_value->IsComputationallyIndependent();
+  }
+
+  switch (GetClassType()) {
+    case kAlphaColorClass:
+      return To<cssvalue::CSSAlphaColorValue>(this)
+          ->IsComputationallyIndependent();
+    case kColorMixClass:
+      return To<cssvalue::CSSColorMixValue>(this)
+          ->IsComputationallyIndependent();
+    case kRelativeColorClass:
+      return To<cssvalue::CSSRelativeColorValue>(this)
+          ->IsComputationallyIndependent();
+    case kUnresolvedColorClass:
+      return To<cssvalue::CSSUnresolvedColorValue>(this)
+          ->IsComputationallyIndependent();
+    default:
+      // TODO(timloh): Image values can also contain lengths.
+      return true;
+  }
+}
+
 bool CSSValue::HasRandomFunctions() const {
   switch (GetClassType()) {
     case kMathFunctionClass:
