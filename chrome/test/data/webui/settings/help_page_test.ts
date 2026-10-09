@@ -20,7 +20,7 @@ suite('SettingsHelpPage', function() {
   test('about section', async () => {
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
-    const settingsMain = settingsUi.shadowRoot!.querySelector('settings-main');
+    const settingsMain = settingsUi.shadowRoot.querySelector('settings-main');
     assertTrue(!!settingsMain);
     await flushTasks();
     const aboutPage =

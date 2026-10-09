@@ -4,12 +4,10 @@
 
 // clang-format off
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, microtasksFinished, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for the Settings layout. */
@@ -22,7 +20,6 @@ suite('SettingsUIToolbarAndDrawer', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    flush();
     toolbar = ui.$.toolbar;
     drawer = ui.$.drawer;
   });
@@ -30,16 +27,16 @@ suite('SettingsUIToolbarAndDrawer', function() {
   test('showing menu in toolbar is dependent on narrow mode', async function() {
     assertTrue(!!toolbar);
     toolbar.narrow = true;
-    await toolbar.updateComplete;
+    await microtasksFinished();
     assertTrue(toolbar.showMenu);
 
     toolbar.narrow = false;
-    await toolbar.updateComplete;
+    await microtasksFinished();
     assertFalse(toolbar.showMenu);
   });
 
   test('app drawer', async () => {
-    assertEquals(null, ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
+    assertEquals(null, ui.shadowRoot.querySelector('cr-drawer settings-menu'));
     assertFalse(drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', drawer);
@@ -48,7 +45,7 @@ suite('SettingsUIToolbarAndDrawer', function() {
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(drawer.open);
-    assertTrue(!!ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
+    assertTrue(!!ui.shadowRoot.querySelector('cr-drawer settings-menu'));
 
     const drawerClosed = eventToPromise('close', drawer);
     drawer.cancel();
@@ -57,18 +54,18 @@ suite('SettingsUIToolbarAndDrawer', function() {
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
-    assertTrue(!!ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
+    assertTrue(!!ui.shadowRoot.querySelector('cr-drawer settings-menu'));
   });
 
   test('app drawer closes when exiting narrow mode', async () => {
     // Mimic narrow mode and open the drawer
     toolbar.narrow = true;
     drawer.openDrawer();
-    flush();
+    await microtasksFinished();
     await eventToPromise('cr-drawer-opened', drawer);
 
     toolbar.narrow = false;
-    flush();
+    await microtasksFinished();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
   });
@@ -83,7 +80,6 @@ suite('SettingsUISearch', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    flush();
     toolbar = ui.$.toolbar;
     searchField = toolbar.getSearchField();
   });
@@ -144,9 +140,9 @@ suite('SettingsUISearch', function() {
   test('MaintainsFocusOnMenus', async () => {
     // Start in non-narrow mode with focus in the left menu.
     toolbar.narrow = false;
-    await toolbar.updateComplete;
+    await microtasksFinished();
     ui.$.leftMenu.focusFirstItem();
-    assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
+    assertEquals(ui.$.leftMenu, ui.shadowRoot.activeElement);
 
     // Switch to narrow mode and test that focus moves to menu button.
     toolbar.narrow = true;
@@ -155,8 +151,8 @@ suite('SettingsUISearch', function() {
 
     // Switch back to non-narrow mode and test that focus moves to left menu.
     toolbar.narrow = false;
-    await toolbar.updateComplete;
-    assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
+    await microtasksFinished();
+    assertEquals(ui.$.leftMenu, ui.shadowRoot.activeElement);
   });
 });
 
@@ -168,21 +164,18 @@ suite('WebuiRefresh2026', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    flush();
   }
 
-  test('Enabled', async () => {
+  test('Enabled', () => {
     loadTimeData.overrideValues({webuiRefresh2026: WEBUI_REFRESH_ATTR});
     createSettingsUi();
-    await flushTasks();
 
     assertNotEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
   });
 
-  test('Disabled', async () => {
+  test('Disabled', () => {
     loadTimeData.overrideValues({webuiRefresh2026: ''});
     createSettingsUi();
-    await flushTasks();
 
     assertEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
   });
@@ -195,7 +188,6 @@ suite('SettingsRefresh2026', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    flush();
   }
 
   test('NavMenuCollapseEnabled', async () => {

@@ -1,145 +1,46 @@
-    <style include="cr-page-host-style cr-scrollable settings-shared">
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        --settings-menu-width: 266px;
-        /* Centered cards has a max-width of var(--cr-centered-card-max-width)
-         * and a width of a certain percentage. Therefore, to make room for the
-         * cards to be at their max width, the flex-basis of #main needs to be
-         * whatever value the percentage of would equal to the max width. */
-        --settings-main-basis: calc(var(--cr-centered-card-max-width) /
-            var(--cr-centered-card-width-percentage));
-      }
-
-      :host-context([settings-refresh-2026]) {
-        --settings-menu-label-fade-collapse-time: 50ms;
-        --settings-menu-width: 250px;
-        --settings-menu-width-collapse-time: 100ms;
-      }
-
-      :host-context([settings-refresh-2026]) cr-toolbar::part(search-field) {
-        height: 28px;
-        padding: 4px 10px;
-      }
-
-      :host-context([settings-refresh-2026]) cr-toolbar::part(search-input) {
-        color: var(--color-toolbar-search-field-text-color);
-        font-weight: 400;
-        line-height: 167%;
-      }
-
-      :host-context([settings-refresh-2026]) #left settings-menu {
-        transition: width var(--settings-menu-width-collapse-time) ease;
-      }
-
-      :host-context([settings-refresh-2026]) #left[collapsed] settings-menu {
-        transition-delay: var(--settings-menu-label-fade-collapse-time);
-      }
-
-      cr-toolbar {
-        min-height: 56px;
-        --cr-toolbar-center-basis: var(--settings-main-basis);
-      }
-
-      cr-toolbar:not([narrow]) {
-        --cr-toolbar-left-spacer-width: var(--settings-menu-width);
-      }
-
-      @media (prefers-color-scheme: light) {
-        cr-toolbar {
-          --iron-icon-fill-color: white;
-        }
-      }
-
-      #container {
-        display: flex;
-        flex: 1;
-        overflow: auto;
-        position: relative;
-        scrollbar-gutter: stable;
-      }
-
-      #left,
-      #main,
-      #right {
-        flex: 1 1 0;
-      }
-
-      #left {
-        height: 100%;
-        position: sticky;
-        top: 0;
-      }
-
-      #left settings-menu {
-        max-height: 100%;
-        overflow: auto;
-        overscroll-behavior: contain;
-        width: var(--settings-menu-width);
-      }
-
-      #left[collapsed] settings-menu {
-        width: 55px;
-      }
-
-      #main {
-        flex-basis: var(--settings-main-basis);
-      }
-
-      /* The breakpoint of 980px was decided on by the rounded sum of
-       * var(--settings-main-basis), var(--settings-menu-width), and
-       * var(--cr-section-padding). */
-      @media (max-width: 980px) {
-        #main {
-          min-width: auto;
-          /* Add some padding to make room for borders and to prevent focus
-           * indicators from being cropped. */
-          padding: 0 3px;
-        }
-      }
-    </style>
     <cr-toolbar id="toolbar"
         page-name="$i18n{settings}"
         clear-label="$i18n{clearSearch}"
         autofocus
         search-prompt="$i18n{searchPrompt}"
-        on-cr-toolbar-menu-click="onMenuButtonClick_"
-        spinner-active="[[toolbarSpinnerActive_]]"
+        @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
+        ?spinner-active="${this.toolbarSpinnerActive_}"
         menu-label="$i18n{menuButtonLabel}"
-        on-search-changed="onSearchChanged_"
+        @search-changed="${this.onSearchChanged_}"
         role="banner"
-        narrow="{{narrow_}}"
+        ?narrow="${this.narrow_}"
+        @narrow-changed="${this.onToolbarNarrowChanged_}"
         narrow-threshold="980"
-        show-menu="[[getLeftMenuHidden_(narrow_, isSettingsRefresh2026_)]]">
+        ?show-menu="${this.getLeftMenuHidden_()}">
     </cr-toolbar>
-    <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
+    <cr-drawer id="drawer" @close="${this.onMenuClose_}" heading="$i18n{settings}"
         align="$i18n{textdirection}">
       <div slot="body">
-        <template is="dom-if" id="drawerTemplate">
-          <settings-menu id="drawerMenu" on-iron-activate="onIronActivate_">
-          </settings-menu>
-        </template>
+        <cr-lazy-render-lit id="drawerMenu"
+            .template="${() => html`
+              <settings-menu @iron-activate="${this.onIronActivate_}">
+              </settings-menu>
+            `}">
+        </cr-lazy-render-lit>
       </div>
     </cr-drawer>
     <div id="container" class="no-outline cr-scrollable">
       <div id="scrollableShadow" class="cr-scrollable-top-shadow"></div>
       <div id="left"
-          hidden$="[[getLeftMenuHidden_(narrow_, isSettingsRefresh2026_)]]"
-          collapsed$="[[getLeftMenuCollapsed_(
-              narrow_, isSettingsRefresh2026_)]]">
+          ?hidden="${this.getLeftMenuHidden_()}"
+          ?collapsed="${this.getLeftMenuCollapsed_()}">
         <settings-menu id="leftMenu"
-            collapsed="[[getLeftMenuCollapsed_(
-                narrow_, isSettingsRefresh2026_)]]"
-            on-iron-activate="onIronActivate_">
+            .collapsed="${this.getLeftMenuCollapsed_()}"
+            @iron-activate="${this.onIronActivate_}">
         </settings-menu>
       </div>
       <settings-main id="main"
-          toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-          on-search-finished="onSearchFinished_"
-          on-search-result-interaction="onSearchResultInteraction_">
+          .toolbarSpinnerActive="${this.toolbarSpinnerActive_}"
+          @toolbar-spinner-active-changed="${this.onToolbarSpinnerActiveChanged_}"
+          @search-finished="${this.onSearchFinished_}"
+          @search-result-interaction="${this.onSearchResultInteraction_}">
       </settings-main>
       <!-- An additional child of the flex #container to take up space,
            aligned with the right-hand child of the flex toolbar. -->
-      <div id="right" hidden$="[[narrow_]]"></div>
+      <div id="right" ?hidden="${this.narrow_}"></div>
     </div>
