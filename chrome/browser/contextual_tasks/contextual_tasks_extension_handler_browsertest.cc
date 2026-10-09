@@ -2614,6 +2614,38 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
+    OnTabContextStateChanged_ResolvesSessionTabIdToTabHandleId) {
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  const int32_t active_tab_handle_id = active_tab->GetHandle().raw_value();
+
+  base::RunLoop notify_run_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    const std::vector<int32_t>& submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->tab_id, active_tab_handle_id);
+        notify_run_loop.Quit();
+      });
+
+  base::RunLoop add_run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->AddTabContext(
+      active_tab_handle_id, /*delay_upload=*/true,
+      searchbox::mojom::TabAttachmentSource::kContextMenu,
+      base::BindLambdaForTesting(
+          [&](base::expected<base::UnguessableToken,
+                             contextual_search::ContextUploadErrorType>
+                  result) {
+            ASSERT_TRUE(result.has_value());
+            add_run_loop.Quit();
+          }));
+  add_run_loop.Run();
+  notify_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
     OnTabContextStateChanged_DeduplicatesAttachedAndRestoredTabs) {
   const base::UnguessableToken token = base::UnguessableToken::Create();
   mock_session_handle_->GetUploadedContextTokensForTesting().push_back(token);

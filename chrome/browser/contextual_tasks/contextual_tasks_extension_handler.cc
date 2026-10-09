@@ -60,9 +60,10 @@ void DeleteTabToken(
 #endif
 
 searchbox::mojom::TabInfoPtr CreateMojomTab(
-    const contextual_search::TabInfo& tab) {
+    const contextual_search::TabInfo& tab,
+    int32_t tab_handle_id) {
   auto mojom_tab = searchbox::mojom::TabInfo::New();
-  mojom_tab->tab_id = tab.tab_id.value_or(0);
+  mojom_tab->tab_id = tab_handle_id;
   mojom_tab->title = tab.title;
   mojom_tab->url = tab.url;
   return mojom_tab;
@@ -773,14 +774,31 @@ void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
 
   // Combine and deduplicate tabs between restored tabs and attached
   // tabs into a single tab list to send to the frontend extension.
+  // Key tabs by TabHandle ID (used by the frontend) rather than SessionID.
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
   std::vector<int32_t> submitted_tab_ids;
   std::set<GURL> seen_urls;
   std::set<int32_t> seen_tab_ids;
 
+  // Helper lambda to resolve a tab's SessionID to its TabHandle ID,
+  // falling back to SessionID if no matching open tab is found.
+  // Frontend uses tab handle ID to identify tabs, while restored tab session
+  // IDs are persistent between chat sessions.
+  auto* user_data = GetOrCreateWebContentsUserData();
+  auto resolve_tab_id = [user_data](int32_t session_tab_id) -> int32_t {
+    if (user_data) {
+      if (auto handle =
+              user_data->GetTabHandleForSessionTabId(session_tab_id)) {
+        return *handle;
+      }
+    }
+    return session_tab_id;
+  };
+
   for (const auto& tab : state.attached) {
+    const int32_t tab_handler_id = resolve_tab_id(*tab.tab_id);
     // Session handle guarantees that `tab_id` is present. De-duplicate.
-    if (!seen_tab_ids.insert(*tab.tab_id).second) {
+    if (!seen_tab_ids.insert(tab_handler_id).second) {
       continue;
     }
     // Record the URL so restored duplicates are skipped below. Attached tabs
@@ -789,25 +807,32 @@ void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
     if (tab.url.is_valid()) {
       seen_urls.insert(tab.url);
     }
-    tabs.push_back(CreateMojomTab(tab));
+    tabs.push_back(CreateMojomTab(tab, tab_handler_id));
     const bool is_submitted =
         !std::ranges::contains(uploaded_tokens, tab.context_token);
     if (is_submitted && tab.tab_id.has_value()) {
-      submitted_tab_ids.push_back(*tab.tab_id);
+      submitted_tab_ids.push_back(tab_handler_id);
     }
   }
 
   for (const auto& tab : state.restored) {
-    // Tab ID is not guaranteed to be present. Disallow duplicate restored IDs.
-    if (!tab.tab_id.has_value() || !seen_tab_ids.insert(*tab.tab_id).second) {
+    // Tab ID is not guaranteed to be present. Verify it exists.
+    if (!tab.tab_id.has_value()) {
       continue;
     }
+
+    const int32_t tab_handler_id = resolve_tab_id(*tab.tab_id);
+    // Disallow duplicate restored IDs.
+    if (!seen_tab_ids.insert(tab_handler_id).second) {
+      continue;
+    }
+
     // Allow for empty URLs, but not duplicate restored URLs.
     if (tab.url.is_valid() && !seen_urls.insert(tab.url).second) {
       continue;
     }
-    tabs.push_back(CreateMojomTab(tab));
-    submitted_tab_ids.push_back(*tab.tab_id);
+    tabs.push_back(CreateMojomTab(tab, tab_handler_id));
+    submitted_tab_ids.push_back(tab_handler_id);
   }
 
   contextual_tasks_page_->OnTabContextUpdated(std::move(tabs),

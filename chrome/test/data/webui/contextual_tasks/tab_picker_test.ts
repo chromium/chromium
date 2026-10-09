@@ -5,6 +5,7 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://contextual-tasks/contextual_tasks_extension/tab_picker.js';
 
+import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {TabPickerAppElement} from 'chrome://contextual-tasks/contextual_tasks_extension/tab_picker.js';
 import {TabPickerBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_extension/tab_picker.js';
 import type {TabPickerBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_extension/tab_picker.js';
@@ -14,6 +15,8 @@ import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/s
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 class TestTabPickerBrowserProxy extends TestBrowserProxy implements
     TabPickerBrowserProxy {
@@ -70,6 +73,7 @@ function createTabInfo(id: number, title: string, url: string): TabInfo {
 suite('TabPickerTest', () => {
   let app: TabPickerAppElement;
   let testProxy: TestTabPickerBrowserProxy;
+  let extensionBrowserProxy: TestExtensionBrowserProxy;
   let recordedMetrics:
       Array<{metricName: string, value: number, enumSize: number}> = [];
   let originalRecordEnumerationValue: any;
@@ -130,6 +134,9 @@ suite('TabPickerTest', () => {
       recentTabsSuffix: 'Recent',
       contextualTasksUnboundedMenuEnabled: true,
     });
+
+    extensionBrowserProxy = new TestExtensionBrowserProxy();
+    ExtensionBrowserProxyImpl.setInstance(extensionBrowserProxy);
 
     testProxy = new TestTabPickerBrowserProxy();
     testProxy.setRecentTabs(mockTabs);
@@ -539,5 +546,39 @@ suite('TabPickerTest', () => {
                     m => m.metricName ===
                         'ContextualSearch.TabPicker.SelectedTabPosition.ContextualTasksExtension')
                 ?.value);
+      });
+
+  test(
+      'Repopulates selected tabs when onTabContextUpdated is dispatched',
+      async () => {
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated(
+            [tab0, tab2], []);
+        await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertEquals(2, app.selectedTabs.length);
+        assertEquals(tab0.tabId, app.selectedTabs[0]!.tabId);
+        assertEquals(tab2.tabId, app.selectedTabs[1]!.tabId);
+
+        const label = app.$.shareTabsTrigger.querySelector('.tab-title');
+        assert(label);
+        assertEquals('Sharing 2 tabs', label.textContent.trim());
+
+        app.$.shareTabsTrigger.click();
+        await microtasksFinished();
+
+        const items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        assertEquals(3, items.length);
+        assertTrue(isVisible(items[0]!.querySelector('.share-tabs-check')));
+        assertFalse(isVisible(items[1]!.querySelector('.share-tabs-check')));
+        assertTrue(isVisible(items[2]!.querySelector('.share-tabs-check')));
+
+        // Deselecting a repopulated tab deletes it from context.
+        items[0]!.click();
+        const deletedTabId = await testProxy.whenCalled('deleteTabContext');
+        assertEquals(tab0.tabId, deletedTabId);
+        await microtasksFinished();
+        assertEquals('Sharing 1 tab', label.textContent.trim());
       });
 });
