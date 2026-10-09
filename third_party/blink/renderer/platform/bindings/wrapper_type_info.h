@@ -141,16 +141,6 @@ struct PLATFORM_EXPORT WrapperTypeInfo final
 
   bool Equals(const WrapperTypeInfo* that) const { return this == that; }
 
-  bool IsSubclass(const WrapperTypeInfo* that) const {
-    for (const WrapperTypeInfo* current = this; current;
-         current = current->parent_class) {
-      if (current == that)
-        return true;
-    }
-
-    return false;
-  }
-
   bool SupportsDroppingWrapper() const {
     return wrapper_class_id != kNoInternalFieldClassId;
   }

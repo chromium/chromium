@@ -158,22 +158,17 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
                                               wtf_size_t position_hint);
 
  private:
-  bool VerifyParentIsCSSRule() const;
-  bool VerifyParentIsCSSStyleSheet() const;
-
   CSSRule* ParentAsCSSRule() const {
     DCHECK(parent_is_rule_);
-    DCHECK(VerifyParentIsCSSRule());
     return reinterpret_cast<CSSRule*>(parent_.Get());
   }
   CSSStyleSheet* ParentAsCSSStyleSheet() const {
     DCHECK(!parent_is_rule_);
-    DCHECK(VerifyParentIsCSSStyleSheet());
     return reinterpret_cast<CSSStyleSheet*>(parent_.Get());
   }
 
-  mutable unsigned char has_cached_selector_text_ : 1;
-  unsigned char parent_is_rule_ : 1;
+  mutable bool has_cached_selector_text_ : 1;
+  bool parent_is_rule_ : 1;
 
   // parent_ should reference either CSSRule or CSSStyleSheet (both are
   // descendants of ScriptWrappable). This field should only be accessed

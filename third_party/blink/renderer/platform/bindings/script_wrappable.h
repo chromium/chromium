@@ -73,8 +73,12 @@ class PLATFORM_EXPORT ScriptWrappable : public v8::Object::Wrappable {
     // the IDL definitions in *.idl files, not based on C++ class inheritance.
     template <typename T>
     T* DowncastTo() {
-      if (wrapper_type_info_->IsSubclass(T::GetStaticWrapperTypeInfo()))
-        return static_cast<T*>(script_wrappable_);
+      for (const WrapperTypeInfo* current = wrapper_type_info_; current;
+           current = current->parent_class) {
+        if (current == T::GetStaticWrapperTypeInfo()) {
+          return static_cast<T*>(script_wrappable_);
+        }
+      }
       return nullptr;
     }
 

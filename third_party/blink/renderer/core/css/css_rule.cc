@@ -96,13 +96,4 @@ void CSSRule::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-bool CSSRule::VerifyParentIsCSSRule() const {
-  return !parent_ || ToWrapperTypeInfo(parent_)->IsSubclass(
-                         CSSRule::GetStaticWrapperTypeInfo());
-}
-bool CSSRule::VerifyParentIsCSSStyleSheet() const {
-  return !parent_ || ToWrapperTypeInfo(parent_)->IsSubclass(
-                         CSSStyleSheet::GetStaticWrapperTypeInfo());
-}
-
 }  // namespace blink
