@@ -17,6 +17,7 @@
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "net/http/http_response_headers.h"
@@ -33,6 +34,16 @@ struct ResolvedStream {
   // the filtering decision of a different frame.
   bool should_filter_response_headers = true;
 };
+
+constexpr char kUnhandledMimeTypeError[] =
+    "This extension does not handle MIME type '*'.";
+
+bool ExtensionHandlesMimeType(const Extension& extension,
+                              const std::string& mime_type) {
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(extension);
+  return handler &&
+         std::ranges::contains(handler->GetSupportedMimeTypes(), mime_type);
+}
 
 // Validates that `extension_rfh` is a child frame whose embedder owns a
 // MIME handler stream belonging to `expected_extension_id`. On success
@@ -151,6 +162,11 @@ MimeHandlerSetMimeHandlerOptionsFunction::Run() {
       api::mime_handler::SetMimeHandlerOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  if (!ExtensionHandlesMimeType(*extension(), params->mime_type)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        kUnhandledMimeTypeError, params->mime_type)));
+  }
+
   MimeHandlerRegistry::Get(browser_context())
       ->SetEnabledForMimeType(extension_id(), params->mime_type,
                               params->options.enabled);
@@ -167,6 +183,11 @@ MimeHandlerGetMimeHandlerOptionsFunction::Run() {
   auto params =
       api::mime_handler::GetMimeHandlerOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!ExtensionHandlesMimeType(*extension(), params->mime_type)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        kUnhandledMimeTypeError, params->mime_type)));
+  }
 
   api::mime_handler::MimeHandlerOptions idl_options;
   idl_options.enabled =

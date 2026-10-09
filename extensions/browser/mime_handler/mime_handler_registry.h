@@ -87,6 +87,8 @@ class MimeHandlerRegistry : public KeyedService,
                             const std::string& mime_type) const;
 
   // Persists the enabled state for (`extension_id`, `mime_type`).
+  // Changing the state requires `extension_id` to be an enabled extension
+  // that handles `mime_type`.
   void SetEnabledForMimeType(const ExtensionId& extension_id,
                              const std::string& mime_type,
                              bool enabled);

@@ -125,6 +125,17 @@ bool MimeHandlerRegistry::IsEnabledForMimeType(
 void MimeHandlerRegistry::SetEnabledForMimeType(const ExtensionId& extension_id,
                                                 const std::string& mime_type,
                                                 bool enabled) {
+  // The `mimeHandler` API is gated on `manifest:mime_types_handler` and
+  // disabled-extension calls are dropped before reaching here, so the calling
+  // extension is loaded and has a `MimeTypesHandler`.
+  const Extension* extension = ExtensionRegistry::Get(&*browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  CHECK(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
+  CHECK(handler);
+  CHECK(std::ranges::contains(handler->GetSupportedMimeTypes(), mime_type));
+
   // TODO(crbug.com/495538206): Define behavior for two cases not yet
   // covered by the spec:
   //   1. Persistence across extension updates — prefs are keyed by
@@ -144,23 +155,8 @@ void MimeHandlerRegistry::SetEnabledForMimeType(const ExtensionId& extension_id,
   prefs->SetDictionaryPref(extension_id, kMimeHandlerEnabled, std::move(dict));
 
   // Mirror the new state in `handlers_by_type_` so lookups don't need
-  // to consult prefs. The `mimeHandler` API is gated on
-  // `manifest:mime_types_handler` and disabled-extension calls are
-  // dropped before reaching here, so the calling extension is loaded
-  // and has a `MimeTypesHandler`. The manifest may still not claim
-  // `mime_type` (the API takes an arbitrary string), so that case is
-  // a no-op.
+  // to consult prefs.
   if (enabled) {
-    const Extension* extension = ExtensionRegistry::Get(&*browser_context_)
-                                     ->enabled_extensions()
-                                     .GetByID(extension_id);
-    CHECK(extension);
-    const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
-    CHECK(handler);
-    const auto& mime_types = handler->GetSupportedMimeTypes();
-    if (std::ranges::find(mime_types, mime_type) == mime_types.end()) {
-      return;
-    }
     std::vector<ExtensionId>& handlers = handlers_by_type_[mime_type];
     if (std::ranges::find(handlers, extension_id) == handlers.end()) {
       handlers.emplace_back(extension_id);

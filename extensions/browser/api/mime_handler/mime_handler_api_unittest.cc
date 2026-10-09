@@ -22,6 +22,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
@@ -47,6 +48,8 @@ constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kOriginalUrl[] = "https://example.com/foo.pdf";
 constexpr char kStreamUrl[] = "stream://pdf";
 constexpr char kHandlerPage[] = "handler.html";
+constexpr char kUnhandledPngMimeTypeError[] =
+    "This extension does not handle MIME type 'image/png'.";
 constexpr char kCustomHeaderName[] = "X-Custom";
 constexpr char kCustomHeaderValue[] = "bar";
 constexpr char kCoepHeaderName[] = "Cross-Origin-Embedder-Policy";
@@ -132,9 +135,27 @@ ClaimedStreamSetup CreateAndSetUpClaimedStream(
   return result;
 }
 
+scoped_refptr<const Extension> BuildExtensionWithMimeTypesHandler(
+    const std::string& name,
+    std::string_view mime_type) {
+  return ExtensionBuilder(name)
+      .SetManifestKey(
+          "mime_types_handler",
+          base::DictValue().Set(
+              mime_type, base::DictValue().Set("handler_url", kHandlerPage)))
+      .Build();
+}
+
 }  // namespace
 
-using MimeHandlerApiTest = ApiUnitTest;
+class MimeHandlerApiTest : public ApiUnitTest {
+ protected:
+  void SetRegisteredExtension(scoped_refptr<const Extension> extension) {
+    set_extension(extension);
+    // API functions run only for enabled extensions.
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+  }
+};
 
 // Called without any render frame host bound to the function: the function
 // cannot know which extension context is calling it.
@@ -331,6 +352,9 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackRejectsBuiltInExtension) {
 }
 
 TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsDefaultsToEnabled) {
+  SetRegisteredExtension(
+      BuildExtensionWithMimeTypesHandler("PDF handler", kPdfMimeType));
+
   // With no prior setMimeHandlerOptions call, getMimeHandlerOptions
   // must return enabled=true by default.
   auto function =
@@ -342,6 +366,9 @@ TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsDefaultsToEnabled) {
 }
 
 TEST_F(MimeHandlerApiTest, SetThenGetMimeHandlerOptionsRoundTrip) {
+  SetRegisteredExtension(
+      BuildExtensionWithMimeTypesHandler("PDF handler", kPdfMimeType));
+
   // Persist enabled=false via setMimeHandlerOptions.
   auto set_function =
       base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
@@ -354,6 +381,49 @@ TEST_F(MimeHandlerApiTest, SetThenGetMimeHandlerOptionsRoundTrip) {
       RunFunctionAndReturnValue(get_function.get(), R"(["application/pdf"])");
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(*result, base::test::IsJson(R"({"enabled": false})"));
+}
+
+TEST_F(MimeHandlerApiTest,
+       SetAndGetMimeHandlerOptionsAcceptOnlyHandledMimeTypes) {
+  SetRegisteredExtension(
+      BuildExtensionWithMimeTypesHandler("PDF handler", kPdfMimeType));
+
+  auto set_handled_function =
+      base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
+  RunFunction(set_handled_function.get(),
+              R"(["application/pdf", {"enabled": false}])");
+  auto set_unhandled_function =
+      base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
+  EXPECT_EQ(kUnhandledPngMimeTypeError,
+            RunFunctionAndReturnError(set_unhandled_function.get(),
+                                      R"(["image/png", {"enabled": false}])"));
+
+  auto get_handled_function =
+      base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
+  std::optional<base::Value> handled_result = RunFunctionAndReturnValue(
+      get_handled_function.get(), R"(["application/pdf"])");
+  ASSERT_TRUE(handled_result.has_value());
+  EXPECT_THAT(handled_result.value(),
+              base::test::IsJson(R"({"enabled": false})"));
+  auto get_unhandled_function =
+      base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
+  EXPECT_EQ(kUnhandledPngMimeTypeError,
+            RunFunctionAndReturnError(get_unhandled_function.get(),
+                                      R"(["image/png"])"));
+}
+
+// A generic handler cannot handle image/png, so this manifest parses to no
+// MIME handler at all.
+TEST_F(MimeHandlerApiTest,
+       SetMimeHandlerOptionsRejectsExtensionWithoutHandler) {
+  SetRegisteredExtension(
+      BuildExtensionWithMimeTypesHandler("PNG handler", "image/png"));
+
+  auto function =
+      base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
+  EXPECT_EQ(kUnhandledPngMimeTypeError,
+            RunFunctionAndReturnError(function.get(),
+                                      R"(["image/png", {"enabled": true}])"));
 }
 
 }  // namespace extensions

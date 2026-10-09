@@ -4,8 +4,6 @@
 
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 
-#include <optional>
-
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
@@ -23,7 +21,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/manifest_handlers/mime_types_handler_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -419,35 +416,6 @@ TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
   // Re-enable: ext_new wins again (newer install time beats ext_old).
   registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, true);
   EXPECT_EQ(ext_new->id(), GetHandlerForMimeType(kPdfMimeType));
-}
-
-TEST_F(MimeHandlerRegistryTest, SetEnabledForUnclaimedMimeTypeDoesNotRegister) {
-  constexpr char kPngMimeType[] = "image/png";
-  // Anchor on the actual invariant: `kPngMimeType` is not a supported MIME
-  // type, so no non-allowlisted extension's manifest can claim it (the
-  // parser drops unsupported entries with an install warning). If support
-  // ever grows to include `image/png`, pick a different MIME type for this
-  // test.
-  EXPECT_EQ(MimeTypesHandlerPermission::PermissionIDForMimeType(kPngMimeType),
-            std::nullopt);
-
-  auto ext =
-      CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl);
-  LoadExtension(ext.get());
-
-  // Sanity: extension is the active handler for the MIME type it claims,
-  // and `image/png` has no registered handler.
-  ASSERT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
-  ASSERT_TRUE(registry()->GetHandlersForMimeType(kPngMimeType).empty());
-
-  // Call for a MIME type the manifest does not claim. The pref write
-  // happens unconditionally, but the in-memory registry must not gain
-  // an entry for `image/png`.
-  registry()->SetEnabledForMimeType(ext->id(), kPngMimeType, true);
-
-  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPngMimeType));
-  EXPECT_TRUE(registry()->GetHandlersForMimeType(kPngMimeType).empty());
-  EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPngMimeType), 0u);
 }
 
 }  // namespace

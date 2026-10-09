@@ -42,7 +42,8 @@ interface MimeHandler {
   static Promise<undefined> abortAndFallbackToNativeHandler();
 
   // Sets the configuration options for a specified MIME type.
-  // |mimeType|: The MIME type to configure.
+  // |mimeType|: The MIME type to configure. It must be a MIME type the
+  // extension handles through mime_types_handler.
   // |options|: The new options to use.
   // |Returns|: Promise resolved when the configuration has been set.
   static Promise<undefined> setMimeHandlerOptions(DOMString mimeType,
@@ -50,7 +51,8 @@ interface MimeHandler {
 
   // Reads the persisted options for a MIME type. Returns defaults
   // (enabled=true) if none have been stored.
-  // |mimeType|: The MIME type whose options to read.
+  // |mimeType|: The MIME type whose options to read. It must be a MIME type
+  // the extension handles through mime_types_handler.
   // |PromiseValue|: options
   // |Returns|: Promise resolved with the persisted options for the MIME type.
   static Promise<MimeHandlerOptions> getMimeHandlerOptions(DOMString mimeType);
