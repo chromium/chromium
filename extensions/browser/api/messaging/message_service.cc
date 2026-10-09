@@ -114,6 +114,10 @@ constexpr auto kAndroidNativeMessagingAllowedExtensionIds =
         "ckcendljdlmgnhghiaomidhiiclmapok",
         // gnubbyd-v3 prod
         "lfboplenmmjcmpbkeemecobbadnmpfhi",
+        // Chrome Remote Desktop dev
+        "pbnaomcgbfiofkfobmlhmdobjchjkphi",
+        // Chrome Remote Desktop prod
+        "inomeogfingihgjfjlpeplalcfajhgai",
     });
 #endif
 
