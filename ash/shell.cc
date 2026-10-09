@@ -1170,6 +1170,8 @@ Shell::~Shell() {
   // `autozoom_controller_` since they will destruct `SystemNudgeController`.
   system_nudge_pause_manager_.reset();
 
+  partial_magnifier_controller_.reset();
+
   // This also deletes all RootWindows. Note that we invoke Shutdown() on
   // WindowTreeHostManager before resetting |window_tree_host_manager_|, since
   // destruction of its owned RootWindowControllers relies on the value.
@@ -1191,8 +1193,6 @@ Shell::~Shell() {
 
   display_color_manager_.reset();
   projecting_observer_.reset();
-
-  partial_magnifier_controller_.reset();
 
   laser_pointer_controller_.reset();
 
