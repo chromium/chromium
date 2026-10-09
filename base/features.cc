@@ -214,7 +214,7 @@ BASE_FEATURE(kUseTerminationStatusMemoryExhaustion, FEATURE_ENABLED_BY_DEFAULT);
 
 // Optimize text decoding by using FindFirstNonASCII to find and copy ASCII
 // content.
-BASE_FEATURE(kUtfConversionAsciiFastPath, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUtfConversionAsciiFastPath, FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // When enabled, use ABOVE_NORMAL_PRIORITY_CLASS for Priority::kUserBlocking on
