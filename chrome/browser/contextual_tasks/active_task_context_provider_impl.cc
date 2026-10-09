@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
@@ -45,23 +46,49 @@ std::set<tabs::TabHandle> GetTabsFromContext(
   // Map SessionID to its GURL and title.
   std::map<SessionID, std::pair<GURL, std::u16string>>
       context_session_ids_url_map;
+  // Returns true if the session still tracks `id` as context. GetTokenForTab()
+  // covers uploaded (attached but not yet submitted), submitted and persisted
+  // tabs, and returns an empty token for tabs whose context was superceded
+  // (e.g. cleared by a manual smart tab sharing toggle).
+  const bool check_session_tokens =
+      session_handle &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox);
+  auto is_tracked_by_session = [session_handle,
+                                check_session_tokens](SessionID id) {
+    return !check_session_tokens ||
+           !session_handle->GetTokenForTab(id).is_empty();
+  };
+
   // Add the tabs from context if they exist in the current browser window.
   for (const auto& attachment : context.GetUrlAttachments()) {
     SessionID id = attachment.GetTabSessionId();
-    if (!id.is_valid()) {
-      continue;
-    }
-    // Only keep tabs that the session still tracks as context. GetTokenForTab()
-    // covers uploaded (attached but not yet submitted), submitted and persisted
-    // tabs, and returns an empty token for tabs whose context was superceded
-    // (e.g. cleared by a manual smart tab sharing toggle).
-    if (session_handle &&
-        base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
-        session_handle->GetTokenForTab(id).is_empty()) {
+    if (!id.is_valid() || !is_tracked_by_session(id)) {
       continue;
     }
     context_session_ids_url_map[id] =
         std::make_pair(attachment.GetURL(), attachment.GetTitle());
+  }
+
+  // Also add the tabs the session itself still holds as submitted or persisted
+  // context. This is the same set the side panel uses to render context chips.
+  // The task context above is populated from URL resources echoed back by the
+  // server; if that echo lacks tab ids (or has not arrived yet), the underline
+  // should still reflect what the session is sharing rather than disappear.
+  if (session_handle) {
+    for (const contextual_search::FileInfo& file_info :
+         session_handle->GetSubmittedContextFileInfos()) {
+      if (!file_info.tab_session_id.has_value() ||
+          !file_info.tab_session_id->is_valid() ||
+          !file_info.tab_url.has_value() || file_info.is_superceded ||
+          !is_tracked_by_session(*file_info.tab_session_id)) {
+        continue;
+      }
+      // Prefer the attachment from the task context when present; it carries
+      // the server-reconciled URL and title.
+      context_session_ids_url_map.try_emplace(
+          *file_info.tab_session_id, *file_info.tab_url,
+          base::UTF8ToUTF16(file_info.tab_title.value_or("")));
+    }
   }
 
   if (context_session_ids_url_map.empty()) {
