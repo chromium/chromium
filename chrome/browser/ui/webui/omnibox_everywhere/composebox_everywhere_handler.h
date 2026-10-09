@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_COMPOSEBOX_EVERYWHERE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_COMPOSEBOX_EVERYWHERE_HANDLER_H_
 
+#include "base/containers/flat_set.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_screenshare_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class Profile;
 class OmniboxEverywhereService;
+class Profile;
 
 namespace content {
 class WebContents;
@@ -47,14 +49,26 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
   void OnEscapePressed() override;
 
   // ContextualSearchboxHandler:
+  void AddFileContextToPage(
+      const base::UnguessableToken& token,
+      searchbox::mojom::SelectedFileInfoPtr file_info) override;
+  void ProcessContextAndOpenUrl(
+      GURL url,
+      const WindowOpenDisposition disposition) override;
   void OpenUrl(GURL url,
                const WindowOpenDisposition disposition,
                base::OnceCallback<void(content::NavigationHandle&)>
                    navigation_handle_callback) override;
   void CleanupDrivePicker() override;
 
+  void AddScreenshotContextToken(const base::UnguessableToken& token);
+  void ClearScreenshotContextTokens();
+
  private:
+  bool ShouldOpenWithInPlaceWindow();
+
   raw_ptr<OmniboxEverywhereService> service_;
+  base::flat_set<base::UnguessableToken> screenshot_context_tokens_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_COMPOSEBOX_EVERYWHERE_HANDLER_H_

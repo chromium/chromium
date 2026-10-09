@@ -10,14 +10,15 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
 class Profile;
 class ScopedProfileKeepAlive;
 class SkBitmap;
@@ -38,6 +39,9 @@ class OmniboxEverywhereFeaturePromoController;
 
 class OmniboxEverywhereService : public KeyedService {
  public:
+  static constexpr int kInPlaceWindowWidth = 800;
+  static constexpr int kInPlaceWindowHeight = 600;
+
   struct RegionCaptureSource {
     enum class Type { kAllDisplays, kSpecificDisplay };
     Type type = Type::kAllDisplays;
@@ -91,6 +95,16 @@ class OmniboxEverywhereService : public KeyedService {
                        ui::PageTransition transition,
                        base::OnceCallback<void(content::NavigationHandle&)>
                            navigation_handle_callback);
+  // Opens `url` in a new browser window aligned with the popup widget.
+  virtual void OpenUrlWithInPlaceWindow(
+      const GURL& url,
+      ui::PageTransition transition,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback);
+
+  static gfx::Rect CalculateInPlaceWindowBounds(const gfx::Rect& popup_bounds,
+                                                const gfx::Rect& work_area);
+  gfx::Rect GetInPlaceWindowBounds() const;
 
   // Acquires a ScopedProfileKeepAlive for this profile while the popup widget
   // is active or being shown. Returns true if profile keep alive was acquired
@@ -109,6 +123,13 @@ class OmniboxEverywhereService : public KeyedService {
   }
 
  private:
+  void NavigateInBrowserWindow(
+      BrowserWindowInterface* bwi,
+      const GURL& url,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback);
   void OnScreenshotDisclosureAccepted(base::OnceClosure on_accepted);
 
   omnibox_everywhere::OmniboxEverywhereController* controller() const;

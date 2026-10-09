@@ -9590,6 +9590,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLoomDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kOmniboxLoomChoices)},
 
+    {"omnibox-everywhere-screenshot-new-window",
+     flag_descriptions::kOmniboxEverywhereScreenshotNewWindowName,
+     flag_descriptions::kOmniboxEverywhereScreenshotNewWindowDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxEverywhereScreenshotNewWindow)},
+
     {"webui-omnibox-aim-popup-disable-animation",
      flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationName,
      flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationDescription,

@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 class OmniboxEverywhereServiceTest : public testing::Test {
  public:
@@ -127,5 +128,21 @@ TEST_F(OmniboxEverywhereServiceTest, EndLensPromoDoesNotCrash) {
   ASSERT_TRUE(service);
   service->MaybeShowLensPromo();
   service->EndLensPromo();
+}
+
+TEST_F(OmniboxEverywhereServiceTest, CalculateInPlaceWindowBounds) {
+  const gfx::Rect work_area(0, 0, 1920, 1080);
+
+  // Horizontally centered and top-aligned with the popup.
+  const gfx::Rect centered_popup(596, 300, 728, 152);
+  EXPECT_EQ(gfx::Rect(560, 300, 800, 600),
+            OmniboxEverywhereService::CalculateInPlaceWindowBounds(
+                centered_popup, work_area));
+
+  // Clamped to the work area when the popup is near the bottom-right corner.
+  const gfx::Rect corner_popup(1180, 700, 728, 152);
+  EXPECT_EQ(gfx::Rect(1120, 480, 800, 600),
+            OmniboxEverywhereService::CalculateInPlaceWindowBounds(corner_popup,
+                                                                   work_area));
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

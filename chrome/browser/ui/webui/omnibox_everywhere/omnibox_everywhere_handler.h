@@ -77,6 +77,9 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
   void OpenProfilePicker() override;
 
   // ContextualSearchboxHandler:
+  void AddFileContextToPage(
+      const base::UnguessableToken& token,
+      searchbox::mojom::SelectedFileInfoPtr file_info) override;
   void OpenUrl(GURL url,
                const WindowOpenDisposition disposition,
                base::OnceCallback<void(content::NavigationHandle&)>

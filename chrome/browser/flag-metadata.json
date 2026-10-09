@@ -7577,6 +7577,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "omnibox-everywhere-screenshot-new-window",
+    "owners": [ "alsan@google.com", "julietlevesque@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-focus-triggers-web-and-srp-zero-suggest",
     "owners": ["jdonnelly@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150

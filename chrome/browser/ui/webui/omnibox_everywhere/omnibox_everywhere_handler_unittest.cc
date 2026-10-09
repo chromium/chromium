@@ -39,6 +39,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,6 +101,13 @@ class MockOmniboxEverywhereService : public OmniboxEverywhereService {
                base::OnceCallback<void(content::NavigationHandle&)>
                    navigation_handle_callback),
               (override));
+  MOCK_METHOD(void,
+              OpenUrlWithInPlaceWindow,
+              (const GURL& url,
+               ui::PageTransition transition,
+               base::OnceCallback<void(content::NavigationHandle&)>
+                   navigation_handle_callback),
+              (override));
   MOCK_METHOD(void, ShowProfilePicker, (), (override));
   MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void, OnDrivePickerOpened, (), (override));
@@ -155,6 +163,10 @@ class OmniboxEverywhereHandlerTest
         version_info::Channel::UNKNOWN, "en-US", template_url_service(),
         /*variations_client=*/nullptr,
         std::move(query_controller_config_params));
+    query_controller_ = query_controller_ptr.get();
+    ON_CALL(*query_controller_, GetFileInfo)
+        .WillByDefault(testing::Invoke(query_controller_.get(),
+                                       &MockQueryController::FakeGetFileInfo));
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
 
@@ -183,6 +195,7 @@ class OmniboxEverywhereHandlerTest
           omnibox_everywhere::prefs::kHotkeyEnabled);
     }
     handler_.reset();
+    query_controller_ = nullptr;
     contextual_session_handle_.reset();
     mock_service_.reset();
     ContextualSearchboxHandlerTestHarness::TearDown();
@@ -194,6 +207,7 @@ class OmniboxEverywhereHandlerTest
   std::unique_ptr<MockOmniboxEverywhereService> mock_service_;
   testing::NiceMock<MockSearchboxPage> page_;
   mojo::Remote<searchbox::mojom::PageHandler> handler_remote_;
+  raw_ptr<MockQueryController> query_controller_ = nullptr;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
   std::unique_ptr<OmniboxEverywhereHandlerPublic> handler_;
@@ -706,6 +720,84 @@ TEST_F(OmniboxEverywhereHandlerTest,
 
   EXPECT_EQ(kTestUrl, captured_url);
   EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, captured_disposition);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,
+                                           ui::PAGE_TRANSITION_GENERATED));
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       ComposeboxEverywhereScreenshotOpensWithInPlaceWindow) {
+  MockOmniboxEverywhereService* factory_service = nullptr;
+  OmniboxEverywhereServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        auto service = std::make_unique<MockOmniboxEverywhereService>(
+            Profile::FromBrowserContext(context));
+        factory_service = service.get();
+        return service;
+      }));
+  ASSERT_TRUE(factory_service);
+
+  mojo::Remote<composebox::mojom::PageHandler> composebox_remote;
+  mojo::Remote<searchbox::mojom::PageHandler> searchbox_remote;
+  testing::NiceMock<MockSearchboxPage> mock_page;
+  ComposeboxEverywhereHandlerPublic composebox_handler(
+      composebox_remote.BindNewPipeAndPassReceiver(),
+      searchbox_remote.BindNewPipeAndPassReceiver(),
+      mock_page.BindAndGetRemote(), profile(), web_contents(),
+      base::BindLambdaForTesting(
+          [&]() { return contextual_session_handle_.get(); }),
+      base::DoNothing(), /*screenshare_delegate=*/nullptr);
+
+  // Regular uploaded images (not added via AddFileContextToPage) should open
+  // via OpenUrl, not OpenUrlWithInPlaceWindow.
+  const base::UnguessableToken uploaded_image_token =
+      contextual_session_handle_->CreateContextToken();
+  query_controller_->AddFileInfoForTesting(uploaded_image_token,
+                                           lens::MimeType::kImage);
+
+  const GURL kUploadedImageUrl(
+      "https://www.google.com/search?q=uploaded+image+query&udm=50");
+  EXPECT_CALL(*factory_service,
+              OpenUrlWithInPlaceWindow(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*factory_service,
+              OpenUrl(kUploadedImageUrl, WindowOpenDisposition::CURRENT_TAB,
+                      testing::_, testing::_))
+      .Times(1);
+  composebox_handler.ProcessContextAndOpenUrl(
+      kUploadedImageUrl, WindowOpenDisposition::CURRENT_TAB);
+  testing::Mock::VerifyAndClearExpectations(factory_service);
+
+  // Screenshots (added via AddFileContextToPage) should open with an in-place
+  // window.
+  const base::UnguessableToken screenshot_token =
+      contextual_session_handle_->CreateContextToken();
+  query_controller_->AddFileInfoForTesting(screenshot_token,
+                                           lens::MimeType::kImage);
+  composebox_handler.AddFileContextToPage(
+      screenshot_token, searchbox::mojom::SelectedFileInfo::New());
+
+  const GURL kScreenshotUrl(
+      "https://www.google.com/search?q=screenshot+query&udm=50");
+  GURL captured_url;
+  ui::PageTransition captured_transition;
+  EXPECT_CALL(*factory_service,
+              OpenUrl(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*factory_service,
+              OpenUrlWithInPlaceWindow(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](const GURL& url, ui::PageTransition transition,
+              base::OnceCallback<void(content::NavigationHandle&)> callback) {
+            captured_url = url;
+            captured_transition = transition;
+          });
+
+  composebox_handler.ProcessContextAndOpenUrl(
+      kScreenshotUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  EXPECT_EQ(kScreenshotUrl, captured_url);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(captured_transition,
                                            ui::PAGE_TRANSITION_GENERATED));
 }

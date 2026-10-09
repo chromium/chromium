@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -13,7 +15,9 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/page_transition_types.h"
@@ -122,15 +126,47 @@ void ComposeboxEverywhereHandler::CleanupDrivePicker() {
   }
 }
 
+void ComposeboxEverywhereHandler::AddFileContextToPage(
+    const base::UnguessableToken& token,
+    searchbox::mojom::SelectedFileInfoPtr file_info) {
+  AddScreenshotContextToken(token);
+  ComposeboxHandler::AddFileContextToPage(token, std::move(file_info));
+}
+
+void ComposeboxEverywhereHandler::AddScreenshotContextToken(
+    const base::UnguessableToken& token) {
+  screenshot_context_tokens_.insert(token);
+}
+
+void ComposeboxEverywhereHandler::ClearScreenshotContextTokens() {
+  screenshot_context_tokens_.clear();
+}
+
+void ComposeboxEverywhereHandler::ProcessContextAndOpenUrl(
+    GURL url,
+    const WindowOpenDisposition disposition) {
+  const WindowOpenDisposition effective_disposition =
+      ShouldOpenWithInPlaceWindow() ? WindowOpenDisposition::NEW_WINDOW
+                                    : disposition;
+  ComposeboxHandler::ProcessContextAndOpenUrl(std::move(url),
+                                              effective_disposition);
+}
+
 void ComposeboxEverywhereHandler::OpenUrl(
     GURL url,
     const WindowOpenDisposition disposition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  if (service_) {
-    service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_GENERATED,
-                      std::move(navigation_handle_callback));
+  if (!service_) {
+    return;
   }
+  if (ShouldOpenWithInPlaceWindow()) {
+    service_->OpenUrlWithInPlaceWindow(url, ui::PAGE_TRANSITION_GENERATED,
+                                       std::move(navigation_handle_callback));
+    return;
+  }
+  service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_GENERATED,
+                    std::move(navigation_handle_callback));
 }
 
 void ComposeboxEverywhereHandler::OnEscapePressed() {
@@ -139,4 +175,22 @@ void ComposeboxEverywhereHandler::OnEscapePressed() {
         FROM_HERE, base::BindOnce(&OmniboxEverywhereService::HidePopup,
                                   base::Unretained(service_)));
   }
+}
+
+bool ComposeboxEverywhereHandler::ShouldOpenWithInPlaceWindow() {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxEverywhereScreenshotNewWindow)) {
+    return false;
+  }
+  const auto* session_handle = GetContextualSessionHandle();
+  if (!session_handle) {
+    return false;
+  }
+  auto is_screenshot_token = [this](const base::UnguessableToken& token) {
+    return screenshot_context_tokens_.contains(token);
+  };
+  return std::ranges::any_of(session_handle->GetSubmittedContextTokens(),
+                             is_screenshot_token) ||
+         std::ranges::any_of(session_handle->GetUploadedContextTokens(),
+                             is_screenshot_token);
 }

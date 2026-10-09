@@ -12432,6 +12432,8 @@ from previous Chrome versions.
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
   <int value="-764164329" label="UiaProvider:disabled"/>
+  <int value="-764115435"
+      label="OmniboxEverywhereScreenshotNewWindow:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
   <int value="-763759697" label="enable-audio-support-for-desktop-share"/>
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
@@ -19054,6 +19056,7 @@ from previous Chrome versions.
   <int value="1246486472"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1246504071" label="TabAndroidGracefulShutdown:enabled"/>
+  <int value="1246894221" label="OmniboxEverywhereScreenshotNewWindow:enabled"/>
   <int value="1247280744" label="ComposeboxSkillsOmniboxPopup:enabled"/>
   <int value="1247293682" label="topchrome-md"/>
   <int value="1247309454" label="PasswordGenerationExperiment:enabled"/>

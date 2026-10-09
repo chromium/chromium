@@ -547,6 +547,16 @@ void OmniboxEverywhereHandler::PushProfileInfo() {
                             base::UTF16ToUTF8(entry->GetUserName()));
 }
 
+void OmniboxEverywhereHandler::AddFileContextToPage(
+    const base::UnguessableToken& token,
+    searchbox::mojom::SelectedFileInfoPtr file_info) {
+  if (auto* omnibox_everywhere_ui =
+          OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents_)) {
+    omnibox_everywhere_ui->AddScreenshotContextToken(token);
+  }
+  ContextualSearchboxHandler::AddFileContextToPage(token, std::move(file_info));
+}
+
 void OmniboxEverywhereHandler::AddFileContextFromBrowser(
     base::UnguessableToken token,
     searchbox::mojom::SelectedFileInfoPtr file_info) {
