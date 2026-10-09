@@ -982,7 +982,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1755601632425835748">Testuaren tamaina</translation>
 <translation id="1756963401828337401">Aukeratu pantaila bat haren argazki bat ateratzeko</translation>
 <translation id="17584710573359123">Ikusi Chrome Web Store-n</translation>
-<translation id="176013700366797492">Joan Google Diru-zorroa zerbitzura <ph name="BEGIN_LINK1" />datuen eta pribatutasunaren hobespenak<ph name="END_LINK1" /> kontrolatzeko edo <ph name="BEGIN_LINK2" />ordainketa-metodoak<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />txartelak<ph name="END_LINK3" /> kudeatzeko, hala nola fideltasun-txartelak eta nortasun-agiriak</translation>
+<translation id="176013700366797492">Joan Google Wallet-era <ph name="BEGIN_LINK1" />datuen eta pribatutasunaren hobespenak<ph name="END_LINK1" /> kontrolatzeko edo <ph name="BEGIN_LINK2" />ordainketa-metodoak<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />txartelak<ph name="END_LINK3" /> kudeatzeko, hala nola fideltasun-txartelak eta nortasun-agiriak</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> botoiari <ph name="REMAPPING_OPTION" /> ekintza esleitu zaio.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> erabiltzailearen kontuak</translation>
 <translation id="176272781006230109">erosketei buruzko iradokizunak</translation>
@@ -1505,7 +1505,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2156707722163479690">Fitxa partekatuetan gora/behera egiteko eta zooma erabiltzeko baimena dute</translation>
 <translation id="2157457598652721267">Erabili "/" eta "-" saguaren ezkerreko edo eskuineko botoia hautatzeko. Erabili "*" biak hautatzeko.</translation>
 <translation id="215753907730220065">Irten pantaila osoko modutik</translation>
-<translation id="2157632422749995237">Geroago, Diru-zorroa zerbitzuak gertaerei buruzko jakinarazpenak bidaliko dizkizu</translation>
+<translation id="2157632422749995237">Geroago, Wallet-ek gertaerei buruzko jakinarazpenak bidaliko dizkizu</translation>
 <translation id="2158249272743343757">Ezabatu pertsonalizatzeko datuak…</translation>
 <translation id="2158475082070321257">Kopiatu nabarmendutako testurako esteka</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2690,7 +2690,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3038612606416062604">Gehitu inprimagailu bat eskuz</translation>
 <translation id="3038628620670416486">Bilatu saguaren botoiak</translation>
 <translation id="303955801043931176">Fitxa itxi da</translation>
-<translation id="3040435070100611531">Google Diru-zorroa zerbitzuko txartelak</translation>
+<translation id="3040435070100611531">Google Wallet-eko txartelak</translation>
 <translation id="304169924727249890">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> erabiltzailearekin</translation>
 <translation id="3042097545107738107">Aldatu optimizatutako karga-estrategia.</translation>
 <translation id="3043016484125065343">Laster-markak ikusteko, hasi saioa</translation>
@@ -6217,7 +6217,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5784291589716625675">Aldatu aplikazioaren hizkuntza</translation>
 <translation id="5785583009707899920">Chrome-ren fitxategietarako zerbitzu-aplikazioak</translation>
 <translation id="5787420647064736989">Gailuaren izena</translation>
-<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />Fideltasun-txartelak<ph name="END_LINK_LOYALTY_CARDS" /> edo Google Pay-ko <ph name="BEGIN_LINK_PAYMENT_METHODS" />ordainketa-metodoak<ph name="END_LINK_PAYMENT_METHODS" /> gehitzeko edo kudeatzeko, joan Google Diru-zorroa zerbitzura</translation>
+<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />Fideltasun-txartelak<ph name="END_LINK_LOYALTY_CARDS" /> edo Google Pay-ko <ph name="BEGIN_LINK_PAYMENT_METHODS" />ordainketa-metodoak<ph name="END_LINK_PAYMENT_METHODS" /> gehitzeko edo kudeatzeko, joan Google Wallet-era</translation>
 <translation id="5789581866075720267">Pasahitzak <ph name="BRAND" /> zerbitzura inportatzeko gailu honetan, hautatu CSV fitxategi bat.</translation>
 <translation id="5790085346892983794">Behar bezala egin da</translation>
 <translation id="5790651917470750848">Ataka-birbideratzea badago dagoeneko</translation>
@@ -6277,9 +6277,9 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5828633471261496623">Inprimatzen…</translation>
 <translation id="5829137022934788067">Eman hautapen honi buruzko informazioa</translation>
 <translation id="5829214552954466783">Partekatu <ph name="USER_EMAIL" /> erabiltzaile-izenari dagokion <ph name="CREDENTIAL_TYPE" /></translation>
-<translation id="5829544019044013776">Google Diru-zorroa zerbitzuko ordainketa-metodoak</translation>
+<translation id="5829544019044013776">Google Wallet-eko ordainketa-metodoak</translation>
 <translation id="5830512293931520102">Pasahitza enkriptatuta dago, eta inork ez du inoiz ikusten</translation>
-<translation id="5831217499016131155">Google Diru-zorroa</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> gisa hasi duzu saioa</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> webguneko, haren mende dauden webgune guztietako eta instalatutako aplikazioko datuak eta baimenak ezabatu nahi dituzu?</translation>
 <translation id="5832813618714645810">Profilak</translation>
@@ -6778,7 +6778,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6212168817037875041">Itzali pantaila</translation>
 <translation id="6212752530110374741">Bidali esteka posta elektronikoz</translation>
 <translation id="6214106213498203737">Akuarela</translation>
-<translation id="6214157047210274853">Editatu Google Diru-zorroa zerbitzuan</translation>
+<translation id="6214157047210274853">Editatu Google Wallet-en</translation>
 <translation id="621470880408090483">Ez eman Bluetooth bidezko gailuetara konektatzeko baimena webguneei</translation>
 <translation id="6215039389782910006">{1,plural, =1{Pasahitzak seguru mantentzeko, <ph name="BRAND" /> blokeatu egingo da minutu batez jarduerarik ez badago}other{Pasahitzak seguru mantentzeko, <ph name="BRAND" /> blokeatu egingo da # minutuz jarduerarik ez badago}}</translation>
 <translation id="6216154119179790291">Joan lehen fitxara</translation>
@@ -8022,7 +8022,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7175353351958621980">Hemendik kargatua:</translation>
 <translation id="7176515069119047423">{NUM_TABS,plural, =1{Sakatu <ph name="SHORTCUT_TEXT" /> berriro fitxa ainguratua ixteko}other{Sakatu <ph name="SHORTCUT_TEXT" /> berriro fitxa ainguratuak ixteko}}</translation>
 <translation id="7177659256878428843">Bihurtu fitxa taldea laster-marken karpeta</translation>
-<translation id="7180569503618416775">Diru-zorroa zerbitzuak ikusten ari zaren orrietako informazioa gordetzeko eskainiko dizu; adibidez, erosten dituzun sarrerak</translation>
+<translation id="7180569503618416775">Wallet-ek ikusten ari zaren orrietako informazioa gordetzeko eskainiko dizu; adibidez, erosten dituzun sarrerak</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7181117767881540376">Ezkutatu laster-marken barra</translation>
@@ -8179,7 +8179,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7293774463163321848">Bilaketa-historia, Gemini-ren historia eta pasahitzak haiek kudeatzeko ezarpenetan ezaba daitezke</translation>
 <translation id="7296503797589217366">Hautatu <ph name="FOLDER_TITLE" /> karpeta</translation>
-<translation id="7297228218361240128">Gorde ikusten dituzun orrietako informazioa Google Diru-zorroa zerbitzuan</translation>
+<translation id="7297228218361240128">Gorde ikusten dituzun orrietako informazioa Google Wallet-en</translation>
 <translation id="7297726121602187087">Berde iluna</translation>
 <translation id="7298195798382681320">Gomendatua</translation>
 <translation id="7299515639584427954">Onartzen diren estekak irekitzeko aplikazio lehenetsia aldatu nahi duzu?</translation>
@@ -9226,7 +9226,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8084417885464859041">Erabili Gemini segurtasunez</translation>
 <translation id="8084429490152575036">APN mugikorraren ezarpenak</translation>
 <translation id="8084628902026812045">Webgune honen konexioa ez da segurua, eta agian fitxategia manipulatu da</translation>
-<translation id="808488435221187916">Informazioa erabilgarri dago saioa hasita daukan edozein gailutako Google Diru-zorroa zerbitzuan</translation>
+<translation id="808488435221187916">Informazioa erabilgarri dago saioa hasita daukan edozein gailutako Google Wallet-en</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiguratzen…</translation>
 <translation id="8086121155774250556">Fitxa hau pantaila partekatzen ari da</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Fitxategia enkriptatuta dago. Eskatu jabeari hura desenkriptatzeko.}other{Fitxategi hauetako batzuk enkriptatuta daude. Eskatu jabeari haiek desenkriptatzeko.}}</translation>

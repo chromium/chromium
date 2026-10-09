@@ -6856,7 +6856,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6265159465845424232">Microsoft dosyalarını Microsoft OneDrive'a kopyalamadan veya taşımadan önce sor</translation>
 <translation id="6265687851677020761">Bağlantı noktasını kaldır</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> cihazına bağlanılıyor</translation>
-<translation id="6266984048393265562">Profili Özelleştir</translation>
+<translation id="6266984048393265562">Profili Özelleştirin</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> sunucusunda kimliğinizi doğrulamak için bir sertifika seçin</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ile aç</translation>
 <translation id="6269392226729599142">Bölünmüş Görünümü Geri Yükle</translation>
@@ -7697,7 +7697,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6903437476849497868">Devre Dışı Bırak</translation>
 <translation id="6903590427234129279">Tümünü aç (<ph name="URL_COUNT" />)</translation>
 <translation id="6903619242902924848">Bu cihazdaki diğer uygulamalara ve hizmetlere erişmesine izin verilen siteler</translation>
-<translation id="6903907808598579934">Senkronizasyonu aç</translation>
+<translation id="6903907808598579934">Senkronizasyonu açın</translation>
 <translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> için arama yapın</translation>
 <translation id="6909422577741440844">Bu cihazdan içerik alınsın mı?</translation>
 <translation id="6910190732484284349"><ph name="USER_EMAIL" /> kullanıcı adı için geçiş anahtarını silin</translation>

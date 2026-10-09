@@ -264,7 +264,7 @@
 <translation id="1771016937398045251">“工具”菜单</translation>
 <translation id="1772468122139624049">无法重新加载标签页</translation>
 <translation id="1779354709911146450">身份验证错误</translation>
-<translation id="1780152987505130652">关闭分组</translation>
+<translation id="1780152987505130652">关闭标签页组</translation>
 <translation id="178400879184240105">不存在密码重复使用的情况</translation>
 <translation id="17906873777101817">询问是否保存密码和通行密钥</translation>
 <translation id="1794893174442046596">标签页分组</translation>
@@ -607,7 +607,7 @@
 <translation id="2888631381369839306">已开启价格跟踪通知</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893791155497534382">密码和其他活动记录可在相应管理设置中删除</translation>
-<translation id="2894757982205307093">在分组内添加新标签页</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="2897858638449756400">探索更多搜索方式</translation>
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2904788871580817212">您打开的标签页中有降价，原价为 <ph name="PREVIOUS_PRICE" />，现价为 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
@@ -1820,7 +1820,7 @@
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
 <translation id="6782531425936234573">导出数据</translation>
 <translation id="6789665473250283877">移除“<ph name="TOOL_NAME" />”</translation>
-<translation id="6791425686608802741">点按“向新分组添加标签页”</translation>
+<translation id="6791425686608802741">点按“添加到新标签页组”</translation>
 <translation id="6794476726485507147">选择日期和时间即可接收通知，提醒您再次访问此页面</translation>
 <translation id="6797543908718012274">开启阅读模式</translation>
 <translation id="6806550742467879742">网页工具</translation>
@@ -2287,7 +2287,7 @@
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282657446819506217">在标签页分组中打开</translation>
-<translation id="828291969289324795">{count,plural, =1{向新分组添加标签页}other{向新分组添加标签页}}</translation>
+<translation id="828291969289324795">{count,plural, =1{添加到新标签页组}other{添加到新标签页组}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8289930144142009940">“<ph name="FEATURE_NAME" />”通知已关闭</translation>
 <translation id="8292893224181644074">下载已完成</translation>
@@ -2368,7 +2368,7 @@
 <translation id="854938212724803178">发现有 1 个密码已泄露。建议立即更改密码，确保安全。</translation>
 <translation id="8551311254462607218">在地址栏中，点按“Google 智能镜头”相机图标</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
-<translation id="8558046478684552694">关闭分组。</translation>
+<translation id="8558046478684552694">关闭标签页组。</translation>
 <translation id="8559858985063901027">密钥</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
 <translation id="8561999115126307258">{count,plural, =1{键盘上方显示了 {count} 个密码选项。}other{键盘上方显示了 {count} 个密码选项。}}</translation>
@@ -2400,7 +2400,7 @@
 <translation id="8638151046944329622">{COUNT,plural, =0{暂无已泄露的密码}=1{{COUNT} 个已泄露的密码}other{{COUNT} 个已泄露的密码}}</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
 <translation id="8642417828095157370">系统会共享标签页以提供更相关的回答</translation>
-<translation id="8643403533759285912">删除分组</translation>
+<translation id="8643403533759285912">删除标签页组</translation>
 <translation id="8647280737650867362">无法取消跟踪价格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8655861111558401309">选择“删除浏览数据”</translation>
@@ -2449,7 +2449,7 @@
 <translation id="8763613688786959833">转到最后一个标签页</translation>
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
-<translation id="8781834595282316166">在分组内添加新标签页</translation>
+<translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8783445328207519872">创建关于此主题的常见问题解答</translation>
 <translation id="8784653774976848206">选择文件</translation>
 <translation id="8786100550345425552">修改权限</translation>
@@ -2597,7 +2597,7 @@
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="942624946817804130">导出</translation>
 <translation id="945522503751344254">发送反馈</translation>
-<translation id="94870150074703282">要删除分组吗？</translation>
+<translation id="94870150074703282">要删除标签页组吗？</translation>
 <translation id="951090530321144895">CA 证书颁发者</translation>
 <translation id="952704832371081537">取消</translation>
 <translation id="95332591904104970">关联的应用</translation>

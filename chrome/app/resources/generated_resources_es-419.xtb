@@ -2428,7 +2428,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2854453262159518435">Reemplazar el grupo de pestañas existente</translation>
 <translation id="2855243985454069333">Borra el historial de todos los dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Acceder con <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="2857047802954430547">Accede para obtener tus contraseñas, favoritos y más en todos tus dispositivos</translation>
+<translation id="2857047802954430547">Accede a tu cuenta para obtener tus contraseñas, favoritos y más en todos tus dispositivos</translation>
 <translation id="2857195263461649321">Retoma la conversación donde la dejaste en Gemini</translation>
 <translation id="2859741939921354763">Importa contraseñas al <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Políticas empresariales</translation>
@@ -5780,7 +5780,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5420438158931847627">Determina la nitidez del texto y las imágenes</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá el acceso al grupo de pestañas “<ph name="GROUP_NAME" />” de inmediato</translation>
 <translation id="5421048291985386320">&amp;Volver a acceder</translation>
-<translation id="542237158771780634">Si activas esta opción, los datos se guardarán en tu Cuenta de Google y se podrán usar en todos tus dispositivos. Si se desactiva, los datos se guardan solo en este dispositivo.</translation>
+<translation id="542237158771780634">Si activas esta opción, los datos se guardarán en tu Cuenta de Google y se podrán usar en todos tus dispositivos. Si la desactivas, los datos se guardarán solo en este dispositivo.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">La próxima vez que visites <ph name="SITE" />, se usarán los permisos predeterminados</translation>
 <translation id="5423829801105537712">Corrector ortográfico básico</translation>
@@ -7165,7 +7165,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
-<translation id="6520087076882753524">Puedes ver y administrar tus contraseñas guardadas en el Administrador de contraseñas de Google</translation>
+<translation id="6520087076882753524">Puedes ver y administrar tus contraseñas guardadas en el Administrador de contraseñas de Google</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> quiere verificar tu identidad. Ingresa tu PIN alfanumérico del Administrador de contraseñas de Google</translation>
 <translation id="6520876759015997832">Resultado de la búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Presiona Intro para navegar a la sección.</translation>
 <translation id="6521214596282732365">Los sitios suelen usar tus fuentes para que puedas crear contenido de alta fidelidad con herramientas en línea de diseño y gráficos</translation>
@@ -9187,7 +9187,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8045923671629973368">Ingresa el ID de aplicación o la URL de la tienda web</translation>
 <translation id="804786196054284061">Acuerdo de licencia de usuario final</translation>
 <translation id="8048596485169033655">Descargando archivos de anotación de nodos principales… <ph name="PERCENT" />%</translation>
-<translation id="8048728378294435881">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
+<translation id="8048728378294435881">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo</translation>
 <translation id="8048977114738515028">Crea un acceso directo de escritorio en tu dispositivo para acceder directamente a este perfil</translation>
 <translation id="8049122382261047457">Busca cualquier imagen con Google Lens</translation>
 <translation id="8049948037269924837">Desplazamiento invertido del panel táctil</translation>

@@ -2219,7 +2219,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2705736684557713153">Faites défiler l'écran vers le bas et activez le partage de connexion instantané si l'option correspondante s'affiche. Dans le cas contraire, vous avez terminé.</translation>
 <translation id="2706462751667573066">Haut</translation>
 <translation id="270903766506716172">Exporter les règles LBS</translation>
-<translation id="2709516037105925701">Saisir automatiquement</translation>
+<translation id="2709516037105925701">Saisie automatique</translation>
 <translation id="271033894570825754">Nouvelle collection</translation>
 <translation id="2710507903599773521">Votre <ph name="DEVICE_TYPE" /> est désormais déverrouillé</translation>
 <translation id="2710676967944965821">Réinitialiser toutes les autorisations du lecteur de carte à puce ?</translation>
@@ -10404,7 +10404,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8986362086234534611">Retirer</translation>
 <translation id="8986494364107987395">Envoie automatiquement les statistiques d'utilisation et les rapports d'erreur à Google</translation>
 <translation id="8987321822984361516">Navigateur géré par une organisation, profil géré par <ph name="PROFILE_DOMAIN" /></translation>
-<translation id="8987736167266086032">Reprenez là où vous vous étiez arrêté</translation>
+<translation id="8987736167266086032">Reprenez là où vous en étiez</translation>
 <translation id="8987927404178983737">Mois</translation>
 <translation id="8989359959810288806">Actualiser l'état du partage de connexion</translation>
 <translation id="8989779557457435460">Partager l'onglet actuel par défaut</translation>

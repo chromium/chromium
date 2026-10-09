@@ -137,7 +137,7 @@
 <translation id="1485343711570311792">在<ph name="NATIVE_APP_NAME" />中打开 • 来自“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1496514951988037011">用户名</translation>
-<translation id="1501480321619201731">删除群组</translation>
+<translation id="1501480321619201731">删除标签页组</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
 <translation id="1515901671075971249">标签页导航快捷键</translation>
@@ -607,7 +607,7 @@
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全</translation>
-<translation id="3435914367318771664">将标签页添加到新分组</translation>
+<translation id="3435914367318771664">添加到新标签页组</translation>
 <translation id="3436118221454753036">问问 AI 模式</translation>
 <translation id="3438681572027105609">如需将密码等信息同步到您的所有设备上，请登录 Chrome</translation>
 <translation id="3439276997620616816">此处会显示您近期关闭的标签页</translation>
@@ -681,7 +681,7 @@
 <translation id="3710560693796335511">协作</translation>
 <translation id="3714430408451673233">标签页底部动作条已半屏打开。</translation>
 <translation id="3718765429352682176">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。</translation>
-<translation id="3721119614952978349">您与 Google</translation>
+<translation id="3721119614952978349">我与 Google</translation>
 <translation id="3727000368239390918">登录后即可将标签页等信息同步到您的所有设备上</translation>
 <translation id="3731865955999508196">立体</translation>
 <translation id="3737319253362202215">翻译设置</translation>
@@ -1376,7 +1376,7 @@
 <translation id="6437162790453527153">登录账号即可将您的书签等信息同步到您的所有设备上</translation>
 <translation id="6437478888915024427">网页信息</translation>
 <translation id="6440291723980579689">仅当您打开网页后，它们才会加载</translation>
-<translation id="6441377161852435370">向阅读清单中添加标签页</translation>
+<translation id="6441377161852435370">将标签页添加到阅读清单</translation>
 <translation id="6441734959916820584">名称太长</translation>
 <translation id="6444291413624515012">已关闭“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="6452534462676960500">新活动</translation>
@@ -1747,7 +1747,7 @@
 <translation id="7792388396321542707">停止分享</translation>
 <translation id="780287761701992588">在所有设备上获取保存的书签、密码等信息</translation>
 <translation id="780301667611848630">不用了</translation>
-<translation id="7804364787702057554">设置 Chrome 账号</translation>
+<translation id="7804364787702057554">您在 Chrome 中的账号</translation>
 <translation id="7810647596859435254">打开方式…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有文件，列表中有 1 个文件}other{所有文件，列表中有 # 个文件}}</translation>
 <translation id="7815484226266492798">长屏幕截图</translation>

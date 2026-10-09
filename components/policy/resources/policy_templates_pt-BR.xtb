@@ -963,7 +963,7 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1625700732886306811">Permitir que o <ph name="PRODUCT_NAME" /> se conecte- a dispositivos em todos os endereços IP</translation>
 <translation id="1626379196197114720">Permitir o uso do cache de avanço e retorno</translation>
 <translation id="1628974048137236820">A página Nova guia não exibirá cards</translation>
-<translation id="1628984674324273832">Não permitir o recurso Encontrar e Preencher com o Gemini.</translation>
+<translation id="1628984674324273832">Não permitir o recurso Encontre e Preencha com o Gemini.</translation>
 <translation id="163200210584085447">Os padrões nesta lista serão comparados com a origem
       de segurança do URL solicitante. Se for encontrada uma correspondência, o acesso a dispositivos de captura
       de vídeo será concedido em páginas de login SAML. Se nenhuma correspondência for
@@ -1752,7 +1752,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="2107601598727098402">
         O uso desta política foi suspenso no M72. Use CloudManagementEnrollmentToken.
         </translation>
-<translation id="2111355600078097861">Permitir o recurso Encontrar e Preencher com o Gemini sem melhorar os modelos de IA.</translation>
+<translation id="2111355600078097861">Permitir o recurso Encontre e Preencha com o Gemini sem melhorar os modelos de IA.</translation>
 <translation id="2112656109118682849">Permitir que os usuários escolham se as informações do sistema vão ser mostradas na tela de login ou não</translation>
 <translation id="2113068765175018713">Limitar tempo de execução do dispositivo reiniciando automaticamente</translation>
 <translation id="211386002920955760">Controle se um usuário empresarial pode acessar o recurso de compartilhamento de grupos de guias no Chrome.
@@ -6651,7 +6651,7 @@ Se ela for definida como 2, o recurso não será habilitado.
 Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">Permitir o recurso Encontrar e Preencher com o Gemini e melhorar os modelos de IA.</translation>
+<translation id="5070539335358964387">Permitir o recurso Encontre e Preencha com o Gemini e melhorar os modelos de IA.</translation>
 <translation id="5071303485174858500">Desativar sessão de visitante gerenciada restrita.</translation>
 <translation id="5073788301065423829">Esta política ativa ou desativa o recurso "Me ajude a escrever" no ChromeOS.
 
@@ -10313,7 +10313,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="7136237405361383549">Usar o renderizador padrão com base na configuração do teste de campo.</translation>
 <translation id="7138762292550697459">Controle o tempo limite mínimo da função setTimeout() do JavaScript.</translation>
 <translation id="7138792262152376158">Segue cronogramas regulares de descontinuação para a API PrefixedVideoFullscreen</translation>
-<translation id="7140755255968613921">Configurações do recurso Encontrar e Preencher com o Gemini</translation>
+<translation id="7140755255968613921">Configurações do recurso Encontre e Preencha com o Gemini</translation>
 <translation id="7140760943584613237">Provedor de identidade na nuvem da Microsoft®</translation>
 <translation id="714219487865269980">Ativar destaque de foco do teclado</translation>
 <translation id="7144022711746703451">
@@ -10762,7 +10762,7 @@ Os valores reais dos dados sensíveis (como cookies ou valores de entrada) NÃO 
 <translation id="7402257017733669351">Impedir que o processo do navegador crie código dinâmico</translation>
 <translation id="7406039009275722824">Desativar a <ph name="CHROME_SYNC_NAME" /> fará com que o recurso de backup e restauração do Android não funcione corretamente.</translation>
 <translation id="7406276857470642718">Controla as configurações para usuários autenticados por SAML com um IdP externo</translation>
-<translation id="7407431811343706437">Controla se os usuários podem usar o recurso "Encontrar e Preencher com o Gemini" no <ph name="PRODUCT_NAME" />.
+<translation id="7407431811343706437">Controla se os usuários podem usar o recurso "Encontre e Preencha com o Gemini" no <ph name="PRODUCT_NAME" />.
 
 Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
 

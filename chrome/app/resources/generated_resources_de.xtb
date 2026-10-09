@@ -4174,7 +4174,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4168015872538332605">Einige Einstellungen, die <ph name="PRIMARY_EMAIL" /> gehören, werden mit dir geteilt. Diese Einstellungen wirken sich nur dann auf dein Konto aus, wenn die Mehrfachanmeldung verwendet wird.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> mit den Endziffern <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169275505426201952">Bewerten…</translation>
-<translation id="4169535189173047238">Nicht zulassen</translation>
+<translation id="4169535189173047238">Nicht erlauben</translation>
 <translation id="4170314459383239649">Beim Beenden löschen</translation>
 <translation id="4170685671197375581">Kürzel aktivieren</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Tab mit Gemini teilen}other{# Tabs mit Gemini teilen}}</translation>

@@ -489,7 +489,7 @@
 <translation id="3140130301071865159">שלג</translation>
 <translation id="3146655726035122603">רק ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">נתוני נייד</translation>
-<translation id="3153094818810437149">אפשר לשנות זאת מאוחר יותר בהגדרות של מכשיר ההקלטה</translation>
+<translation id="3153094818810437149">אפשר לשנות זאת מאוחר יותר בהגדרות של "רשמקול"</translation>
 <translation id="3156511682997763015">הרצה 10 שניות קדימה</translation>
 <translation id="3156846309055100599">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">זוהה פורטל שבוי</translation>
@@ -609,7 +609,7 @@
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
 <translation id="3715651196924935218">יציאה ממצב צף</translation>
 <translation id="3716250181321371108">יצירת אמצעי בקרה</translation>
-<translation id="3716830479327464973">אם בחרת לאשר, מכשיר ההקלטה ינתח את הקלטות האודיו כדי:</translation>
+<translation id="3716830479327464973">אם בחרת לאשר, "רשמקול" ינתח את הקלטות האודיו כדי:</translation>
 <translation id="3719826155360621982">דף הבית</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
 <translation id="3748026146096797577">לא מחובר</translation>
@@ -717,7 +717,7 @@
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4176659219503619100">לוח הבקרה</translation>
 <translation id="4192913637640303603">לא ניתן ליצור שמות להקלטות</translation>
-<translation id="4193496492959950834">הגדרות מכשיר ההקלטה</translation>
+<translation id="4193496492959950834">הגדרות "רשמקול"</translation>
 <translation id="4198398257084619072">פנדות</translation>
 <translation id="420283545744377356">השבתה של שומר המסך</translation>
 <translation id="4210636113897977670">שמירה ויציאה</translation>
@@ -1314,7 +1314,7 @@
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6786747875388722282">תוספים</translation>
-<translation id="6789891265243243337">כשהאודיו של <ph name="DEVICE_TYPE" /> מופעל, מכשיר ההקלטה מקליט את כל האודיו שמושמע במכשיר הזה</translation>
+<translation id="6789891265243243337">כשהאודיו של <ph name="DEVICE_TYPE" /> מופעל, "רשמקול" מקליט את כל האודיו שמושמע במכשיר הזה</translation>
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
 <translation id="6796229976413584781">מקש הקיצור נמחק</translation>
 <translation id="6798678288485555829">ניווט בטקסט</translation>
@@ -1451,7 +1451,7 @@
 <translation id="73631062356239394">שיתוף נתוני הניתוח</translation>
 <translation id="7369648056634183167">תמונת תקריב מורכבת של שושן צחור, מכוסה טיפות טל בגשם. המיקוד הוא על עלי הכותרת הדקיקים ועל טיפות המים שמשקפות את האור, תוך שימוש בצבעים עדינים של פסטל על רקע כחול. צילום בגובה העיניים באור טבעי</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378170410161264436">‏מכשיר ההקלטה יכול ליצור תמלילים של הקלטות שכוללות דיבור.
+<translation id="7378170410161264436">‏"רשמקול" יכול ליצור תמלילים של הקלטות שכוללות דיבור.
 כדי ליצור תמלילים כאלה, צריך להוריד את מודל התמלול (עד 100MB).</translation>
 <translation id="7384004438856720753">ארמון</translation>
 <translation id="7388345524791662148">אפשרויות נוספות של <ph name="RECORDING_NAME" /></translation>
@@ -1835,7 +1835,7 @@
 <translation id="9100765901046053179">הגדרות מתקדמות</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
-<translation id="9108856746036501072">‏מכשיר ההקלטה יכול ליצור תמלילים של הקלטות שכוללות דיבור. בשלב הבא, צריך לבחור את שפת התמלול ולהוריד את המודל (עד 100MB).</translation>
+<translation id="9108856746036501072">‏"רשמקול" יכול ליצור תמלילים של הקלטות שכוללות דיבור. בשלב הבא, צריך לבחור את שפת התמלול ולהוריד את המודל (עד 100MB).</translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="9122492456897874028">סיכום של תוכן, קבלת הגדרות ועוד</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>

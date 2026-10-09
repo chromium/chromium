@@ -20,7 +20,7 @@
 <translation id="1486715732399361704">您可在此处找到您的所有标签页分组</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{创建时间：<ph name="NUM_MINS_ONE" /> 分钟前}other{创建时间：<ph name="NUM_MINS_MANY" /> 分钟前}}</translation>
 <translation id="1499635324672558517">要关闭所有无痕式标签页吗？</translation>
-<translation id="1501480321619201731">删除群组</translation>
+<translation id="1501480321619201731">删除标签页组</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个闲置标签页}other{<ph name="TABS_COUNT_MANY" /> 个闲置标签页}}</translation>
 <translation id="1568067597247500137">将单个网站静音</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{下移标签页}other{下移标签页}}</translation>
@@ -35,7 +35,7 @@
 <translation id="1828808367831369073">已将 <ph name="TABS_COUNT_ONE" /> 个标签页合为一组</translation>
 <translation id="1844381456014878100">闲置 7 天后</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
-<translation id="1894429470045525403">{TAB_COUNT,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{添加到阅读清单}other{添加到阅读清单}}</translation>
 <translation id="1909810060368225529">注意：对此共享标签页分组所做的更改对所有人均可见。所有人都可以更改您的共享标签页分组</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定标签页}other{固定标签页}}</translation>
 <translation id="1982637982196732906">移至“闲置”部分</translation>
@@ -72,7 +72,7 @@
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{创建时间：<ph name="NUM_HOURS_ONE" /> 小时前}other{创建时间：<ph name="NUM_HOURS_MANY" /> 小时前}}</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{已关闭 <ph name="ONE_CLOSED" /> 个标签页}other{已关闭 <ph name="MANY_CLOSED" /> 个标签页}}</translation>
-<translation id="2894757982205307093">在分组内添加新标签页</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{已选择 <ph name="ITEMS_COUNT_ONE" /> 项}other{已选择 <ph name="ITEMS_COUNT_MANY" /> 项}}</translation>
@@ -122,7 +122,7 @@
 <translation id="4861611890274104875">关闭卡片。</translation>
 <translation id="4861953997778766866">所有人都可以更改您分享的标签页分组</translation>
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>
-<translation id="4871719318659334896">关闭分组</translation>
+<translation id="4871719318659334896">关闭标签页组</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{恢复并打开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{恢复并打开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4894777338623123366">正在共享标签页屏幕内容</translation>
@@ -164,7 +164,7 @@
 <translation id="6228793724645064692">（商店评分）</translation>
 <translation id="6251046978189636310">正在播放音频</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{从分组中移除标签页}other{从分组中移除标签页}}</translation>
-<translation id="6313830465749181217">{TABS_COUNT,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{添加到新标签页组}other{添加到新标签页组}}</translation>
 <translation id="6333260925957816943">此商店的相关信息</translation>
 <translation id="6344715021569694246">{TABS_COUNT,plural, =1{固定 <ph name="TABS_COUNT_ONE" /> 个所选标签页}other{固定 <ph name="TABS_COUNT_MANY" /> 个所选标签页}}</translation>
 <translation id="6381032505162537930">您的标签页分组会显示在此处</translation>

@@ -2427,7 +2427,7 @@
 <translation id="2854453262159518435">既存のタブグループを置き換える</translation>
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
-<translation id="2857047802954430547">ログインすると、すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用できます</translation>
+<translation id="2857047802954430547">ログインすると、パスワード、ブックマーク、その他の設定を、すべてのデバイスで同期して使用できます</translation>
 <translation id="2857195263461649321">Gemini の作業を続きから再開</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポートします</translation>
 <translation id="2860284453253554297">エンタープライズ ポリシー</translation>
@@ -7438,7 +7438,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723946439672043591">別のプロフィールを選択</translation>
 <translation id="6725206449694821596">インターネット印刷プロトコル（IPP）</translation>
-<translation id="6725250112230872513">メディア認識</translation>
+<translation id="6725250112230872513">メディアの理解</translation>
 <translation id="6725970970008349185">1 ページに表示する候補数</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
 <translation id="6728528977475057549">末尾が <ph name="LAST_FOUR_DIGITS" /> の IBAN</translation>
@@ -7795,7 +7795,7 @@
 <translation id="6985607387932385770">プリンタ</translation>
 <translation id="6986887242592019603">スペースを広げるには、タブバーを閉じてみてください</translation>
 <translation id="6988403677482707277">タブをタブバーの左端に移動しました</translation>
-<translation id="6988572888918530647">Google アカウントを管理する</translation>
+<translation id="6988572888918530647">Google アカウントを管理</translation>
 <translation id="6989274756151920076">このまま続行</translation>
 <translation id="6991665348624301627">送信先の選択</translation>
 <translation id="6992078676798011826">権限を削除できませんでした。しばらくしてからもう一度お試しください。</translation>
