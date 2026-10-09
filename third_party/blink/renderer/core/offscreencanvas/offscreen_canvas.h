@@ -188,8 +188,6 @@ class CORE_EXPORT OffscreenCanvas final
   bool IsWebGL1Enabled() const override { return true; }
   bool IsWebGL2Enabled() const override { return true; }
   bool IsWebGLBlocked() const override { return false; }
-
-  // CanvasResourceProviderDelegate implementation
   void NotifyGpuContextLost() override;
   void SetNeedsCompositingUpdate() override {}
 

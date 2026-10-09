@@ -2213,12 +2213,15 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     resource_provider_ = CanvasNon2DResourceProvider::Create(
         size, format, alpha_type, color_space, hdr_metadata,
         SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags,
-        Host());
+        blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                        WrapWeakPersistent(Host())));
   } else {
     resource_provider_ =
         CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
             size, format, alpha_type, color_space, hdr_metadata,
-            SharedGpuContext::SharedImageInterfaceProvider(), Host());
+            SharedGpuContext::SharedImageInterfaceProvider(),
+            blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                            WrapWeakPersistent(Host())));
   }
   Host()->UpdateMemoryUsage();
 

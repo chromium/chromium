@@ -56,7 +56,7 @@ CanvasNon2DResourceProvider::Create(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate) {
+    base::OnceClosure context_lost_callback) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -145,7 +145,8 @@ CanvasNon2DResourceProvider::Create(
 
   auto provider = base::WrapUnique(new CanvasNon2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
-      context_provider_wrapper, shared_image_usage_flags, delegate));
+      context_provider_wrapper, shared_image_usage_flags,
+      std::move(context_lost_callback)));
 
   return provider->IsValid() ? std::move(provider) : nullptr;
 }
@@ -170,7 +171,7 @@ CanvasNon2DResourceProvider::CreateForWebGPU(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate) {
+    base::OnceClosure context_lost_callback) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   // The SharedImages created by this provider serve as a means of import/export
   // between VideoFrames/canvas and WebGPU, e.g.:
@@ -185,7 +186,7 @@ CanvasNon2DResourceProvider::CreateForWebGPU(
       std::move(context_provider_wrapper),
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-      delegate);
+      std::move(context_lost_callback));
 }
 
 std::unique_ptr<CanvasNon2DResourceProvider>
@@ -196,7 +197,7 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    CanvasResourceProviderDelegate* delegate) {
+    base::OnceClosure context_lost_callback) {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     return nullptr;
   }
@@ -206,7 +207,7 @@ CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
 
   auto provider = base::WrapUnique(new CanvasNon2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
-      shared_image_interface_provider, delegate));
+      shared_image_interface_provider, std::move(context_lost_callback)));
   return provider->IsValid() ? std::move(provider) : nullptr;
 }
 
@@ -229,13 +230,13 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceProviderDelegate* delegate)
+    base::OnceClosure context_lost_callback)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      delegate_(delegate),
+      context_lost_callback_(std::move(context_lost_callback)),
       is_software_(false),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
@@ -318,13 +319,13 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    CanvasResourceProviderDelegate* delegate)
+    base::OnceClosure context_lost_callback)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      delegate_(delegate),
+      context_lost_callback_(std::move(context_lost_callback)),
       is_software_(true),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
@@ -445,11 +446,10 @@ void CanvasNon2DResourceProvider::OnContextDestroyed() {
 
 void CanvasNon2DResourceProvider::NotifyGpuContextLostTask(
     base::WeakPtr<CanvasNon2DResourceProvider> provider) {
-  if (provider && provider->delegate_) {
+  if (provider && provider->context_lost_callback_) {
     // Move `provider` as hint that it shouldn't be reused after this point.
-    // The `delegate` owns the provider and can delete it in
-    // `NotifyGpuContextLost()`.
-    std::move(provider)->delegate_->NotifyGpuContextLost();
+    // The owner of the provider can delete it in `context_lost_callback_`.
+    std::move(std::move(provider)->context_lost_callback_).Run();
   }
 }
 

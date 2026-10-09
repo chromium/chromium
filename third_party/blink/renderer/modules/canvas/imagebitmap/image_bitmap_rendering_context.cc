@@ -465,12 +465,16 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
           CanvasNon2DResourceProvider::Create(
               image->Size(), format, alpha_type, color_space, hdr_metadata,
               SharedGpuContext::ContextProviderWrapper(),
-              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
+              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+              blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                              WrapWeakPersistent(Host())));
     } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
       resource_provider_for_offscreen_canvas_ =
           CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
               image->Size(), format, alpha_type, color_space, hdr_metadata,
-              SharedGpuContext::SharedImageInterfaceProvider(), Host());
+              SharedGpuContext::SharedImageInterfaceProvider(),
+              blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                              WrapWeakPersistent(Host())));
     }
 
     Host()->UpdateMemoryUsage();

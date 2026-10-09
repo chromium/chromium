@@ -59,7 +59,7 @@ CanvasRenderingContextHost::~CanvasRenderingContextHost() {
 void CanvasRenderingContextHost::Trace(Visitor* visitor) const {
   visitor->Trace(plain_text_painter_);
   visitor->Trace(unique_font_selector_);
-  CanvasResourceProviderDelegate::Trace(visitor);
+  GarbageCollectedMixin::Trace(visitor);
 }
 
 void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {

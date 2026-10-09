@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_drawable_paint_record.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/gfx/geometry/rect.h"
@@ -49,10 +48,9 @@ enum class RasterModeHint {
   kPreferCPU,
 };
 
-class CORE_EXPORT CanvasRenderingContextHost
-    : public CanvasResourceProviderDelegate,
-      public CanvasImageSource,
-      public ImageBitmapSource {
+class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
+                                               public CanvasImageSource,
+                                               public ImageBitmapSource {
  public:
   enum class HostType {
     kNone,
@@ -131,6 +129,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   RasterMode GetRasterModeForCanvas2D() const;
 
   virtual bool IsPageVisible() const = 0;
+  virtual void NotifyGpuContextLost() = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void ClearCanvas2DLayerTexture() {}
 
