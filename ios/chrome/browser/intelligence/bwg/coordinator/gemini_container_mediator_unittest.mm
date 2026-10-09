@@ -280,6 +280,30 @@ class FakeGeminiContainerMediatorEventHandler
   bool ui_did_appear_called_ = false;
 };
 
+// A test spy for `GeminiSharedTabsDelegate`.
+class FakeGeminiSharedTabsDelegate : public GeminiSharedTabsDelegate {
+ public:
+  NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const override {
+    return inactive_shared_tabs_;
+  }
+  void SaveActivePageContextToSharedTabs(
+      GeminiPageContext* active_page_context) override {
+    last_saved_active_page_context_ = active_page_context;
+    save_active_page_context_call_count_++;
+  }
+  void UpdateSharedTabsForActiveWebState(
+      web::WebState* active_web_state) override {
+    last_updated_active_web_state_ = active_web_state;
+    update_shared_tabs_for_active_web_state_call_count_++;
+  }
+
+  NSArray<GeminiPageContext*>* inactive_shared_tabs_ = @[];
+  GeminiPageContext* last_saved_active_page_context_ = nil;
+  int save_active_page_context_call_count_ = 0;
+  raw_ptr<web::WebState> last_updated_active_web_state_ = nullptr;
+  int update_shared_tabs_for_active_web_state_call_count_ = 0;
+};
+
 class GeminiContainerMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -320,7 +344,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
                  actorService:nullptr
         authenticationService:AuthenticationServiceFactory::GetForProfile(
                                   profile_.get())
-                 eventHandler:&delegate_];
+                 eventHandler:&delegate_
+           sharedTabsDelegate:&shared_tabs_delegate_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
   }
@@ -356,6 +381,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   GeminiStartupState* startup_state_;
   FakeGeminiContainerMediatorEventHandler delegate_;
+  FakeGeminiSharedTabsDelegate shared_tabs_delegate_;
   GeminiContainerMediator* mediator_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
@@ -652,7 +678,8 @@ TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
                    actorService:nullptr
           authenticationService:AuthenticationServiceFactory::GetForProfile(
                                     profile_.get())
-                   eventHandler:nullptr];
+                   eventHandler:nullptr
+             sharedTabsDelegate:nullptr];
 
   // Verify that calling delegate methods does not crash when delegate is null.
   [null_delegate_mediator
@@ -1082,16 +1109,9 @@ TEST_F(GeminiContainerMediatorTest,
   web_state->SetCurrentURL(GURL("https://example.com"));
   web_state->SetContentsMimeType("text/html");
 
-  id mock_shared_tabs_delegate =
-      OCMProtocolMock(@protocol(GeminiSharedTabsDelegate));
   GeminiPageContext* shared_context = [[GeminiPageContext alloc] init];
-  OCMStub([mock_shared_tabs_delegate inactiveSharedTabs]).andReturn(@[
-    shared_context
-  ]);
+  shared_tabs_delegate_.inactive_shared_tabs_ = @[ shared_context ];
   GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
-  OCMExpect([mock_shared_tabs_delegate
-      saveActivePageContextToSharedTabs:active_context]);
-  mediator_.sharedTabsDelegate = mock_shared_tabs_delegate;
 
   [mediator_ propagatePageContext:active_context];
 
@@ -1099,7 +1119,9 @@ TEST_F(GeminiContainerMediatorTest,
             active_context.geminiPageContextAttachmentState);
   EXPECT_NE(ios::provider::GeminiPageContextComputationState::kBlocked,
             active_context.geminiPageContextComputationState);
-  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+  EXPECT_EQ(1, shared_tabs_delegate_.save_active_page_context_call_count_);
+  EXPECT_EQ(active_context,
+            shared_tabs_delegate_.last_saved_active_page_context_);
 }
 
 // Tests that requestActivePageContextGeneration triggers page context
@@ -1306,10 +1328,6 @@ TEST_F(GeminiContainerMediatorTest, TestActuationMediumDetentHeight) {
 // active `WebState` only while floaty is invoked.
 TEST_F(GeminiContainerMediatorTest,
        TestActiveWebStateChangedUpdatesPageContextAndObservers) {
-  id mock_shared_tabs_delegate =
-      OCMProtocolMock(@protocol(GeminiSharedTabsDelegate));
-  mediator_.sharedTabsDelegate = mock_shared_tabs_delegate;
-
   // Insert and activate the first `WebState` before floaty is invoked.
   web::FakeWebState* first_web_state = AppendActiveWebState();
   first_web_state->SetTitle(u"Initial Title Before Invoke");
@@ -1332,12 +1350,13 @@ TEST_F(GeminiContainerMediatorTest,
       std::make_unique<web::FakeNavigationManager>());
   GeminiTabHelper::CreateForWebState(second_web_state);
 
-  OCMExpect([mock_shared_tabs_delegate
-      updateSharedTabsForActiveWebState:second_web_state]);
   browser_->GetWebStateList()->InsertWebState(
       std::move(second_web_state_owned),
       WebStateList::InsertionParams::Automatic().Activate(true));
-  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+  EXPECT_EQ(1, shared_tabs_delegate_
+                   .update_shared_tabs_for_active_web_state_call_count_);
+  EXPECT_EQ(second_web_state,
+            shared_tabs_delegate_.last_updated_active_web_state_);
   EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Updating the title on the inactive first `WebState` should not trigger
@@ -1416,10 +1435,6 @@ TEST_F(GeminiContainerMediatorTest,
           completionCallback:base::DoNothing()];
   OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
 
-  id mock_shared_tabs_delegate =
-      OCMProtocolMock(@protocol(GeminiSharedTabsDelegate));
-  mediator_.sharedTabsDelegate = mock_shared_tabs_delegate;
-
   // In non-Live mode (`kFloaty`), `kTranscribing` and `kResponding` should not
   // trigger full or partial page context updates.
   [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
@@ -1441,20 +1456,20 @@ TEST_F(GeminiContainerMediatorTest,
   // generation via `tabHelper->GeneratePageContext`, which completes and calls
   // `propagatePageContext` with `geminiPageContextComputationState ==
   // kSuccess`.
-  OCMExpect([mock_shared_tabs_delegate
-      saveActivePageContextToSharedTabs:[OCMArg checkWithBlock:^BOOL(id obj) {
-        GeminiPageContext* context = static_cast<GeminiPageContext*>(obj);
-        return context.geminiPageContextComputationState ==
-                   ios::provider::GeminiPageContextComputationState::kSuccess &&
-               context.uniquePageContext != nullptr;
-      }]]);
   [mediator_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
                       sessionID:@"session"
                  conversationID:@"conv"];
   EXPECT_TRUE(fake_wrapper.populateCalled);
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
-  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+  EXPECT_EQ(1, shared_tabs_delegate_.save_active_page_context_call_count_);
+  ASSERT_NE(nil, shared_tabs_delegate_.last_saved_active_page_context_);
+  EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kSuccess,
+            shared_tabs_delegate_.last_saved_active_page_context_
+                .geminiPageContextComputationState);
+  EXPECT_NE(
+      nullptr,
+      shared_tabs_delegate_.last_saved_active_page_context_.uniquePageContext);
 
   // Reset `populateCalled` to verify subsequent statuses do not trigger full
   // page context generation.
@@ -1471,20 +1486,20 @@ TEST_F(GeminiContainerMediatorTest,
   // Transitioning to `kResponding` in Live mode updates partial page context
   // via `tabHelper->GetPartialPageContext` (`geminiPageContextComputationState
   // == kPending`) without triggering `PageContextWrapper`.
-  OCMExpect([mock_shared_tabs_delegate
-      saveActivePageContextToSharedTabs:[OCMArg checkWithBlock:^BOOL(id obj) {
-        GeminiPageContext* context = static_cast<GeminiPageContext*>(obj);
-        return context.geminiPageContextComputationState ==
-                   ios::provider::GeminiPageContextComputationState::kPending &&
-               context.uniquePageContext != nullptr;
-      }]]);
   [mediator_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:@"session"
                  conversationID:@"conv"];
   EXPECT_FALSE(fake_wrapper.populateCalled);
   EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
-  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+  EXPECT_EQ(2, shared_tabs_delegate_.save_active_page_context_call_count_);
+  ASSERT_NE(nil, shared_tabs_delegate_.last_saved_active_page_context_);
+  EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kPending,
+            shared_tabs_delegate_.last_saved_active_page_context_
+                .geminiPageContextComputationState);
+  EXPECT_NE(
+      nullptr,
+      shared_tabs_delegate_.last_saved_active_page_context_.uniquePageContext);
 
   [mock_wrapper_class stopMocking];
 }

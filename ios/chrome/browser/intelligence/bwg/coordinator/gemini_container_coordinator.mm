@@ -136,7 +136,8 @@
                actorService:actorService
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 self.browser->GetProfile())
-               eventHandler:geminiBrowserAgent];
+               eventHandler:geminiBrowserAgent
+         sharedTabsDelegate:geminiBrowserAgent];
   _mediator.delegate = self;
   _mediator.startupState = _startupState;
   // TODO(crbug.com/537730178): Delegate the permission prompt request up to

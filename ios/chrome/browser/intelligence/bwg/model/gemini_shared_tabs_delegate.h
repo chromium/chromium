@@ -22,18 +22,20 @@ class WebState;
 // Therefore, shared tabs are owned and managed by an instance necessary
 // for it's lifecylce and communicate with GeminiContainerMediator through
 // this interface.
-@protocol GeminiSharedTabsDelegate <NSObject>
+class GeminiSharedTabsDelegate {
+ public:
+  virtual ~GeminiSharedTabsDelegate() = default;
 
-// Returns the currently inactive shared tabs for the session.
-- (NSArray<GeminiPageContext*>*)inactiveSharedTabs;
+  // Returns the currently inactive shared tabs for the session.
+  virtual NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const = 0;
 
-// Adds the active page context to the list of shared tabs.
-- (void)saveActivePageContextToSharedTabs:
-    (GeminiPageContext*)active_page_context;
+  // Adds the active page context to the list of shared tabs.
+  virtual void SaveActivePageContextToSharedTabs(
+      GeminiPageContext* active_page_context) = 0;
 
-// Clears the set of all shared tabs if it doesn't include `active_web_state`.
-- (void)updateSharedTabsForActiveWebState:(web::WebState*)active_web_state;
-
-@end
+  // Clears the set of all shared tabs if it doesn't include `active_web_state`.
+  virtual void UpdateSharedTabsForActiveWebState(
+      web::WebState* active_web_state) = 0;
+};
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SHARED_TABS_DELEGATE_H_

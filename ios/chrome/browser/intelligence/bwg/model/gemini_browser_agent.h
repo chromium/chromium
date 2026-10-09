@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -54,7 +55,6 @@ class ScopedFullscreenDisabler;
 @class GeminiCameraHandler;
 @class GeminiTabPickerHandler;
 @class GeminiConsentProviderHandler;
-@class GeminiSharedTabsDelegateBridge;
 @class GeminiPageContext;
 @class GeminiViewStateChangeHandler;
 @class GeminiScrollObserver;
@@ -76,7 +76,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public BrowserObserver,
                            public signin::IdentityManager::Observer,
                            public TabGridStateObserver,
-                           public GeminiContainerMediatorEventHandler {
+                           public GeminiContainerMediatorEventHandler,
+                           public GeminiSharedTabsDelegate {
  public:
   using SharedTabsList =
       std::vector<std::pair<web::WebStateID, __strong GeminiPageContext*>>;
@@ -208,17 +209,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns the entry point that triggered the current Gemini flow.
   gemini::EntryPoint GetEntryPoint() const;
 
-  // Saves `active_page_context` to `shared_tabs_`.
+  // GeminiSharedTabsDelegate:
   void SaveActivePageContextToSharedTabs(
-      GeminiPageContext* active_page_context);
-
-  // Clears the set of all shared tabs if it doesn't include the active web
-  // state.
-  void UpdateSharedTabsForActiveWebState(web::WebState* active_web_state);
-
-  // Returns the array of page contexts for all currently attached
-  // inactive shared tabs.
-  NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const;
+      GeminiPageContext* active_page_context) override;
+  void UpdateSharedTabsForActiveWebState(
+      web::WebState* active_web_state) override;
+  NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const override;
 
  private:
   explicit GeminiBrowserAgent(Browser* browser);
@@ -579,9 +575,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Observers for GeminiBrowserAgent.
   base::ObserverList<Observer> observers_;
-
-  // Bridge for GeminiSharedTabsDelegate.
-  __strong GeminiSharedTabsDelegateBridge* shared_tabs_delegate_bridge_ = nil;
 
   // Weak pointer factory for the page context generation callback of the
   // presentation deferred by `StartGeminiFlow()`. Invalidated when that

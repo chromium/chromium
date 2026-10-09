@@ -144,6 +144,8 @@ class GeminiContainerMediatorTabHelperObserver
   std::optional<actor::ActorTaskId> _actuationTaskId;
   // Authentication service used to retrieve the primary identity.
   raw_ptr<AuthenticationService> _authService;
+  // Delegate for shared tabs in a Gemini session.
+  raw_ptr<GeminiSharedTabsDelegate> _sharedTabsDelegate;
   // Track if we have triggered feature engagement for Gemini Live IPH or New
   // Badge.
   BOOL _hasTriggeredGeminiLiveIPH;
@@ -164,10 +166,12 @@ class GeminiContainerMediatorTabHelperObserver
                    actorService:(actor::ActorService*)actorService
           authenticationService:(AuthenticationService*)authService
                    eventHandler:
-                       (GeminiContainerMediatorEventHandler*)eventHandler {
+                       (GeminiContainerMediatorEventHandler*)eventHandler
+             sharedTabsDelegate:(GeminiSharedTabsDelegate*)sharedTabsDelegate {
   self = [super init];
   if (self) {
     _eventHandler = eventHandler;
+    _sharedTabsDelegate = sharedTabsDelegate;
     _authService = authService;
     if (browser) {
       _webStateList = browser->GetWebStateList();
@@ -319,7 +323,7 @@ class GeminiContainerMediatorTabHelperObserver
   _eventHandler = nullptr;
   _containerHandler = nil;
   _geminiHandler = nil;
-  _sharedTabsDelegate = nil;
+  _sharedTabsDelegate = nullptr;
   _consumer = nil;
   _webStateList = nullptr;
   _profile = nullptr;
@@ -841,10 +845,13 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)propagatePageContext:(GeminiPageContext*)pageContext {
   [self updatePageContextState:pageContext];
-  [self.sharedTabsDelegate saveActivePageContextToSharedTabs:pageContext];
+  if (_sharedTabsDelegate) {
+    _sharedTabsDelegate->SaveActivePageContextToSharedTabs(pageContext);
+  }
 
   ios::provider::UpdateActivePageContext(
-      pageContext, [self.sharedTabsDelegate inactiveSharedTabs]);
+      pageContext,
+      _sharedTabsDelegate ? _sharedTabsDelegate->GetInactiveSharedTabs() : nil);
 }
 
 - (void)updateFloatyWithPartialPageContext {
@@ -867,7 +874,9 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   if (newActive) {
-    [self.sharedTabsDelegate updateSharedTabsForActiveWebState:newActive];
+    if (_sharedTabsDelegate) {
+      _sharedTabsDelegate->UpdateSharedTabsForActiveWebState(newActive);
+    }
     GeminiTabHelper* newTabHelper = GeminiTabHelper::FromWebState(newActive);
     if (newTabHelper && _tabHelperObserver) {
       newTabHelper->AddObserver(_tabHelperObserver.get());

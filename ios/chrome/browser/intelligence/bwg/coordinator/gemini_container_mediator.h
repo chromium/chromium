@@ -24,6 +24,7 @@ enum class EntryPoint;
 class AuthenticationService;
 class Browser;
 class GeminiContainerMediatorEventHandler;
+class GeminiSharedTabsDelegate;
 @class GeminiConfiguration;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
@@ -32,7 +33,6 @@ class GeminiContainerMediatorEventHandler;
 @protocol BWGGatewayProtocol;
 @protocol GeminiCommands;
 @protocol GeminiContainerMediatorDelegate;
-@protocol GeminiSharedTabsDelegate;
 @protocol GeminiZeroStateConsumer;
 
 // Mediator for the Gemini container.
@@ -43,9 +43,6 @@ class GeminiContainerMediatorEventHandler;
 
 // Delegate notified of Gemini actuation task transitions.
 @property(nonatomic, weak) id<GeminiContainerMediatorDelegate> delegate;
-
-// Delegate for shared tabs in a Gemini session.
-@property(nonatomic, weak) id<GeminiSharedTabsDelegate> sharedTabsDelegate;
 
 // Delegate for handling events from the mediator. Temporarily used by
 // `GeminiBrowserAgent` to support pre-migration logic.
@@ -79,6 +76,7 @@ class GeminiContainerMediatorEventHandler;
           authenticationService:(AuthenticationService*)authService
                    eventHandler:
                        (GeminiContainerMediatorEventHandler*)eventHandler
+             sharedTabsDelegate:(GeminiSharedTabsDelegate*)sharedTabsDelegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

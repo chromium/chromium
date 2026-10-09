@@ -336,54 +336,6 @@ void RecordStartupTime(GeminiStartupState* startup_state,
 
 @end
 
-@interface GeminiSharedTabsDelegateBridge : NSObject <GeminiSharedTabsDelegate>
-
-- (instancetype)initWithBrowserAgent:(GeminiBrowserAgent*)browserAgent;
-
-- (void)disconnect;
-
-@end
-
-@implementation GeminiSharedTabsDelegateBridge {
-  raw_ptr<GeminiBrowserAgent> _browserAgent;
-}
-
-- (instancetype)initWithBrowserAgent:(GeminiBrowserAgent*)browserAgent {
-  self = [super init];
-  if (self) {
-    _browserAgent = browserAgent;
-  }
-  return self;
-}
-
-- (void)disconnect {
-  _browserAgent = nullptr;
-}
-
-#pragma mark - GeminiSharedTabsDelegate
-
-- (NSArray<GeminiPageContext*>*)inactiveSharedTabs {
-  if (_browserAgent) {
-    return _browserAgent->GetInactiveSharedTabs();
-  }
-  return @[];
-}
-
-- (void)saveActivePageContextToSharedTabs:
-    (GeminiPageContext*)activePageContext {
-  if (_browserAgent) {
-    _browserAgent->SaveActivePageContextToSharedTabs(activePageContext);
-  }
-}
-
-- (void)updateSharedTabsForActiveWebState:(web::WebState*)activeWebState {
-  if (_browserAgent) {
-    _browserAgent->UpdateSharedTabsForActiveWebState(activeWebState);
-  }
-}
-
-@end
-
 GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
   browser_->AddObserver(this);
@@ -484,10 +436,8 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                actorService:nullptr
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 browser_->GetProfile())
-               eventHandler:this];
-  shared_tabs_delegate_bridge_ =
-      [[GeminiSharedTabsDelegateBridge alloc] initWithBrowserAgent:this];
-  gemini_container_mediator_.sharedTabsDelegate = shared_tabs_delegate_bridge_;
+               eventHandler:this
+         sharedTabsDelegate:this];
 
   // TODO(crbug.com/537761575): Move tab managment related work to into a
   // dedicated helper/service class GeminiTabSessionManager.
@@ -572,8 +522,6 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   }
 
   if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
-    [shared_tabs_delegate_bridge_ disconnect];
-    shared_tabs_delegate_bridge_ = nil;
     [gemini_container_mediator_ disconnect];
     gemini_container_mediator_ = nil;
   }
@@ -625,8 +573,6 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
   link_opening_handler_ = nil;
 
   if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
-    [shared_tabs_delegate_bridge_ disconnect];
-    shared_tabs_delegate_bridge_ = nil;
     [gemini_container_mediator_ disconnect];
     gemini_container_mediator_ = nil;
   }
