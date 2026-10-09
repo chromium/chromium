@@ -1455,7 +1455,12 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 }
 
 + (BOOL)areMultipleWindowsSupported {
-  return base::ios::IsMultipleScenesSupported();
+  if (!base::ios::IsMultipleScenesSupported()) {
+    return NO;
+  }
+  SceneState* sceneState = chrome_test_util::GetMainController()
+                               .appState.connectedScenes.firstObject;
+  return sceneState.multipleScenesAvailable;
 }
 
 + (BOOL)isUseLensToSearchForImageEnabled {
