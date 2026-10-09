@@ -1042,6 +1042,14 @@ crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] deqp/data/gles3/shaders/arrays.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] deqp/functional/gles3/shadermatrix/inverse.html [ Failure ]
 
+########################################################################
+# Temporary suppressions for introduction of texElementSubImage2D
+########################################################################
+crbug.com/418089323 conformance/offscreencanvas/methods.html [ Failure ]
+crbug.com/418089323 conformance/offscreencanvas/methods-worker.html [ Failure ]
+crbug.com/418089323 conformance2/offscreencanvas/methods-2.html [ Failure ]
+crbug.com/418089323 conformance2/offscreencanvas/methods-2-worker.html [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

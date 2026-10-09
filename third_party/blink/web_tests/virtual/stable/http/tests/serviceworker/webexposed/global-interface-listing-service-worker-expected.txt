@@ -494,6 +494,10 @@ interface DisposableStack
     method dispose
     method move
     method use
+interface ElementImage
+    attribute @@toStringTag
+    method close
+    method constructor
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -904,7 +908,9 @@ interface GPUQueue
     attribute @@toStringTag
     getter label
     method constructor
+    method copyElementImageToTexture
     method copyExternalImageToTexture
+    method drawElementImageToTexture
     method onSubmittedWorkDone
     method submit
     method writeBuffer
@@ -1361,10 +1367,13 @@ interface OffscreenCanvas : EventTarget
     getter oncontextlost
     getter oncontextrestored
     getter width
+    method clearElementGeometry
     method constructor
     method convertToBlob
     method getContext
+    method getElementImageDefaultSize
     method transferToImageBitmap
+    method updateElementGeometry
     setter height
     setter oncontextlost
     setter oncontextrestored
@@ -1412,6 +1421,7 @@ interface OffscreenCanvasRenderingContext2D
     method createLinearGradient
     method createPattern
     method createRadialGradient
+    method drawElementImage
     method drawImage
     method ellipse
     method fill
@@ -2805,6 +2815,7 @@ interface WebGL2RenderingContext
     method stencilMaskSeparate
     method stencilOp
     method stencilOpSeparate
+    method texElementSubImage2D
     method texImage2D
     method texImage3D
     method texParameterf
@@ -3307,6 +3318,7 @@ interface WebGLRenderingContext
     method stencilMaskSeparate
     method stencilOp
     method stencilOpSeparate
+    method texElementSubImage2D
     method texImage2D
     method texParameterf
     method texParameteri

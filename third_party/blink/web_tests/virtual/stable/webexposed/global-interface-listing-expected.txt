@@ -1133,6 +1133,7 @@ interface CanvasRenderingContext2D
     method createLinearGradient
     method createPattern
     method createRadialGradient
+    method drawElementImage
     method drawFocusIfNeeded
     method drawImage
     method ellipse
@@ -2487,6 +2488,14 @@ interface Element : Node
     setter scrollLeft
     setter scrollTop
     setter slot
+interface ElementGeometryUpdateEvent : Event
+    attribute @@toStringTag
+    getter elements
+    method constructor
+interface ElementImage
+    attribute @@toStringTag
+    method close
+    method constructor
 interface ElementInternals
     attribute @@toStringTag
     getter ariaActionsElements
@@ -3079,7 +3088,9 @@ interface GPUQueue
     attribute @@toStringTag
     getter label
     method constructor
+    method copyElementImageToTexture
     method copyExternalImageToTexture
+    method drawElementImageToTexture
     method onSubmittedWorkDone
     method submit
     method writeBuffer
@@ -3581,15 +3592,27 @@ interface HTMLCameraElement : HTMLElement
     setter ontrack
 interface HTMLCanvasElement : HTMLElement
     attribute @@toStringTag
+    getter content
     getter height
+    getter onelementgeometryupdate
+    getter onpaint
     getter width
+    method captureElementImage
     method captureStream
+    method clearElementGeometry
     method constructor
     method getContext
+    method getElementImageDefaultSize
+    method getElementTransform
+    method requestPaint
     method toBlob
     method toDataURL
     method transferControlToOffscreen
+    method updateElementGeometry
+    setter content
     setter height
+    setter onelementgeometryupdate
+    setter onpaint
     setter width
 interface HTMLCollection
     attribute @@toStringTag
@@ -6677,10 +6700,13 @@ interface OffscreenCanvas : EventTarget
     getter oncontextlost
     getter oncontextrestored
     getter width
+    method clearElementGeometry
     method constructor
     method convertToBlob
     method getContext
+    method getElementImageDefaultSize
     method transferToImageBitmap
+    method updateElementGeometry
     setter height
     setter oncontextlost
     setter oncontextrestored
@@ -6728,6 +6754,7 @@ interface OffscreenCanvasRenderingContext2D
     method createLinearGradient
     method createPattern
     method createRadialGradient
+    method drawElementImage
     method drawImage
     method ellipse
     method fill
@@ -11048,6 +11075,7 @@ interface WebGL2RenderingContext
     method stencilMaskSeparate
     method stencilOp
     method stencilOpSeparate
+    method texElementSubImage2D
     method texImage2D
     method texImage3D
     method texParameterf
@@ -11550,6 +11578,7 @@ interface WebGLRenderingContext
     method stencilMaskSeparate
     method stencilOp
     method stencilOpSeparate
+    method texElementSubImage2D
     method texImage2D
     method texParameterf
     method texParameteri

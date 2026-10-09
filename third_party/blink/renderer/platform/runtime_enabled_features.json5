@@ -1091,7 +1091,7 @@
       // Note the API name has changed to `drawElementImage`.
       name: "CanvasDrawElement",
       origin_trial_feature_name: "HTMLInCanvas",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CanvasFloatingPoint",

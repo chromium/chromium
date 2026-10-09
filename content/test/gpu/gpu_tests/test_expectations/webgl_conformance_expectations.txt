@@ -665,9 +665,11 @@ crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/g
 # Roll WebGL d1b65aa..b934957.
 crbug.com/1448573 [ android angle-disabled no-passthrough qualcomm renderer-skia-gl ] conformance/extensions/oes-texture-float.html [ Failure ]
 
-
-
-
+########################################################################
+# Temporary suppressions for introduction of texElementSubImage2D
+########################################################################
+crbug.com/418089323 conformance/offscreencanvas/methods.html [ Failure ]
+crbug.com/418089323 conformance/offscreencanvas/methods-worker.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -556,12 +556,21 @@ html element camera
     property setConstraints
     property track
 html element canvas
+    property captureElementImage
     property captureStream
+    property clearElementGeometry
+    property content
     property getContext
+    property getElementImageDefaultSize
+    property getElementTransform
     property height
+    property onelementgeometryupdate
+    property onpaint
+    property requestPaint
     property toBlob
     property toDataURL
     property transferControlToOffscreen
+    property updateElementGeometry
     property width
 html element caption
     property align

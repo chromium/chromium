@@ -499,6 +499,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method dispose
 [Worker]     method move
 [Worker]     method use
+[Worker] interface ElementImage
+[Worker]     attribute @@toStringTag
+[Worker]     method close
+[Worker]     method constructor
 [Worker] interface EncodedAudioChunk
 [Worker]     attribute @@toStringTag
 [Worker]     getter byteLength
@@ -921,7 +925,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter label
 [Worker]     method constructor
+[Worker]     method copyElementImageToTexture
 [Worker]     method copyExternalImageToTexture
+[Worker]     method drawElementImageToTexture
 [Worker]     method onSubmittedWorkDone
 [Worker]     method submit
 [Worker]     method writeBuffer
@@ -1462,10 +1468,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter oncontextlost
 [Worker]     getter oncontextrestored
 [Worker]     getter width
+[Worker]     method clearElementGeometry
 [Worker]     method constructor
 [Worker]     method convertToBlob
 [Worker]     method getContext
+[Worker]     method getElementImageDefaultSize
 [Worker]     method transferToImageBitmap
+[Worker]     method updateElementGeometry
 [Worker]     setter height
 [Worker]     setter oncontextlost
 [Worker]     setter oncontextrestored
@@ -1513,6 +1522,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createLinearGradient
 [Worker]     method createPattern
 [Worker]     method createRadialGradient
+[Worker]     method drawElementImage
 [Worker]     method drawImage
 [Worker]     method ellipse
 [Worker]     method fill
@@ -3150,6 +3160,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stencilMaskSeparate
 [Worker]     method stencilOp
 [Worker]     method stencilOpSeparate
+[Worker]     method texElementSubImage2D
 [Worker]     method texImage2D
 [Worker]     method texImage3D
 [Worker]     method texParameterf
@@ -3652,6 +3663,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stencilMaskSeparate
 [Worker]     method stencilOp
 [Worker]     method stencilOpSeparate
+[Worker]     method texElementSubImage2D
 [Worker]     method texImage2D
 [Worker]     method texParameterf
 [Worker]     method texParameteri
