@@ -268,6 +268,9 @@ CORE_EXPORT CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream&,
                                            const CSSParserContext&,
                                            CSSParserLocalContext&);
 
+CORE_EXPORT bool IsAllowedColorValue(const CSSValue*,
+                                     const ColorParserContext&);
+
 CSSValue* ConsumeLineWidth(CSSParserTokenStream&,
                            const CSSParserContext&,
                            CSSParserLocalContext&,

@@ -222,22 +222,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   return true;
 }
 
-namespace {
-
-bool IsAllowedValueInParserContext(
-    const CSSValue* value,
-    const css_parsing_utils::ColorParserContext& color_parser_context) {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return (color_parser_context.InElementContext() ||
-            !primitive_value->IsElementDependent()) &&
-           (color_parser_context.InPropertyContext() ||
-            !primitive_value->HasRandomFunctions());
-  }
-  return true;
-}
-
-}  // namespace
-
 bool ColorFunctionParser::ConsumeChannel(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -271,24 +255,24 @@ bool ColorFunctionParser::ConsumeChannel(
       return false;
     }
 
-    return IsAllowedValueInParserContext(unresolved_channels_[i],
-                                         color_parser_context);
+    return css_parsing_utils::IsAllowedColorValue(unresolved_channels_[i],
+                                                  color_parser_context);
   }
 
   if ((unresolved_channels_[i] = css_parsing_utils::ConsumeNumber(
            stream, context, local_context,
            CSSPrimitiveValue::ValueRange::kAll))) {
     channel_types_[i] = ChannelType::kNumber;
-    return IsAllowedValueInParserContext(unresolved_channels_[i],
-                                         color_parser_context);
+    return css_parsing_utils::IsAllowedColorValue(unresolved_channels_[i],
+                                                  color_parser_context);
   }
 
   if ((unresolved_channels_[i] = css_parsing_utils::ConsumePercent(
            stream, context, local_context,
            CSSPrimitiveValue::ValueRange::kAll))) {
     channel_types_[i] = ChannelType::kPercentage;
-    return IsAllowedValueInParserContext(unresolved_channels_[i],
-                                         color_parser_context);
+    return css_parsing_utils::IsAllowedColorValue(unresolved_channels_[i],
+                                                  color_parser_context);
   }
 
   if (IsRelativeColor()) {
@@ -297,8 +281,8 @@ bool ColorFunctionParser::ConsumeChannel(
              stream, context, local_context, color_channel_map_,
              {kCalcNumber, kCalcPercent},
              function_metadata_->channel_percentage[i]))) {
-      return IsAllowedValueInParserContext(unresolved_channels_[i],
-                                           color_parser_context);
+      return css_parsing_utils::IsAllowedColorValue(unresolved_channels_[i],
+                                                    color_parser_context);
     }
   }
 
@@ -315,16 +299,16 @@ bool ColorFunctionParser::ConsumeAlpha(
            stream, context, local_context,
            CSSPrimitiveValue::ValueRange::kAll))) {
     alpha_channel_type_ = ChannelType::kNumber;
-    return IsAllowedValueInParserContext(unresolved_alpha_,
-                                         color_parser_context);
+    return css_parsing_utils::IsAllowedColorValue(unresolved_alpha_,
+                                                  color_parser_context);
   }
 
   if ((unresolved_alpha_ = css_parsing_utils::ConsumePercent(
            stream, context, local_context,
            CSSPrimitiveValue::ValueRange::kAll))) {
     alpha_channel_type_ = ChannelType::kPercentage;
-    return IsAllowedValueInParserContext(unresolved_alpha_,
-                                         color_parser_context);
+    return css_parsing_utils::IsAllowedColorValue(unresolved_alpha_,
+                                                  color_parser_context);
   }
 
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
@@ -339,8 +323,8 @@ bool ColorFunctionParser::ConsumeAlpha(
            stream, context, local_context, color_channel_map_,
            {kCalcNumber, kCalcPercent}, 1.0))) {
     alpha_channel_type_ = ChannelType::kRelative;
-    return IsAllowedValueInParserContext(unresolved_alpha_,
-                                         color_parser_context);
+    return css_parsing_utils::IsAllowedColorValue(unresolved_alpha_,
+                                                  color_parser_context);
   }
 
   return false;

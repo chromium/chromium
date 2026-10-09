@@ -2189,18 +2189,6 @@ static std::optional<ColorInterpolationSpace> ConsumeColorInterpolationSpace(
 
 namespace {
 
-bool IsAllowedValueInParserContext(
-    const CSSValue* value,
-    const ColorParserContext& color_parser_context) {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return (color_parser_context.InElementContext() ||
-            !primitive_value->IsElementDependent()) &&
-           (color_parser_context.InPropertyContext() ||
-            !primitive_value->HasRandomFunctions());
-  }
-  return true;
-}
-
 // https://www.w3.org/TR/css-color-5/#color-mix
 CSSValue* ConsumeColorMixFunction(
     CSSParserTokenStream& stream,
@@ -2237,7 +2225,7 @@ CSSValue* ConsumeColorMixFunction(
         ConsumeColor(stream, context, local_context, color_parser_context);
     CSSPrimitiveValue* p1 = ConsumePercent(stream, context, local_context,
                                            CSSPrimitiveValue::ValueRange::kAll);
-    if (!IsAllowedValueInParserContext(p1, color_parser_context)) {
+    if (!IsAllowedColorValue(p1, color_parser_context)) {
       return nullptr;
     }
     // Color can come after the percentage
@@ -2263,7 +2251,7 @@ CSSValue* ConsumeColorMixFunction(
         ConsumeColor(stream, context, local_context, color_parser_context);
     CSSPrimitiveValue* p2 = ConsumePercent(stream, context, local_context,
                                            CSSPrimitiveValue::ValueRange::kAll);
-    if (!IsAllowedValueInParserContext(p2, color_parser_context)) {
+    if (!IsAllowedColorValue(p2, color_parser_context)) {
       return nullptr;
     }
     // Color can come after the percentage
@@ -2483,6 +2471,18 @@ CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream& stream,
                                CSSParserLocalContext& local_context) {
   return ConsumeColor(stream, context, local_context,
                       ColorParserContext::AbsoluteColorContext());
+}
+
+bool IsAllowedColorValue(const CSSValue* value,
+                         const ColorParserContext& color_parser_context) {
+  if (const CSSPrimitiveValue* primitive_value =
+          DynamicTo<CSSPrimitiveValue>(value)) {
+    return (color_parser_context.InElementContext() ||
+            !primitive_value->IsElementDependent()) &&
+           (color_parser_context.InPropertyContext() ||
+            !primitive_value->HasRandomFunctions());
+  }
+  return true;
 }
 
 CSSValue* ConsumeColorWithoutElementAndPropertyContext(
