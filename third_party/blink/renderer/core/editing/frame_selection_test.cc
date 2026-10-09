@@ -1575,6 +1575,35 @@ TEST_F(FrameSelectionTest, PaintCaretRecordsSelectionWithNoSelectionHandles) {
   EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data->end->type);
 }
 
+// crbug.com/570740320
+TEST_F(FrameSelectionTest, PaintCaretDoesNotUpdateStyleAndLayout) {
+  Text* text = AppendTextNode("Hello, World!");
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().body()->setContentEditable("true", ASSERT_NO_EXCEPTION);
+  GetDocument().body()->Focus();
+  Selection().SetCaretEnabled(true);
+  Selection().SetSelection(
+      SelectionInDomTree::Builder().Collapse(Position(text, 0)).Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(Selection().ShouldPaintCaret(
+      *To<LayoutBlock>(GetDocument().body()->GetLayoutObject())));
+
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  ASSERT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+
+  PaintController paint_controller;
+  {
+    GraphicsContext context(paint_controller);
+    paint_controller.UpdateCurrentPaintChunkProperties(
+        root_paint_chunk_id_, *root_paint_property_client_,
+        PropertyTreeState::Root());
+    Selection().PaintCaret(context, PhysicalOffset());
+  }
+  EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+}
+
 // ===========================================================================
 // Bidi state persistence in FrameSelection::Modify()
 // Tests the affinity override branch that adjusts selection affinity
