@@ -1208,6 +1208,7 @@ def main():
     '-DCLANG_PLUGIN_SUPPORT=OFF',
     '-DCLANG_ENABLE_STATIC_ANALYZER=OFF',
     '-DCLANG_ENABLE_ARCMT=OFF',
+    '-DCLANG_ENABLE_CIR=OFF',
     '-DBUG_REPORT_URL=' + BUG_REPORT_URL,
     # See crbug.com/1126219: Use native symbolizer instead of DIA
     '-DLLVM_ENABLE_DIA_SDK=OFF',
