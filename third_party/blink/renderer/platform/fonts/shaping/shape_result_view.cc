@@ -41,6 +41,13 @@ wtf_size_t ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
   if (offset >= NumCharacters()) {
     return NumCharacters();
   }
+  if (range_.IsCompactSource()) [[unlikely]] {
+    const unsigned num_glyphs = NumGlyphs();
+    if (offset < num_glyphs) {
+      return offset;
+    }
+    return num_glyphs ? num_glyphs - 1 : 0;
+  }
   offset += offset_;
   const auto [begin, end] = range_.NonCompactGlyphPointers();
   const auto is_safe = [offset](const HarfBuzzRunGlyphData& glyph) {

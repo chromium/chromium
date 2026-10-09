@@ -116,6 +116,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
   wtf_size_t StartIndex() const { return start_index_; }
   wtf_size_t GlyphToCharacterIndex(wtf_size_t i) const {
+    if (glyph_data_.IsCompact()) [[unlikely]] {
+      DCHECK_LT(i, glyph_data_.size());
+      return start_index_ + i;
+    }
     return start_index_ + glyph_data_[i].character_index;
   }
 
@@ -203,7 +207,19 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   void ExpandRangeToIncludePartialGlyphs(int offset, int* from, int* to) const {
+    if (glyph_data_.IsCompact()) {
+      if (glyph_data_.size() < num_characters_) {
+        const int start = offset + glyph_data_.size() - 1;
+        const int end = offset + num_characters_;
+        if (end > *from && start < *to) {
+          *from = std::min(*from, start);
+          *to = std::max(*to, end);
+        }
+      }
+      return;
+    }
     const auto& glyphs = glyph_data_.NonCompactGlyphs();
+
     int end = offset + num_characters_;
     int start;
 

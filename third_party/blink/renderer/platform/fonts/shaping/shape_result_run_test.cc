@@ -235,6 +235,19 @@ TEST_F(ShapeResultRunTest, CompactReadersDoNotMaterialize) {
   }
 }
 
+TEST_F(ShapeResultRunTest, CompactEmptyGlyphRangeKeepsRun) {
+  ShapeResultRun* run = CreateCompactRun(8, 8);
+
+  GlyphDataRange range = run->FindGlyphDataRange(8, 10);
+  EXPECT_TRUE(range.IsEmpty());
+  EXPECT_EQ(range.GetRun(), run);
+  EXPECT_TRUE(range.IsCompactSource());
+
+  EXPECT_EQ(70.0f, run->XPositionForOffset(8, AdjustMidCluster::kToStart));
+  EXPECT_EQ(80.0f, run->XPositionForOffset(8, AdjustMidCluster::kToEnd));
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+}
+
 TEST_F(ShapeResultRunTest, CompactRejectsOversizedInputBeforeReading) {
   ShapeResultRun* run = CreateTestShapeResultRun(0, 0);
   bool read_glyph = false;
@@ -246,6 +259,42 @@ TEST_F(ShapeResultRunTest, CompactRejectsOversizedInputBeforeReading) {
       }));
   EXPECT_FALSE(read_glyph);
   EXPECT_FALSE(run->glyph_data_.IsCompact());
+}
+
+TEST_F(ShapeResultRunTest, CompactTrailingCharactersMatchFullStorage) {
+  ShapeResultRun* full_run = CreateConstantAdvanceRun(8, 10);
+  ShapeResultRun* compact_run = MakeGarbageCollected<ShapeResultRun>(*full_run);
+  ASSERT_TRUE(compact_run->glyph_data_.TryMakeCompact());
+
+  for (int offset : {-13, 0, 13}) {
+    for (int from = 0; from <= 10; ++from) {
+      for (int to = from; to <= 11; ++to) {
+        int expected_from = offset + from;
+        int expected_to = offset + to;
+        full_run->ExpandRangeToIncludePartialGlyphs(offset, &expected_from,
+                                                    &expected_to);
+        int actual_from = offset + from;
+        int actual_to = offset + to;
+        compact_run->ExpandRangeToIncludePartialGlyphs(offset, &actual_from,
+                                                       &actual_to);
+        EXPECT_EQ(expected_from, actual_from);
+        EXPECT_EQ(expected_to, actual_to);
+      }
+    }
+  }
+
+  for (unsigned offset = 0; offset <= 10; ++offset) {
+    EXPECT_EQ(full_run->NextSafeToBreakOffset(offset),
+              compact_run->NextSafeToBreakOffset(offset));
+    EXPECT_EQ(full_run->PreviousSafeToBreakOffset(offset),
+              compact_run->PreviousSafeToBreakOffset(offset));
+    for (AdjustMidCluster adjust :
+         {AdjustMidCluster::kToStart, AdjustMidCluster::kToEnd}) {
+      EXPECT_EQ(full_run->XPositionForOffset(offset, adjust),
+                compact_run->XPositionForOffset(offset, adjust));
+    }
+  }
+  EXPECT_TRUE(compact_run->glyph_data_.IsCompact());
 }
 
 TEST_F(ShapeResultRunTest, CompactReaderMatchesGlyphAtForSubRange) {

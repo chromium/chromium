@@ -108,6 +108,9 @@ ASSERT_SIZE(ShapeResult, SameSizeAsShapeResult);
 
 wtf_size_t ShapeResultRun::NextSafeToBreakOffset(wtf_size_t offset) const {
   DCHECK_LE(offset, num_characters_);
+  if (glyph_data_.IsCompact()) [[unlikely]] {
+    return offset < glyph_data_.size() ? offset : num_characters_;
+  }
   const auto& glyphs = glyph_data_.NonCompactGlyphs();
   const HarfBuzzRunGlyphData* const begin = glyphs.data();
   const HarfBuzzRunGlyphData* const end = base::to_address(glyphs.end());
@@ -135,6 +138,9 @@ wtf_size_t ShapeResultRun::NextSafeToBreakOffset(wtf_size_t offset) const {
 wtf_size_t ShapeResultRun::PreviousSafeToBreakOffset(wtf_size_t offset) const {
   if (offset >= num_characters_) {
     return num_characters_;
+  }
+  if (glyph_data_.IsCompact()) [[unlikely]] {
+    return offset < glyph_data_.size() ? offset : glyph_data_.size() - 1;
   }
   const auto& glyphs = glyph_data_.NonCompactGlyphs();
   const HarfBuzzRunGlyphData* const begin = glyphs.data();
@@ -227,7 +233,21 @@ float ShapeResultRun::XPositionForOffset(
     wtf_size_t offset,
     AdjustMidCluster adjust_mid_cluster) const {
   DCHECK_LE(offset, num_characters_);
-  const wtf_size_t num_glyphs = glyph_data_.size();
+
+  if (glyph_data_.IsCompact()) [[unlikely]] {
+    const wtf_size_t num_glyphs = glyph_data_.size();
+    CHECK_GT(num_glyphs, 0u);
+    const int64_t advance_raw = glyph_data_.CompactAdvance().RawValue();
+    const wtf_size_t whole =
+        offset < num_glyphs
+            ? offset
+            : (adjust_mid_cluster == AdjustMidCluster::kToEnd ? num_glyphs
+                                                              : num_glyphs - 1);
+    return InlineLayoutUnit::FromRawValue(int64_t{whole} * advance_raw)
+        .ToFloat();
+  }
+  const auto& glyphs = glyph_data_.NonCompactGlyphs();
+  const wtf_size_t num_glyphs = glyphs.size();
 
   // In this context, a glyph sequence is a sequence of glyphs that shares the
   // same character_index and therefore represent the same interval of source
@@ -246,12 +266,12 @@ float ShapeResultRun::XPositionForOffset(
 
   if (IsLtr()) {
     for (wtf_size_t i = 0; i < num_glyphs; ++i) {
-      wtf_size_t current_glyph_char_index = glyph_data_[i].character_index;
+      wtf_size_t current_glyph_char_index = glyphs[i].character_index;
       // If this glyph is still part of the same glyph sequence for the grapheme
       // cluster at character index glyph_sequence_start, add its advance to the
       // glyph_sequence's advance.
       if (glyph_sequence_start == current_glyph_char_index) {
-        glyph_sequence_advance += glyph_data_[i].advance;
+        glyph_sequence_advance += glyphs[i].advance;
         continue;
       }
 
@@ -267,19 +287,19 @@ float ShapeResultRun::XPositionForOffset(
       // last_character in case this is the final iteration of the loop.
       glyph_sequence_end = num_characters_;
       accumulated_position += glyph_sequence_advance;
-      glyph_sequence_advance = glyph_data_[i].advance;
+      glyph_sequence_advance = glyphs[i].advance;
     }
 
   } else {
     glyph_sequence_start = glyph_sequence_end = num_characters_;
 
     for (wtf_size_t i = 0; i < num_glyphs; ++i) {
-      wtf_size_t current_glyph_char_index = glyph_data_[i].character_index;
+      wtf_size_t current_glyph_char_index = glyphs[i].character_index;
       // If this glyph is still part of the same glyph sequence for the grapheme
       // cluster at character index glyph_sequence_start, add its advance to the
       // glyph_sequence's advance.
       if (glyph_sequence_start == current_glyph_char_index) {
-        glyph_sequence_advance += glyph_data_[i].advance;
+        glyph_sequence_advance += glyphs[i].advance;
         continue;
       }
 
@@ -292,7 +312,7 @@ float ShapeResultRun::XPositionForOffset(
       glyph_sequence_end = glyph_sequence_start;
       glyph_sequence_start = current_glyph_char_index;
       accumulated_position += glyph_sequence_advance;
-      glyph_sequence_advance = glyph_data_[i].advance;
+      glyph_sequence_advance = glyphs[i].advance;
     }
 
     // If |offset| precedes every glyph in this run, the leading characters have

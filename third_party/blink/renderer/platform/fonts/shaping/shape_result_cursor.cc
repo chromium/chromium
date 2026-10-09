@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_cursor.h"
 
+#include <algorithm>
+
 namespace blink {
 
 void ShapeResultCursor::MoveToStart() {
@@ -34,9 +36,21 @@ void ShapeResultCursor::MoveToCharacter(wtf_size_t character_index) {
       DCHECK_GE(character_index, run_->start_index_);
       wtf_size_t character_index_in_run = character_index - run_->start_index_;
       if (character_index_in_run < run_->NumCharacters()) {
-        for (; glyph_index_ < run_->NumGlyphs(); ++glyph_index_) {
-          if (GlyphData().character_index >= character_index_in_run) {
+        if (run_->glyph_data_.IsCompact()) [[unlikely]] {
+          // Identity indices collapse the scan below to an index.
+          const wtf_size_t num_glyphs = run_->NumGlyphs();
+          glyph_index_ = std::max(glyph_index_, character_index_in_run);
+          if (glyph_index_ < num_glyphs) {
             return;
+          }
+          glyph_index_ = num_glyphs;
+        } else {
+          const auto& glyphs = run_->glyph_data_.NonCompactGlyphs();
+          for (; glyph_index_ < glyphs.size(); ++glyph_index_) {
+            if (glyphs[glyph_index_].character_index >=
+                character_index_in_run) {
+              return;
+            }
           }
         }
       }
@@ -51,8 +65,9 @@ void ShapeResultCursor::MoveToCharacter(wtf_size_t character_index) {
       DCHECK_GE(character_index, run_->start_index_);
       wtf_size_t character_index_in_run = character_index - run_->start_index_;
       if (character_index_in_run < run_->NumCharacters()) {
+        const auto& glyphs = run_->glyph_data_.NonCompactGlyphs();
         for (;; --glyph_index_) {
-          if (GlyphData().character_index >= character_index_in_run) {
+          if (glyphs[glyph_index_].character_index >= character_index_in_run) {
             return;
           }
           if (!glyph_index_) {
@@ -72,11 +87,15 @@ void ShapeResultCursor::MoveToCharacter(wtf_size_t character_index) {
 
 TextRunLayoutUnit ShapeResultCursor::ClusterAdvance() const {
   DCHECK(*this);
-  const HarfBuzzRunGlyphData& glyph_data = GlyphData();
+  if (run_->glyph_data_.IsCompact()) [[unlikely]] {
+    return run_->glyph_data_.CompactAdvance();
+  }
+  const auto& glyphs = run_->glyph_data_.NonCompactGlyphs();
+  const HarfBuzzRunGlyphData& glyph_data = glyphs[glyph_index_];
   const wtf_size_t character_index = glyph_data.character_index;
   TextRunLayoutUnit advance = glyph_data.advance;
-  for (wtf_size_t i = glyph_index_ + 1; i < run_->NumGlyphs(); ++i) {
-    const HarfBuzzRunGlyphData& next_glyph_data = GlyphData(i);
+  for (wtf_size_t i = glyph_index_ + 1; i < glyphs.size(); ++i) {
+    const HarfBuzzRunGlyphData& next_glyph_data = glyphs[i];
     if (next_glyph_data.character_index != character_index) {
       break;
     }
@@ -90,7 +109,7 @@ void ShapeResultCursor::AddSpaceToRight(TextRunLayoutUnit advance) {
 
   // Space of a cluster should be added to the last glyph of the cluster, so
   // that positions of glyphs in the cluster do not change.
-  const wtf_size_t character_index = GlyphData().character_index;
+  const wtf_size_t character_index = CharacterIndex();
   while (IsCluster(glyph_index_ + 1, character_index)) [[unlikely]] {
     ++glyph_index_;
   }
@@ -106,7 +125,7 @@ void ShapeResultCursor::AddSpaceToLeft(TextRunLayoutUnit advance) {
   // Adding to the left side of the cluster means all glyphs in the cluster need
   // to be moved, in addition to what `AddSpaceToRight` does.
   const float advance_float = advance.ToFloat();
-  const wtf_size_t character_index = GlyphData().character_index;
+  const wtf_size_t character_index = CharacterIndex();
   const bool is_horizontal = run_->IsHorizontal();
   for (;;) {
     if (is_horizontal) {
