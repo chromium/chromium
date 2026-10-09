@@ -19,7 +19,6 @@ import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.test.util.MemoryMetricsLoggerUtilsJni;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -45,7 +44,6 @@ public class RendererProcessLifecycleTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add("enable-features=WebViewRendererKeepAlive")
     public void testRendererKeptAliveAtWaivedPriorityAfterWebViewDestroy() throws Throwable {
         // Load a page to ensure renderer is started
         mActivityTestRule.loadUrlSync(
@@ -103,7 +101,6 @@ public class RendererProcessLifecycleTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add("enable-features=WebViewRendererKeepAlive")
     public void testRendererReusedAndBindingStateRestored() throws Throwable {
         // Load a page to ensure renderer is started
         mActivityTestRule.loadUrlSync(
@@ -153,51 +150,6 @@ public class RendererProcessLifecycleTest {
                 () -> {
                     int state = renderProcess.getEffectiveChildBindingStateForTesting();
                     return state > ChildBindingState.WAIVED;
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add(
-            "enable-features=WebViewRendererKeepAlive:webview_renderer_keep_alive_duration/2s")
-    public void testRendererKeepAliveDurationRespected() throws Throwable {
-        // Load a page to ensure renderer is started
-        mActivityTestRule.loadUrlSync(
-                mAwContents,
-                mContentsClient.getOnPageFinishedHelper(),
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-
-        AwRenderProcess renderProcess =
-                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
-
-        Assert.assertNotNull(renderProcess);
-
-        // Destroy the WebView
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTestContainerView.removeAllViews();
-                    mAwContents.destroy();
-                });
-
-        // Verify that the renderer process is kept alive initially.
-        Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlocking(() -> renderProcess.isReadyForTesting()));
-
-        // Verify binding state drops to WAIVED now that there are no active WebViews.
-        mActivityTestRule.pollUiThread(
-                () -> {
-                    int state = renderProcess.getEffectiveChildBindingStateForTesting();
-                    return state == ChildBindingState.WAIVED;
-                });
-
-        // Wait for the renderer process to terminate after the duration.
-        // pollUiThread waits up to 15s (WAIT_TIMEOUT_MS), which is sufficient for 2s duration.
-        mActivityTestRule.pollUiThread(
-                () -> {
-                    // isReadyForTesting() returns false when the process has exited/died.
-                    return !renderProcess.isReadyForTesting();
                 });
     }
 

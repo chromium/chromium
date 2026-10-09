@@ -3052,7 +3052,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="WebViewRendererKeepAliveEvent">
   <int value="0" label="Reused"/>
-  <int value="1" label="Timed out"/>
+  <int value="1" label="(Obsolete) Timed out. Removed in M157."/>
   <int value="2" label="Pending reuse"/>
 </enum>
 

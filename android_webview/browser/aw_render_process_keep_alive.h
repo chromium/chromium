@@ -6,10 +6,8 @@
 #define ANDROID_WEBVIEW_BROWSER_AW_RENDER_PROCESS_KEEP_ALIVE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 
 namespace content {
 class RenderProcessHost;
@@ -38,16 +36,11 @@ class AwRenderProcessKeepAlive : public base::SupportsUserData::Data {
   explicit AwRenderProcessKeepAlive(
       content::RenderProcessHost* render_process_host);
 
-  void OnKeepAliveTimerFired();
-
   raw_ptr<content::RenderProcessHost> render_process_host_;
 
   int aw_contents_count_ = 0;
   bool kept_alive_ = false;
   base::TimeTicks keep_alive_start_time_;
-  base::OneShotTimer keep_alive_timer_;
-
-  base::WeakPtrFactory<AwRenderProcessKeepAlive> weak_factory_{this};
 };
 
 }  // namespace android_webview

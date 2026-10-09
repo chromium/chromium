@@ -327,9 +327,7 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
   AwContentsLifecycleNotifier::GetInstance().OnWebViewCreated(this);
   AwBrowserProcess::GetInstance()->visibility_metrics_logger()->AddClient(this);
 
-  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
-    UpdateAwRenderProcessAssociation();
-  }
+  UpdateAwRenderProcessAssociation();
 
   if (base::FeatureList::IsEnabled(
           features::kWebViewInitRendererDuringWebContentsCreation)) {
@@ -431,15 +429,13 @@ void AwContents::InitSensitiveContentClient(JNIEnv* env) {
 AwContents::~AwContents() {
   DCHECK_EQ(this, AwContents::FromWebContents(web_contents_.get()));
 
-  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
-    if (associated_rph_id_) {
-      if (auto* old_rph =
-              content::RenderProcessHost::FromID(associated_rph_id_)) {
-        AwRenderProcessKeepAlive::GetInstanceForRenderProcessHost(old_rph)
-            ->RemoveAwContents();
-      }
-      associated_rph_id_ = content::ChildProcessId();
+  if (associated_rph_id_) {
+    if (auto* old_rph =
+            content::RenderProcessHost::FromID(associated_rph_id_)) {
+      AwRenderProcessKeepAlive::GetInstanceForRenderProcessHost(old_rph)
+          ->RemoveAwContents();
     }
+    associated_rph_id_ = content::ChildProcessId();
   }
 
   web_contents_->RemoveUserData(kAwContentsUserDataKey);
@@ -1729,9 +1725,7 @@ void LogSiteVisitOnBackgroundThread(int64_t site_hash) {
 }  // namespace
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
-  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
-    UpdateAwRenderProcessAssociation();
-  }
+  UpdateAwRenderProcessAssociation();
   // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
   // triggered by the WebView prerender API to outlive PrimaryPageChanged. See
   // the issue for the context.

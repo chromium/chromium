@@ -395,10 +395,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL,
                 "Enables reduce webview user-agent android version and device model."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_RENDERER_KEEP_ALIVE,
-                "Keeps the renderer process alive after the last WebView is destroyed to "
-                        + "allow for reuse."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREFETCH_ON_RENDERER_REUSE,
                 "Prefetches the native WebView code to memory when renderer is reused."),
         Flag.baseFeature(

@@ -416,14 +416,6 @@ BASE_FEATURE(kWebViewRemoveInstantAppSupport,
 // enabled.
 BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Keeps the renderer process alive after the last WebView is destroyed to
-// allow for reuse.
-BASE_FEATURE(kWebViewRendererKeepAlive, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kWebViewRendererKeepAliveDuration{
-    &kWebViewRendererKeepAlive, "webview_renderer_keep_alive_duration",
-    base::Days(1000)};
-
 // Enables using a single shared gpu::SharedContextState across all
 // OutputSurfaceProviderWebView instances.
 BASE_FEATURE(kWebViewSingleSharedContextState,

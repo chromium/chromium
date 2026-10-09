@@ -8814,10 +8814,21 @@ chromium-metrics-reviews@google.com.
   <owner>ziadyoussef@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the fate of a renderer process that was kept alive pending reuse.
-    Recorded when a renderer enters the pending reuse state, when it is reused
-    by a new WebView, or when the keep-alive timer expires. This metric is only
-    recorded if the WebViewRendererKeepAlive feature is enabled.
+    Records lifecycle transitions of an Android WebView renderer process that is
+    kept alive in the background with no active WebViews so a future WebView can
+    reuse it.
+
+    &quot;Pending reuse&quot; is recorded each time the last active WebView
+    associated with a renderer process is destroyed or navigates away to another
+    process (dropping its active WebView count from 1 to 0). &quot;Reused&quot;
+    is recorded each time a new or navigating WebView attaches to a kept-alive
+    renderer process that currently has 0 active WebViews.
+
+    Not recorded when a newly created or pre-warmed spare renderer is used for
+    the very first time, nor when WebViews attach to or detach from a renderer
+    that still hosts at least one other active WebView. A single renderer
+    process may emit these events multiple times over its lifetime (once per
+    idle-to-reuse cycle).
   </summary>
 </histogram>
 
@@ -8826,10 +8837,17 @@ chromium-metrics-reviews@google.com.
   <owner>ziadyoussef@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the time elapsed from when a renderer process entered the pending
-    reuse state until it was reused by a new WebView. Only recorded if the
-    process was reused before the keep-alive timer expired. This metric is only
-    recorded if the WebViewRendererKeepAlive feature is enabled.
+    Records the time elapsed between when the last active WebView using a
+    renderer process is destroyed (or navigates away to another process, leaving
+    the renderer idle with 0 active WebViews) and when a subsequent WebView
+    re-attaches to that kept-alive renderer process.
+
+    Emitted once per reuse cycle at the moment a WebView attaches to a
+    kept-alive renderer with 0 active WebViews (a single renderer process can
+    emit this multiple times if it is repeatedly emptied and reused). Not
+    emitted on initial renderer creation, when additional WebViews attach to a
+    renderer that already hosts an active WebView, or if an idle renderer is
+    never reused before the app process exits.
   </summary>
 </histogram>
 

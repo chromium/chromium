@@ -9,8 +9,6 @@
 
 #include "android_webview/browser/aw_render_process.h"
 #include "android_webview/common/aw_features.h"
-#include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,7 +25,7 @@ const void* const kAwRenderProcessKeepAliveKey = &kAwRenderProcessKeepAliveKey;
 // LINT.IfChange(RendererKeepAliveEvent)
 enum class RendererKeepAliveEvent {
   kReused = 0,
-  kTimedOut = 1,
+  // kTimedOut = 1,  // Obsolete: renderers are now kept alive indefinitely.
   kPendingReuse = 2,
   kMaxValue = kPendingReuse,
 };
@@ -66,8 +64,8 @@ AwRenderProcessKeepAlive::~AwRenderProcessKeepAlive() = default;
 
 void AwRenderProcessKeepAlive::AddAwContents() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  aw_contents_count_++;
-  if (keep_alive_timer_.IsRunning()) {
+  // A renderer that is kept alive without any AwContents is pending reuse.
+  if (kept_alive_ && aw_contents_count_ == 0) {
     RecordKeepAliveEvent(RendererKeepAliveEvent::kReused);
     base::UmaHistogramLongTimes100(
         "Android.WebView.RendererKeepAlive.TimeToReuse",
@@ -84,7 +82,7 @@ void AwRenderProcessKeepAlive::AddAwContents() {
       }
     }
   }
-  keep_alive_timer_.Stop();
+  aw_contents_count_++;
   if (!kept_alive_) {
     render_process_host_->IncrementPendingReuseRefCount();
     kept_alive_ = true;
@@ -98,19 +96,7 @@ void AwRenderProcessKeepAlive::RemoveAwContents() {
   if (aw_contents_count_ == 0 && kept_alive_) {
     RecordKeepAliveEvent(RendererKeepAliveEvent::kPendingReuse);
     keep_alive_start_time_ = base::TimeTicks::Now();
-    keep_alive_timer_.Start(
-        FROM_HERE, features::kWebViewRendererKeepAliveDuration.Get(),
-        base::BindOnce(&AwRenderProcessKeepAlive::OnKeepAliveTimerFired,
-                       weak_factory_.GetWeakPtr()));
   }
-}
-
-void AwRenderProcessKeepAlive::OnKeepAliveTimerFired() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(kept_alive_);
-  RecordKeepAliveEvent(RendererKeepAliveEvent::kTimedOut);
-  render_process_host_->DecrementPendingReuseRefCount();
-  kept_alive_ = false;
 }
 
 }  // namespace android_webview
