@@ -303,11 +303,23 @@ function fillForm(data) {
       continue;
     }
 
-    // Skip non-empty fields unless:
-    // a) The element's identifier matches |forceFillFieldIdentifier|; or
+    // Skip fields that are already autofilled with the same value (ignoring
+    // whitespace). This prevents re-dispatching synthetic keystroke events when
+    // a site reformats the filled value (e.g. adding spaces to credit card
+    // numbers) and an automatic refill or subsequent fill occurs.
+    if (element.isAutofilled && fieldData.isAutofilled && element.value &&
+        element.value.replace(/\s+/g, '') ===
+            fieldData.value.replace(/\s+/g, '')) {
+      continue;
+    }
+
+    // Skip non-empty fields that were edited by the user unless:
+    // a) The element is focused and force-filled (`shouldBeForceFilled`); or
     // b) The element is a 'select-one' element. 'select-one' elements are
     //    always autofilled; see AutofillManager::FillOrPreviewDataModelForm().
-    // c) The "value" or "placeholder" attributes match the value, if any; or
+    // c) The element's current text (`element.value`) matches its HTML "value"
+    //    or "placeholder" attribute (i.e. default/placeholder text rather than
+    //    real user input); or
     // d) The value has not been set by the user.
     const shouldBeForceFilled = element === document.activeElement;
     if (element.value && fieldWasEditedByUser(element) &&

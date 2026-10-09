@@ -578,6 +578,34 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
                 feature());
         return [has_attribute isEqual:@YES];
       }));
+
+  // Simulate site reformatting the autofilled value with spaces (e.g. credit
+  // card number formatting) and verify that re-filling with the unformatted
+  // value is skipped.
+  ExecuteJavaScript(
+      @"document.getElementById('firstname').value = 'Cool   User';");
+
+  base::DictValue refillData;
+  refillData.Set("formName", "testform");
+  refillData.Set("formRendererID", 1);
+
+  base::DictValue refillFieldsData;
+  base::DictValue refillFirstFieldData;
+  refillFirstFieldData.Set("name", "firstname");
+  refillFirstFieldData.Set("identifier", "firstname");
+  refillFirstFieldData.Set("value", "CoolUser");
+  refillFirstFieldData.Set("isAutofilled", YES);
+  refillFieldsData.Set("2", std::move(refillFirstFieldData));
+  refillData.Set("fields", std::move(refillFieldsData));
+
+  base::test::TestFuture<NSString*> refill_future;
+  feature()->FillForm(main_web_frame(), std::move(refillData),
+                      refill_future.GetCallback());
+  EXPECT_TRUE(refill_future.Wait());
+  EXPECT_NSEQ(@"{}", refill_future.Get());
+  EXPECT_NSEQ(
+      @"Cool   User",
+      ExecuteJavaScript(@"document.getElementById('firstname').value;"));
 }
 
 // Tests that the undo autofill can clear the value and the chrome-autofilled
