@@ -4,9 +4,14 @@
 
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
@@ -18,6 +23,10 @@
 void PrerenderWebContentsDelegateImpl::PrerenderWebContentsCreated(
     content::WebContents* prerender_web_contents) {
   TabHelpers::AttachTabHelpers(prerender_web_contents);
+#if BUILDFLAG(IS_ANDROID)
+  RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
+      prerender_web_contents);
+#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::GetViewType(prerender_web_contents) ==
       extensions::mojom::ViewType::kInvalid) {

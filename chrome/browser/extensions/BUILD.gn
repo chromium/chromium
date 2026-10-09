@@ -692,6 +692,7 @@ source_set("extensions") {
     ]
     deps += [
       "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/content_settings",
       "//chrome/browser/ui/android/tab_model",
     ]
 

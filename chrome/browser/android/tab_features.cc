@@ -28,6 +28,7 @@
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
+#include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
@@ -708,6 +709,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     HistoryClustersTabHelper::CreateForWebContents(
         web_contents, HistoryTabHelper::FromWebContents(web_contents));
   }
+
+  RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
+      web_contents);
 
   resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
       web_contents);

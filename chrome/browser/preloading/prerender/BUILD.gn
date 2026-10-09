@@ -39,6 +39,7 @@ source_set("impl") {
     "//chrome/browser:after_startup_task_utils",
     "//chrome/browser:browser_features",
     "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/content_settings",
     "//chrome/browser/headless",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/preloading",

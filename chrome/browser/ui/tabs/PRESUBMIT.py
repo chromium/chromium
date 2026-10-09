@@ -86,6 +86,13 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # glic::OnGuestAdded, WebUIContentsPreloadManager, and WebUIContentsWrapper,
   # so WebContents must own it.
   'PrefsTabHelper::CreateForWebContents',
+  # RequestDesktopSiteWebContentsObserverAndroid is also attached synchronously
+  # to pre-tab WebContents on Android in ChromeExtensionHostDelegate::CreateTab,
+  # TabWebContentsDelegateAndroid::AddNewContents, and
+  # PrerenderWebContentsDelegateImpl::PrerenderWebContentsCreated before
+  # TabAndroid exists so DidStartNavigation can override the user agent for the
+  # initial load, so the WebContents must own it.
+  'RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents',
   # ResourceCoordinatorTabHelper is also attached directly to WebContents in
   # TabLifecycleUnit for unit tests and stops TabLoadTracker tracking in
   # WebContentsDestroyed() after TabFeatures is destroyed, so WebContents must
