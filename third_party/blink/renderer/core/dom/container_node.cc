@@ -636,9 +636,6 @@ bool ContainerNode::CheckParserAcceptChild(const Node& new_child) const {
 
 void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
   DCHECK(new_child);
-  DCHECK(next_child.parentNode() == this ||
-         (IsA<DocumentFragment>(*this) &&
-          To<DocumentFragment>(*this).IsTemplateContent()));
   DCHECK(!new_child->IsDocumentFragment());
   DCHECK(!IsA<HTMLTemplateElement>(this));
 

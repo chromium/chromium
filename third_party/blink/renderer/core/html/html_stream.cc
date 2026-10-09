@@ -55,6 +55,7 @@ class HTMLSink : public UnderlyingSinkBase {
     CHECK(parser_);
     CHECK(root_insertion_point_);
     if (chunk.V8ValueFor(script_state)->IsSymbol()) {
+      parser_->StopParsing();
       exception_state.ThrowTypeError("Cannot stream symbols into HTML");
       return ToResolvedUndefinedPromise(script_state);
     }
@@ -64,12 +65,14 @@ class HTMLSink : public UnderlyingSinkBase {
         exception_state);
 
     if (exception_state.HadException()) {
+      parser_->StopParsing();
       return ToResolvedUndefinedPromise(script_state);
     }
 
     if (root_insertion_point_->ref_node &&
         root_insertion_point_->ref_node->parentNode() !=
             root_insertion_point_->target) {
+      parser_->StopParsing();
       exception_state.ThrowDOMException(
           DOMExceptionCode::kHierarchyRequestError,
           "The ref_node is no longer a child of the target.");

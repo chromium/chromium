@@ -192,6 +192,9 @@ static String TryCanonicalizeString(const StringView& string,
 
 static inline void Insert(HTMLConstructionSite::InsertionLocation location,
                           Node* child) {
+  if (!location.IsValid()) {
+    return;
+  }
   // https://html.spec.whatwg.org/multipage/parsing.html#appropriate-place-for-inserting-a-node
   // 3. If the adjusted insertion location is inside a template element, let it
   // instead be inside the template element's template contents, after its last
@@ -252,6 +255,10 @@ void HTMLConstructionSite::FlushPendingText() {
 
   InsertionLocation location = AdjustInsertionLocation(
       {pending_text_.parent.Get(), pending_text_.next_child.Get()});
+  if (!location.IsValid()) {
+    pending_text_.Discard();
+    return;
+  }
 
   Text* child = Text::Create(
       location.parent->GetDocument(),
@@ -765,14 +772,6 @@ HTMLConstructionSite::AdjustInsertionLocation(InsertionLocation location) {
       }
       location.parent = parent_item->NextItemInStack()->GetNode();
     }
-
-    // This can happen if the reference node moved right before closing the
-    // stream, and the stream close has some side effects (e.g. <head>
-    // processing). In this case, ignore the reference node and append.
-    if (location.next_child &&
-        location.next_child->parentNode() != location.parent) {
-      location.next_child = nullptr;
-    }
   }
 
   if (location.parent != open_elements_.RootNode() || !root_insertion_point_) {
@@ -1081,6 +1080,9 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
   }
 
   location = AdjustInsertionLocation(location);
+  if (!location.IsValid()) {
+    return;
+  }
   if (auto* template_element =
           DynamicTo<HTMLTemplateElement>(*location.parent)) {
     // If the Document was detached in the middle of parsing, the template
@@ -1150,6 +1152,9 @@ void HTMLConstructionSite::TakeAllChildren(HTMLStackItem* new_parent,
                                            HTMLStackItem* old_parent) {
   InsertionLocation location =
       AdjustInsertionLocation({new_parent->GetNode(), nullptr});
+  if (!location.IsValid()) {
+    return;
+  }
   location.parent->ParserTakeAllChildrenFrom(
       *To<ContainerNode>(old_parent->GetNode()));
 }

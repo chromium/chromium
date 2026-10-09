@@ -67,6 +67,10 @@ class HTMLConstructionSite final {
     STACK_ALLOCATED();
 
    public:
+    bool IsValid() const {
+      return !next_child || next_child->parentNode() == parent;
+    }
+
     ContainerNode* parent = nullptr;
     Node* next_child = nullptr;
   };
