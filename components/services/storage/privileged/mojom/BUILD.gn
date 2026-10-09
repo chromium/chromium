@@ -53,10 +53,10 @@ mojom("mojom") {
   public_deps = [
     ":mojom_webui",
     "//components/services/storage/public/mojom",
-    "//third_party/blink/public/mojom:mojom_core",
+    "//third_party/blink/public/mojom:mojom_modules",
   ]
 
-  overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_modules" ]
 
   component_deps = [ "//third_party/blink/public/common" ]
 }
