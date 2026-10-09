@@ -208,10 +208,10 @@ tabs::TabInterface* DictationKeyedService::GetActiveDictationTab() const {
   return session_ ? session_->tab_.get() : nullptr;
 }
 
-void DictationKeyedService::StartSession(
-    tabs::TabInterface& tab,
-    const TargetDetails& target_details,
-    DictationSessionEntryPoint entry_point) {
+void DictationKeyedService::StartSession(tabs::TabInterface& tab,
+                                         const TargetDetails& target_details,
+                                         DictationSessionEntryPoint entry_point,
+                                         base::TimeTicks trigger_time) {
   CHECK(IsEnabledAndReady());
   CHECK(!session_);
 
@@ -233,7 +233,7 @@ void DictationKeyedService::StartSession(
   session_->controller_.ResetUi();
 
   session_->controller_.StartDictationStream(
-      target_details, DictationStreamStartTrigger::kSessionStart);
+      target_details, DictationStreamStartTrigger::kSessionStart, trigger_time);
 }
 
 void DictationKeyedService::DidCompleteOnboarding(
@@ -244,14 +244,14 @@ void DictationKeyedService::DidCompleteOnboarding(
     return;
   }
   UpdateHotkeyManager();
-  StartSession(tab, target_details, entry_point);
+  StartSession(tab, target_details, entry_point, base::TimeTicks::Now());
 }
 
 void DictationKeyedService::StartSessionForTesting(  // IN-TEST
     tabs::TabInterface& tab,
     const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
-  StartSession(tab, target_details, entry_point);
+  StartSession(tab, target_details, entry_point, base::TimeTicks::Now());
 }
 
 void DictationKeyedService::EndSession() {
@@ -266,6 +266,8 @@ bool DictationKeyedService::ShouldShowContextMenuItem() const {
 void DictationKeyedService::TriggerSession(
     const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
+  const base::TimeTicks trigger_time = base::TimeTicks::Now();
+
   tabs::TabInterface* tab = GetTabFromTargetId(target_details.target_id);
   if (!tab) {
     return;
@@ -273,7 +275,7 @@ void DictationKeyedService::TriggerSession(
 
   if (!session_) {
     VT_LOG(profile_) << "Starting new session";
-    StartSession(*tab, target_details, entry_point);
+    StartSession(*tab, target_details, entry_point, trigger_time);
   } else {
     // Always stop existing stream before starting a new one.
     if (session_->controller_.attached_stream_provider()) {
@@ -301,7 +303,8 @@ void DictationKeyedService::TriggerSession(
         trigger = DictationStreamStartTrigger::kHotkeyToggleExistingSession;
         break;
     }
-    session_->controller_.StartDictationStream(target_details, trigger);
+    session_->controller_.StartDictationStream(target_details, trigger,
+                                               trigger_time);
   }
 }
 

@@ -434,7 +434,8 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   // Start a second stream while the first is finalizing. The controller should
   // immediately enter kStreamInitializing.
   controller->StartDictationStream(DefaultInPageTarget(web_contents()),
-                                   DictationStreamStartTrigger::kSessionStart);
+                                   DictationStreamStartTrigger::kSessionStart,
+                                   base::TimeTicks::Now());
   EXPECT_EQ(controller->GetState(), SessionState::kStreamInitializing);
 
   // Wait for the stream to enter transcribing state.

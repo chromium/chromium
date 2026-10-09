@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/local_hotkey_manager.h"
@@ -137,7 +138,8 @@ class DictationKeyedService : public KeyedService,
   // progress.
   void StartSession(tabs::TabInterface& tab,
                     const TargetDetails& target_details,
-                    DictationSessionEntryPoint entry_point);
+                    DictationSessionEntryPoint entry_point,
+                    base::TimeTicks trigger_time);
 
   void OnPrefChanged();
   void UpdateHotkeyManager();

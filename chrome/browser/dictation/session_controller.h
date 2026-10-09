@@ -74,7 +74,8 @@ class SessionController : public SessionUiDelegate,
   // provider. An existing stream must have been detached before calling this
   // method.
   void StartDictationStream(const TargetDetails& target_details,
-                            DictationStreamStartTrigger trigger);
+                            DictationStreamStartTrigger trigger,
+                            base::TimeTicks trigger_time);
 
   // Ends the current dictation stream and detaches the stream provider.
   void EndDictationStream(DictationStreamEndTrigger trigger);
@@ -122,6 +123,10 @@ class SessionController : public SessionUiDelegate,
       session_state_changed_callback_list_;
 
   std::optional<TargetDetails> last_used_target_details_;
+
+  // When the user action that started the current stream happened. Used to
+  // record VoiceTyping.StreamStartLatency.
+  base::TimeTicks stream_trigger_time_;
 
   // Timer for delayed session shutdown when `kSessionEndsOnStreamEnd` is
   // enabled.

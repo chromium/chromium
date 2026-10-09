@@ -142,7 +142,7 @@ class DictationSessionUiImplBrowserTest
   auto StartDictationStream(DictationStreamStartTrigger trigger) {
     return Do([this, trigger]() {
       dictation_service().session_controller()->StartDictationStream(
-          DefaultInPageTarget(web_contents()), trigger);
+          DefaultInPageTarget(web_contents()), trigger, base::TimeTicks::Now());
     });
   }
 

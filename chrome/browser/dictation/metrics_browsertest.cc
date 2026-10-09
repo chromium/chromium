@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dictation/metrics.h"
 
+#include <vector>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
@@ -163,6 +165,41 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kStreamExitReasonHistogramName,
                                       DictationStreamExitStatus::kUserDone, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordStreamStartLatencyOnTranscribing) {
+  base::HistogramTester histogram_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  ExtensionWaitForStreamStart(profile(),
+                              attached_stream()->stream_id_for_testing());
+  histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
+
+  ExtensionSendStreamStateUpdate(
+      profile(), attached_stream()->stream_id_for_testing(),
+      extensions::api::dictation_private::StreamState::kTranscribing);
+  WaitForSessionState(SessionState::kTranscribing);
+
+  histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 1);
+
+  // The recorded latency should be non-zero.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples(kStreamStartLatencyHistogramName);
+  ASSERT_EQ(buckets.size(), 1u);
+  EXPECT_GT(buckets[0].min, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       NoStreamStartLatencyIfEndedBeforeTranscribing) {
+  base::HistogramTester histogram_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  session_controller()->UiRequestEndActiveStream();
+
+  histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,

@@ -94,7 +94,8 @@ void SessionController::ResetUi() {
 
 void SessionController::StartDictationStream(
     const TargetDetails& target_details,
-    DictationStreamStartTrigger trigger) {
+    DictationStreamStartTrigger trigger,
+    base::TimeTicks trigger_time) {
   VT_LOG(GetBrowserContext())
       << "Starting DictationStream on target " << target_details.target_id;
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
@@ -114,6 +115,7 @@ void SessionController::StartDictationStream(
       target_details.target_id.document.AsRenderFrameHostIfValid()));
 
   RecordDictationStreamStartTrigger(trigger);
+  stream_trigger_time_ = trigger_time;
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
@@ -236,7 +238,7 @@ void SessionController::OnFocusChangedInPage(
         TargetDetails(
             newly_focused_target_id,
             details.editable_level == content::EditableLevel::kRichlyEditable),
-        DictationStreamStartTrigger::kFocusChange);
+        DictationStreamStartTrigger::kFocusChange, base::TimeTicks::Now());
   }
 }
 
@@ -316,7 +318,8 @@ void SessionController::UiRequestStartStream() {
   CHECK(last_used_target_details_.has_value());
 
   StartDictationStream(*last_used_target_details_,
-                       DictationStreamStartTrigger::kStartButton);
+                       DictationStreamStartTrigger::kStartButton,
+                       base::TimeTicks::Now());
 }
 
 SessionState SessionController::GetState() const {
@@ -424,7 +427,17 @@ void SessionController::MoveToState(SessionState new_state) {
   DCHECK_STATE_TRANSITION(allowed_transitions, /*old_state=*/state_,
                           /*new_state=*/new_state);
 #endif  // DCHECK_IS_ON()
+  const SessionState old_state = state_;
   state_ = new_state;
+
+  if (old_state == kStreamInitializing && new_state == kTranscribing) {
+    const base::TimeDelta latency =
+        base::TimeTicks::Now() - stream_trigger_time_;
+    VT_LOG(GetBrowserContext())
+        << "Stream start latency: " << latency.InMilliseconds() << "ms";
+    RecordDictationStreamStartLatency(latency);
+  }
+
   session_state_changed_callback_list_.Notify(new_state);
 
   if (state_ == SessionState::kInactive && is_shutting_down_) {
