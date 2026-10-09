@@ -397,4 +397,26 @@ RecordLegalReminderAcknowledgmentRequestDetails::operator=(
 RecordLegalReminderAcknowledgmentRequestDetails::
     ~RecordLegalReminderAcknowledgmentRequestDetails() = default;
 
+GetDataForAgentRequestDetails::GetDataForAgentRequestDetails() = default;
+GetDataForAgentRequestDetails::GetDataForAgentRequestDetails(
+    const GetDataForAgentRequestDetails& other) = default;
+GetDataForAgentRequestDetails& GetDataForAgentRequestDetails::operator=(
+    const GetDataForAgentRequestDetails& other) = default;
+GetDataForAgentRequestDetails::GetDataForAgentRequestDetails(
+    GetDataForAgentRequestDetails&&) = default;
+GetDataForAgentRequestDetails& GetDataForAgentRequestDetails::operator=(
+    GetDataForAgentRequestDetails&&) = default;
+GetDataForAgentRequestDetails::~GetDataForAgentRequestDetails() = default;
+
+GetDataForAgentResponseDetails::GetDataForAgentResponseDetails() = default;
+GetDataForAgentResponseDetails::GetDataForAgentResponseDetails(
+    const GetDataForAgentResponseDetails& other) = default;
+GetDataForAgentResponseDetails& GetDataForAgentResponseDetails::operator=(
+    const GetDataForAgentResponseDetails& other) = default;
+GetDataForAgentResponseDetails::GetDataForAgentResponseDetails(
+    GetDataForAgentResponseDetails&&) = default;
+GetDataForAgentResponseDetails& GetDataForAgentResponseDetails::operator=(
+    GetDataForAgentResponseDetails&&) = default;
+GetDataForAgentResponseDetails::~GetDataForAgentResponseDetails() = default;
+
 }  // namespace autofill::payments

@@ -67,6 +67,13 @@ class MockMultipleRequestPaymentsNetworkInterface
       (const UpdateCardRequestDetails&,
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>),
       (override));
+  MOCK_METHOD(
+      RequestId,
+      GetDataForAgent,
+      (const GetDataForAgentRequestDetails&,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               const GetDataForAgentResponseDetails&)>),
+      (override));
 };
 
 }  // namespace autofill::payments

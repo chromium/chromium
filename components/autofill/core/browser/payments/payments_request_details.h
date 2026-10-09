@@ -754,6 +754,43 @@ struct RecordLegalReminderAcknowledgmentRequestDetails {
   FlowType flow_type = FlowType::kUnknown;
 };
 
+// Details for a request to retrieve the card credentials that Google Payments
+// associated with an opaque token.
+struct GetDataForAgentRequestDetails {
+  GetDataForAgentRequestDetails();
+  GetDataForAgentRequestDetails(const GetDataForAgentRequestDetails& other);
+  GetDataForAgentRequestDetails& operator=(
+      const GetDataForAgentRequestDetails& other);
+  GetDataForAgentRequestDetails(GetDataForAgentRequestDetails&&);
+  GetDataForAgentRequestDetails& operator=(GetDataForAgentRequestDetails&&);
+  ~GetDataForAgentRequestDetails();
+
+  // The single-use opaque token issued by Google Payments. Chrome must not
+  // interpret or modify it.
+  std::string opaque_token;
+  // The Chrome locale.
+  std::string app_locale;
+};
+
+// The card credentials returned by a GetDataForAgent request.
+struct GetDataForAgentResponseDetails {
+  GetDataForAgentResponseDetails();
+  GetDataForAgentResponseDetails(const GetDataForAgentResponseDetails& other);
+  GetDataForAgentResponseDetails& operator=(
+      const GetDataForAgentResponseDetails& other);
+  GetDataForAgentResponseDetails(GetDataForAgentResponseDetails&&);
+  GetDataForAgentResponseDetails& operator=(GetDataForAgentResponseDetails&&);
+  ~GetDataForAgentResponseDetails();
+
+  std::string card_number;
+  // May be empty because Google Payments does not have a CVC for every card.
+  std::string cvc;
+  // The expiration month (1-12).
+  int expiration_month = 0;
+  // The four-digit expiration year.
+  int expiration_year = 0;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

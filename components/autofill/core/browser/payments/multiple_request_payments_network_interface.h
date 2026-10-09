@@ -90,6 +90,13 @@ class MultipleRequestPaymentsNetworkInterface
       const UpdateCardRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
           callback);
+
+  // Retrieves the card credentials that Google Payments associated with the
+  // opaque token in `request_details`.
+  virtual RequestId GetDataForAgent(
+      const GetDataForAgentRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const GetDataForAgentResponseDetails&)> callback);
 };
 
 }  // namespace autofill::payments

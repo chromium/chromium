@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/create_card_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_data_for_agent_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_update_card_request.h"
@@ -97,6 +98,14 @@ RequestId MultipleRequestPaymentsNetworkInterface::UpdateCard(
         callback) {
   return IssueRequest(std::make_unique<UpdateCardRequest>(request_details,
                                                           std::move(callback)));
+}
+
+RequestId MultipleRequestPaymentsNetworkInterface::GetDataForAgent(
+    const GetDataForAgentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult,
+                            const GetDataForAgentResponseDetails&)> callback) {
+  return IssueRequest(std::make_unique<GetDataForAgentRequest>(
+      request_details, std::move(callback)));
 }
 
 }  // namespace autofill::payments
