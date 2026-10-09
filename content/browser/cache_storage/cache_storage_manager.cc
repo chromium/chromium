@@ -66,11 +66,8 @@ void DeleteBucketDidDeleteDir(
 
 void DidDeleteAllBuckets(
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
-    bool enumeration_succeeded,
     std::vector<blink::mojom::QuotaStatusCode> results) {
-  auto status = enumeration_succeeded
-                    ? blink::mojom::QuotaStatusCode::kOk
-                    : blink::mojom::QuotaStatusCode::kErrorAbort;
+  auto status = blink::mojom::QuotaStatusCode::kOk;
   for (auto result : results) {
     if (result != blink::mojom::QuotaStatusCode::kOk) {
       status = result;
@@ -80,51 +77,6 @@ void DidDeleteAllBuckets(
   // On scheduler sequence.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), status));
-}
-
-void DidDoomAllCaches(
-    CacheStorageHandle cache_storage,
-    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
-    std::vector<blink::mojom::CacheStorageError> results) {
-  auto status = blink::mojom::QuotaStatusCode::kOk;
-  for (auto result : results) {
-    if (result != blink::mojom::CacheStorageError::kSuccess &&
-        result != blink::mojom::CacheStorageError::kErrorNotFound) {
-      status = blink::mojom::QuotaStatusCode::kErrorAbort;
-      break;
-    }
-  }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), status));
-}
-
-void DoomCachesForOrigin(
-    CacheStorageHandle cache_storage,
-    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
-    std::vector<std::u16string> cache_names,
-    blink::mojom::CacheStorageError error) {
-  if (error != blink::mojom::CacheStorageError::kSuccess) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  blink::mojom::QuotaStatusCode::kErrorAbort));
-    return;
-  }
-  if (cache_names.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  blink::mojom::QuotaStatusCode::kOk));
-    return;
-  }
-
-  auto* storage = CacheStorage::From(cache_storage);
-  const auto barrier_callback =
-      base::BarrierCallback<blink::mojom::CacheStorageError>(
-          cache_names.size(),
-          base::BindOnce(&DidDoomAllCaches, std::move(cache_storage),
-                         std::move(callback)));
-  for (const std::u16string& cache_name : cache_names) {
-    storage->DoomCache(cache_name, /*trace_id=*/0, barrier_callback);
-  }
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -178,32 +130,30 @@ base::FilePath ConstructOriginPath(const base::FilePath& profile_path,
   return first_party_default_root_path.AppendASCII(origin_hash_hex);
 }
 
-bool ValidateAndAddBucketFromPath(
+void ValidateAndAddBucketFromPath(
     const base::FilePath& index_file_directory_path,
     storage::mojom::CacheStorageOwner owner,
     const base::FilePath& profile_path,
     std::vector<storage::BucketLocator>& buckets,
     bool is_origin_path = false) {
   if (!base::PathExists(index_file_directory_path)) {
-    return true;
+    return;
   }
   base::FilePath index_path =
       index_file_directory_path.AppendASCII(CacheStorage::kIndexFileName);
   std::string protobuf;
-  if (!base::ReadFileToString(index_path, &protobuf)) {
-    return base::IsDirectoryEmpty(index_file_directory_path);
-  }
+  base::ReadFileToString(index_path, &protobuf);
 
   proto::CacheStorageIndex index;
   if (!index.ParseFromString(protobuf)) {
     RecordIndexValidationResult(IndexResult::kFailedToParse);
-    return false;
+    return;
   }
 
   IndexResult rv = ValidateIndex(index);
   if (rv != IndexResult::kOk) {
     RecordIndexValidationResult(rv);
-    return false;
+    return;
   }
 
   blink::StorageKey storage_key;
@@ -212,7 +162,7 @@ bool ValidateAndAddBucketFromPath(
         blink::StorageKey::Deserialize(index.storage_key());
     if (!result) {
       RecordIndexValidationResult(IndexResult::kInvalidStorageKey);
-      return false;
+      return;
     }
     storage_key = result.value();
   } else {
@@ -272,19 +222,15 @@ bool ValidateAndAddBucketFromPath(
       auto other_owner_path = CacheStorageManager::ConstructBucketPath(
           profile_path, bucket_locator, other_owner);
       if (index_file_directory_path == other_owner_path) {
-        return true;
+        return;
       }
     }
     RecordIndexValidationResult(IndexResult::kPathMismatch);
-    return false;
+    return;
   }
 
-  // An index with no caches has no visible origin data to report.
-  if (index.cache_size() > 0) {
-    buckets.emplace_back(bucket_locator);
-  }
+  buckets.emplace_back(bucket_locator);
   RecordIndexValidationResult(IndexResult::kOk);
-  return true;
 }
 
 // Open the various cache directories' index files and extract their bucket
@@ -294,11 +240,7 @@ void GetBucketsFromDiskOnTaskRunner(
     std::vector<storage::BucketLocator> buckets,
     base::FilePath profile_path,
     storage::mojom::CacheStorageOwner owner,
-    base::OnceCallback<void(bool, std::vector<storage::BucketLocator>)>
-        callback) {
-  // Invalid indexes may hide matching buckets. Continue collecting readable
-  // indexes, but report that origin deletion could not enumerate all data.
-  bool success = true;
+    base::OnceCallback<void(std::vector<storage::BucketLocator>)> callback) {
   // Add entries to `buckets` from the directory for default buckets
   // corresponding to first-party contexts.
   {
@@ -311,8 +253,8 @@ void GetBucketsFromDiskOnTaskRunner(
 
     base::FilePath path;
     while (!(path = file_enum.Next()).empty()) {
-      success &= ValidateAndAddBucketFromPath(
-          path, owner, profile_path, buckets, true /* is_origin_path */);
+      ValidateAndAddBucketFromPath(path, owner, profile_path, buckets,
+                                   true /* is_origin_path */);
     }
   }
 
@@ -334,15 +276,14 @@ void GetBucketsFromDiskOnTaskRunner(
       if (!base::PathExists(cache_storage_path)) {
         continue;
       }
-      success &= ValidateAndAddBucketFromPath(cache_storage_path, owner,
-                                              profile_path, buckets);
+      ValidateAndAddBucketFromPath(cache_storage_path, owner, profile_path,
+                                   buckets);
     }
   }
 
   // Don't attempt to resolve any missing bucket IDs.
   scheduler_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), success, std::move(buckets)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(buckets)));
   return;
 }
 
@@ -585,9 +526,7 @@ void CacheStorageManager::GetStorageKeys(
         continue;
       }
 
-      if (key_value.second->HasCaches()) {
-        storage_keys.push_back(bucket_locator.storage_key);
-      }
+      storage_keys.push_back(bucket_locator.storage_key);
     }
 
     scheduler_task_runner_->PostTask(
@@ -603,47 +542,47 @@ void CacheStorageManager::GetStorageKeys(
           &GetBucketsFromDiskOnTaskRunner,
           base::WrapRefCounted(scheduler_task_runner_.get()),
           std::move(buckets), profile_path_, owner,
-          base::IgnoreArgs<bool>(base::BindOnce(
-              &CacheStorageManager::ListStorageKeysOnTaskRunner,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback)))));
+          base::BindOnce(&CacheStorageManager::ListStorageKeysOnTaskRunner,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void CacheStorageManager::DeleteOriginsDataGotAllBucketInfo(
     const std::set<url::Origin>& origins,
     storage::mojom::CacheStorageOwner owner,
     base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback,
-    bool enumeration_succeeded,
     std::vector<storage::BucketLocator> buckets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (buckets.empty()) {
     scheduler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       enumeration_succeeded
-                           ? blink::mojom::QuotaStatusCode::kOk
-                           : blink::mojom::QuotaStatusCode::kErrorAbort));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::mojom::QuotaStatusCode::kOk));
     return;
   }
 
   const auto barrier_callback =
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(
           buckets.size(),
-          base::BindOnce(&DidDeleteAllBuckets, std::move(callback),
-                         enumeration_succeeded));
+          base::BindOnce(&DidDeleteAllBuckets, std::move(callback)));
 
   for (const storage::BucketLocator& bucket_locator : buckets) {
     if (!BucketMatchesOriginsForDeletion(bucket_locator, origins)) {
       barrier_callback.Run(blink::mojom::QuotaStatusCode::kOk);
       continue;
     }
-    CacheStorageHandle cache_storage = OpenCacheStorage(bucket_locator, owner);
-    // Keep the bucket directory and index: existing doomed cache handles and
-    // subsequent CacheStorage operations can still use this instance.
-    CacheStorage::From(cache_storage)
-        ->EnumerateCaches(
-            /*trace_id=*/0,
-            base::BindOnce(&DoomCachesForOrigin, std::move(cache_storage),
-                           barrier_callback));
+    if (!bucket_locator.is_null()) {
+      // The bucket locator is fully formed, so use the same steps to delete as
+      // `DeleteBucketData()`.
+      DeleteBucketDataDidGetExists(owner, barrier_callback, bucket_locator,
+                                   /*exists=*/true);
+    } else {
+      // This must be for an unmigrated cache storage instance using an origin
+      // path, so just directly delete the directory.
+      cache_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&DeleteDir, CacheStorageManager::ConstructBucketPath(
+                                         profile_path_, bucket_locator, owner)),
+          base::BindOnce(&DeleteBucketDidDeleteDir, barrier_callback));
+    }
   }
 }
 
@@ -674,7 +613,7 @@ void CacheStorageManager::DeleteOriginData(
       to_delete.emplace_back(key_value.first.first);
     }
 
-    DeleteOriginsDataGotAllBucketInfo(origins, owner, std::move(callback), true,
+    DeleteOriginsDataGotAllBucketInfo(origins, owner, std::move(callback),
                                       std::move(to_delete));
     return;
   }

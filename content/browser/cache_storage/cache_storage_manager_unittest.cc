@@ -33,7 +33,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -322,10 +321,8 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   void CacheMetadataCallback(base::RunLoop* run_loop,
-                             std::vector<std::u16string> cache_names,
-                             CacheStorageError error) {
+                             std::vector<std::u16string> cache_names) {
     cache_names_ = std::move(cache_names);
-    callback_error_ = error;
     run_loop->Quit();
   }
 
@@ -2684,8 +2681,6 @@ TEST_P(CacheStorageManagerTestP, BatchDeleteOriginData) {
   ASSERT_OK_AND_ASSIGN(
       const auto partitioned_default_bucket_locator1,
       GetOrCreateBucket(partitioned_storage_key1, storage::kDefaultBucketName));
-  ASSERT_OK_AND_ASSIGN(const auto named_bucket_locator1,
-                       GetOrCreateBucket(storage_key1_, "named"));
 
   GURL test_url = GURL("http://example.com/foo");
 
@@ -2701,9 +2696,6 @@ TEST_P(CacheStorageManagerTestP, BatchDeleteOriginData) {
     EXPECT_TRUE(Open(partitioned_default_bucket_locator1, u"baz", owner));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
-    EXPECT_TRUE(Open(named_bucket_locator1, u"named", owner));
-    EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
-
     EXPECT_EQ(3ULL, GetStorageKeys(owner).size());
 
     std::set<url::Origin> to_delete = {storage_key1_.origin(),
@@ -2714,130 +2706,7 @@ TEST_P(CacheStorageManagerTestP, BatchDeleteOriginData) {
 
     auto storage_keys = GetStorageKeys(owner);
     EXPECT_EQ(0ULL, storage_keys.size());
-    EXPECT_FALSE(Has(named_bucket_locator1, u"named", owner));
   }
-}
-
-TEST_P(CacheStorageManagerTestP, DeleteOriginDataKeepsOpenCacheUsable) {
-  const GURL test_url("http://example.com/foo");
-  ASSERT_TRUE(Open(bucket_locator1_, u"foo"));
-  ASSERT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
-  CacheStorageCacheHandle open_handle = callback_cache_handle_.Clone();
-
-  EXPECT_EQ(DeleteOriginData({storage_key1_.origin()}),
-            blink::mojom::QuotaStatusCode::kOk);
-
-  // Origin removal should hide the cache from new lookups without invalidating
-  // a cache handle that was already handed to a renderer.
-  ASSERT_TRUE(open_handle.value());
-  EXPECT_TRUE(CacheMatch(open_handle.value(), test_url));
-  EXPECT_TRUE(GetStorageKeys().empty());
-  EXPECT_FALSE(Has(bucket_locator1_, u"foo"));
-
-  if (!MemoryOnly()) {
-    const auto bucket_path = CacheStorageManager::ConstructBucketPath(
-        temp_dir_.GetPath(), bucket_locator1_,
-        storage::mojom::CacheStorageOwner::kCacheAPI);
-    EXPECT_TRUE(base::PathExists(
-        bucket_path.AppendASCII(CacheStorage::kIndexFileName)));
-  }
-
-  const GURL new_url("http://example.com/bar");
-  ASSERT_TRUE(Open(bucket_locator1_, u"foo"));
-  ASSERT_TRUE(CachePut(callback_cache_handle_.value(), new_url));
-  open_handle = CacheStorageCacheHandle();
-  EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(), new_url));
-  EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(), test_url));
-}
-
-TEST_P(CacheStorageManagerTestP, DeleteOriginDataUpdatesQuotaOnce) {
-  ASSERT_TRUE(Open(bucket_locator1_, u"foo"));
-  ASSERT_TRUE(
-      CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    return quota_manager_proxy_->notify_bucket_modified_count() > 0;
-  }));
-  const int notifications_before_delete =
-      quota_manager_proxy_->notify_bucket_modified_count();
-  const int64_t usage_before_delete = GetQuotaKeyUsage(storage_key1_);
-  ASSERT_GT(usage_before_delete, 0);
-
-  CacheStorageCacheHandle open_handle = std::move(callback_cache_handle_);
-  EXPECT_EQ(DeleteOriginData({storage_key1_.origin()}),
-            blink::mojom::QuotaStatusCode::kOk);
-  EXPECT_EQ(notifications_before_delete,
-            quota_manager_proxy_->notify_bucket_modified_count());
-
-  open_handle = CacheStorageCacheHandle();
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    return quota_manager_proxy_->notify_bucket_modified_count() >
-           notifications_before_delete;
-  }));
-  EXPECT_EQ(notifications_before_delete + 1,
-            quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_EQ(0, GetQuotaKeyUsage(storage_key1_));
-}
-
-TEST_F(CacheStorageManagerTest, EmptyIndexDoesNotListOrigin) {
-  const base::FilePath bucket_path = CacheStorageManager::ConstructBucketPath(
-      temp_dir_.GetPath(), bucket_locator1_,
-      storage::mojom::CacheStorageOwner::kCacheAPI);
-  ASSERT_TRUE(base::CreateDirectory(bucket_path));
-
-  proto::CacheStorageIndex index;
-  index.set_origin(storage_key1_.origin().GetURL().spec());
-  index.set_storage_key(storage_key1_.Serialize());
-  index.set_bucket_id(bucket_locator1_.id.value());
-  index.set_bucket_is_default(bucket_locator1_.is_default);
-  std::string serialized;
-  ASSERT_TRUE(index.SerializeToString(&serialized));
-  ASSERT_TRUE(base::WriteFile(
-      bucket_path.AppendASCII(CacheStorage::kIndexFileName), serialized));
-
-  EXPECT_TRUE(GetStorageKeys().empty());
-}
-
-TEST_F(CacheStorageManagerTest, DeleteOriginDataReportsCorruptIndex) {
-  ASSERT_TRUE(Open(bucket_locator2_, u"bar"));
-  const auto bucket_path = CacheStorageManager::ConstructBucketPath(
-      temp_dir_.GetPath(), bucket_locator1_,
-      storage::mojom::CacheStorageOwner::kCacheAPI);
-  ASSERT_TRUE(base::CreateDirectory(bucket_path));
-  ASSERT_TRUE(base::WriteFile(
-      bucket_path.AppendASCII(CacheStorage::kIndexFileName), "invalid index"));
-
-  EXPECT_EQ(DeleteOriginData({storage_key1_.origin(), storage_key2_.origin()}),
-            blink::mojom::QuotaStatusCode::kErrorAbort);
-  EXPECT_FALSE(Has(bucket_locator2_, u"bar"));
-}
-
-TEST_F(CacheStorageManagerTest, DeleteOriginDataReportsIndexLoadError) {
-  const auto bucket_path = CacheStorageManager::ConstructBucketPath(
-      temp_dir_.GetPath(), bucket_locator1_,
-      storage::mojom::CacheStorageOwner::kCacheAPI);
-  ASSERT_TRUE(base::CreateDirectory(bucket_path));
-
-  proto::CacheStorageIndex index;
-  index.set_origin(storage_key1_.origin().GetURL().spec());
-  index.set_storage_key(storage_key1_.Serialize());
-  index.set_bucket_id(bucket_locator1_.id.value());
-  index.set_bucket_is_default(bucket_locator1_.is_default);
-  // This legacy cache cannot be migrated because its directory is missing.
-  index.add_cache()->set_name("foo");
-  std::string serialized;
-  ASSERT_TRUE(index.SerializeToString(&serialized));
-  ASSERT_TRUE(base::WriteFile(
-      bucket_path.AppendASCII(CacheStorage::kIndexFileName), serialized));
-
-  EXPECT_EQ(DeleteOriginData({storage_key1_.origin()}),
-            blink::mojom::QuotaStatusCode::kErrorAbort);
-  EXPECT_EQ(0u, Keys(bucket_locator1_));
-  EXPECT_EQ(CacheStorageError::kErrorStorage, callback_error_);
-
-  // A successful index write recovers the storage from the load error.
-  ASSERT_TRUE(Open(bucket_locator1_, u"bar"));
-  EXPECT_EQ(1u, Keys(bucket_locator1_));
-  EXPECT_EQ(CacheStorageError::kSuccess, callback_error_);
 }
 
 TEST_F(CacheStorageManagerMemoryOnlyTest, DeleteBucketData) {

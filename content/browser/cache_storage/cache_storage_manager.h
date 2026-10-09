@@ -147,7 +147,6 @@ class CONTENT_EXPORT CacheStorageManager
       const std::set<url::Origin>& origins,
       storage::mojom::CacheStorageOwner owner,
       base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback,
-      bool enumeration_succeeded,
       std::vector<storage::BucketLocator> buckets);
 
   void GetBucketUsageDidGetExists(
