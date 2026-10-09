@@ -386,6 +386,61 @@ TEST_F(ShapeResultRunTest, NestedCompactRangesMatchFullStorage) {
   }
 }
 
+TEST_F(ShapeResultRunTest, CompactReadShortcutsDoNotMaterialize) {
+  ShapeResultRun* full_run = CreateConstantAdvanceRun(8, 8);
+  full_run->start_index_ = 5;
+
+  ShapeResultRun* compact_run = MakeGarbageCollected<ShapeResultRun>(*full_run);
+  ASSERT_TRUE(compact_run->glyph_data_.TryMakeCompact());
+
+  for (unsigned i = 0; i < 8; ++i) {
+    EXPECT_EQ(5u + i, compact_run->GlyphToCharacterIndex(i));
+  }
+
+  constexpr float kTargetPositions[] = {0.0f,  1.0f,  9.0f,  10.0f,
+                                        11.0f, 39.0f, 79.0f, 80.0f};
+  for (bool break_glyphs : {false, true}) {
+    for (float target_x : kTargetPositions) {
+      GlyphIndexResult expected;
+      GlyphIndexResult actual;
+      full_run->CharacterIndexForXPosition(
+          target_x, BreakGlyphsOption(break_glyphs), &expected);
+      compact_run->CharacterIndexForXPosition(
+          target_x, BreakGlyphsOption(break_glyphs), &actual);
+      EXPECT_EQ(expected.left_character_index, actual.left_character_index);
+      EXPECT_EQ(expected.right_character_index, actual.right_character_index);
+      EXPECT_FLOAT_EQ(expected.origin_x, actual.origin_x);
+      EXPECT_FLOAT_EQ(expected.advance, actual.advance);
+    }
+  }
+
+  for (unsigned i = 0; i < 8; ++i) {
+    full_run->glyph_data_.MutableGlyphAt(i).SetAdvance(0);
+  }
+  full_run->width_ = 0;
+  ShapeResultRun* compact_zero_advance_run =
+      MakeGarbageCollected<ShapeResultRun>(*full_run);
+  ASSERT_TRUE(compact_zero_advance_run->glyph_data_.TryMakeCompact());
+  GlyphIndexResult expected_zero_advance;
+  GlyphIndexResult actual_zero_advance;
+  full_run->CharacterIndexForXPosition(0, BreakGlyphsOption(true),
+                                       &expected_zero_advance);
+  compact_zero_advance_run->CharacterIndexForXPosition(
+      0, BreakGlyphsOption(true), &actual_zero_advance);
+  EXPECT_EQ(expected_zero_advance.left_character_index,
+            actual_zero_advance.left_character_index);
+  EXPECT_EQ(expected_zero_advance.right_character_index,
+            actual_zero_advance.right_character_index);
+  EXPECT_FLOAT_EQ(expected_zero_advance.origin_x, actual_zero_advance.origin_x);
+  EXPECT_FLOAT_EQ(expected_zero_advance.advance, actual_zero_advance.advance);
+
+#if DCHECK_IS_ON()
+  compact_run->CheckConsistency();
+#endif
+  EXPECT_TRUE(compact_run->glyph_data_.IsCompact());
+  EXPECT_TRUE(compact_zero_advance_run->glyph_data_.IsCompact());
+}
+
 TEST_F(ShapeResultRunTest, CompactCopyMaterializesIndependently) {
   ShapeResultRun* run = CreateCompactRun(8, 8);
   run->glyph_data_.SetOffsetAt(3, GlyphOffset(1, 2));

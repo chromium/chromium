@@ -733,6 +733,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
 #endif
 
  private:
+  void CharacterIndexForXPositionCompact(float target_x,
+                                         GlyphIndexResult* result) const;
+
   friend class GlyphDataRange;
   friend class HarfBuzzShaper;
   friend class ShapeResult;

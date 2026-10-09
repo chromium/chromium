@@ -382,11 +382,50 @@ float ShapeResultRun::XPositionForOffset(
 // that space. @break_glyphs controls whether we use grapheme information
 // to break glyphs into grapheme clusters and return character that are a part
 // of a glyph.
+void ShapeResultRun::CharacterIndexForXPositionCompact(
+    float target_x,
+    GlyphIndexResult* result) const {
+  const unsigned num_glyphs = glyph_data_.size();
+  const TextRunLayoutUnit advance = glyph_data_.CompactAdvance();
+  const int64_t advance_raw = advance.RawValue();
+  const float advance_float = advance.ToFloat();
+  // Fixed-point products keep this path constant-time and match glyph
+  // positions. The full-storage path instead sums floats, so materializing a
+  // fractional-advance run can change hit-testing near boundaries, with larger
+  // differences on long runs. We intentionally do not reproduce that drift.
+  const auto position_for_glyph = [advance_raw](unsigned index) {
+    return InlineLayoutUnit::FromRawValue(advance_raw * index).ToFloat();
+  };
+  CHECK_GT(num_glyphs, 0u);
+  unsigned glyph_index = num_glyphs - 1;
+  if (advance_float > 0) {
+    glyph_index = std::min(static_cast<unsigned>(target_x / advance_float),
+                           num_glyphs - 1);
+    // Correct the float estimate against exact fixed-point positions.
+    if (glyph_index && position_for_glyph(glyph_index) > target_x) {
+      --glyph_index;
+    } else if (glyph_index + 1 < num_glyphs &&
+               position_for_glyph(glyph_index + 1) <= target_x) {
+      ++glyph_index;
+    }
+  }
+  result->left_character_index = glyph_index;
+  result->right_character_index = glyph_index + 1;
+  result->origin_x = position_for_glyph(glyph_index);
+  result->advance = advance_float;
+}
+
 void ShapeResultRun::CharacterIndexForXPosition(
     float target_x,
     BreakGlyphsOption break_glyphs,
     GlyphIndexResult* result) const {
   DCHECK(target_x >= 0 && target_x <= width_);
+
+  if (glyph_data_.IsCompact()) [[unlikely]] {
+    CharacterIndexForXPositionCompact(target_x, result);
+    return;
+  }
+  const auto& glyphs = glyph_data_.NonCompactGlyphs();
 
   result->origin_x = 0;
   wtf_size_t glyph_sequence_start = 0;
@@ -398,8 +437,7 @@ void ShapeResultRun::CharacterIndexForXPosition(
     glyph_sequence_start = glyph_sequence_end = num_characters_;
   }
 
-  for (const HarfBuzzRunGlyphData& glyph_data :
-       glyph_data_.NonCompactGlyphs()) {
+  for (const HarfBuzzRunGlyphData& glyph_data : glyphs) {
     wtf_size_t current_glyph_char_index = glyph_data.character_index;
     // If the glyph is part of the same sequence, we just accumulate the
     // advance.
