@@ -11,23 +11,24 @@
 
 @class BackgroundContinuedProcessingTaskConfiguration;
 @class BackgroundContinuedProcessingTaskContext;
+@protocol BackgroundContinuedProcessingTaskProvider;
 
 // An app agent that manages background continued processing tasks.
 // Coordinates scheduling with `BGTaskScheduler` and provides context handles
 // to callers for tracking progress, system-provided Live Activity updates, and
-// expiration handling. `requestTaskWithIdentifier:configuration:` must be
-// called while at least one scene is in the foreground
-// (`SceneActivationLevelForegroundActive` or
-// `SceneActivationLevelForegroundInactive`).
-@interface BackgroundContinuedProcessingAppAgent : ObservingAppAgent
+// expiration handling. When the app enters the background, it requests the
+// tasks of its registered providers.
+@interface BackgroundContinuedProcessingAppAgent : SceneObservingAppAgent
+
+// Adds or removes a task provider. Providers are held weakly.
+- (void)addTaskProvider:(id<BackgroundContinuedProcessingTaskProvider>)provider;
+- (void)removeTaskProvider:
+    (id<BackgroundContinuedProcessingTaskProvider>)provider;
 
 // Requests a continued processing task with the given identifier and
-// configuration. MUST be invoked while at least one scene is in the foreground
-// (`SceneActivationLevelForegroundActive` or
-// `SceneActivationLevelForegroundInactive`). Returns a handle immediately, or
-// nil if background continued processing is disabled, running on iOS < 26, or
-// submission fails for any other reason (such as on simulator without runtime
-// support).
+// configuration. Returns a handle immediately, or nil if background continued
+// processing is disabled, running on iOS < 26, or submission fails for any
+// other reason (such as on simulator without runtime support).
 //
 // Requesting a task and receiving a handle does not guarantee the task will be
 // executed right away, or at all. The app agent retains the context handle for

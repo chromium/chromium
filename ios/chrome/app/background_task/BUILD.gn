@@ -32,12 +32,14 @@ source_set("background_task") {
     "background_continued_processing_task_configuration.mm",
     "background_continued_processing_task_context.h",
     "background_continued_processing_task_context.mm",
+    "background_continued_processing_task_provider.h",
+    "background_continued_processing_task_request.h",
+    "background_continued_processing_task_request.mm",
   ]
   public_deps = [ "//ios/chrome/app:background_mode_buildflags" ]
   deps = [
     ":features",
     "//base",
-    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
   ]
   frameworks = [

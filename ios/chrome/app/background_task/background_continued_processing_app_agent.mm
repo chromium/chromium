@@ -10,13 +10,15 @@
 #import "base/atomic_sequence_num.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/ios/crb_protocol_observers.h"
 #import "base/logging.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
+#import "ios/chrome/app/background_task/background_continued_processing_task_provider.h"
+#import "ios/chrome/app/background_task/background_continued_processing_task_request.h"
 #import "ios/chrome/app/background_task/features.h"
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
@@ -47,6 +49,10 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
   NSMutableDictionary<NSString*, BackgroundContinuedProcessingTaskContext*>*
       _activeTasks;
 
+  // Registered task providers, held weakly.
+  CRBProtocolObservers<BackgroundContinuedProcessingTaskProvider>*
+      _taskProviders;
+
   // Ensures calls are made on the main thread.
   SEQUENCE_CHECKER(_sequenceChecker);
 }
@@ -56,6 +62,10 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
 - (instancetype)init {
   if ((self = [super init])) {
     _activeTasks = [[NSMutableDictionary alloc] init];
+    _taskProviders = static_cast<CRBProtocolObservers<
+        BackgroundContinuedProcessingTaskProvider>*>([CRBProtocolObservers
+        observersWithProtocol:@protocol(
+                                  BackgroundContinuedProcessingTaskProvider)]);
   }
   return self;
 }
@@ -71,6 +81,18 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
 
 #pragma mark - Public
 
+- (void)addTaskProvider:
+    (id<BackgroundContinuedProcessingTaskProvider>)provider {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [_taskProviders addObserver:provider];
+}
+
+- (void)removeTaskProvider:
+    (id<BackgroundContinuedProcessingTaskProvider>)provider {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [_taskProviders removeObserver:provider];
+}
+
 - (BackgroundContinuedProcessingTaskContext*)
     requestTaskWithIdentifier:(NSString*)identifier
                 configuration:(BackgroundContinuedProcessingTaskConfiguration*)
@@ -85,16 +107,6 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
   CHECK(configuration.title.length > 0);
   CHECK(configuration.subtitle);
   CHECK(configuration.expirationHandler);
-
-  // iOS requires `BGContinuedProcessingTaskRequest` to be submitted before the
-  // app finishes entering the background (i.e. while at least one scene is in
-  // `SceneActivationLevelForegroundActive` or
-  // `SceneActivationLevelForegroundInactive`).
-  if (self.appState.foregroundScenes.count == 0) {
-    DLOG(WARNING) << "Cannot request continued processing task without a "
-                     "foreground scene.";
-    return nil;
-  }
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   NSString* taskIdentifier = FullTaskIdentifierForIdentifier(identifier);
@@ -154,9 +166,50 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
   return nil;
 }
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#pragma mark - SceneObservingAppAgent
+
+- (void)appDidEnterBackground {
+  [super appDidEnterBackground];
+  if (!IsBackgroundContinuedProcessingEnabled()) {
+    return;
+  }
+
+  [_taskProviders backgroundProcessingBecameAvailable];
+  __weak BackgroundContinuedProcessingAppAgent* weakSelf = self;
+  [_taskProviders executeOnObservers:^(id provider) {
+    [weakSelf requestTasksFromProvider:provider];
+  }];
+}
+
+- (void)appDidEnterForeground {
+  [super appDidEnterForeground];
+  if (!IsBackgroundContinuedProcessingEnabled()) {
+    return;
+  }
+
+  [_taskProviders backgroundProcessingBecameUnnecessary];
+}
+
 #pragma mark - Private
 
+// Requests the tasks of `provider` and hands each request the context of its
+// started task.
+- (void)requestTasksFromProvider:
+    (id<BackgroundContinuedProcessingTaskProvider>)provider {
+  for (BackgroundContinuedProcessingTaskRequest* request in
+       [provider continuedProcessingTaskRequests]) {
+    BackgroundContinuedProcessingTaskContext* context =
+        [self requestTaskWithIdentifier:request.identifier
+                          configuration:request.configuration];
+    // TODO(crbug.com/568387677): Record metrics for failed task requests, to
+    // measure whether entering the background is a good time to request them.
+    if (context && request.startedHandler) {
+      request.startedHandler(context);
+    }
+  }
+}
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // Handles task completion by removing the task identifier from `_activeTasks`.
 - (void)taskDidFinishWithIdentifier:(NSString*)taskIdentifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
