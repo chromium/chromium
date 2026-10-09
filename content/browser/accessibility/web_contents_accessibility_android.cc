@@ -733,7 +733,8 @@ void WebContentsAccessibilityAndroid::Connector::UpdateRenderProcessConnection(
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     WebContents* web_contents)
-    : web_contents_(static_cast<WebContentsImpl*>(web_contents)),
+    : WebContentsObserver(web_contents),
+      web_contents_(static_cast<WebContentsImpl*>(web_contents)),
       frame_info_initialized_(false),
       max_content_changed_events_to_fire_(GetMaxContentChangedEventsToFire()) {
   // We must initialize this after weak_ptr_factory_ because it can result in
@@ -764,6 +765,24 @@ WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
   DeleteAutofillPopupProxy();
 
   Java_WebContentsAccessibilityImpl_onNativeObjectDestroyed(env, obj);
+}
+
+void WebContentsAccessibilityAndroid::InnerWebContentsAttached(
+    WebContents* inner_web_contents,
+    RenderFrameHost* render_frame_host) {
+  if (!scoped_accessibility_mode_) {
+    return;
+  }
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
+  for (WebContentsImpl* wc : static_cast<WebContentsImpl*>(inner_web_contents)
+                                 ->GetWebContentsAndAllInner()) {
+    if (!wc->IsBeingDestroyed() && !wc->IsNeverComposited()) {
+      inner_scoped_accessibility_modes_.push_back(
+          accessibility_state->CreateScopedModeForWebContents(
+              wc, scoped_accessibility_mode_->mode()));
+    }
+  }
 }
 
 ScopedJavaLocalRef<jobject> WebContentsAccessibilityAndroid::GetJavaObject(
@@ -838,6 +857,7 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
 
   // Turn off accessibility on the renderer side by resetting the AXMode.
   scoped_accessibility_mode_.reset();
+  inner_scoped_accessibility_modes_.clear();
 }
 
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
@@ -856,6 +876,7 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
   // rebuild the C++ -> Java bridge. The web contents may have changed, so
   // update the reference just in case.
   web_contents_ = static_cast<WebContentsImpl*>(web_contents);
+  Observe(web_contents_);
 
   // If we are re-enabling, the root manager may already be connected, in which
   // case we can set its weak pointer to |this|. However, if a user has rapidly
@@ -911,6 +932,7 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
   if (!accessibility_state->IsAXModeChangeAllowed() ||
       !accessibility_state->IsActivationFromPlatformEnabled()) {
     scoped_accessibility_mode_.reset();
+    inner_scoped_accessibility_modes_.clear();
     return;
   }
   ui::AXMode target_mode;
@@ -931,14 +953,27 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     target_mode = ui::kAXModeBasic;
   }
 
-  // Scope `target_mode` strictly to `web_contents_` (`web_contents_` is null
-  // for Paint Preview snapshot instances).
+  // Scope `target_mode` strictly to `web_contents_` and any attached inner
+  // WebContents (such as GuestView / SlimWebViewGuest, which do not have their
+  // own Java WebContentsAccessibilityImpl and delegate to the outer instance).
+  // `web_contents_` is null for Paint Preview snapshot instances.
   if (web_contents_) {
     scoped_accessibility_mode_ =
         accessibility_state->CreateScopedModeForWebContents(web_contents_,
                                                             target_mode);
+    std::vector<std::unique_ptr<ScopedAccessibilityMode>> new_inner_modes;
+    for (WebContentsImpl* wc : web_contents_->GetWebContentsAndAllInner()) {
+      if (wc != web_contents_ && !wc->IsBeingDestroyed() &&
+          !wc->IsNeverComposited()) {
+        new_inner_modes.push_back(
+            accessibility_state->CreateScopedModeForWebContents(wc,
+                                                                target_mode));
+      }
+    }
+    inner_scoped_accessibility_modes_ = std::move(new_inner_modes);
   } else {
     scoped_accessibility_mode_.reset();
+    inner_scoped_accessibility_modes_.clear();
   }
 }
 

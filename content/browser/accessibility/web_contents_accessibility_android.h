@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
@@ -17,6 +18,7 @@
 #include "content/browser/accessibility/web_contents_accessibility.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/node_hash_map.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
@@ -62,6 +64,7 @@ class ScopedAccessibilityMode;
 // is destroyed.
 class CONTENT_EXPORT WebContentsAccessibilityAndroid
     : public WebContentsAccessibility,
+      public WebContentsObserver,
       public ui::AXNodeIdDelegate {
  public:
   explicit WebContentsAccessibilityAndroid(WebContents* web_contents);
@@ -73,6 +76,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const WebContentsAccessibilityAndroid&) = delete;
 
   ~WebContentsAccessibilityAndroid() override;
+
+  // WebContentsObserver:
+  void InnerWebContentsAttached(WebContents* inner_web_contents,
+                                RenderFrameHost* render_frame_host) override;
 
   // ui::AXNodeIdDelegate:
   ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
@@ -651,6 +658,12 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   std::unique_ptr<BrowserAccessibilityManagerAndroid> snapshot_root_manager_;
 
   std::unique_ptr<ScopedAccessibilityMode> scoped_accessibility_mode_;
+
+  // ScopedAccessibilityMode instances for attached inner WebContents (e.g.
+  // GuestView / SlimWebViewGuest), which do not have their own Java
+  // WebContentsAccessibilityImpl and delegate to the outer instance.
+  std::vector<std::unique_ptr<ScopedAccessibilityMode>>
+      inner_scoped_accessibility_modes_;
 
   int32_t tooltip_showing_node_id_ = 0;
 

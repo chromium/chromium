@@ -27,8 +27,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -932,6 +934,84 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
   EXPECT_EQ(accessibility_state().ActiveAssistiveTech(),
             ui::AssistiveTech::kNone);
 }
+
+// Verifies that when WebContentsAccessibilityAndroid::SetBrowserAXMode enables
+// accessibility on an outer WebContents, attached inner WebContents (such as
+// SlimWebViewGuest <webview> instances) also receive the AXMode whether they
+// attach before or after SetBrowserAXMode is called.
+IN_PROC_BROWSER_TEST_F(
+    ScopedAccessibilityModeTest,
+    AndroidWebContentsScopedAXMode_PropagatesToInnerWebContents) {
+  GURL url("data:text/html,<iframe></iframe><iframe></iframe>");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // If the Android framework / AutofillManager on the device initialized
+  // WebContentsAccessibilityImpl during SetUpOnMainThread or navigation, reset
+  // its renderer accessibility scoper so we start from a clean ui::AXMode().
+  for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
+    if (auto* wcax = static_cast<WebContentsAccessibilityAndroid*>(
+            wc->GetPrimaryMainFrame()
+                ->AccessibilityGetWebContentsAccessibility())) {
+      wcax->DisableRendererAccessibility(/*env=*/nullptr);
+    }
+  }
+  accessibility_state().SetActivationFromPlatformEnabled(true);
+
+  // Case 1: Attach an inner WebContents BEFORE SetBrowserAXMode is called on
+  // the outer WebContents.
+  WebContents* inner_before =
+      CreateAndAttachInnerContents(ChildFrameAt(&web_contents1(), 0));
+  ASSERT_TRUE(inner_before);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(inner_before->GetAccessibilityMode(), ui::AXMode());
+
+  auto* wcax1 = static_cast<WebContentsAccessibilityAndroid*>(
+      static_cast<WebContentsImpl*>(&web_contents1())
+          ->GetPrimaryMainFrame()
+          ->AccessibilityGetWebContentsAccessibility());
+  if (!wcax1) {
+    wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+  }
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/true,
+      /*is_complex_accessibility_service_enabled=*/true,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+
+  const ui::AXMode expected_mode =
+      ui::kAXModeComplete | ui::AXMode::kScreenReader;
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), expected_mode);
+  EXPECT_EQ(inner_before->GetAccessibilityMode(), expected_mode);
+
+  // Case 2: Attach an inner WebContents AFTER SetBrowserAXMode was already
+  // called on the outer WebContents (e.g. SlimWebViewGuest attaching after the
+  // outer WebUI initializes accessibility).
+  WebContents* inner_after =
+      CreateAndAttachInnerContents(ChildFrameAt(&web_contents1(), 1));
+  ASSERT_TRUE(inner_after);
+  EXPECT_EQ(inner_after->GetAccessibilityMode(), expected_mode);
+
+  // Updating the outer WebContents AXMode also updates all attached inner
+  // WebContents.
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/false,
+      /*is_complex_accessibility_service_enabled=*/false,
+      /*is_form_controls_candidate=*/true,
+      /*is_on_screen_mode_candidate=*/false);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeFormControls);
+  EXPECT_EQ(inner_before->GetAccessibilityMode(), ui::kAXModeFormControls);
+  EXPECT_EQ(inner_after->GetAccessibilityMode(), ui::kAXModeFormControls);
+
+  // Disabling renderer accessibility on the outer WebContents resets both the
+  // outer and inner WebContents modes.
+  wcax1->DisableRendererAccessibility(/*env=*/nullptr);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(inner_before->GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(inner_after->GetAccessibilityMode(), ui::AXMode());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
+
