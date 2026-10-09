@@ -48,10 +48,7 @@ const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "webrequest_auth.window.js",
 #endif
                                         "webrequest_core.window.js",
-// TODO(crbug.com/569841724): webrequest_modify is flaky on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
                                         "webrequest_modify.window.js",
-#endif
                                         "webrequest_read.window.js");
 
 constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
@@ -63,6 +60,7 @@ constexpr char kTestDriverPath[] =
 constexpr char kHtmlWrapperSrc[] = R"(
   <!doctype html>
   <meta charset=utf-8>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -114,6 +112,15 @@ constexpr char kWptReporterSrc[] = R"(
       }
 
       const testBody = await (await fetch(testSrc)).text();
+
+      // Tests append elements to document.body, so don't run them until the
+      // body has been parsed.
+      if (document.readyState === 'loading') {
+        await new Promise((resolve) => {
+          document.addEventListener('DOMContentLoaded', resolve, {once: true});
+        });
+      }
+
       const importRegex = /^\/\/ META script=(.*)/gm;
       const imports = [...testBody.matchAll(importRegex)]
           .map((match) => match[1]);
