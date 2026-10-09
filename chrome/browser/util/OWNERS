@@ -4,3 +4,4 @@ hnakashima@chromium.org
 wnwen@chromium.org
 
 per-file ...DefaultBrowser*=file://chrome/browser/ui/android/default_browser_promo/OWNERS
+per-file ...BrowserUiUtils*=file://chrome/android/java/src/org/chromium/chrome/browser/ntp/OWNERS
