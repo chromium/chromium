@@ -75,7 +75,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="permissions_microphone"
         android:title="@string/settings_glic_permissions_microphone_toggle"
-        android:summary="@string/settings_glic_permissions_microphone_toggle_sublabel_data_protected"
+        android:summary="@string/settings_glic_permissions_microphone_toggle_sublabel_data_protected_android"
         android:defaultValue="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference
