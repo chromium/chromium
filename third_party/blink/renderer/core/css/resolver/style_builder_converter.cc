@@ -3043,7 +3043,8 @@ const CSSValue& ResolveLightDarkPair(
 }
 
 bool ShouldConvertLegacyColorSpaceToSRGB(const CSSValue& value) {
-  return value.IsRelativeColorValue() || value.IsColorMixValue();
+  return value.IsRelativeColorValue() || value.IsAlphaColorValue() ||
+         value.IsColorMixValue();
 }
 
 }  // anonymous namespace

@@ -135,10 +135,10 @@ TEST(StyleBuilderConverterTest, ResolveColorValue_ResolveAlphaColor) {
 
   const StyleColor result = ResolveColorValue(*alpha_color_value, context);
   ASSERT_TRUE(result.IsAbsoluteColor());
-  EXPECT_EQ(result.GetColor().SerializeAsCSSColor(),
-            Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 255.0f, 0.0f,
-                                  0.0f, 0.5f)
-                .SerializeAsCSSColor());
+  EXPECT_EQ(
+      result.GetColor().SerializeAsCSSColor(),
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.0f, 0.0f, 0.5f)
+          .SerializeAsCSSColor());
 }
 
 TEST(StyleBuilderConverterTest,
