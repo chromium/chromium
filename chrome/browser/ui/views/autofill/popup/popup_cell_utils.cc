@@ -168,7 +168,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
     case Suggestion::Icon::kLocationSpark:
-    case Suggestion::Icon::kLoyalty:
+    case Suggestion::Icon::kLoyaltyPrograms:
     case Suggestion::Icon::kMagic:
     case Suggestion::Icon::kMailAsterisk:
     case Suggestion::Icon::kOfferTag:
@@ -584,10 +584,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kLocationSpark:
       return ImageModelFromVectorIcon(vector_icons::kLocationOnSparkIcon,
                                       kChromeRefreshIconSize);
-    case Suggestion::Icon::kLoyalty:
-      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
-                                          ? vector_icons::kLoyaltyIcon
-                                          : vector_icons::kLoyaltyOldIcon,
+    case Suggestion::Icon::kLoyaltyPrograms:
+      return ImageModelFromVectorIcon(vector_icons::kLoyaltyProgramsIcon,
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kMagic:
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()

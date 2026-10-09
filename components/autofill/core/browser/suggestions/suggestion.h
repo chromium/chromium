@@ -439,7 +439,7 @@ struct Suggestion {
     kKey,
     kLocation,
     kLocationSpark,
-    kLoyalty,
+    kLoyaltyPrograms,
     kMagic,
     kMailAsterisk,
     kOfferTag,

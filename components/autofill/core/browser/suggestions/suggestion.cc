@@ -140,8 +140,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kLocation";
     case Suggestion::Icon::kLocationSpark:
       return "kLocationSpark";
-    case Suggestion::Icon::kLoyalty:
-      return "kLoyalty";
+    case Suggestion::Icon::kLoyaltyPrograms:
+      return "kLoyaltyPrograms";
     case Suggestion::Icon::kMagic:
       return "kMagic";
     case Suggestion::Icon::kMailAsterisk:

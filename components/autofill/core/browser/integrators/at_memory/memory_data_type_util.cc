@@ -1511,7 +1511,7 @@ Suggestion::Icon GetSuggestionIcon(MemoryDataType type, bool is_autofill_only) {
                               : Suggestion::Icon::kCardGenericSpark;
     case MemoryDataTypeCategory::kLoyaltyCard:
       // TODO(crbug.com/566940947): Add spark icon for loyalty cards.
-      return is_autofill_only ? Suggestion::Icon::kLoyalty
+      return is_autofill_only ? Suggestion::Icon::kLoyaltyPrograms
                               : Suggestion::Icon::kTextSpark;
     case MemoryDataTypeCategory::kVehicle:
       return is_autofill_only ? Suggestion::Icon::kVehicle
