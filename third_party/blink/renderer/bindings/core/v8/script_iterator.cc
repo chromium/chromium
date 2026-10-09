@@ -31,8 +31,8 @@ bool GetMethod(v8::Isolate* isolate,
                v8::Local<v8::Object> object,
                v8::Local<v8::Value> key,
                const char* not_callable_message,
-               ExceptionState& exception_state,
-               v8::Local<v8::Function>* method) {
+               v8::Local<v8::Function>* method,
+               ExceptionState& exception_state) {
   TryRethrowScope rethrow_scope(isolate, exception_state);
   // 1. Let func be ? GetV(V, P).
   v8::Local<v8::Value> value;
@@ -64,8 +64,8 @@ bool GetMethod(v8::Isolate* isolate,
 // https://tc39.es/ecma262/#sec-iteratorclose
 ScriptValue IteratorClose(ScriptState* script_state,
                           v8::Local<v8::Object> iterator,
-                          ExceptionState& exception_state,
-                          v8::Local<v8::Value> reason) {
+                          v8::Local<v8::Value> reason,
+                          ExceptionState& exception_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
 
   // 3. Let innerResult be Completion(GetMethod(iterator, "return")).
@@ -74,8 +74,8 @@ ScriptValue IteratorClose(ScriptState* script_state,
   v8::Local<v8::Function> return_method;
   if (!GetMethod(isolate, script_state->GetContext(), iterator,
                  V8AtomicString(isolate, "return"),
-                 "return() function must be callable.", exception_state,
-                 &return_method)) {
+                 "return() function must be callable.", &return_method,
+                 exception_state)) {
     CHECK(exception_state.HadException());
     // 6. If innerResult is a throw completion, return ? innerResult.
     return ScriptValue();
@@ -114,8 +114,8 @@ ScriptValue IteratorClose(ScriptState* script_state,
 // propagates it.
 void IteratorCloseForThrowCompletion(ScriptState* script_state,
                                      v8::Local<v8::Object> iterator) {
-  IteratorClose(script_state, iterator, IGNORE_EXCEPTION,
-                v8::Local<v8::Value>());
+  IteratorClose(script_state, iterator, v8::Local<v8::Value>(),
+                IGNORE_EXCEPTION);
 }
 
 class AsyncIteratorCloseFulfillFunction final
@@ -213,8 +213,8 @@ class AsyncFromSyncIteratorRejectFunction final : public ScriptFunction {
 // static
 ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
                                             v8::Local<v8::Object> iterable,
-                                            ExceptionState& exception_state,
-                                            Kind kind) {
+                                            Kind kind,
+                                            ExceptionState& exception_state) {
   CHECK(kind == Kind::kSync || kind == Kind::kAsync);
 
   // 7.4.3 GetIterator(obj, kind).
@@ -233,8 +233,8 @@ ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
   // The lookups are shared with Web IDL's async_sequence<T> conversion, which
   // sets `kind` to `kAsyncFromSync` when step 1.b applies.
   if (kind == Kind::kAsync) {
-    if (!LookUpAsyncIterableMethod(isolate, iterable, exception_state, &method,
-                                   &kind)) {
+    if (!LookUpAsyncIterableMethod(isolate, iterable, &method, &kind,
+                                   exception_state)) {
       CHECK(exception_state.HadException());
       return ScriptIterator();
     }
@@ -242,8 +242,8 @@ ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
     // 2. Else, let method be ? GetMethod(obj, @@iterator).
     if (!GetMethod(isolate, isolate->GetCurrentContext(), iterable,
                    v8::Symbol::GetIterator(isolate),
-                   "@@iterator must be a callable.", exception_state,
-                   &method)) {
+                   "@@iterator must be a callable.", &method,
+                   exception_state)) {
       CHECK(exception_state.HadException());
       return ScriptIterator();
     }
@@ -259,7 +259,7 @@ ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
   }
 
   // 4. Return ? GetIteratorFromMethod(obj, method).
-  return FromIteratorMethod(isolate, iterable, method, exception_state, kind);
+  return FromIteratorMethod(isolate, iterable, method, kind, exception_state);
 }
 
 // static
@@ -267,8 +267,8 @@ ScriptIterator ScriptIterator::FromIteratorMethod(
     v8::Isolate* isolate,
     v8::Local<v8::Object> iterable,
     v8::Local<v8::Function> method,
-    ExceptionState& exception_state,
-    Kind kind) {
+    Kind kind,
+    ExceptionState& exception_state) {
   CHECK_NE(kind, Kind::kNull);
 
   // 7.4.4 GetIteratorFromMethod(obj, method).
@@ -310,11 +310,12 @@ ScriptIterator ScriptIterator::FromIteratorMethod(
 }
 
 // static
-bool ScriptIterator::LookUpAsyncIterableMethod(v8::Isolate* isolate,
-                                               v8::Local<v8::Object> object,
-                                               ExceptionState& exception_state,
-                                               v8::Local<v8::Function>* method,
-                                               Kind* kind) {
+bool ScriptIterator::LookUpAsyncIterableMethod(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> object,
+    v8::Local<v8::Function>* method,
+    Kind* kind,
+    ExceptionState& exception_state) {
   // Converting a JavaScript value to an IDL async_sequence<T> value, steps
   // 2-4, minus the TypeError for the case where neither method exists:
   // https://webidl.spec.whatwg.org/#js-async-sequence
@@ -322,8 +323,8 @@ bool ScriptIterator::LookUpAsyncIterableMethod(v8::Isolate* isolate,
   // 2. Let method be ? GetMethod(obj, %Symbol.asyncIterator%).
   if (!GetMethod(isolate, isolate->GetCurrentContext(), object,
                  v8::Symbol::GetAsyncIterator(isolate),
-                 "@@asyncIterator must be a callable.", exception_state,
-                 method)) {
+                 "@@asyncIterator must be a callable.", method,
+                 exception_state)) {
     CHECK(exception_state.HadException());
     return false;
   }
@@ -338,7 +339,7 @@ bool ScriptIterator::LookUpAsyncIterableMethod(v8::Isolate* isolate,
   //    1. Set syncMethod to ? GetMethod(obj, %Symbol.iterator%).
   if (!GetMethod(isolate, isolate->GetCurrentContext(), object,
                  v8::Symbol::GetIterator(isolate),
-                 "@@iterator must be a callable.", exception_state, method)) {
+                 "@@iterator must be a callable.", method, exception_state)) {
     CHECK(exception_state.HadException());
     return false;
   }
@@ -470,12 +471,12 @@ bool ScriptIterator::Next(ExecutionContext* execution_context,
 }
 
 ScriptValue ScriptIterator::CloseSync(ScriptState* script_state,
-                                      ExceptionState& exception_state,
-                                      v8::Local<v8::Value> reason) {
+                                      v8::Local<v8::Value> reason,
+                                      ExceptionState& exception_state) {
   DCHECK_EQ(kind_, Kind::kSync);
   DCHECK(!IsNull());
-  return IteratorClose(script_state, iterator_.Get(script_state),
-                       exception_state, reason);
+  return IteratorClose(script_state, iterator_.Get(script_state), reason,
+                       exception_state);
 }
 
 ScriptPromise<IDLUndefined> ScriptIterator::CloseAsync(
@@ -511,8 +512,8 @@ ScriptPromise<IDLUndefined> ScriptIterator::CloseAsync(
   v8::Local<v8::Function> return_method;
   if (!GetMethod(isolate_, script_state->GetContext(), iterator,
                  V8AtomicString(isolate_, "return"),
-                 "return() function must be callable",
-                 PassThroughException(isolate_), &return_method)) {
+                 "return() function must be callable", &return_method,
+                 PassThroughException(isolate_))) {
     return reject_with_caught_exception();
   }
 

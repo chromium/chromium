@@ -1044,8 +1044,8 @@ NativeValueTraits<IDLSequence<T>>::NativeValue(
   // 3. If method is undefined, throw a TypeError.
   // 4. Return the result of creating a sequence from V and method.
   auto script_iterator = ScriptIterator::FromIterable(
-      isolate, value.As<v8::Object>(), exception_state,
-      ScriptIterator::Kind::kSync);
+      isolate, value.As<v8::Object>(), ScriptIterator::Kind::kSync,
+      exception_state);
   if (exception_state.HadException())
     return ImplType();
   if (script_iterator.IsNull()) {

@@ -496,7 +496,7 @@ def make_factory_methods(cg_context):
                 T(
                     "ScriptIterator script_iterator = ScriptIterator::FromIterable("
                     "${isolate}, ${v8_value}.As<v8::Object>(), "
-                    "${exception_state}, ScriptIterator::Kind::kSync);"
+                    "ScriptIterator::Kind::kSync, ${exception_state});"
                 ),
                 CxxUnlikelyIfNode(
                     cond="${exception_state}.HadException()",

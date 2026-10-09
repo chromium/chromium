@@ -69,8 +69,8 @@ class ScriptIteratorTest : public testing::Test {
                       ExceptionState& exception_state) {
     LookUp result;
     result.ok = ScriptIterator::LookUpAsyncIterableMethod(
-        scope.GetIsolate(), object, exception_state, &result.method,
-        &result.kind);
+        scope.GetIsolate(), object, &result.method, &result.kind,
+        exception_state);
     return result;
   }
 
@@ -85,16 +85,16 @@ class ScriptIteratorTest : public testing::Test {
     }
     CHECK(!look_up.method.IsEmpty());
     return ScriptIterator::FromIteratorMethod(scope.GetIsolate(), iterable,
-                                              look_up.method, exception_state,
-                                              look_up.kind);
+                                              look_up.method, look_up.kind,
+                                              exception_state);
   }
 
   ScriptIterator OpenSync(V8TestingScope& scope,
                           v8::Local<v8::Object> iterable,
                           ExceptionState& exception_state) {
     return ScriptIterator::FromIterable(scope.GetIsolate(), iterable,
-                                        exception_state,
-                                        ScriptIterator::Kind::kSync);
+                                        ScriptIterator::Kind::kSync,
+                                        exception_state);
   }
 
   // Calls Next() on an async-style iterator and returns the Promise it
@@ -282,7 +282,7 @@ TEST_F(ScriptIteratorTest, FromIterableAsyncFallsBackToSyncIterator) {
 
   DummyExceptionStateForTesting exception_state;
   ScriptIterator iterator = ScriptIterator::FromIterable(
-      scope.GetIsolate(), array, exception_state, ScriptIterator::Kind::kAsync);
+      scope.GetIsolate(), array, ScriptIterator::Kind::kAsync, exception_state);
   ASSERT_FALSE(iterator.IsNull());
   ASSERT_FALSE(exception_state.HadException());
 
@@ -301,9 +301,9 @@ TEST_F(ScriptIteratorTest, FromIterableAsyncReturnsNullWithoutAnyMethod) {
   v8::Local<v8::Object> object = EvalObject(scope, "({})");
 
   DummyExceptionStateForTesting exception_state;
-  ScriptIterator iterator =
-      ScriptIterator::FromIterable(scope.GetIsolate(), object, exception_state,
-                                   ScriptIterator::Kind::kAsync);
+  ScriptIterator iterator = ScriptIterator::FromIterable(
+      scope.GetIsolate(), object, ScriptIterator::Kind::kAsync,
+      exception_state);
   EXPECT_TRUE(iterator.IsNull());
   EXPECT_FALSE(exception_state.HadException());
 }
@@ -456,7 +456,7 @@ TEST_F(ScriptIteratorTest, CloseSyncCallsReturnAndReturnsReason) {
 
   v8::Local<v8::Value> reason = V8String(scope.GetIsolate(), "why");
   ScriptValue result =
-      iterator.CloseSync(scope.GetScriptState(), exception_state, reason);
+      iterator.CloseSync(scope.GetScriptState(), reason, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(result.V8Value()->StrictEquals(reason));
   ExpectReturnCalledWith(scope, reason);
@@ -471,7 +471,7 @@ TEST_F(ScriptIteratorTest, CloseSyncWithoutReturnDoesNotThrow) {
   ASSERT_FALSE(iterator.IsNull());
 
   ScriptValue result = iterator.CloseSync(
-      scope.GetScriptState(), exception_state, v8::Local<v8::Value>());
+      scope.GetScriptState(), v8::Local<v8::Value>(), exception_state);
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(result.IsEmpty());
 }
@@ -488,8 +488,8 @@ TEST_F(ScriptIteratorTest, CloseSyncThrowsForNonObjectReturnResult) {
   ScriptIterator iterator = OpenSync(scope, iterable, exception_state);
   ASSERT_FALSE(iterator.IsNull());
 
-  iterator.CloseSync(scope.GetScriptState(), exception_state,
-                     v8::Local<v8::Value>());
+  iterator.CloseSync(scope.GetScriptState(), v8::Local<v8::Value>(),
+                     exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
 }
@@ -508,9 +508,8 @@ TEST_F(ScriptIteratorTest, CloseSyncRethrowsWhenReturnThrows) {
   ASSERT_FALSE(iterator.IsNull());
 
   v8::TryCatch try_catch(scope.GetIsolate());
-  iterator.CloseSync(scope.GetScriptState(),
-                     PassThroughException(scope.GetIsolate()),
-                     v8::Local<v8::Value>());
+  iterator.CloseSync(scope.GetScriptState(), v8::Local<v8::Value>(),
+                     PassThroughException(scope.GetIsolate()));
   ASSERT_TRUE(try_catch.HasCaught());
   // The user's exception is rethrown untouched.
   EXPECT_TRUE(

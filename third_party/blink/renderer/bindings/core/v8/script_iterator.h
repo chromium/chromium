@@ -55,8 +55,8 @@ class ScriptPromise;
 //     SubscriptionManager(v8::Local<v8::Object> obj) {
 //       ExceptionState exception_state = ...;
 //       iterator_ = ScriptIterator::FromIterable(
-//           script_state->GetIsolate(), obj, exception_state,
-//           ScriptIterator::Kind::kAsync);
+//           script_state->GetIsolate(), obj, ScriptIterator::Kind::kAsync,
+//           exception_state);
 //
 //       if (exception_state.HadException()) {
 //         return;
@@ -105,7 +105,7 @@ class ScriptPromise;
 // Sync iterable usage:
 //   v8::Local<v8::Object> es_object = ...;
 //   auto script_iterator = ScriptIterator::FromIterable(
-//       isolate, es_object, exception_state, ScriptIterable::Kind::kSync);
+//       isolate, es_object, ScriptIterator::Kind::kSync, exception_state);
 //   if (exception_state.HadException()) {
 //     return;
 //   }
@@ -162,13 +162,10 @@ class CORE_EXPORT ScriptIterator {
   // - ScriptIterator can be null even if there is no exception. In this case,
   //   it indicates that the given ES object has no @@iterator method (nor,
   //   with `kAsync`, an @@asyncIterator method).
-  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
-  // declared after the last input argument.
-  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
   static ScriptIterator FromIterable(v8::Isolate* isolate,
                                      v8::Local<v8::Object> iterable,
-                                     ExceptionState& exception_state,
-                                     ScriptIterator::Kind kind);
+                                     ScriptIterator::Kind kind,
+                                     ExceptionState& exception_state);
 
   // Implements GetIteratorFromMethod(obj, method):
   // https://tc39.es/ecma262/#sec-getiteratorfrommethod
@@ -178,14 +175,11 @@ class CORE_EXPORT ScriptIterator {
   // `kind` says how the resulting iterator is driven: pass `kAsyncFromSync`
   // when `method` is an @@iterator method whose iterator must be consumed
   // asynchronously.
-  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
-  // declared after the last input argument.
-  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
   static ScriptIterator FromIteratorMethod(v8::Isolate* isolate,
                                            v8::Local<v8::Object> iterable,
                                            v8::Local<v8::Function> method,
-                                           ExceptionState& exception_state,
-                                           ScriptIterator::Kind kind);
+                                           ScriptIterator::Kind kind,
+                                           ExceptionState& exception_state);
 
   // GetMethod(obj, @@asyncIterator), then, if that is undefined,
   // GetMethod(obj, @@iterator): the lookups of Web IDL's async_sequence<T>
@@ -198,14 +192,11 @@ class CORE_EXPORT ScriptIterator {
   // is left empty, and `*kind` untouched, when neither method exists, so that
   // callers can choose between throwing a TypeError and trying another
   // conversion.
-  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
-  // declared after the last input argument.
-  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
   static bool LookUpAsyncIterableMethod(v8::Isolate* isolate,
                                         v8::Local<v8::Object> object,
-                                        ExceptionState& exception_state,
                                         v8::Local<v8::Function>* method,
-                                        ScriptIterator::Kind* kind);
+                                        ScriptIterator::Kind* kind,
+                                        ExceptionState& exception_state);
 
   // Returns a `ScriptIterator` whose `IsNull()` is true. This is only needed
   // when storing a bare `ScriptIterator` in a class, which is useful in the
@@ -245,12 +236,9 @@ class CORE_EXPORT ScriptIterator {
   //      case the returned Promise is rejected. For `kAsyncFromSync` the sync
   //      iterator's `return()` is called and its result's value is awaited, as
   //      %AsyncFromSyncIteratorPrototype%.return does.
-  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
-  // declared after the last input argument.
-  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
   ScriptValue CloseSync(ScriptState* script_state,
-                        ExceptionState& exception_state,
-                        v8::Local<v8::Value> reason);
+                        v8::Local<v8::Value> reason,
+                        ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> CloseAsync(
       ScriptState* script_state,
       const ExceptionContext& exception_context,

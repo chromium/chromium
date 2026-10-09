@@ -1644,8 +1644,8 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       // exception, clear it, and report it properly through `subscriber`.
       iterator_ = ScriptIterator::FromIterable(
           script_state->GetIsolate(), v8_async_iterable,
-          PassThroughException(script_state_->GetIsolate()),
-          ScriptIterator::Kind::kAsync);
+          ScriptIterator::Kind::kAsync,
+          PassThroughException(script_state_->GetIsolate()));
 
       // "If |iteratorRecord| is a throw completion, then run |subscriber|'s
       // error() method, given |iteratorRecord|'s [[Value]]."
@@ -1980,8 +1980,8 @@ class OperatorFromIterableSubscribeDelegate final
       // exception, clear it, and report it properly through `subscriber`.
       v8::TryCatch try_catch(isolate);
       iterator_ = ScriptIterator::FromIterable(isolate, v8_iterable,
-                                               PassThroughException(isolate),
-                                               ScriptIterator::Kind::kSync);
+                                               ScriptIterator::Kind::kSync,
+                                               PassThroughException(isolate));
       if (try_catch.HasCaught()) {
         // Don't ApplyContextToException(), because FromIterable() might return
         // a user-defined exception, which we shouldn't modify.
@@ -2069,8 +2069,8 @@ class OperatorFromIterableSubscribeDelegate final
       // Don't ApplyContextToException(), because CloseSync() might return
       // a user-defined exception, which we shouldn't modify.
       iterator_.CloseSync(script_state_,
-                          PassThroughException(script_state_->GetIsolate()),
-                          signal_->reason(script_state_).V8Value());
+                          signal_->reason(script_state_).V8Value(),
+                          PassThroughException(script_state_->GetIsolate()));
     }
 
    private:
