@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-
 #include "chrome/common/importer/firefox_importer_utils.h"
 
 #include <stddef.h>
@@ -32,7 +30,7 @@ struct GetPrefsJsValueCase {
   const char* pref_name;
   const char* pref_value;
 };
-auto GetPrefsJsValueCases = std::to_array<GetPrefsJsValueCase>({
+constexpr auto kGetPrefsJsValueCases = std::to_array<GetPrefsJsValueCase>({
     // Basic case. Single pref, unquoted value.
     {"user_pref(\"foo.bar\", 1);", "foo.bar", "1"},
     // Value is quoted. Quotes should be stripped.
@@ -58,62 +56,61 @@ struct GetFirefoxImporterNameCase {
   const char* app_ini_content;
   int resource_id;
 };
-auto GetFirefoxImporterNameCases = std::to_array<GetFirefoxImporterNameCase>({
-    // Basic case
-    {"[App]\n"
-     "Vendor=Mozilla\n"
-     "Name=iceweasel\n"
-     "Version=10.0.6\n"
-     "BuildID=20120717115048\n"
-     "ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
-     IDS_IMPORT_FROM_ICEWEASEL},
-    // Whitespace
-    {" \t[App] \n"
-     "Vendor=Mozilla\n"
-     "   Name=Firefox\t \r\n"
-     "Version=10.0.6\n",
-     IDS_IMPORT_FROM_FIREFOX},
-    // No Name setting
-    {"[App]\n"
-     "Vendor=Mozilla\n"
-     "Version=10.0.6\n"
-     "BuildID=20120717115048\n"
-     "ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
-     IDS_IMPORT_FROM_FIREFOX},
-    // No [App] section
-    {"[Foo]\n"
-     "Vendor=Mozilla\n"
-     "Name=Foo\n",
-     IDS_IMPORT_FROM_FIREFOX},
-    // Multiple Name settings in different sections
-    {"[Foo]\n"
-     "Vendor=Mozilla\n"
-     "Name=Firefox\n"
-     "[App]\n"
-     "Profile=mozilla/firefox\n"
-     "Name=iceweasel\n"
-     "[Bar]\n"
-     "Name=Bar\n"
-     "ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
-     IDS_IMPORT_FROM_ICEWEASEL},
-    // Case-insensitivity
-    {"[App]\n"
-     "Vendor=Mozilla\n"
-     "Name=IceWeasel\n"
-     "Version=10.0.6\n",
-     IDS_IMPORT_FROM_ICEWEASEL},
-    // Empty file
-    {"", IDS_IMPORT_FROM_FIREFOX},
-});
+constexpr auto kGetFirefoxImporterNameCases =
+    std::to_array<GetFirefoxImporterNameCase>({
+        // Basic case
+        {"[App]\n"
+         "Vendor=Mozilla\n"
+         "Name=iceweasel\n"
+         "Version=10.0.6\n"
+         "BuildID=20120717115048\n"
+         "ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+         IDS_IMPORT_FROM_ICEWEASEL},
+        // Whitespace
+        {" \t[App] \n"
+         "Vendor=Mozilla\n"
+         "   Name=Firefox\t \r\n"
+         "Version=10.0.6\n",
+         IDS_IMPORT_FROM_FIREFOX},
+        // No Name setting
+        {"[App]\n"
+         "Vendor=Mozilla\n"
+         "Version=10.0.6\n"
+         "BuildID=20120717115048\n"
+         "ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+         IDS_IMPORT_FROM_FIREFOX},
+        // No [App] section
+        {"[Foo]\n"
+         "Vendor=Mozilla\n"
+         "Name=Foo\n",
+         IDS_IMPORT_FROM_FIREFOX},
+        // Multiple Name settings in different sections
+        {"[Foo]\n"
+         "Vendor=Mozilla\n"
+         "Name=Firefox\n"
+         "[App]\n"
+         "Profile=mozilla/firefox\n"
+         "Name=iceweasel\n"
+         "[Bar]\n"
+         "Name=Bar\n"
+         "ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+         IDS_IMPORT_FROM_ICEWEASEL},
+        // Case-insensitivity
+        {"[App]\n"
+         "Vendor=Mozilla\n"
+         "Name=IceWeasel\n"
+         "Version=10.0.6\n",
+         IDS_IMPORT_FROM_ICEWEASEL},
+        // Empty file
+        {"", IDS_IMPORT_FROM_FIREFOX},
+    });
 
-}  // anonymous namespace
+}  // namespace
 
 TEST(FirefoxImporterUtilsTest, GetPrefsJsValue) {
-  for (size_t i = 0; i < std::size(GetPrefsJsValueCases); ++i) {
-    EXPECT_EQ(
-      GetPrefsJsValueCases[i].pref_value,
-      GetPrefsJsValue(GetPrefsJsValueCases[i].prefs_content,
-                      GetPrefsJsValueCases[i].pref_name));
+  for (const auto& test_case : kGetPrefsJsValueCases) {
+    EXPECT_EQ(test_case.pref_value,
+              GetPrefsJsValue(test_case.prefs_content, test_case.pref_name));
   }
 }
 
@@ -122,12 +119,10 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxImporterName) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath app_ini_file(
       temp_dir.GetPath().AppendASCII("application.ini"));
-  for (size_t i = 0; i < std::size(GetFirefoxImporterNameCases); ++i) {
-    base::WriteFile(app_ini_file,
-                    GetFirefoxImporterNameCases[i].app_ini_content);
-    EXPECT_EQ(
-        GetFirefoxImporterName(temp_dir.GetPath()),
-        l10n_util::GetStringUTF16(GetFirefoxImporterNameCases[i].resource_id));
+  for (const auto& test_case : kGetFirefoxImporterNameCases) {
+    base::WriteFile(app_ini_file, test_case.app_ini_content);
+    EXPECT_EQ(GetFirefoxImporterName(temp_dir.GetPath()),
+              l10n_util::GetStringUTF16(test_case.resource_id));
   }
   EXPECT_EQ(l10n_util::GetStringUTF16(
           IDS_IMPORT_FROM_FIREFOX),
