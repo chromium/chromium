@@ -497,12 +497,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
             : base::Milliseconds(200);
     if (!settings.enable_fluent_overlay_scrollbar) {
       // Set scrollbar flash behavior based on feature flags
-      const bool flash_once_enabled = base::FeatureList::IsEnabled(
-          ::features::kOverlayScrollbarFlashOnlyOnceVisibleOnViewport);
-      settings.scrollbar_flash_once_after_scroll_update = flash_once_enabled;
-      settings.scrollbar_flash_after_any_scroll_update = !flash_once_enabled;
-      settings.scrollbar_flash_once_visible_on_viewport =
-          settings.scrollbar_flash_once_after_scroll_update;
+      settings.scrollbar_flash_once_after_scroll_update = true;
+      settings.scrollbar_flash_once_visible_on_viewport = true;
       settings.scrollbar_flash_when_mouse_enter = base::FeatureList::IsEnabled(
           ::features::kOverlayScrollbarFlashWhenMouseEnter);
     }

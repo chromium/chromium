@@ -1052,14 +1052,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Requests scrollbars' flashes. Returns true if a scrollbar with
   // |tracking_element_id| has been flashed as part of the bulk flash. If
   // `settings.scrollbar_flash_once_after_scroll_update` is true, invokes
-  // `MaybeFlashAllScrollbarsOnce`. If
-  // `settings.scrollbar_flash_after_any_scroll_update` is true, invokes
-  // FlashAllScrollbars.
+  // `MaybeFlashAllScrollbarsOnce`.
   bool MaybeFlashAllScrollbars(ElementId tracking_element_id, bool did_scroll);
-
-  // Flashes all scrollbars. Can be used when
-  // `settings.scrollbar_flash_after_any_scroll_update` is true.
-  void FlashAllScrollbars(bool did_scroll);
 
   // Erases track of flashed scrollbars. Can be used when
   // `settings.scrollbar_flash_once_after_scroll_update` is true.

@@ -4005,13 +4005,6 @@ inline constexpr char kOverlayScrollbarsFlashWhenMouseEnterDescription[] =
     "Flash Overlay Scrollbars When Mouse Enter a scrollable area. You must also"
     " enable Overlay Scrollbars.";
 
-inline constexpr char kOverlayScrollbarsFlashOnceVisibleOnViewportName[] =
-    "Flash Overlay Scrollbars Once When Visible";
-inline constexpr char
-    kOverlayScrollbarsFlashOnceVisibleOnViewportDescription[] =
-        "Flash Overlay Scrollbars only once per scrollbar and when they become "
-        "visible on the viewport. You must also enable Overlay Scrollbars.";
-
 inline constexpr char kOverlayStrategiesName[] = "Select HW overlay strategies";
 inline constexpr char kOverlayStrategiesDescription[] =
     "Select strategies used to promote quads to HW overlays. Note that "

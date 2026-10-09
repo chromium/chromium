@@ -5240,12 +5240,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOverlayScrollbarsFlashWhenMouseEnterDescription,
      kOsAura,
      FEATURE_VALUE_TYPE(features::kOverlayScrollbarFlashWhenMouseEnter)},
-    {"overlay-scrollbars-flash-once-visible-on-viewport",
-     flag_descriptions::kOverlayScrollbarsFlashOnceVisibleOnViewportName,
-     flag_descriptions::kOverlayScrollbarsFlashOnceVisibleOnViewportDescription,
-     kOsAura,
-     FEATURE_VALUE_TYPE(
-         features::kOverlayScrollbarFlashOnlyOnceVisibleOnViewport)},
 #endif  // USE_AURA
 #if BUILDFLAG(ENABLE_JXL_DECODER)
     {"enable-jxl-image-format", flag_descriptions::kJxlImageFormatName,

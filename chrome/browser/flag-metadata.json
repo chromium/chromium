@@ -7977,15 +7977,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "overlay-scrollbars-flash-once-visible-on-viewport",
-    "owners": [
-      "msisov@igalia.com",
-      "chrishtr@chromium.org",
-      "cros-ui-foundations@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "overlay-scrollbars-flash-when-mouse-enter",
     "owners": [
       "msisov@igalia.com",

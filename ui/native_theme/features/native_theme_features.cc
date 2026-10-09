@@ -48,11 +48,6 @@ constinit const base::FeatureParam<ScrollbarMode> kScrollbarMode{
 // screenshot is captured.
 BASE_FEATURE(kScrollbarAnimations, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, scrollbars flash only once when a page is loaded or when they
-// become visible on the viewport instead of flashing after every scroll update.
-BASE_FEATURE(kOverlayScrollbarFlashOnlyOnceVisibleOnViewport,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables will flash scrollbar when user move mouse enter a scrollable area.
 BASE_FEATURE(kOverlayScrollbarFlashWhenMouseEnter,
              base::FEATURE_ENABLED_BY_DEFAULT);

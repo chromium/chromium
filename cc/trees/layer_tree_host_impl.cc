@@ -625,14 +625,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
         GetTaskRunner(), this, settings_.enable_image_animation_resync);
   }
 
-  CHECK(!(settings.scrollbar_flash_once_after_scroll_update &&
-          settings.scrollbar_flash_after_any_scroll_update))
-      << "Only one of "
-      << "scrollbar_flash_once_after_scroll_update "
-      << "or "
-      << "scrollbar_flash_after_any_scroll_update "
-      << "can be enabled";
-
   if (settings.trees_in_viz_in_viz_process) {
     compositor_frame_reporting_controller_ =
         std::make_unique<StubCompositorFrameReportingController>();
@@ -6043,29 +6035,13 @@ void LayerTreeHostImpl::ResetHasInputForFrameInterval() {
 bool LayerTreeHostImpl::MaybeFlashAllScrollbars(ElementId tracking_element_id,
                                                 bool did_scroll) {
   bool has_tracking_element_id_flashed = false;
-  if (settings_.scrollbar_flash_after_any_scroll_update) {
-    FlashAllScrollbars(did_scroll);
-    // Always assume that the given |element_id| was flashed (along with the
-    // other scrollbars) since we are flashing all scrollbars.
-    has_tracking_element_id_flashed = true;
-  } else if (settings_.scrollbar_flash_once_after_scroll_update) {
+  if (settings_.scrollbar_flash_once_after_scroll_update) {
     // This call will flash all the scrollbars including the given |element_id|
     // if it has not flashed them before.
     has_tracking_element_id_flashed =
         MaybeFlashAllScrollbarsOnce(tracking_element_id, did_scroll);
   }
   return has_tracking_element_id_flashed;
-}
-
-void LayerTreeHostImpl::FlashAllScrollbars(bool did_scroll) {
-  CHECK(settings().scrollbar_flash_after_any_scroll_update);
-  for (auto& pair : scrollbar_animation_controllers_) {
-    if (did_scroll) {
-      pair.second->DidScrollUpdate();
-    } else {
-      pair.second->WillUpdateScroll();
-    }
-  }
 }
 
 void LayerTreeHostImpl::EraseFlashedScrollbars() {
