@@ -469,6 +469,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.RestrictModeLookupResult"
+    enum="VariationsRestrictModeLookupResult" expires_after="2027-09-26">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the result of looking up a value for the &quot;restrict&quot; URL
+    param of a variations seed request. Recorded once per Android WebView
+    variations seed fetch attempt in builds that provide such a value.
+  </summary>
+</histogram>
+
+<histogram name="Variations.RestrictModeLookupTime" units="ms"
+    expires_after="2027-09-26">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records how long it took to look up a value for the &quot;restrict&quot; URL
+    param of a variations seed request, including lookups that timed out or
+    failed. Recorded once per Android WebView variations seed fetch attempt in
+    which the lookup was performed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.RuntimeMutability.Error.FeatureName"
     enum="FeatureNameHash" expires_after="2027-06-30">
   <owner>rogerm@google.com</owner>

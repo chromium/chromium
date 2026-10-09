@@ -316,6 +316,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="All variations are restricted"/>
 </enum>
 
+<enum name="VariationsRestrictModeLookupResult">
+  <int value="0" label="Restrict mode set"/>
+  <int value="1" label="Restrict mode not set"/>
+  <int value="2" label="Platform services unavailable"/>
+  <int value="3" label="API unsupported"/>
+  <int value="4" label="API not connected"/>
+  <int value="5" label="Timeout"/>
+  <int value="6" label="Error"/>
+</enum>
+
 <!-- LINT.IfChange(VariationsRotateUmaLogResult) -->
 
 <enum name="VariationsRotateUmaLogResult">
