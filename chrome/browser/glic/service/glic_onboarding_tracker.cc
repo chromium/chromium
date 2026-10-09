@@ -13,12 +13,37 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/service/glic_onboarding_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace glic {
+
+// Onboarding state machine:
+//
+//                     +-------------------+
+//                     |  kNoInteraction   |
+//                     +-------------------+
+//                       /               \
+//     OnConsentChanged /                 \ OnInvoke
+//                     v                   v
+//     +-----------------------+     +-----------------------+
+//     | kOptedInButNotInvoked |     | kNotOptedInButInvoked |
+//     +-----------------------+     +-----------------------+
+//                 \                     /             \
+//         OnInvoke \  OnConsentChanged /               \ OnPrompt
+//                   v                 v                 v
+//                 +---------------------+     +--------------------+
+//                 |  kOptedInAndInvoked |     | kPromptWithNoOptIn |
+//                 +---------------------+     +--------------------+
+//                            \                   /
+//                    OnPrompt \                 / OnConsentChanged
+//                              v               v
+//                            +--------------------+
+//                            |  kPromptAndOptIn   |
+//                            +--------------------+
 
 GlicOnboardingTracker::GlicOnboardingTracker(Profile* profile,
                                              GlicEnabling* enabling)
@@ -65,6 +90,7 @@ void GlicOnboardingTracker::OnConsentChanged() {
     onboarding_status_.SetStatus(OnboardingStatus::kOptedInAndInvoked);
   } else if (current_status == OnboardingStatus::kPromptWithNoOptIn) {
     onboarding_status_.SetStatus(OnboardingStatus::kPromptAndOptIn);
+    base::RecordAction(base::UserMetricsAction("Glic.Onboarding.Completed"));
   }
 }
 
@@ -101,7 +127,6 @@ void GlicOnboardingTracker::OnInvoke(mojom::InvocationSource source,
   }
 
   OnboardingStatus current_status = GetStatus();
-  base::RecordAction(base::UserMetricsAction("Glic.Onboarding.Invoked"));
   base::UmaHistogramEnumeration("Glic.Onboarding.Invoked.Status",
                                 current_status);
   if (current_status == OnboardingStatus::kNoInteraction) {
@@ -121,17 +146,19 @@ void GlicOnboardingTracker::OnFreOptInShown(ukm::SourceId source_id) {
 void GlicOnboardingTracker::OnPrompt(ukm::SourceId source_id) {
   pref_service_->SetTime(prefs::kGlicLastPromptTime, base::Time::Now());
   OnboardingStatus current_status = GetStatus();
-  base::RecordAction(
-      base::UserMetricsAction("Glic.Onboarding.PromptSubmitted"));
-  if (!enabling_ || !enabling_->HasConsented() ||
-      !onboarding_status_.HasPrompt()) {
+  base::UmaHistogramEnumeration("Glic.Onboarding.PromptSubmitted.Status",
+                                current_status);
+
+  if (current_status != OnboardingStatus::kPromptAndOptIn) {
     RecordFunnelStep(OnboardingFunnelStep::kFirstPromptSubmitted,
                      last_invocation_source_, source_id);
   }
+
   if (current_status == OnboardingStatus::kNotOptedInButInvoked) {
     onboarding_status_.SetStatus(OnboardingStatus::kPromptWithNoOptIn);
   } else if (current_status == OnboardingStatus::kOptedInAndInvoked) {
     onboarding_status_.SetStatus(OnboardingStatus::kPromptAndOptIn);
+    base::RecordAction(base::UserMetricsAction("Glic.Onboarding.Completed"));
   }
 }
 

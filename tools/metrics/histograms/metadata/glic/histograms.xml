@@ -2255,11 +2255,11 @@ chromium-metrics-reviews@google.com.
   <owner>perrier@chromium.org</owner>
   <owner>glic+metrics@google.com</owner>
   <summary>
-    Records the onboarding status at the time Glic is invoked. Recorded when
-    Glic is invoked during onboarding. Invoked is defined as a new embedder
-    being shown for a tab or Floaty. Tab switching or focus events are not
-    considered invoking, but daisy chaining, conversation switching, or
-    re-opening on an already bound tab are considered invoking.
+    Records the onboarding status at the time Glic is invoked. Recorded on every
+    Glic invocation, including before and after onboarding completes. Invoked is
+    defined as a new embedder being shown for a tab or Floaty. Tab switching or
+    focus events are not considered invoking, but daisy chaining, conversation
+    switching, or re-opening on an already bound tab are considered invoking.
   </summary>
 </histogram>
 
@@ -2294,6 +2294,17 @@ chromium-metrics-reviews@google.com.
     <variant name="OptIn"/>
     <variant name="UserSubmit"/>
   </token>
+</histogram>
+
+<histogram name="Glic.Onboarding.PromptSubmitted.Status"
+    enum="GlicOnboardingStatus" expires_after="2027-06-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <summary>
+    Records the onboarding status at the time a prompt is submitted in Glic.
+    Recorded on every prompt submission, including before and after onboarding
+    completes.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Onboarding.WebUiLoadTime.{Visibility}" units="ms"

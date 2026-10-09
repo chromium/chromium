@@ -94,21 +94,40 @@ TEST_F(GlicOnboardingTrackerTest, StateTransitions_StandardFlow) {
       profile_->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime).is_null());
   histogram_tester.ExpectUniqueSample("Glic.Onboarding.Invoked.Status",
                                       OnboardingStatus::kNoInteraction, 1);
-  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Invoked"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
 
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kOptedInAndInvoked);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
 
   tracker.OnPrompt(ukm::kInvalidSourceId);
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptAndOptIn);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetTime(prefs::kGlicLastPromptTime).is_null());
+  histogram_tester.ExpectUniqueSample("Glic.Onboarding.PromptSubmitted.Status",
+                                      OnboardingStatus::kOptedInAndInvoked, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
+
+  // Subsequent invocations and prompts after full onboarding continue to record
+  // status histograms, but do not record user actions again.
+  tracker.OnInvoke(mojom::InvocationSource::kTopChromeButton,
+                   ukm::kInvalidSourceId);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.Invoked.Status",
+                                     OnboardingStatus::kPromptAndOptIn, 1);
+
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.PromptSubmitted.Status",
+                                     OnboardingStatus::kPromptAndOptIn, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Invoked"), 0);
   EXPECT_EQ(
-      user_action_tester.GetActionCount("Glic.Onboarding.PromptSubmitted"), 1);
+      user_action_tester.GetActionCount("Glic.Onboarding.PromptSubmitted"), 0);
 }
 
 TEST_F(GlicOnboardingTrackerTest, StateTransitions_OptInFirst) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   GlicOnboardingTracker tracker(profile_, enabling_.get());
 
   profile_->GetPrefs()->SetInteger(
@@ -118,21 +137,96 @@ TEST_F(GlicOnboardingTrackerTest, StateTransitions_OptInFirst) {
   tracker.OnInvoke(mojom::InvocationSource::kTopChromeButton,
                    ukm::kInvalidSourceId);
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kOptedInAndInvoked);
+  histogram_tester.ExpectUniqueSample("Glic.Onboarding.Invoked.Status",
+                                      OnboardingStatus::kOptedInButNotInvoked,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
+
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptAndOptIn);
+  histogram_tester.ExpectUniqueSample("Glic.Onboarding.PromptSubmitted.Status",
+                                      OnboardingStatus::kOptedInAndInvoked, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
+
+  // Subsequent invocations and prompts after full onboarding continue to record
+  // status histograms, but do not record user actions again.
+  tracker.OnInvoke(mojom::InvocationSource::kTopChromeButton,
+                   ukm::kInvalidSourceId);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.Invoked.Status",
+                                     OnboardingStatus::kPromptAndOptIn, 1);
+
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.PromptSubmitted.Status",
+                                     OnboardingStatus::kPromptAndOptIn, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
 }
 
 TEST_F(GlicOnboardingTrackerTest, StateTransitions_UnconsentedPrompt) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   GlicOnboardingTracker tracker(profile_, enabling_.get());
 
   tracker.OnInvoke(mojom::InvocationSource::kTopChromeButton,
                    ukm::kInvalidSourceId);
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kNotOptedInButInvoked);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
 
   tracker.OnPrompt(ukm::kInvalidSourceId);
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptWithNoOptIn);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.PromptSubmitted.Status",
+                                     OnboardingStatus::kNotOptedInButInvoked,
+                                     1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
 
+  // Repeated prompt while unconsented records histogram sample.
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptWithNoOptIn);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.PromptSubmitted.Status",
+                                     OnboardingStatus::kPromptWithNoOptIn, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
+
+  // Accepting FRE transitions from kPromptWithNoOptIn to kPromptAndOptIn,
+  // recording Glic.Onboarding.Completed.
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
   EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptAndOptIn);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
+
+  // Subsequent prompts while fully onboarded continue recording status
+  // histogram, but do not record Glic.Onboarding.Completed again.
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  histogram_tester.ExpectBucketCount("Glic.Onboarding.PromptSubmitted.Status",
+                                     OnboardingStatus::kPromptAndOptIn, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
+
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 1);
+}
+
+TEST_F(GlicOnboardingTrackerTest,
+       AlreadyFullyOnboarded_DoesNotRecordUserActions) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicOnboardingStatus,
+      static_cast<int>(OnboardingStatus::kPromptAndOptIn));
+  GlicOnboardingTracker tracker(profile_, enabling_.get());
+  EXPECT_EQ(tracker.GetStatus(), OnboardingStatus::kPromptAndOptIn);
+
+  tracker.OnInvoke(mojom::InvocationSource::kTopChromeButton,
+                   ukm::kInvalidSourceId);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
+  histogram_tester.ExpectUniqueSample("Glic.Onboarding.Invoked.Status",
+                                      OnboardingStatus::kPromptAndOptIn, 1);
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime).is_null());
+
+  tracker.OnPrompt(ukm::kInvalidSourceId);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
+  histogram_tester.ExpectUniqueSample("Glic.Onboarding.PromptSubmitted.Status",
+                                      OnboardingStatus::kPromptAndOptIn, 1);
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetTime(prefs::kGlicLastPromptTime).is_null());
 }
 
 TEST_F(GlicOnboardingTrackerTest, Ukm_StandardOnboardingFunnel) {
