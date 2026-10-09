@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -45,7 +46,7 @@ namespace enterprise_data_protection {
 namespace {
 
 const char* GetAnalysisPolicy() {
-  static std::string policy = base::StringPrintf(
+  static base::NoDestructor<std::string> policy(base::StringPrintf(
       R"({
         "service_provider": "google",
         "enable": [
@@ -56,8 +57,8 @@ const char* GetAnalysisPolicy() {
         ],
         "block_until_verdict": 1
       })",
-      enterprise_connectors::kDlpTag, enterprise_connectors::kMalwareTag);
-  return policy.c_str();
+      enterprise_connectors::kDlpTag, enterprise_connectors::kMalwareTag));
+  return policy->c_str();
 }
 
 // The network request connector uses an audit-only policy schema.
@@ -145,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, PolicyUnset) {
 
   // The chain can still be retrieved using the SB cache.
   chain = enterprise_connectors::GetReferrerChain(main_url(), *contents());
-  ASSERT_EQ(chain.size(), 2u);
+  ASSERT_EQ(chain.size(), 2);
   ASSERT_EQ(chain[0].url(), main_url());
   ASSERT_EQ(chain[1].url(), secondary_url());
 }
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, DownloadItem) {
   // own URL.
   auto download_chain =
       safe_browsing::GetOrIdentifyReferrerChainForEnterprise(download);
-  ASSERT_EQ(download_chain.size(), 1u);
+  ASSERT_EQ(download_chain.size(), 1);
   ASSERT_EQ(download_chain[0].url(), download_url);
   ASSERT_TRUE(enterprise_connectors::HasCachedChainForTesting(download));
 
@@ -243,13 +244,13 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, DownloadItem) {
 
   download_chain =
       safe_browsing::GetOrIdentifyReferrerChainForEnterprise(download);
-  ASSERT_EQ(download_chain.size(), 1u);
+  ASSERT_EQ(download_chain.size(), 1);
   ASSERT_EQ(download_chain[0].url(), download_url);
   ASSERT_TRUE(enterprise_connectors::HasCachedChainForTesting(download));
 
   contents_chain =
       enterprise_connectors::GetReferrerChain(main_url(), *contents());
-  ASSERT_EQ(contents_chain.size(), 2u);
+  ASSERT_EQ(contents_chain.size(), 2);
   ASSERT_EQ(contents_chain[0].url(), main_url());
   ASSERT_EQ(contents_chain[1].url(), secondary_url());
 }
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(DataProtectionNavigationControllerPolicyTest,
 
   chain = enterprise_connectors::GetReferrerChain(
       main_url(), *browser()->GetTabStripModel()->GetActiveWebContents());
-  ASSERT_EQ(chain.size(), 2u);
+  ASSERT_EQ(chain.size(), 2);
   ASSERT_EQ(chain[0].url(), main_url());
   ASSERT_EQ(chain[1].url(), secondary_url());
 }

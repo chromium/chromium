@@ -170,6 +170,27 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    configs += [ "//components/enterprise:extra_warnings" ]
+
+    sources = [ "desktop_data_controls_dialog_browsertest.cc" ]
+
+    deps = [
+      ":data_controls",
+      ":test_support",
+      "//base",
+      "//chrome/browser/ui/webui:chrome_web_contents_handler",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//ui/web_dialogs:test_support",
+    ]
+  }
+}
+
 if (is_android) {
   source_set("android_browsertests") {
     testonly = true

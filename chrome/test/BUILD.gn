@@ -1401,6 +1401,7 @@ if (!is_android) {
       "//chrome/browser/enterprise:browser_tests",
       "//chrome/browser/enterprise/browser_management:browser_tests",
       "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/enterprise/data_protection:browser_tests",
       "//chrome/browser/enterprise/platform_auth:browser_tests",
       "//chrome/browser/enterprise/signals:browser_tests",
       "//chrome/browser/enterprise/watermark:browser_tests",
@@ -2614,8 +2615,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/spellchecker:browser_tests" ]
     }
 
-    sources += [ "//chrome/browser/enterprise/data_protection/view_source_navigation_throttle_browsertest.cc" ]
-
     if (is_win || is_mac || is_linux) {
       deps += [
         "../browser/enterprise/connectors/test:test_support",
@@ -2625,19 +2624,7 @@ if (!is_android) {
     }
 
     if (enterprise_data_controls) {
-      sources += [
-        "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_browsertest.cc",
-        "//chrome/browser/enterprise/data_protection/data_protection_navigation_controller_browsertest.cc",
-        "//chrome/browser/enterprise/data_protection/data_protection_telemetry_browsertest.cc",
-      ]
-      deps += [ "//components/enterprise/connectors/core:test_support" ]
-    }
-    if (enterprise_data_controls && !is_android) {
-      sources += [
-        "//chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_browsertest.cc",
-        "//chrome/browser/enterprise/data_protection/clipboard_toast_tracker_browsertest.cc",
-      ]
-      deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
+      deps += [ "//chrome/browser/enterprise/data_controls:browser_tests" ]
     }
 
     deps += [
