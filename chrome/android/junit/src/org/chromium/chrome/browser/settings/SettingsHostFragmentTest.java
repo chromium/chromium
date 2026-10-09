@@ -26,6 +26,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -355,6 +356,61 @@ public class SettingsHostFragmentTest {
         multiColumnSettings.getChildFragmentManager().executePendingTransactions();
 
         assertEquals(0, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+    }
+
+    /**
+     * Regression test for crbug.com/571768954: showing a detail fragment while the activity's
+     * FragmentManager has already saved its state (e.g. during post-native tab restoration while
+     * the activity is stopped) must defer the transaction until onResume() instead of crashing in
+     * FragmentManager.checkStateLoss().
+     */
+    @Test
+    public void testShowFragment_WhenStateSaved_DefersUntilResume() {
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        mActivityScenarios.getScenario().moveToState(Lifecycle.State.CREATED);
+        assertTrue(multiColumnSettings.getChildFragmentManager().isStateSaved());
+
+        Bundle args = new Bundle();
+        args.putString("test_key", "test_value");
+        SecondFakeSettingsFragment fragment = new SecondFakeSettingsFragment();
+        fragment.setArguments(args);
+        boolean shown =
+                mSettingsHostFragment.showFragment(
+                        fragment, /* addToBackStack= */ true, /* tag= */ "test_tag");
+        assertTrue("showFragment should succeed when state is saved", shown);
+        assertEquals(
+                "Transaction should be deferred while state is saved",
+                0,
+                multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+
+        mActivityScenarios.getScenario().moveToState(Lifecycle.State.RESUMED);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        Fragment detail =
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail);
+        assertTrue(
+                "Deferred detail fragment should be shown after resuming",
+                detail instanceof SecondFakeSettingsFragment);
+        assertEquals("test_value", detail.getArguments().getString("test_key"));
+        assertEquals(1, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+        assertEquals(
+                "test_tag",
+                multiColumnSettings.getChildFragmentManager().getBackStackEntryAt(0).getName());
     }
 
     @Test

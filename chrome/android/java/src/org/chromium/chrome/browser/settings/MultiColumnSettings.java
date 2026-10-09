@@ -493,7 +493,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     /** Shows a fragment inside the detail pane (`preferences_detail`). */
     public void showDetailFragment(
             Fragment fragment, boolean addToBackStack, @Nullable String tag) {
-        if (!isAdded()) {
+        if (!isAdded() || getChildFragmentManager().isStateSaved()) {
             Intent intent = new Intent();
             intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, fragment.getClass().getName());
             if (fragment.getArguments() != null) {
