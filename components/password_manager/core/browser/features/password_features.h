@@ -88,10 +88,6 @@ BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
 BASE_DECLARE_FEATURE(kDisablePasswordChangeFromNewPasswordFields);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// Enables the Mojo JavaScript API for the password manager, replacing the
-// legacy passwordsPrivate extension API.
-BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApi);
-
 // Enables Phase 2 of the Mojo JavaScript API migration for the password
 // manager, replacing the legacy passwordsPrivate extension API.
 BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApiPhase2);

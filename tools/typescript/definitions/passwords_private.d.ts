@@ -16,14 +16,6 @@ declare global {
         EDIT = 'EDIT',
       }
 
-      export enum ExportProgressStatus {
-        NOT_STARTED = 'NOT_STARTED',
-        IN_PROGRESS = 'IN_PROGRESS',
-        SUCCEEDED = 'SUCCEEDED',
-        FAILED_CANCELLED = 'FAILED_CANCELLED',
-        FAILED_WRITE_FAILED = 'FAILED_WRITE_FAILED',
-      }
-
       export enum CompromiseType {
         LEAKED = 'LEAKED',
         PHISHED = 'PHISHED',
@@ -179,12 +171,6 @@ declare global {
         id: number;
       }
 
-      export interface PasswordExportProgress {
-        status: ExportProgressStatus;
-        filePath?: string;
-        folderName?: string;
-      }
-
       export interface PasswordCheckStatus {
         state: PasswordCheckState;
         totalNumberOfPasswords?: number;
@@ -210,8 +196,6 @@ declare global {
           Promise<void>;
       export function removeCredential(
           id: number, fromStores: PasswordStoreSet): void;
-      export function removePasswordException(id: number): void;
-      export function undoRemoveSavedPasswordOrException(): void;
       export function requestPlaintextPassword(
           id: number, reason: PlaintextReason): Promise<string>;
       export function requestCredentialsDetails(ids: number[]):
@@ -219,7 +203,6 @@ declare global {
       export function getSavedPasswordList(): Promise<PasswordUiEntry[]>;
       export function getCredentialGroups(): Promise<CredentialGroup[]>;
       export function getPasswordExceptionList(): Promise<ExceptionEntry[]>;
-      export function movePasswordsToAccount(ids: number[]): void;
       export function fetchFamilyMembers(): Promise<FamilyFetchResults>;
       export function sharePassword(id: number, recipients: RecipientInfo[]):
           Promise<void>;
@@ -227,10 +210,6 @@ declare global {
           Promise<ImportResults>;
       export function continueImport(selectedIds: number[]):
           Promise<ImportResults>;
-      export function resetImporter(deleteFile: boolean): Promise<void>;
-      export function exportPasswords(): Promise<void>;
-      export function requestExportProgressStatus():
-          Promise<ExportProgressStatus>;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
       export function getCredentialsWithReusedPassword():
           Promise<PasswordUiEntryList[]>;
@@ -238,21 +217,15 @@ declare global {
           Promise<void>;
       export function unmuteInsecureCredential(credential: PasswordUiEntry):
           Promise<void>;
-      export function startPasswordCheck(): Promise<void>;
       export function getPasswordCheckStatus(): Promise<PasswordCheckStatus>;
       export function getUrlCollection(url: string):
           Promise<UrlCollection|null>;
       export function addPassword(options: AddPasswordOptions): Promise<void>;
-      export function showExportedFileInShell(filePath: string): void;
-      export function disconnectCloudAuthenticator(): Promise<boolean>;
-      export function isConnectedToCloudAuthenticator(): Promise<boolean>;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: PasswordUiEntry[]) => void>;
       export const onPasswordExceptionsListChanged:
           ChromeEvent<(entries: ExceptionEntry[]) => void>;
-      export const onPasswordsFileExportProgress:
-          ChromeEvent<(progress: PasswordExportProgress) => void>;
       export const onAccountStorageActiveStateChanged:
           ChromeEvent<(activeState: boolean) => void>;
       export const onInsecureCredentialsChanged:

@@ -74,8 +74,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ResetImporter(bool delete_file) override;
   void ExportPasswords(base::OnceCallback<void(ExportPasswordsResult)> callback,
                        content::WebContents* web_contents) override;
-  api::passwords_private::ExportProgressStatus GetExportProgressStatus()
-      override;
+  password_manager::ExportProgressStatus GetExportProgressStatus() override;
   bool IsAccountStorageActive() override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
@@ -130,42 +129,17 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ResetPlaintextPassword() { plaintext_password_.reset(); }
   bool ImportPasswordsTriggered() const { return import_passwords_triggered_; }
   bool ContinueImportTriggered() const { return continue_import_triggered_; }
-  bool ResetImporterTriggered() const { return reset_importer_triggered_; }
-  bool ExportPasswordsTriggered() const { return export_passwords_triggered_; }
   bool FetchFamilyMembersTriggered() const {
     return fetch_family_members_triggered_;
   }
   bool SharePasswordTriggered() const { return share_password_triggered_; }
-  bool StartPasswordCheckTriggered() const {
-    return start_password_check_triggered_;
-  }
-  void SetStartPasswordCheckState(
-      password_manager::BulkLeakCheckService::State state) {
-    start_password_check_state_ = state;
-  }
-
-  const std::vector<int>& last_moved_passwords() const {
-    return last_moved_passwords_;
-  }
-
-  bool get_authenticator_interaction_status() const {
-    return authenticator_interacted_;
-  }
 
   bool get_add_shortcut_dialog_shown() const {
     return add_shortcut_dialog_shown_;
   }
 
-  bool get_exported_file_shown_in_shell() const {
-    return exported_file_shown_in_shell_;
-  }
-
   bool get_change_password_manager_pin_called() const {
     return change_password_manager_pin_called_;
-  }
-
-  bool get_disconnect_cloud_authenticator_called() const {
-    return disconnect_cloud_authenticator_called_;
   }
 
   bool get_undo_remove_saved_password_or_exception_called() const {
@@ -219,34 +193,15 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool fetch_family_members_triggered_ = false;
   bool share_password_triggered_ = false;
 
-  // Flags for detecting whether import/export operations have been invoked.
+  // Flags for detecting whether import operations have been invoked.
   bool import_passwords_triggered_ = false;
   bool continue_import_triggered_ = false;
-  bool reset_importer_triggered_ = false;
-  bool export_passwords_triggered_ = false;
-
-  // Flags for detecting whether password check operations have been invoked.
-  bool start_password_check_triggered_ = false;
-  password_manager::BulkLeakCheckService::State start_password_check_state_ =
-      password_manager::BulkLeakCheckService::State::kRunning;
-
-  // Records the ids of the passwords that were last moved.
-  std::vector<int> last_moved_passwords_;
-
-  // Used to track whether user interacted with the ExtendAuthValidity API.
-  bool authenticator_interacted_ = false;
 
   // Used to track whether shortcut creation dialog was shown.
   bool add_shortcut_dialog_shown_ = false;
 
-  // Used to track whether the exported file was shown in shell.
-  bool exported_file_shown_in_shell_ = false;
-
   // Used for checking whether `ChangePasswordManagerPin` is called.
   bool change_password_manager_pin_called_ = false;
-
-  // Used to track whether `DisconnectCloudAuthenticator` was called.
-  bool disconnect_cloud_authenticator_called_ = false;
 
   // Used to track whether `UndoRemoveSavedPasswordOrException` was called.
   bool undo_remove_saved_password_or_exception_called_ = false;

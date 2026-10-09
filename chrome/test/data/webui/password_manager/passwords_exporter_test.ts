@@ -6,7 +6,6 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {CrButtonElement, CrDialogElement, PasswordsExporterElement} from 'chrome://password-manager/password_manager.js';
 import {ExportPasswordsResult, ExportProgressStatus, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -43,7 +42,6 @@ suite('PasswordExporterTest', function() {
   let passwordsExporter: PasswordsExporterElement;
 
   setup(function() {
-    loadTimeData.overrideValues({enablePasswordManagerMojoApi: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);

@@ -95,31 +95,6 @@ using password_manager::constants::kPasswordManagerAuthValidity;
 // Time to keep password in clipboard before clearing.
 constexpr base::TimeDelta kClipboardClearDelay = base::Seconds(120);
 
-// Map password_manager::ExportProgressStatus to
-// extensions::api::passwords_private::ExportProgressStatus.
-extensions::api::passwords_private::ExportProgressStatus ConvertStatus(
-    password_manager::ExportProgressStatus status) {
-  switch (status) {
-    case password_manager::ExportProgressStatus::kNotStarted:
-      return extensions::api::passwords_private::ExportProgressStatus::
-          kNotStarted;
-    case password_manager::ExportProgressStatus::kInProgress:
-      return extensions::api::passwords_private::ExportProgressStatus::
-          kInProgress;
-    case password_manager::ExportProgressStatus::kSucceeded:
-      return extensions::api::passwords_private::ExportProgressStatus::
-          kSucceeded;
-    case password_manager::ExportProgressStatus::kFailedCancelled:
-      return extensions::api::passwords_private::ExportProgressStatus::
-          kFailedCancelled;
-    case password_manager::ExportProgressStatus::kFailedWrite:
-      return extensions::api::passwords_private::ExportProgressStatus::
-          kFailedWriteFailed;
-  }
-
-  NOTREACHED();
-}
-
 std::u16string GetReauthPurpose(
     extensions::api::passwords_private::PlaintextReason reason) {
 #if BUILDFLAG(IS_MAC)
@@ -814,9 +789,9 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
                      std::move(accepted_callback), web_contents->GetWeakPtr()));
 }
 
-api::passwords_private::ExportProgressStatus
+password_manager::ExportProgressStatus
 PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
-  return ConvertStatus(password_export_controller_->GetExportProgressStatus());
+  return password_export_controller_->GetExportProgressStatus();
 }
 
 bool PasswordsPrivateDelegateImpl::IsAccountStorageActive() {
@@ -1030,16 +1005,6 @@ void PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH(
 
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
     const password_manager::PasswordExportInfo& progress) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordManagerMojoApi)) {
-    if (event_router_) {
-      event_router_->OnPasswordsExportProgress(ConvertStatus(progress.status),
-                                               progress.file_path,
-                                               progress.folder_name);
-    }
-    return;
-  }
-
   observers_.Notify(
       &PasswordsPrivateDelegate::Observer::OnPasswordsExportProgress,
       progress.status, progress.folder_name);

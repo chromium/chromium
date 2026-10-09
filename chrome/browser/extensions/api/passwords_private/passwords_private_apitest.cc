@@ -117,43 +117,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->ContinueImportTriggered();
   }
 
-  bool reset_importer_was_triggered() {
-    return test_delegate_->ResetImporterTriggered();
-  }
-
-  bool exportPasswordsWasTriggered() {
-    return test_delegate_->ExportPasswordsTriggered();
-  }
-
-  bool start_password_check_triggered() {
-    return test_delegate_->StartPasswordCheckTriggered();
-  }
-
-  void set_start_password_check_state(
-      password_manager::BulkLeakCheckService::State state) {
-    test_delegate_->SetStartPasswordCheckState(state);
-  }
-
   void ResetPlaintextPassword() { test_delegate_->ResetPlaintextPassword(); }
 
   void AddCompromisedCredential(int id) {
     test_delegate_->AddCompromisedCredential(id);
-  }
-
-  const std::vector<int>& last_moved_passwords() const {
-    return test_delegate_->last_moved_passwords();
-  }
-
-  bool get_authenticator_interaction_status() const {
-    return test_delegate_->get_authenticator_interaction_status();
-  }
-
-  bool get_exported_file_shown_in_shell() const {
-    return test_delegate_->get_exported_file_shown_in_shell();
-  }
-
-  bool get_disconnect_cloud_authenticator_called() const {
-    return test_delegate_->get_disconnect_cloud_authenticator_called();
   }
 
  private:
@@ -226,18 +193,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ChangeCredentialNotFound) {
   EXPECT_TRUE(RunPasswordsSubtest("changeCredentialNotFound")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RemoveAndUndoRemoveSavedPassword) {
-  EXPECT_TRUE(RunPasswordsSubtest("removeAndUndoRemoveSavedPassword"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RemoveAndUndoRemovePasswordException) {
-  EXPECT_TRUE(RunPasswordsSubtest("removeAndUndoRemovePasswordException"))
-      << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RemovePasskey) {
   EXPECT_TRUE(RunPasswordsSubtest("removePasskey")) << message_;
 }
@@ -294,22 +249,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ContinueImport) {
   EXPECT_TRUE(continue_import_was_triggered());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ResetImporter) {
-  EXPECT_FALSE(reset_importer_was_triggered());
-  EXPECT_TRUE(RunPasswordsSubtest("resetImporter")) << message_;
-  EXPECT_TRUE(reset_importer_was_triggered());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ExportPasswords) {
-  EXPECT_FALSE(exportPasswordsWasTriggered());
-  EXPECT_TRUE(RunPasswordsSubtest("exportPasswords")) << message_;
-  EXPECT_TRUE(exportPasswordsWasTriggered());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestExportProgressStatus) {
-  EXPECT_TRUE(RunPasswordsSubtest("requestExportProgressStatus")) << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetInsecureCredentials) {
   EXPECT_TRUE(RunPasswordsSubtest("getInsecureCredentials")) << message_;
 }
@@ -329,30 +268,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, UnmuteInsecureCredentialFails) {
   EXPECT_TRUE(RunPasswordsSubtest("unmuteInsecureCredentialFails")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartPasswordCheck) {
-  set_start_password_check_state(
-      password_manager::BulkLeakCheckService::State::kRunning);
-  EXPECT_FALSE(start_password_check_triggered());
-  EXPECT_TRUE(RunPasswordsSubtest("startPasswordCheck")) << message_;
-  EXPECT_TRUE(start_password_check_triggered());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartPasswordCheckFailed) {
-  set_start_password_check_state(
-      password_manager::BulkLeakCheckService::State::kIdle);
-  EXPECT_FALSE(start_password_check_triggered());
-  EXPECT_TRUE(RunPasswordsSubtest("startPasswordCheckFailed")) << message_;
-  EXPECT_TRUE(start_password_check_triggered());
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPasswordCheckStatus) {
   EXPECT_TRUE(RunPasswordsSubtest("getPasswordCheckStatus")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MovePasswordsToAccount) {
-  EXPECT_TRUE(last_moved_passwords().empty());
-  EXPECT_TRUE(RunPasswordsSubtest("movePasswordsToAccount")) << message_;
-  EXPECT_EQ(42, last_moved_passwords()[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetCredentialGroups) {
@@ -363,22 +280,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        GetCredentialsWithReusedPassword) {
   EXPECT_TRUE(RunPasswordsSubtest("getCredentialsWithReusedPassword"))
       << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ShowExportedFileInShell) {
-  EXPECT_FALSE(get_exported_file_shown_in_shell());
-  EXPECT_TRUE(RunPasswordsSubtest("showExportedFileInShell")) << message_;
-  EXPECT_TRUE(get_exported_file_shown_in_shell());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DisconnectCloudAuthenticator) {
-  EXPECT_TRUE(RunPasswordsSubtest("disconnectCloudAuthenticator"));
-  EXPECT_TRUE(get_disconnect_cloud_authenticator_called());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       IsConnectedToCloudAuthenticator) {
-  EXPECT_TRUE(RunPasswordsSubtest("isConnectedToCloudAuthenticator"));
 }
 
 }  // namespace extensions

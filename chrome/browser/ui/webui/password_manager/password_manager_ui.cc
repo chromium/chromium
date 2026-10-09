@@ -726,11 +726,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
           : IDS_SETTINGS_PASSWORD_CHANGE_CONTENT);
 
   source->AddBoolean(
-      "enablePasswordManagerMojoApi",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordManagerMojoApi));
-
-  source->AddBoolean(
       "enablePasswordManagerMojoApiPhase2",
       base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordManagerMojoApiPhase2));

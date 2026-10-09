@@ -40,10 +40,6 @@ class PasswordsPrivateEventRouterImpl : public PasswordsPrivateEventRouter {
   void OnPasswordExceptionsListChanged(
       const std::vector<api::passwords_private::ExceptionEntry>& exceptions)
       override;
-  void OnPasswordsExportProgress(
-      api::passwords_private::ExportProgressStatus status,
-      const std::string& file_path,
-      const std::string& folder_name) override;
   void OnAccountStorageActiveStateChanged(bool active) override;
   void OnInsecureCredentialsChanged(
       std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials)

@@ -36,12 +36,6 @@ class MockPasswordsPrivateEventRouter : public PasswordsPrivateEventRouter {
       (const std::vector<api::passwords_private::ExceptionEntry>& exceptions),
       (override));
   MOCK_METHOD(void,
-              OnPasswordsExportProgress,
-              (api::passwords_private::ExportProgressStatus status,
-               const std::string& file_path,
-               const std::string& folder_name),
-              (override));
-  MOCK_METHOD(void,
               OnAccountStorageActiveStateChanged,
               (bool active),
               (override));

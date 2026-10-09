@@ -428,8 +428,7 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
        GetPasswordsExportProgress_CallsDelegate) {
   base::test::TestFuture<mojom::ExportProgressStatus> future;
   EXPECT_CALL(mock_delegate(), GetExportProgressStatus())
-      .WillOnce(Return(extensions::api::passwords_private::
-                           ExportProgressStatus::kInProgress));
+      .WillOnce(Return(password_manager::ExportProgressStatus::kInProgress));
 
   handler().GetPasswordsExportProgress(future.GetCallback());
 

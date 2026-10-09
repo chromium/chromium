@@ -12,19 +12,6 @@ enum PlaintextReason {
   "EDIT"
 };
 
-enum ExportProgressStatus {
-  // No export was started.
-  "NOT_STARTED",
-  // Data is being written to the destination.
-  "IN_PROGRESS",
-  // Data has been written.
-  "SUCCEEDED",
-  // The user rejected the file selection prompts.
-  "FAILED_CANCELLED",
-  // Writing to the destination failed.
-  "FAILED_WRITE_FAILED"
-};
-
 enum CompromiseType {
   // If the credentials was leaked by a data breach.
   "LEAKED",
@@ -318,19 +305,6 @@ dictionary ExceptionEntry {
   required long id;
 };
 
-dictionary PasswordExportProgress {
-  // The current status of the export task.
-  required ExportProgressStatus status;
-
-  // If |status| is $ref(ExportProgressStatus.SUCCEEDED), this will
-  // be the full path of the written file.
-  DOMString filePath;
-
-  // If |status| is $ref(ExportProgressStatus.FAILED_WRITE_FAILED), this will
-  // be the name of the selected folder to export to.
-  DOMString folderName;
-};
-
 // Object describing the current state of the password check. The check could
 // be in any of the above described states.
 dictionary PasswordCheckStatus {
@@ -397,17 +371,6 @@ interface OnPasswordExceptionsListChangedEvent : ExtensionEvent {
   static undefined removeListener(
       OnPasswordExceptionsListChangedListener listener);
   static boolean hasListener(OnPasswordExceptionsListChangedListener listener);
-};
-
-// |status|: The progress status and an optional UI message.
-callback OnPasswordsFileExportProgressListener = undefined (
-    PasswordExportProgress status);
-
-interface OnPasswordsFileExportProgressEvent : ExtensionEvent {
-  static undefined addListener(OnPasswordsFileExportProgressListener listener);
-  static undefined removeListener(
-      OnPasswordsFileExportProgressListener listener);
-  static boolean hasListener(OnPasswordsFileExportProgressListener listener);
 };
 
 // |enabled|: The new active state.
@@ -487,15 +450,6 @@ interface PasswordsPrivate {
   // |fromStores|: The store(s) from which the credential is being removed.
   static undefined removeCredential(long id, PasswordStoreSet fromStores);
 
-  // Removes the saved password exception corresponding to |id|. If
-  // no exception with this id exists, this function is a no-op. This will
-  // remove exception from both stores.
-  // |id|: The id for the exception url entry is being removed.
-  static undefined removePasswordException(long id);
-
-  // Undoes the last removal of saved password(s) or exception(s).
-  static undefined undoRemoveSavedPasswordOrException();
-
   // Returns the plaintext password corresponding to |id|. Note that on
   // some operating systems, this call may result in an OS-level
   // reauthentication. Once the password has been fetched, it will be returned
@@ -534,14 +488,6 @@ interface PasswordsPrivate {
   // |PromiseValue|: exceptions
   static Promise<sequence<ExceptionEntry>> getPasswordExceptionList();
 
-  // Moves passwords currently stored on the device to being stored in the
-  // signed-in, non-syncing Google Account. For each id, the result is a
-  // no-op if any of these is true: |id| is invalid; |id| corresponds to a
-  // password already stored in the account; or the user is not using the
-  // account-scoped password storage.
-  // |ids|: The ids for the password entries being moved.
-  static undefined movePasswordsToAccount(sequence<long> ids);
-
   // Fetches family members (password share recipients).
   // |PromiseValue|: results
   static Promise<FamilyFetchResults> fetchFamilyMembers();
@@ -564,26 +510,6 @@ interface PasswordsPrivate {
   // |PromiseValue|: results
   static Promise<ImportResults> continueImport(sequence<long> selectedIds);
 
-  // Resets the PasswordImporter if it is in the CONFLICTS/FINISHED state
-  // and the user closes the dialog. Only when the PasswordImporter is in
-  // FINISHED state, |deleteFile| option is taken into account.
-  // |deleteFile|: Whether to trigger deletion of the last imported file.
-  static Promise<undefined> resetImporter(boolean deleteFile);
-
-  // Triggers the Password Manager password export functionality. Completion
-  // Will be signaled by the onPasswordsFileExportProgress event.
-  // |callback| will be called when the request is started or rejected. If
-  // rejected $(ref:runtime.lastError) will be set to
-  // <code>'in-progress'</code> or <code>'reauth-failed'</code>.
-  static Promise<undefined> exportPasswords();
-
-  // Requests the export progress status. This is the same as the last value
-  // seen on the onPasswordsFileExportProgress event. This function is useful
-  // for checking if an export has already been initiated from an older tab,
-  // where we might have missed the original event.
-  // |PromiseValue|: status
-  static Promise<ExportProgressStatus> requestExportProgressStatus();
-
   // Requests the latest insecure credentials.
   // |PromiseValue|: entries
   static Promise<sequence<PasswordUiEntry>> getInsecureCredentials();
@@ -603,9 +529,6 @@ interface PasswordsPrivate {
   static Promise<undefined> unmuteInsecureCredential(
       PasswordUiEntry credential);
 
-  // Starts a check for insecure passwords. Invokes |callback| on completion.
-  static Promise<undefined> startPasswordCheck();
-
   // Returns the current status of the check via |callback|.
   // |PromiseValue|: status
   static Promise<PasswordCheckStatus> getPasswordCheckStatus();
@@ -623,18 +546,6 @@ interface PasswordsPrivate {
   // |Returns|: The callback that gets invoked on success.
   static Promise<undefined> addPassword(AddPasswordOptions options);
 
-  // Opens a file with exported passwords in the OS shell.
-  static undefined showExportedFileInShell(DOMString file_path);
-
-  // Disconnects the Chrome client from the cloud authenticator.
-  // |PromiseValue|: success
-  static Promise<boolean> disconnectCloudAuthenticator();
-
-  // Checks whether the Chrome client is registered with/connected to
-  // the cloud authenticator.
-  // |PromiseValue|: connected
-  static Promise<boolean> isConnectedToCloudAuthenticator();
-
   // Fired when the saved passwords list has changed, meaning that an entry
   // has been added or removed.
   static attribute OnSavedPasswordsListChangedEvent onSavedPasswordsListChanged;
@@ -643,10 +554,6 @@ interface PasswordsPrivate {
   // entry has been added or removed.
   static attribute OnPasswordExceptionsListChangedEvent
       onPasswordExceptionsListChanged;
-
-  // Fired when the status of the export has changed.
-  static attribute OnPasswordsFileExportProgressEvent
-      onPasswordsFileExportProgress;
 
   // Fired when the active state for the account-scoped storage has changed.
   static attribute OnAccountStorageActiveStateChangedEvent

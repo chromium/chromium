@@ -229,8 +229,7 @@ class PasswordsPrivateDelegate
       content::WebContents* web_contents) = 0;
 
   // Get the most recent progress status.
-  virtual api::passwords_private::ExportProgressStatus
-  GetExportProgressStatus() = 0;
+  virtual password_manager::ExportProgressStatus GetExportProgressStatus() = 0;
 
   // Whether the current signed-in user (aka unconsented primary account) has
   // the Google account storage for passwords is enabled (as opposed to

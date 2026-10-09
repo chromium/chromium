@@ -5,7 +5,7 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 import {ExportPasswordsResult, ExportProgressStatus, ImportResultsStatus, PageCallbackRouter, PasswordManagerActionableError} from 'chrome://password-manager/password_manager.js';
-import type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ImportResults, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerActionableErrorChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
+import type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ImportResults, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerActionableErrorChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
@@ -44,8 +44,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     savedPasswordListChangedListener: CredentialsChangedListener|null,
     passwordCheckStatusListener: PasswordCheckStatusChangedListener|null,
     insecureCredentialsListener: CredentialsChangedListener|null,
-    passwordsFileExportProgressListener: PasswordsFileExportProgressListener|
-    null,
     passwordManagerAuthTimeoutListener: PasswordManagerAuthTimeoutListener|null,
     passwordManagerActionableErrorChangedListener:
         PasswordManagerActionableErrorChangedListener|null,
@@ -143,7 +141,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       blockedSitesListChangedListener: null,
       insecureCredentialsListener: null,
       passwordCheckStatusListener: null,
-      passwordsFileExportProgressListener: null,
       passwordManagerAuthTimeoutListener: null,
       savedPasswordListChangedListener: null,
       passwordManagerActionableErrorChangedListener: null,
@@ -301,16 +298,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   setExportPasswordsResult(result: ExportPasswordsResult) {
     this.exportPasswordsResult_ = result;
-  }
-
-  addPasswordsFileExportProgressListener(
-      listener: PasswordsFileExportProgressListener) {
-    this.listeners.passwordsFileExportProgressListener = listener;
-  }
-
-  removePasswordsFileExportProgressListener(
-      _listener: PasswordsFileExportProgressListener) {
-    this.listeners.passwordsFileExportProgressListener = null;
   }
 
   cancelExportPasswords() {

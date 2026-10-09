@@ -215,9 +215,7 @@ void TestPasswordsPrivateDelegate::RequestCredentialsDetails(
 }
 
 void TestPasswordsPrivateDelegate::MovePasswordsToAccount(
-    const std::vector<int>& ids) {
-  last_moved_passwords_ = ids;
-}
+    const std::vector<int>& ids) {}
 
 void TestPasswordsPrivateDelegate::ImportPasswords(
     api::passwords_private::PasswordStoreSet to_store,
@@ -259,24 +257,21 @@ void TestPasswordsPrivateDelegate::SharePassword(
   share_password_triggered_ = true;
 }
 
-void TestPasswordsPrivateDelegate::ResetImporter(bool delete_file) {
-  reset_importer_triggered_ = true;
-}
+void TestPasswordsPrivateDelegate::ResetImporter(bool delete_file) {}
 
 void TestPasswordsPrivateDelegate::ExportPasswords(
     base::OnceCallback<void(ExportPasswordsResult)> callback,
     content::WebContents* web_contents) {
   // The testing of password exporting itself should be handled via
   // |PasswordManagerPorter|.
-  export_passwords_triggered_ = true;
   std::move(callback).Run(ExportPasswordsResult::kSuccess);
 }
 
-api::passwords_private::ExportProgressStatus
+password_manager::ExportProgressStatus
 TestPasswordsPrivateDelegate::GetExportProgressStatus() {
   // The testing of password exporting itself should be handled via
   // |PasswordManagerPorter|.
-  return api::passwords_private::ExportProgressStatus::kInProgress;
+  return password_manager::ExportProgressStatus::kInProgress;
 }
 
 bool TestPasswordsPrivateDelegate::IsAccountStorageActive() {
@@ -369,8 +364,8 @@ bool TestPasswordsPrivateDelegate::UnmuteInsecureCredential(
 
 void TestPasswordsPrivateDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
-  start_password_check_triggered_ = true;
-  std::move(callback).Run(start_password_check_state_);
+  std::move(callback).Run(
+      password_manager::BulkLeakCheckService::State::kRunning);
 }
 
 api::passwords_private::PasswordCheckStatus
@@ -389,9 +384,7 @@ TestPasswordsPrivateDelegate::GetInsecureCredentialsManager() {
   return nullptr;
 }
 
-void TestPasswordsPrivateDelegate::RestartAuthTimer() {
-  authenticator_interacted_ = true;
-}
+void TestPasswordsPrivateDelegate::RestartAuthTimer() {}
 
 void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
   profile_ = profile;
@@ -432,7 +425,6 @@ bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(
 
 void TestPasswordsPrivateDelegate::SwitchBiometricAuthBeforeFillingState(
     AuthenticationCallback callback) {
-  authenticator_interacted_ = true;
   std::move(callback).Run(true);
 }
 
@@ -442,9 +434,7 @@ void TestPasswordsPrivateDelegate::ShowAddShortcutDialog(
 }
 
 void TestPasswordsPrivateDelegate::ShowLastExportedFileInShell(
-    content::WebContents* web_contents) {
-  exported_file_shown_in_shell_ = true;
-}
+    content::WebContents* web_contents) {}
 
 void TestPasswordsPrivateDelegate::ChangePasswordManagerPin(
     content::WebContents* web_contents,
@@ -476,7 +466,6 @@ void TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
 
 void TestPasswordsPrivateDelegate::DisconnectCloudAuthenticator(
     base::OnceCallback<void(bool)> success_callback) {
-  disconnect_cloud_authenticator_called_ = true;
   std::move(success_callback).Run(false);
 }
 

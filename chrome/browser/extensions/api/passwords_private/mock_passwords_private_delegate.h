@@ -102,7 +102,7 @@ class MockPasswordsPrivateDelegate
       (base::OnceCallback<void(ExportPasswordsResult)> accepted_callback,
        content::WebContents* web_contents),
       (override));
-  MOCK_METHOD(extensions::api::passwords_private::ExportProgressStatus,
+  MOCK_METHOD(password_manager::ExportProgressStatus,
               GetExportProgressStatus,
               (),
               (override));

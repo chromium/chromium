@@ -13,11 +13,9 @@ import './shared_style.css.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {PasswordsFileExportProgressListener} from './password_manager_proxy.js';
-import {ExportPasswordsResult, ExportProgressStatus, PasswordManagerImpl, toMojoExportProgressStatus} from './password_manager_proxy.js';
+import {ExportPasswordsResult, ExportProgressStatus, PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_exporter.html.js';
 
 export interface PasswordsExporterElement {
@@ -60,8 +58,6 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
   }
 
   private exportListenerId_: number|null = null;
-  private onPasswordsFileExportProgressListener_:
-      PasswordsFileExportProgressListener|null = null;
 
   declare private showPasswordsExportErrorDialog_: boolean;
   declare private showExportInProgress_: boolean;
@@ -80,34 +76,16 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
       }
     });
 
-    if (loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      this.exportListenerId_ =
-          proxy.callbackRouter.onPasswordsExportProgress.addListener(
-              this.onPasswordsFileExportProgress_.bind(this));
-    } else {
-      this.onPasswordsFileExportProgressListener_ =
-          (progress: chrome.passwordsPrivate.PasswordExportProgress) => {
-            this.onPasswordsFileExportProgress_(
-                toMojoExportProgressStatus(progress.status),
-                progress.folderName || null);
-          };
-      proxy.addPasswordsFileExportProgressListener(
-          this.onPasswordsFileExportProgressListener_);
-    }
+    this.exportListenerId_ =
+        proxy.callbackRouter.onPasswordsExportProgress.addListener(
+            this.onPasswordsFileExportProgress_.bind(this));
   }
 
   override disconnectedCallback() {
     const proxy = PasswordManagerImpl.getInstance();
-    if (loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      assert(this.exportListenerId_ !== null);
-      proxy.callbackRouter.removeListener(this.exportListenerId_);
-      this.exportListenerId_ = null;
-    } else {
-      assert(this.onPasswordsFileExportProgressListener_);
-      proxy.removePasswordsFileExportProgressListener(
-          this.onPasswordsFileExportProgressListener_);
-      this.onPasswordsFileExportProgressListener_ = null;
-    }
+    assert(this.exportListenerId_ !== null);
+    proxy.callbackRouter.removeListener(this.exportListenerId_);
+    this.exportListenerId_ = null;
     super.disconnectedCallback();
   }
 

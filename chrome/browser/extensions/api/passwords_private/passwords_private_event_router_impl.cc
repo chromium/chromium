@@ -69,25 +69,6 @@ void PasswordsPrivateEventRouterImpl::SendPasswordExceptionListToListeners() {
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
-void PasswordsPrivateEventRouterImpl::OnPasswordsExportProgress(
-    api::passwords_private::ExportProgressStatus status,
-    const std::string& file_path,
-    const std::string& folder_name) {
-  api::passwords_private::PasswordExportProgress params;
-  params.status = status;
-  params.file_path = file_path;
-  params.folder_name = folder_name;
-
-  base::ListValue event_value;
-  event_value.Append(params.ToValue());
-
-  auto extension_event = std::make_unique<Event>(
-      events::PASSWORDS_PRIVATE_ON_PASSWORDS_FILE_EXPORT_PROGRESS,
-      api::passwords_private::OnPasswordsFileExportProgress::kEventName,
-      std::move(event_value));
-  event_router_->BroadcastEvent(std::move(extension_event));
-}
-
 void PasswordsPrivateEventRouterImpl::OnAccountStorageActiveStateChanged(
     bool active) {
   auto extension_event = std::make_unique<Event>(

@@ -141,32 +141,6 @@ const availableTests = [
     chrome.test.succeed();
   },
 
-  function removeAndUndoRemoveSavedPassword() {
-    let numCalls = 0;
-    let numSavedPasswords;
-    const callback = function(savedPasswordsList) {
-      numCalls++;
-
-      if (numCalls === 1) {
-        numSavedPasswords = savedPasswordsList.length;
-        chrome.passwordsPrivate.removeCredential(
-            savedPasswordsList[0].id,
-            chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
-      } else if (numCalls === 2) {
-        chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords - 1);
-        chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
-      } else if (numCalls === 3) {
-        chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords);
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
-    };
-
-    chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(callback);
-    chrome.passwordsPrivate.getSavedPasswordList(callback);
-  },
-
   function removePasskey() {
     let numCalls = 0;
     let numSavedCredentials;
@@ -188,34 +162,6 @@ const availableTests = [
     };
     chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(callback);
     chrome.passwordsPrivate.getSavedPasswordList(callback);
-  },
-
-  function removeAndUndoRemovePasswordException() {
-    let numCalls = 0;
-    let numPasswordExceptions;
-    const callback = function(passwordExceptionsList) {
-      numCalls++;
-
-      if (numCalls === 1) {
-        numPasswordExceptions = passwordExceptionsList.length;
-        chrome.passwordsPrivate.removePasswordException(
-            passwordExceptionsList[0].id);
-      } else if (numCalls === 2) {
-        chrome.test.assertEq(
-            passwordExceptionsList.length, numPasswordExceptions - 1);
-        chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
-      } else if (numCalls === 3) {
-        chrome.test.assertEq(
-            passwordExceptionsList.length, numPasswordExceptions);
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
-    };
-
-    chrome.passwordsPrivate.onPasswordExceptionsListChanged.addListener(
-        callback);
-    chrome.passwordsPrivate.getPasswordExceptionList(callback);
   },
 
   function requestPlaintextPassword() {
@@ -376,36 +322,6 @@ const availableTests = [
       chrome.test.succeed();
     };
     chrome.passwordsPrivate.continueImport([0, 1], callback);
-  },
-
-  function resetImporter() {
-    chrome.passwordsPrivate.resetImporter(false, () => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function exportPasswords() {
-    const callback = function() {
-      chrome.test.assertNoLastError();
-
-      // Ensure that the callback is invoked.
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.exportPasswords(callback);
-  },
-
-  function requestExportProgressStatus() {
-    const callback = function(status) {
-      chrome.test.assertEq(
-          chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS, status);
-
-      // Ensure that the callback is invoked.
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.requestExportProgressStatus(callback);
   },
 
   function getInsecureCredentials() {
@@ -569,20 +485,6 @@ const availableTests = [
         });
   },
 
-  function startPasswordCheck() {
-    chrome.passwordsPrivate.startPasswordCheck(() => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function startPasswordCheckFailed() {
-    chrome.passwordsPrivate.startPasswordCheck(() => {
-      chrome.test.assertLastError('Starting password check failed.');
-      chrome.test.succeed();
-    });
-  },
-
   function getPasswordCheckStatus() {
     chrome.passwordsPrivate.getPasswordCheckStatus(status => {
       chrome.test.assertEq('RUNNING', status.state);
@@ -591,11 +493,6 @@ const availableTests = [
       chrome.test.assertEq('5 mins ago', status.elapsedTimeSinceLastCheck);
       chrome.test.succeed();
     });
-  },
-
-  function movePasswordsToAccount() {
-    chrome.passwordsPrivate.movePasswordsToAccount([42]);
-    chrome.test.succeed();
   },
 
   function getCredentialGroups() {
@@ -662,30 +559,6 @@ const availableTests = [
               ['REUSED'], secondCredential.compromisedInfo.compromiseTypes);
           chrome.test.succeed();
         });
-  },
-
-  function showExportedFileInShell() {
-    chrome.passwordsPrivate.showExportedFileInShell(
-        '/usr/testfolder/testfilename.csv');
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
-  },
-
-  function disconnectCloudAuthenticator() {
-    chrome.passwordsPrivate.disconnectCloudAuthenticator(success => {
-      chrome.test.assertFalse(success);
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-
-  function isConnectedToCloudAuthenticator() {
-    const callback = function(connected) {
-      chrome.test.assertFalse(connected);
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.isConnectedToCloudAuthenticator(callback);
   },
 ];
 

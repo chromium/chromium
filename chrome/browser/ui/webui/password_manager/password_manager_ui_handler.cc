@@ -52,25 +52,6 @@ password_manager::mojom::ExportProgressStatus ToExportProgressMojomStatus(
   }
 }
 
-password_manager::mojom::ExportProgressStatus ToExportProgressMojomStatus(
-    extensions::api::passwords_private::ExportProgressStatus status) {
-  switch (status) {
-    case extensions::api::passwords_private::ExportProgressStatus::kNotStarted:
-    case extensions::api::passwords_private::ExportProgressStatus::kNone:
-      return password_manager::mojom::ExportProgressStatus::kNotStarted;
-    case extensions::api::passwords_private::ExportProgressStatus::kInProgress:
-      return password_manager::mojom::ExportProgressStatus::kInProgress;
-    case extensions::api::passwords_private::ExportProgressStatus::kSucceeded:
-      return password_manager::mojom::ExportProgressStatus::kSucceeded;
-    case extensions::api::passwords_private::ExportProgressStatus::
-        kFailedCancelled:
-      return password_manager::mojom::ExportProgressStatus::kFailed;
-    case extensions::api::passwords_private::ExportProgressStatus::
-        kFailedWriteFailed:
-      return password_manager::mojom::ExportProgressStatus::kFailedWrite;
-  }
-}
-
 password_manager::mojom::ExportPasswordsResult ToExportPasswordsMojomResult(
     extensions::PasswordsPrivateDelegate::ExportPasswordsResult result) {
   switch (result) {

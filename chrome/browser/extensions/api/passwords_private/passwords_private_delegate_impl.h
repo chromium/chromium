@@ -179,8 +179,7 @@ class PasswordsPrivateDelegateImpl
   void ExportPasswords(
       base::OnceCallback<void(ExportPasswordsResult)> accepted_callback,
       content::WebContents* web_contents) override;
-  api::passwords_private::ExportProgressStatus GetExportProgressStatus()
-      override;
+  password_manager::ExportProgressStatus GetExportProgressStatus() override;
   bool IsAccountStorageActive() override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
