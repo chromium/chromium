@@ -444,10 +444,6 @@ inline constexpr char kCriticalActionHistoryDescription[] =
     "performed during user-initiated AI agent browsing sessions alongside "
     "page visits on the Chrome History page for transparency and auditing.";
 
-inline constexpr char kCrosSwitcherName[] = "ChromeOS Switcher feature.";
-inline constexpr char kCrosSwitcherDescription[] =
-    "Enable/Disable ChromeOS Switcher feature.";
-
 inline constexpr char kStylusHandwritingWinName[] =
     "Stylus Handwriting for Windows.";
 inline constexpr char kStylusHandwritingWinDescription[] =

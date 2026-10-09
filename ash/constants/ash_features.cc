@@ -280,7 +280,6 @@ BASE_FEATURE(kBocaScreenSharingTeacher, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables sharing student's screen in the Boca app.
 BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCrosSwitcher, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Camera Cloud Storage for saving photos and videos on Google Drive
 // or OneDrive, controlled by CameraSaveLocation policy.
@@ -2217,10 +2216,6 @@ bool IsCrossDeviceFeatureSuiteAllowed() {
   }
 
   return base::FeatureList::IsEnabled(kAllowCrossDeviceFeatureSuite);
-}
-
-bool IsCrosSwitcherEnabled() {
-  return base::FeatureList::IsEnabled(kCrosSwitcher);
 }
 
 bool IsDemoModeAppResetWindowContainerEnable() {

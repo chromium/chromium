@@ -2542,11 +2542,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "cros-switcher",
-    "owners": [ "assistive-eng@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "cross-device-signin",
     "owners": ["lbarczynski@google.com", "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 156

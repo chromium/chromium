@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_HELP_APP_HELP_APP_UNTRUSTED_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_HELP_APP_HELP_APP_UNTRUSTED_UI_CONFIG_H_
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/webui_config.h"
@@ -24,7 +23,6 @@ class HelpAppUntrustedUIConfig : public content::WebUIConfig {
   ~HelpAppUntrustedUIConfig() override;
 
   static bool IsCrosSwitcherEnabledForTesting(
-      base::FeatureList* feature_list,
       variations::VariationsService* variations_service);
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   std::unique_ptr<content::WebUIController> CreateWebUIController(

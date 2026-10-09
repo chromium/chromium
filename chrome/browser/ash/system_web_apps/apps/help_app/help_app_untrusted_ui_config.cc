@@ -68,27 +68,14 @@ constexpr auto kCrosSwitcherCountriesSet =
          "my", "ng", "nl", "no", "nz", "pe", "ph", "pl", "pt", "ro", "ru",
          "sa", "se", "sg", "sk", "th", "tr", "tw", "ua", "uy", "vn", "za"});
 
-bool IsCrosSwitcherEnabled(base::FeatureList* feature_list,
-                           variations::VariationsService* variations_service) {
-  if (!feature_list) {
-    // Disables Switcher as a fail-safe behavior.
-    return false;
-  }
-
-  // If feature flag is overridden, respect the value regardless of other
-  // conditions.
-  if (feature_list->IsFeatureOverridden(features::kCrosSwitcher.name)) {
-    return ash::features::IsCrosSwitcherEnabled();
-  }
-
+bool IsCrosSwitcherEnabled(variations::VariationsService* variations_service) {
   if (!variations_service) {
     // Disables Switcher as a fail-safe behavior.
     return false;
   }
 
-  return ash::features::IsCrosSwitcherEnabled() &&
-         kCrosSwitcherCountriesSet.contains(
-             variations_service->GetStoredPermanentCountry());
+  return kCrosSwitcherCountriesSet.contains(
+      variations_service->GetStoredPermanentCountry());
 }
 
 void PopulateLoadTimeData(content::WebUI* web_ui,
@@ -153,8 +140,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
             ash::personalization_app::IsEligibleForSeaPen(profile));
     source->AddBoolean(
         "isCrosSwitcherEnabled",
-        IsCrosSwitcherEnabled(base::FeatureList::GetInstance(),
-                              g_browser_process->variations_service()));
+        IsCrosSwitcherEnabled(g_browser_process->variations_service()));
     source->AddBoolean(
         "featureManagementShowoff",
         base::FeatureList::IsEnabled(ash::features::kFeatureManagementShowoff));
@@ -265,10 +251,9 @@ bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
 
 // static
 bool HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
-    base::FeatureList* feature_list,
     variations::VariationsService* variations_service) {
   CHECK_IS_TEST();
-  return IsCrosSwitcherEnabled(feature_list, variations_service);
+  return IsCrosSwitcherEnabled(variations_service);
 }
 
 std::unique_ptr<content::WebUIController>
