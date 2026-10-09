@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_ANDROID_DEVICE_TRUST_KEY_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_ANDROID_DEVICE_TRUST_KEY_MANAGER_ANDROID_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,13 +15,18 @@
 
 namespace enterprise_connectors {
 
-// Android `DeviceTrustKeyManager` implementation for unsigned attestation.
-// Android does not provision a browser signing key, so every operation is a
-// no-op. Returning `std::nullopt` from the signing methods makes the shared
-// attestation flow fall back to generating an unsigned challenge response.
+class AndroidAttestationTokenClient;
+
+// Android `DeviceTrustKeyManager` implementation. Android does not provision a
+// browser signing key. Instead, when `kDeviceTrustAndroidAttestationTokens` is
+// enabled, "signing" a payload produces an attestation token bound to the
+// SHA-256 hash of that payload. When the feature is disabled, the signing
+// methods return `std::nullopt`, which makes the shared attestation flow fall
+// back to generating an unsigned challenge response.
 class DeviceTrustKeyManagerAndroid : public DeviceTrustKeyManager {
  public:
-  DeviceTrustKeyManagerAndroid();
+  explicit DeviceTrustKeyManagerAndroid(
+      std::unique_ptr<AndroidAttestationTokenClient> client);
   ~DeviceTrustKeyManagerAndroid() override;
 
   DeviceTrustKeyManagerAndroid(const DeviceTrustKeyManagerAndroid&) = delete;
@@ -39,6 +45,9 @@ class DeviceTrustKeyManagerAndroid : public DeviceTrustKeyManager {
       override;
   std::optional<KeyMetadata> GetLoadedKeyMetadata() const override;
   bool HasPermanentFailure() const override;
+
+ private:
+  std::unique_ptr<AndroidAttestationTokenClient> client_;
 };
 
 }  // namespace enterprise_connectors

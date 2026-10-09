@@ -1411,6 +1411,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/android",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/android",
       "//chrome/browser/lens",
       "//chrome/browser/policy/android",

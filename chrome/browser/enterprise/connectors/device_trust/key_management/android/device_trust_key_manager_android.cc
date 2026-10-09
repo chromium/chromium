@@ -6,14 +6,22 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/android/android_attestation_token_client.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "crypto/hash.h"
 
 namespace enterprise_connectors {
 
-DeviceTrustKeyManagerAndroid::DeviceTrustKeyManagerAndroid() = default;
+DeviceTrustKeyManagerAndroid::DeviceTrustKeyManagerAndroid(
+    std::unique_ptr<AndroidAttestationTokenClient> client)
+    : client_(std::move(client)) {
+  CHECK(client_);
+}
 
 DeviceTrustKeyManagerAndroid::~DeviceTrustKeyManagerAndroid() = default;
 
@@ -39,14 +47,22 @@ void DeviceTrustKeyManagerAndroid::ExportPublicKeyAsync(
       FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
-// Post a task with `nullopt` to produce an unsigned response
-// (`kSuccessNoSignature`) while fulfilling the asynchronous interface contract
-// and ensuring the callback is never invoked synchronously.
 void DeviceTrustKeyManagerAndroid::SignStringAsync(
-    const std::string& /*str*/,
+    const std::string& str,
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+  if (!IsDeviceTrustAndroidAttestationTokensEnabled()) {
+    // Post a task with `nullopt` to produce an unsigned response
+    // (`kSuccessNoSignature`) while fulfilling the asynchronous interface
+    // contract and ensuring the callback is never invoked synchronously.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  // Bind the attestation token to the content of the serialized challenge
+  // response.
+  // TODO(crbug.com/463390232): Add latency logging for this operation.
+  client_->GenerateToken(crypto::hash::Sha256(str), std::move(callback));
 }
 
 std::optional<DeviceTrustKeyManager::KeyMetadata>
