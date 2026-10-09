@@ -192,6 +192,7 @@ linux_memory_builder(
                 ),
             ),
             "content_browsertests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 24,
                 ),
