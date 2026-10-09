@@ -47,10 +47,11 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   ~WebuiOmniboxHandler() override;
 
   // searchbox::mojom::PageHandler:
-  void ActivateKeyword(uint8_t line,
-                       const GURL& url,
-                       base::TimeTicks match_selection_timestamp,
-                       bool is_mouse_event) override;
+  void ActivateKeyword(
+      uint8_t line,
+      const GURL& url,
+      base::TimeTicks match_selection_timestamp,
+      searchbox::mojom::KeywordActivationMethod activation_method) override;
   void OnThumbnailRemoved() override {}
   void OpenLensSearch() override;
   void AddTabContext(int32_t tab_id,

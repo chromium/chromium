@@ -79,6 +79,17 @@ enum KeywordType {
   kInstant,
 };
 
+// How the user entered keyword mode. Maps to the keyword mode entry method
+// used for logging in `OmniboxEditModel`.
+enum KeywordActivationMethod {
+  // A mouse click, e.g. on the keyword chip.
+  kClick,
+  // A touch tap, e.g. on the keyword chip.
+  kTap,
+  // A keyboard key, e.g. Tab, that moved the selection into keyword mode.
+  kKeyboard,
+};
+
 struct InputKeywordModel {
   KeywordType type;
   string keyword;
@@ -499,13 +510,17 @@ interface PageHandler {
   // it is deletable. |url| is used to confirm the match |line| selection.
   DeleteAutocompleteMatch(uint8 line, url.mojom.Url url);
 
-  // Activate a keyword. `match_selection_timestamp` is the number of
+  // Activate a keyword, i.e. enter keyword mode for the keyword of the match at
+  // `line`. Called whenever the WebUI enters keyword mode, whether via the
+  // keyword chip or keyboard navigation, so that the browser-side keyword state
+  // stays in sync with the WebUI. `match_selection_timestamp` is the number of
   // microseconds since Jan. 1, 1970 (ECMAScript epoch). `url` is only used to
-  // confirm the match `line` selection. `is_mouse_event` is used for logging.
+  // confirm the match `line` selection. `activation_method` is used for
+  // logging.
   ActivateKeyword(uint8 line,
                   url.mojom.Url url,
                   mojo_base.mojom.TimeTicks match_selection_timestamp,
-                  bool is_mouse_event);
+                  KeywordActivationMethod activation_method);
 
   // Executes the Pedal Action. `match_selection_timestamp` is the number of
   // microseconds since Jan. 1, 1970 (ECMAScript epoch). `url` is only used to

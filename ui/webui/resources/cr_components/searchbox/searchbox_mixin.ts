@@ -11,7 +11,7 @@ import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup
 import {SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, InputKeywordModel, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {InputMethod, SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputMethod, KeywordActivationMethod, SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {KeywordModeEntryMethod, KeywordModeManager} from './keyword_mode_manager.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
@@ -987,6 +987,20 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
           e.preventDefault();
           this.setSelection(nextSelection);
+
+          // Entering keyword mode via the keyboard must also enter keyword
+          // mode in the browser, like clicking the keyword chip does in
+          // `cr-searchbox-match`; otherwise the browser's keyword state
+          // diverges from the WebUI's. Sent before `updateComplete` so it
+          // precedes the `setPopupSelection()` issued on update.
+          if (nextSelection.state === SelectionLineState.kKeywordMode) {
+            const match = this.result?.matches[nextSelection.line];
+            if (match?.keywordModel) {
+              this.pageHandler().activateKeyword(
+                  nextSelection.line, match.destinationUrl,
+                  mojoTimeTicks(Date.now()), KeywordActivationMethod.kKeyboard);
+            }
+          }
 
           this.getInputElement().focus();
 

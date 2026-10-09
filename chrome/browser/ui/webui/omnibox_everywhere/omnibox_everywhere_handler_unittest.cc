@@ -337,7 +337,8 @@ TEST_F(OmniboxEverywhereHandlerTest, CreateAutocompleteMatchWithKeyword) {
 
 TEST_F(OmniboxEverywhereHandlerTest, ActivateKeywordDoesNotCrash) {
   handler_->ActivateKeyword(0, GURL("https://example.com"),
-                            base::TimeTicks::Now(), /*is_mouse_event=*/true);
+                            base::TimeTicks::Now(),
+                            searchbox::mojom::KeywordActivationMethod::kClick);
 }
 
 TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {

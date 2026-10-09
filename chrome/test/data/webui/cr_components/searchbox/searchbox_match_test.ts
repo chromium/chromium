@@ -8,7 +8,7 @@ import {SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {createAutocompleteMatch, createMatchKeywordModelForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import {KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordActivationMethod, KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -458,6 +458,10 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(1, event.detail.matchIndex);
 
     assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
+    const activateKeywordArgs = testProxy.handler.getArgs('activateKeyword')[0];
+    assertEquals(1, activateKeywordArgs.line);
+    assertEquals(
+        KeywordActivationMethod.kClick, activateKeywordArgs.activationMethod);
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 

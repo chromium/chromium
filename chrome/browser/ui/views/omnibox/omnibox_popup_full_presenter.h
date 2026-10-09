@@ -126,8 +126,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Focuses the native Views content, underlying WebContents, and DOM input.
   void FocusPopupContent();
-  // Blurs the omnibox and closes the popup unless it holds a draft. See
-  // `FocusAfterBlur` for what happens to the browser window's focus.
+  // Blurs the omnibox and closes the popup unless it holds a draft, i.e. user
+  // text or keyword mode. See `FocusAfterBlur` for what happens to the browser
+  // window's focus.
   void DeactivatePopupAndKillFocus(FocusAfterBlur focus_after_blur);
   // Blurs the omnibox if the user left the browser window, i.e. neither the
   // browser widget nor its child widgets are active.

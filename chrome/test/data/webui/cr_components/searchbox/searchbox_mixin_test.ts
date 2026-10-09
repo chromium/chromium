@@ -22,7 +22,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordActivationMethod, KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SecondaryTextPlacement} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -3603,6 +3603,17 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('@bookmarks', element.inputKeywordModel?.keyword);
         assertEquals('', mockInput.inputElement.value);
 
+        // The browser is told to enter keyword mode too, so its keyword state
+        // stays in sync with the WebUI.
+        assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
+        const activateKeywordArgs =
+            testProxy.handler.getArgs('activateKeyword')[0];
+        assertEquals(1, activateKeywordArgs.line);
+        assertDeepEquals(instantMatch.destinationUrl, activateKeywordArgs.url);
+        assertEquals(
+            KeywordActivationMethod.kKeyboard,
+            activateKeywordArgs.activationMethod);
+
         // ArrowUp back to default search match.
         mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowUp'));
         await microtasksFinished();
@@ -3612,6 +3623,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertFalse(element.keywordModeManager.isInKeywordMode);
         assertEquals(null, element.inputKeywordModel);
         assertEquals('@', mockInput.inputElement.value);
+        // Leaving keyword mode doesn't activate a keyword.
+        assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
       });
 
   test(
@@ -3649,6 +3662,29 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertTrue(element.keywordModeManager.isInKeywordMode);
         assertEquals('youtube.com', element.inputKeywordModel?.keyword);
         assertEquals('', mockInput.inputElement.value);
+
+        // The browser is told to enter keyword mode too, like the keyword chip
+        // click does, so its keyword state stays in sync with the WebUI.
+        assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
+        const activateKeywordArgs =
+            testProxy.handler.getArgs('activateKeyword')[0];
+        assertEquals(0, activateKeywordArgs.line);
+        assertDeepEquals(defaultMatch.destinationUrl, activateKeywordArgs.url);
+        assertEquals(
+            KeywordActivationMethod.kKeyboard,
+            activateKeywordArgs.activationMethod);
+
+        // Shift+Tab leaves keyword mode back to the keyword hint.
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Tab', {shiftKey: true}));
+        await microtasksFinished();
+
+        assertEquals(0, element.selection.line);
+        assertEquals(SelectionLineState.kNormal, element.selection.state);
+        assertFalse(element.keywordModeManager.isInKeywordMode);
+        assertEquals('youtube.com', mockInput.inputElement.value);
+        // Leaving keyword mode doesn't activate a keyword.
+        assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
       });
 
   test('dynamic keyword space triggering pref change', async () => {

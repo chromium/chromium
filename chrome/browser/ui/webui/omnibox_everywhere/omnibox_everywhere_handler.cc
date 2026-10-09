@@ -374,9 +374,9 @@ void OmniboxEverywhereHandler::ActivateKeyword(
     uint8_t line,
     const GURL& url,
     base::TimeTicks match_selection_timestamp,
-    bool is_mouse_event) {
+    searchbox::mojom::KeywordActivationMethod activation_method) {
   // OmniboxEverywhere does not make use of OmniboxEditModel. Keyword mode is
-  // handled directly by the frontend SearchboxMixin via `onKeywordClick`.
+  // handled directly by the frontend SearchboxMixin.
 }
 
 void OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged() {

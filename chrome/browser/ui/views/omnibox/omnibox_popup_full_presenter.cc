@@ -728,18 +728,27 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
   is_deactivating_ = true;
   OmniboxEditModel* edit_model = controller()->edit_model();
 
+  // Keyword mode is an uncommitted draft even when the user text is empty,
+  // e.g. on the NTP after entering keyword mode via the keyword chip. Blurring
+  // should never exit keyword mode (see `OmniboxViewViews::OnBlur()`), so
+  // neither revert nor close the popup in that case.
+  const bool is_keyword_selected = edit_model->is_keyword_selected();
+
   // If the view is showing text that's not user-text, revert the text to the
   // permanent display text. This usually occurs if Steady State Elisions is on
   // and the user has unelided, but not edited the URL.
   // Also revert if the text has been edited but currently exactly matches
   // the permanent text. An example of this scenario is someone typing on the
   // new tab page and then deleting everything using backspace/delete.
-  if ((!edit_model->user_input_in_progress() &&
-       edit_model->user_text() != edit_model->GetPermanentDisplayText()) ||
-      (edit_model->user_input_in_progress() &&
-       (edit_model->user_text() == edit_model->GetPermanentDisplayText() ||
-        edit_model->user_text() ==
-            controller()->client()->GetFormattedFullURL()))) {
+  //
+  // This should never exit keyword mode.
+  if (!is_keyword_selected &&
+      ((!edit_model->user_input_in_progress() &&
+        edit_model->user_text() != edit_model->GetPermanentDisplayText()) ||
+       (edit_model->user_input_in_progress() &&
+        (edit_model->user_text() == edit_model->GetPermanentDisplayText() ||
+         edit_model->user_text() ==
+             controller()->client()->GetFormattedFullURL())))) {
     edit_model->Revert();
   }
 
@@ -775,11 +784,13 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
   }
   edit_model->OnKillFocus();
 
-  // Close the popup unless the user has an uncommitted draft.
+  // Close the popup unless the user has an uncommitted draft. Keyword mode
+  // counts as a draft even if the user text is empty.
   // NOTE: Query values directly from edit model, as they are not guaranteed to
   // remain consistent after calling `Revert()` or `OnKillFocus()`.
-  if (!edit_model->user_input_in_progress() ||
-      edit_model->user_text().empty()) {
+  if (!edit_model->is_keyword_selected() &&
+      (!edit_model->user_input_in_progress() ||
+       edit_model->user_text().empty())) {
     if (controller()->popup_state_manager()->popup_state() ==
         OmniboxPopupState::kFull) {
       controller()->popup_state_manager()->SetPopupState(

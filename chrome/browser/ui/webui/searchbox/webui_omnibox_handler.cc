@@ -209,7 +209,7 @@ void WebuiOmniboxHandler::ActivateKeyword(
     uint8_t line,
     const GURL& url,
     base::TimeTicks match_selection_timestamp,
-    bool is_mouse_event) {
+    searchbox::mojom::KeywordActivationMethod activation_method) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match) {
     // This can happen due to asynchronous updates changing the result while
@@ -217,7 +217,8 @@ void WebuiOmniboxHandler::ActivateKeyword(
     return;
   }
   // The rest of this function mirrors
-  // `OmniboxSuggestionButtonRowView::ButtonPressed()`.
+  // `OmniboxSuggestionButtonRowView::ButtonPressed()` for clicks and taps, and
+  // `OmniboxEditModel::StepPopupSelection()` for keyboard entry.
   OmniboxPopupSelection selection(
       line, OmniboxPopupSelection::LineState::kKeywordMode);
   // Note: Since keyword mode logic depends on state of the edit model, the
@@ -226,9 +227,20 @@ void WebuiOmniboxHandler::ActivateKeyword(
   // Don't re-enter keyword mode if already in it. This occurs when the user
   // was in keyword mode and re-clicked the same or a different keyword chip.
   if (edit_model()->is_keyword_hint()) {
-    const auto entry_method = is_mouse_event
-                                  ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
-                                  : metrics::OmniboxEventProto::TAP_HINT_VIEW;
+    metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method;
+    switch (activation_method) {
+      case searchbox::mojom::KeywordActivationMethod::kClick:
+        entry_method = metrics::OmniboxEventProto::CLICK_HINT_VIEW;
+        break;
+      case searchbox::mojom::KeywordActivationMethod::kTap:
+        entry_method = metrics::OmniboxEventProto::TAP_HINT_VIEW;
+        break;
+      case searchbox::mojom::KeywordActivationMethod::kKeyboard:
+        // Like the Views popup, all keyboard entries are logged as `TAB`, even
+        // though e.g. arrow keys can also select an instant keyword match.
+        entry_method = metrics::OmniboxEventProto::TAB;
+        break;
+    }
     edit_model()->AcceptKeyword(entry_method);
   }
 }

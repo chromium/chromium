@@ -12,7 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordActivationMethod, KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {ACMatchClassification} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
@@ -316,7 +316,8 @@ export class SearchboxMatchElement extends CrLitElement {
     this.pageHandler_.activateKeyword(
         this.matchIndex, this.match.destinationUrl, mojoTimeTicks(Date.now()),
         // Distinguish mouse and touch or pen events for logging purposes.
-        event.pointerType === 'mouse');
+        event.pointerType === 'mouse' ? KeywordActivationMethod.kClick :
+                                        KeywordActivationMethod.kTap);
   }
 
   /**
@@ -345,7 +346,8 @@ export class SearchboxMatchElement extends CrLitElement {
           'keyword-click', {match: this.match, matchIndex: this.matchIndex});
       this.pageHandler_.activateKeyword(
           this.matchIndex, this.match.destinationUrl, mojoTimeTicks(Date.now()),
-          e.button === 0);
+          e.button === 0 ? KeywordActivationMethod.kClick :
+                           KeywordActivationMethod.kTap);
       return;
     }
 

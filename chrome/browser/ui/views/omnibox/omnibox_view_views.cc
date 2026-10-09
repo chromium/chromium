@@ -605,7 +605,15 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
     RequestFocus();
   }
 
-  if (omnibox_already_focused) {
+  // Re-focusing the already focused omnibox exits keyword mode, e.g. when the
+  // user presses Ctrl+L while in keyword mode. Once the full WebUI omnibox is
+  // ready, `LocationBarView::FocusLocation()` no longer reaches here, but
+  // `LocationBarView::OnFocus()` does for `FocusManager` driven focus changes,
+  // including restoring focus when the browser window is reactivated while the
+  // WebUI popup held focus, e.g. by clicking on the page to blur the omnibox.
+  // Like `OnFocus()` for the native textfield, those must preserve keyword
+  // mode.
+  if (omnibox_already_focused && !is_full_webui_ready) {
     controller()->edit_model()->ClearKeyword();
   }
 

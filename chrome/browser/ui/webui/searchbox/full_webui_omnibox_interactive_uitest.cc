@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -55,6 +56,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
@@ -67,6 +69,9 @@
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -110,6 +115,10 @@ const DeepQuery kFirstSuggestionMatch = {
 const DeepQuery kFirstSuggestionMatchPrimaryText = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
     "cr-searchbox-match[match-index='1']", "#primaryText"};
+// The keyword chip on the default match, e.g. "Search kw".
+const DeepQuery kDefaultMatchKeywordChip = {
+    "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index='0']", "#keyword"};
 const DeepQuery kComposeButton = {"omnibox-full-app", "omnibox-popup-searchbox",
                                   "cr-searchbox-compose-button",
                                   "#composeButton"};
@@ -232,6 +241,40 @@ class FullWebUIOmniboxInteractiveTestBase
               ->user_input_in_progress();
         },
         expected, "CheckUserInputInProgress");
+  }
+
+  // Adds an active search engine with keyword `keyword`, so that typing exactly
+  // `keyword` shows a tab-to-search keyword chip on the default match.
+  void AddKeywordSearchEngine(const std::u16string& keyword) {
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+    TemplateURLData data;
+    data.SetShortName(keyword);
+    data.SetKeyword(keyword);
+    data.SetURL("https://example.com/?q={searchTerms}");
+    data.is_active = TemplateURLData::ActiveStatus::kTrue;
+    template_url_service->Add(std::make_unique<TemplateURL>(data));
+  }
+
+  // Waits until `OmniboxEditModel::is_keyword_selected()` matches `expected`.
+  auto WaitForEditModelKeywordSelected(bool expected) {
+    return PollUntil(
+        [this, expected]() -> bool {
+          auto* controller = GetOmniboxControllerForTest();
+          return controller && controller->edit_model() &&
+                 controller->edit_model()->is_keyword_selected() == expected;
+        },
+        "WaitForEditModelKeywordSelected");
+  }
+
+  // Waits until the WebUI searchbox's keyword mode matches `expected`.
+  auto WaitForWebUIKeywordMode(bool expected) {
+    return WaitForJsConditionAt(
+        kPopupWebView, kPopupSearchbox,
+        base::StringPrintf(
+            "(el) => !!el && el.keywordModeManager.isInKeywordMode === %s",
+            expected ? "true" : "false"));
   }
 
   // Waits until `OmniboxEditModel::has_focus()` matches `expected_focus`.
@@ -998,6 +1041,66 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       // Press Enter and verify navigation is a search for the latest query.
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_NONE),
       WaitForGoogleSearch(kTab1, {{"q", "hello"}}));
+}
+
+// Verifies that entering keyword mode by clicking the keyword chip on the NTP
+// and then clicking outside on the webpage body keeps keyword mode in both the
+// WebUI and the edit model, and keeps the popup open. Keyword mode is an
+// uncommitted draft even though the user text is empty.
+//
+// Clicking the page both reactivates the browser window, which restores Views
+// focus to the location bar (`OmniboxViewViews::SetFocus()`), and blurs the
+// omnibox (`OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus()`). Neither
+// may exit keyword mode.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaChipClickSurvivesBlur) {
+  AddKeywordSearchEngine(u"kw");
+  RunTestSequence(
+      // Open an NTP, whose permanent text is empty, and wait for the popup.
+      WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      // Type the keyword and wait for its chip on the default match.
+      InputWebUIText("kw"),
+      InAnyContext(
+          WaitForElementToRender(kPopupWebView, kDefaultMatchKeywordChip)),
+      // Click the chip to enter keyword mode.
+      InSameContext(ClickElement(kPopupWebView, kDefaultMatchKeywordChip)),
+      WaitForWebUIKeywordMode(true), WaitForEditModelKeywordSelected(true),
+      // Click on the webpage body of Tab 1 to blur the Omnibox.
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      // Verify keyword mode is kept and the popup remains open.
+      WaitForEditModelKeywordSelected(true), WaitForWebUIKeywordMode(true),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)));
+}
+
+// Verifies that entering keyword mode via Tab also enters keyword mode in the
+// edit model, and that clicking outside on the webpage body then keeps keyword
+// mode in both the WebUI and the edit model, and keeps the popup open.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaTabSurvivesBlur) {
+  AddKeywordSearchEngine(u"kw");
+  RunTestSequence(
+      // Open an NTP, whose permanent text is empty, and wait for the popup.
+      WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      // Type the keyword and wait for its chip on the default match.
+      InputWebUIText("kw"),
+      InAnyContext(
+          WaitForElementToRender(kPopupWebView, kDefaultMatchKeywordChip)),
+      // Press Tab to select the chip and enter keyword mode.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_NONE)),
+      WaitForWebUIKeywordMode(true),
+      // The WebUI tells the edit model to enter keyword mode too.
+      WaitForEditModelKeywordSelected(true),
+      // Click on the webpage body of Tab 1 to blur the Omnibox.
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      // Verify keyword mode is kept and the popup remains open.
+      WaitForEditModelKeywordSelected(true), WaitForWebUIKeywordMode(true),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)));
 }
 
 // Verifies focusing the omnibox without typing a draft, selecting a portion of

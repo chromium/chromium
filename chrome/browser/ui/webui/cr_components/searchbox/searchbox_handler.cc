@@ -1863,7 +1863,7 @@ void SearchboxHandler::ActivateKeyword(
     uint8_t line,
     const GURL& url,
     base::TimeTicks match_selection_timestamp,
-    bool is_mouse_event) {
+    searchbox::mojom::KeywordActivationMethod activation_method) {
   // TODO(b/449785444): Allow embedders other than the Omnibox to activate
   // keyword mode.
   NOTREACHED();

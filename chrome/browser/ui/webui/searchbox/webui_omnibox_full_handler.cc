@@ -39,6 +39,15 @@ WebuiOmniboxFullHandler::WebuiOmniboxFullHandler(
 
 WebuiOmniboxFullHandler::~WebuiOmniboxFullHandler() = default;
 
+void WebuiOmniboxFullHandler::ActivateKeyword(
+    uint8_t line,
+    const GURL& url,
+    base::TimeTicks match_selection_timestamp,
+    searchbox::mojom::KeywordActivationMethod activation_method) {
+  // This handler does not use an `OmniboxEditModel`, so there's no browser-side
+  // keyword state to sync. Keyword mode is handled by the frontend.
+}
+
 bool WebuiOmniboxFullHandler::SupportsKeywordMode() const {
   return true;
 }

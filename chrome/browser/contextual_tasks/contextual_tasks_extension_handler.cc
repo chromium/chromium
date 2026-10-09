@@ -419,7 +419,7 @@ void ContextualTasksExtensionHandler::ActivateKeyword(
     uint8_t line,
     const GURL& url,
     base::TimeTicks match_selection_timestamp,
-    bool is_mouse_event) {}
+    searchbox::mojom::KeywordActivationMethod activation_method) {}
 void ContextualTasksExtensionHandler::ExecuteAction(
     uint8_t line,
     uint8_t action_index,
