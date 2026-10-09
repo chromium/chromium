@@ -131,11 +131,12 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         last_seen_vs_code_units_ = U16_LENGTH(code_point);
         return MoveToNextState(BackspaceState::kBeforeVSAndKeycap);
       }
-      if (Character::IsEmojiKeycapBase(code_point))
+      if (unicode::IsEmojiKeycapBase(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
+      }
       return Finish();
     case BackspaceState::kBeforeVSAndKeycap:
-      if (Character::IsEmojiKeycapBase(code_point)) {
+      if (unicode::IsEmojiKeycapBase(code_point)) {
         DCHECK_GT(last_seen_vs_code_units_, 0);
         DCHECK_LE(last_seen_vs_code_units_, 2);
         code_units_to_be_deleted_ +=
@@ -148,7 +149,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         last_seen_vs_code_units_ = U16_LENGTH(code_point);
         return MoveToNextState(BackspaceState::kBeforeVSAndEmojiModifier);
       }
-      if (Character::IsEmojiModifierBase(code_point)) {
+      if (unicode::IsEmojiModifierBase(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         // If processing tag sequence base, finish here instead of looking
         // for ZWJ sequences.
@@ -160,7 +161,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       }
       return Finish();
     case BackspaceState::kBeforeVSAndEmojiModifier:
-      if (Character::IsEmojiModifierBase(code_point)) {
+      if (unicode::IsEmojiModifierBase(code_point)) {
         DCHECK_GT(last_seen_vs_code_units_, 0);
         DCHECK_LE(last_seen_vs_code_units_, 2);
         code_units_to_be_deleted_ +=
@@ -224,7 +225,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
     case BackspaceState::kBeforeTagTerm:
       // After seeing CANCEL TAG, we expect tag sequence characters.
       // http://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
-      if (Character::IsEmojiTagSequence(code_point)) {
+      if (unicode::IsEmojiTagSequence(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         return MoveToNextState(BackspaceState::kInTagSequence);
       }
@@ -232,7 +233,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       return Finish();
     case BackspaceState::kInTagSequence:
       // Continue accumulating tag sequence characters.
-      if (Character::IsEmojiTagSequence(code_point)) {
+      if (unicode::IsEmojiTagSequence(code_point)) {
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
         return StayInSameState();
       }

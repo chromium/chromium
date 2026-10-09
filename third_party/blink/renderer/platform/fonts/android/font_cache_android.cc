@@ -139,8 +139,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   FontFallbackPriority fallback_priority_with_emoji_text = fallback_priority;
 
-  if (fallback_priority == FontFallbackPriority::kText &&
-      Character::IsEmoji(c)) {
+  if (fallback_priority == FontFallbackPriority::kText && unicode::IsEmoji(c)) {
     fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
   }
 

@@ -48,7 +48,7 @@ bool SymbolsIterator::Consume(wtf_size_t* symbols_limit,
       break;
 
     if (!current_token_emoji &&
-        !Character::MaybeEmojiPresentation(buffer_iterator_.PeekCodepoint())) {
+        !unicode::MaybeEmojiPresentation(buffer_iterator_.PeekCodepoint())) {
       ++buffer_iterator_;
       next_token_end_ = buffer_iterator_.Cursor();
       next_token_has_vs_ = false;

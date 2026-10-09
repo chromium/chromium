@@ -251,8 +251,7 @@ namespace {
 consteval bool MaybeEmojiPresentationForAscii(uint8_t ch) {
   constexpr auto kCopyRightSign = 0xA9;
   constexpr auto kRegisteredSign = 0xAE;
-  return ch == kCopyRightSign || ch == kRegisteredSign ||
-         Character::IsEmojiKeycapBase(ch);
+  return ch == kCopyRightSign || ch == kRegisteredSign || IsEmojiKeycapBase(ch);
 }
 
 template <std::size_t kSize, typename Function>

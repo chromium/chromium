@@ -135,8 +135,8 @@ wtf_size_t NextWordEndIndex(StringView text, wtf_size_t start_index) {
     ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
     // Modifier check in order not to split Emoji sequences.
     if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
-        ch == uchar::kZeroWidthJoiner || Character::IsEmojiComponent(ch) ||
-        Character::IsExtendedPictographic(ch)) {
+        ch == uchar::kZeroWidthJoiner || unicode::IsEmojiComponent(ch) ||
+        unicode::IsExtendedPictographic(ch)) {
       continue;
     }
     // Avoid delimiting COMMON/INHERITED alone, which makes harder to

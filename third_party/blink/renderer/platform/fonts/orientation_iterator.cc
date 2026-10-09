@@ -29,8 +29,8 @@ bool ExtendsGraphemeCluster(UChar32 character,
   if (character == uchar::kZeroWidthJoiner) {
     return true;
   }
-  return after_zwj && Character::IsExtendedPictographic(character) &&
-         Character::IsExtendedPictographic(cluster_base);
+  return after_zwj && unicode::IsExtendedPictographic(character) &&
+         unicode::IsExtendedPictographic(cluster_base);
 }
 
 }  // namespace

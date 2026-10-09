@@ -53,14 +53,14 @@ TEST(CharacterTest, Derived) {
   for (auto s : set.strings()) {
     for (auto unit : icu::header::unsafeUTFStringCodePoints<UChar32>(s)) {
       UChar32 cp = unit.codePoint();
-      if (Character::IsExtendedPictographic(cp)) {
+      if (IsExtendedPictographic(cp)) {
         EXPECT_TRUE(IsCjkIdeographOrSymbolWithMessage(cp));
       }
     }
   }
 
   for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
-    if (Character::IsEmojiEmojiDefault(ch)) {
+    if (IsEmojiEmojiDefault(ch)) {
       EXPECT_TRUE(IsCjkIdeographOrSymbolWithMessage(ch));
     }
 
@@ -111,7 +111,7 @@ TEST(CharacterTest, CjkIdeographOrSymbolCollisions) {
   for (auto s : set.strings()) {
     icu::UnicodeString us(s.data(), static_cast<int32_t>(s.length()));
     for (auto cp : icu::header::unsafeUTFStringCodePoints<UChar32>(us)) {
-      if (Character::IsExtendedPictographic(cp.codePoint())) {
+      if (IsExtendedPictographic(cp.codePoint())) {
         emoji_set.add(cp.codePoint());
       }
     }
@@ -394,79 +394,79 @@ TEST(CharacterTest, CanTextDecorationSkipInk) {
 TEST(CharacterTest, TestEmojiTextDefault) {
   // Text-default emoji, i.e.
   // Emoji=Yes and EmojiPresentation=No
-  EXPECT_TRUE(Character::IsEmojiTextDefault(0x0023));
-  EXPECT_TRUE(Character::IsEmojiTextDefault(0x2744));
-  EXPECT_TRUE(Character::IsEmojiTextDefault(0x1F6F3));
+  EXPECT_TRUE(IsEmojiTextDefault(0x0023));
+  EXPECT_TRUE(IsEmojiTextDefault(0x2744));
+  EXPECT_TRUE(IsEmojiTextDefault(0x1F6F3));
 
   // Non-emoji
-  EXPECT_FALSE(Character::IsEmojiTextDefault('A'));
-  EXPECT_FALSE(Character::IsEmojiTextDefault(0x2713));
+  EXPECT_FALSE(IsEmojiTextDefault('A'));
+  EXPECT_FALSE(IsEmojiTextDefault(0x2713));
 
   // Emoji=Yes and EmojiPresentation=Yes
-  EXPECT_FALSE(Character::IsEmojiTextDefault(0x1F9C0));
-  EXPECT_FALSE(Character::IsEmojiTextDefault(0x26BD));
-  EXPECT_FALSE(Character::IsEmojiTextDefault(0x26BE));
+  EXPECT_FALSE(IsEmojiTextDefault(0x1F9C0));
+  EXPECT_FALSE(IsEmojiTextDefault(0x26BD));
+  EXPECT_FALSE(IsEmojiTextDefault(0x26BE));
 }
 
 TEST(CharacterTest, TestEmojiEmojiDefault) {
   // Emoji=Yes and EmojiPresentation=Yes
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x231A));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F191));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F19A));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F9C0));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x231A));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F191));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F19A));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F9C0));
   // Kiss
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F48F));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F48F));
   // Couple with heart
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F491));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F46A));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F491));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F46A));
 
   // Non-emoji
-  EXPECT_FALSE(Character::IsEmojiEmojiDefault('A'));
+  EXPECT_FALSE(IsEmojiEmojiDefault('A'));
 
   // Emoji=Yes and EmojiPresentation=No
-  EXPECT_FALSE(Character::IsEmojiEmojiDefault(0x1F202));
+  EXPECT_FALSE(IsEmojiEmojiDefault(0x1F202));
 }
 
 TEST(CharacterTest, EmojificationV11) {
   // Infinity and Chess pawn were given the emoji class, but have default text
   // presentation in Unicode 11.
-  EXPECT_TRUE(Character::IsEmojiTextDefault(0x265F));
-  EXPECT_TRUE(Character::IsEmojiTextDefault(0x267E));
+  EXPECT_TRUE(IsEmojiTextDefault(0x265F));
+  EXPECT_TRUE(IsEmojiTextDefault(0x267E));
 }
 
 TEST(CharacterTest, TestEmojiModifierBase) {
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x261D));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F470));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F478));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F918));
-  EXPECT_FALSE(Character::IsEmojiModifierBase('A'));
-  EXPECT_FALSE(Character::IsEmojiModifierBase(0x1F47D));
+  EXPECT_TRUE(IsEmojiModifierBase(0x261D));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F470));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F478));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F918));
+  EXPECT_FALSE(IsEmojiModifierBase('A'));
+  EXPECT_FALSE(IsEmojiModifierBase(0x1F47D));
 }
 
 TEST(CharacterTest, TestEmoji40Data) {
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F32F));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F57A));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F919));
-  EXPECT_TRUE(Character::IsEmojiEmojiDefault(0x1F926));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F574));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F6CC));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F919));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F926));
-  EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F933));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F32F));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F57A));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F919));
+  EXPECT_TRUE(IsEmojiEmojiDefault(0x1F926));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F574));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F6CC));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F919));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F926));
+  EXPECT_TRUE(IsEmojiModifierBase(0x1F933));
 }
 
 TEST(CharacterTest, EmojiReserved) {
 #if U_ICU_VERSION_MAJOR_NUM >= 78
-  EXPECT_TRUE(Character::IsEmoji(0x1FAEF));
+  EXPECT_TRUE(IsEmoji(0x1FAEF));
 #else
-  EXPECT_TRUE(Character::IsEmojiReserved(0x1FAEF));
+  EXPECT_TRUE(IsEmojiReserved(0x1FAEF));
 #endif
-  EXPECT_TRUE(Character::IsEmojiReserved(0x1FFFD));
+  EXPECT_TRUE(IsEmojiReserved(0x1FFFD));
 }
 
 TEST(CharacterTest, LineBreakAndQuoteNotEmoji) {
-  EXPECT_FALSE(Character::IsEmojiTextDefault('\n'));
-  EXPECT_FALSE(Character::IsEmojiTextDefault('"'));
+  EXPECT_FALSE(IsEmojiTextDefault('\n'));
+  EXPECT_FALSE(IsEmojiTextDefault('"'));
 }
 
 TEST(CharacterTest, Truncation) {
@@ -601,12 +601,12 @@ TEST(CharacterTest, IsVerticalMathCharacter) {
 }
 
 TEST(CharacterTest, ExtendedPictographic) {
-  EXPECT_FALSE(Character::IsExtendedPictographic(0x00A8));
-  EXPECT_TRUE(Character::IsExtendedPictographic(0x00A9));
-  EXPECT_FALSE(Character::IsExtendedPictographic(0x00AA));
-  EXPECT_FALSE(Character::IsExtendedPictographic(0x3298));
-  EXPECT_TRUE(Character::IsExtendedPictographic(0x3299));
-  EXPECT_FALSE(Character::IsExtendedPictographic(0x329A));
+  EXPECT_FALSE(IsExtendedPictographic(0x00A8));
+  EXPECT_TRUE(IsExtendedPictographic(0x00A9));
+  EXPECT_FALSE(IsExtendedPictographic(0x00AA));
+  EXPECT_FALSE(IsExtendedPictographic(0x3298));
+  EXPECT_TRUE(IsExtendedPictographic(0x3299));
+  EXPECT_FALSE(IsExtendedPictographic(0x329A));
 }
 
 TEST(CharacterTest, EmojiComponents) {
@@ -618,10 +618,10 @@ TEST(CharacterTest, EmojiComponents) {
                         0x1f3ff, 0x1f9b0, 0x1f9b3, 0xe0020, 0xe007f};
 
   for (auto false_test : false_set)
-    EXPECT_FALSE(Character::IsEmojiComponent(false_test));
+    EXPECT_FALSE(IsEmojiComponent(false_test));
 
   for (auto true_test : true_set)
-    EXPECT_TRUE(Character::IsEmojiComponent(true_test));
+    EXPECT_TRUE(IsEmojiComponent(true_test));
 }
 
 // Ensure that the iterator forwarding in SymbolsIterator is not
@@ -631,9 +631,9 @@ TEST(CharacterTest, MaybeEmojiPresentationNoIllegalShortcut) {
   for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
     const EmojiSegmentationCategory emoji = GetEmojiSegmentationCategory(ch);
     if (IsEmojiPresentationCategory(emoji)) {
-      EXPECT_TRUE(Character::MaybeEmojiPresentation(ch));
+      EXPECT_TRUE(MaybeEmojiPresentation(ch));
     }
-    if (!Character::MaybeEmojiPresentation(ch)) {
+    if (!MaybeEmojiPresentation(ch)) {
       EXPECT_FALSE(IsEmojiPresentationCategory(emoji));
     }
   }
@@ -648,10 +648,10 @@ TEST(CharacterTest, TestIsStandardizedVariationSequence) {
 }
 
 TEST(CharacterTest, TestIsEmojiVariationSequence) {
-  EXPECT_TRUE(Character::IsEmojiVariationSequence(0x1fae8, 0xfe0f));
-  EXPECT_TRUE(Character::IsEmojiVariationSequence(0x0030, 0xfe0e));
-  EXPECT_FALSE(Character::IsEmojiVariationSequence(0x1faf0, 0xfe00));
-  EXPECT_FALSE(Character::IsEmojiVariationSequence(0x0041, 0xfe0f));
+  EXPECT_TRUE(IsEmojiVariationSequence(0x1fae8, 0xfe0f));
+  EXPECT_TRUE(IsEmojiVariationSequence(0x0030, 0xfe0e));
+  EXPECT_FALSE(IsEmojiVariationSequence(0x1faf0, 0xfe00));
+  EXPECT_FALSE(IsEmojiVariationSequence(0x0041, 0xfe0f));
 }
 
 TEST(CharacterTest, TestIsIdeographicVariationSequence) {

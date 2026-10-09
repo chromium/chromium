@@ -138,7 +138,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     is_variation_sequence = true;
     consider_variation_selector = true;
   } else if (UseFontVariantEmojiVariationSelector(variation_selector_mode) &&
-             Character::IsEmoji(unicode)) {
+             unicode::IsEmoji(unicode)) {
     consider_variation_selector = true;
   }
 
@@ -154,11 +154,11 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     if (!is_variation_sequence) {
       if (variation_selector_mode == kForceVariationSelector15 ||
           (variation_selector_mode == kUseUnicodeDefaultPresentation &&
-           Character::IsEmojiTextDefault(unicode))) {
+           unicode::IsEmojiTextDefault(unicode))) {
         variation_selector = uchar::kVariationSelector15;
       } else if (variation_selector_mode == kForceVariationSelector16 ||
                  (variation_selector_mode == kUseUnicodeDefaultPresentation &&
-                  Character::IsEmojiEmojiDefault(unicode))) {
+                  unicode::IsEmojiEmojiDefault(unicode))) {
         variation_selector = uchar::kVariationSelector16;
       }
     }

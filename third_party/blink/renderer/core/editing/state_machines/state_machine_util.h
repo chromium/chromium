@@ -27,8 +27,8 @@ inline bool IsExtendedPictographicGb11(UChar32 code_point) {
   // sufficient but it's not because the `BackspaceStateMachine` doesn't support
   // `Emoji_Modifier` as [`Extended`] (e.g., U+1F3FB).
   // [`Extended`]: https://unicode.org/reports/tr29/tr29-33.html#Extend0
-  return Character::IsExtendedPictographic(code_point) ||
-         Character::IsEmoji(code_point);
+  return unicode::IsExtendedPictographic(code_point) ||
+         unicode::IsEmoji(code_point);
 }
 
 }  // namespace blink

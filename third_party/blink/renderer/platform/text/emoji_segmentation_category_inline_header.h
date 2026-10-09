@@ -14,7 +14,7 @@ namespace {
 
 EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (codepoint <= 0x7F) {
-    if (Character::IsEmojiKeycapBase(codepoint)) {
+    if (unicode::IsEmojiKeycapBase(codepoint)) {
       return EmojiSegmentationCategory::KEYCAP_BASE;
     }
     return EmojiSegmentationCategory::kMaxCategory;
@@ -42,7 +42,7 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (codepoint == 0x1F3F4) {
     return EmojiSegmentationCategory::TAG_BASE;
   }
-  if (Character::IsEmojiTagSequence(codepoint)) {
+  if (unicode::IsEmojiTagSequence(codepoint)) {
     return EmojiSegmentationCategory::TAG_SEQUENCE;
   }
   if (codepoint == uchar::kCancelTag) {
@@ -50,7 +50,7 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
     // defines a TAG_TERM grammar rule for U+E007F CANCEL TAG.
     return EmojiSegmentationCategory::TAG_TERM;
   }
-  if (Character::IsEmojiModifierBase(codepoint)) {
+  if (unicode::IsEmojiModifierBase(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_MODIFIER_BASE;
   }
   if (Character::IsModifier(codepoint)) {
@@ -60,13 +60,13 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
     return EmojiSegmentationCategory::REGIONAL_INDICATOR;
   }
 
-  if (Character::IsEmojiEmojiDefault(codepoint)) {
+  if (unicode::IsEmojiEmojiDefault(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION;
   }
-  if (Character::IsEmojiTextDefault(codepoint)) {
+  if (unicode::IsEmojiTextDefault(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION;
   }
-  if (Character::IsEmojiIncludingReserved(codepoint)) {
+  if (unicode::IsEmojiIncludingReserved(codepoint)) {
     return EmojiSegmentationCategory::EMOJI;
   }
 
