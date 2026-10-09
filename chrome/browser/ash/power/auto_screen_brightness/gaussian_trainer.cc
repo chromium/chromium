@@ -259,11 +259,14 @@ bool GaussianTrainer::SetInitialCurves(
 
   // Global curve and personal curve should have the same ambient log lux.
   const std::vector<double> global_log_lux = global_curve_->GetControlPointsX();
-  CHECK_EQ(global_log_lux.size(), num_points, base::NotFatalUntil::M160);
+  // TODO(crbug.com/571618743): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(global_log_lux.size(), num_points);
 
   for (size_t i = 0; i < num_points; ++i) {
-    CHECK_LE(std::abs(global_log_lux[i] - ambient_log_lux_[i]), kTol,
-             base::NotFatalUntil::M160);
+    // TODO(crbug.com/571618743): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(std::abs(global_log_lux[i] - ambient_log_lux_[i]), kTol);
   }
 
   // Calculate |min_ratios_| and |max_ratios_| from global curve.
