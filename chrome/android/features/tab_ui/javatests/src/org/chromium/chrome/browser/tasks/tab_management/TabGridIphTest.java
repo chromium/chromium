@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -86,6 +87,8 @@ import java.io.IOException;
             + "/event_used/name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365"
             + "/session_rate/<1")
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")
+// TODO(crbug.com/571163608): Re-enable leak checks once the AnimatedVectorDrawable leak is fixed.
+@DisableLeakChecks("crbug.com/571163608")
 public class TabGridIphTest {
     private ModalDialogManager mModalDialogManager;
     private Tracker mTracker;
