@@ -103,7 +103,8 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   double GetMaxInputVolume(AudioDeviceID device_id) override;
 
   // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
-  void SetInputVolume(AudioDeviceID device_id, double volume) override;
+  // Returns noErr if successful or the OSStatus error code.
+  OSStatus SetInputVolume(AudioDeviceID device_id, double volume) override;
 
   // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
   double GetInputVolume(AudioDeviceID device_id) override;

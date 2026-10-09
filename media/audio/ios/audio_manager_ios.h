@@ -81,11 +81,12 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   // have volume control.
   double GetMaxInputVolume(AudioDeviceID device_id) override;
 
-  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
+  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
   double GetInputVolume(AudioDeviceID device_id) override;
 
-  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
-  void SetInputVolume(AudioDeviceID device_id, double volume) override;
+  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
+  // Returns noErr if successful or the OSStatus error code.
+  OSStatus SetInputVolume(AudioDeviceID device_id, double volume) override;
 
   // Returns the current muting state for the microphone.
   bool IsInputMuted(AudioDeviceID device_id) override;

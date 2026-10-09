@@ -176,9 +176,12 @@ double AudioManagerIOS::GetInputVolume(AudioDeviceID device_id) {
       AudioSessionManagerIOS::GetInstance().GetInputGain());
 }
 
-void AudioManagerIOS::SetInputVolume(AudioDeviceID device_id, double volume) {
-  AudioSessionManagerIOS::GetInstance().SetInputGain(
-      static_cast<float>(volume));
+OSStatus AudioManagerIOS::SetInputVolume(AudioDeviceID device_id,
+                                         double volume) {
+  return AudioSessionManagerIOS::GetInstance().SetInputGain(
+             static_cast<float>(volume))
+             ? noErr
+             : kAudioHardwareUnspecifiedError;
 }
 
 bool AudioManagerIOS::IsInputMuted(AudioDeviceID device_id) {

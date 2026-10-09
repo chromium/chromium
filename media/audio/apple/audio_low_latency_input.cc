@@ -873,7 +873,13 @@ double AUAudioInputStream::GetMaxVolume() {
 void AUAudioInputStream::SetVolume(double volume) {
   DVLOG(1) << __FUNCTION__ << " this " << this << " volume=" << volume << ")";
 
-  manager_->SetInputVolume(input_device_id_, volume);
+  OSStatus result = manager_->SetInputVolume(input_device_id_, volume);
+  if (result != noErr) {
+    SendLog(base::StrCat({"Failed to set volume for device ",
+                          manager_->GetDeviceNameFromCache(device_unique_id_,
+                                                           /*is_input=*/true)}),
+            result);
+  }
 
   // Update the AGC volume level based on the last setting above. Note that,
   // the volume-level resolution is not infinite and it is therefore not

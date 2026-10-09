@@ -42,7 +42,8 @@ class AudioManagerApple : public AudioManagerBase {
   virtual double GetMaxInputVolume(AudioDeviceID device_id) = 0;
 
   // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
-  virtual void SetInputVolume(AudioDeviceID device_id, double volume) = 0;
+  // Returns noErr if successful or the OSStatus error code.
+  virtual OSStatus SetInputVolume(AudioDeviceID device_id, double volume) = 0;
 
   // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
   virtual double GetInputVolume(AudioDeviceID device_id) = 0;

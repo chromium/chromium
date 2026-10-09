@@ -1317,14 +1317,14 @@ bool AudioManagerMac::IsVolumeSettableOnChannel(AudioDeviceID device_id,
   return (result == noErr) ? is_settable : false;
 }
 
-void AudioManagerMac::SetInputVolume(AudioDeviceID device_id, double volume) {
+OSStatus AudioManagerMac::SetInputVolume(AudioDeviceID device_id,
+                                         double volume) {
   CHECK_GE(volume, 0.0);
   CHECK_LE(volume, 1.0);
 
   // Verify that we have a valid device.
   if (device_id == kAudioObjectUnknown) {
-    LOG(ERROR) << "Device ID is unknown";
-    return;
+    return kAudioHardwareBadObjectError;
   }
 
   Float32 volume_float32 = static_cast<Float32>(volume);
@@ -1334,33 +1334,31 @@ void AudioManagerMac::SetInputVolume(AudioDeviceID device_id, double volume) {
 
   // Try to set the volume for master volume channel.
   if (IsVolumeSettableOnChannel(device_id, kAudioObjectPropertyElementMain)) {
-    OSStatus result =
-        AudioObjectSetPropertyData(device_id, &property_address, 0, nullptr,
-                                   sizeof(volume_float32), &volume_float32);
-    if (result != noErr) {
-      DLOG(WARNING) << "Failed to set volume to " << volume_float32;
-    }
-    return;
+    return AudioObjectSetPropertyData(device_id, &property_address, 0, nullptr,
+                                      sizeof(volume_float32), &volume_float32);
   }
 
   // The master channel is 0, Left and right are channels 1 and 2.
   // There is no master volume control, try to set volume for each channel.
-  [[maybe_unused]] int successful_channels = 0;
+  int successful_channels = 0;
+  // Returned if no channel has a settable volume.
+  OSStatus last_error = kAudioHardwareUnsupportedOperationError;
   for (int channel = 1; channel <= GetNumberOfChannelsForDevice(device_id);
        ++channel) {
     property_address.mElement = static_cast<UInt32>(channel);
     if (IsVolumeSettableOnChannel(device_id, channel)) {
       OSStatus result =
-          AudioObjectSetPropertyData(device_id, &property_address, 0, NULL,
+          AudioObjectSetPropertyData(device_id, &property_address, 0, nullptr,
                                      sizeof(volume_float32), &volume_float32);
       if (result == noErr) {
         ++successful_channels;
+      } else {
+        last_error = result;
       }
     }
   }
 
-  DLOG_IF(WARNING, successful_channels == 0)
-      << "Failed to set volume to " << volume_float32;
+  return successful_channels > 0 ? noErr : last_error;
 }
 
 double AudioManagerMac::GetInputVolume(AudioDeviceID device_id) {
