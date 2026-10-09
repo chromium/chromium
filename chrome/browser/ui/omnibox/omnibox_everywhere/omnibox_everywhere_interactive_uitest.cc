@@ -536,8 +536,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
       WaitForWidgetActiveState(false));
 }
 
-// TODO(crbug.com/40249472): Support modal dragging on Windows with Kombucha.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_DragToMoveWindowInDraggableRegion \
   DragToMoveWindowInDraggableRegion
 #else
@@ -624,9 +623,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
   gfx::Point dragged_origin;
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40249472): Modal drag loops in tests aren't supported on
-  // MacOS and Windows. Manually set widget bounds to test position retention
+#if BUILDFLAG(IS_MAC)
+  // On Mac, dragging triggers a native window move loop, which is not
+  // supported in tests. Manually set widget bounds to test position retention
   // across re-invocations.
   auto reposition_step = Steps(Do([&]() {
     views::Widget* widget = controller->ui_manager()->widget();
@@ -638,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
 #else
   const char kContentsView[] = "OmniboxContentsView";
   auto reposition_step = Steps(
-      NameOmniboxContentsView(kContentsView),
+      WaitForDraggableRegions(), NameOmniboxContentsView(kContentsView),
       DragMouseInView(kContentsView, gfx::Point(10, 5), gfx::Point(110, 5)),
       Do([&]() {
         dragged_origin = controller->ui_manager()
