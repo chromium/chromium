@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 
+#include "base/trace_event/trace_event.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -391,6 +392,7 @@ void MaybeApplyOverrideForDevtoolsUserAgentHeader(
 network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase1(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request) {
+  TRACE_EVENT("loading", "PrepareInitialHeadersForPrefetchPhase1");
   network::HttpRequestHeadersUpdateParams headers_update_params;
 
   url::Origin request_url_origin = url::Origin::Create(request_url);
@@ -441,6 +443,7 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  TRACE_EVENT("loading", "PrepareInitialHeadersForPrefetchPhase2");
 
   network::HttpRequestHeadersUpdateParams headers_update_params;
 
@@ -512,6 +515,7 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
 network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request) {
+  TRACE_EVENT("loading", "PrepareRedirectHeadersForPrefetch");
   // There are sometimes other headers that are modified during navigation
   // redirects; see `NavigationRequest::OnRedirectChecksComplete` (including
   // some which are added by throttles). These aren't yet supported for
@@ -618,6 +622,7 @@ std::unique_ptr<network::ResourceRequest>
 MakeInitialResourceRequestWithoutHeadersForPrefetch(
     const PrefetchRequest& prefetch_request,
     bool is_decoy) {
+  TRACE_EVENT("loading", "MakeInitialResourceRequestWithoutHeadersForPrefetch");
   const GURL& url = prefetch_request.key().url();
   url::Origin origin = url::Origin::Create(url);
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
@@ -740,6 +745,7 @@ std::unique_ptr<network::ResourceRequest> MakeInitialResourceRequestForPrefetch(
     const PrefetchRequest& prefetch_request,
     bool is_decoy) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  TRACE_EVENT("loading", "MakeInitialResourceRequestForPrefetch");
 
   auto resource_request = MakeInitialResourceRequestWithoutHeadersForPrefetch(
       prefetch_request, is_decoy);
@@ -771,6 +777,7 @@ MakeInitialResourceRequestForPrePrefetch(
     const PrefetchRequest& prefetch_request,
     const network::HttpRequestHeadersUpdateParams&
         ui_thread_pre_calculated_headers) {
+  TRACE_EVENT("loading", "MakeInitialResourceRequestForPrePrefetch");
   auto resource_request = MakeInitialResourceRequestWithoutHeadersForPrefetch(
       prefetch_request, /*is_decoy=*/false);
 

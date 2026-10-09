@@ -53,6 +53,7 @@ network::HttpRequestHeadersUpdateParams PreCalculatePrePrefetchHeadersOnUI(
     BrowserContext* browser_context,
     const PrePrefetchPreCalculatedHeadersKey& key) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  TRACE_EVENT("loading", "PreCalculatePrePrefetchHeadersOnUI");
   // Create a tentative `PrefetchRequest` to pre-calculate headers based on
   // `PrePrefetchPreCalculatedHeadersKey`.
   // TODO(crbug.com/470242977): Creating a full `PrefetchRequest` just to
@@ -119,6 +120,8 @@ class PrePrefetchServiceCore {
             std::move(non_ui_thread_update_headers_callbacks)) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+    TRACE_EVENT("loading", "PrePrefetchServiceCore::PrePrefetchServiceCore");
+
     UpdateURLLoaderFactory(std::move(pending_factory));
   }
   ~PrePrefetchServiceCore() {

@@ -181,6 +181,8 @@ AwBrowserContext::AwBrowserContext(std::string name,
   {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "Android.WebView.AwBrowserContext.CreateAwPrefetchManager.Duration");
+    TRACE_EVENT("android_webview",
+                "AwBrowserContext::CreateAwPrefetchManager");
     prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
   }
   preconnector_ = std::make_unique<AwPreconnector>(this);

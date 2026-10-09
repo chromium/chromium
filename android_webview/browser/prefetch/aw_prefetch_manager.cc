@@ -174,6 +174,8 @@ std::unique_ptr<content::PrePrefetchService> CreatePrePrefetchService(
     content::BrowserContext* browser_context,
     std::optional<AwPrefetchLatestInfoPref> initial_prefetch_hints,
     AwPrefetchManagerData& prefetch_manager_data) {
+  TRACE_EVENT("android_webview",
+              "AwPrefetchManager::CreatePrePrefetchService");
   if (initial_prefetch_hints.has_value()) {
     prefetch_manager_data.UpdateLatestPrefetchInfo(
         initial_prefetch_hints.value());
@@ -206,8 +208,7 @@ AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
                                          aw_prefetch_manager_data_)
               : nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT_INSTANT("android_webview",
-                      "AwPrefetchManager::AwPrefetchManager");
+  TRACE_EVENT("android_webview", "AwPrefetchManager::AwPrefetchManager");
 }
 
 AwPrefetchManager::~AwPrefetchManager() = default;
