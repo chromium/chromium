@@ -8,6 +8,7 @@
 #include <wrl/event.h>
 #include <wrl/implements.h>
 
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -66,6 +67,9 @@ class FakeDataTransferManagerInteropTest : public ::testing::Test {
 };
 
 TEST_F(FakeDataTransferManagerInteropTest, GetDataRequestedInvoker) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
+
   // Verify failure when called without a listener in place
   base::OnceClosure invoker;
   EXPECT_NONFATAL_FAILURE(
@@ -286,6 +290,9 @@ TEST_F(FakeDataTransferManagerInteropTest,
 
 TEST_F(FakeDataTransferManagerInteropTest,
        ShowShareUIForWindow_WithoutListener) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
+
   // Validate that ShowShareUIForWindow fails and causes a test failure when
   // called without a listener
   ASSERT_NO_FATAL_FAILURE(

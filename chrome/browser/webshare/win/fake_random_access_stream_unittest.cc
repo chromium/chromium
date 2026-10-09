@@ -8,6 +8,7 @@
 #include <wrl/implements.h>
 
 #include "base/compiler_specific.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -31,6 +32,8 @@ using Microsoft::WRL::Make;
 namespace webshare {
 
 TEST(FakeRandomAccessStreamTest, InvalidSeek) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   auto stream = Make<FakeRandomAccessStream>();
   ASSERT_HRESULT_SUCCEEDED(stream->Seek(0));
   EXPECT_NONFATAL_FAILURE(ASSERT_HRESULT_FAILED(stream->Seek(1)), "Seek");
@@ -38,6 +41,8 @@ TEST(FakeRandomAccessStreamTest, InvalidSeek) {
 }
 
 TEST(FakeRandomAccessStreamTest, UsageAfterClose) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   base::test::SingleThreadTaskEnvironment task_environment;
 
   auto stream = Make<FakeRandomAccessStream>();
@@ -95,6 +100,8 @@ TEST(FakeRandomAccessStreamTest, UsageAfterClose) {
 }
 
 TEST(FakeRandomAccessStreamTest, CompetingAsyncCalls) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   base::test::SingleThreadTaskEnvironment task_environment;
 
   auto stream = Make<FakeRandomAccessStream>();

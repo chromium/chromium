@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -106,6 +107,9 @@ class FakeDataTransferManagerTest : public ::testing::Test {
 };
 
 TEST_F(FakeDataTransferManagerTest, RemovingHandlerForInvalidToken) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
+
   // Validate removing an invalid token both fails and creates a test failure
   // when there is no listener
   EventRegistrationToken invalid_token;
@@ -187,6 +191,8 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventUnsubscribing) {
       fake_data_transfer_manager_->remove_DataRequested(token_1));
   ASSERT_FALSE(fake_data_transfer_manager_->HasDataRequestedListener());
 
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   EXPECT_NONFATAL_FAILURE(
       fake_data_transfer_manager_->GetDataRequestedInvoker(),
       "GetDataRequestedInvoker");

@@ -6,6 +6,7 @@
 
 #include <wrl/implements.h>
 
+#include "base/debug/stack_trace.h"
 #include "base/win/scoped_hstring.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +31,8 @@ TEST(FakeUriRuntimeClassFactoryTest, CreateUri) {
 }
 
 TEST(FakeUriRuntimeClassFactoryTest, CreateUri_Invalid) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   auto factory = Make<FakeUriRuntimeClassFactory>();
 
   auto uri = base::win::ScopedHString::Create("");

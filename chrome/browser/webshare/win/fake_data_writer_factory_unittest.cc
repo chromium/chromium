@@ -8,6 +8,7 @@
 #include <wrl/implements.h>
 
 #include "base/compiler_specific.h"
+#include "base/debug/stack_trace.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/webshare/win/fake_buffer.h"
@@ -30,6 +31,8 @@ using Microsoft::WRL::Make;
 namespace webshare {
 
 TEST(FakeDataWriterFactoryTest, RacingStoreAsync) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   base::test::SingleThreadTaskEnvironment task_environment;
 
   auto writer_factory = Make<FakeDataWriterFactory>();
@@ -78,6 +81,8 @@ TEST(FakeDataWriterFactoryTest, RacingStoreAsync) {
 }
 
 TEST(FakeDataWriterFactoryTest, UnstoredBytes) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   auto writer_factory = Make<FakeDataWriterFactory>();
   auto stream = Make<FakeRandomAccessStream>();
 
