@@ -22,7 +22,7 @@ public interface LookAheadObservableSupplier<T> extends NullableObservableSuppli
      *
      * @param obs The observer to add.
      */
-    @Nullable T addLookAheadObserver(Callback<@Nullable T> obs);
+    @Nullable T addLookAheadObserver(Callback<? super @Nullable T> obs);
 
     /**
      * Adds an observer that is notified before the supplier's value is changed. The observer
@@ -31,12 +31,13 @@ public interface LookAheadObservableSupplier<T> extends NullableObservableSuppli
      * @param obs The observer to add.
      * @param behavior The {@link NotifyBehavior} the observer will exhibit.
      */
-    @Nullable T addLookAheadObserver(Callback<@Nullable T> obs, @NotifyBehavior int behavior);
+    @Nullable T addLookAheadObserver(
+            Callback<? super @Nullable T> obs, @NotifyBehavior int behavior);
 
     /**
      * Removes a look ahead observer.
      *
      * @param obs The observer to remove.
      */
-    void removeLookAheadObserver(Callback<@Nullable T> obs);
+    void removeLookAheadObserver(Callback<? super @Nullable T> obs);
 }

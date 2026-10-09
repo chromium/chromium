@@ -47,7 +47,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
     @Override
     public @BrowserControlsState Integer addObserver(
-            Callback<@BrowserControlsState Integer> obs, @NotifyBehavior int behavior) {
+            Callback<? super @BrowserControlsState Integer> obs, @NotifyBehavior int behavior) {
         if (!hasObservers()) {
             for (BrowserControlsVisibilityDelegate delegate : mDelegates) {
                 delegate.addSyncObserver(mConstraintsUpdatedCallback);
@@ -59,7 +59,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public void removeObserver(Callback<@BrowserControlsState Integer> obs) {
+    public void removeObserver(Callback<? super @BrowserControlsState Integer> obs) {
         super.removeObserver(obs);
         if (!hasObservers()) {
             // One of the delegates can be activity-scoped and live longer than e.g. a tab-scoped

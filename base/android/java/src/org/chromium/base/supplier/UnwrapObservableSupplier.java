@@ -66,7 +66,7 @@ class UnwrapObservableSupplier<ParentT, ChildT> extends ObservableSupplierImpl<C
     }
 
     @Override
-    public ChildT addObserver(Callback<ChildT> obs, @NotifyBehavior int behavior) {
+    public ChildT addObserver(Callback<? super ChildT> obs, @NotifyBehavior int behavior) {
         // Can use hasObservers() to tell if we are subscribed or not to
         // mParentSupplier. This is safe because we never expose outside callers, and completely
         // control when we add/remove observers to it.
@@ -79,7 +79,7 @@ class UnwrapObservableSupplier<ParentT, ChildT> extends ObservableSupplierImpl<C
     }
 
     @Override
-    public void removeObserver(Callback<ChildT> obs) {
+    public void removeObserver(Callback<? super ChildT> obs) {
         super.removeObserver(obs);
         // If no one is observing, we do not need to observe parent. This allows our callers to
         // destroy themselves, unsubscribe from us, and we remove our observer from the parent,

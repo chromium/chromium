@@ -53,7 +53,7 @@ class TransitiveObservableSupplier<
     }
 
     @Override
-    public ChildT addObserver(Callback<ChildT> obs, @NotifyBehavior int behavior) {
+    public ChildT addObserver(Callback<? super ChildT> obs, @NotifyBehavior int behavior) {
         if (!super.hasObservers()) {
             onParentSupplierChange(
                     mParentSupplier.addSyncObserver(mOnParentSupplierChangeCallback));
@@ -62,7 +62,7 @@ class TransitiveObservableSupplier<
     }
 
     @Override
-    public void removeObserver(Callback<ChildT> obs) {
+    public void removeObserver(Callback<? super ChildT> obs) {
         super.removeObserver(obs);
         if (!super.hasObservers()) {
             deactivate();

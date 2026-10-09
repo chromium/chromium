@@ -23,12 +23,12 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
     }
 
     @Override
-    public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
+    public T addObserver(Callback<? super T> obs, @NotifyBehavior int behavior) {
         return null;
     }
 
     @Override
-    public void removeObserver(Callback<T> obs) {}
+    public void removeObserver(Callback<? super T> obs) {}
 
     @Override
     public @Nullable T get() {

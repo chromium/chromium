@@ -109,12 +109,12 @@ public class TabModelSelectorProfileSupplier
     }
 
     @Override
-    public @Nullable Profile addObserver(Callback<Profile> obs, int behavior) {
+    public @Nullable Profile addObserver(Callback<? super Profile> obs, int behavior) {
         return mSupplier.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<Profile> obs) {
+    public void removeObserver(Callback<? super Profile> obs) {
         mSupplier.removeObserver(obs);
     }
 

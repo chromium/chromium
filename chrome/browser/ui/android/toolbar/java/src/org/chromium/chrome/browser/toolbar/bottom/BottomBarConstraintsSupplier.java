@@ -121,12 +121,12 @@ public class BottomBarConstraintsSupplier
 
     @Override
     public @Nullable @BrowserControlsState Integer addObserver(
-            Callback<@Nullable Integer> obs, int behavior) {
+            Callback<? super @Nullable Integer> obs, int behavior) {
         return mSupplier.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<@Nullable Integer> obs) {
+    public void removeObserver(Callback<? super @Nullable Integer> obs) {
         mSupplier.removeObserver(obs);
     }
 

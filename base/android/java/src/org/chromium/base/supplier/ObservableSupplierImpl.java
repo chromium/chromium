@@ -38,7 +38,7 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
                 SettableMonotonicObservableSupplier<T>,
                 SettableNonNullObservableSupplier<T> {
     protected final ThreadChecker mThreadChecker = new ThreadChecker();
-    protected @Nullable ObserverList<Callback<T>> mObservers;
+    protected @Nullable ObserverList<Callback<? super T>> mObservers;
     protected T mObject;
     private boolean mIsDestroyed;
 
@@ -51,7 +51,7 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
     }
 
     @Override
-    public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
+    public T addObserver(Callback<? super T> obs, @NotifyBehavior int behavior) {
         assert !mIsDestroyed : "addObserver called on destroyed supplier";
         if (mIsDestroyed) {
             return null;
@@ -86,7 +86,7 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
     }
 
     @Override
-    public void removeObserver(Callback<T> obs) {
+    public void removeObserver(Callback<? super T> obs) {
         // Check not destroyed.
         if (mObservers != null) {
             mObservers.removeObserver(obs);
@@ -129,7 +129,7 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
         if (Objects.equals(prevValue, value)) {
             return;
         }
-        for (Callback<T> observer : mObservers) {
+        for (Callback<? super T> observer : mObservers) {
             observer.onResult(value);
         }
     }

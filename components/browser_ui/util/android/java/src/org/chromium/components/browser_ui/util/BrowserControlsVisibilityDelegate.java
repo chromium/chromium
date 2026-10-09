@@ -32,12 +32,12 @@ public class BrowserControlsVisibilityDelegate
 
     @Override
     public @BrowserControlsState Integer addObserver(
-            Callback<@BrowserControlsState Integer> obs, int behavior) {
+            Callback<? super @BrowserControlsState Integer> obs, int behavior) {
         return mDelegateSupplier.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<@BrowserControlsState Integer> obs) {
+    public void removeObserver(Callback<? super @BrowserControlsState Integer> obs) {
         mDelegateSupplier.removeObserver(obs);
     }
 

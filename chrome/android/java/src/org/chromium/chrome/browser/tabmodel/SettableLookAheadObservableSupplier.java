@@ -52,28 +52,28 @@ public class SettableLookAheadObservableSupplier<T>
     }
 
     @Override
-    public @Nullable T addLookAheadObserver(Callback<@Nullable T> obs) {
+    public @Nullable T addLookAheadObserver(Callback<? super @Nullable T> obs) {
         return mLookAheadSupplier.addSyncObserverAndPostIfNonNull(obs);
     }
 
     @Override
     public @Nullable T addLookAheadObserver(
-            Callback<@Nullable T> obs, @NotifyBehavior int behavior) {
+            Callback<? super @Nullable T> obs, @NotifyBehavior int behavior) {
         return mLookAheadSupplier.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeLookAheadObserver(Callback<@Nullable T> obs) {
+    public void removeLookAheadObserver(Callback<? super @Nullable T> obs) {
         mLookAheadSupplier.removeObserver(obs);
     }
 
     @Override
-    public @Nullable T addObserver(Callback<@Nullable T> obs, int behavior) {
+    public @Nullable T addObserver(Callback<? super @Nullable T> obs, int behavior) {
         return mObservableSupplier.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<@Nullable T> obs) {
+    public void removeObserver(Callback<? super @Nullable T> obs) {
         mObservableSupplier.removeObserver(obs);
     }
 

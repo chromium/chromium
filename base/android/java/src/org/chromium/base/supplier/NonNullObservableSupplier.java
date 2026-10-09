@@ -18,17 +18,17 @@ import java.util.function.Supplier;
 @NullMarked
 public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObservableSupplier<T> {
     @Override
-    default T addSyncObserver(Callback<T> obs) {
+    default T addSyncObserver(Callback<? super T> obs) {
         return addObserver(obs, MonotonicObservableSupplier.NotifyBehavior.NONE);
     }
 
     @Override
-    default T addSyncObserverAndCallIfNonNull(Callback<T> obs) {
+    default T addSyncObserverAndCallIfNonNull(Callback<? super T> obs) {
         return addObserver(obs, MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD);
     }
 
     @Override
-    default T addSyncObserverAndPostIfNonNull(Callback<T> obs) {
+    default T addSyncObserverAndPostIfNonNull(Callback<? super T> obs) {
         return addObserver(
                 obs,
                 MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
@@ -36,7 +36,7 @@ public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObse
     }
 
     @Override
-    default T addSyncObserverAndCall(Callback<T> obs) {
+    default T addSyncObserverAndCall(Callback<? super T> obs) {
         return addObserver(
                 obs,
                 MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
@@ -44,7 +44,7 @@ public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObse
     }
 
     @Override
-    default T addSyncObserverAndPost(Callback<T> obs) {
+    default T addSyncObserverAndPost(Callback<? super T> obs) {
         return addObserver(
                 obs,
                 MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
@@ -53,5 +53,5 @@ public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObse
     }
 
     @Override
-    T addObserver(Callback<T> obs, @NotifyBehavior int behavior);
+    T addObserver(Callback<? super T> obs, @NotifyBehavior int behavior);
 }

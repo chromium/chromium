@@ -177,12 +177,12 @@ public class CurrentTabPriceTrackingStateSupplier implements NonNullObservableSu
     }
 
     @Override
-    public Boolean addObserver(Callback<Boolean> obs, int behavior) {
+    public Boolean addObserver(Callback<? super Boolean> obs, int behavior) {
         return mSupplier.addObserver(obs, behavior);
     }
 
     @Override
-    public void removeObserver(Callback<Boolean> obs) {
+    public void removeObserver(Callback<? super Boolean> obs) {
         mSupplier.removeObserver(obs);
     }
 

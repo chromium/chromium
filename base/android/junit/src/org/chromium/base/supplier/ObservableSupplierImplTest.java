@@ -420,6 +420,41 @@ public class ObservableSupplierImplTest {
         assertFalse(BaseObservableSupplierImpl.allowsSetToNull(ObservableSuppliers.alwaysNull()));
     }
 
+    @Test
+    public void testContravariantObserver_BaseClassAndInterfaceCallbacks() {
+        SettableNullableObservableSupplier<String> stringSupplier =
+                ObservableSuppliers.createNullable();
+        SettableMonotonicObservableSupplier<StringBuilder> stringBuilderSupplier =
+                ObservableSuppliers.createMonotonic();
+        SettableNonNullObservableSupplier<Integer> intSupplier =
+                ObservableSuppliers.createNonNull(0);
+
+        Callback<CharSequence> charSequenceObserver =
+                seq -> mLastSuppliedString = seq != null ? seq.toString() : null;
+        Callback<Number> numberObserver = num -> mCallCount += num.intValue();
+
+        stringSupplier.addSyncObserver(charSequenceObserver);
+        stringBuilderSupplier.addSyncObserver(charSequenceObserver);
+        intSupplier.addSyncObserver(numberObserver);
+
+        stringSupplier.set("hello");
+        assertEquals("hello", mLastSuppliedString);
+
+        stringBuilderSupplier.set(new StringBuilder("world"));
+        assertEquals("world", mLastSuppliedString);
+
+        intSupplier.set(42);
+        assertEquals(42, mCallCount);
+
+        stringSupplier.removeObserver(charSequenceObserver);
+        stringBuilderSupplier.removeObserver(charSequenceObserver);
+        intSupplier.removeObserver(numberObserver);
+
+        assertFalse(stringSupplier.hasObservers());
+        assertFalse(stringBuilderSupplier.hasObservers());
+        assertFalse(intSupplier.hasObservers());
+    }
+
     private void checkState(
             int expectedCallCount,
             String expectedLastSuppliedString,

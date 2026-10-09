@@ -27,10 +27,10 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * @param behavior The notification behavior.
      * @return The current value of the supplier.
      */
-    @Nullable T addObserver(Callback<@Nullable T> obs, @NotifyBehavior int behavior);
+    @Nullable T addObserver(Callback<? super @Nullable T> obs, @NotifyBehavior int behavior);
 
     /** Removes the given observer. */
-    void removeObserver(Callback<@Nullable T> obs);
+    void removeObserver(Callback<? super @Nullable T> obs);
 
     /**
      * Adds a synchronous observer to the supplier.
@@ -38,7 +38,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * @param obs The observer to add.
      * @return The current value of the supplier.
      */
-    default @Nullable T addSyncObserver(Callback<@Nullable T> obs) {
+    default @Nullable T addSyncObserver(Callback<? super @Nullable T> obs) {
         return addObserver(obs, NotifyBehavior.NONE);
     }
 
@@ -49,7 +49,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * @param obs The observer to add.
      * @return The current value of the supplier.
      */
-    default @Nullable T addSyncObserverAndCall(Callback<@Nullable T> obs) {
+    default @Nullable T addSyncObserverAndCall(Callback<? super @Nullable T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.ALLOW_NULL_ON_ADD);
     }
 
@@ -59,7 +59,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * @param obs The observer to add.
      * @return The current value of the supplier.
      */
-    default @Nullable T addSyncObserverAndCallIfNonNull(Callback<@Nullable T> obs) {
+    default @Nullable T addSyncObserverAndCallIfNonNull(Callback<? super @Nullable T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD);
     }
 
@@ -75,7 +75,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * @param obs The observer to add.
      * @return The current value of the supplier.
      */
-    default @Nullable T addSyncObserverAndPost(Callback<@Nullable T> obs) {
+    default @Nullable T addSyncObserverAndPost(Callback<? super @Nullable T> obs) {
         return addObserver(
                 obs,
                 NotifyBehavior.NOTIFY_ON_ADD
@@ -95,7 +95,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * @param obs The observer to add.
      * @return The current value of the supplier.
      */
-    default @Nullable T addSyncObserverAndPostIfNonNull(Callback<@Nullable T> obs) {
+    default @Nullable T addSyncObserverAndPostIfNonNull(Callback<? super @Nullable T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.POST_ON_ADD);
     }
 
