@@ -22,7 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
-#include "base/types/optional_ref.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
@@ -201,15 +200,6 @@ void LogProactiveRefreshAttempt(
       "Net.DeviceBoundSessions.ProactiveRefreshAttempt", attempt);
 }
 
-bool CanAccessPreProvisionedKey(
-    const SessionServiceImpl::CookieAccessCallback& cookie_access_cb,
-    const url::Origin& provider_origin,
-    const url::Origin& rp_origin) {
-  return cookie_access_cb &&
-         cookie_access_cb.Run({.provider_origin{provider_origin},
-                               .relying_party_origin{rp_origin}});
-}
-
 }  // namespace
 
 SessionServiceImpl::SessionServiceImpl(
@@ -225,7 +215,7 @@ SessionServiceImpl::SessionServiceImpl(
       session_store_(store),
       restricted_sites_(restricted_sites),
       client_cert_handler_(std::move(client_cert_handler)),
-      has_cookie_access_cb_(std::move(has_cookie_access_cb)) {
+      sso_key_manager_(std::move(has_cookie_access_cb)) {
   ignore_signing_quota_ = !features::kDeviceBoundSessionsSigningQuota.Get();
   CHECK(context_);
   CHECK(client_cert_handler_);
@@ -457,8 +447,8 @@ void SessionServiceImpl::RegisterBoundSession(
           features::kDeviceBoundSessionsForSingleSignOn)) {
     ASSIGN_OR_RETURN(
         unexportable_keys::UnexportableSigningKeyId pre_provisioned_key,
-        FindPreProvisionedKey(*provider_params,
-                              registration_params.original_request_initiator),
+        sso_key_manager_.FindPreProvisionedKey(
+            *provider_params, registration_params.original_request_initiator),
         [&](SessionError::ErrorType error) {
           OnRegistrationComplete(
               registration_params.access_callback,
@@ -1237,25 +1227,13 @@ void SessionServiceImpl::DeleteAllSessions(
     DeletionReason reason,
     std::optional<base::Time> created_after_time,
     std::optional<base::Time> created_before_time,
-    base::RepeatingCallback<bool(const url::Origin&, const net::SchemefulSite&)>
-        origin_and_site_matcher,
+    OriginAndSiteMatcher origin_and_site_matcher,
     base::OnceClosure completion_callback) {
   // Delete potential zombie pre-provisioned keys. Zombie keys are signing
   // keys pre-provisioned for a certain relying party that were not consumed
   // during any device bound session registration.
   // Removing zombie keys regardless of time range is fine.
-  if (!origin_and_site_matcher) {
-    pre_provisioned_keys_.clear();
-  } else {
-    std::erase_if(pre_provisioned_keys_,
-                  [&](const PreProvisionedKeyEntry& key) {
-                    // We only delete a pre-provisioned key if the origin and
-                    // site matches the Relying Party's origin and site because
-                    // the key is considered RP's data, not IdP's.
-                    return origin_and_site_matcher.Run(
-                        key.rp_origin, net::SchemefulSite(key.rp_origin));
-                  });
-  }
+  sso_key_manager_.ClearPreProvisionedKeys(origin_and_site_matcher);
 
   if (pending_initialization_) {
     queued_operations_.push_back(base::BindOnce(
@@ -1388,18 +1366,10 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
               [&](std::unique_ptr<Session> session) {
                 CHECK(session);
                 const SchemefulSite site(session->origin());
-                SessionError::ErrorType success_result = SessionError::kSuccess;
-                if (session->unexportable_key_id().has_value()) {
-                  // Consume the pre-provisioned key.
-                  std::erase_if(pre_provisioned_keys_,
-                                [&](const PreProvisionedKeyEntry& pk) {
-                                  return pk.key_id ==
-                                         session->unexportable_key_id();
-                                });
-                }
+                sso_key_manager_.ConsumeKeyForSession(*session);
                 AddSessionAndNotify(site, std::move(session),
                                     on_access_callback);
-                return success_result;
+                return SessionError::kSuccess;
               },
               [](RegistrationResult::NoSessionConfigChange)
                   -> SessionError::ErrorType {
@@ -1855,84 +1825,6 @@ void SessionServiceImpl::HandleResponseHeaders(DbscRequest& request,
     SetChallengeForBoundSession(request.device_bound_session_access_callback(),
                                 request, std::move(param));
   }
-}
-
-bool SessionServiceImpl::CanAddPreProvisionedKey(const GURL& provider_url,
-                                                 const url::Origin& rp_origin) {
-  if (!CanAccessPreProvisionedKey(has_cookie_access_cb_,
-                                  url::Origin::Create(provider_url),
-                                  rp_origin)) {
-    return false;
-  }
-
-  // If we haven't reached the max keys per Identity Provider overall, we can
-  // add it right away.
-  if (pre_provisioned_keys_.size() <
-      kMaxPreProvisionedKeysPerIdentityProvider) {
-    return true;
-  }
-
-  return static_cast<size_t>(std::ranges::count(
-             pre_provisioned_keys_, net::SchemefulSite(provider_url),
-             &PreProvisionedKeyEntry::provider_site)) <
-         kMaxPreProvisionedKeysPerIdentityProvider;
-}
-
-bool SessionServiceImpl::AddPreProvisionedKey(
-    const url::Origin& rp_origin,
-    std::string_view provider_key,
-    const GURL& provider_url,
-    unexportable_keys::UnexportableSigningKeyId key_id) {
-  if (!CanAddPreProvisionedKey(provider_url, rp_origin)) {
-    return false;
-  }
-
-  auto existing_key_it =
-      std::ranges::find_if(pre_provisioned_keys_, [&](const auto& pk) {
-        return pk.provider_url == provider_url && pk.rp_origin == rp_origin &&
-               pk.provider_key == provider_key;
-      });
-  if (existing_key_it != pre_provisioned_keys_.end()) {
-    return false;
-  }
-
-  pre_provisioned_keys_.push_back(
-      {.provider_url{provider_url},
-       .provider_site{net::SchemefulSite(provider_url)},
-       .rp_origin{rp_origin},
-       .provider_key{std::string(provider_key)},
-       .key_id{key_id}});
-  return true;
-}
-
-SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
-SessionServiceImpl::FindPreProvisionedKey(
-    const ProviderRegistrationParams& provider_params,
-    base::optional_ref<const url::Origin> original_request_initiator) {
-  if (!original_request_initiator) {
-    return base::unexpected(
-        SessionError::kInvalidPreProvisionedKeyInitiatorMissing);
-  }
-
-  if (!CanAccessPreProvisionedKey(
-          has_cookie_access_cb_,
-          url::Origin::Create(provider_params.provider_url),
-          *original_request_initiator)) {
-    return base::unexpected(SessionError::kPreProvisionedKeyAccessNotGranted);
-  }
-
-  auto key_it =
-      std::ranges::find_if(pre_provisioned_keys_, [&](const auto& pk) {
-        return pk.provider_url == provider_params.provider_url &&
-               pk.provider_key == provider_params.provider_key &&
-               pk.rp_origin == *original_request_initiator;
-      });
-  if (key_it == pre_provisioned_keys_.end()) {
-    return base::unexpected(
-        SessionError::ErrorType::kPreProvisionedKeyNotFound);
-  }
-
-  return key_it->key_id;
 }
 
 }  // namespace net::device_bound_sessions

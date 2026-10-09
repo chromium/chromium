@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/types/expected.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_error.h"
@@ -67,27 +66,12 @@ class SessionServiceMock : public SessionService {
                const SessionKey& session_key,
                SessionService::OnAccessCallback per_request_callback),
               (override));
-  MOCK_METHOD(bool,
-              AddPreProvisionedKey,
-              (const url::Origin&,
-               std::string_view,
-               const GURL&,
-               unexportable_keys::UnexportableSigningKeyId),
-              (override));
-  MOCK_METHOD(
-      (SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>),
-      FindPreProvisionedKey,
-      (const ProviderRegistrationParams& provider_params,
-       base::optional_ref<const url::Origin> original_request_initiator),
-      (override));
   MOCK_METHOD(void,
               DeleteAllSessions,
               (DeletionReason reason,
                std::optional<base::Time> created_after_time,
                std::optional<base::Time> created_before_time,
-               base::RepeatingCallback<bool(const url::Origin&,
-                                            const net::SchemefulSite&)>
-                   origin_and_site_matcher,
+               OriginAndSiteMatcher origin_and_site_matcher,
                base::OnceClosure completion_callback),
               (override));
   MOCK_METHOD(base::ScopedClosureRunner,

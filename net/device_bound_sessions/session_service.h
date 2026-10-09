@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_access_check_params.h"
 #include "net/device_bound_sessions/deletion_reason.h"
@@ -78,6 +77,9 @@ class NET_EXPORT SessionService {
   using CookieAccessCallback =
       base::RepeatingCallback<bool(const CookieAccessCheckParams&)>;
   using PrewarmCallback = base::OnceCallback<void(SessionPrewarmResult)>;
+  // Selects data by origin and site, e.g. in `DeleteAllSessions()`.
+  using OriginAndSiteMatcher =
+      base::RepeatingCallback<bool(const url::Origin&, const SchemefulSite&)>;
 
   // Indicates the reason for deferring. Exactly one of
   // `is_pending_initialization` or `session_id` will be truthy.
@@ -206,39 +208,11 @@ class NET_EXPORT SessionService {
 
   // Delete all sessions that match the filtering arguments. See
   // `device_bound_sessions.mojom` for details on the filtering logic.
-  virtual void DeleteAllSessions(
-      DeletionReason reason,
-      std::optional<base::Time> created_after_time,
-      std::optional<base::Time> created_before_time,
-      base::RepeatingCallback<bool(const url::Origin&,
-                                   const net::SchemefulSite&)>
-          origin_and_site_matcher,
-      base::OnceClosure completion_callback) = 0;
-
-  // Adds a pre-provisioned key to an in-memory storage.
-  //
-  // Returns `true` if the key was successfully added, `false` otherwise.
-  //
-  // A key insertion can fail if the key already exists, i.e. same rp_origin,
-  // provider_key, and provider_url.
-  //
-  // A key insertion can fail if there are more than
-  // `kMaxPreProvisionedKeysPerIdentityProvider` keys per Identity Provider
-  // site.
-  //
-  // A key insertion can fail if the Identity Provider site does not have access
-  // to its cookies from a third-party context.
-  virtual bool AddPreProvisionedKey(
-      const url::Origin& rp_origin,
-      std::string_view provider_key,
-      const GURL& provider_url,
-      unexportable_keys::UnexportableSigningKeyId key_id) = 0;
-
-  // Find a pre-provisioned key that matches the parameters.
-  virtual SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
-  FindPreProvisionedKey(
-      const ProviderRegistrationParams& provider_params,
-      base::optional_ref<const url::Origin> original_request_initiator) = 0;
+  virtual void DeleteAllSessions(DeletionReason reason,
+                                 std::optional<base::Time> created_after_time,
+                                 std::optional<base::Time> created_before_time,
+                                 OriginAndSiteMatcher origin_and_site_matcher,
+                                 base::OnceClosure completion_callback) = 0;
 
   // Add an observer for session changes that include `url`. `callback`
   // will only be notified until the destruction of the returned
