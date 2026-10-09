@@ -97,7 +97,6 @@ void StartCrashReporter(UpdaterScope updater_scope,
                                                 kIndirectMemoryLimit);
   crashpad::CrashpadClient& client = GetCrashpadClient();
   std::vector<base::FilePath> attachments;
-#if !BUILDFLAG(IS_MAC)  // Crashpad does not support attachments on macOS.
   if (std::optional<base::FilePath> log_file = GetLogFilePath(updater_scope);
       log_file) {
     attachments.push_back(*std::move(log_file));
@@ -108,7 +107,6 @@ void StartCrashReporter(UpdaterScope updater_scope,
     attachments.push_back(*std::move(history_log_path));
   }
 
-#endif
   if (!client.StartHandler(
           handler_path, *database_path,
           /*metrics_dir=*/base::FilePath(),
