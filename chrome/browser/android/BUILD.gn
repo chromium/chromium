@@ -179,6 +179,7 @@ source_set("tabs_impl") {
     "//chrome/browser/finds/core",
     "//chrome/browser/glic",
     "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/loader",
     "//chrome/browser/login_detection",

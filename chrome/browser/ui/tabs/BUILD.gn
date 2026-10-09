@@ -561,6 +561,7 @@ if (!is_android) {
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/history",
+      "//chrome/browser/history_clusters",
       "//chrome/browser/history_embeddings",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",

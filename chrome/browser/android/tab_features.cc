@@ -51,7 +51,9 @@
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
@@ -689,6 +691,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
       web_contents);
+
+  if (!profile->IsOffTheRecord()) {
+    HistoryClustersTabHelper::CreateForWebContents(
+        web_contents, HistoryTabHelper::FromWebContents(web_contents));
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

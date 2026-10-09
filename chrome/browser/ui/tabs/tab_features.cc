@@ -44,7 +44,9 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
@@ -1304,6 +1306,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
       tab.GetContents());
+
+  if (!profile->IsOffTheRecord()) {
+    HistoryClustersTabHelper::CreateForWebContents(
+        tab.GetContents(),
+        HistoryTabHelper::FromWebContents(tab.GetContents()));
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1913,6 +1921,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
       new_contents);
+
+  if (!profile->IsOffTheRecord()) {
+    HistoryClustersTabHelper::CreateForWebContents(
+        new_contents, HistoryTabHelper::FromWebContents(new_contents));
+  }
 }
 
 customize_chrome::SidePanelController*
