@@ -87,8 +87,6 @@ AAPT_IGNORE_PATTERN = ':'.join(
     ]
 )
 
-MULTIPLE_RES_MAGIC_STRING = b'magic'
-
 
 def ToAndroidLocaleName(chromium_locale):
     """Convert a Chromium locale name into a corresponding Android one."""
@@ -277,8 +275,6 @@ class ResourceInfoFile:
     def __init__(self):
         # Dict of archive_path -> source_path for the current target.
         self._entries = {}
-        # List of (old_archive_path, new_archive_path) tuples.
-        self._renames = []
         # We don't currently support using both AddMapping and MergeInfoFile.
         self._add_mapping_was_called = False
 
@@ -297,15 +293,6 @@ class ResourceInfoFile:
                 )
             )
 
-    def RegisterRename(self, old_archive_path, new_archive_path):
-        """Records an archive_path rename.
-
-        |old_archive_path| does not need to currently exist in the mappings. Renames
-        are buffered and replayed only when Write() is called.
-        """
-        if not old_archive_path.startswith('values'):
-            self._renames.append((old_archive_path, new_archive_path))
-
     def MergeInfoFile(self, info_file_path):
         """Merges the mappings from |info_file_path| into this object.
 
@@ -316,33 +303,15 @@ class ResourceInfoFile:
         with open(info_file_path, encoding='utf-8') as f:
             self._entries.update(l.rstrip().split('\t') for l in f)  # noqa: E741
 
-    def _ApplyRenames(self):
-        applied_renames = set()
-        ret = self._entries
-        for rename_tup in self._renames:
-            # Duplicate entries happen for resource overrides.
-            # Use a "seen" set to ensure we still error out if multiple renames
-            # happen for the same old_archive_path with different new_archive_paths.
-            if rename_tup in applied_renames:
-                continue
-            applied_renames.add(rename_tup)
-            old_archive_path, new_archive_path = rename_tup
-            ret[new_archive_path] = ret[old_archive_path]
-            del ret[old_archive_path]
-
-        self._entries = None
-        self._renames = None
-        return ret
-
     def Write(self, info_file_path):
-        """Applies renames and writes out the file.
+        """Writes out the file.
 
         No other methods may be called after this.
         """
-        entries = self._ApplyRenames()
         lines = []
-        for archive_path, source_path in entries.items():
+        for archive_path, source_path in self._entries.items():
             lines.append('{}\t{}\n'.format(archive_path, source_path))
+        self._entries = None
         with open(info_file_path, 'w', encoding='utf-8') as info_file:
             info_file.writelines(sorted(lines))
 
@@ -930,44 +899,11 @@ def ExtractArscPackage(aapt2_path, apk_path):
     return None, None
 
 
-def _RenameSubdirsWithPrefix(dir_path, prefix):
-    subdirs = [
-        d
-        for d in os.listdir(dir_path)
-        if os.path.isdir(os.path.join(dir_path, d))
-    ]
-    renamed_subdirs = []
-    for d in subdirs:
-        old_path = os.path.join(dir_path, d)
-        new_path = os.path.join(dir_path, '{}_{}'.format(prefix, d))
-        renamed_subdirs.append(new_path)
-        os.rename(old_path, new_path)
-    return renamed_subdirs
-
-
-def _HasMultipleResDirs(zip_path):
-    """Checks for magic comment set by prepare_resources.py
-
-    Returns: True iff the zipfile has the magic comment that means it contains
-    multiple res/ dirs inside instead of just contents of a single res/ dir
-    (without a wrapping res/).
-    """
-    with zipfile.ZipFile(zip_path) as z:
-        return z.comment == MULTIPLE_RES_MAGIC_STRING
-
-
 def _ExtractSingleDep(z, deps_dir):
     subdirname = z.replace(os.path.sep, '_')
     subdir = os.path.join(deps_dir, subdirname)
     build_utils.ExtractAll(z, path=subdir)
-    if _HasMultipleResDirs(z):
-        # basename of the directory is used to create a zip during resource
-        # compilation, include the path in the basename to help blame errors
-        # on the correct target. For example directory 0_res may be renamed
-        # chrome_android_chrome_app_java_resources_0_res pointing to the
-        # name and path of the android_resources target from whence it came.
-        return _RenameSubdirsWithPrefix(subdir, subdirname)
-    return [subdir]
+    return subdir
 
 
 def ExtractDeps(dep_zips, deps_dir):
@@ -992,11 +928,8 @@ def ExtractDeps(dep_zips, deps_dir):
             raise Exception('Resource zip name conflict: ' + subdirname)
         seen_subdirs.add(subdirname)
 
-    dep_subdirs = []
     arg_tuples = [(z, deps_dir) for z in dep_zips]
-    for subdirs in parallel.BulkForkAndCall(_ExtractSingleDep, arg_tuples):
-        dep_subdirs.extend(subdirs)
-    return dep_subdirs
+    return list(parallel.BulkForkAndCall(_ExtractSingleDep, arg_tuples))
 
 
 class _ResourceBuildContext:
@@ -1017,9 +950,6 @@ class _ResourceBuildContext:
             self.temp_dir = tempfile.mkdtemp()
         self.remove_on_exit = not keep_files
 
-        # A location to store resources extracted form dependency zip files.
-        self.deps_dir = os.path.join(self.temp_dir, 'deps')
-        os.mkdir(self.deps_dir)
         # A location to place aapt-generated files.
         self.gen_dir = os.path.join(self.temp_dir, 'gen')
         os.mkdir(self.gen_dir)

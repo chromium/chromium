@@ -11,13 +11,12 @@ import argparse
 import os
 import shutil
 import sys
-import zipfile
 
 from util import build_utils
 from util import jar_info_utils
 from util import md5_check
-from util import resources_parser
 from util import resource_utils
+from util import resources_parser
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
@@ -94,10 +93,73 @@ def _CheckAllFilesListed(resource_files, resource_dirs):
         sys.exit(1)
 
 
+def _TransformArchivePath(archive_path, existing_dirs, renamed_dirs):
+    """Applies static resource path transformations before zipping.
+
+    Specifically:
+      * Renames non-standard locale resource directories into standard Android
+        locale names (e.g. values-fil -> values-tl, values-b+en+US ->
+        values-en-rUS, values-id -> values-in, values-no -> values-nb) unless
+        the target config directory already exists in the same resource_dir.
+      * Moves images from drawable-*-mdpi-* folders to drawable-* folders (see
+        http://crbug.com/289843).
+      * Removes .png and .webp extensions (except .9.png) to save binary size
+        and skip redundant aapt2 PNG crunching.
+    """
+    locale = resource_utils.FindLocaleInStringResourceFilePath(archive_path)
+    if locale:
+        cr_locale = resource_utils.ToChromiumLocaleName(locale)
+        if not cr_locale:
+            return archive_path
+        locale2 = resource_utils.ToAndroidLocaleName(cr_locale)
+        if locale == locale2:
+            return archive_path
+        src_subdir = f'values-{locale}'
+        dst_subdir = renamed_dirs.get(src_subdir)
+        if dst_subdir is None:
+            # Ignore rather than rename when the destination resources config
+            # already exists (e.g. some libraries provide both values-nb/ and
+            # values-no/, or both values-es-rUS/ and values-b+es+419/).
+            target_subdir = f'values-{locale2}'
+            if target_subdir in existing_dirs:
+                dst_subdir = src_subdir
+            else:
+                dst_subdir = target_subdir
+                existing_dirs.add(dst_subdir)
+            renamed_dirs[src_subdir] = dst_subdir
+        return f'{dst_subdir}/{os.path.basename(archive_path)}'
+
+    subdir_name, filename = os.path.split(archive_path)
+    src_components = subdir_name.split('-')
+    if src_components[0] == 'drawable' and 'mdpi' in src_components:
+        dst_components = [c for c in src_components if c != 'mdpi']
+        subdir_name = '-'.join(dst_components)
+        archive_path = f'{subdir_name}/{filename}'
+
+    # Strip .png and .webp extensions (except .9.png and raw/):
+    # 1. Android's resource loader only checks for .xml and .9.png extensions,
+    #    whereas `aapt2 optimize --shorten-resource-paths` preserves extensions
+    #    (e.g. "res/xo.png"). Stripping them saves 4-5 bytes per image across
+    #    the resources.arsc string pool and APK zip headers (crbug.com/1014555).
+    # 2. `aapt2 compile` runs PNG crunching whenever a file ends with ".png"
+    #    (and we cannot pass --no-crunch because .9.png files must be crunched).
+    #    Stripping ".png" beforehand causes aapt2 to take the fast raw-file
+    #    copy path for regular PNGs while still crunching .9.png files.
+    if (
+        not archive_path.startswith('raw/')
+        and (archive_path.endswith('.png') or archive_path.endswith('.webp'))
+        and not archive_path.endswith('.9.png')
+    ):
+        archive_path = os.path.splitext(archive_path)[0]
+
+    return archive_path
+
+
 def _ZipResources(resource_dirs, zip_path, ignore_pattern):
     # ignore_pattern is a string of ':' delimited list of globs used to ignore
     # files that should not be part of the final resource zip.
     files_to_zip = []
+    seen_archive_paths = set()
     path_info = resource_utils.ResourceInfoFile()
     for index, resource_dir in enumerate(resource_dirs):
         attributed_aar = None
@@ -110,6 +172,8 @@ def _ZipResources(resource_dirs, zip_path, ignore_pattern):
                     aar_source_info_path
                 )
 
+        existing_dirs = set(os.listdir(resource_dir))
+        renamed_dirs = {}
         for path, archive_path in resource_utils.IterResourceFilesInDirectories(
             [resource_dir], ignore_pattern
         ):
@@ -118,25 +182,23 @@ def _ZipResources(resource_dirs, zip_path, ignore_pattern):
                 attributed_path = os.path.join(
                     attributed_aar, 'res', path[len(resource_dir) + 1 :]
                 )
-            # Use the non-prefixed archive_path in the .info file.
+            archive_path = _TransformArchivePath(
+                archive_path, existing_dirs, renamed_dirs
+            )
             path_info.AddMapping(archive_path, attributed_path)
 
-            resource_dir_name = os.path.basename(resource_dir)
-            archive_path = '{}_{}/{}'.format(
-                index, resource_dir_name, archive_path
-            )
+            # Allow a single target to have multiple res/ directories with
+            # identically named values*/ XML files (e.g. values/strings.xml).
+            # Non-values collisions are already rejected by AddMapping() above,
+            # and aapt2 ignores the XML filename for values*/ resources.
+            if archive_path in seen_archive_paths:
+                subdir, filename = os.path.split(archive_path)
+                archive_path = f'{subdir}/{index}_{filename}'
+            seen_archive_paths.add(archive_path)
             files_to_zip.append((archive_path, path))
 
     path_info.Write(zip_path + '.info')
-
-    with zipfile.ZipFile(zip_path, 'w') as z:
-        # This magic comment signals to resource_utils.ExtractDeps that this zip is
-        # not just the contents of a single res dir, without the encapsulating res/
-        # (like the outputs of android_generated_resources targets), but instead has
-        # the contents of possibly multiple res/ dirs each within an encapsulating
-        # directory within the zip.
-        z.comment = resource_utils.MULTIPLE_RES_MAGIC_STRING
-        zip_helpers.add_files_to_zip(files_to_zip, z)
+    zip_helpers.add_files_to_zip(files_to_zip, zip_path)
 
 
 def _GenerateRTxt(options, r_txt_path):

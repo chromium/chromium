@@ -22,8 +22,10 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import textwrap
 from xml.etree import ElementTree
+import zipfile
 
 from util import build_utils
 from util import diff_utils
@@ -32,6 +34,7 @@ from util import parallel
 from util import protoresources
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 # Pngs that we shouldn't convert to webp. Please add rationale when updating.
 _PNG_WEBP_EXCLUSION_PATTERN = re.compile(
@@ -267,83 +270,6 @@ def _ParseArgs(args):
     return options
 
 
-def _IterFiles(root_dir):
-    for root, _, files in os.walk(root_dir):
-        for f in files:
-            yield os.path.join(root, f)
-
-
-def _RenameLocaleResourceDirs(resource_dirs, path_info):
-    """Rename locale resource directories into standard names when necessary.
-
-    This is necessary to deal with the fact that older Android releases only
-    support ISO 639-1 two-letter codes, and sometimes even obsolete versions
-    of them.
-
-    In practice it means:
-      * 3-letter ISO 639-2 qualifiers are renamed under a corresponding
-        2-letter one. E.g. for Filipino, strings under values-fil/ will be moved
-        to a new corresponding values-tl/ sub-directory.
-
-      * Modern ISO 639-1 codes will be renamed to their obsolete variant
-        for Indonesian, Hebrew and Yiddish (e.g. 'values-in/ -> values-id/).
-
-      * Norwegian macrolanguage strings will be renamed to Bokmal (main
-        Norway language). See http://crbug.com/920960. In practice this
-        means that 'values-no/ -> values-nb/' unless 'values-nb/' already
-        exists.
-
-      * BCP 47 langauge tags will be renamed to an equivalent ISO 639-1
-        locale qualifier if possible (e.g. 'values-b+en+US/ -> values-en-rUS').
-
-    Args:
-      resource_dirs: list of top-level resource directories.
-    """
-    for resource_dir in resource_dirs:
-        ignore_dirs = {}
-        for path in _IterFiles(resource_dir):
-            locale = resource_utils.FindLocaleInStringResourceFilePath(path)
-            if not locale:
-                continue
-            cr_locale = resource_utils.ToChromiumLocaleName(locale)
-            if not cr_locale:
-                continue  # Unsupported Android locale qualifier!?
-            locale2 = resource_utils.ToAndroidLocaleName(cr_locale)
-            if locale != locale2:
-                path2 = path.replace(
-                    '/values-%s/' % locale, '/values-%s/' % locale2
-                )
-                if path == path2:
-                    raise Exception(
-                        'Could not substitute locale %s for %s in %s'
-                        % (locale, locale2, path)
-                    )
-
-                # Ignore rather than rename when the destination resources config
-                # already exists.
-                # e.g. some libraries provide both values-nb/ and values-no/.
-                # e.g. material design provides:
-                # * res/values-rUS/values-rUS.xml
-                # * res/values-b+es+419/values-b+es+419.xml
-                config_dir = os.path.dirname(path2)
-                already_has_renamed_config = ignore_dirs.get(config_dir)
-                if already_has_renamed_config is None:
-                    # Cache the result of the first time the directory is encountered
-                    # since subsequent encounters will find the directory already exists
-                    # (due to the rename).
-                    already_has_renamed_config = os.path.exists(config_dir)
-                    ignore_dirs[config_dir] = already_has_renamed_config
-                if already_has_renamed_config:
-                    continue
-
-                build_utils.MakeDirectory(os.path.dirname(path2))
-                shutil.move(path, path2)
-                path_info.RegisterRename(
-                    os.path.relpath(path, resource_dir),
-                    os.path.relpath(path2, resource_dir),
-                )
-
-
 def _ToAndroidLocales(locale_allowlist):
     """Converts the list of Chrome locales to Android config locale qualifiers.
 
@@ -363,34 +289,6 @@ def _ToAndroidLocales(locale_allowlist):
         ret.add(language)
 
     return ret
-
-
-def _MoveImagesToNonMdpiFolders(res_root, path_info):
-    """Move images from drawable-*-mdpi-* folders to drawable-* folders.
-
-    Why? http://crbug.com/289843
-    """
-    for src_dir_name in os.listdir(res_root):
-        src_components = src_dir_name.split('-')
-        if src_components[0] != 'drawable' or 'mdpi' not in src_components:
-            continue
-        src_dir = os.path.join(res_root, src_dir_name)
-        if not os.path.isdir(src_dir):
-            continue
-        dst_components = [c for c in src_components if c != 'mdpi']
-        assert dst_components != src_components
-        dst_dir_name = '-'.join(dst_components)
-        dst_dir = os.path.join(res_root, dst_dir_name)
-        build_utils.MakeDirectory(dst_dir)
-        for src_file_name in os.listdir(src_dir):
-            src_file = os.path.join(src_dir, src_file_name)
-            dst_file = os.path.join(dst_dir, src_file_name)
-            assert not os.path.lexists(dst_file)
-            shutil.move(src_file, dst_file)
-            path_info.RegisterRename(
-                os.path.relpath(src_file, res_root),
-                os.path.relpath(dst_file, res_root),
-            )
 
 
 def _DeterminePlatformVersion(aapt2_path, jar_candidates):
@@ -521,14 +419,35 @@ def _CreateKeepPredicate(
     )
 
 
-def _ComputeSha1(path):
-    with open(path, 'rb') as f:
-        data = f.read()
-    return hashlib.sha1(data).hexdigest()
+def _HasStrippedExtension(entry_name):
+    # Image extensions (.png, .webp) are stripped in prepare_resources.py.
+    # Only raw/ resources originally lack extensions on disk.
+    return not entry_name.startswith('raw/') and '.' not in os.path.basename(
+        entry_name
+    )
 
 
-def _ConvertToWebPSingle(png_path, cwebp_binary, cwebp_version, webp_cache_dir):
-    sha1_hash = _ComputeSha1(png_path)
+def _ShouldKeepResourceEntry(
+    subdirname, entry_name, keep_predicate, wanted_locales
+):
+    if wanted_locales is not None:
+        locale = resource_utils.FindLocaleInStringResourceFilePath(entry_name)
+        if locale and locale not in wanted_locales:
+            return False
+    check_path = f'{subdirname}/{entry_name}'
+    # resource_exclusion_exceptions globs (e.g. "*ic_lock.*") expect an
+    # extension.
+    if _HasStrippedExtension(entry_name):
+        check_path += '.png'
+    return keep_predicate(check_path)
+
+
+def _ConvertToWebPSingle(
+    dep_zip, entry_name, cwebp_binary, cwebp_version, webp_cache_dir, temp_dir
+):
+    with zipfile.ZipFile(dep_zip) as z:
+        data = z.read(entry_name)
+    sha1_hash = hashlib.sha1(data).hexdigest()
 
     # The set of arguments that will appear in the cache key.
     quality_args = ['-m', '6', '-q', '100', '-lossless']
@@ -537,46 +456,67 @@ def _ConvertToWebPSingle(png_path, cwebp_binary, cwebp_version, webp_cache_dir):
         webp_cache_dir,
         '{}-{}-{}'.format(sha1_hash, cwebp_version, ''.join(quality_args)),
     )
-    # No need to add .webp. Android can load images fine without them.
-    webp_path = os.path.splitext(png_path)[0]
 
     cache_hit = os.path.exists(webp_cache_path)
-    if cache_hit:
-        os.link(webp_cache_path, webp_path)
-    else:
-        # We place the generated webp image to webp_path, instead of in the
-        # webp_cache_dir to avoid concurrency issues.
-        args = [
-            cwebp_binary,
-            png_path,
-            '-o',
-            webp_path,
-            '-quiet',
-        ] + quality_args
-        subprocess.check_call(args)
+    if not cache_hit:
+        with (
+            tempfile.NamedTemporaryFile(dir=temp_dir, suffix='.png') as png_tmp,
+            tempfile.NamedTemporaryFile(
+                dir=temp_dir, suffix='.webp', delete=False
+            ) as webp_tmp,
+        ):
+            png_tmp.write(data)
+            png_tmp.flush()
+            webp_tmp_path = webp_tmp.name
+            args = [
+                cwebp_binary,
+                png_tmp.name,
+                '-o',
+                webp_tmp_path,
+                '-quiet',
+            ] + quality_args
+            subprocess.check_call(args)
 
         try:
-            os.link(webp_path, webp_cache_path)
+            os.link(webp_tmp_path, webp_cache_path)
         except OSError:
-            # Because of concurrent run, a webp image may already exists in
+            # Because of concurrent run, a webp image may already exist in
             # webp_cache_path.
             pass
+        os.remove(webp_tmp_path)
 
-    os.remove(png_path)
-    original_dir = os.path.dirname(os.path.dirname(png_path))
-    rename_tuple = (
-        os.path.relpath(png_path, original_dir),
-        os.path.relpath(webp_path, original_dir),
-    )
-    return rename_tuple, cache_hit
+    return dep_zip, entry_name, webp_cache_path, cache_hit
 
 
-def _ConvertToWebP(cwebp_binary, png_paths, path_info, webp_cache_dir):
+def _ConvertToWebP(
+    cwebp_binary,
+    dep_zips,
+    keep_predicate,
+    wanted_locales,
+    webp_cache_dir,
+    temp_dir,
+):
+    shard_args = []
+    for dep_zip in dep_zips:
+        subdirname = dep_zip.replace(os.path.sep, '_')
+        with zipfile.ZipFile(dep_zip) as z:
+            for entry_name in z.namelist():
+                if not _HasStrippedExtension(entry_name):
+                    continue
+                if not _ShouldKeepResourceEntry(
+                    subdirname, entry_name, keep_predicate, wanted_locales
+                ):
+                    continue
+                if _PNG_WEBP_EXCLUSION_PATTERN.match(f'{entry_name}.png'):
+                    continue
+                with z.open(entry_name) as f:
+                    if f.read(8) == b'\x89PNG\r\n\x1a\n':
+                        shard_args.append((dep_zip, entry_name))
+
+    if not shard_args:
+        return {}
+
     cwebp_version = subprocess.check_output([cwebp_binary, '-version']).rstrip()
-    shard_args = [
-        (f,) for f in png_paths if not _PNG_WEBP_EXCLUSION_PATTERN.match(f)
-    ]
-
     build_utils.MakeDirectory(webp_cache_dir)
     results = parallel.BulkForkAndCall(
         _ConvertToWebPSingle,
@@ -584,48 +524,68 @@ def _ConvertToWebP(cwebp_binary, png_paths, path_info, webp_cache_dir):
         cwebp_binary=cwebp_binary,
         cwebp_version=cwebp_version,
         webp_cache_dir=webp_cache_dir,
+        temp_dir=temp_dir,
     )
+    webp_map = collections.defaultdict(dict)
     total_cache_hits = 0
-    for rename_tuple, cache_hit in results:
-        path_info.RegisterRename(*rename_tuple)
+    for dep_zip, entry_name, webp_cache_path, cache_hit in results:
+        webp_map[dep_zip][entry_name] = webp_cache_path
         total_cache_hits += int(cache_hit)
 
     logging.debug('png->webp cache: %d/%d', total_cache_hits, len(shard_args))
-
-
-def _RemoveImageExtensions(directory, path_info):
-    """Remove extensions from image files in the passed directory.
-
-    This reduces binary size but does not affect android's ability to load the
-    images.
-    """
-    for f in _IterFiles(directory):
-        if (f.endswith('.png') or f.endswith('.webp')) and not f.endswith(
-            '.9.png'
-        ):
-            path_with_extension = f
-            path_no_extension = os.path.splitext(path_with_extension)[0]
-            if path_no_extension != path_with_extension:
-                shutil.move(path_with_extension, path_no_extension)
-                path_info.RegisterRename(
-                    os.path.relpath(path_with_extension, directory),
-                    os.path.relpath(path_no_extension, directory),
-                )
+    return webp_map
 
 
 def _CompileSingleDep(
-    index, dep_subdir, keep_predicate, aapt2_path, partials_dir
+    index,
+    dep_zip,
+    values_keep_predicate,
+    webp_entries,
+    aapt2_path,
+    partials_dir,
+    keep_predicate,
+    wanted_locales,
 ):
-    unique_name = '{}_{}'.format(index, os.path.basename(dep_subdir))
-    partial_path = os.path.join(partials_dir, '{}.zip'.format(unique_name))
+    subdirname = dep_zip.replace(os.path.sep, '_')
+    unique_name = f'{index}_{subdirname}'
+    partial_path = os.path.join(partials_dir, f'{unique_name}.zip')
+
+    with zipfile.ZipFile(dep_zip) as z:
+        all_names = z.namelist()
+        kept_names = [
+            name
+            for name in all_names
+            if _ShouldKeepResourceEntry(
+                subdirname, name, keep_predicate, wanted_locales
+            )
+        ]
+        if not kept_names:
+            return None
+        if len(kept_names) != len(all_names) or webp_entries:
+            input_zip_path = os.path.join(
+                partials_dir, f'{unique_name}.input.zip'
+            )
+            with zipfile.ZipFile(input_zip_path, 'w') as out_z:
+                for name in kept_names:
+                    webp_path = webp_entries.get(name) if webp_entries else None
+                    if webp_path:
+                        zip_helpers.add_to_zip_hermetic(
+                            out_z, name, src_path=webp_path
+                        )
+                    else:
+                        zip_helpers.add_to_zip_hermetic(
+                            out_z, name, data=z.read(name)
+                        )
+        else:
+            input_zip_path = dep_zip
 
     compile_command = [
         aapt2_path,
         'compile',
         # TODO(wnwen): Turn this on once aapt2 forces 9-patch to be crunched.
         # '--no-crunch',
-        '--dir',
-        dep_subdir,
+        '--zip',
+        input_zip_path,
         '-o',
         partial_path,
     ]
@@ -642,17 +602,21 @@ def _CompileSingleDep(
 
     # Filtering these files is expensive, so only apply filters to the partials
     # that have been explicitly targeted.
-    if keep_predicate:
-        logging.debug('Applying .arsc filtering to %s', dep_subdir)
-        protoresources.StripUnwantedResources(partial_path, keep_predicate)
+    if values_keep_predicate:
+        logging.debug('Applying .arsc filtering to %s', dep_zip)
+        protoresources.StripUnwantedResources(
+            partial_path, values_keep_predicate
+        )
     return partial_path
 
 
-def _CreateValuesKeepPredicate(exclusion_rules, dep_subdir):
+def _CreateValuesKeepPredicate(exclusion_rules, dep_zip):
+    mangled = dep_zip.replace(os.path.sep, '_')
     patterns = [
         x[1]
         for x in exclusion_rules
-        if build_utils.MatchesGlob(dep_subdir, [x[0]])
+        if build_utils.MatchesGlob(dep_zip, [x[0]])
+        or build_utils.MatchesGlob(mangled, [x[0]])
     ]
     if not patterns:
         return None
@@ -662,14 +626,26 @@ def _CreateValuesKeepPredicate(exclusion_rules, dep_subdir):
 
 
 def _CompileDeps(
-    aapt2_path, dep_subdirs, dep_subdir_overlay_set, temp_dir, exclusion_rules
+    aapt2_path,
+    dep_zips,
+    overlay_zips,
+    temp_dir,
+    exclusion_rules,
+    keep_predicate,
+    wanted_locales,
+    webp_map,
 ):
     partials_dir = os.path.join(temp_dir, 'partials')
     build_utils.MakeDirectory(partials_dir)
 
     job_params = [
-        (i, dep_subdir, _CreateValuesKeepPredicate(exclusion_rules, dep_subdir))
-        for i, dep_subdir in enumerate(dep_subdirs)
+        (
+            i,
+            dep_zip,
+            _CreateValuesKeepPredicate(exclusion_rules, dep_zip),
+            webp_map.get(dep_zip),
+        )
+        for i, dep_zip in enumerate(dep_zips)
     ]
 
     # Filtering is slow, so ensure jobs with keep_predicate are started first.
@@ -680,71 +656,29 @@ def _CompileDeps(
             job_params,
             aapt2_path=aapt2_path,
             partials_dir=partials_dir,
+            keep_predicate=keep_predicate,
+            wanted_locales=wanted_locales,
         )
     )
 
     partials_cmd = []
     for i, partial in enumerate(partials):
-        dep_subdir = job_params[i][1]
-        if dep_subdir in dep_subdir_overlay_set:
+        if partial is None:
+            continue
+        dep_zip = job_params[i][1]
+        if dep_zip in overlay_zips:
             partials_cmd += ['-R']
         partials_cmd += [partial]
     return partials_cmd
 
 
-def _CreateResourceInfoFile(path_info, info_path, all_res_zips):
+def _CreateResourceInfoFile(info_path, all_res_zips):
+    path_info = resource_utils.ResourceInfoFile()
     for zip_file in all_res_zips:
         zip_info_file_path = zip_file + '.info'
         if os.path.exists(zip_info_file_path):
             path_info.MergeInfoFile(zip_info_file_path)
     path_info.Write(info_path)
-
-
-def _RemoveUnwantedLocalizedStrings(dep_subdirs, options):
-    """Remove localized strings that should not go into the final output.
-
-    Args:
-      dep_subdirs: List of resource dependency directories.
-      options: Command-line options namespace.
-    """
-    # Collect locale and file paths from the existing subdirs.
-    # The following variable maps Android locale names to
-    # sets of corresponding xml file paths.
-    locale_to_files_map = collections.defaultdict(set)
-    for directory in dep_subdirs:
-        for f in _IterFiles(directory):
-            locale = resource_utils.FindLocaleInStringResourceFilePath(f)
-            if locale:
-                locale_to_files_map[locale].add(f)
-
-    all_locales = set(locale_to_files_map)
-
-    # Set A: wanted locales, either all of them or the
-    # list provided by --locale-allowlist.
-    wanted_locales = all_locales
-    if options.locale_allowlist:
-        wanted_locales = _ToAndroidLocales(options.locale_allowlist)
-
-    # Remove any file that belongs to a locale not covered by wanted locales.
-    removable_locales = all_locales - wanted_locales
-    for locale in removable_locales:
-        for path in locale_to_files_map[locale]:
-            os.remove(path)
-
-
-def _FilterResourceFiles(dep_subdirs, keep_predicate):
-    # Create a function that selects which resource files should be packaged
-    # into the final output. Any file that does not pass the predicate will
-    # be removed below.
-    png_paths = []
-    for directory in dep_subdirs:
-        for f in _IterFiles(directory):
-            if not keep_predicate(f):
-                os.remove(f)
-            elif f.endswith('.png'):
-                png_paths.append(f)
-
-    return png_paths
 
 
 def _FilterAapt2Warnings(output):
@@ -765,53 +699,43 @@ def _PackageApk(options, build):
     Returns:
       The manifest package name for the APK.
     """
-    logging.debug('Extracting resource .zips')
     all_res_zips = (
         options.dependencies_res_zips + options.dependencies_res_zip_overlays
     )
     overlay_zips = set(options.dependencies_res_zip_overlays)
-    dep_subdirs = []
-    dep_subdir_overlay_set = set()
-    for dependency_res_zip in all_res_zips:
-        extracted_dep_subdirs = resource_utils.ExtractDeps(
-            [dependency_res_zip], build.deps_dir
-        )
-        dep_subdirs += extracted_dep_subdirs
-        if dependency_res_zip in overlay_zips:
-            dep_subdir_overlay_set.update(extracted_dep_subdirs)
 
-    logging.debug('Applying locale transformations')
-    path_info = resource_utils.ResourceInfoFile()
-    _RenameLocaleResourceDirs(dep_subdirs, path_info)
-
-    logging.debug('Applying file-based exclusions')
     keep_predicate = _CreateKeepPredicate(
         options.resource_exclusion_regex, options.resource_exclusion_exceptions
     )
-    png_paths = _FilterResourceFiles(dep_subdirs, keep_predicate)
+    wanted_locales = (
+        _ToAndroidLocales(options.locale_allowlist)
+        if options.locale_allowlist
+        else None
+    )
 
-    if options.locale_allowlist:
-        logging.debug('Applying locale-based string exclusions')
-        _RemoveUnwantedLocalizedStrings(dep_subdirs, options)
-
-    if png_paths and options.png_to_webp:
+    webp_map = {}
+    if options.png_to_webp:
         logging.debug('Converting png->webp')
-        _ConvertToWebP(
-            options.webp_binary, png_paths, path_info, options.webp_cache_dir
+        webp_map = _ConvertToWebP(
+            options.webp_binary,
+            all_res_zips,
+            keep_predicate,
+            wanted_locales,
+            options.webp_cache_dir,
+            build.temp_dir,
         )
-    logging.debug('Applying drawable transformations')
-    for directory in dep_subdirs:
-        _MoveImagesToNonMdpiFolders(directory, path_info)
-        _RemoveImageExtensions(directory, path_info)
 
     logging.debug('Running aapt2 compile')
     exclusion_rules = [x.split(':', 1) for x in options.values_filter_rules]
     partials = _CompileDeps(
         options.aapt2_path,
-        dep_subdirs,
-        dep_subdir_overlay_set,
+        all_res_zips,
+        overlay_zips,
         build.temp_dir,
         exclusion_rules,
+        keep_predicate,
+        wanted_locales,
+        webp_map,
     )
 
     link_command = [
@@ -878,7 +802,7 @@ def _PackageApk(options, build):
         # Create .res.info file in parallel.
         if options.info_path:
             logging.debug('Creating .res.info file')
-            _CreateResourceInfoFile(path_info, build.info_path, all_res_zips)
+            _CreateResourceInfoFile(build.info_path, all_res_zips)
             logging.debug('Finished .res.info file')
 
     logging.debug('Starting: aapt2 link')
