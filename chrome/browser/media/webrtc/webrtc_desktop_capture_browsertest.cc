@@ -32,6 +32,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,10 +80,20 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
   return infobars::ContentInfoBarManager::FromWebContents(contents);
 }
 
-TabSharingInfoBarDelegate* GetDelegate(BrowserWindowInterface* browser,
-                                       int tab) {
-  return static_cast<TabSharingInfoBarDelegate*>(
-      GetInfoBarManager(browser, tab)->infobars()[0]->delegate());
+// The tab sharing infobar is a TabSharingInfoBarDelegate, unless the
+// centralized infobar framework shows it (MigratedTabSharing). Then it is a
+// ConfirmInfoBarDelegate whose cancel button is "Share this tab instead".
+void ClickShareThisTabInsteadButton(BrowserWindowInterface* browser, int tab) {
+  infobars::InfoBarDelegate* delegate =
+      GetInfoBarManager(browser, tab)->infobars()[0]->delegate();
+  CHECK_EQ(delegate->GetIdentifier(),
+           infobars::InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE);
+  if (ConfirmInfoBarDelegate* confirm_delegate =
+          delegate->AsConfirmInfoBarDelegate()) {
+    confirm_delegate->Cancel();
+    return;
+  }
+  static_cast<TabSharingInfoBarDelegate*>(delegate)->ShareThisTabInstead();
 }
 
 class InfobarUIChangeObserver : public TabStripModelObserver {
@@ -453,13 +464,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   // Should delete 3 infobars and create 3 new!
   observer.ExpectCalls(6);
   // Switch shared tab from 2 to 0.
-  GetDelegate(browser(), 0)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(browser(), 0);
   observer.Wait();
 
   // Should delete 3 infobars and create 3 new!
   observer.ExpectCalls(6);
   // Switch shared tab from 0 to 2.
-  GetDelegate(browser(), 2)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(browser(), 2);
   observer.Wait();
 }
 

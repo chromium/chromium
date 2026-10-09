@@ -3499,6 +3499,7 @@
                         "MigratedPdf": "true",
                         "MigratedPinInfoBar": "true",
                         "MigratedSessionRestore": "true",
+                        "MigratedTabSharing": "true",
                         "MigratedWebAuthFlow": "true"
                     },
                     "enable_features": [

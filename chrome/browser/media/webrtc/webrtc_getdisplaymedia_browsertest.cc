@@ -35,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -246,26 +247,67 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
-TabSharingInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
+// The tab sharing infobar is a TabSharingInfoBarDelegate, unless the
+// centralized infobar framework shows it (MigratedTabSharing). Then it is a
+// ConfirmInfoBarDelegate whose cancel button is "Share this tab instead" and
+// whose extra button is the Captured Surface Control indicator.
+infobars::InfoBarDelegate* GetDelegate(content::WebContents* web_contents,
                                        size_t infobar_index = 0) {
-  return static_cast<TabSharingInfoBarDelegate*>(
-      GetInfoBarManager(web_contents)->infobars()[infobar_index]->delegate());
+  return GetInfoBarManager(web_contents)->infobars()[infobar_index]->delegate();
+}
+
+TabSharingInfoBarDelegate* AsTabSharingDelegate(
+    infobars::InfoBarDelegate* delegate) {
+  CHECK_EQ(delegate->GetIdentifier(),
+           infobars::InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE);
+  CHECK(!delegate->AsConfirmInfoBarDelegate());
+  return static_cast<TabSharingInfoBarDelegate*>(delegate);
 }
 
 bool HasCscIndicator(content::WebContents* web_contents) {
-  return GetDelegate(web_contents)->GetButtons() & kCscIndicator;
+  infobars::InfoBarDelegate* delegate = GetDelegate(web_contents);
+  if (ConfirmInfoBarDelegate* confirm_delegate =
+          delegate->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtons() &
+           ConfirmInfoBarDelegate::BUTTON_EXTRA;
+  }
+  return AsTabSharingDelegate(delegate)->GetButtons() & kCscIndicator;
 }
 
 bool HasShareThisTabInsteadButton(content::WebContents* web_contents) {
-  return GetDelegate(web_contents)->GetButtons() &
+  infobars::InfoBarDelegate* delegate = GetDelegate(web_contents);
+  if (ConfirmInfoBarDelegate* confirm_delegate =
+          delegate->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtons() &
+           ConfirmInfoBarDelegate::BUTTON_CANCEL;
+  }
+  return AsTabSharingDelegate(delegate)->GetButtons() &
          TabSharingInfoBarButton::kShareThisTabInstead;
 }
 
 std::u16string GetShareThisTabInsteadButtonLabel(
     content::WebContents* web_contents) {
   DCHECK(HasShareThisTabInsteadButton(web_contents));  // Test error otherwise.
-  return GetDelegate(web_contents)
-      ->GetButtonLabel(TabSharingInfoBarButton::kShareThisTabInstead);
+  infobars::InfoBarDelegate* delegate = GetDelegate(web_contents);
+  if (ConfirmInfoBarDelegate* confirm_delegate =
+          delegate->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtonLabel(
+        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  }
+  return AsTabSharingDelegate(delegate)->GetButtonLabel(
+      TabSharingInfoBarButton::kShareThisTabInstead);
+}
+
+void ClickShareThisTabInsteadButton(content::WebContents* web_contents,
+                                    size_t infobar_index = 0) {
+  infobars::InfoBarDelegate* delegate =
+      GetDelegate(web_contents, infobar_index);
+  if (ConfirmInfoBarDelegate* confirm_delegate =
+          delegate->AsConfirmInfoBarDelegate()) {
+    confirm_delegate->Cancel();
+    return;
+  }
+  AsTabSharingDelegate(delegate)->ShareThisTabInstead();
 }
 
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
@@ -1291,7 +1333,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
             kShareThisTabInsteadMessage);
 
   // Click the share-this-tab-instead secondary button.
-  GetDelegate(other_tab)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(other_tab);
 
   // Wait until the capture of the other tab has started.
   while (!other_tab->IsBeingCaptured()) {
@@ -1335,7 +1377,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                      /*is_tab_capture=*/true);
 
   // Click the share-this-tab-instead secondary button.
-  GetDelegate(other_tab)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(other_tab);
 
   // Wait until the capture of the other tab has started.
   while (!other_tab->IsBeingCaptured()) {
@@ -1396,7 +1438,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
 
   // Click the share-this-tab-instead secondary button. This is rejected since
   // screen capture is not allowed by the above policy.
-  GetDelegate(other_tab)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(other_tab);
 
   // When "Share this tab instead" fails for other_tab, the focus goes back to
   // the captured tab. Wait until that happens:
@@ -2512,7 +2554,7 @@ void CapturedSurfaceControlTest::RunChangingCapturedTabZoomChangeEventTest(
             100 * zoom_level_first_tab);
   ASSERT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
 
-  GetDelegate(second_captured_tab)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(second_captured_tab);
   capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
   ASSERT_EQ(capture_session.GetCapturedTab(), second_captured_tab);
   ASSERT_EQ(GetZoomLevelPercentage(second_captured_tab),
@@ -2587,7 +2629,7 @@ IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
   // Expect that clicking "share this tab instead" will pipe a notification of
   // the change to the captured surface controller.
   capture_session.SetExpectUpdateCaptureTarget();
-  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(capture_session.other_tab());
   capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
 
   capture_session.VerifyAndClearExpectations();
@@ -2618,9 +2660,9 @@ void CapturedSurfaceControlTest::RunChangeSourceWorksOnCorrectCaptureSession(
       (session_experiencing_change == 0) ? capture_session_0
                                          : capture_session_1;
   capture_session_experiencing_change.SetExpectUpdateCaptureTarget();
-  GetDelegate(capture_session_experiencing_change.other_tab(),
-              /*infobar_index=*/session_experiencing_change)
-      ->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(
+      capture_session_experiencing_change.other_tab(),
+      /*infobar_index=*/session_experiencing_change);
   capture_session_experiencing_change.WaitForCaptureOf(CapturedTab::kOtherTab);
 
   capture_session_0.VerifyAndClearExpectations();
@@ -2769,7 +2811,7 @@ IN_PROC_BROWSER_TEST_P(
   capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
 
   // Note absence of call to MakeValidApiCall() before share-this-tab-instead.
-  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(capture_session.other_tab());
 
   // The capturing tab's infobar does not show the CSC indicator because
   // a write-access CSC action was not invoked.
@@ -2793,7 +2835,7 @@ IN_PROC_BROWSER_TEST_P(
   capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
 
   MakeValidApiCall(capture_session, action_);
-  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(capture_session.other_tab());
 
   // The capturing tab's infobar show the CSC indicator if the action
   // was a write-access action.
