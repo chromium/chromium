@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
+#include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -23,40 +25,6 @@
 using content_settings::RuleIterator;
 
 namespace {
-
-class InstalledWebappIterator : public content_settings::RuleIterator {
- public:
-  explicit InstalledWebappIterator(InstalledWebappProvider::RuleList rules,
-                                   ContentSettingsType type)
-      : rules_(std::move(rules)),
-        info_(content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-            type)) {}
-
-  InstalledWebappIterator(const InstalledWebappIterator&) = delete;
-  InstalledWebappIterator& operator=(const InstalledWebappIterator&) = delete;
-
-  ~InstalledWebappIterator() override = default;
-
-  bool HasNext() const override { return index_ < rules_.size(); }
-
-  std::unique_ptr<content_settings::Rule> Next() override {
-    DCHECK(HasNext());
-    const GURL& origin = rules_[index_].first;
-    PermissionSetting setting = rules_[index_].second;
-    DCHECK(info_->delegate().IsValid(setting)) << setting;
-    index_++;
-
-    return std::make_unique<content_settings::Rule>(
-        ContentSettingsPattern::FromURLNoWildcard(origin),
-        ContentSettingsPattern::Wildcard(), info_->delegate().ToValue(setting),
-        content_settings::RuleMetaData{});
-  }
-
- private:
-  size_t index_ = 0;
-  const InstalledWebappProvider::RuleList rules_;
-  const raw_ptr<const content_settings::PermissionSettingsInfo> info_;
-};
 
 bool IsSupportedContentType(ContentSettingsType content_type) {
   switch (content_type) {
@@ -77,6 +45,9 @@ bool IsSupportedContentType(ContentSettingsType content_type) {
 
 InstalledWebappProvider::InstalledWebappProvider() {
   InstalledWebappBridge::SetProviderInstance(this);
+  RefreshRulesForType(ContentSettingsType::NOTIFICATIONS);
+  RefreshRulesForType(ContentSettingsType::GEOLOCATION);
+  RefreshRulesForType(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
 }
 InstalledWebappProvider::~InstalledWebappProvider() {
   InstalledWebappBridge::SetProviderInstance(nullptr);
@@ -85,15 +56,22 @@ InstalledWebappProvider::~InstalledWebappProvider() {
 std::unique_ptr<RuleIterator> InstalledWebappProvider::GetRuleIterator(
     ContentSettingsType content_type,
     bool incognito) const {
-  if (incognito)
+  if (incognito || !IsSupportedContentType(content_type)) {
     return nullptr;
-
-  if (IsSupportedContentType(content_type)) {
-    return std::make_unique<InstalledWebappIterator>(
-        InstalledWebappBridge::GetInstalledWebappPermissions(content_type),
-        content_type);
   }
-  return nullptr;
+  return value_map_.GetRuleIterator(content_type);
+}
+
+std::unique_ptr<content_settings::Rule> InstalledWebappProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record) const {
+  if (off_the_record || !IsSupportedContentType(content_type)) {
+    return nullptr;
+  }
+  base::AutoLock auto_lock(value_map_.GetLock());
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 
 bool InstalledWebappProvider::SetWebsiteSetting(
@@ -112,11 +90,42 @@ void InstalledWebappProvider::ClearAllContentSettingsRules(
 }
 
 void InstalledWebappProvider::ShutdownOnUIThread() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread());
   RemoveAllObservers();
 }
 
 void InstalledWebappProvider::Notify(ContentSettingsType content_type) {
+  CHECK(CalledOnValidThread());
+  if (is_refreshing_) {
+    return;
+  }
+  RefreshRulesForType(content_type);
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(), content_type);
+}
+
+void InstalledWebappProvider::RefreshRulesForType(
+    ContentSettingsType content_type) {
+  CHECK(CalledOnValidThread());
+  if (!IsSupportedContentType(content_type) || is_refreshing_) {
+    return;
+  }
+
+  base::AutoReset<bool> reset_refreshing(&is_refreshing_, true);
+  RuleList rules =
+      InstalledWebappBridge::GetInstalledWebappPermissions(content_type);
+  const auto* info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_type);
+  CHECK(info);
+
+  base::AutoLock auto_lock(value_map_.GetLock());
+  value_map_.DeleteValues(content_type);
+  for (const auto& [origin, setting] : rules) {
+    DCHECK(info->delegate().IsValid(setting)) << setting;
+    value_map_.SetValue(ContentSettingsPattern::FromURLNoWildcard(origin),
+                        ContentSettingsPattern::Wildcard(), content_type,
+                        info->delegate().ToValue(setting),
+                        content_settings::RuleMetaData{});
+  }
 }

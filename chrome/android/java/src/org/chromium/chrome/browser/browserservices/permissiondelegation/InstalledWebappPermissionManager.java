@@ -21,9 +21,13 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -48,10 +52,38 @@ import java.util.Set;
 public class InstalledWebappPermissionManager {
     private static final String TAG = "PermissionManager";
 
+    private static boolean sIsRunningTwa;
+    private static boolean sActivityStateListenerRegistered;
+
     private InstalledWebappPermissionManager() {}
 
     private static InstalledWebappPermissionStore getStore() {
         return WebappRegistry.getInstance().getPermissionStore();
+    }
+
+    static void ensureActivityStateListenerRegistered() {
+        ThreadUtils.assertOnUiThread();
+        if (sActivityStateListenerRegistered || !ApplicationStatus.isInitialized()) {
+            return;
+        }
+        sActivityStateListenerRegistered = true;
+        sIsRunningTwa = getLastTrackedFocusedTwaCustomTabActivity() != null;
+        ApplicationStatus.registerStateListenerForAllActivities(
+                (activity, newState) -> {
+                    boolean prevRunningTwa = sIsRunningTwa;
+                    boolean nowRunningTwa = getLastTrackedFocusedTwaCustomTabActivity() != null;
+                    sIsRunningTwa = nowRunningTwa;
+                    // Refresh if TWA active status changed, or if a TWA resumed (switching to an
+                    // external app like Android Settings doesn't clear ApplicationStatus's last
+                    // focused activity, and the client app's OS location permission may have
+                    // changed while paused). Only geolocation permissions depend on whether a TWA
+                    // is currently running; notification permissions apply regardless of activity
+                    // state.
+                    if (prevRunningTwa != nowRunningTwa
+                            || (nowRunningTwa && newState == ActivityState.RESUMED)) {
+                        InstalledWebappBridge.notifyPermissionsChange(getGeolocationType());
+                    }
+                });
     }
 
     static boolean isRunningTwa() {
@@ -115,6 +147,7 @@ public class InstalledWebappPermissionManager {
             @Nullable String packageName,
             @ContentSettingsType.EnumType int type,
             @ContentSetting int settingValue) {
+        ThreadUtils.assertOnUiThread();
         if (packageName == null) return;
 
         String appName = getAppNameForPackage(packageName);
@@ -138,6 +171,7 @@ public class InstalledWebappPermissionManager {
 
     @UiThread
     static void unregister(Origin origin) {
+        ThreadUtils.assertOnUiThread();
         getStore().removeOrigin(origin);
 
         NotificationChannelPreserver.restoreChannelIfNeeded(origin);
@@ -149,6 +183,7 @@ public class InstalledWebappPermissionManager {
 
     @UiThread
     static void resetStoredPermission(Origin origin, @ContentSettingsType.EnumType int type) {
+        ThreadUtils.assertOnUiThread();
         getStore().resetPermission(origin, type);
         InstalledWebappBridge.notifyPermissionsChange(type);
     }
@@ -231,7 +266,19 @@ public class InstalledWebappPermissionManager {
                     @ContentSetting
                     int settingValue = enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
 
-                    updatePermission(origin, packageName, getGeolocationType(), settingValue);
+                    final @ContentSettingsType.EnumType int geolocationType = getGeolocationType();
+                    if (ThreadUtils.runningOnUiThread()) {
+                        updatePermission(origin, packageName, geolocationType, settingValue);
+                    } else {
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () ->
+                                        updatePermission(
+                                                origin,
+                                                packageName,
+                                                geolocationType,
+                                                settingValue));
+                    }
 
                     return settingValue;
                 }

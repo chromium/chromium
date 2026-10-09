@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -53,6 +54,7 @@ public class InstalledWebappBridge {
     }
 
     public static void notifyPermissionsChange(@ContentSettingsType.EnumType int type) {
+        ThreadUtils.assertOnUiThread();
         if (sNativeInstalledWebappProvider == 0) return;
 
         InstalledWebappBridgeJni.get()
@@ -68,6 +70,9 @@ public class InstalledWebappBridge {
     @CalledByNative
     private static void setInstalledWebappProvider(long provider) {
         sNativeInstalledWebappProvider = provider;
+        if (provider != 0) {
+            InstalledWebappPermissionManager.ensureActivityStateListenerRegistered();
+        }
     }
 
     @CalledByNative

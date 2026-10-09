@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "url/gurl.h"
@@ -33,6 +34,12 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
       ContentSettingsType content_type,
       bool incognito) const override;
 
+  std::unique_ptr<content_settings::Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record) const override;
+
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
@@ -44,6 +51,12 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
   void ShutdownOnUIThread() override;
 
   void Notify(ContentSettingsType content_type);
+
+ private:
+  void RefreshRulesForType(ContentSettingsType content_type);
+
+  content_settings::OriginValueMap value_map_;
+  bool is_refreshing_ = false;
 };
 
 #endif  // CHROME_BROWSER_WEBAPPS_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_

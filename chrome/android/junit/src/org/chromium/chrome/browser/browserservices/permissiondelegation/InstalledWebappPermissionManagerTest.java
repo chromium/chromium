@@ -8,10 +8,12 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,12 +33,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -49,6 +53,8 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link InstalledWebappPermissionManager}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -329,5 +335,39 @@ public class InstalledWebappPermissionManagerTest {
             // Clean up activity.
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void getPermission_offUiThread_postsUpdateToUiThread() throws Exception {
+        setClientLocationPermission(true);
+        setStoredLocationPermission(ContentSetting.BLOCK);
+
+        AtomicInteger resultOnBackgroundThread = new AtomicInteger(ContentSetting.DEFAULT);
+        AtomicBoolean storeUpdatedOffUiThread = new AtomicBoolean(false);
+        doAnswer(
+                        invocation -> {
+                            storeUpdatedOffUiThread.set(!ThreadUtils.runningOnUiThread());
+                            return true;
+                        })
+                .when(mStore)
+                .setStateForOrigin(any(), anyString(), anyString(), anyInt(), anyInt());
+
+        Thread bgThread =
+                new Thread(
+                        () ->
+                                resultOnBackgroundThread.set(
+                                        InstalledWebappPermissionManager.getPermission(
+                                                mType, mOrigin)));
+        bgThread.start();
+        bgThread.join();
+
+        assertEquals(ContentSetting.ALLOW, resultOnBackgroundThread.get());
+        verifyPermissionNotUpdated();
+
+        ShadowLooper.runUiThreadTasks();
+
+        verifyLocationPermissionUpdated(ContentSetting.ALLOW);
+        assertFalse(storeUpdatedOffUiThread.get());
     }
 }
