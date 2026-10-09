@@ -92,6 +92,11 @@ suite('AppReceivesToolbarChanges', () => {
     emitEvent(app, ToolbarEvent.RATE, {detail: {data: rate}});
   }
 
+  function emitHighlight(granularity: number): void {
+    emitEvent(
+        app, ToolbarEvent.HIGHLIGHT_CHANGE, {detail: {data: granularity}});
+  }
+
   function emitPlayPause(): Promise<void> {
     emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     return microtasksFinished();
@@ -671,13 +676,6 @@ suite('AppReceivesToolbarChanges', () => {
           .getPropertyValue('--current-highlight-bg-color');
     }
 
-    function emitHighlight(granularity: number) {
-      audioBrowserProxy.onHighlightGranularityChanged(granularity);
-      emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
-        detail: {data: granularity},
-      });
-    }
-
     setup(() => {
       app.updateContent();
     });
@@ -762,6 +760,7 @@ suite('AppReceivesToolbarChanges', () => {
     visualBrowserProxy.fontName = 'Serif';
     visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     audioBrowserProxy.speechRate = 1.5;
+    audioBrowserProxy.highlightGranularity = audioBrowserProxy.wordHighlighting;
 
     visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
     await microtasksFinished();
@@ -772,6 +771,8 @@ suite('AppReceivesToolbarChanges', () => {
     assertEquals('Serif', toolbar.font);
     assertEquals(visualBrowserProxy.darkTheme, toolbar.theme);
     assertEquals(1.5, toolbar.speechRate);
+    assertEquals(
+        audioBrowserProxy.wordHighlighting, toolbar.highlightGranularity);
   });
 
   suite('on links toggle', () => {
@@ -984,23 +985,28 @@ suite('AppReceivesToolbarChanges', () => {
       await microtasksFinished();
       assertEquals(0.8, app.$.toolbar.speechRate);
     });
-  });
 
-  test('on highlight change updates toolbar settingsPrefs', async () => {
-    emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
-      detail: {data: audioBrowserProxy.noHighlighting},
-    });
-    await microtasksFinished();
-    assertEquals(
-        audioBrowserProxy.noHighlighting,
-        app.$.toolbar.settingsPrefs.highlightGranularity);
+    test('highlight granularity', async () => {
+      emitHighlight(audioBrowserProxy.wordHighlighting);
+      await microtasksFinished();
 
-    emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
-      detail: {data: audioBrowserProxy.wordHighlighting},
+      assertEquals(
+          audioBrowserProxy.wordHighlighting,
+          await audioBrowserProxy.whenCalled('onHighlightGranularityChanged'));
+      assertEquals(
+          ReadAloudSettingsChange.HIGHLIGHT_CHANGE,
+          await metrics.whenCalled('recordSpeechSettingsChange'));
+      assertEquals(
+          audioBrowserProxy.wordHighlighting,
+          await metrics.whenCalled('recordHighlightGranularity'));
+      assertEquals(
+          audioBrowserProxy.wordHighlighting,
+          app.$.toolbar.highlightGranularity);
+
+      emitHighlight(audioBrowserProxy.noHighlighting);
+      await microtasksFinished();
+      assertEquals(
+          audioBrowserProxy.noHighlighting, app.$.toolbar.highlightGranularity);
     });
-    await microtasksFinished();
-    assertEquals(
-        audioBrowserProxy.wordHighlighting,
-        app.$.toolbar.settingsPrefs.highlightGranularity);
   });
 });

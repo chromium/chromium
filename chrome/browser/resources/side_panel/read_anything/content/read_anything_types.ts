@@ -196,12 +196,10 @@ export enum SettingsOption {
 // The user settings stored in preferences and restored on re-opening Reading
 // mode. Used to set the initial values for the toolbar buttons and menus.
 export interface SettingsPrefs {
-  highlightGranularity: number;
   linksEnabled: boolean;
   imagesEnabled: boolean;
 }
 export const DEFAULT_SETTINGS: SettingsPrefs = {
-  highlightGranularity: 0,
   linksEnabled: false,
   imagesEnabled: false,
 };

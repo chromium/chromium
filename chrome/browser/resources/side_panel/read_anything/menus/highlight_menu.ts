@@ -8,12 +8,10 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
-import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
@@ -41,13 +39,13 @@ export class HighlightMenuElement extends HighlightMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      highlightGranularity: {type: Number},
       nonModal: {type: Boolean},
       options_: {type: Array},
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor highlightGranularity: number = 0;
   accessor nonModal: boolean = false;
 
   private audioBrowserProxy_: AudioBrowserProxy =
@@ -76,8 +74,6 @@ export class HighlightMenuElement extends HighlightMenuElementBase implements
     },
   ];
 
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
-
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
     this.$.menu.open(anchor, showAtConfig);
   }
@@ -87,15 +83,10 @@ export class HighlightMenuElement extends HighlightMenuElementBase implements
   }
 
   protected restoredHighlightIndex_(): number {
-    return getIndexOfSetting(
-        this.options_, this.settingsPrefs['highlightGranularity']);
+    return getIndexOfSetting(this.options_, this.highlightGranularity);
   }
 
-  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
-    this.audioBrowserProxy_.onHighlightGranularityChanged(event.detail.data);
-    this.logger_.logSpeechSettingsChange(
-        ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
-    this.logger_.logHighlightGranularity(event.detail.data);
+  protected onHighlightChange_() {
     this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }

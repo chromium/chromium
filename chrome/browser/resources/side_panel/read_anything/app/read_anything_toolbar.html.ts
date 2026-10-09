@@ -106,7 +106,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   <font-size-menu id="fontSizeMenu"></font-size-menu>
   <rate-menu id="rateMenu" .speechRate="${this.speechRate}"></rate-menu>
   <highlight-menu id="highlightMenu" class="settings-submenu"
-      .nonModal="${true}" .settingsPrefs="${this.settingsPrefs}"
+      .nonModal="${true}" .highlightGranularity="${this.highlightGranularity}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </highlight-menu>
   <color-menu id="colorMenu" class="settings-submenu" .nonModal="${true}"
@@ -137,7 +137,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </appearance-menu>
   <audio-menu id="audioMenu" class="settings-submenu" non-modal
-      .settingsPrefs="${this.settingsPrefs}"
+      .highlightGranularity="${this.highlightGranularity}"
       .enabledLangs="${this.enabledLangs}"
       .availableVoices="${this.availableVoices}"
       .localeToDisplayName="${this.localeToDisplayName}"

@@ -122,6 +122,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       letterSpacing: {type: Number},
       font: {type: String},
       speechRate: {type: Number},
+      highlightGranularity: {type: Number},
       areFontsLoaded_: {type: Boolean},
       textStyleOptions_: {type: Array},
       hideSpinner_: {type: Boolean},
@@ -164,6 +165,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor letterSpacing: number = 0;
   accessor font: string = '';
   accessor speechRate: number = 1;
+  accessor highlightGranularity: number = 0;
   accessor selectedVoice: SpeechSynthesisVoice|null = null;
   accessor pageLanguage: string = '';
   accessor isImmersiveMode: boolean = false;

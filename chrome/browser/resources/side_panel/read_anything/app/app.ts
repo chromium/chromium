@@ -90,6 +90,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       letterSpacing_: {type: Number},
       font_: {type: String},
       speechRate_: {type: Number},
+      highlightGranularity_: {type: Number},
       settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
@@ -179,6 +180,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor letterSpacing_: number = 0;
   protected accessor font_: string = '';
   protected accessor speechRate_: number = 1;
+  protected accessor highlightGranularity_: number = 0;
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
@@ -240,7 +242,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.showLoading();
 
     this.settingsPrefs_ = {
-      highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
       linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
       imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
     };
@@ -709,6 +710,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.letterSpacing_ = this.visualBrowserProxy_.getLetterSpacing();
     this.font_ = this.visualBrowserProxy_.getFontName();
     this.speechRate_ = getCurrentSpeechRate();
+    this.highlightGranularity_ =
+        this.audioBrowserProxy_.getHighlightGranularity();
   }
 
   protected onSpeechRateChange_(event: CustomEvent<{data: number}>) {
@@ -724,7 +727,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private restoreSettingsFromPrefs_() {
     this.settingsPrefs_ = {
-      highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
       linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
       imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
     };
@@ -784,11 +786,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {
-    this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
-      highlightGranularity: event.detail.data,
-    };
-    this.speechController_.onHighlightGranularityChange(event.detail.data);
+    const granularity = event.detail.data;
+    this.audioBrowserProxy_.onHighlightGranularityChanged(granularity);
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
+    this.logger_.logHighlightGranularity(granularity);
+    this.syncSettings_();
+    this.speechController_.onHighlightGranularityChange(granularity);
     // Apply highlighting changes to the DOM.
     this.styleUpdater_.setHighlight();
   }

@@ -11,13 +11,11 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {getVoiceDisplayName, getVoiceTitleAndNatureNaming} from '../read_aloud/voice_menu_display.js';
-import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './audio_menu.html.js';
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
@@ -44,7 +42,7 @@ export class AudioMenuElement extends AudioMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      highlightGranularity: {type: Number},
       selectedVoice: {type: Object},
       previewVoicePlaying: {type: Object},
       showVoiceSelectionDialog_: {type: Boolean},
@@ -58,7 +56,7 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor highlightGranularity: number = 0;
   accessor nonModal: boolean = false;
   accessor enabledLangs: string[] = [];
   accessor availableVoices: SpeechSynthesisVoice[] = [];
@@ -133,18 +131,16 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     },
   ];
 
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('settingsPrefs')) {
+    if (changedProperties.has('highlightGranularity')) {
       this.updateOptionsForHighlight_();
     }
     if (changedProperties.has('selectedVoice')) {
       this.updateOptionsForVoice_();
     }
-    if (changedProperties.has('settingsPrefs') ||
+    if (changedProperties.has('highlightGranularity') ||
         changedProperties.has('selectedVoice')) {
       this.groups_ = [...this.groups_];
     }
@@ -156,18 +152,6 @@ export class AudioMenuElement extends AudioMenuElementBase implements
 
   close() {
     this.$.menu.close();
-  }
-
-  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
-    const data = event.detail.data;
-    this.audioBrowserProxy_.onHighlightGranularityChanged(data);
-    this.logger_.logSpeechSettingsChange(
-        ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
-    this.logger_.logHighlightGranularity(data);
-    this.settingsPrefs = {
-      ...this.settingsPrefs,
-      highlightGranularity: data,
-    };
   }
 
   protected onOpenAccentMenu_() {
@@ -193,9 +177,8 @@ export class AudioMenuElement extends AudioMenuElementBase implements
   }
 
   private updateOptionsForHighlight_() {
-    const currentHighlight = this.settingsPrefs.highlightGranularity;
     this.highlightOptions_.forEach(option => {
-      option.selected = option.data === currentHighlight;
+      option.selected = option.data === this.highlightGranularity;
     });
   }
 

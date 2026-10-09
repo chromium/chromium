@@ -10,8 +10,7 @@ export function getHtml(this: AudioMenuElement) {
   return html`<!--_html_template_start_-->
 <grouped-action-menu id="menu" label="$i18n{audioTitle}"
     .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
-    .closeOnClick="${false}" @highlight-change="${this.onHighlightChange_}"
-    @open-accent-menu="${this.onOpenAccentMenu_}"
+    .closeOnClick="${false}" @open-accent-menu="${this.onOpenAccentMenu_}"
     @open-voice-selection-dialog="${this.onOpenVoiceSelectionDialog_}">
 </grouped-action-menu>
 

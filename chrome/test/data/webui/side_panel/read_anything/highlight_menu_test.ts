@@ -5,17 +5,15 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {HighlightMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
+import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('HighlightMenuElement', () => {
   let highlightMenu: HighlightMenuElement;
-  let metrics: TestMetricsBrowserProxy;
   let audioBrowserProxy: TestAudioBrowserProxy;
 
   function createHighlightMenu() {
@@ -23,13 +21,8 @@ suite('HighlightMenuElement', () => {
     document.body.appendChild(highlightMenu);
   }
 
-  suiteSetup(() => {
-    assertTestSettingsAreNotDefaultSettings();
-  });
-
   setup(() => {
     const result = setupTestEnvironment();
-    metrics = result.metrics;
     audioBrowserProxy = result.audioBrowserProxy;
   });
 
@@ -38,60 +31,13 @@ suite('HighlightMenuElement', () => {
     assertCheckMarksForDropdown(highlightMenu);
   });
 
-
-
-  test('highlight change is propagated', async () => {
+  test('highlight change closes all menus', async () => {
     createHighlightMenu();
-    const numberOfOptions = 3;
-
-    const closeAllMenusPromise1 =
-        eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
-    const highlight1 = audioBrowserProxy.getNoHighlighting();
+    const closePromise = eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
     highlightMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.HIGHLIGHT_CHANGE, {detail: {data: highlight1}}));
-    await closeAllMenusPromise1;
-    assertEquals(
-        highlight1,
-        await audioBrowserProxy.whenCalled('onHighlightGranularityChanged'));
-
-    audioBrowserProxy.resetResolver('onHighlightGranularityChanged');
-    const closeAllMenusPromise2 =
-        eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
-    const highlight2 = audioBrowserProxy.getAutoHighlighting();
-    highlightMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.HIGHLIGHT_CHANGE, {detail: {data: highlight2}}));
-    await closeAllMenusPromise2;
-    assertEquals(
-        highlight2,
-        await audioBrowserProxy.whenCalled('onHighlightGranularityChanged'));
-
-    audioBrowserProxy.resetResolver('onHighlightGranularityChanged');
-    const closeAllMenusPromise3 =
-        eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
-    const highlight3 = audioBrowserProxy.getSentenceHighlighting();
-    highlightMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.HIGHLIGHT_CHANGE, {detail: {data: highlight3}}));
-    await closeAllMenusPromise3;
-    assertEquals(
-        highlight3,
-        await audioBrowserProxy.whenCalled('onHighlightGranularityChanged'));
-
-    assertEquals(
-        ReadAloudSettingsChange.HIGHLIGHT_CHANGE,
-        await metrics.whenCalled('recordSpeechSettingsChange'));
-    assertEquals(
-        numberOfOptions, metrics.getCallCount('recordSpeechSettingsChange'));
-  });
-
-  test('highlight change logs new granularity', async () => {
-    createHighlightMenu();
-
-    const highlight = audioBrowserProxy.getNoHighlighting();
-    highlightMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.HIGHLIGHT_CHANGE, {detail: {data: highlight}}));
-
-    assertEquals(
-        highlight, await metrics.whenCalled('recordHighlightGranularity'));
+        ToolbarEvent.HIGHLIGHT_CHANGE,
+        {detail: {data: audioBrowserProxy.getNoHighlighting()}}));
+    await closePromise;
   });
 
   test('has phrase highlighting option if flag enabled', () => {
@@ -126,10 +72,7 @@ suite('HighlightMenuElement', () => {
     const startingIndex = highlightMenu.$.menu.currentSelectedIndex;
     assertNotEquals(granularity, startingIndex);
 
-    highlightMenu.settingsPrefs = {
-      ...DEFAULT_SETTINGS,
-      highlightGranularity: granularity,
-    };
+    highlightMenu.highlightGranularity = granularity;
     await microtasksFinished();
 
     assertNotEquals(startingIndex, highlightMenu.$.menu.currentSelectedIndex);
@@ -139,10 +82,7 @@ suite('HighlightMenuElement', () => {
     createHighlightMenu();
     const startingIndex = highlightMenu.$.menu.currentSelectedIndex;
 
-    highlightMenu.settingsPrefs = {
-      ...TEST_RANDOM_VALUE_SETTINGS,
-      highlightGranularity: 0,
-    };
+    highlightMenu.highlightGranularity = 0;
     await microtasksFinished();
 
     assertEquals(startingIndex, highlightMenu.$.menu.currentSelectedIndex);
