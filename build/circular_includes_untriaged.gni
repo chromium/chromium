@@ -203,7 +203,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ui/webui/webui_gallery:webui_gallery",
   "//chrome/browser/ui/webui:favicon_source",
   "//chrome/browser/ui/webui:theme_colors_source_manager",
-  "//chrome/browser/ui:ui",
   "//chrome/browser/web_applications/app_service:app_service",
   "//chrome/browser/web_applications:web_applications",
   "//chrome/browser:browser",

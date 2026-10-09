@@ -761,7 +761,7 @@ source_set("web_ui_mocha_browser_test") {
     deps += [
       ":ui_test_utils",
       "//base/test:test_support",
-      "//chrome/browser/ui",
+      "//chrome/browser",
       "//content/public/common",
     ]
   }
@@ -804,6 +804,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/lifetime",
       "//chrome/browser/lifetime:termination_notification",
+      "//chrome/browser/net",
       "//chrome/browser/notifications:test_support",
       "//chrome/browser/predictors",
       "//chrome/browser/profiles:profile",
@@ -850,7 +851,7 @@ if (!is_android) {
       "//ui/views:test_support",
     ]
     if (toolkit_views) {
-      public_deps += [ "//chrome/browser/ui" ]
+      public_deps += [ "//chrome/browser" ]
       deps += [ "//chrome/test/views" ]
     }
     if (is_mac) {
@@ -889,7 +890,7 @@ if (!is_android) {
     ]
     public_deps = [
       "//base",
-      "//chrome/browser/ui",
+      "//chrome/browser",
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -961,7 +962,7 @@ if (!is_android) {
       "//ui/views",
     ]
     deps = [
-      "//chrome/browser/ui",
+      "//chrome/browser",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//content/test:test_support",
@@ -1069,9 +1070,10 @@ if (!is_android) {
     ]
     public_deps = [
       "//base",
-      "//chrome/browser/ui",
+      "//chrome/browser",
       "//chrome/browser/ui/autofill:test_support",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/translate",
       "//chrome/browser/ui/webui/tab_search:mojo_bindings",
@@ -1117,9 +1119,9 @@ if (!is_android) {
       ":test_browser_window",
       ":testing_profile",
       "//base",
+      "//chrome/browser",
       "//chrome/browser/performance_manager:test_support",
       "//chrome/browser/profiles:profile_manager",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/views:chrome_constrained_window_views_client",
       "//components/variations:test_support",
       "//content/test:test_support",
@@ -1346,13 +1348,13 @@ if (is_android) {
     ]
     public_deps = [
       "//base",
+      "//chrome/browser",
       "//chrome/browser/ui:view_ids",
       "//ui/base:test_support",
       "//ui/display",
       "//ui/gfx",
     ]
     deps = [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//content/test:test_support",
       "//testing/gtest",
@@ -1423,8 +1425,8 @@ if (is_chromeos) {
       "//base",
     ]
     deps = [
+      "//chrome/browser",
       "//chrome/browser/profiles:profile_manager",
-      "//chrome/browser/ui",
       "//chrome/common",
       "//components/privacy_sandbox:features",
       "//content/public/browser",

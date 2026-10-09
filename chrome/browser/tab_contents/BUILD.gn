@@ -34,7 +34,6 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//components/navigation_metrics",
     "//components/performance_manager",
@@ -44,7 +43,7 @@ source_set("impl") {
     "//extensions/buildflags",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//extensions/browser" ]
   }
 }
@@ -92,8 +91,8 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/app:command_ids",
+      "//chrome/browser",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:chrome_features",

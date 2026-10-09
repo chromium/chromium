@@ -42,7 +42,7 @@ source_set("impl") {
   deps = [
     ":infobars",
     "//chrome/app:generated_resources_grit",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/omnibox",
@@ -70,7 +70,7 @@ source_set("browser_tests") {
   deps = [
     ":impl",
     ":infobars",
-    "//chrome/browser/ui",
+    "//chrome/browser",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/frame:browser_view_header",

@@ -14,13 +14,13 @@ if (!is_chromeos) {
       public += [ "enterprise_startup_dialog_mac_util.h" ]
       sources += [ "enterprise_startup_dialog_mac_util.mm" ]
     }
+    public_deps = [ "//chrome/browser/ui:enterprise_startup_dialog" ]
     deps = [
       "//build:branding_buildflags",
       "//chrome/app:branded_strings",
       "//chrome/app/theme:theme_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser/headless",
-      "//chrome/browser/ui:enterprise_startup_dialog",
       "//chrome/browser/ui/views:layout_provider",
       "//components/constrained_window",
       "//ui/base",

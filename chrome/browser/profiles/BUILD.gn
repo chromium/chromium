@@ -768,6 +768,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/enterprise/network_header_injection",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/feedback",
     "//chrome/browser/file_system_access",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/glic",
@@ -785,8 +786,10 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/lookalikes",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
+    "//chrome/browser/media",
     "//chrome/browser/media/router",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/net",
     "//chrome/browser/notebooks",
     "//chrome/browser/notifications",
     "//chrome/browser/omnibox",
@@ -853,7 +856,6 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/themes",
     "//chrome/browser/tips",
     "//chrome/browser/ttc/core",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/find_bar",
@@ -935,7 +937,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/device_api",
       "//chrome/browser/devtools",
       "//chrome/browser/dictation",
-      "//chrome/browser/feedback",
       "//chrome/browser/indigo",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/metrics/critical_user_journeys",
@@ -959,6 +960,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/waap",
+      "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui:theme_colors_source_manager",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/ntp:ntp_resource_cache",
@@ -1018,6 +1020,13 @@ source_set("profiles_extra_parts_impl") {
     deps += [
       "//chrome/browser/browser_switcher",
       "//chrome/browser/search_integrity",
+    ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//chrome/browser/ui/search_promotion",
+      "//chrome/browser/win:jumplist",
     ]
   }
 
@@ -1246,13 +1255,13 @@ if (!is_android) {
       ":profile_manager",
       ":profile_util",
       "//base",
+      "//chrome/browser",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/enterprise",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
@@ -1261,6 +1270,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/zoom",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//chrome/test/base:browser_test_waiters",

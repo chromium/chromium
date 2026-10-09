@@ -391,6 +391,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":location_bar",
+    "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
@@ -405,6 +406,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/translate",
     "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
     "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+    "//chrome/browser/ui/waap:manager",
     "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",

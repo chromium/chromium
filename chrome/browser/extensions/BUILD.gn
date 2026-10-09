@@ -1359,7 +1359,6 @@ source_set("extensions") {
       "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/login/app_mode",
-      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/login/quick_unlock",
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/net",
@@ -1826,6 +1825,7 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/external_protocol",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/net",
     "//chrome/browser/prefetch",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
@@ -1833,7 +1833,7 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/search_engines",
     "//chrome/browser/task_manager",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//chrome/browser/usb",
@@ -1876,6 +1876,7 @@ source_set("chrome_extensions_browser_client") {
 
   if (is_chromeos) {
     deps += [
+      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/chromeos/policy/dlp",
       "//chromeos/ash/components/demo_mode",
@@ -2069,6 +2070,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions/api/web_navigation",
     "//chrome/browser/gcm",
     "//chrome/browser/media/router:test_support",
+    "//chrome/browser/net",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
@@ -2317,6 +2319,9 @@ source_set("unit_tests") {
   if (toolkit_views) {
     deps += [ "//chrome/browser/ui/views/web_apps:launch_dialogs" ]
   }
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/customization" ]
+  }
 }
 
 # By default these tests run on Win, Mac, Linux, Chrome OS and desktop Android.
@@ -2525,11 +2530,13 @@ source_set("browser_tests") {
     "//chrome/browser/download:test_support",
     "//chrome/browser/extensions/api/bookmarks/test:test_support",
     "//chrome/browser/extensions/api/messaging:platform_browser_tests",
+    "//chrome/browser/feedback",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/infobars",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/net",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
@@ -2558,6 +2565,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/extensions:test_support",
     "//chrome/browser/ui/navigator",
@@ -3294,6 +3302,7 @@ source_set("interactive_ui_tests") {
       "//base",
       "//base/test:test_support",
       "//build:chromeos_buildflags",
+      "//chrome/browser",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/platform_apps:browser_test_support",
       "//chrome/browser/devtools:test_support",
@@ -3301,7 +3310,6 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/omnibox",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui:view_ids",

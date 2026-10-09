@@ -47,12 +47,14 @@ source_set("impl") {
     "organizer_tray_view.cc",
   ]
 
-  public_deps = [ ":organizer" ]
+  public_deps = [
+    ":organizer",
+    "//chrome/browser/ui/views/extensions:extension_view_views",
+  ]
 
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:layout_constants",
@@ -159,8 +161,8 @@ source_set("interactive_ui_tests") {
   sources = [ "organizer_panel_interactive_uitest.cc" ]
   deps = [
     ":organizer",
+    "//chrome/browser",
     "//chrome/browser/tab_group_sync:factories",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs",

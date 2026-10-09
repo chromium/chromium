@@ -40,11 +40,11 @@ source_set("browser_tests") {
   deps = [
     ":user_education",
     "//base/test:test_support",
+    "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/user_education",
     "//chrome/test/base:testing_profile",

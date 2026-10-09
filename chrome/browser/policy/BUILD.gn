@@ -897,6 +897,7 @@ source_set("unit_tests") {
     deps += [
       ":path_parser",
       "//chrome/browser/device_api",
+      "//chrome/browser/device_identity",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/webapps/isolated_web_apps",
@@ -934,6 +935,7 @@ source_set("unit_tests") {
       "chrome_browser_cloud_management_controller_android_unittest.cc",
       "client_data_delegate_android_unittest.cc",
     ]
+    deps += [ "//chrome/browser/net" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -994,9 +996,6 @@ source_set("unit_tests") {
   if (enable_extensions) {
     sources += [ "chrome_extension_policy_migrator_unittest.cc" ]
     deps += [ ":policy_migrator" ]
-  }
-  if (!is_android) {
-    deps += [ "//chrome/browser/device_identity" ]
   }
 }
 
