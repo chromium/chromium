@@ -9,7 +9,6 @@ import logging
 import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 import zipfile
@@ -864,39 +863,6 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
     version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
     package_name = re.search(r'package.*?="(.*?)"', output).group(1)
     return version_code, version_name, package_name
-
-
-def ExtractArscPackage(aapt2_path, apk_path):
-    """Returns (package_name, package_id) of resources.arsc from apk_path.
-
-    When the apk does not have any entries in its resources file, in recent aapt2
-    versions it will not contain a "Package" line. The package is not even in the
-    actual resources.arsc/resources.pb file (which itself is mostly empty). Thus
-    return (None, None) when dump succeeds and there are no errors to indicate
-    that the package name does not exist in the resources file.
-    """
-    proc = subprocess.Popen(
-        [aapt2_path, 'dump', 'resources', apk_path],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding='utf-8',
-    )
-    for line in proc.stdout:
-        # Package name=org.chromium.webview_shell id=7f
-        if line.startswith('Package'):
-            proc.kill()
-            parts = line.split()
-            package_name = parts[1].split('=')[1]
-            package_id = parts[2][3:]
-            return package_name, int(package_id, 16)
-
-    # aapt2 currently crashes when dumping webview resources, but not until after
-    # it prints the "Package" line (b/130553900).
-    stderr_output = proc.stderr.read()
-    if stderr_output:
-        sys.stderr.write(stderr_output)
-        raise Exception('Failed to find arsc package name')
-    return None, None
 
 
 def _ExtractSingleDep(z, deps_dir):

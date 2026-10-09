@@ -846,11 +846,8 @@ def _PackageApk(options, build):
 
     # Sanity check that the created resources have the expected package ID.
     logging.debug('Performing sanity check')
-    _, actual_package_id = resource_utils.ExtractArscPackage(
-        options.aapt2_path,
-        build.arsc_path if options.arsc_path else build.proto_path,
-    )
-    # When there are no resources, ExtractArscPackage returns (None, None), in
+    actual_package_id = _ExtractPackageIdFromRTxt(build.r_txt_path)
+    # When there are no resources, _ExtractPackageIdFromRTxt returns None; in
     # this case there is no need to check for matching package ID.
     if actual_package_id is not None and actual_package_id != package_id:
         raise Exception(
@@ -859,6 +856,18 @@ def _PackageApk(options, build):
         )
 
     return desired_manifest_package_name
+
+
+def _ExtractPackageIdFromRTxt(r_txt_path):
+    with open(r_txt_path, encoding='utf-8') as f:
+        for line in f:
+            # Format: "int <type> <name> 0x7f010001"
+            # Skip "int[] styleable ..." and "int styleable <name> <index>".
+            if line.startswith('int ') and not line.startswith(
+                'int styleable '
+            ):
+                return int(line.rsplit(' ', 1)[1], 16) >> 24
+    return None
 
 
 def _CreateStableIdsFile(in_path, out_path, package_name, package_id):
