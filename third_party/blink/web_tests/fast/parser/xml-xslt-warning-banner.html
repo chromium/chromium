@@ -80,12 +80,9 @@ test(() => {
 
   assert_not_equals(resultDoc, null, "transformToDocument should succeed");
   assert_equals(resultDoc.getElementById('result').textContent, "Hello");
-  const banner = resultDoc.querySelector('xslt-warning-banner');
-  assert_not_equals(banner, null, "Banner element should exist");
-  assert_not_equals(banner.shadowRoot, null, "Banner should have an open shadow root");
-  assert_true(banner.shadowRoot.textContent.includes("This site uses XSLT"),
-      "Document produced by transformToDocument should contain the deprecation warning banner");
-}, "XSLT deprecation warning banner on XSLTProcessor.transformToDocument");
+  assert_equals(resultDoc.querySelector('xslt-warning-banner'), null,
+      "Document produced by transformToDocument should not contain the deprecation warning banner");
+}, "No XSLT deprecation warning banner on XSLTProcessor.transformToDocument");
 
 promise_test(async () => {
   // This test is only for XSLT enabled, since the warning banner only shows up for XSLT transforms.
@@ -102,6 +99,10 @@ promise_test(async () => {
   assert_not_equals(banner.shadowRoot, null, "The banner should have an open shadow root");
   assert_true(banner.shadowRoot.textContent.includes("This site uses XSLT"),
       "The banner shadow root should contain the warning text");
+  assert_equals(banner.getAttribute('popover'), "manual",
+      "The banner should be a manual popover");
+  assert_true(banner.matches(':popover-open'), "The banner popover should be open");
+  assert_equals(doc.body.firstChild, banner, "The banner should be the first child of body");
 
   const checkbox = banner.shadowRoot.querySelector('input[type="checkbox"]');
   assert_not_equals(checkbox, null, "The banner should contain a checkbox");

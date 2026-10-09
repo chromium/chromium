@@ -114,8 +114,37 @@ class XSLTPolicyBrowserTest : public PolicyTest,
 
     const bool inject_OT_token = std::get<2>(GetParam());
 
+    // The banner is only shown for documents transformed via an
+    // xml-stylesheet processing instruction, so serve one along with its
+    // stylesheet.
+    const std::string_view path = params->url_request.url.path();
+    std::string content_type = "text/html";
+    std::string body =
+        "<!DOCTYPE "
+        "html><html><head><meta charset=\"utf-8\"></head><body></body></html>";
+    if (path == "/xslt.xml") {
+      content_type = "application/xml";
+      body =
+          "<?xml version=\"1.0\"?>"
+          "<?xml-stylesheet type=\"text/xsl\" href=\"xslt.xsl\"?>"
+          "<r><n>1</n></r>";
+    } else if (path == "/xslt.xsl") {
+      content_type = "text/xsl";
+      body =
+          "<?xml version=\"1.0\"?>"
+          "<xsl:stylesheet version=\"1.0\" "
+          "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
+          "<xsl:template match=\"/\">"
+          "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>"
+          "<p id=\"r\"><xsl:value-of select=\"//n\"/></p>"
+          "</body></html>"
+          "</xsl:template>"
+          "</xsl:stylesheet>";
+    }
+
     std::string headers = "HTTP/1.1 200 OK\n";
-    base::StrAppend(&headers, {"Content-Type: text/html; charset=utf-8\n"});
+    base::StrAppend(&headers,
+                    {"Content-Type: ", content_type, "; charset=utf-8\n"});
     if (inject_OT_token) {
       base::StrAppend(
           &headers,
@@ -127,9 +156,6 @@ class XSLTPolicyBrowserTest : public PolicyTest,
     }
     headers += '\n';
 
-    std::string body =
-        "<!DOCTYPE "
-        "html><html><head><meta charset=\"utf-8\"></head><body></body></html>";
     content::URLLoaderInterceptor::WriteResponse(headers, body,
                                                  params->client.get());
     return true;
@@ -184,23 +210,20 @@ IN_PROC_BROWSER_TEST_P(XSLTPolicyBrowserTest, PolicyIsFollowed) {
         chrome_test_utils::GetActiveWebContents(this));
     content::ExecuteScriptAsync(chrome_test_utils::GetActiveWebContents(this),
                                 R"(
-          const xml = (new DOMParser()).parseFromString(
-              '<r><n>1</n></r>', 'text/xml');
-          const xsl = (new DOMParser()).parseFromString(`<?xml version="1.0"?>
-            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-              <xsl:template match="/">
-                <html><body>
-                  <p id="r"><xsl:value-of select="//n"/></p>
-                </body></html>
-              </xsl:template>
-            </xsl:stylesheet>`, 'text/xml');
-          const p = new XSLTProcessor();
-          p.importStylesheet(xsl);
-          const doc = p.transformToDocument(xml);
-          const banner = doc ? doc.querySelector('xslt-warning-banner') : null;
-          const hasBanner = banner && banner.shadowRoot &&
-              banner.shadowRoot.textContent.includes('This site uses XSLT');
-          window.domAutomationController.send(Boolean(hasBanner));
+          const iframe = document.createElement('iframe');
+          iframe.onload = () => {
+            // Give time for the XSLT commit navigation to settle.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              const doc = iframe.contentDocument;
+              const banner =
+                  doc ? doc.querySelector('xslt-warning-banner') : null;
+              const hasBanner = banner && banner.shadowRoot &&
+                  banner.shadowRoot.textContent.includes('This site uses XSLT');
+              window.domAutomationController.send(Boolean(hasBanner));
+            }));
+          };
+          iframe.src = 'xslt.xml';
+          document.body.appendChild(iframe);
         )");
     std::string banner_message;
     EXPECT_TRUE(banner_queue.WaitForMessage(&banner_message));

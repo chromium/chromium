@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -169,10 +170,9 @@ namespace {
 // The banner lives in the transformed document, whose stylesheets are not
 // under our control, so everything is styled inline.
 constexpr char kBannerStyle[] =
-    "display: block; background-color: #d9534f; color: white; "
-    "padding: 12px 44px; margin-bottom: 20px; font-size: 16px; "
-    "font-weight: bold; text-align: center; font-family: sans-serif; "
-    "position: relative; z-index: 2147483647; line-height: normal;";
+    "background-color: #d9534f; color: white; padding: 12px 44px; font-size: "
+    "16px; font-weight: bold; text-align: center; font-family: sans-serif; "
+    "line-height: normal; bottom: auto; width: auto; border: none;";
 constexpr char kLinkStyle[] = "color: white; text-decoration: underline;";
 constexpr char kCloseButtonStyle[] =
     "position: absolute; top: 6px; right: 8px; background: transparent; "
@@ -346,9 +346,8 @@ static void AppendDismissControls(Document& document,
   close_button->setAttribute(html_names::kAriaLabelAttr, AtomicString("Close"));
   close_button->setAttribute(html_names::kTitleAttr, AtomicString("Close"));
   // Content attributes survive cloning; addEventListener() listeners do not.
-  // This keeps the close button working when a page clones the banner, e.g.
-  // via importNode() on a transformToDocument() result. Note that this will not
-  // pass CSP/trusted types, so it's not a perfect solution.
+  // This keeps the close button working when a page clones the banner. Note
+  // that this will not pass CSP/trusted types, so it's not a perfect solution.
   close_button->setAttribute(html_names::kOnclickAttr,
                              AtomicString("this.getRootNode().host.remove();"));
   // U+00D7 MULTIPLICATION SIGN.
@@ -369,12 +368,13 @@ static void CreateAndAppendBanner(Document& document, Callback build_banner) {
     return;
   }
 
-  Element* banner = document.CreateRawElement(
+  auto* banner = To<HTMLElement>(document.CreateRawElement(
       QualifiedName(g_null_atom, AtomicString("xslt-warning-banner"),
                     html_names::xhtmlNamespaceURI),
-      CreateElementFlags::ByCreateElement());
+      CreateElementFlags::ByCreateElement()));
   banner->SetCustomElementState(CustomElementState::kUndefined);
   banner->setAttribute(html_names::kStyleAttr, AtomicString(kBannerStyle));
+  banner->setAttribute(html_names::kPopoverAttr, AtomicString("manual"));
   ShadowRoot& shadow_root = banner->AttachShadowRootInternal(
       ShadowRootMode::kOpen, FocusDelegation::kNone, SlotAssignmentMode::kNamed,
       CustomElementRegistryAssignment::Inherit(),
@@ -383,6 +383,8 @@ static void CreateAndAppendBanner(Document& document, Callback build_banner) {
   build_banner(&shadow_root);
   AppendDismissControls(document, &shadow_root, banner);
   target->insertBefore(banner, target->firstChild());
+  banner->ShowPopoverInternal(/*invoker=*/nullptr,
+                              /*exception_state=*/nullptr);
 }
 
 constexpr char kXhtmlNamespace[] = "http://www.w3.org/1999/xhtml";
@@ -471,6 +473,7 @@ static const Settings* SettingsForBanner(ExecutionContext* context) {
 
 static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
                                     bool source_has_polyfill_script,
+                                    bool source_has_origin_trial,
                                     Document& document) {
   ExecutionContext* context = document.GetExecutionContext();
   if (!RuntimeEnabledFeatures::GenerateXSLTWarningBannerEnabled(context)) {
@@ -487,8 +490,9 @@ static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
           blink::switches::kXSLTEnabledPolicy) == "true") {
     return;
   }
-  if (context &&
-      context->FeatureEnabled(mojom::blink::OriginTrialFeature::kXSLT)) {
+  if (source_has_origin_trial ||
+      (context &&
+       context->FeatureEnabled(mojom::blink::OriginTrialFeature::kXSLT))) {
     return;
   }
   if (source_has_polyfill_script || ContextHasPolyfillGlobal(context)) {
@@ -548,9 +552,17 @@ Document* XSLTProcessor::CreateDocumentFromSource(
   // Sites that have deployed an XSLT polyfill don't need the banner. This must
   // be computed before CommitNavigation() below, which detaches the source
   // document. CAP alerts are intentionally not scanned: they always get their
-  // own banner.
-  bool source_has_polyfill_script = !owner_document->IsCAPAlert() &&
+  // own banner. The banner is only shown for processing-instruction-based
+  // transforms (those with a frame), not for transformToDocument().
+  bool source_has_polyfill_script = frame && !owner_document->IsCAPAlert() &&
                                     SourceHasPolyfillScript(*owner_document);
+  // The transformed document is committed from a static response, so it does
+  // not inherit an origin trial enabled on the source document (e.g. via an
+  // Origin-Trial header). Check the source document before it is detached.
+  ExecutionContext* owner_context = owner_document->GetExecutionContext();
+  bool source_has_origin_trial =
+      frame && owner_context &&
+      owner_context->FeatureEnabled(mojom::blink::OriginTrialFeature::kXSLT);
 
   String mime_type = source_mime_type;
   // Force text/plain to be parsed as XHTML. This was added without explanation
@@ -577,7 +589,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
     Document* new_doc = frame->GetDocument();
     if (new_doc) {
       InjectXSLTWarningBanner(is_cap_alert_xslt, source_has_polyfill_script,
-                              *new_doc);
+                              source_has_origin_trial, *new_doc);
     }
     return new_doc;
   }
@@ -602,8 +614,6 @@ Document* XSLTProcessor::CreateDocumentFromSource(
         StrCat({"Document encoding not valid: ", source_encoding})));
   }
   document->SetContent(document_source);
-  InjectXSLTWarningBanner(is_cap_alert_xslt, source_has_polyfill_script,
-                          *document);
   return document;
 }
 
