@@ -33,14 +33,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/signin/dice_tab_helper.h"
-#include "chrome/browser/ui/signin/signin_qrcode_model.h"
-#endif
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -66,6 +61,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -103,6 +100,11 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/ui/signin/signin_qrcode_model.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
@@ -235,6 +237,54 @@ constexpr char kSigninHybridPasskeyOutcomeHistogram[] =
 constexpr char kHybridOutcomeHistogram[] = "WebAuthentication.Hybrid.Outcome";
 constexpr char kHybridQrEngagementHistogram[] =
     "WebAuthentication.Hybrid.QrEngagement";
+
+// Triggers a HaTS survey about the WebAuthn ("passkey") experience.
+void TriggerWebAuthnHatsSurvey(content::RenderFrameHost* render_frame_host,
+                               std::string_view filling_assistance) {
+  if (!render_frame_host) {
+    return;
+  }
+  if (content::WebContents* web_contents =
+          content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    if (ChromePasswordManagerClient* client =
+            ChromePasswordManagerClient::FromWebContents(web_contents)) {
+      client->TriggerPersonalizationAndTrustSurvey(filling_assistance);
+    }
+  }
+}
+
+std::string_view GetWebAuthnAcceptedFillingAssistanceStringForHats(
+    device::FidoRequestType type) {
+  switch (type) {
+    case device::FidoRequestType::kGetAssertion:
+      return "WebAuthn credential was used";
+    case device::FidoRequestType::kMakeCredential:
+      return "WebAuthn credential was created";
+  }
+  NOTREACHED();
+}
+
+// Returns whether the given authenticator type has most user interactions in
+// Chrome UI (as opposed to delegating to native OS dialogs like Windows Hello
+// or Apple Passwords) in order to decide if a HaT survey can be shown about the
+// user experience in Chrome.
+bool HasChromeUiInteractionForHats(device::AuthenticatorType type) {
+  switch (type) {
+    // Most user interaction is in Chrome UI:
+    case device::AuthenticatorType::kTouchID:
+    case device::AuthenticatorType::kChromeOS:
+    case device::AuthenticatorType::kEnclave:
+    case device::AuthenticatorType::kPhone:
+    case device::AuthenticatorType::kOther:
+      return true;
+
+    // Completion of authentication flow is delegated to OS:
+    case device::AuthenticatorType::kWinNative:
+    case device::AuthenticatorType::kICloudKeychain:
+      return false;
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -430,6 +480,13 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
       authenticator_type == device::AuthenticatorType::kPhone
           ? HybridPasskeyOutcome::kSuccess
           : HybridPasskeyOutcome::kOtherAuthenticatorUsed);
+
+  if (HasChromeUiInteractionForHats(authenticator_type)) {
+    TriggerWebAuthnHatsSurvey(
+        content::RenderFrameHost::FromID(render_frame_host_id_),
+        GetWebAuthnAcceptedFillingAssistanceStringForHats(request_type));
+  }
+
 #if BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
     base::Time::Exploded exploded;

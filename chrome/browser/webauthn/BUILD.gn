@@ -471,6 +471,7 @@ source_set("unit_tests") {
       "//chrome/browser/signin:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/signin",
       "//components/signin/public/identity_manager",

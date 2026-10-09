@@ -24,9 +24,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 #include "chrome/browser/webauthn/fake_password_credential_fetcher.h"
@@ -137,6 +139,24 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
   }
 
   std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
+};
+
+class MockPasswordManagerClient : public ChromePasswordManagerClient {
+ public:
+  static MockPasswordManagerClient* Create(content::WebContents* contents) {
+    auto client = std::make_unique<MockPasswordManagerClient>(contents);
+    auto* raw = client.get();
+    contents->SetUserData(UserDataKey(), std::move(client));
+    return raw;
+  }
+
+  explicit MockPasswordManagerClient(content::WebContents* web_contents)
+      : ChromePasswordManagerClient(web_contents) {}
+
+  MOCK_METHOD(void,
+              TriggerPersonalizationAndTrustSurvey,
+              (std::string_view),
+              (override));
 };
 
 class ChromeAuthenticatorRequestDelegateTest
@@ -1740,6 +1760,63 @@ TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
   } else {
     histogram_tester_.ExpectTotalCount(engagement_histogram(), 0);
   }
+}
+
+// Tests that a HaT survey is triggered when WebAuthn credentials are used for
+// sign-in.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       TriggerPersonalizationAndTrustSurvey_WebAuthnCredentialUsed) {
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
+  MockPasswordManagerClient* client =
+      MockPasswordManagerClient::Create(web_contents());
+
+  EXPECT_CALL(*client, TriggerPersonalizationAndTrustSurvey(
+                           "WebAuthn credential was used"));
+
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.OnTransactionSuccessful(content::AuthenticatorRequestClientDelegate::
+                                       RequestSource::kWebAuthentication,
+                                   device::FidoRequestType::kGetAssertion,
+                                   device::AuthenticatorType::kEnclave);
+}
+
+// Tests that a HaT survey is triggered when WebAuthn credentials are created.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       TriggerPersonalizationAndTrustSurvey_WebAuthnCredentialCreated) {
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
+  MockPasswordManagerClient* client =
+      MockPasswordManagerClient::Create(web_contents());
+
+  EXPECT_CALL(*client, TriggerPersonalizationAndTrustSurvey(
+                           "WebAuthn credential was created"));
+
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.OnTransactionSuccessful(content::AuthenticatorRequestClientDelegate::
+                                       RequestSource::kWebAuthentication,
+                                   device::FidoRequestType::kMakeCredential,
+                                   device::AuthenticatorType::kOther);
+}
+
+// Tests that no HaT survey is triggered when no major Chrome UI interaction is
+// required by the user in the WebAuthn flow.
+TEST_F(
+    ChromeAuthenticatorRequestDelegateTest,
+    TriggerPersonalizationAndTrustSurvey_ExcludedWithoutChromeUiInteraction) {
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
+  MockPasswordManagerClient* client =
+      MockPasswordManagerClient::Create(web_contents());
+
+  EXPECT_CALL(*client, TriggerPersonalizationAndTrustSurvey).Times(0);
+
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.OnTransactionSuccessful(content::AuthenticatorRequestClientDelegate::
+                                       RequestSource::kWebAuthentication,
+                                   device::FidoRequestType::kGetAssertion,
+                                   device::AuthenticatorType::kWinNative);
+  delegate.OnTransactionSuccessful(content::AuthenticatorRequestClientDelegate::
+                                       RequestSource::kWebAuthentication,
+                                   device::FidoRequestType::kGetAssertion,
+                                   device::AuthenticatorType::kICloudKeychain);
 }
 
 }  // namespace
