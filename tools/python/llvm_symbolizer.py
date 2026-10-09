@@ -135,11 +135,12 @@ class LLVMSymbolizer(object):
             # with the corresponding line number.
             while True:
                 line = proc.stdout.readline()
-                if line != '\n':
-                    line_numbers = proc.stdout.readline()
-                    result.append((line[:-1], line_numbers[:-1]))
-                else:
-                    return result
+                if not line or line == '\n':
+                    return result or [(_UNKNOWN, lib)]
+                line_numbers = proc.stdout.readline()
+                if not line_numbers:
+                    return result or [(_UNKNOWN, lib)]
+                result.append((line[:-1], line_numbers[:-1]))
 
     @staticmethod
     def IsValidTarget(path):

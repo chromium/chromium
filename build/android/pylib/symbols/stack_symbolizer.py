@@ -20,6 +20,7 @@ _STACK_TOOL = os.path.join(
 _MINIMUM_TIMEOUT = 10.0
 _PER_LINE_TIMEOUT = 0.005  # Should be able to process 200 lines per second.
 _PROCESS_START_TIMEOUT = 20.0
+_TOMBSTONE_SYMBOLIZE_TIMEOUT = 180.0
 _MAX_RESTARTS = 4  # Should be plenty unless tool is crashing on start-up.
 _POOL_SIZE = 1
 _PASSTHROUH_ON_FAILURE = True
@@ -98,9 +99,19 @@ class Symbolizer:
             f.flush()
             start = time.time()
             try:
-                _, output = cmd_helper.GetCmdStatusAndOutput(
-                    cmd + [f.name], env=env
+                _, output = cmd_helper.GetCmdStatusAndOutputWithTimeout(
+                    cmd + [f.name],
+                    timeout=_TOMBSTONE_SYMBOLIZE_TIMEOUT,
+                    env=env,
                 )
+            except cmd_helper.TimeoutError:
+                logging.error(
+                    'Timed out after %.1fs symbolizing native stack trace; '
+                    'falling back to unsymbolized tombstone output.',
+                    _TOMBSTONE_SYMBOLIZE_TIMEOUT,
+                )
+                yield from data_to_symbolize
+                return
             finally:
                 self._time_spent_symbolizing += time.time() - start
         for line in output.splitlines():
