@@ -64,8 +64,8 @@ public class AutofillAiSuppressionDialogRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
-                    .setRevision(1)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setRevision(2)
+                    .setDescription("Reworded attribution message")
                     .build();
 
     private Activity mActivity;
@@ -98,7 +98,7 @@ public class AutofillAiSuppressionDialogRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     String rawBody =
-                            "Suggested by Gemini · <src_link>View sources</src_link>\n"
+                            "From Gemini and connected apps · <src_link>View sources</src_link>\n"
                                 + "You can remove this suggestion from Chrome. Your original source"
                                 + " won't be deleted. <manage_link>Manage enhanced"
                                 + " autofill</manage_link>";

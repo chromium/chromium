@@ -684,7 +684,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   std::u16string expected_source_label =
-      u"Suggested by Gemini · Photos\u00A0[1]";
+      u"From Gemini and connected apps · Photos\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -701,7 +701,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                 GURL("https://photos.example.com"),
-                                gfx::Range(29, 32))})),
+                                gfx::Range(40, 43))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -722,7 +722,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   std::u16string expected_source_label =
-      u"Suggested by Gemini · Gmail\u00A0[1]";
+      u"From Gemini and connected apps · Gmail\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -739,7 +739,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                 GURL("https://mail.example.com"),
-                                gfx::Range(28, 31))})),
+                                gfx::Range(39, 42))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -766,28 +766,28 @@ TEST_F(
       CreateAutofillAiFillingSuggestions(field(0)),
       IdentityDocSuggestionsAre(
           MaybeSuggestedByGeminiTitle(),
-          AllOf(
-              EqualsSuggestion(SuggestionType::kFillAutofillAi,
-                               Suggestion::AutofillAiPayload(
-                                   passport_personal_context.guid())),
-              ChildrenAre(
-                  EqualsSuggestion(
-                      SuggestionType::kAutofillAiSourceAttribution,
-                      u"Suggested by Gemini · Gmail\u00A0[1] · Photos\u00A0[1]",
-                      Suggestion::Icon::kSpark,
-                      Suggestion::AutofillAiPayload(
-                          passport_personal_context.guid(),
-                          {Suggestion::PersonalContextSourceCitation(
-                               GURL("https://mail.example.com"),
-                               gfx::Range(28, 31)),
-                           Suggestion::PersonalContextSourceCitation(
-                               GURL("https://photos.example.com"),
-                               gfx::Range(41, 44))})),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                                   l10n_util::GetStringUTF16(
-                                       IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                                   Suggestion::Icon::kSettings)))));
+          AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                 Suggestion::AutofillAiPayload(
+                                     passport_personal_context.guid())),
+                ChildrenAre(
+                    EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        u"From Gemini and connected apps · Gmail\u00A0[1] · "
+                        u"Photos\u00A0[1]",
+                        Suggestion::Icon::kSpark,
+                        Suggestion::AutofillAiPayload(
+                            passport_personal_context.guid(),
+                            {Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://mail.example.com"),
+                                 gfx::Range(39, 42)),
+                             Suggestion::PersonalContextSourceCitation(
+                                 GURL("https://photos.example.com"),
+                                 gfx::Range(52, 55))})),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                                     l10n_util::GetStringUTF16(
+                                         IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                                     Suggestion::Icon::kSettings)))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -814,16 +814,17 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                 ChildrenAre(
                     EqualsSuggestion(
                         SuggestionType::kAutofillAiSourceAttribution,
-                        u"Suggested by Gemini · Gmail\u00A0[1]\u00A0[2]",
+                        u"From Gemini and connected apps · "
+                        u"Gmail\u00A0[1]\u00A0[2]",
                         Suggestion::Icon::kSpark,
                         Suggestion::AutofillAiPayload(
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/1"),
-                                 gfx::Range(28, 31)),
+                                 gfx::Range(39, 42)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/2"),
-                                 gfx::Range(32, 35))})),
+                                 gfx::Range(43, 46))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -857,13 +858,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                 ChildrenAre(
                     EqualsSuggestion(
                         SuggestionType::kAutofillAiSourceAttribution,
-                        u"Suggested by Gemini · Photos\u00A0[1]",
+                        u"From Gemini and connected apps · Photos\u00A0[1]",
                         Suggestion::Icon::kSpark,
                         Suggestion::AutofillAiPayload(
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                 GURL("https://photos.example.com"),
-                                gfx::Range(29, 32))})),
+                                gfx::Range(40, 43))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -911,7 +912,7 @@ TEST_F(
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   const std::u16string expected_source_label =
-      u"Suggested by Gemini · Gmail\u00A0[1]\u00A0[2]\u00A0[3] · "
+      u"From Gemini and connected apps · Gmail\u00A0[1]\u00A0[2]\u00A0[3] · "
       u"Photos\u00A0[1]\u00A0[2]";
 
   EXPECT_THAT(
@@ -929,19 +930,19 @@ TEST_F(
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/newest"),
-                                 gfx::Range(28, 31)),
+                                 gfx::Range(39, 42)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/second"),
-                                 gfx::Range(32, 35)),
+                                 gfx::Range(43, 46)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/third"),
-                                 gfx::Range(36, 39)),
+                                 gfx::Range(47, 50)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://photos.example.com/newest"),
-                                 gfx::Range(49, 52)),
+                                 gfx::Range(60, 63)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://photos.example.com/second"),
-                                 gfx::Range(53, 56))})),
+                                 gfx::Range(64, 67))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -982,7 +983,7 @@ TEST_F(
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   const std::u16string expected_source_label =
-      u"Suggested by Gemini · "
+      u"From Gemini and connected apps · "
       u"Gmail\u00A0[1]\u00A0[2]\u00A0[3]\u00A0[4]\u00A0[5]";
 
   EXPECT_THAT(
@@ -1000,19 +1001,19 @@ TEST_F(
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/1"),
-                                 gfx::Range(28, 31)),
+                                 gfx::Range(39, 42)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/2"),
-                                 gfx::Range(32, 35)),
+                                 gfx::Range(43, 46)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/3"),
-                                 gfx::Range(36, 39)),
+                                 gfx::Range(47, 50)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/4"),
-                                 gfx::Range(40, 43)),
+                                 gfx::Range(51, 54)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/5"),
-                                 gfx::Range(44, 47))})),
+                                 gfx::Range(55, 58))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -1049,7 +1050,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   const std::u16string expected_source_label =
-      u"Suggested by Gemini · "
+      u"From Gemini and connected apps · "
       u"Gmail\u00A0[1]\u00A0[2]\u00A0[3]\u00A0[4]\u00A0[5]";
 
   EXPECT_THAT(
@@ -1067,19 +1068,19 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/1"),
-                                 gfx::Range(28, 31)),
+                                 gfx::Range(39, 42)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/2"),
-                                 gfx::Range(32, 35)),
+                                 gfx::Range(43, 46)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/3"),
-                                 gfx::Range(36, 39)),
+                                 gfx::Range(47, 50)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/4"),
-                                 gfx::Range(40, 43)),
+                                 gfx::Range(51, 54)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/5"),
-                                 gfx::Range(44, 47))})),
+                                 gfx::Range(55, 58))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -1118,7 +1119,7 @@ TEST_F(
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   const std::u16string expected_source_label =
-      u"Suggested by Gemini · "
+      u"From Gemini and connected apps · "
       u"Gmail\u00A0[1]\u00A0[2]\u00A0[3]\u00A0[4]\u00A0[5]";
 
   EXPECT_THAT(
@@ -1136,19 +1137,19 @@ TEST_F(
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/1"),
-                                 gfx::Range(28, 31)),
+                                 gfx::Range(39, 42)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/2"),
-                                 gfx::Range(32, 35)),
+                                 gfx::Range(43, 46)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/3"),
-                                 gfx::Range(36, 39)),
+                                 gfx::Range(47, 50)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/4"),
-                                 gfx::Range(40, 43)),
+                                 gfx::Range(51, 54)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/5"),
-                                 gfx::Range(44, 47))})),
+                                 gfx::Range(55, 58))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -1180,7 +1181,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   const std::u16string expected_source_label =
-      u"Suggested by Gemini · Gmail\u00A0[1]\u00A0[2]\u00A0[3]";
+      u"From Gemini and connected apps · Gmail\u00A0[1]\u00A0[2]\u00A0[3]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -1197,13 +1198,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/day3"),
-                                 gfx::Range(28, 31)),
+                                 gfx::Range(39, 42)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/day2"),
-                                 gfx::Range(32, 35)),
+                                 gfx::Range(43, 46)),
                              Suggestion::PersonalContextSourceCitation(
                                  GURL("https://mail.example.com/day1"),
-                                 gfx::Range(36, 39))})),
+                                 gfx::Range(47, 50))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
@@ -1228,7 +1229,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   std::u16string expected_source_label =
-      u"Suggested by Gemini · Photos\u00A0[1]";
+      u"From Gemini and connected apps · Photos\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -1245,7 +1246,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                 GURL("https://photos.example.com"),
-                                gfx::Range(29, 32))})),
+                                gfx::Range(40, 43))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(
                         SuggestionType::kRemoveAutofillAi,
@@ -1349,7 +1350,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER});
 
   std::u16string expected_source_label =
-      u"Suggested by Gemini · Gmail\u00A0[1]";
+      u"From Gemini and connected apps · Gmail\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -1366,7 +1367,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                             passport_personal_context.guid(),
                             {Suggestion::PersonalContextSourceCitation(
                                 GURL("https://mail.google.com/test"),
-                                gfx::Range(28, 31))})),
+                                gfx::Range(39, 42))})),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(

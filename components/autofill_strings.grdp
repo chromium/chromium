@@ -965,11 +965,11 @@
    <message name="IDS_AUTOFILL_AT_MEMORY_SUGGESTION_SOURCE_TEXT" desc="The label for a text in the At Memory flyout that shows the source of the autofill suggestion." formatter_data="android_java" translateable="false">
     Suggested by Gemini
   </message>
-  <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text indicating that a suggestion is sourced from Gemini.">
-    Suggested by Gemini
+  <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text indicating that a suggestion is sourced from Gemini." translateable="false">
+    From Gemini and connected apps
   </message>
-  <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES" desc="Header for Autofill AI personal context child menu attributing the information to source applications. $1 is the formatted list of sources with citation badges (e.g. Gmail [1] [2] · Photos [1]).">
-    Suggested by Gemini · <ph name="SOURCES">$1<ex>Gmail [1] [2] · Photos [1]</ex></ph>
+  <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES" desc="Header for Autofill AI personal context child menu attributing the information to source applications. $1 is the formatted list of sources with citation badges (e.g. Gmail [1] [2] · Photos [1])." translateable="false">
+    From Gemini and connected apps · <ph name="SOURCES">$1<ex>Gmail [1] [2] · Photos [1]</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS" desc="App name for Google Photos." formatter_data="android_java">
     Photos
@@ -1888,8 +1888,8 @@
       Filling your info
     </message>
 
-    <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_DESCRIPTION" desc="The description text shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java">
-      Suggested by Gemini. Manage enhanced autofill in settings.
+    <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_DESCRIPTION" desc="The description text shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java" translateable="false">
+      From Gemini and connected apps. Manage enhanced autofill in settings.
     </message>
     <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_POSITIVE_BUTTON" desc="The positive button shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java">
       Settings
@@ -1900,8 +1900,8 @@
 
     <!-- Autofill AI Suppression Dialog Strings (Android) -->
     <!-- LINT.IfChange(SuppressionDialogTags) -->
-    <message name="IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_BODY" desc="Description for the modal confirmation dialog on Android.">
-      Suggested by Gemini · <ph name="SRC_LINK">&lt;src_link&gt;</ph>View sources<ph name="END_SRC_LINK">&lt;/src_link&gt;</ph>
+    <message name="IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_BODY" desc="Description for the modal confirmation dialog on Android." translateable="false">
+      From Gemini and connected apps · <ph name="SRC_LINK">&lt;src_link&gt;</ph>View sources<ph name="END_SRC_LINK">&lt;/src_link&gt;</ph>
 You can remove this suggestion from Chrome. Your original source won't be deleted. <ph name="MANAGE_LINK">&lt;manage_link&gt;</ph>Manage enhanced autofill<ph name="END_MANAGE_LINK">&lt;/manage_link&gt;</ph>
     </message>
     <!-- LINT.ThenChange(/chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMediator.java:SuppressionDialogTags) -->
@@ -2085,11 +2085,11 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" desc="Headline of an informational notice introducing a new enhanced autofill feature. 'Gmail' is a proper branding name and should remain unlocalized and match standard guidelines across languages.">
       Now you can find and fill info from Gmail and more.
     </message>
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages.">
-      Powered by Personal Intelligence with Gemini.
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages." translateable="false">
+      Powered by Gemini with Personal Intelligence.
     </message>
-    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages.">
-      Powered by Personal Intelligence with Gemini. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill.
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages." translateable="false">
+      Powered by Gemini with Personal Intelligence. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill.
     </message>
     <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" desc="Link that navigates the user to the Chrome settings page to adjust their preferences.">
       Manage settings
@@ -2118,8 +2118,8 @@ You can remove this suggestion from Chrome. Your original source won't be delete
   <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_TITLE" desc="Headline of an informational notice introducing a new autofill feature. 'Gmail' is a Google product name and must remain unlocalized." formatter_data="android_java">
     Now you can find and fill info from Gmail and more
   </message>
-  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_DESCRIPTION" desc="Body text of an informational notice introducing a new autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should match standard branding guidelines across languages." formatter_data="android_java">
-    Powered by Personal Intelligence with Gemini. Manage your choices in settings.
+  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_DESCRIPTION" desc="Body text of an informational notice introducing a new autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should match standard branding guidelines across languages." formatter_data="android_java" translateable="false">
+    Powered by Gemini with Personal Intelligence. Manage your choices in settings.
   </message>
   <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" desc="Acknowledgment button label to dismiss the informational notice." formatter_data="android_java">
     OK

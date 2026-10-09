@@ -592,13 +592,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
-  Suggestion source_attribution(u"Suggested by Gemini · Photos\u00A0[1]",
-                                SuggestionType::kAutofillAiSourceAttribution);
+  Suggestion source_attribution(
+      u"From Gemini and connected apps · Photos\u00A0[1]",
+      SuggestionType::kAutofillAiSourceAttribution);
   source_attribution.icon = Suggestion::Icon::kSpark;
   source_attribution.payload = Suggestion::AutofillAiPayload(
       autofill::EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(29, 32))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
@@ -618,13 +619,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_AutofillAi_SubMenu_Selected) {
-  Suggestion source_attribution(u"Suggested by Gemini · Photos\u00A0[1]",
-                                SuggestionType::kAutofillAiSourceAttribution);
+  Suggestion source_attribution(
+      u"From Gemini and connected apps · Photos\u00A0[1]",
+      SuggestionType::kAutofillAiSourceAttribution);
   source_attribution.icon = Suggestion::Icon::kSpark;
   source_attribution.payload = Suggestion::AutofillAiPayload(
       autofill::EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(29, 32))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),

@@ -600,7 +600,7 @@ public class ManualFillingControllerTest {
         SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
 
         String rawBody =
-                "Suggested by Gemini · <src_link>View sources</src_link>\n\n"
+                "From Gemini and connected apps · <src_link>View sources</src_link>\n\n"
                         + "You can remove this suggestion from Chrome. Your original source won't"
                         + " be deleted. <manage_link>Manage enhanced autofill</manage_link>";
         List<AutofillAiSourceAttributionInfo> sources =
