@@ -4145,6 +4145,93 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertEquals(0, handler.getCallCount('advanceFocus'));
      });
 
+ test('CtrlTabAndOptionCmdTabIgnoredToAllowBrowserTabSwitching', async () => {
+   searchbox.dropdownIsVisible = false;
+   searchbox.focusInput();
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   handler.reset();
+
+   // 1. Ctrl+Tab does not advance focus to AIM button or out of omnibox.
+   const ctrlTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     ctrlKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(ctrlTabEvent);
+   await microtasksFinished();
+
+   assertFalse(ctrlTabEvent.defaultPrevented);
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+
+   // 2. Ctrl+Shift+Tab does not advance focus backwards out of omnibox.
+   const ctrlShiftTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     ctrlKey: true,
+     shiftKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(ctrlShiftTabEvent);
+   await microtasksFinished();
+
+   assertFalse(ctrlShiftTabEvent.defaultPrevented);
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+
+   // 3. Option+Cmd+Tab (altKey && metaKey on macOS) does not advance focus.
+   const altMetaTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     altKey: true,
+     metaKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(altMetaTabEvent);
+   await microtasksFinished();
+
+   assertFalse(altMetaTabEvent.defaultPrevented);
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+ });
+
+ test('CtrlTabIgnoredWithDropdownVisible', async () => {
+   searchbox.dropdownIsVisible = true;
+   searchbox.focusInput();
+
+   const match = createSearchMatchForTesting({
+     allowedToBeDefaultMatch: true,
+     contents: 'first match',
+     inlineAutocompletion: ' match',
+   });
+   searchbox.activeQueryId = 0;
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: 'first',
+     matches: [match],
+   }));
+   await microtasksFinished();
+
+   const initialSelection = searchbox.selection;
+
+   const ctrlTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     ctrlKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(ctrlTabEvent);
+   await microtasksFinished();
+
+   assertFalse(ctrlTabEvent.defaultPrevented);
+   assertEquals(initialSelection.line, searchbox.selection.line);
+   assertEquals(initialSelection.state, searchbox.selection.state);
+ });
+
  test('UnfocusedSingleClick_SelectsAllOnMouseUp', async () => {
    const testText = 'https://example.com/test';
    callbackRouter.setInputState(createDefaultOmniboxInputState({
