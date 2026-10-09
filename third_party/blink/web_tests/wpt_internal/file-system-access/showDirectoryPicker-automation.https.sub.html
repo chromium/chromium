@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>showDirectoryPicker automation tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+// Use wptserve fs_path to resolve the directory relative to this test directory.
+const testDir = String.raw`{{fs_path(resources)}}`;
+
+// 1. Test selecting a directory.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+
+  await internals.setSelectFileDialogResult([testDir]);
+  await test_driver.bless('show a directory picker');
+
+  const dir = await self.showDirectoryPicker();
+  assert_true(dir instanceof FileSystemHandle);
+  assert_true(dir instanceof FileSystemDirectoryHandle);
+  assert_equals(dir.kind, 'directory');
+  assert_equals(dir.name, 'resources');
+
+  const entries = [];
+  for await (const entry of dir.values()) {
+    entries.push(entry.name);
+  }
+  assert_array_equals(entries.sort(), ['testfile.txt', 'testfile2.txt']);
+
+  assert_equals(await dir.queryPermission({mode: 'read'}), 'granted');
+}, 'showDirectoryPicker can select a directory');
+
+// 2. Test selecting a directory with readwrite mode.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+
+  await internals.setSelectFileDialogResult([testDir]);
+  await test_driver.bless('show a directory picker');
+
+  const dir = await self.showDirectoryPicker({mode: 'readwrite'});
+  assert_true(dir instanceof FileSystemHandle);
+  assert_true(dir instanceof FileSystemDirectoryHandle);
+  assert_equals(dir.kind, 'directory');
+  assert_equals(dir.name, 'resources');
+
+  assert_equals(await dir.queryPermission({mode: 'readwrite'}), 'granted');
+}, 'showDirectoryPicker can select a directory with readwrite mode');
+
+// 3. Test dialog cancellation (AbortError).
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+  await internals.setSelectFileDialogResult(null);
+  await test_driver.bless('show a directory picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showDirectoryPicker());
+}, 'showDirectoryPicker rejects with AbortError when canceled');
+</script>

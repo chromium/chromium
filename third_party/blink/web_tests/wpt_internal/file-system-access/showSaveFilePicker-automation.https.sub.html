@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>showSaveFilePicker automation tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+// Use wptserve fs_path to resolve files relative to this test directory.
+const saveFile = String.raw`{{fs_path(resources/save_test_file.txt)}}`;
+
+// 1. Test saving a file.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  let file;
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+    if (file) {
+      try {
+        await file.remove();
+      } catch (e) {
+        // Ignore if already deleted.
+      }
+    }
+  });
+
+  await internals.setSelectFileDialogResult([saveFile]);
+  await test_driver.bless('show a save file picker');
+
+  file = await self.showSaveFilePicker();
+  assert_true(file instanceof FileSystemHandle);
+  assert_true(file instanceof FileSystemFileHandle);
+  assert_equals(file.kind, 'file');
+  assert_equals(file.name, 'save_test_file.txt');
+
+  const writable = await file.createWritable();
+  await writable.write('Saved content');
+  await writable.close();
+
+  const fileData = await file.getFile();
+  assert_equals(await fileData.text(), 'Saved content');
+}, 'showSaveFilePicker can save a file');
+
+// 2. Test that showSaveFilePicker truncates an existing file.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  let file;
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+    if (file) {
+      try {
+        await file.remove();
+      } catch (e) {
+        // Ignore if already deleted.
+      }
+    }
+  });
+
+  // Step 1: Create a file with existing content.
+  await internals.setSelectFileDialogResult([saveFile]);
+  await test_driver.bless('show a save file picker');
+  file = await self.showSaveFilePicker();
+  const writable = await file.createWritable();
+  await writable.write('Existing content to be truncated');
+  await writable.close();
+
+  const initialData = await file.getFile();
+  assert_equals(
+      await initialData.text(), 'Existing content to be truncated');
+
+  // Step 2: Select the same existing file via showSaveFilePicker.
+  await internals.setSelectFileDialogResult([saveFile]);
+  await test_driver.bless('show a save file picker');
+  file = await self.showSaveFilePicker();
+
+  // The file should be truncated to 0 length upon selection.
+  const truncatedData = await file.getFile();
+  assert_equals(truncatedData.size, 0);
+  assert_equals(await truncatedData.text(), '');
+}, 'showSaveFilePicker truncates an existing file');
+
+// 3. Test dialog cancellation (AbortError).
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+  await internals.setSelectFileDialogResult(null);
+  await test_driver.bless('show a save file picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showSaveFilePicker());
+}, 'showSaveFilePicker rejects with AbortError when canceled');
+</script>
