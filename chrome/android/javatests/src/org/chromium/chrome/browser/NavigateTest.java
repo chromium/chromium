@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -226,15 +227,12 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisableIf.Device(
-            DeviceFormFactor
-                    .TABLET_OR_DESKTOP) // https://crbug.com/339299609, https://crbug.com/376375165
     public void testOpenLink() throws Exception {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
         navigateAndObserve(url1);
-        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
+        waitForPageScaleFactor(0.5f);
 
         Tab tab = mActivityTestRule.getActivityTab();
 
@@ -391,15 +389,12 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisableIf.Device(
-            DeviceFormFactor
-                    .TABLET_OR_DESKTOP) // https://crbug.com/339299609, https://crbug.com/376375165
     public void testTabObserverOnPageLoadStarted() throws Exception {
         final String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
         navigateAndObserve(url1);
-        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
+        waitForPageScaleFactor(0.5f);
 
         TabObserver onPageLoadStartedObserver =
                 new TabObserver() {
@@ -770,7 +765,6 @@ public class NavigateTest {
 
     @Test
     @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/40439157")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376375165
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"ip-address-space-overrides=[::1]:0=public"})
@@ -821,7 +815,7 @@ public class NavigateTest {
                                     + "  }"
                                     + "</script>"
                                     + "<body id='body' onclick='spoof()'></body>"));
-            mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
+            waitForPageScaleFactor(0.5f);
 
             // Click the page, which triggers the URL load.
             DOMUtils.clickNode(mActivityTestRule.getWebContents(), "body");
@@ -832,7 +826,7 @@ public class NavigateTest {
             // Wait for the url to change.
             final Tab tab =
                     ThreadUtils.runOnUiThreadBlocking(() -> TabModelUtils.getCurrentTab(model));
-            mActivityTestRule.assertWaitForPageScaleFactorMatch(0.75f);
+            waitForPageScaleFactor(0.75f);
             CriteriaHelper.pollInstrumentationThread(
                     () -> {
                         Criteria.checkThat(getTabUrlOnUiThread(tab), Matchers.is(mockedUrl));
@@ -892,7 +886,7 @@ public class NavigateTest {
                                         Base64.URL_SAFE));
 
         navigateAndObserve(firstUrl);
-        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
+        waitForPageScaleFactor(0.5f);
 
         TabObserver onPageLoadStartedObserver =
                 new TabObserver() {
@@ -917,6 +911,18 @@ public class NavigateTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "rendererInitiated");
         ChromeTabUtils.waitForTabPageLoaded(tab, finalUrl);
+    }
+
+    private void waitForPageScaleFactor(float mobileScale) {
+        Tab tab = mActivityTestRule.getActivityTab();
+        boolean useDesktopScale =
+                DeviceInfo.isDesktop()
+                        || ThreadUtils.runOnUiThreadBlocking(
+                                () ->
+                                        tab.getWebContents()
+                                                .getNavigationController()
+                                                .getUseDesktopUserAgent());
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(useDesktopScale ? 1.0f : mobileScale);
     }
 
     private String getTabUrlOnUiThread(final Tab tab) {
