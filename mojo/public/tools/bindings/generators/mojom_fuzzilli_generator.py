@@ -86,6 +86,9 @@ class Generator(generator.Generator):
     self.primary_interface = None
     self.interface_remotes = {}
     self.interface_receivers = {}
+    # An interface may appear as both associated and non-associated
+    self.associated_interfaces = set()
+    self.non_associated_interfaces = set()
     self.arrays = {}
     self.maps = {}
     self.enums = {}
@@ -104,9 +107,12 @@ class Generator(generator.Generator):
       "format_unique_name": self._FormatUniqueName,
       "fully_qualified_name": self._FullyQualifiedName,
       "is_array_kind": mojom.IsArrayKind,
+      "is_passed_as_pending": self._IsPassedAsPending,
       "is_synchronous_method": self._IsSynchronousMethod,
       "namespace_as_array": self._NamespaceAsArray,
       "to_camel": generator.ToCamel,
+      "uses_associated_endpoints": self._UsesAssociatedEndpoints,
+      "uses_non_associated_endpoints": self._UsesNonAssociatedEndpoints,
     }
 
   @staticmethod
@@ -199,18 +205,19 @@ class Generator(generator.Generator):
 
     interface = None
     if is_pending_remote or is_pending_receiver:
-      # TODO(crbug.com/522372048): add handling for non-associated interfaces
-      assert self._IsPendingAssociatedKind(kind), (
-        "Only pending associated interfaces are supported."
-      )
       interface = kind.kind
     else:
       interface = kind
+    name = self._FormatUniqueName(interface)
+
+    if self._IsPendingAssociatedKind(kind):
+      self.associated_interfaces.add(name)
+    elif is_pending_remote or is_pending_receiver:
+      self.non_associated_interfaces.add(name)
 
     # TODO(crbug.com/522372048): this check prevents interfaces from being
     # registered as both remotes and receivers. Rewrite the logic to
     # support the edge case where an interface is used as both.
-    name = self._FormatUniqueName(interface)
     if name in self.interface_remotes or name in self.interface_receivers:
       return
 
@@ -374,6 +381,18 @@ class Generator(generator.Generator):
     return mojom.IsPendingAssociatedRemoteKind(
       kind
     ) or mojom.IsPendingAssociatedReceiverKind(kind)
+
+  # Whether `interface` is ever passed as a pending kind.
+  def _IsPassedAsPending(self, interface):
+    return self._UsesAssociatedEndpoints(
+      interface
+    ) or self._UsesNonAssociatedEndpoints(interface)
+
+  def _UsesAssociatedEndpoints(self, interface):
+    return self._FormatUniqueName(interface) in self.associated_interfaces
+
+  def _UsesNonAssociatedEndpoints(self, interface):
+    return self._FormatUniqueName(interface) in self.non_associated_interfaces
 
   def _IsAnyPendingRemoteKind(self, kind):
     return mojom.IsPendingRemoteKind(

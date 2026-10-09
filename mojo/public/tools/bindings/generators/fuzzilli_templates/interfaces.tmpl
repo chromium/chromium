@@ -13,9 +13,21 @@ extension ILType {
         ])
     fileprivate static let js{{remote|format_unique_name}}RemoteWrapper: ILType = .object(
         ofGroup: "{{remote|fully_qualified_name}}RemoteWrapper",
-        withMethods: ["close", "isBound", "associateAndPassReceiver"])
+        withMethods: [
+          "close",
+          "isBound",
+          {%- if remote|uses_non_associated_endpoints %}
+          "bindNewPipeAndPassReceiver",
+          {%- endif %}
+          {%- if remote|uses_associated_endpoints %}
+          "associateAndPassReceiver",
+          {%- endif %}
+        ])
+
+    {%- if remote|is_passed_as_pending %}
     fileprivate static let js{{remote|format_unique_name}}PendingReceiver: ILType = .object(
         ofGroup: "{{remote|fully_qualified_name}}PendingReceiver")
+    {%- endif %}
 {% endfor -%}
 {%- for receiver in interface_receivers %}
     // {{receiver.name}}
@@ -27,16 +39,32 @@ extension ILType {
             "{{method.name}}",
             {%- endfor %}
         ])
-    {#- TODO(crbug.com/522372048): add handling for non-associated interfaces #}
     fileprivate static let js{{receiver|format_unique_name}}CallbackRouterReceiverHelper: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}CallbackRouterReceiverHelper",
-        withMethods: ["associateAndPassRemote", "closeBindings"])
+        withMethods: [
+          "closeBindings",
+          {%- if receiver|uses_non_associated_endpoints %}
+          "bindNewPipeAndPassRemote",
+          {%- endif %}
+          {%- if receiver|uses_associated_endpoints %}
+          "associateAndPassRemote",
+          {%- endif %}
+        ])
     fileprivate static let {{receiver|format_il_type}}: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}Remote",
         withProperties: ["$"])
     fileprivate static let js{{receiver|format_unique_name}}RemoteWrapper: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}RemoteWrapper",
-        withMethods: ["close", "isBound", "associateAndPassReceiver"])
+        withMethods: [
+          "close",
+          "isBound",
+          {%- if receiver|uses_non_associated_endpoints %}
+          "bindNewPipeAndPassReceiver",
+          {%- endif %}
+          {%- if receiver|uses_associated_endpoints %}
+          "associateAndPassReceiver",
+          {%- endif %}
+        ])
     fileprivate static let js{{receiver|format_unique_name}}PendingReceiver: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}PendingReceiver")
 
@@ -90,16 +118,22 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
+            {%- if remote|uses_non_associated_endpoints %}
+            "bindNewPipeAndPassReceiver": [] => .js{{remote|format_unique_name}}PendingReceiver,
+            {%- endif %}
+            {%- if remote|uses_associated_endpoints %}
             "associateAndPassReceiver": [] => .js{{remote|format_unique_name}}PendingReceiver,
-        ]
-    )
+            {%- endif %}
+        ])
 
+    {%- if remote|is_passed_as_pending %}
     fileprivate static let {{remote|format_unique_name|to_camel(True)}}PendingReceiver = ObjectGroup(
         name: "{{remote|fully_qualified_name}}PendingReceiver",
         instanceType: .js{{remote|format_unique_name}}PendingReceiver,
         properties: [:],
         methods: [:]
     )
+    {%- endif %}
 {% endfor -%}
 {%- for receiver in interface_receivers %}
     // {{receiver.name}}
@@ -120,10 +154,14 @@ extension ObjectGroup {
         instanceType: .js{{receiver|format_unique_name}}CallbackRouterReceiverHelper,
         properties: [:],
         methods: [
-            "associateAndPassRemote": [] => .{{receiver|format_il_type}},
             "closeBindings": [] => .undefined,
-        ]
-    )
+            {%- if receiver|uses_non_associated_endpoints %}
+            "bindNewPipeAndPassRemote": [] => .{{receiver|format_il_type}},
+            {%- endif %}
+            {%- if receiver|uses_associated_endpoints %}
+            "associateAndPassRemote": [] => .{{receiver|format_il_type}},
+            {%- endif %}
+        ])
 
     {%- for method in receiver.methods %}
 
@@ -158,10 +196,14 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
+            {%- if receiver|uses_non_associated_endpoints %}
+            "bindNewPipeAndPassReceiver": [] => .js{{receiver|format_unique_name}}PendingReceiver,
+            {%- endif %}
+            {%- if receiver|uses_associated_endpoints %}
             {#- TODO(crbug.com/532195391): Investigate associateAndPassReceiver impact on correctness #}
             "associateAndPassReceiver": [] => .js{{receiver|format_unique_name}}PendingReceiver,
-        ]
-    )
+            {%- endif %}
+        ])
 
     fileprivate static let {{receiver|format_unique_name|to_camel(True)}}PendingReceiver = ObjectGroup(
         name: "{{receiver|fully_qualified_name}}PendingReceiver",

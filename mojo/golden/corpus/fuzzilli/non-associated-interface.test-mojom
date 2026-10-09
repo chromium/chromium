@@ -1,0 +1,33 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  SendObserver(pending_remote<Observer> observer);
+  SendDelegate(pending_receiver<Delegate> delegate) => (bool result);
+  GetFactory() => (pending_remote<Factory> factory);
+  GetClient() => (pending_receiver<Client> client);
+
+  // `Mixed` is passed both as a non-associated and as an associated remote.
+  SendMixed(pending_remote<Mixed> remote,
+            pending_associated_remote<Mixed> associated_remote);
+};
+
+interface Observer {
+  OnEvent(pending_remote<Delegate> delegate);
+};
+
+interface Delegate {
+  Method(int32 param);
+};
+
+interface Factory {
+  CreateDelegate(pending_receiver<Delegate> delegate);
+};
+
+interface Client {
+};
+
+interface Mixed {
+};
