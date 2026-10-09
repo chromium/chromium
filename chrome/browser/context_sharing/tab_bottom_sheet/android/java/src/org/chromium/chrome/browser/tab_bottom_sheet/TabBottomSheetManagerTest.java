@@ -41,7 +41,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -80,6 +80,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+// TODO(crbug.com/568382414): Re-enable AndroidBottomBar once the tab switcher button is no longer
+// transiently INVISIBLE while BottomControlsStacker updates the bottom sheet layer height.
+@DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
 public class TabBottomSheetManagerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -399,7 +402,6 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testBottomSheetHiddenOnTabSwitcher() {
         showBottomSheetAndBlockUntilReady();
 
@@ -514,7 +516,6 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testSheetEventsCallback_onBottomSheetClosed_Suppressed() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(mockDelegate);
@@ -549,7 +550,6 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testTryToCloseBottomSheet_WhenSuppressed() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(mockDelegate);
@@ -653,7 +653,6 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testTabSwitcherSuppression_OnlyOneObserverActive() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(mockDelegate);
