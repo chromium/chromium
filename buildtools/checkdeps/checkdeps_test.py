@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Tests for checkdeps.
-"""
+"""Tests for checkdeps."""
 
 import os
 import subprocess
@@ -18,23 +17,25 @@ import results
 
 
 def _write(path, text):
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(text)
+  with open(path, 'w', encoding='utf-8') as f:
+    f.write(text)
 
 
 class CheckDepsTest(unittest.TestCase):
-
   def setUp(self):
     self.deps_checker = checkdeps.DepsChecker(
-        being_tested=True,
-        base_directory=os.path.join(os.path.dirname(__file__), '..', '..'))
+      being_tested=True,
+      base_directory=os.path.join(os.path.dirname(__file__), '..', '..'),
+    )
 
   def ImplTestRegularCheckDepsRun(self, ignore_temp_rules, skip_tests):
     self.deps_checker._ignore_temp_rules = ignore_temp_rules
     self.deps_checker._skip_tests = skip_tests
     self.deps_checker.CheckDirectory(
-        os.path.join(self.deps_checker.base_directory,
-                     'buildtools/checkdeps/testdata'))
+      os.path.join(
+        self.deps_checker.base_directory, 'buildtools/checkdeps/testdata'
+      )
+    )
 
     problems = self.deps_checker.results_formatter.GetResults()
 
@@ -51,7 +52,8 @@ class CheckDepsTest(unittest.TestCase):
         if index != -1:
           if substrings_in_sequence is None:
             self.fail(
-                f'Expected no problems for {key_path}, but found: {problem}')
+              f'Expected no problems for {key_path}, but found: {problem}'
+            )
 
           for substring in substrings_in_sequence:
             index = problem.find(substring, index + 1)
@@ -65,47 +67,70 @@ class CheckDepsTest(unittest.TestCase):
       VerifySubstringsInProblems(key_path, None)
 
     if ignore_temp_rules:
-      VerifySubstringsInProblems('testdata/allowed/test.h',
-                                 ['-buildtools/checkdeps/testdata/disallowed',
-                                  'temporarily_allowed.h',
-                                  '-third_party/explicitly_disallowed',
-                                  'Because of no rule applying'])
+      VerifySubstringsInProblems(
+        'testdata/allowed/test.h',
+        [
+          '-buildtools/checkdeps/testdata/disallowed',
+          'temporarily_allowed.h',
+          '-third_party/explicitly_disallowed',
+          'Because of no rule applying',
+        ],
+      )
     else:
-      VerifySubstringsInProblems('testdata/allowed/test.h',
-                                 ['-buildtools/checkdeps/testdata/disallowed',
-                                  '-third_party/explicitly_disallowed',
-                                  'Because of no rule applying'])
+      VerifySubstringsInProblems(
+        'testdata/allowed/test.h',
+        [
+          '-buildtools/checkdeps/testdata/disallowed',
+          '-third_party/explicitly_disallowed',
+          'Because of no rule applying',
+        ],
+      )
 
-    VerifySubstringsInProblems('testdata/disallowed/test.h',
-                               ['-third_party/explicitly_disallowed',
-                                'Because of no rule applying',
-                                'Because of no rule applying'])
-    VerifySubstringsInProblems('disallowed/allowed/test.h',
-                               ['-third_party/explicitly_disallowed',
-                                'Because of no rule applying',
-                                'Because of no rule applying'])
-    VerifySubstringsInProblems('testdata/noparent/test.h',
-                               ['allowed/bad.h',
-                                'Because of no rule applying'])
-    VerifySubstringsInProblems('testdata/requires_review_users/usage.cc', [
+    VerifySubstringsInProblems(
+      'testdata/disallowed/test.h',
+      [
+        '-third_party/explicitly_disallowed',
+        'Because of no rule applying',
+        'Because of no rule applying',
+      ],
+    )
+    VerifySubstringsInProblems(
+      'disallowed/allowed/test.h',
+      [
+        '-third_party/explicitly_disallowed',
+        'Because of no rule applying',
+        'Because of no rule applying',
+      ],
+    )
+    VerifySubstringsInProblems(
+      'testdata/noparent/test.h',
+      ['allowed/bad.h', 'Because of no rule applying'],
+    )
+    VerifySubstringsInProblems(
+      'testdata/requires_review_users/usage.cc',
+      [
         'testdata/requires_review/sub/foo.h"',
-        'requires_review/sub", which is marked'])
+        'requires_review/sub", which is marked',
+      ],
+    )
     VerifyNoProblems('requires_review_users/sub/includes_okay/usage.cc')
     VerifySubstringsInProblems(
       'requires_review_users/sub/includes_only_sub/usage.cc',
-        [
-          'testdata/requires_review/sub/foo.h"',
-          'requires_review/sub", which is',
-          'testdata/requires_review/sub/inherited/foo.h"',
-          'testdata/requires_review/sub/sub/inherited/bar.h"',
-          'requires_review/sub/sub", which is',
-          ])
+      [
+        'testdata/requires_review/sub/foo.h"',
+        'requires_review/sub", which is',
+        'testdata/requires_review/sub/inherited/foo.h"',
+        'testdata/requires_review/sub/sub/inherited/bar.h"',
+        'requires_review/sub/sub", which is',
+      ],
+    )
 
     if skip_tests:
       VerifyNoProblems('allowed/not_a_test.cc')
     else:
-      VerifySubstringsInProblems('allowed/not_a_test.cc',
-                                 ['-buildtools/checkdeps/testdata/disallowed'])
+      VerifySubstringsInProblems(
+        'allowed/not_a_test.cc', ['-buildtools/checkdeps/testdata/disallowed']
+      )
 
   def testRegularCheckDepsRun(self):
     self.ImplTestRegularCheckDepsRun(False, False)
@@ -123,8 +148,10 @@ class CheckDepsTest(unittest.TestCase):
     self.deps_checker._ignore_temp_rules = ignore_temp_rules
     self.deps_checker.results_formatter = results.CountViolationsFormatter()
     self.deps_checker.CheckDirectory(
-        os.path.join(self.deps_checker.base_directory,
-                     'buildtools/checkdeps/testdata'))
+      os.path.join(
+        self.deps_checker.base_directory, 'buildtools/checkdeps/testdata'
+      )
+    )
     return self.deps_checker.results_formatter.GetResults()
 
   def testCountViolations(self):
@@ -136,65 +163,93 @@ class CheckDepsTest(unittest.TestCase):
   def testCountViolationsWithRelativePath(self):
     self.deps_checker.results_formatter = results.CountViolationsFormatter()
     self.deps_checker.CheckDirectory(
-        os.path.join('buildtools', 'checkdeps', 'testdata', 'allowed'))
+      os.path.join('buildtools', 'checkdeps', 'testdata', 'allowed')
+    )
     self.assertEqual('5', self.deps_checker.results_formatter.GetResults())
 
   def testTempRulesGenerator(self):
     self.deps_checker.results_formatter = results.TemporaryRulesFormatter()
     self.deps_checker.CheckDirectory(
-        os.path.join(self.deps_checker.base_directory,
-                     'buildtools/checkdeps/testdata/allowed'))
+      os.path.join(
+        self.deps_checker.base_directory,
+        'buildtools/checkdeps/testdata/allowed',
+      )
+    )
     temp_rules = self.deps_checker.results_formatter.GetResults()
-    expected = ['  "!/does_not_exist.h",',
-                '  "!buildtools/checkdeps/testdata/disallowed/bad.h",',
-                '  "!buildtools/checkdeps/testdata/disallowed/'
-                'teststuff/bad.h",',
-                '  "!third_party/explicitly_disallowed/bad.h",',
-                '  "!third_party/no_rule/bad.h",']
+    expected = [
+      '  "!/does_not_exist.h",',
+      '  "!buildtools/checkdeps/testdata/disallowed/bad.h",',
+      '  "!buildtools/checkdeps/testdata/disallowed/teststuff/bad.h",',
+      '  "!third_party/explicitly_disallowed/bad.h",',
+      '  "!third_party/no_rule/bad.h",',
+    ]
     self.assertEqual(expected, temp_rules)
 
-  @unittest.skipIf(os.getcwd().startswith('/google/cog/cloud'),
-                  "Skip if not git")
+  @unittest.skipIf(
+    os.getcwd().startswith('/google/cog/cloud'), "Skip if not git"
+  )
   def testBadBaseDirectoryNotCheckoutRoot(self):
     # This assumes git. It's not a valid test if buildtools is fetched via svn.
     with self.assertRaises(builddeps.DepsBuilderError):
-      checkdeps.DepsChecker(being_tested=True,
-                            base_directory=os.path.dirname(__file__))
+      checkdeps.DepsChecker(
+        being_tested=True, base_directory=os.path.dirname(__file__)
+      )
 
   def testCheckAddedIncludesAllGood(self):
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [['buildtools/checkdeps/testdata/allowed/test.cc',
-        ['#include "buildtools/checkdeps/testdata/allowed/good.h"',
-         '#include "buildtools/checkdeps/testdata/disallowed/allowed/good.h"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/allowed/test.cc',
+          [
+            '#include "buildtools/checkdeps/testdata/allowed/good.h"',
+            '#include "buildtools/checkdeps/testdata/disallowed/allowed/good.h"',
+          ],
+        ]
+      ]
+    )
     self.assertFalse(problems)
 
   def testCheckAddedIncludesManyGarbageLines(self):
     garbage_lines = ["My name is Sam%d\n" % num for num in range(50)]
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [['buildtools/checkdeps/testdata/allowed/test.cc', garbage_lines]])
+      [['buildtools/checkdeps/testdata/allowed/test.cc', garbage_lines]]
+    )
     self.assertFalse(problems)
 
   def testCheckAddedIncludesNoRule(self):
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [['buildtools/checkdeps/testdata/allowed/test.cc',
-        ['#include "no_rule_for_this/nogood.h"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/allowed/test.cc',
+          ['#include "no_rule_for_this/nogood.h"'],
+        ]
+      ]
+    )
     self.assertTrue(problems)
 
   def testCheckAddedIncludesSkippedDirectory(self):
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [['buildtools/checkdeps/testdata/disallowed/allowed/skipped/test.cc',
-        ['#include "whatever/whocares.h"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/disallowed/allowed/skipped/test.cc',
+          ['#include "whatever/whocares.h"'],
+        ]
+      ]
+    )
     self.assertFalse(problems)
 
   def testCheckAddedIncludesTempAllowed(self):
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [['buildtools/checkdeps/testdata/allowed/test.cc',
-        ['#include "buildtools/checkdeps/testdata/disallowed/'
-         'temporarily_allowed.h"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/allowed/test.cc',
+          [
+            '#include "buildtools/checkdeps/testdata/disallowed/'
+            'temporarily_allowed.h"'
+          ],
+        ]
+      ]
+    )
     self.assertTrue(problems)
 
   def testCopyIsDeep(self):
@@ -209,14 +264,23 @@ class CheckDepsTest(unittest.TestCase):
     # once the bug is fixed, but succeed (with a temporary allowance)
     # if the bug is in place.
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [['buildtools/checkdeps/testdata/allowed/test.cc',
-        ['#include "buildtools/checkdeps/testdata/disallowed/'
-         'temporarily_allowed.h"']
-       ],
-       ['buildtools/checkdeps/testdata/disallowed/foo_unittest.cc',
-        ['#include "buildtools/checkdeps/testdata/bongo/'
-         'temp_allowed_for_tests.h"']
-       ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/allowed/test.cc',
+          [
+            '#include "buildtools/checkdeps/testdata/disallowed/'
+            'temporarily_allowed.h"'
+          ],
+        ],
+        [
+          'buildtools/checkdeps/testdata/disallowed/foo_unittest.cc',
+          [
+            '#include "buildtools/checkdeps/testdata/bongo/'
+            'temp_allowed_for_tests.h"'
+          ],
+        ],
+      ]
+    )
     # With the bug in place, there would be two problems reported, and
     # the second would be for foo_unittest.cc.
     self.assertTrue(len(problems) == 1)
@@ -225,7 +289,8 @@ class CheckDepsTest(unittest.TestCase):
   def testTraversalIsOrdered(self):
     dirs_traversed = []
     for rules, filenames in self.deps_checker.GetAllRulesAndFiles(
-        dir_name='buildtools'):
+      dir_name='buildtools'
+    ):
       self.assertEqual(type(filenames), list)
       self.assertEqual(filenames, sorted(filenames))
       if filenames:
@@ -236,56 +301,88 @@ class CheckDepsTest(unittest.TestCase):
 
   def testCheckPartialImportsAreAllowed(self):
     problems = self.deps_checker.CheckAddedProtoImports(
-      [['buildtools/checkdeps/testdata/test.proto',
-        ['import "no_rule_for_this/nogood.proto"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/test.proto',
+          ['import "no_rule_for_this/nogood.proto"'],
+        ]
+      ]
+    )
     self.assertFalse(problems)
 
   def testCheckAddedFullPathImportsAllowed(self):
     problems = self.deps_checker.CheckAddedProtoImports(
-      [['buildtools/checkdeps/testdata/test.proto',
-        ['import "buildtools/checkdeps/testdata/allowed/good.proto"',
-         'import "buildtools/checkdeps/testdata/disallowed/'
-         'sub_folder/good.proto"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/test.proto',
+          [
+            'import "buildtools/checkdeps/testdata/allowed/good.proto"',
+            'import "buildtools/checkdeps/testdata/disallowed/'
+            'sub_folder/good.proto"',
+          ],
+        ]
+      ]
+    )
     self.assertFalse(problems)
 
   def testCheckAddedFullPathImportsDisallowed(self):
     problems = self.deps_checker.CheckAddedProtoImports(
-      [['buildtools/checkdeps/testdata/test.proto',
-        ['import "buildtools/checkdeps/testdata/disallowed/bad.proto"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/test.proto',
+          ['import "buildtools/checkdeps/testdata/disallowed/bad.proto"'],
+        ]
+      ]
+    )
     self.assertTrue(problems)
 
   def testCheckAddedFullPathImportsManyGarbageLines(self):
     garbage_lines = ["My name is Sam%d\n" % num for num in range(50)]
     problems = self.deps_checker.CheckAddedProtoImports(
-      [['buildtools/checkdeps/testdata/test.proto',
-        garbage_lines]])
+      [['buildtools/checkdeps/testdata/test.proto', garbage_lines]]
+    )
     self.assertFalse(problems)
 
   def testCheckAddedIncludesNoRuleFullPath(self):
     problems = self.deps_checker.CheckAddedProtoImports(
-      [['buildtools/checkdeps/testdata/test.proto',
-        ['import "tools/some.proto"']
-      ]])
+      [
+        [
+          'buildtools/checkdeps/testdata/test.proto',
+          ['import "tools/some.proto"'],
+        ]
+      ]
+    )
     self.assertTrue(problems)
 
   def testCheckResolveDotDot(self):
     # The CppChecker disallows unknown files by default, so if we don't
     # resolve properly this will be forbidden.
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [[os.path.join(self.deps_checker.base_directory,
-                    'buildtools/checkdeps/testdata/allowed/test.cc'),
-        ['#include "../../testdata/allowed/test.h"']]])
+      [
+        [
+          os.path.join(
+            self.deps_checker.base_directory,
+            'buildtools/checkdeps/testdata/allowed/test.cc',
+          ),
+          ['#include "../../testdata/allowed/test.h"'],
+        ]
+      ]
+    )
     self.assertFalse(problems)
 
     # The ProtoChecker allows unknown files by default, so if we don't
     # resolve properly this will be allowed.
     problems = self.deps_checker.CheckAddedProtoImports(
-      [[os.path.join(self.deps_checker.base_directory,
-                    'buildtools/checkdeps/testdata/test.proto'),
-        ['import "../testdata/disallowed/test.proto"']]])
+      [
+        [
+          os.path.join(
+            self.deps_checker.base_directory,
+            'buildtools/checkdeps/testdata/test.proto',
+          ),
+          ['import "../testdata/disallowed/test.proto"'],
+        ]
+      ]
+    )
     self.assertTrue(problems)
 
   def testSuppressSyntaxWarnings(self):
@@ -301,19 +398,31 @@ class CheckDepsTest(unittest.TestCase):
       _write(deps_path, 'x = (1 is 1)\ninclude_rules = ["+foo\\."]\n')
 
       script_path = os.path.join(
-          self.deps_checker.base_directory, 'buildtools', 'checkdeps',
-          'checkdeps.py')
+        self.deps_checker.base_directory,
+        'buildtools',
+        'checkdeps',
+        'checkdeps.py',
+      )
 
       # Run without flag
       res_no_flag = subprocess.run(
-          [sys.executable, script_path, '--root', temp_dir],
-          capture_output=True, text=True)
+        [sys.executable, script_path, '--root', temp_dir],
+        capture_output=True,
+        text=True,
+      )
 
       # Run with flag
       res_with_flag = subprocess.run(
-          [sys.executable, script_path, '--root', temp_dir,
-           '--suppress-syntax-warnings'],
-          capture_output=True, text=True)
+        [
+          sys.executable,
+          script_path,
+          '--root',
+          temp_dir,
+          '--suppress-syntax-warnings',
+        ],
+        capture_output=True,
+        text=True,
+      )
 
       # Verify that without the flag, the DEPS filename is shown instead of
       # <string>.
@@ -328,50 +437,74 @@ class CheckDepsTest(unittest.TestCase):
       # Set up a temporary git repository with DEPS rules allowing `+allowed`
       # and disallowing `-disallowed`.
       subprocess.check_call(['git', 'init', '-q', temp_dir])
-      _write(os.path.join(temp_dir, 'DEPS'),
-             'include_rules = ["+allowed", "-disallowed"]\n')
+      _write(
+        os.path.join(temp_dir, 'DEPS'),
+        'include_rules = ["+allowed", "-disallowed"]\n',
+      )
       os.makedirs(os.path.join(temp_dir, 'allowed'))
       os.makedirs(os.path.join(temp_dir, 'disallowed'))
       os.makedirs(os.path.join(temp_dir, 'foo'))
       allowed_java = os.path.join(temp_dir, 'allowed', 'Good.java')
       disallowed_java = os.path.join(temp_dir, 'disallowed', 'Bad.java')
       foo_java = os.path.join(temp_dir, 'foo', 'Foo.java')
-      _write(allowed_java,
-             'package org.chromium.allowed;\npublic class Good {}\n')
-      _write(disallowed_java,
-             'package org.chromium.disallowed;\npublic class Bad {}\n')
+      _write(
+        allowed_java, 'package org.chromium.allowed;\npublic class Good {}\n'
+      )
+      _write(
+        disallowed_java,
+        'package org.chromium.disallowed;\npublic class Bad {}\n',
+      )
       _write(foo_java, 'package org.chromium.foo;\npublic class Foo {}\n')
       subprocess.check_call(
-          ['git', '-C', temp_dir, 'add', 'DEPS', 'allowed/Good.java',
-           'disallowed/Bad.java', 'foo/Foo.java'])
+        [
+          'git',
+          '-C',
+          temp_dir,
+          'add',
+          'DEPS',
+          'allowed/Good.java',
+          'disallowed/Bad.java',
+          'foo/Foo.java',
+        ]
+      )
 
       checker = checkdeps.DepsChecker(base_directory=temp_dir)
 
       # Scenario 1: Importing a git-tracked class (including nested classes and
       # static members) from an allowed directory (exercises the `git ls-files`
       # + `target_filenames` fast path).
-      self.assertFalse(checker.CheckAddedJavaImports([[
-          foo_java,
+      self.assertFalse(
+        checker.CheckAddedJavaImports(
           [
-              'import org.chromium.allowed.Good;',
-              'import org.chromium.allowed.Good.Nested;',
-              'import static org.chromium.allowed.Good.SOME_CONST;',
-              'import static org.chromium.allowed.Good.Nested.someMethod;',
-          ],
-      ]]))
+            [
+              foo_java,
+              [
+                'import org.chromium.allowed.Good;',
+                'import org.chromium.allowed.Good.Nested;',
+                'import static org.chromium.allowed.Good.SOME_CONST;',
+                'import static org.chromium.allowed.Good.Nested.someMethod;',
+              ],
+            ]
+          ]
+        )
+      )
 
       # Scenario 2: Importing a git-tracked class (direct, nested, or static
       # member) from a disallowed directory reports a DEPS violation with the
       # resolved top-level file path.
-      problems = checker.CheckAddedJavaImports([[
-          foo_java,
+      problems = checker.CheckAddedJavaImports(
+        [
           [
+            foo_java,
+            [
               'import org.chromium.disallowed.Bad;',
               'import org.chromium.disallowed.Bad.Nested;',
               'import static org.chromium.disallowed.Bad.SOME_CONST;',
               'import static org.chromium.disallowed.Bad.Nested.*;',
-          ],
-      ]])
+            ],
+          ]
+        ]
+      )
       self.assertEqual(4, len(problems))
       for problem in problems:
         self.assertIn('disallowed/Bad.java', problem[2])
@@ -379,12 +512,16 @@ class CheckDepsTest(unittest.TestCase):
       # Scenario 3: An untracked file included in `added_imports` (not yet in
       # `git ls-files`) is still prescanned via the `added_imports` supplement.
       untracked_bad = os.path.join(temp_dir, 'disallowed', 'UntrackedBad.java')
-      _write(untracked_bad, 'package org.chromium.disallowed;\n'
-                'public class UntrackedBad {}\n')
-      problems = checker.CheckAddedJavaImports([
+      _write(
+        untracked_bad,
+        'package org.chromium.disallowed;\npublic class UntrackedBad {}\n',
+      )
+      problems = checker.CheckAddedJavaImports(
+        [
           [untracked_bad, ['import org.chromium.allowed.Good;']],
           [foo_java, ['import org.chromium.disallowed.UntrackedBad;']],
-      ])
+        ]
+      )
       self.assertEqual(1, len(problems))
       self.assertIn('disallowed/UntrackedBad.java', problems[0][2])
 
@@ -394,13 +531,18 @@ class CheckDepsTest(unittest.TestCase):
       os.makedirs(subrepo_dir)
       subprocess.check_call(['git', 'init', '-q', subrepo_dir])
       subrepo_bad = os.path.join(subrepo_dir, 'SubBad.java')
-      _write(subrepo_bad,'package org.chromium.disallowed;\n'
-                'public class SubBad {}\n')
+      _write(
+        subrepo_bad,
+        'package org.chromium.disallowed;\npublic class SubBad {}\n',
+      )
       subprocess.check_call(['git', '-C', subrepo_dir, 'add', 'SubBad.java'])
-      _write(os.path.join(temp_dir, '.gitmodules'),
-             '[submodule "disallowed/subrepo"]\n\tpath = disallowed/subrepo\n')
+      _write(
+        os.path.join(temp_dir, '.gitmodules'),
+        '[submodule "disallowed/subrepo"]\n\tpath = disallowed/subrepo\n',
+      )
       problems = checker.CheckAddedJavaImports(
-          [[foo_java, ['import org.chromium.disallowed.SubBad;']]])
+        [[foo_java, ['import org.chromium.disallowed.SubBad;']]]
+      )
       self.assertEqual(1, len(problems))
       self.assertIn('disallowed/subrepo/SubBad.java', problems[0][2])
 
@@ -410,12 +552,16 @@ class CheckDepsTest(unittest.TestCase):
       # object files are read-only on Windows (`TemporaryDirectory` resets
       # permissions on cleanup).
       os.rename(
-          os.path.join(temp_dir, '.git'),
-          os.path.join(temp_dir, '.git_disabled'))
-      self.assertFalse(checker.CheckAddedJavaImports(
-          [[foo_java, ['import org.chromium.allowed.Good;']]]))
+        os.path.join(temp_dir, '.git'), os.path.join(temp_dir, '.git_disabled')
+      )
+      self.assertFalse(
+        checker.CheckAddedJavaImports(
+          [[foo_java, ['import org.chromium.allowed.Good;']]]
+        )
+      )
       problems = checker.CheckAddedJavaImports(
-          [[foo_java, ['import org.chromium.disallowed.Bad;']]])
+        [[foo_java, ['import org.chromium.disallowed.Bad;']]]
+      )
       self.assertEqual(1, len(problems))
       self.assertIn('disallowed/Bad.java', problems[0][2])
 

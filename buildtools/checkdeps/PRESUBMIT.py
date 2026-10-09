@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Presubmit script for checkdeps tool.
-"""
+"""Presubmit script for checkdeps tool."""
+
 
 def CheckChange(input_api, output_api):
   if not (
@@ -12,9 +12,14 @@ def CheckChange(input_api, output_api):
   ):
     return []
   return input_api.canned_checks.RunUnitTests(
-      input_api, output_api,
-      [input_api.os_path.join(input_api.PresubmitLocalPath(),
-                              'checkdeps_test.py')])
+    input_api,
+    output_api,
+    [
+      input_api.os_path.join(
+        input_api.PresubmitLocalPath(), 'checkdeps_test.py'
+      )
+    ],
+  )
 
 
 # Mandatory entrypoint.

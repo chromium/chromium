@@ -12,8 +12,6 @@ Any source file including something not permitted by the DEPS files will fail.
 See README.md for a detailed description of the DEPS format.
 """
 
-
-
 import os
 import optparse
 import re
@@ -25,7 +23,7 @@ import java_checker
 import results
 
 from builddeps import DepsBuilder
-from rules import Rule, Rules
+from rules import Rule, Rules  # noqa: F401
 
 
 def _IsTestFile(filename):
@@ -40,14 +38,16 @@ class DepsChecker(DepsBuilder):
   source tree against them.
   """
 
-  def __init__(self,
-               base_directory=None,
-               extra_repos=[],
-               verbose=False,
-               being_tested=False,
-               ignore_temp_rules=False,
-               skip_tests=False,
-               resolve_dotdot=True):
+  def __init__(
+    self,
+    base_directory=None,
+    extra_repos=[],
+    verbose=False,
+    being_tested=False,
+    ignore_temp_rules=False,
+    skip_tests=False,
+    resolve_dotdot=True,
+  ):
     """Creates a new DepsChecker.
 
     Args:
@@ -58,8 +58,13 @@ class DepsChecker(DepsBuilder):
       ignore_temp_rules: Ignore rules that start with Rule.TEMP_ALLOW ("!").
     """
     DepsBuilder.__init__(
-        self, base_directory, extra_repos, verbose, being_tested,
-        ignore_temp_rules)
+      self,
+      base_directory,
+      extra_repos,
+      verbose,
+      being_tested,
+      ignore_temp_rules,
+    )
 
     self._skip_tests = skip_tests
     self._resolve_dotdot = resolve_dotdot
@@ -84,19 +89,23 @@ class DepsChecker(DepsBuilder):
     """
     java = java_checker.JavaChecker(self.base_directory, self.verbose)
     cpp = cpp_checker.CppChecker(
-        self.verbose, self._resolve_dotdot, self.base_directory)
+      self.verbose, self._resolve_dotdot, self.base_directory
+    )
     proto = proto_checker.ProtoChecker(
-        self.verbose, self._resolve_dotdot, self.base_directory)
+      self.verbose, self._resolve_dotdot, self.base_directory
+    )
     checkers = dict(
-        (extension, checker)
-        for checker in [java, cpp, proto] for extension in checker.EXTENSIONS)
+      (extension, checker)
+      for checker in [java, cpp, proto]
+      for extension in checker.EXTENSIONS
+    )
 
     for rules, file_paths in self.GetAllRulesAndFiles(start_dir):
       for full_name in file_paths:
         if self._skip_tests and _IsTestFile(os.path.basename(full_name)):
           continue
         file_extension = os.path.splitext(full_name)[1]
-        if not file_extension in checkers:
+        if file_extension not in checkers:
           continue
         checker = checkers[file_extension]
         file_status = checker.CheckFile(rules, full_name)
@@ -125,14 +134,16 @@ class DepsChecker(DepsBuilder):
         continue
       for line in changed_lines:
         is_include, violation = checker.CheckLine(
-            rules_for_file, line, file_path, True)
+          rules_for_file, line, file_path, True
+        )
         if not violation:
           continue
         rule_type = violation.violated_rule.allow
         if rule_type == Rule.ALLOW:
           continue
         violation_text = results.NormalResultsFormatter.FormatViolation(
-            violation, self.verbose)
+          violation, self.verbose
+        )
         problems.append((file_path, rule_type, violation_text))
     return problems
 
@@ -149,11 +160,15 @@ class DepsChecker(DepsBuilder):
       rule_description is human-readable. Empty if no problems.
     """
     return self.CheckIncludesAndImports(
-        added_includes, cpp_checker.CppChecker(
-        self.verbose, self._resolve_dotdot, self.base_directory))
+      added_includes,
+      cpp_checker.CppChecker(
+        self.verbose, self._resolve_dotdot, self.base_directory
+      ),
+    )
 
-  def CheckAddedJavaImports(self, added_imports,
-                            allow_multiple_definitions=None):
+  def CheckAddedJavaImports(
+    self, added_imports, allow_multiple_definitions=None
+  ):
     """This is used from PRESUBMIT.py to check new import statements added in
     the change being presubmit checked.
 
@@ -169,9 +184,14 @@ class DepsChecker(DepsBuilder):
       rule_description is human-readable. Empty if no problems.
     """
     return self.CheckIncludesAndImports(
+      added_imports,
+      java_checker.JavaChecker(
+        self.base_directory,
+        self.verbose,
         added_imports,
-        java_checker.JavaChecker(self.base_directory, self.verbose,
-                                 added_imports, allow_multiple_definitions))
+        allow_multiple_definitions,
+      ),
+    )
 
   def CheckAddedProtoImports(self, added_imports):
     """This is used from PRESUBMIT.py to check new #import statements added in
@@ -186,8 +206,12 @@ class DepsChecker(DepsBuilder):
       rule_description is human-readable. Empty if no problems.
     """
     return self.CheckIncludesAndImports(
-        added_imports, proto_checker.ProtoChecker(
-        self.verbose, self._resolve_dotdot, self.base_directory))
+      added_imports,
+      proto_checker.ProtoChecker(
+        self.verbose, self._resolve_dotdot, self.base_directory
+      ),
+    )
+
 
 def PrintUsage():
   print("""Usage: python checkdeps.py [--root <root>] [tocheck]
@@ -209,61 +233,96 @@ Examples:
 def main():
   option_parser = optparse.OptionParser()
   option_parser.add_option(
-      '', '--root',
-      default='', dest='base_directory',
-      help='Specifies the repository root. This defaults '
-           'to "../../.." relative to the script file, which '
-           'will normally be the repository root.')
+    '',
+    '--root',
+    default='',
+    dest='base_directory',
+    help='Specifies the repository root. This defaults '
+    'to "../../.." relative to the script file, which '
+    'will normally be the repository root.',
+  )
   option_parser.add_option(
-      '', '--extra-repos',
-      action='append', dest='extra_repos', default=[],
-      help='Specifies extra repositories relative to root repository.')
+    '',
+    '--extra-repos',
+    action='append',
+    dest='extra_repos',
+    default=[],
+    help='Specifies extra repositories relative to root repository.',
+  )
   option_parser.add_option(
-      '', '--ignore-temp-rules',
-      action='store_true', dest='ignore_temp_rules', default=False,
-      help='Ignore !-prefixed (temporary) rules.')
+    '',
+    '--ignore-temp-rules',
+    action='store_true',
+    dest='ignore_temp_rules',
+    default=False,
+    help='Ignore !-prefixed (temporary) rules.',
+  )
   option_parser.add_option(
-      '', '--generate-temp-rules',
-      action='store_true', dest='generate_temp_rules', default=False,
-      help='Print rules to temporarily allow files that fail '
-           'dependency checking.')
+    '',
+    '--generate-temp-rules',
+    action='store_true',
+    dest='generate_temp_rules',
+    default=False,
+    help='Print rules to temporarily allow files that fail '
+    'dependency checking.',
+  )
   option_parser.add_option(
-      '', '--count-violations',
-      action='store_true', dest='count_violations', default=False,
-      help='Count #includes in violation of intended rules.')
+    '',
+    '--count-violations',
+    action='store_true',
+    dest='count_violations',
+    default=False,
+    help='Count #includes in violation of intended rules.',
+  )
   option_parser.add_option(
-      '', '--skip-tests',
-      action='store_true', dest='skip_tests', default=False,
-      help='Skip checking test files (best effort).')
+    '',
+    '--skip-tests',
+    action='store_true',
+    dest='skip_tests',
+    default=False,
+    help='Skip checking test files (best effort).',
+  )
   option_parser.add_option(
-      '-s', '--suppress-syntax-warnings',
-      action='store_true', dest='suppress_syntax_warnings', default=False,
-      help='Suppress SyntaxWarning messages from Python')
+    '-s',
+    '--suppress-syntax-warnings',
+    action='store_true',
+    dest='suppress_syntax_warnings',
+    default=False,
+    help='Suppress SyntaxWarning messages from Python',
+  )
   option_parser.add_option(
-      '-v', '--verbose',
-      action='store_true', default=False,
-      help='Print debug logging')
+    '-v',
+    '--verbose',
+    action='store_true',
+    default=False,
+    help='Print debug logging',
+  )
+  option_parser.add_option('', '--json', help='Path to JSON output file')
   option_parser.add_option(
-      '', '--json',
-      help='Path to JSON output file')
-  option_parser.add_option(
-      '', '--no-resolve-dotdot',
-      action='store_false', dest='resolve_dotdot', default=True,
-      help='resolve leading ../ in include directive paths relative '
-           'to the file perfoming the inclusion.')
+    '',
+    '--no-resolve-dotdot',
+    action='store_false',
+    dest='resolve_dotdot',
+    default=True,
+    help='resolve leading ../ in include directive paths relative '
+    'to the file perfoming the inclusion.',
+  )
 
   options, args = option_parser.parse_args()
 
   if options.suppress_syntax_warnings:
     import warnings
+
     warnings.filterwarnings("ignore", category=SyntaxWarning)
 
-  deps_checker = DepsChecker(options.base_directory,
-                             extra_repos=options.extra_repos,
-                             verbose=options.verbose,
-                             ignore_temp_rules=options.ignore_temp_rules,
-                             skip_tests=options.skip_tests,
-                             resolve_dotdot=options.resolve_dotdot)
+  deps_checker = DepsChecker(
+    options.base_directory,
+    extra_repos=options.extra_repos,
+    verbose=options.verbose,
+    ignore_temp_rules=options.ignore_temp_rules,
+    skip_tests=options.skip_tests,
+    resolve_dotdot=options.resolve_dotdot,
+  )
   base_directory = deps_checker.base_directory  # Default if needed, normalized
 
   # Figure out which directory we have to check.
@@ -272,8 +331,9 @@ def main():
     # Directory specified. Start here. It's supposed to be relative to the
     # base directory.
     start_dir = os.path.abspath(os.path.join(base_directory, args[0]))
-  elif len(args) >= 2 or (options.generate_temp_rules and
-                          options.count_violations):
+  elif len(args) >= 2 or (
+    options.generate_temp_rules and options.count_violations
+  ):
     # More than one argument, or incompatible flags, we don't handle this.
     PrintUsage()
     return 1
@@ -293,7 +353,8 @@ def main():
 
   if options.json:
     deps_checker.results_formatter = results.JSONResultsFormatter(
-        options.json, deps_checker.results_formatter)
+      options.json, deps_checker.results_formatter
+    )
 
   deps_checker.CheckDirectory(start_dir)
   return deps_checker.Report()

@@ -282,7 +282,7 @@ def main():
         config = ReadConfig()
         # This makes the assumption the $rbe_instance is saved under "instance"
         # in the original template
-        if not "instance" in config:
+        if "instance" not in config:
             return 1
         logging.info(config["instance"])
         return 0
@@ -342,7 +342,7 @@ def main():
                 directory=toolchain_root,
                 quiet=args.quiet,
             )
-        except CipdAuthError as e:
+        except CipdAuthError:
             RequestCipdAuthentication()
             return 1
         except CipdError as e:

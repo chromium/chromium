@@ -9,8 +9,6 @@ a dependency rule table to be used by subclasses.
 See README.md for the format of the deps file.
 """
 
-
-
 import copy
 import functools
 import os.path
@@ -41,8 +39,9 @@ NOPARENT_VAR_NAME = 'noparent'
 
 
 class DepsBuilderError(Exception):
-    """Base class for exceptions in this module."""
-    pass
+  """Base class for exceptions in this module."""
+
+  pass
 
 
 def NormalizePath(path):
@@ -59,9 +58,9 @@ def _GitSourceDirectories(base_directory):
   git_cmd = 'git.bat' if os.name == 'nt' else 'git'
   git_ls_files_cmd = [git_cmd, 'ls-files']
   # FIXME: Use a context manager in Python 3.2+
-  popen = subprocess.Popen(git_ls_files_cmd,
-                           stdout=subprocess.PIPE,
-                           cwd=base_directory)
+  popen = subprocess.Popen(
+    git_ls_files_cmd, stdout=subprocess.PIPE, cwd=base_directory
+  )
   try:
     try:
       for line in popen.stdout.read().decode('utf-8').splitlines():
@@ -117,8 +116,8 @@ def _ParseDepsMemoize(dir_path, under_test, verbose):
   # are handled correctly.
   deps_file_path = os.path.join(dir_path, 'DEPS')
   if os.path.isfile(deps_file_path) and not (
-      under_test and
-      os.path.basename(dir_path) == 'checkdeps'):
+    under_test and os.path.basename(dir_path) == 'checkdeps'
+  ):
     try:
       with open(deps_file_path) as file:
         code = compile(file.read(), os.path.normcase(deps_file_path), 'exec')
@@ -135,13 +134,15 @@ def _ParseDepsMemoize(dir_path, under_test, verbose):
 class DepsBuilder(object):
   """Parses include_rules from DEPS files."""
 
-  def __init__(self,
-               base_directory=None,
-               extra_repos=[],
-               verbose=False,
-               being_tested=False,
-               ignore_temp_rules=False,
-               ignore_specific_rules=False):
+  def __init__(
+    self,
+    base_directory=None,
+    extra_repos=[],
+    verbose=False,
+    being_tested=False,
+    ignore_temp_rules=False,
+    ignore_specific_rules=False,
+  ):
     r"""Creates a new DepsBuilder.
 
     Args:
@@ -151,9 +152,9 @@ class DepsBuilder(object):
                     buildtools/checkdeps/DEPS.
       ignore_temp_rules: Ignore rules that start with Rule.TEMP_ALLOW ("!").
     """
-    base_directory = (base_directory or
-                      os.path.join(os.path.dirname(__file__),
-                      os.path.pardir, os.path.pardir))
+    base_directory = base_directory or os.path.join(
+      os.path.dirname(__file__), os.path.pardir, os.path.pardir
+    )
     self.base_directory = os.path.normcase(os.path.abspath(base_directory))
     self.extra_repos = extra_repos
     self.verbose = verbose
@@ -182,10 +183,12 @@ class DepsBuilder(object):
     # Normalized is: absolute, lowercase, / for separator.
     self.directory_rules = {}
     self._ApplyDirectoryRulesAndSkipSubdirs(
-        rules.Rules(self._instance_index), self.base_directory)
+      rules.Rules(self._instance_index), self.base_directory
+    )
 
-  def _ApplyRules(self, existing_rules, includes, specific_includes,
-                  cur_dir_norm):
+  def _ApplyRules(
+    self, existing_rules, includes, specific_includes, cur_dir_norm
+  ):
     r"""Applies the given include rules, returning the new rules.
 
     Args:
@@ -205,16 +208,17 @@ class DepsBuilder(object):
     base_dir_norm = NormalizePath(self.base_directory)
     if not cur_dir_norm.startswith(base_dir_norm):
       raise Exception(
-          'Internal error: base directory is not at the beginning for\n'
-          '  %s and base dir\n'
-          '  %s' % (cur_dir_norm, base_dir_norm))
+        'Internal error: base directory is not at the beginning for\n'
+        '  %s and base dir\n'
+        '  %s' % (cur_dir_norm, base_dir_norm)
+      )
     relative_dir = posixpath.relpath(cur_dir_norm, base_dir_norm)
 
     # Make the help string a little more meaningful.
     source = relative_dir or 'top level'
-    new_rules.AddRule('+' + relative_dir,
-                  relative_dir,
-                  'Default rule for ' + source)
+    new_rules.AddRule(
+      '+' + relative_dir, relative_dir, 'Default rule for ' + source
+    )
 
     def ApplyOneRule(rule_str, dependee_regexp=None):
       """Deduces a sensible description for the rule being added, and
@@ -233,8 +237,9 @@ class DepsBuilder(object):
         rule_description = relative_dir + "'s %s" % rule_block_name
       else:
         rule_description = 'the top level %s' % rule_block_name
-      new_rules.AddRule(rule_str, relative_dir, rule_description,
-                        dependee_regexp)
+      new_rules.AddRule(
+        rule_str, relative_dir, rule_description, dependee_regexp
+      )
 
     # Apply the additional explicit rules.
     for rule_str in includes:
@@ -283,8 +288,7 @@ class DepsBuilder(object):
     # Even if a DEPS file does not exist we still invoke ApplyRules
     # to apply the implicit "allow" rule for the current directory
     include_rules = deps_dict.get(INCLUDE_RULES_VAR_NAME, [])
-    specific_include_rules = deps_dict.get(SPECIFIC_INCLUDE_RULES_VAR_NAME,
-                                             {})
+    specific_include_rules = deps_dict.get(SPECIFIC_INCLUDE_RULES_VAR_NAME, {})
     skip_subdirs = deps_dict.get(SKIP_SUBDIRS_VAR_NAME, [])
     noparent = deps_dict.get(NOPARENT_VAR_NAME, False)
     if noparent:
@@ -292,19 +296,24 @@ class DepsBuilder(object):
     else:
       parent_rules = existing_rules
 
-    return (self._ApplyRules(parent_rules, include_rules,
-                             specific_include_rules, dir_path_norm),
-            skip_subdirs)
+    return (
+      self._ApplyRules(
+        parent_rules, include_rules, specific_include_rules, dir_path_norm
+      ),
+      skip_subdirs,
+    )
 
-  def _ApplyDirectoryRulesAndSkipSubdirs(self, parent_rules,
-                                         dir_path_local_abs):
+  def _ApplyDirectoryRulesAndSkipSubdirs(
+    self, parent_rules, dir_path_local_abs
+  ):
     """Given |parent_rules| and a subdirectory |dir_path_local_abs| of the
     directory that owns the |parent_rules|, add |dir_path_local_abs|'s rules to
     |self.directory_rules|, and add None entries for any of its
     subdirectories that should be skipped.
     """
     directory_rules, excluded_subdirs = self._ApplyDirectoryRules(
-        parent_rules, dir_path_local_abs)
+      parent_rules, dir_path_local_abs
+    )
     dir_path_norm = NormalizePath(dir_path_local_abs)
     self.directory_rules[dir_path_norm] = directory_rules
     for subdir in excluded_subdirs:
@@ -372,7 +381,8 @@ class DepsBuilder(object):
     while current_dir_name != self.base_directory:
       parent = os.path.dirname(current_dir_name)
       assert parent != current_dir_name, (
-          f'{dir_name}, {self.base_directory}, {current_dir_name}')
+        f'{dir_name}, {self.base_directory}, {current_dir_name}'
+      )
       current_dir_name = parent
       yield current_dir_name
 
@@ -393,7 +403,8 @@ class DepsBuilder(object):
       if requires_review is not None:
         if requires_review:
           return NormalizePath(
-              os.path.relpath(current_dir, self.base_directory))
+            os.path.relpath(current_dir, self.base_directory)
+          )
         return None
     return None
 

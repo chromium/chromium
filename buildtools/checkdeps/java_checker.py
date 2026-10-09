@@ -4,7 +4,6 @@
 
 """Checks Java files for illegal imports."""
 
-
 import concurrent.futures
 import os
 import posixpath
@@ -41,10 +40,16 @@ class JavaChecker(object):
   # names (e.g. `import static foo.bar.Outer.Inner.CONST;` -> `foo.bar.Outer`)
   # so that it matches the `<package>.<filename_stem>` keys in `_classmap`.
   _EXTRACT_IMPORT_PATH = re.compile(
-      r'^import\s+(?:static\s+)?((?:[a-z0-9_]+\.)+[A-Z]\w*)(?:\.[\w\*]+)*\s*;')
+    r'^import\s+(?:static\s+)?((?:[a-z0-9_]+\.)+[A-Z]\w*)(?:\.[\w\*]+)*\s*;'
+  )
 
-  def __init__(self, base_directory, verbose, added_imports=None,
-               allow_multiple_definitions=None):
+  def __init__(
+    self,
+    base_directory,
+    verbose,
+    added_imports=None,
+    allow_multiple_definitions=None,
+  ):
     self._base_directory = base_directory
     self._verbose = verbose
     self._classmap = {}
@@ -72,8 +77,11 @@ class JavaChecker(object):
     # TODO(husky): We need some way of determining the "real" path to
     # a generated file -- i.e., where it would be in source control if
     # it weren't generated.
-    if d.startswith('out') or d in ('xcodebuild', 'AndroidStudioDefault',
-                                    'libassistant',):
+    if d.startswith('out') or d in (
+      'xcodebuild',
+      'AndroidStudioDefault',
+      'libassistant',
+    ):
       return True
     # Skip third-party directories.
     if d in ('third_party', 'ThirdParty'):
@@ -84,8 +92,10 @@ class JavaChecker(object):
     """Returns whether rel_path (with '/' separators) should be prescanned."""
     if not rel_path.endswith('.java'):
       return False
-    if (target_filenames is not None
-        and posixpath.basename(rel_path) not in target_filenames):
+    if (
+      target_filenames is not None
+      and posixpath.basename(rel_path) not in target_filenames
+    ):
       return False
     parts = rel_path.split('/')
     return not any(self._IgnoreDir(p) for p in parts[:-1])
@@ -100,9 +110,10 @@ class JavaChecker(object):
     gitmodules = os.path.join(self._base_directory, '.gitmodules')
     if os.path.isfile(gitmodules):
       out = subprocess.check_output(
-          [git_cmd, 'config', '--file', gitmodules, '--get-regexp', 'path'],
-          stderr=subprocess.DEVNULL,
-          text=True)
+        [git_cmd, 'config', '--file', gitmodules, '--get-regexp', 'path'],
+        stderr=subprocess.DEVNULL,
+        text=True,
+      )
       for line in out.splitlines():
         parts = line.split(None, 1)
         if len(parts) != 2:
@@ -130,16 +141,21 @@ class JavaChecker(object):
         # them.
         dirs[:] = [d for d in dirs if not self._IgnoreDir(d)]
         for f in files:
-          if (f in target_filenames if target_filenames is not None
-              else f.endswith('.java')):
+          if (
+            f in target_filenames
+            if target_filenames is not None
+            else f.endswith('.java')
+          ):
             filepath = os.path.join(root, f)
             futures_to_file[executor.submit(self._PrescanFile, filepath)] = (
-                filepath)
+              filepath
+            )
       for future in concurrent.futures.as_completed(futures_to_file):
         full_class_name = future.result()
         if full_class_name:
           self._ProcessFile(
-              futures_to_file[future], full_class_name, added_classset)
+            futures_to_file[future], full_class_name, added_classset
+          )
 
   def _GetJavaFilesGit(self, target_filenames, added_imports):
     """Returns a list of .java file paths to prescan using git ls-files.
@@ -162,9 +178,10 @@ class JavaChecker(object):
 
     def list_repo(repo):
       return repo, subprocess.check_output(
-          [git_cmd, '-C', repo, 'ls-files', '-z', '--', '*.java'],
-          stderr=subprocess.DEVNULL,
-          text=True)
+        [git_cmd, '-C', repo, 'ls-files', '-z', '--', '*.java'],
+        stderr=subprocess.DEVNULL,
+        text=True,
+      )
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
       repo_outputs = list(executor.map(list_repo, repos))
@@ -178,13 +195,14 @@ class JavaChecker(object):
     # `git ls-files` only lists tracked/staged files. Also include any
     # untracked files from `added_imports` (e.g. during `git cl presubmit
     # --force`).
-    for filepath, _ in (added_imports or []):
+    for filepath, _ in added_imports or []:
       abs_path = os.path.abspath(filepath)
       norm_path = os.path.normcase(abs_path)
       if norm_path in seen or not os.path.isfile(filepath):
         continue
-      rel_path = os.path.relpath(
-          abs_path, self._base_directory).replace(os.sep, '/')
+      rel_path = os.path.relpath(abs_path, self._base_directory).replace(
+        os.sep, '/'
+      )
       if self._ShouldIncludeRelPath(rel_path, target_filenames):
         seen.add(norm_path)
         java_files.append(filepath)
@@ -200,17 +218,21 @@ class JavaChecker(object):
     # short class name of an entry in `added_classset` (typically a few files
     # instead of all ~14,000 `.java` files in the tree).
     target_filenames = (
-        None if self._verbose else
-        {c.rsplit('.', 1)[-1] + '.java' for c in added_classset})
-    if (os.getcwd().startswith('/google/cog/cloud')
-        or not os.path.exists(os.path.join(self._base_directory, '.git'))):
+      None
+      if self._verbose
+      else {c.rsplit('.', 1)[-1] + '.java' for c in added_classset}
+    )
+    if os.getcwd().startswith('/google/cog/cloud') or not os.path.exists(
+      os.path.join(self._base_directory, '.git')
+    ):
       self._PrescanFilesWalk(added_classset, target_filenames)
       return
 
     java_files = self._GetJavaFilesGit(target_filenames, added_imports)
     with concurrent.futures.ThreadPoolExecutor() as executor:
       for filepath, full_class_name in zip(
-          java_files, executor.map(self._PrescanFile, java_files)):
+        java_files, executor.map(self._PrescanFile, java_files)
+      ):
         if full_class_name:
           self._ProcessFile(filepath, full_class_name, added_classset)
 
@@ -228,7 +250,7 @@ class JavaChecker(object):
       A set of full class names with package name of imported files.
     """
     classset = set()
-    for filepath, changed_lines in (added_imports or []):
+    for filepath, changed_lines in added_imports or []:
       if not self.ShouldCheck(filepath):
         continue
       full_class_name = self._GetClassFullName(filepath)
@@ -253,15 +275,17 @@ class JavaChecker(object):
     """Populates _classmap based on the path and class name."""
     if full_class_name in self._classmap:
       if self._verbose or full_class_name in added_classset:
-        if not any(re.match(i, filepath) for i in
-                    self._allow_multiple_definitions):
+        if not any(
+          re.match(i, filepath) for i in self._allow_multiple_definitions
+        ):
           print('WARNING: multiple definitions of %s:' % full_class_name)
           print('    ' + filepath)
           print('    ' + self._classmap[full_class_name])
           print()
       # Prefer the public repo when multiple matches are found.
       if self._classmap[full_class_name].startswith(
-          os.path.join(self._base_directory, 'clank')):
+        os.path.join(self._base_directory, 'clank')
+      ):
         self._classmap[full_class_name] = filepath
     else:
       self._classmap[full_class_name] = filepath
@@ -283,13 +307,13 @@ class JavaChecker(object):
       # Importing a class from outside the Chromium tree. That's fine --
       # it's probably a Java or Android system class.
       return True, None
-    import_path = os.path.relpath(
-        self._classmap[clazz], self._base_directory)
+    import_path = os.path.relpath(self._classmap[clazz], self._base_directory)
     # Convert Windows paths to Unix style, as used in DEPS files.
     import_path = import_path.replace(os.path.sep, '/')
     rule = rules.RuleApplyingTo(import_path, filepath)
-    if (rule.allow == Rule.DISALLOW or
-        (fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW)):
+    if rule.allow == Rule.DISALLOW or (
+      fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW
+    ):
       return True, results.DependencyViolation(import_path, rule, rules)
     return True, None
 

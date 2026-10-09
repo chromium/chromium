@@ -4,8 +4,6 @@
 
 """Checks protobuf files for illegal imports."""
 
-
-
 import os
 import re
 
@@ -14,9 +12,8 @@ from rules import Rule, MessageRule
 
 
 class ProtoChecker(object):
-
   EXTENSIONS = [
-      '.proto',
+    '.proto',
   ]
 
   # The maximum line length, this is to be efficient in the case of very long
@@ -25,8 +22,7 @@ class ProtoChecker(object):
 
   # This regular expression will be used to extract filenames from import
   # statements.
-  _EXTRACT_IMPORT_PATH = re.compile(
-      r'[ \t]*[ \t]*import[ \t]+"(.*)"')
+  _EXTRACT_IMPORT_PATH = re.compile(r'[ \t]*[ \t]*import[ \t]+"(.*)"')
 
   def __init__(self, verbose, resolve_dotdot=False, root_dir=''):
     self._verbose = verbose
@@ -57,9 +53,10 @@ class ProtoChecker(object):
 
     if '\\' in import_path:
       return True, results.DependencyViolation(
-          import_path,
-          MessageRule('Import paths may not include backslashes.'),
-          rules)
+        import_path,
+        MessageRule('Import paths may not include backslashes.'),
+        rules,
+      )
 
     if '/' not in import_path:
       # Don't fail when no directory is specified. We may want to be more
@@ -81,8 +78,9 @@ class ProtoChecker(object):
 
     rule = rules.RuleApplyingTo(import_path, dependee_path)
 
-    if (rule.allow == Rule.DISALLOW or
-        (fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW)):
+    if rule.allow == Rule.DISALLOW or (
+      fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW
+    ):
       return True, results.DependencyViolation(import_path, rule, rules)
     return True, None
 
@@ -98,7 +96,7 @@ class ProtoChecker(object):
 
         is_import, violation = self.CheckLine(rules, line, filepath)
         if is_import:
-          last_import = line_num
+          last_import = line_num  # noqa: F841
         if violation:
           dependee_status.AddViolation(violation)
 

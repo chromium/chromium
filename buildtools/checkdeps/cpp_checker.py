@@ -4,8 +4,6 @@
 
 """Checks C++ and Objective-C files for illegal includes."""
 
-
-
 import os
 import re
 
@@ -14,13 +12,12 @@ from rules import Rule, MessageRule
 
 
 class CppChecker(object):
-
   EXTENSIONS = [
-      '.h',
-      '.cc',
-      '.cpp',
-      '.m',
-      '.mm',
+    '.h',
+    '.cc',
+    '.cpp',
+    '.m',
+    '.mm',
   ]
 
   # The maximum line length, this is to be efficient in the case of very long
@@ -30,7 +27,8 @@ class CppChecker(object):
   # This regular expression will be used to extract filenames from include
   # statements.
   _EXTRACT_INCLUDE_PATH = re.compile(
-      r'[ \t]*#[ \t]*(?:include|import)[ \t]*"(.*)"')
+    r'[ \t]*#[ \t]*(?:include|import)[ \t]*"(.*)"'
+  )
 
   def __init__(self, verbose, resolve_dotdot=False, root_dir=''):
     self._verbose = verbose
@@ -54,9 +52,10 @@ class CppChecker(object):
 
     if '\\' in include_path:
       return True, results.DependencyViolation(
-          include_path,
-          MessageRule('Include paths may not include backslashes.'),
-          rules)
+        include_path,
+        MessageRule('Include paths may not include backslashes.'),
+        rules,
+      )
 
     if '/' not in include_path:
       # Don't fail when no directory is specified. We may want to be more
@@ -74,8 +73,9 @@ class CppChecker(object):
       include_path = include_path.replace(os.path.sep, '/')
 
     rule = rules.RuleApplyingTo(include_path, dependee_path)
-    if (rule.allow == Rule.DISALLOW or
-        (fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW)):
+    if rule.allow == Rule.DISALLOW or (
+      fail_on_temp_allow and rule.allow == Rule.TEMP_ALLOW
+    ):
       return True, results.DependencyViolation(include_path, rule, rules)
     return True, None
 
@@ -84,7 +84,7 @@ class CppChecker(object):
       print('Checking: ' + filepath)
 
     dependee_status = results.DependeeStatus(filepath)
-    ret_val = ''  # We'll collect the error messages in here
+    ret_val = ''  # We'll collect the error messages in here  # noqa: F841
     last_include = 0
 
     with open(filepath, encoding='utf-8') as f:
@@ -105,7 +105,7 @@ class CppChecker(object):
 
         is_include, violation = self.CheckLine(rules, line, filepath)
         if is_include:
-          last_include = line_num
+          last_include = line_num  # noqa: F841
         if violation:
           dependee_status.AddViolation(violation)
 

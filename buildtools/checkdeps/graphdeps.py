@@ -34,22 +34,24 @@ class DepsGrapher(DepsBuilder):
   provided regexp patterns.
   """
 
-  def __init__(self,
-               base_directory,
-               extra_repos,
-               verbose,
-               being_tested,
-               ignore_temp_rules,
-               ignore_specific_rules,
-               hide_disallowed_deps,
-               out_file,
-               out_format,
-               layout_engine,
-               unflatten_graph,
-               incl,
-               excl,
-               hilite_fanins,
-               hilite_fanouts):
+  def __init__(
+    self,
+    base_directory,
+    extra_repos,
+    verbose,
+    being_tested,
+    ignore_temp_rules,
+    ignore_specific_rules,
+    hide_disallowed_deps,
+    out_file,
+    out_format,
+    layout_engine,
+    unflatten_graph,
+    incl,
+    excl,
+    hilite_fanins,
+    hilite_fanouts,
+  ):
     """Creates a new DepsGrapher.
 
     Args:
@@ -76,13 +78,14 @@ class DepsGrapher(DepsBuilder):
                       different edge and node color.
     """
     DepsBuilder.__init__(
-        self,
-        base_directory,
-        extra_repos,
-        verbose,
-        being_tested,
-        ignore_temp_rules,
-        ignore_specific_rules)
+      self,
+      base_directory,
+      extra_repos,
+      verbose,
+      being_tested,
+      ignore_temp_rules,
+      ignore_specific_rules,
+    )
 
     self.ignore_temp_rules = ignore_temp_rules
     self.ignore_specific_rules = ignore_specific_rules
@@ -99,7 +102,7 @@ class DepsGrapher(DepsBuilder):
     self.deps = set()
 
   def DumpDependencies(self):
-    """ Builds a dependency rule table and dumps the corresponding dependency
+    """Builds a dependency rule table and dumps the corresponding dependency
     graph to all requested formats."""
     self._BuildDepsGraph()
     self._DumpDependencies()
@@ -107,10 +110,11 @@ class DepsGrapher(DepsBuilder):
   def _BuildDepsGraph(self):
     """Recursively traverses the source tree starting at the specified directory
     and builds a dependency graph representation in self.deps."""
-    for (rules, _) in self.GetAllRulesAndFiles():
+    for rules, _ in self.GetAllRulesAndFiles():
       deps = rules.AsDependencyTuples(
-          include_general_rules=True,
-          include_specific_rules=not self.ignore_specific_rules)
+        include_general_rules=True,
+        include_specific_rules=not self.ignore_specific_rules,
+      )
       self.deps.update(deps)
 
   def _DumpDependencies(self):
@@ -143,7 +147,7 @@ class DepsGrapher(DepsBuilder):
     deps_srcs = set()
 
     # Pre-initialize the graph with src->(dst, allow) pairs.
-    for (allow, src, dst) in deps:
+    for allow, src, dst in deps:
       if allow == Rule.TEMP_ALLOW and self.ignore_temp_rules:
         continue
 
@@ -168,14 +172,18 @@ class DepsGrapher(DepsBuilder):
       parent_src = os.path.dirname(src)
       if parent_src:
         # We presort the list, so parents are guaranteed to precede children.
-        assert parent_src in deps_graph,\
-               "src: %s, parent_src: %s" % (src, parent_src)
-        for (dst, allow) in deps_graph[parent_src]:
+        assert parent_src in deps_graph, "src: %s, parent_src: %s" % (
+          src,
+          parent_src,
+        )
+        for dst, allow in deps_graph[parent_src]:
           # Check that this node does not explicitly override a rule from the
           # parent that we're about to add.
-          if ((dst, Rule.ALLOW) not in deps_graph[src]) and \
-             ((dst, Rule.TEMP_ALLOW) not in deps_graph[src]) and \
-             ((dst, Rule.DISALLOW) not in deps_graph[src]):
+          if (
+            ((dst, Rule.ALLOW) not in deps_graph[src])
+            and ((dst, Rule.TEMP_ALLOW) not in deps_graph[src])
+            and ((dst, Rule.DISALLOW) not in deps_graph[src])
+          ):
             deps_graph[src].append((dst, allow))
 
     node_props = {}
@@ -188,7 +196,7 @@ class DepsGrapher(DepsBuilder):
     # on how many of incl/excl/hilite_fanins/hilite_fanouts filters they hit,
     # and in what way.
     for src in deps_graph.keys():
-      for (dst, allow) in deps_graph[src]:
+      for dst, allow in deps_graph[src]:
         if allow == Rule.DISALLOW and self.hide_disallowed_deps:
           continue
 
@@ -196,8 +204,9 @@ class DepsGrapher(DepsBuilder):
           continue
 
         edge_spec = "%s->%s" % (src, dst)
-        if not re.search(self.incl, edge_spec) or \
-               re.search(self.excl, edge_spec):
+        if not re.search(self.incl, edge_spec) or re.search(
+          self.excl, edge_spec
+        ):
           continue
 
         if src not in node_props:
@@ -228,12 +237,14 @@ class DepsGrapher(DepsBuilder):
         else:
           edge_color = 'red'
           edge_style = 'dashed'
-        edges.append('    "%s" -> "%s" [style=%s,color=%s,penwidth=%d];' % \
-            (src, dst, edge_style, edge_color, edge_weight))
+        edges.append(
+          '    "%s" -> "%s" [style=%s,color=%s,penwidth=%d];'
+          % (src, dst, edge_style, edge_color, edge_weight)
+        )
 
     # Reformat the computed raw node attributes into a final DOT representation.
     nodes = []
-    for (node, attrs) in node_props.items():
+    for node, attrs in node_props.items():
       attr_strs = []
       if attrs['hilite']:
         attr_strs.append('style=filled,fillcolor=%s' % attrs['hilite'])
@@ -243,8 +254,7 @@ class DepsGrapher(DepsBuilder):
     # Output nodes and edges to |out| (can be a file or a pipe).
     edges.sort()
     nodes.sort()
-    out.write('digraph DEPS {\n'
-              '    fontsize=8;\n')
+    out.write('digraph DEPS {\n    fontsize=8;\n')
     out.write('\n'.join(nodes))
     out.write('\n\n')
     out.write('\n'.join(edges))
@@ -286,107 +296,152 @@ Examples:
 def main():
   option_parser = optparse.OptionParser()
   option_parser.add_option(
-      "", "--root",
-      default="", dest="base_directory",
-      help="Specifies the repository root. This defaults "
-           "to '../../..' relative to the script file, which "
-           "will normally be the repository root.")
+    "",
+    "--root",
+    default="",
+    dest="base_directory",
+    help="Specifies the repository root. This defaults "
+    "to '../../..' relative to the script file, which "
+    "will normally be the repository root.",
+  )
   option_parser.add_option(
-      '', '--extra-repos',
-      action='append', dest='extra_repos', default=[],
-      help='Specifies extra repositories relative to root repository.')
+    '',
+    '--extra-repos',
+    action='append',
+    dest='extra_repos',
+    default=[],
+    help='Specifies extra repositories relative to root repository.',
+  )
   option_parser.add_option(
-      "-f", "--format",
-      dest="out_format", default="dot",
-      help="Output file format. "
-           "Can be anything that GraphViz dot's -T option supports. "
-           "The most useful ones are: dot (text), svg (image), pdf (image)."
-           "NOTES: dotty has a known problem with fonts when displaying DOT "
-           "files on Ubuntu - if labels are unreadable, try other formats.")
+    "-f",
+    "--format",
+    dest="out_format",
+    default="dot",
+    help="Output file format. "
+    "Can be anything that GraphViz dot's -T option supports. "
+    "The most useful ones are: dot (text), svg (image), pdf (image)."
+    "NOTES: dotty has a known problem with fonts when displaying DOT "
+    "files on Ubuntu - if labels are unreadable, try other formats.",
+  )
   option_parser.add_option(
-      "-o", "--out",
-      dest="out_file", default="DEPS",
-      help="Output file name. If the name does not end in an extension "
-           "matching the output format, that extension is automatically "
-           "appended.")
+    "-o",
+    "--out",
+    dest="out_file",
+    default="DEPS",
+    help="Output file name. If the name does not end in an extension "
+    "matching the output format, that extension is automatically "
+    "appended.",
+  )
   option_parser.add_option(
-      "-l", "--layout-engine",
-      dest="layout_engine", default="",
-      help="Layout rendering engine. "
-           "Can be anything that GraphViz dot's -K option supports. "
-           "The most useful are in decreasing order: dot, fdp, circo, osage. "
-           "NOTE: '-f dot' and '-f dot -l dot' are different: the former "
-           "will dump a raw DOT graph and stop; the latter will further "
-           "filter it through 'dot -Tdot -Kdot' layout engine.")
+    "-l",
+    "--layout-engine",
+    dest="layout_engine",
+    default="",
+    help="Layout rendering engine. "
+    "Can be anything that GraphViz dot's -K option supports. "
+    "The most useful are in decreasing order: dot, fdp, circo, osage. "
+    "NOTE: '-f dot' and '-f dot -l dot' are different: the former "
+    "will dump a raw DOT graph and stop; the latter will further "
+    "filter it through 'dot -Tdot -Kdot' layout engine.",
+  )
   option_parser.add_option(
-      "-i", "--incl",
-      default="^.*$", dest="incl",
-      help="Include only edges of the graph that match the specified regexp. "
-           "The regexp is applied to edges of the graph formatted as "
-           "'source_node->target_node', where the '->' part is vebatim. "
-           "Therefore, a reliable regexp should look like "
-           "'^(chrome|chrome/browser|chrome/common)->content/public/browser$' "
-           "or similar, with both source and target node regexps present, "
-           "explicit ^ and $, and otherwise being as specific as possible.")
+    "-i",
+    "--incl",
+    default="^.*$",
+    dest="incl",
+    help="Include only edges of the graph that match the specified regexp. "
+    "The regexp is applied to edges of the graph formatted as "
+    "'source_node->target_node', where the '->' part is vebatim. "
+    "Therefore, a reliable regexp should look like "
+    "'^(chrome|chrome/browser|chrome/common)->content/public/browser$' "
+    "or similar, with both source and target node regexps present, "
+    "explicit ^ and $, and otherwise being as specific as possible.",
+  )
   option_parser.add_option(
-      "-e", "--excl",
-      default="^$", dest="excl",
-      help="Exclude dependent nodes that match the specified regexp. "
-           "See --incl for details on the format.")
+    "-e",
+    "--excl",
+    default="^$",
+    dest="excl",
+    help="Exclude dependent nodes that match the specified regexp. "
+    "See --incl for details on the format.",
+  )
   option_parser.add_option(
-      "", "--fanin",
-      default="", dest="hilite_fanins",
-      help="Highlight fanins of nodes matching the specified regexp.")
+    "",
+    "--fanin",
+    default="",
+    dest="hilite_fanins",
+    help="Highlight fanins of nodes matching the specified regexp.",
+  )
   option_parser.add_option(
-      "", "--fanout",
-      default="", dest="hilite_fanouts",
-      help="Highlight fanouts of nodes matching the specified regexp.")
+    "",
+    "--fanout",
+    default="",
+    dest="hilite_fanouts",
+    help="Highlight fanouts of nodes matching the specified regexp.",
+  )
   option_parser.add_option(
-      "", "--ignore-temp-rules",
-      action="store_true", dest="ignore_temp_rules", default=False,
-      help="Ignore !-prefixed (temporary) rules in DEPS files.")
+    "",
+    "--ignore-temp-rules",
+    action="store_true",
+    dest="ignore_temp_rules",
+    default=False,
+    help="Ignore !-prefixed (temporary) rules in DEPS files.",
+  )
   option_parser.add_option(
-      "", "--ignore-specific-rules",
-      action="store_true", dest="ignore_specific_rules", default=False,
-      help="Ignore specific_include_rules section of DEPS files.")
+    "",
+    "--ignore-specific-rules",
+    action="store_true",
+    dest="ignore_specific_rules",
+    default=False,
+    help="Ignore specific_include_rules section of DEPS files.",
+  )
   option_parser.add_option(
-      "", "--hide-disallowed-deps",
-      action="store_true", dest="hide_disallowed_deps", default=False,
-      help="Hide disallowed dependencies in the output graph.")
+    "",
+    "--hide-disallowed-deps",
+    action="store_true",
+    dest="hide_disallowed_deps",
+    default=False,
+    help="Hide disallowed dependencies in the output graph.",
+  )
   option_parser.add_option(
-      "", "--unflatten",
-      action="store_true", dest="unflatten_graph", default=False,
-      help="Try to reformat the output graph so it is narrower and taller. "
-           "Helps fight overly flat and wide graphs, but sometimes produces "
-           "inferior results.")
+    "",
+    "--unflatten",
+    action="store_true",
+    dest="unflatten_graph",
+    default=False,
+    help="Try to reformat the output graph so it is narrower and taller. "
+    "Helps fight overly flat and wide graphs, but sometimes produces "
+    "inferior results.",
+  )
   option_parser.add_option(
-      "-v", "--verbose",
-      action="store_true", default=False,
-      help="Print debug logging")
+    "-v",
+    "--verbose",
+    action="store_true",
+    default=False,
+    help="Print debug logging",
+  )
   options, args = option_parser.parse_args()
 
   if not options.out_file.endswith(options.out_format):
     options.out_file += '.' + options.out_format
 
   deps_grapher = DepsGrapher(
-      base_directory=options.base_directory,
-      extra_repos=options.extra_repos,
-      verbose=options.verbose,
-      being_tested=False,
-
-      ignore_temp_rules=options.ignore_temp_rules,
-      ignore_specific_rules=options.ignore_specific_rules,
-      hide_disallowed_deps=options.hide_disallowed_deps,
-
-      out_file=options.out_file,
-      out_format=options.out_format,
-      layout_engine=options.layout_engine,
-      unflatten_graph=options.unflatten_graph,
-
-      incl=options.incl,
-      excl=options.excl,
-      hilite_fanins=options.hilite_fanins,
-      hilite_fanouts=options.hilite_fanouts)
+    base_directory=options.base_directory,
+    extra_repos=options.extra_repos,
+    verbose=options.verbose,
+    being_tested=False,
+    ignore_temp_rules=options.ignore_temp_rules,
+    ignore_specific_rules=options.ignore_specific_rules,
+    hide_disallowed_deps=options.hide_disallowed_deps,
+    out_file=options.out_file,
+    out_format=options.out_format,
+    layout_engine=options.layout_engine,
+    unflatten_graph=options.unflatten_graph,
+    incl=options.incl,
+    excl=options.excl,
+    hilite_fanins=options.hilite_fanins,
+    hilite_fanouts=options.hilite_fanouts,
+  )
 
   if len(args) > 0:
     PrintUsage()
