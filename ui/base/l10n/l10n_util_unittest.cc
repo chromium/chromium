@@ -245,6 +245,51 @@ TEST_F(L10nUtilTest, GetAppLocale_HasDefaultLocale_UseLocaleFromEnvironment) {
   }
 }
 
+// Regression test for https://crbug.com/571157925: the first entry of the
+// LANGUAGE preference list must win even if it only resolves to a locale
+// through fallback (e.g. de_DE -> de), and a later entry has an exact match
+// on disk (e.g. en_US -> en-US).
+TEST_F(L10nUtilTest,
+       GetAppLocale_UseLocaleFromEnvironment_FirstEntryWinsOverExactFallback) {
+  if (!kPlatformHasDefaultLocale || !kUseLocaleFromEnvironment) {
+    GTEST_SKIP() << "Only relevant on platforms reading LANGUAGE.";
+  }
+  SetUpLocales(kDefaultLocalesOnDisk);
+  constexpr auto kExtraLocales = std::to_array<std::string_view>({"de"});
+  SetUpLocales(kExtraLocales);
+  SetIcuLocaleForTest(GetKnownLanguageTag("en-US"));
+  env().SetVar("LANG", "de_DE.UTF-8");
+
+  // Control cases from the bug report, which work correctly.
+  env().UnSetVar("LANGUAGE");
+  EXPECT_EQ("de", l10n_util::GetApplicationLocale(std::string()));
+  env().SetVar("LANGUAGE", "de_DE");
+  EXPECT_EQ("de", l10n_util::GetApplicationLocale(std::string()));
+  env().SetVar("LANGUAGE", "de_DE:de");
+  EXPECT_EQ("de", l10n_util::GetApplicationLocale(std::string()));
+  env().SetVar("LANGUAGE", "de_DE:en");
+  EXPECT_EQ("de", l10n_util::GetApplicationLocale(std::string()));
+
+  // Failing cases from the bug report: the regional `en_US` fallback has an
+  // exact match on disk and must not override the preferred `de_DE`.
+  env().SetVar("LANGUAGE", "de_DE:en_US");
+  EXPECT_EQ("de", l10n_util::GetApplicationLocale(std::string()));
+  env().SetVar("LANGUAGE", "de_DE:en_US:en");
+  EXPECT_EQ("de", l10n_util::GetApplicationLocale(std::string()));
+
+  // Same issue with a different language pair.
+  env().SetVar("LANGUAGE", "fr_FR:en_US");
+  EXPECT_EQ("fr", l10n_util::GetApplicationLocale(std::string()));
+  env().SetVar("LANGUAGE", "fr_CA:en_GB");
+  EXPECT_EQ("fr", l10n_util::GetApplicationLocale(std::string()));
+
+  // Spanish case
+  env().SetVar("LANGUAGE", "es_MX:en_US");
+  EXPECT_EQ("es-419", l10n_util::GetApplicationLocale(std::string()));
+  env().SetVar("LANGUAGE", "es_ES:en_GB");
+  EXPECT_EQ("es", l10n_util::GetApplicationLocale(std::string()));
+}
+
 TEST_F(L10nUtilTest, GetAppLocaleBasicTest) {
   SetUpLocales(kDefaultLocalesOnDisk);
 

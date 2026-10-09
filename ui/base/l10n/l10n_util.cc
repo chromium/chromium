@@ -131,7 +131,6 @@ std::u16string GetDisplayNameForLocaleInternal(
 #endif  // BUILDFLAG(IS_IOS)
 }
 
-#if !BUILDFLAG(IS_APPLE)
 // Use --lang and the app pref on Windows.  On Linux, only look at the LC_*/LANG
 // environment variables.
 std::vector<LanguageTag> GetCandidates() {
@@ -164,8 +163,6 @@ std::vector<LanguageTag> GetCandidates() {
 #endif  // BUILDFLAG(IS_WIN)
   return candidates;
 }
-
-#endif  // !BUILDFLAG(IS_APPLE)
 
 // Preferred locales are enabled everywhere but Linux systems with GLib. This
 // function parses `preferred_locale` into a `LanguageTag` if they are enabled.
@@ -210,23 +207,7 @@ std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
       });
 }
 
-#if BUILDFLAG(IS_APPLE)
-std::string GetApplicationLocaleInternalMac(std::string_view pref_locale) {
-  std::optional<LanguageTag> preferred_locale_tag =
-      GetPreferredTag(pref_locale);
-
-  // The above should handle all of the cases Chrome normally hits, but for some
-  // unit tests, fallback is needed too.
-  if (!preferred_locale_tag) {
-    return "en-US";
-  }
-
-  return std::string(preferred_locale_tag->tag_string());
-}
-#endif
-
-#if !BUILDFLAG(IS_APPLE)
-std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
+std::string GetApplicationLocaleInternal(std::string_view pref_locale) {
   // The `preferred_tag` is separated from the other candidates.
   std::optional<LanguageTag> preferred_tag = GetPreferredTag(pref_locale);
   // If `preferred_tag`, it attempts to get a match for it, even if it is not
@@ -238,9 +219,7 @@ std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
     }
   }
 
-  std::vector<LanguageTag> candidates = GetCandidates();
-  std::optional<LanguageTag> matched_candidate;
-  for (const LanguageTag& candidate : candidates) {
+  for (const LanguageTag& candidate : GetCandidates()) {
     // If an exact match is found and resource-bundle data on-disk is found, it
     // is returned immediately.
     if (ui_l10n::GetPlatformLanguageMatcher().HasExactMatch(candidate) &&
@@ -248,34 +227,18 @@ std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
       return std::string(candidate.tag_string());
     }
 
-    if (matched_candidate) {
-      continue;
-    }
     // If there was a match using `CheckAndResolveLocale`, it is stored but not
     // returned yet because the priority is to find a candidate that has an
     // exact match with a `ResourceBundle` locale.
     if (std::optional<LanguageTag> resolved = CheckAndResolveLocale(
             candidate, CheckLocaleMode::kVerifyLocalizationDataExists);
         resolved) {
-      matched_candidate = *resolved;
+      return std::string(resolved->tag_string());
     }
-  }
-
-  if (matched_candidate) {
-    return std::string(matched_candidate->tag_string());
   }
 
   // Fallback to "en-US"
   return IsResourceBundleLocale(GetKnownLanguageTag("en-US")) ? "en-US" : "";
-}
-#endif  // !BUILDFLAG(IS_APPLE)
-
-std::string GetApplicationLocaleInternal(std::string_view pref_locale) {
-#if BUILDFLAG(IS_APPLE)
-  return GetApplicationLocaleInternalMac(pref_locale);
-#else
-  return GetApplicationLocaleInternalNonMac(pref_locale);
-#endif
 }
 
 std::string GetApplicationLocale(std::string_view pref_locale,
