@@ -471,8 +471,7 @@ class ViewTransitionCaptureTest
     EnablePixelOutput(1.f);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {viz::mojom::EnableVizTestApis,
-         features::kViewTransitionCaptureAndDisplay},
+        {viz::mojom::EnableVizTestApis},
         /*disabled_features=*/
         {blink::features::kPaintHolding});
   }

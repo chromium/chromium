@@ -216,13 +216,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHighFramerateRequestFromClient);
 CC_BASE_EXPORT bool IsEligibleForThrottleMainFrameTo60Hz();
 CC_BASE_EXPORT void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible);
 
-// A mode of ViewTransition capture that does not display unstyled frame,
-// instead displays the properly constructed frame while at the same doing
-// capture.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionCaptureAndDisplay);
-
-
-
 // When enabled, the LayerTreeHost will expect to use layer lists instead of
 // layer trees by default; the caller can explicitly opt into enabled or
 // disabled if need be to override this.

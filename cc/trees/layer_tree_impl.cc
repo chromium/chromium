@@ -3358,13 +3358,6 @@ bool LayerTreeImpl::IsAnimatingHUDContents() const {
 base::flat_set<blink::ViewTransitionToken>
 LayerTreeImpl::GetCaptureViewTransitionTokens() const {
   base::flat_set<blink::ViewTransitionToken> result;
-  // This effectively disables the new mode, since none of the capture tokens
-  // will apply.
-  if (!base::FeatureList::IsEnabled(
-          features::kViewTransitionCaptureAndDisplay)) {
-    return result;
-  }
-
   for (const auto& request : view_transition_requests_) {
     if (request->type() == ViewTransitionRequest::Type::kSave) {
       result.insert(request->token());

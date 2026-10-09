@@ -30,8 +30,7 @@ struct CC_EXPORT AppendQuadsContext {
   // passes -- one for capture which isn't displayed and one for display. The
   // reason this is important is that the captured render passes are filtered
   // to exclude ancestor clips as well as nested view transiiton elements,
-  // which may not be appropriate for display. Note that this is only set if
-  // ViewTransitionCaptureAndDisplay feature is enabled.
+  // which may not be appropriate for display.
   base::flat_set<blink::ViewTransitionToken> capture_view_transition_tokens;
 
   // In separate render pass appends, this indicates whether we're appending for

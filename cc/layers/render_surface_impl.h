@@ -213,10 +213,9 @@ class CC_EXPORT RenderSurfaceImpl {
     return viz::CompositorRenderPassId(id().GetInternalValue());
   }
 
-  // This is a render pass id that is used for view transition capture phase
-  // when ViewTransitionCaptureAndDisplay feature is enabled. It's constructed
-  // by using the regular `render_pass_id()` and mapping it to a reserved
-  // internal cc namespace (see code in cc/paint/element_.h:
+  // This is a render pass id that is used for view transition capture phase.
+  // It's constructed by using the regular `render_pass_id()` and mapping it to
+  // a reserved internal cc namespace (see code in cc/paint/element_.h:
   // `kElementIdReservedBitCount` and `RemapElementIdToCcNamespace`).
   viz::CompositorRenderPassId view_transition_capture_render_pass_id() const {
     return viz::CompositorRenderPassId(

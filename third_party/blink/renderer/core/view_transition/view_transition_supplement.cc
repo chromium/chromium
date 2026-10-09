@@ -396,13 +396,7 @@ bool ViewTransitionSupplement::HasNonScriptTransitions() const {
 }
 
 bool ViewTransitionSupplement::IsEarlyCallbackEnabled() const {
-  if (!RuntimeEnabledFeatures::ViewTransitionDOMCallbackAfterCommitEnabled()) {
-    return false;
-  }
-  if (HasNonScriptTransitions()) {
-    return false;
-  }
-  return true;
+  return !HasNonScriptTransitions();
 }
 
 bool ViewTransitionSupplement::HasActiveCaptures() const {

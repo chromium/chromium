@@ -204,11 +204,6 @@ bool IsEligibleForThrottleMainFrameTo60Hz() {
       std::memory_order_relaxed);
 }
 
-BASE_FEATURE(kViewTransitionCaptureAndDisplay,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-
-
 BASE_FEATURE(kUseLayerListsByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProgrammaticScrollAnimationOverride,
