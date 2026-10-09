@@ -830,18 +830,19 @@ def _PackageApk(options, build):
                       '''.format(package=desired_manifest_package_name)
                 proguard_file.write(textwrap.dedent(keep_rule))
 
-    logging.debug('Running aapt2 convert')
-    build_utils.CheckOutput(
-        [
-            options.aapt2_path,
-            'convert',
-            '--output-format',
-            'proto',
-            '-o',
-            build.proto_path,
-            build.arsc_path,
-        ]
-    )
+    if options.proto_path:
+        logging.debug('Running aapt2 convert')
+        build_utils.CheckOutput(
+            [
+                options.aapt2_path,
+                'convert',
+                '--output-format',
+                'proto',
+                '-o',
+                build.proto_path,
+                build.arsc_path,
+            ]
+        )
 
     # Sanity check that the created resources have the expected package ID.
     logging.debug('Performing sanity check')
