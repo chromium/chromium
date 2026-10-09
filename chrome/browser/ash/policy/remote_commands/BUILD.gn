@@ -47,7 +47,7 @@ static_library("remote_commands") {
     "user_commands_factory_ash.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [ "//dbus" ]
 
   deps = [
     "//ash",
@@ -90,7 +90,6 @@ static_library("remote_commands") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
     "//content/public/browser",
-    "//dbus",
     "//net",
     "//services/network/public/cpp",
     "//ui/base",

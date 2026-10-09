@@ -28,10 +28,7 @@ static_library("dlp") {
     "window_util.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chromeos/ash/experiences/screenshot_area",
-  ]
+  public_deps = [ "//chromeos/ash/experiences/screenshot_area" ]
 
   deps = [
     "//ash",

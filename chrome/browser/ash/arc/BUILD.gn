@@ -27,8 +27,6 @@ static_library("arc") {
     "icon_decode_request.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":arc_util",
     "//ash",
@@ -237,8 +235,6 @@ source_set("arc_util") {
 }
 
 source_set("arc_util_impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [ "arc_util.cc" ]
 
   deps = [

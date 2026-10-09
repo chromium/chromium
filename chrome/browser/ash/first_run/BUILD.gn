@@ -10,8 +10,6 @@ static_library("first_run") {
     "first_run.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//ash/webui/help_app_ui:help_app_ui_pref",

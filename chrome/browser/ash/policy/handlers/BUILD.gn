@@ -43,8 +43,8 @@ static_library("handlers") {
   ]
 
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/upgrade_detector:build_state_observer",
+    "//dbus",
   ]
 
   deps = [

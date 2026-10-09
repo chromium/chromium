@@ -14,7 +14,6 @@ static_library("audio") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/audio",
   ]
 
@@ -24,6 +23,7 @@ static_library("audio") {
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/experiences/settings_ui",
     "//components/session_manager/core",
+    "//components/user_manager",
 
     # Due to a cycle, we can't depend on //chrome/browser. Explicitly list one
     # of its dependencies that transitively depends on generated mojo headers,
