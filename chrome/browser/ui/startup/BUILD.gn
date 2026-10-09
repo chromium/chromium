@@ -100,6 +100,7 @@ source_set("startup") {
     ]
 
     public_deps += [
+      "//chrome/browser/infobars",
       "//chrome/browser/startup",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
@@ -614,7 +615,10 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_win) {
       sources += [ "startup_launch_infobar_interactive_uitest.cc" ]
-      deps += [ "//chrome/browser/ui/views/infobars" ]
+      deps += [
+        "//chrome/browser/infobars",
+        "//chrome/browser/ui/views/infobars",
+      ]
     }
 
     if (!is_chromeos) {

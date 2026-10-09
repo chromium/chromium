@@ -15,7 +15,9 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -25,9 +27,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
 
 using InfoBarType = StartupLaunchInfoBarManager::InfoBarType;
 
@@ -77,6 +84,41 @@ void StartupLaunchInfoBarManagerImpl::ShowInfoBars(InfoBarType infobar_type) {
   base::UmaHistogramCounts100(GetShownHistogramName(infobar_type), 1);
 
   infobar_type_ = infobar_type;
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::STARTUP_LAUNCH_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (!browser_infobar_manager) {
+      return;
+    }
+    infobars::InfoBarShowParams params;
+    switch (infobar_type) {
+      case InfoBarType::kForegroundOptIn:
+        params.message_text =
+            l10n_util::GetStringUTF16(IDS_STARTUP_LAUNCH_INFOBAR_OPT_IN_TITLE);
+        params.ok_button.label =
+            l10n_util::GetStringUTF16(IDS_STARTUP_LAUNCH_INFOBAR_ALLOW_BUTTON);
+        params.ok_button.style = ui::ButtonStyle::kProminent;
+        break;
+      case InfoBarType::kForegroundOptOut:
+        params.message_text =
+            l10n_util::GetStringUTF16(IDS_STARTUP_LAUNCH_INFOBAR_OPT_OUT_TITLE);
+        params.ok_button.label = l10n_util::GetStringUTF16(
+            IDS_STARTUP_LAUNCH_INFOBAR_SETTINGS_BUTTON);
+        params.ok_button.style = ui::ButtonStyle::kTonal;
+        break;
+    }
+    // Safe because the destructor calls CloseAllInfoBars(), which hides the
+    // infobar and suppresses any pending result callback.
+    params.result_callback =
+        base::BindRepeating(&StartupLaunchInfoBarManagerImpl::OnInfoBarResult,
+                            base::Unretained(this));
+    browser_infobar_manager->ShowGlobally(
+        infobars::InfoBarDelegate::STARTUP_LAUNCH_INFOBAR_DELEGATE,
+        std::move(params));
+    return;
+  }
+
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
   browser_tab_strip_tracker_ =
@@ -87,6 +129,16 @@ void StartupLaunchInfoBarManagerImpl::ShowInfoBars(InfoBarType infobar_type) {
 }
 
 void StartupLaunchInfoBarManagerImpl::CloseAllInfoBars() {
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::STARTUP_LAUNCH_INFOBAR_DELEGATE)) {
+    if (auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process)) {
+      browser_infobar_manager->Hide(
+          infobars::InfoBarDelegate::STARTUP_LAUNCH_INFOBAR_DELEGATE);
+    }
+    return;
+  }
+
   did_user_interact_ = false;
 
   browser_collection_observation_.Reset();
@@ -149,6 +201,24 @@ void StartupLaunchInfoBarManagerImpl::CreateInfoBarForWebContents(
 
   infobars_[web_contents] = infobar;
   content_infobar_manager->AddObserver(this);
+}
+
+void StartupLaunchInfoBarManagerImpl::OnInfoBarResult(
+    content::WebContents* web_contents,
+    infobars::InfoBarResult result) {
+  switch (result) {
+    case infobars::InfoBarResult::kAccepted:
+      OnAccept();
+      break;
+    case infobars::InfoBarResult::kDismissed:
+      OnDismiss();
+      break;
+    case infobars::InfoBarResult::kCancelled:
+    case infobars::InfoBarResult::kExtraButtonPressed:
+    case infobars::InfoBarResult::kIgnored:
+    case infobars::InfoBarResult::kLinkClicked:
+      break;
+  }
 }
 
 bool StartupLaunchInfoBarManagerImpl::ShouldTrackBrowser(
