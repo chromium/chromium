@@ -807,6 +807,7 @@ if (!is_android) {
       "//chrome/browser/net",
       "//chrome/browser/notifications:test_support",
       "//chrome/browser/predictors",
+      "//chrome/browser/preloading",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_test_util",
       "//chrome/browser/search_engine_choice",
