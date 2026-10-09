@@ -1716,9 +1716,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kOverscrollBehaviorY:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kContain ||
-             value_id == CSSValueID::kNone ||
-             (value_id == CSSValueID::kChain &&
-              RuntimeEnabledFeatures::CSSOverscrollBehaviorChainEnabled());
+             value_id == CSSValueID::kNone || value_id == CSSValueID::kChain;
     case CSSPropertyID::kOriginTrialTestProperty:
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kNone;
     case CSSPropertyID::kTextBoxTrim:

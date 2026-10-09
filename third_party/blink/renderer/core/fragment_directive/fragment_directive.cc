@@ -190,9 +190,7 @@ void FragmentDirective::ParseDirectives(const StringView& fragment_directive) {
     if (directive_string.starts_with("text=")) {
       String value = directive_string.substr(5).ToString();
       if (value.empty() ||
-          (RuntimeEnabledFeatures::
-               ScrollToTextFragmentUniqueFragmentsEnabled() &&
-           !text_directives.insert(value.ToAsciiLower()).is_new_entry)) {
+          !text_directives.insert(value.ToAsciiLower()).is_new_entry) {
         continue;
       }
 

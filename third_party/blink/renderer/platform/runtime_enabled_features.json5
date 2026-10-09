@@ -1927,10 +1927,6 @@
       status: "experimental",
     },
     {
-      name: "CSSOverscrollBehaviorChain",
-      status: "stable",
-    },
-    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },
@@ -5655,10 +5651,6 @@
       base_feature: "none",
     },
     {
-      name: "ScrollAnchorPriorityCandidateSubtree",
-      status: "stable",
-    },
-    {
       // Use parent element for text node to compute relative offset when
       // serializing scroll anchor to ensure consistency with
       // ComputeUniqueSelector()
@@ -5739,11 +5731,6 @@
     // Limits the number of scroll-to-text-fragment directives parsed per URL.
     {
       name: "ScrollToTextFragmentDirectiveLimit",
-      status: "stable",
-    },
-    // Only consider unique case-insensitive scroll-to-text fragments.
-    {
-      name: "ScrollToTextFragmentUniqueFragments",
       status: "stable",
     },
     {

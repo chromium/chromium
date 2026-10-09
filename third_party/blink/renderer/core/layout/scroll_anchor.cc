@@ -436,10 +436,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
         // Run the selection algorithm with the priority candidate as the root.
         // This would override the weak_anchor_object_ if there is a better
         // alternative.
-        if (RuntimeEnabledFeatures::
-                ScrollAnchorPriorityCandidateSubtreeEnabled()) {
-          FindAnchorRecursive(candidate);
-        }
+        FindAnchorRecursive(candidate);
         return true;
       }
     }
@@ -457,9 +454,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
     // Run the selection algorithm with the priority candidate as the root.
     // This would override the weak_anchor_object_ if there is a better
     // alternative.
-    if (RuntimeEnabledFeatures::ScrollAnchorPriorityCandidateSubtreeEnabled()) {
-      FindAnchorRecursive(candidate);
-    }
+    FindAnchorRecursive(candidate);
     return true;
   }
   return false;
