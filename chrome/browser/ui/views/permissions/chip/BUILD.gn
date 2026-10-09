@@ -52,7 +52,6 @@ source_set("impl") {
 
   deps = [
     ":chip",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/themes",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",

@@ -18,7 +18,6 @@ source_set("read_anything") {
     "read_anything_untrusted_ui.h",
   ]
   public_deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/read_anything",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui/top_chrome",

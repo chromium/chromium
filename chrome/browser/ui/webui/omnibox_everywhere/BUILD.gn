@@ -57,7 +57,6 @@ source_set("omnibox_everywhere") {
   public_deps = [
     "debug:mojo_bindings",
     "mojom:mojo_bindings",
-    "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
     "debug",

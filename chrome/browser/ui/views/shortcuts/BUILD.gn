@@ -22,10 +22,7 @@ source_set("impl") {
     "create_desktop_shortcut_delegate.cc",
     "create_desktop_shortcut_delegate.h",
   ]
-  public_deps = [
-    ":shortcuts",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":shortcuts" ]
   deps = [
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",

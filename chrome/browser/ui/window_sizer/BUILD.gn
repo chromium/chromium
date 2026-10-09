@@ -24,10 +24,7 @@ source_set("window_sizer") {
 source_set("impl") {
   sources = [ "window_sizer.cc" ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//ui/base/mojom:ui_base_types",
-  ]
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
 
   deps = [
     ":window_sizer",

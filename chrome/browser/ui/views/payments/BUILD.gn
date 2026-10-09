@@ -115,7 +115,6 @@ source_set("impl") {
   # //chrome/browser/ui:ui (browser_tabstrip.h). Reach them via
   # browser_public_dependencies; the reverse edge is expressed by the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

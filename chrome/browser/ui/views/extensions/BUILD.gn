@@ -549,10 +549,7 @@ source_set("extension_view_utils") {
 
 source_set("extension_view_utils_impl") {
   sources = [ "extension_view_utils.cc" ]
-  public_deps = [
-    ":extension_view_utils",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extension_view_utils" ]
   deps = [
     ":extensions_container_views",
     ":extensions_toolbar_desktop",
@@ -591,10 +588,7 @@ source_set("extensions_toolbar_coordinator") {
 
 source_set("extensions_toolbar_coordinator_impl") {
   sources = [ "extensions_toolbar_coordinator.cc" ]
-  public_deps = [
-    ":extensions_toolbar_coordinator",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extensions_toolbar_coordinator" ]
   deps = [
     ":extensions_toolbar_desktop",
     ":extensions_toolbar_desktop_view_controller",
@@ -662,10 +656,7 @@ source_set("extensions_toolbar_desktop_view_controller") {
 
 source_set("extensions_toolbar_desktop_view_controller_impl") {
   sources = [ "extensions_toolbar_desktop_view_controller.cc" ]
-  public_deps = [
-    ":extensions_toolbar_desktop_view_controller",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extensions_toolbar_desktop_view_controller" ]
   deps = [
     ":extensions_toolbar_desktop",
     "//ui/views",
@@ -717,10 +708,7 @@ source_set("extension_action_delegate_desktop") {
 
 source_set("extension_action_delegate_desktop_impl") {
   sources = [ "extension_action_delegate_desktop.cc" ]
-  public_deps = [
-    ":extension_action_delegate_desktop",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extension_action_delegate_desktop" ]
   deps = [
     ":extension_popup",
     ":extensions_container_views",
@@ -745,10 +733,7 @@ source_set("extension_install_dialog_view") {
 
 source_set("extension_install_dialog_view_impl") {
   sources = [ "extension_install_dialog_view.cc" ]
-  public_deps = [
-    ":extension_install_dialog_view",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extension_install_dialog_view" ]
   deps = [
     ":extensions_views_utils",
     "//base",
@@ -788,10 +773,7 @@ source_set("extensions_request_access_button") {
 
 source_set("extensions_request_access_button_impl") {
   sources = [ "extensions_request_access_button.cc" ]
-  public_deps = [
-    ":extensions_request_access_button",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extensions_request_access_button" ]
   deps = [
     ":extensions_container_views",
     ":extensions_request_access_hover_card_coordinator",
@@ -831,10 +813,7 @@ source_set("extensions_toolbar_button") {
 
 source_set("extensions_toolbar_button_impl") {
   sources = [ "extensions_toolbar_button.cc" ]
-  public_deps = [
-    ":extensions_toolbar_button",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extensions_toolbar_button" ]
   deps = [
     ":extensions_menu_coordinator",
     ":extensions_menu_view",
@@ -869,7 +848,6 @@ source_set("extension_view_views_impl") {
   public_deps = [
     ":extension_popup",
     ":extension_view_views",
-    "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
     "//base",
@@ -903,10 +881,7 @@ source_set("extension_popup") {
 
 source_set("extension_popup_impl") {
   sources = [ "extension_popup.cc" ]
-  public_deps = [
-    ":extension_popup",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":extension_popup" ]
   deps = [
     "//base",
     "//chrome/browser/devtools",

@@ -16,7 +16,6 @@ source_set("management") {
     "management_ui_constants.h",
     "management_ui_handler.h",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
     "//chrome/app:generated_resources",

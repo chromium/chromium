@@ -137,8 +137,6 @@ source_set("settings") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "about_handler.cc",
     "accessibility_main_handler.cc",

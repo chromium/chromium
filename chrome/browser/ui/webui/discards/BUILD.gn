@@ -32,7 +32,6 @@ if (!is_android || is_desktop_android) {
       "graph_dump_impl.h",
       "site_data_provider_impl.h",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       ":mojo_bindings",
       "//base",

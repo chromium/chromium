@@ -88,7 +88,6 @@ source_set("impl") {
   # is a circular include against //chrome/browser/ui:ui. Reach it via
   # browser_public_dependencies; the reverse edge is the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (is_mac) {
     sources += [ "video_overlay_window_native_widget_mac.mm" ]

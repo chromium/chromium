@@ -10,8 +10,6 @@ source_set("browser_command") {
     "browser_command_handler.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/app:command_ids",
