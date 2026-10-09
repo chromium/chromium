@@ -65,6 +65,7 @@ MockIOSContextualSearchService::MockIOSContextualSearchService(
                          contextual_search::ContextualSearchSource source,
                          std::optional<lens::LensOverlayInvocationSource>
                              invocation_source) {
+        last_search_query_text_.clear();
         std::unique_ptr<testing::NiceMock<
             contextual_search::MockContextualSearchContextController>>
             controller = std::make_unique<testing::NiceMock<
@@ -138,17 +139,21 @@ MockIOSContextualSearchService::MockIOSContextualSearchService(
                     handle->GetController()->StartFileUploadFlow(
                         token, std::move(input_data), std::move(image_options));
                   });
-
-          // Completes the flow by providing a placeholder search URL.
-          ON_CALL(*session_handle, CreateSearchUrl)
-              .WillByDefault(
-                  [](std::unique_ptr<
-                         contextual_search::ContextualSearchContextController::
-                             CreateSearchUrlRequestInfo> request_info,
-                     base::OnceCallback<void(GURL)> callback) {
-                    std::move(callback).Run(GURL("about:blank"));
-                  });
         }
+
+        // Completes the flow by recording the requested query text and
+        // providing a placeholder search URL.
+        ON_CALL(*session_handle, CreateSearchUrl)
+            .WillByDefault(
+                [this](
+                    std::unique_ptr<
+                        contextual_search::ContextualSearchContextController::
+                            CreateSearchUrlRequestInfo> request_info,
+                    base::OnceCallback<void(GURL)> callback) {
+                  last_search_query_text_ =
+                      request_info ? request_info->query_text : "";
+                  std::move(callback).Run(GURL("about:blank"));
+                });
 
         return session_handle;
       });

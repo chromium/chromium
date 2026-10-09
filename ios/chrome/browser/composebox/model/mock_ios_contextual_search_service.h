@@ -47,8 +47,14 @@ class MockIOSContextualSearchService : public IOSContextualSearchService {
   // Sets whether tab upload should auto-succeed.
   void SetTabUploadAutoSucceed(bool auto_succeed);
 
+  // Returns the query text from the most recent `CreateSearchUrl` request.
+  const std::string& last_search_query_text() const {
+    return last_search_query_text_;
+  }
+
  private:
   bool tab_upload_auto_succeed_ = false;
+  std::string last_search_query_text_;
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MODEL_MOCK_IOS_CONTEXTUAL_SEARCH_SERVICE_H_

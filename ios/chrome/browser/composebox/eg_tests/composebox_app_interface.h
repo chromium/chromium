@@ -39,6 +39,10 @@
 // Returns whether the composebox server side state is enabled.
 + (BOOL)isServerSideStateEnabled;
 
+// Returns the query text from the most recent search URL request sent via
+// `MockIOSContextualSearchService`.
++ (NSString*)lastSentAIMQueryText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_EG_TESTS_COMPOSEBOX_APP_INTERFACE_H_

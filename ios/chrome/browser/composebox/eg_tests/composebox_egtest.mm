@@ -53,6 +53,10 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+// A short prefix that completes autocomplete synchronously to populate the
+// initial match before typing a longer query.
+NSString* const kShortPrefix = @"foo:bar";
+
 // A long text used to ensure the composebox is expanded when it is on a compact
 // mode.
 NSString* kLongText =
@@ -375,6 +379,58 @@ void RemoveAttachmentWithTitle(NSString* title) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kComposeboxAIMButtonAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that typing a long text and tapping the Send button in AI mode accepts
+// the full text without truncation.
+- (void)testComposeboxAIModeSendLongText {
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(base::StringPrintf(kPageURL, 1))];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible and clear the omnibox.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+  [[EarlGrey selectElementWithMatcher:ComposeboxClearButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Enable AI mode from the plus menu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMButtonAccessibilityIdentifier)];
+
+  // Enter a short prefix that completes synchronously to populate
+  // `current_match`, then update to a long query while `SearchProvider` is
+  // pending.
+  [ChromeEarlGreyUI replaceTextInOmnibox:kShortPrefix];
+  [ChromeEarlGreyUI replaceTextInOmnibox:kLongText];
+
+  // Tap the Send button.
+  id<GREYMatcher> sendButtonMatcher = grey_allOf(
+      grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
+      grey_enabled(), grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:sendButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:sendButtonMatcher]
+      performAction:grey_tap()];
+
+  // Verify that the full long text was accepted and sent for the AIM query.
+  ConditionBlock querySentCondition = ^{
+    return [[ComposeboxAppInterface lastSentAIMQueryText]
+        isEqualToString:kLongText];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, querySentCondition),
+             @"Expected full long text '%@' to be sent, but got '%@'.",
+             kLongText, [ComposeboxAppInterface lastSentAIMQueryText]);
 }
 
 // Tests that all buttons in the plus menu are enabled.

@@ -328,3 +328,33 @@ TEST_F(OmniboxTextControllerTest, RefineWithTextSanitizesJavaScript) {
   [omnibox_text_controller_ refineWithText:u"java\x0d\x0ascript:alert(2)"];
   EXPECT_EQ(u"alert(2)", [omnibox_text_controller_ displayedText]);
 }
+
+// Tests that `currentMatch` updates `fill_into_edit` as the user types longer
+// text in Composebox mode.
+TEST_F(OmniboxTextControllerTest, ComposeboxCurrentMatchUpdatesFillIntoEdit) {
+  omnibox_autocomplete_controller_.omniboxTextController =
+      omnibox_text_controller_;
+  omnibox_client_->set_page_classification(
+      metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX);
+
+  omnibox_text_model_->OnSetFocus();
+
+  const std::u16string short_query = u"foo:bar";
+  omnibox_text_model_->UpdateUserText(short_query);
+  [omnibox_text_controller_ setWindowText:short_query
+                                 caretPos:0
+                        startAutocomplete:YES
+                        notifyTextChanged:YES];
+  EXPECT_EQ(short_query,
+            [omnibox_text_controller_ currentMatch:nullptr].fill_into_edit);
+
+  const std::u16string long_query =
+      u"foo:bar followed by a much longer typed text in composebox ai mode";
+  omnibox_text_model_->UpdateUserText(long_query);
+  [omnibox_text_controller_ setWindowText:long_query
+                                 caretPos:0
+                        startAutocomplete:YES
+                        notifyTextChanged:YES];
+  EXPECT_EQ(long_query,
+            [omnibox_text_controller_ currentMatch:nullptr].fill_into_edit);
+}
