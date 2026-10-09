@@ -710,12 +710,12 @@ void BrowserActions::InitializeSidePanelActions() {
             .SetText(l10n_util::GetStringUTF16(
                 contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
                     profile)
-                    ? IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE
+                    ? IDS_ASK_GOOGLE_ABOUT_THIS_PAGE
                     : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
             .SetTooltipText(l10n_util::GetStringUTF16(
                 contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
                     profile)
-                    ? IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE
+                    ? IDS_ASK_GOOGLE_ABOUT_THIS_PAGE
                     : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 features::IsRoundedIconsEnabled()
@@ -4331,10 +4331,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionAskGoogleAboutThisPageFromAppMenu)
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE))
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE))
+          .SetText(l10n_util::GetStringUTF16(IDS_ASK_GOOGLE_ABOUT_THIS_PAGE))
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_ASK_GOOGLE_ABOUT_THIS_PAGE))
           .SetImage(
               ui::ImageModel::FromVectorIcon(ask_google_icon, ui::kColorIcon))
           .Build());

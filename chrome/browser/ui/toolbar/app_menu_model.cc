@@ -2364,7 +2364,7 @@ void AppMenuModel::Build() {
     if (show_ask_google) {
       AddItemWithStringIdAndVectorIcon(
           target_model, IDC_ASK_GOOGLE_ABOUT_THIS_PAGE,
-          IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE, search_spark_icon);
+          IDS_ASK_GOOGLE_ABOUT_THIS_PAGE, search_spark_icon);
       const size_t ask_google_command_index =
           target_model->GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE)
               .value();
