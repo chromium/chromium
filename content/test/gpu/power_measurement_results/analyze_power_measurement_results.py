@@ -91,7 +91,6 @@ def DetermineResultsFromMultipleRuns(measurements, repeat_strategy):
   return []
 
 
-# pylint: disable=too-many-locals
 def ProcessJsonData(
   jsons, per_bot=False, repeat_strategy=RepeatStrategy.COUNT_MINIMUM
 ):
@@ -145,7 +144,6 @@ def ProcessJsonData(
   }
 
 
-# pylint: enable=too-many-locals
 
 
 def Mean(data):
@@ -208,7 +206,6 @@ def GetOutliers(data, variation_threshold):
   return outliers
 
 
-# pylint: disable=too-many-locals
 def FindBuild(jsons, selected_bots, test_name, result):
   for j in jsons:
     for build in j.get('builds', []):
@@ -242,7 +239,6 @@ def FindBuild(jsons, selected_bots, test_name, result):
   return None
 
 
-# pylint: enable=too-many-locals
 
 
 def RunExperiment_BadBots(
@@ -295,7 +291,6 @@ def RunExperiment_BadBots(
   return total_bad_bots
 
 
-# pylint: disable=too-many-locals
 def RunExperiment_GoodBots(
   jsons, bad_bots=None, repeat_strategy=RepeatStrategy.COUNT_MINIMUM
 ):
@@ -374,13 +369,11 @@ def RunExperiment_GoodBots(
   return total_good_bots
 
 
-# pylint: enable=too-many-locals
 
 
 # This could definitely use some refactoring to be more readable and make
 # pylint happier, but currently difficult to change confidently without any
 # unittests.
-# pylint: disable=too-many-locals,too-many-branches,too-many-statements
 def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
   GET_RID_OF_N_BOTS_WITH_WORST_STDEV = 10
 
@@ -499,7 +492,6 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
       logging.debug(builds)
 
 
-# pylint: enable=too-many-locals,too-many-branches,too-many-statements
 
 
 def main():

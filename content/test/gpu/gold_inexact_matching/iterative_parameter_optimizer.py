@@ -9,7 +9,6 @@ from gold_inexact_matching import common_typing as ct
 
 # This is an abstract class itself, so it's fine that it doesn't implement
 # all of BaseParameterOptimizer's abstract methods.
-# pylint: disable=abstract-method
 class IterativeParameterOptimizer(base_optimizer.BaseParameterOptimizer):
   """Abstract ParameterOptimizer class for running an iterative algorithm."""
 
@@ -62,4 +61,3 @@ class IterativeParameterOptimizer(base_optimizer.BaseParameterOptimizer):
     assert self._args.delta_threshold_step >= self.MIN_DELTA_THRESHOLD_STEP
 
 
-# pylint: enable=abstract-method

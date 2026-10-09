@@ -55,7 +55,7 @@ def DoNotCaptureFullScreenshot(_) -> bool:
 class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
   """Defines a single expected color test."""
 
-  def __init__(  # pylint: disable=too-many-arguments
+  def __init__(
     self,
     url: str,
     name: str,

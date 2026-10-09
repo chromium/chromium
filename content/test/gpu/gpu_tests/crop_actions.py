@@ -68,7 +68,6 @@ class FixedRectCropAction(BaseCropAction):
     self._x2 = x2
     self._y2 = y2
 
-  # pylint: disable=too-many-locals
   def CropScreenshot(
     self, screenshot: ct.Screenshot, dpr: float, device_type: str, os_name: str
   ) -> ct.Screenshot:
@@ -106,7 +105,6 @@ class FixedRectCropAction(BaseCropAction):
       screenshot, start_x, start_y, crop_width, crop_height
     )
 
-  # pylint: enable=too-many-locals
 
 
 class NonWhiteContentCropAction(BaseCropAction):

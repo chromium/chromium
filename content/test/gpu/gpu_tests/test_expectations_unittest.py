@@ -190,7 +190,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
 
   def testWebglTestPathsExist(self) -> None:
     def _CheckWebglConformanceTestPathIsValid(pattern: str) -> None:
-      if not 'WebglExtension_' in pattern:
+      if 'WebglExtension_' not in pattern:
         full_path = os.path.normpath(
           os.path.join(webgl_test_util.conformance_path, pattern)
         )

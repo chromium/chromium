@@ -7,7 +7,7 @@ from typing import Generator
 import unittest
 
 # vpython-provided modules.
-import pandas  # pylint: disable=import-error
+import pandas
 
 from bad_machine_finder import bigquery
 from bad_machine_finder import swarming

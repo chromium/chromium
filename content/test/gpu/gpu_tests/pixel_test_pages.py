@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 # This is more akin to a .pyl/JSON file, so it's expected to be long.
-# pylint: disable=too-many-lines
 
 from collections.abc import Callable
 from enum import Enum
@@ -72,7 +71,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
   from the old-style GPU tests.
   """
 
-  def __init__(  # pylint: disable=too-many-arguments
+  def __init__(
     self,
     url: str,
     name: str,
@@ -1735,7 +1734,6 @@ class PixelTestPages:
       ),
     ]
 
-  # pylint: disable=too-many-locals
   @staticmethod
   def DirectCompositionPages(
     base_name: str, swap_count: int | None = None
@@ -2092,8 +2090,6 @@ class PixelTestPages:
         matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO,
       ),
     ]
-
-  # pylint: enable=too-many-locals
 
   @staticmethod
   def VideoFromCanvasPages(base_name: str) -> list[PixelTestPage]:

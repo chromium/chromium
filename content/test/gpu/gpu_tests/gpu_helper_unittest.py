@@ -15,7 +15,6 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 
 
-# pylint: disable=too-many-arguments
 def CreateGpuDeviceDict(
   vendor_id: int | None = None,
   device_id: int | None = None,
@@ -46,7 +45,6 @@ def CreateGpuDeviceDict(
   }
 
 
-# pylint: enable=too-many-arguments
 
 
 @dataclasses.dataclass

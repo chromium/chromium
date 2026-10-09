@@ -70,7 +70,6 @@ class SkiaGoldTestCase:
   here. Additional information should be stored in the appropriate subclass.
   """
 
-  # pylint: disable=too-many-arguments
   def __init__(
     self,
     name: str,
@@ -96,7 +95,6 @@ class SkiaGoldTestCase:
     )
     self.refresh_after_finish = refresh_after_finish
 
-  # pylint: enable=too-many-arguments
 
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
@@ -467,7 +465,6 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     }
     return gpu_keys
 
-  # pylint: disable=no-self-use
   def GetGoldOptionalKeys(self) -> dict[str, str]:
     """Get all the optional JSON metadata that will be passed to goldctl.
 
@@ -476,7 +473,6 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     """
     return {}
 
-  # pylint: enable=no-self-use
 
   def _UploadTestResultToSkiaGold(
     self,

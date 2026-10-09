@@ -118,7 +118,6 @@ def FindStepLogURL(steps, step_name, log_name):
   return None
 
 
-# pylint: disable=too-many-branches
 def ProcessStepStdout(stdout_url, entry):
   number = entry['number']
   logging.debug(
@@ -148,9 +147,7 @@ def ProcessStepStdout(stdout_url, entry):
       test_name = tokens[1]
       if tokens[2] != 'passed':
         logging.warning('Wrong format for test passed line: %s', line)
-      # pylint: disable=unsupported-assignment-operation
       my_results['name'] = test_name
-      # pylint: enable=unsupported-assignment-operation
       entry['tests'].append(my_results)
     elif line.startswith('Chrome Env: '):
       chrome_env = ast.literal_eval(line[len('Chrome Env: ') :])
@@ -177,7 +174,6 @@ def ProcessStepStdout(stdout_url, entry):
     logging.warning('[BUILD %d] Fail to locate the bot name', number)
 
 
-# pylint: enable=too-many-branches
 
 
 def CollectBuildData(build, data_entries):

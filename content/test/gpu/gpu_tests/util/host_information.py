@@ -21,14 +21,12 @@ import sys
 from typing import Any
 
 # vpython-provided modules.
-import psutil  # pylint: disable=import-error
+import psutil
 
 from gpu_tests import constants
 
 if sys.platform == 'win32':
-  # pylint: disable=import-error
   from win32com import client  # type: ignore
-  # pylint: enable=import-error
 else:
   client = None
 
@@ -252,7 +250,7 @@ def _GetAvailableGpusMac() -> list[_Gpu]:
   # Effectively copied from Swarming's get_gpu() in api/platforms/osx.py.
   # This applies to all helper functions called from here as well.
   for gpu in _get_system_profiler('SPDisplaysDataType'):
-    if not 'spdisplays_device-id' in gpu:
+    if 'spdisplays_device-id' not in gpu:
       # Apple Silicon GPUs don't show up as PCI-e devices, so they require
       # separate detection code.
       gpu_list.append(_HandleAppleGpu(gpu))

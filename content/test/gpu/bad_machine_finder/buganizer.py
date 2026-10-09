@@ -124,7 +124,7 @@ def _GetRecentlyReportedBots(
 def _GetBuganizerClient() -> buganizer.BuganizerClient:
   try:
     return buganizer.BuganizerClient()
-  except Exception as e:  # pylint: disable=broad-except
+  except Exception as e:
     raise ClientNotAvailableException(
       'Failed to create Buganizer client'
     ) from e

@@ -266,7 +266,7 @@ class WebGLConformanceIntegrationTestBase(
       retry_on_amd64_generic = (
         'chromeos-board-amd64-generic' in self.GetPlatformTags(self.browser)
       )
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       logging.warning(
         'Failed to determine if running on a ChromeOS VM, assuming no'
       )
@@ -629,7 +629,7 @@ class WebGLConformanceIntegrationTestBase(
           continue
         if (
           webgl2_only
-          and not '.txt' in test_name
+          and '.txt' not in test_name
           and (
             not min_version_to_compare
             or not min_version_to_compare.startswith('2')

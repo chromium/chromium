@@ -317,7 +317,7 @@ def _OutputBuilderInformation(
         output. If None, all stats will be output regardless of max shard time.
   """
 
-  def _OutputListStats(l, output_lines):
+  def _OutputListStats(l, output_lines):  # noqa: E741
     # Here and lower down when we do the shard calculations, we can potentially
     # understate the values since we aren't guaranteed to get |num_samples|
     # datapoints if a test is new or recently renamed. However, this should be

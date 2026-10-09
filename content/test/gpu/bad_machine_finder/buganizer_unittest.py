@@ -13,7 +13,6 @@ from blinkpy.w3c import buganizer as blink_buganizer
 from bad_machine_finder import buganizer
 from bad_machine_finder import detection
 
-# pylint: disable=protected-access
 
 
 class FakeBuganizerClient:

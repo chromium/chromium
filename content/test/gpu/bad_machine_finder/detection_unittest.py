@@ -603,9 +603,7 @@ class DetectViaInterquartileRangeUnittest(unittest.TestCase):
 class IndependentEventHelpersUnittest(unittest.TestCase):
   def testChanceOfExactlyNIndependentEvents(self):
     """Tests behavior of the N independent events helper."""
-    # pylint: disable=protected-access
     func = detection._ChanceOfExactlyNIndependentEvents
-    # pylint: enable=protected-access
 
     # Equivalent to flipping a coin and getting heads.
     self.assertEqual(func(decimal.Decimal(0.5), 1, 1), decimal.Decimal(0.5))
@@ -621,9 +619,7 @@ class IndependentEventHelpersUnittest(unittest.TestCase):
 
   def testChanceOfNOrMoreIndependentEvents(self):
     """Tests behavior of the N+ independent events helper."""
-    # pylint: disable=protected-access
     func = detection._ChanceOfNOrMoreIndependentEvents
-    # pylint: enable=protected-access
 
     # Probability of getting 0 or more should always be 1.
     self.assertEqual(func(decimal.Decimal(0.5), 10, 0), 1)

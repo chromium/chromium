@@ -9,13 +9,11 @@ import unittest
 from unittest import mock
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import data_types
 
 from unexpected_passes import gpu_expectations
-
-# pylint: disable=protected-access
 
 
 class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):

@@ -477,7 +477,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Test losing a context in a hidden tab. This test passes if the tab
     # doesn't crash.
     tab = self.tab
-    dummy_tab = tab.browser.tabs.New()
+    dummy_tab = tab.browser.tabs.New()  # noqa: F841
     tab.EvaluateJavaScript('loseContextUsingExtension()')
     tab.Activate()
     self._WaitForTabAndCheckCompletion()

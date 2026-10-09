@@ -56,7 +56,7 @@ import tempfile
 try:
   from selenium import webdriver
   from selenium.common import exceptions
-except ImportError as error:
+except ImportError:
   logging.error(
     'This script needs selenium and appropriate web drivers to be installed.'
   )
@@ -195,7 +195,6 @@ def CreateWebDriver(
   return driver
 
 
-# pylint: disable=too-many-arguments
 def MeasurePowerOnce(
   browser,
   logfile,
@@ -217,15 +216,12 @@ def MeasurePowerOnce(
 
   try:
     shutil.rmtree(user_data_dir)
-  except Exception as err:  # pylint: disable=broad-except
+  except Exception as err:
     logging.warning('Failed to remove temporary folder: %s', user_data_dir)
     logging.warning('Please kill browser and remove it manually to avoid leak')
     logging.debug(err)
   results = ipg_utils.AnalyzeIPGLogFile(logfile, delay)
   return results
-
-
-# pylint: enable=too-many-arguments
 
 
 def ParseArgs():
@@ -368,7 +364,7 @@ def main():
       w = csv.DictWriter(results_csv, fieldnames=labels)
       w.writeheader()
       w.writerows(all_results)
-  except Exception as err:  # pylint: disable=broad-except
+  except Exception as err:
     logging.warning('Failed to write results file %s', results_filename)
     logging.debug(err)
 

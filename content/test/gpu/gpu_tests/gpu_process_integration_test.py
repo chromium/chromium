@@ -329,7 +329,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Target machine must have a GPU')
     if not system_info.gpu.aux_attributes:
       self.fail('Browser must support GPU aux attributes')
-    if not 'gl_renderer' in system_info.gpu.aux_attributes:
+    if 'gl_renderer' not in system_info.gpu.aux_attributes:
       self.fail('Browser must have gl_renderer in aux attribs')
     if (
       not host_information.IsMac()
@@ -529,11 +529,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       logging.info('Skipping test because not running on Android')
       return
 
-    # pylint: disable=protected-access
     sdk_version = (
       self.browser.platform._platform_backend.device.build_version_sdk
     )
-    # pylint: enable=protected-access
     if sdk_version < version_codes.PIE:
       logging.info('Skipping test because not running on Android P+')
       return

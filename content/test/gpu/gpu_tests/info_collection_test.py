@@ -285,9 +285,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       )
 
     # Enable advanced protection (AAPM).
-    # pylint: disable=protected-access
     device = self.browser.platform._platform_backend.device
-    # pylint: enable=protected-access
     try:
       device.RunShellCommand(
         ['cmd', 'advanced_protection', 'set-protection-enabled', 'true'],

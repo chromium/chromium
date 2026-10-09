@@ -4,7 +4,6 @@
 
 # It's reasonable for unittests to be messing with protected members.
 # Additionally, there is a lot to test, so line count is expected to be large.
-# pylint: disable=protected-access,too-many-lines
 
 
 import copy
@@ -18,11 +17,11 @@ import unittest
 from unittest import mock
 
 # Needed in order for the tools/perf and Telemetry imports to work.
-# pylint: disable=unused-import,wrong-import-order
-from gpu_path_util import setup_telemetry_paths
-from gpu_path_util import setup_tools_perf_paths
+# pylint: disable=unused-import
+from gpu_path_util import setup_telemetry_paths  # noqa: F401
+from gpu_path_util import setup_tools_perf_paths  # noqa: F401
 
-# pylint: enable=unused-import,wrong-import-order
+# pylint: disable=unused-import
 from chrome_telemetry_build import chromium_config
 import py_utils
 from py_utils import tempfile_ext
@@ -49,7 +48,6 @@ import run_gpu_integration_test
 
 # Unittest test cases are defined as public methods, so ignore complaints about
 # having too many.
-# pylint: disable=too-many-public-methods
 
 VENDOR_NVIDIA = 0x10DE
 VENDOR_AMD = 0x1002
@@ -62,7 +60,7 @@ GpuTestClass = gpu_integration_test.GpuIntegrationTest
 GpuTestClassType = Type[GpuTestClass]
 
 
-def _GetSystemInfo(  # pylint: disable=too-many-arguments
+def _GetSystemInfo(
   gpu: int = 0,
   device: int = 0,
   vendor_string: str = '',
@@ -215,7 +213,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self._RunGpuIntegrationTests('simple_integration_unittest')
     self.assertIn('expected_failure', self._test_result['tests'])
 
-  # pylint: disable=too-many-arguments
   def _TestTagGenerationForMockPlatform(
     self,
     test_class: GpuTestClassType,
@@ -241,8 +238,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       ).issubset(tag_set)
     )
     return tag_set
-
-  # pylint: enable=too-many-arguments
 
   def testGenerateContextLostExampleTagsForAsan(self) -> None:
     args = gpu_helper.GetMockArgs()
@@ -857,7 +852,6 @@ def CreateGpuInfo(
 # changing when it expects it to stay constant throughout the entire
 # suite.
 class FeatureVerificationUnittest(unittest.TestCase):
-  # pylint: disable=no-self-use
   def testVerifyGLBackendSuccessUnspecified(self):
     """Tests GL backend verification that passes w/o a backend specified."""
     gpu_info = CreateGpuInfo(
@@ -1025,11 +1019,8 @@ class FeatureVerificationUnittest(unittest.TestCase):
         ['--disable-skia-graphite'], gpu_info
       )
 
-  # pylint: enable=no-self-use
-
 
 class FeatureVerificationWebGPUCompatUnittest(unittest.TestCase):
-  # pylint: disable=no-self-use
   def testVerifyCompatContextSuccessUnspecified(self):
     """Tests WebGPU compat verification that passes w/o the es31 flag."""
     gpu_info = CreateGpuInfo(

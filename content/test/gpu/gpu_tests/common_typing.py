@@ -36,7 +36,6 @@ Browser = browser.Browser
 # object is also problematic.
 # invalid-field-call disabled since this is just more readable shorthand of a
 # valid field call.
-# pylint: disable=invalid-field-call
 def EmptyDict():
   return dataclasses.field(default_factory=dict)
 
@@ -49,4 +48,3 @@ def EmptySet():
   return dataclasses.field(default_factory=set)
 
 
-# pylint: enable=invalid-field-call

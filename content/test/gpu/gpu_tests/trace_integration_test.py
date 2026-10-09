@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 # TODO(dawn:549) Move WebGPU caching tests to a separate module to trim file.
-# pylint: disable=too-many-lines
 
 import collections
 from collections.abc import Generator
@@ -22,7 +21,7 @@ from typing import Any
 import unittest
 
 # vpython-provided modules.
-import perfetto.trace_processor as tp  # pylint: disable=import-error
+import perfetto.trace_processor as tp
 
 from telemetry.timeline import tracing_config
 from tracing.trace_data import trace_data
@@ -326,7 +325,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    # pylint: disable=too-many-branches
 
     # Include the device level trace tests, even though they're
     # currently skipped on all platforms, to give a hint that they
@@ -897,7 +895,6 @@ WHERE
 
     return expected
 
-  # pylint: disable=too-many-locals
   def _EvaluateSuccess_CheckVideoPath(
     self, category: str, trace_processor: tp.TraceProcessor, other_args: dict
   ) -> None:
@@ -990,8 +987,6 @@ ORDER BY slices.id
           f'ZeroCopy mismatch, expected {expected.zero_copy} got '
           f'{detected_zero_copy} for event with ID {event_id}'
         )
-
-  # pylint: enable=too-many-locals
 
   def _EvaluateSuccess_CheckOverlayMode(
     self, category: str, trace_processor: tp.TraceProcessor, other_args: dict

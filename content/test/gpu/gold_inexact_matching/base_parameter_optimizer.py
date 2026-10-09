@@ -15,9 +15,9 @@ import shutil
 import subprocess
 import tempfile
 
-from PIL import Image  # pylint: disable=import-error
+from PIL import Image
 
-import requests  # pylint: disable=import-error
+import requests
 
 from gold_inexact_matching import common_typing as ct
 from gold_inexact_matching import parameter_set
@@ -68,7 +68,7 @@ class BaseParameterOptimizer:
     # TODO(skbug.com/10610): Switch away from the public instance once
     # authentication is fixed for the non-public instance.
     self._gold_url = f'https://{args.gold_instance}-public-gold.skia.org'
-    self._pool = multiprocessing.Pool()  # pylint: disable=consider-using-with
+    self._pool = multiprocessing.Pool()
     # A map of strings, denoting a resolution or trace, to a set of strings,
     # denoting images that are that dimension or belong to that trace.
     self._images: dict[str, set[str]] = collections.defaultdict(set)
@@ -421,7 +421,7 @@ class BaseParameterOptimizer:
       )
       cmds = [
         self._GenerateComparisonCmd(l, r, parameters)
-        for (l, r) in itertools.combinations(digest_list, 2)
+        for (l, r) in itertools.combinations(digest_list, 2)  # noqa: E741
       ]
       results = self._pool.map(RunCommandAndExtractData, cmds)
       for success, num_pixels, max_delta in results:

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=too-many-lines
 
 import collections
 from collections.abc import Generator, Iterable
@@ -115,7 +114,6 @@ class _CachedAboutGpu(NamedTuple):
   test_that_started_browser: str
 
 
-# pylint: disable=too-many-public-methods
 class GpuIntegrationTest(
   serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase
 ):
@@ -212,11 +210,11 @@ class GpuIntegrationTest(
     """Returns whether the suite in general supports parallel tests."""
     return False
 
-  def _GetSerialGlobs(self) -> set[str]:  # pylint: disable=no-self-use
+  def _GetSerialGlobs(self) -> set[str]:
     """Returns a set of test name globs that should be run serially."""
     return set()
 
-  def _GetSerialTests(self) -> set[str]:  # pylint: disable=no-self-use
+  def _GetSerialTests(self) -> set[str]:
     """Returns a set of test names that should be run serially."""
     return set()
 
@@ -580,7 +578,6 @@ class GpuIntegrationTest(
     # to maintain the previous behavior with regards to storing browser launch
     # information between tests. As such, we also disable protected access
     # checks since those would be allowed if this were actually a class method.
-    # pylint: disable=protected-access
     cls = self.__class__
     new_browser_args = cls._GenerateAndSanitizeBrowserArgs(additional_args)
     if collect_dawn_info is None:
@@ -621,7 +618,6 @@ class GpuIntegrationTest(
         self.skipTest(
           'Determined that Skip expectation applies after browser restart'
         )
-    # pylint: enable=protected-access
 
   def RestartBrowserWithArgs(
     self,
@@ -671,7 +667,7 @@ class GpuIntegrationTest(
         cls._VerifyBrowserFeaturesMatchExpectedValues()
         cls._RetrieveAboutGpu()
         return
-      except Exception as e:  # pylint: disable=broad-except
+      except Exception as e:
         last_exception = e
         logging.exception(
           'Browser start failed (attempt %d of %d). Backtrace:',
@@ -814,7 +810,7 @@ class GpuIntegrationTest(
       # whether we got back useful data.
       if about_gpu_content and len(about_gpu_content) > 1024:
         cls._about_gpu_content = about_gpu_content
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
       logging.error('Exception while retrieving about:gpu: %s', e)
 
   @classmethod
@@ -1025,11 +1021,8 @@ class GpuIntegrationTest(
     if os_name == 'android':
       cls.browser.platform.android_action_runner.TurnScreenOn()
 
-  # pylint: disable=no-self-use
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
     return False
-
-  # pylint: enable=no-self-use
 
   def _DetermineFirstTestRetryWorkaround(self, test_name: str) -> bool:
     """Potentially allows retries for the first test run on a shard.
@@ -1050,13 +1043,10 @@ class GpuIntegrationTest(
     ):
       logging.warning('Forcing RetryOnFailure in test %s', test_name)
       # Notify typ that it should retry this test if necessary.
-      # pylint: disable=attribute-defined-outside-init
       self.retryOnFailure = True
-      # pylint: enable=attribute-defined-outside-init
       return True
     return False
 
-  # pylint: disable=no-self-use
   def _DetermineFirstBrowserStartWorkaround(self) -> bool:
     """Potentially allows retries for the first browser start on a shard.
 
@@ -1069,9 +1059,6 @@ class GpuIntegrationTest(
       return False
     return host_information.IsMac()
 
-  # pylint: enable=no-self-use
-
-  # pylint: disable=no-self-use
   def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
     """Potentially allows retries depending on the exception type.
 
@@ -1086,8 +1073,6 @@ class GpuIntegrationTest(
     """
     del exception
     return False
-
-  # pylint: enable=no-self-use
 
   def _RunGpuTest(self, url: str, test_name: str, args: ct.TestArgs) -> None:
     def _GetExpectedResultsAndShouldRetry():
@@ -1111,14 +1096,12 @@ class GpuIntegrationTest(
       # The re-raised exception isn't actually logged anywhere, so log it now
       # in order to notify users of why the test was skipped.
       logging.info('Programmatic skip reason: %s', e)
-      # pylint: disable=attribute-defined-outside-init
       self.programmaticSkipIsExpected = True
       # Only output associated bugs if the skip was due to an expectation, as
       # otherwise incorrect/confusing bugs can be associated with the skip. See
       # crbug.com/395919007 for more information.
       if not self._skip_was_due_to_expectation:
         self.shouldNotOutputAssociatedBugs = True
-      # pylint: enable=attribute-defined-outside-init
       raise
     except Exception as e:
       # We get these values here instead of at the beginning of the function
@@ -1131,9 +1114,7 @@ class GpuIntegrationTest(
       if not should_retry_on_failure and self._DetermineRetryWorkaround(e):
         should_retry_on_failure = True
         # Notify typ that it should retry this test.
-        # pylint: disable=attribute-defined-outside-init
         self.retryOnFailure = True
-        # pylint: enable=attribute-defined-outside-init
       if ResultType.Failure in expected_results or should_retry_on_failure:
         self._HandleExpectedFailureOrFlake(
           test_name, expected_crashes, should_retry_on_failure
@@ -1170,7 +1151,6 @@ class GpuIntegrationTest(
     Args:
       test_name: The name of the test that was run.
     """
-    # pylint: disable=protected-access
     cls = self.__class__
     if not cls._about_gpu_content:
       return
@@ -1200,7 +1180,6 @@ class GpuIntegrationTest(
       self.artifacts.CreateInMemoryTextArtifact(
         'about_gpu', f'See artifacts for {cls._test_that_started_browser}'
       )
-    # pylint: enable=protected-access
 
   def _HandleExpectedFailureOrFlake(
     self,
@@ -1255,7 +1234,7 @@ class GpuIntegrationTest(
     if self._ShouldRestartBrowserAfterFailure():
       self._RestartBrowser('unexpected test failure')
 
-  def _TestWasSlow(self) -> bool:  # pylint: disable=no-self-use
+  def _TestWasSlow(self) -> bool:
     return False
 
   def _ShouldRestartBrowserAfterFailure(self) -> bool:
@@ -1354,7 +1333,6 @@ class GpuIntegrationTest(
       if self._IsIntelGPUActive():
         self.fail("High performance GPU should have been active but wasn't")
 
-  # pylint: disable=too-many-return-statements
   def _ClearExpectedCrashes(self, expected_crashes: dict[str, int]) -> bool:
     """Clears any expected crash minidumps so they're not caught later.
 
@@ -1403,9 +1381,6 @@ class GpuIntegrationTest(
     )
     return False
 
-  # pylint: enable=too-many-return-statements
-
-  # pylint: disable=no-self-use
   def GetExpectedCrashes(self, args: ct.TestArgs) -> dict[str, int]:
     """Returns which crashes, per process type, to expect for the current test.
 
@@ -1423,8 +1398,6 @@ class GpuIntegrationTest(
     """
     del args
     return {}
-
-  # pylint: enable=no-self-use
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
@@ -1620,7 +1593,7 @@ class GpuIntegrationTest(
     # cause of flakes on Macs is resolved.
     try:
       self._EnsureTabIsAvailable()
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       if self._DetermineFirstBrowserStartWorkaround():
         self._EnsureTabIsAvailable()
       else:

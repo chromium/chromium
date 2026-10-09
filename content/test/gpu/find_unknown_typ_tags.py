@@ -18,10 +18,8 @@ import subprocess
 
 # setup_typ_paths (a first party import) needs to come before
 # expectations_parser (a third party import) in order for the import to work.
-# pylint: disable=wrong-import-order
-from gpu_path_util import setup_typ_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_typ_paths  # pylint: disable=unused-import  # noqa: F401
 from typ import expectations_parser
-# pylint: enable=wrong-import-order
 
 from gpu_tests import gpu_integration_test
 

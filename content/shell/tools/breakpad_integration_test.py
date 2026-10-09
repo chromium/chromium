@@ -9,7 +9,6 @@
 This test checks that content shell and breakpad are correctly hooked up, as
 well as that the tools can symbolize a stack trace."""
 
-
 from __future__ import print_function
 from __future__ import absolute_import
 import glob
@@ -27,9 +26,11 @@ TOP_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 try:
   sys.path.append(os.path.join(TOP_SRC_DIR, 'build', 'android'))
   import devil_chromium
+
   devil_chromium.Initialize()
 
   from pylib.constants import host_paths
+
   if host_paths.DEVIL_PATH not in sys.path:
     sys.path.append(host_paths.DEVIL_PATH)
 
@@ -37,13 +38,14 @@ try:
   from devil.android import device_utils
   from devil.android import flag_changer
   from devil.android.sdk import intent
-except:
+except:  # noqa: E722
   pass
 
 
-CONCURRENT_TASKS=4
+CONCURRENT_TASKS = 4
 BREAKPAD_TOOLS_DIR = os.path.join(
-  TOP_SRC_DIR, 'components', 'crash', 'content', 'tools')
+  TOP_SRC_DIR, 'components', 'crash', 'content', 'tools'
+)
 ANDROID_CRASH_DIR = '/data/data/org.chromium.content_shell_apk/cache'
 
 
@@ -69,10 +71,10 @@ def clear_android_dumps(options, device):
           if options.verbose:
             print(' deleting %s' % dump)
           device.RunShellCommand(['rm', dump], check_return=True, as_root=True)
-        except:
+        except:  # noqa: E722
           print('Failed to delete %s' % dump)
 
-  except:
+  except:  # noqa: E722
     print('Failed to list dumps in android crash dir %s' % pending)
 
 
@@ -99,26 +101,31 @@ def get_android_dump(options, crash_dir, symbols_dir):
       device.PullFile(os.path.join(pending, dump), crash_dir, as_root=True)
       minidump = os.path.join(crash_dir, os.path.basename(dump))
       cmd = [minidump_stackwalk, minidump, symbols_dir]
-      proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
+      proc = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+      )
       stack = proc.communicate()[0].decode('utf-8')
       print(stack)
 
-      device.RunShellCommand(['rm', os.path.join(pending, dump)],
-                             check_return=True, as_root=True)
+      device.RunShellCommand(
+        ['rm', os.path.join(pending, dump)], check_return=True, as_root=True
+      )
 
     failure = 'Expected 1 crash dump, found %d.' % len(dumps)
     print(dumps)
     raise Exception(failure)
 
   device.PullFile(os.path.join(pending, dumps[0]), crash_dir, as_root=True)
-  device.RunShellCommand(['rm', os.path.join(pending, dumps[0])],
-                         check_return=True, as_root=True)
+  device.RunShellCommand(
+    ['rm', os.path.join(pending, dumps[0])], check_return=True, as_root=True
+  )
 
   return os.path.join(crash_dir, os.path.basename(dumps[0]))
 
-def run_test(options, crash_dir, symbols_dir, platform,
-             additional_arguments = []):
+
+def run_test(
+  options, crash_dir, symbols_dir, platform, additional_arguments=[]
+):
   global failure
 
   print('# Run content_shell and make it crash.')
@@ -133,40 +140,50 @@ def run_test(options, crash_dir, symbols_dir, platform,
     view_activity = apk.GetViewActivityName()
     package_name = apk.GetPackageName()
 
-    device.RunShellCommand(['am', 'set-debug-app', '--persistent',
-                            package_name])
+    device.RunShellCommand(
+      ['am', 'set-debug-app', '--persistent', package_name]
+    )
 
     changer = flag_changer.FlagChanger(device, 'content-shell-command-line')
-    changer.ReplaceFlags(['--enable-crash-reporter',
-                          '--crash-dumps-dir=%s' % ANDROID_CRASH_DIR])
+    changer.ReplaceFlags(
+      ['--enable-crash-reporter', '--crash-dumps-dir=%s' % ANDROID_CRASH_DIR]
+    )
 
-    launch_intent = intent.Intent(action='android.intent.action.VIEW',
-                                  activity=view_activity, data='chrome://crash',
-                                  package=package_name)
+    launch_intent = intent.Intent(
+      action='android.intent.action.VIEW',
+      activity=view_activity,
+      data='chrome://crash',
+      package=package_name,
+    )
     device.StartActivity(launch_intent)
   elif platform == 'fuchsia':
-    run_test_path = os.path.join(TOP_SRC_DIR, 'build', 'fuchsia', 'test',
-                                 'run_test.py')
+    run_test_path = os.path.join(
+      TOP_SRC_DIR, 'build', 'fuchsia', 'test', 'run_test.py'
+    )
     fuchsia_logs_dir = os.path.join(crash_dir, 'fuchsia_logs')
     os.makedirs(fuchsia_logs_dir)
 
     cmd = [
-        sys.executable, run_test_path,
-        '--out-dir', options.build_dir,
-        'content_shell',
-        '--logs-dir', fuchsia_logs_dir,
-        '--wait-for-log-pattern', 'CrashIntentionally',
+      sys.executable,
+      run_test_path,
+      '--out-dir',
+      options.build_dir,
+      'content_shell',
+      '--logs-dir',
+      fuchsia_logs_dir,
+      '--wait-for-log-pattern',
+      'CrashIntentionally',
     ]
     if options.product:
       cmd += ['--product', options.product]
     if options.device_spec:
       cmd += ['--device-spec', options.device_spec]
     cmd += [
-        '--',
-        '--run-web-tests',
-        'chrome://crash',
-        '--enable-crash-reporter',
-        '--disable-gpu',
+      '--',
+      '--run-web-tests',
+      'chrome://crash',
+      '--enable-crash-reporter',
+      '--disable-gpu',
     ]
     cmd += additional_arguments
 
@@ -183,11 +200,13 @@ def run_test(options, crash_dir, symbols_dir, platform,
         print('run_test.py exited with %d as expected.' % e.returncode)
         print(e.output.decode('utf-8'))
   else:
-    cmd = [options.binary,
-           '--run-web-tests',
-           'chrome://crash',
-           '--enable-crash-reporter',
-           '--crash-dumps-dir=%s' % crash_dir]
+    cmd = [
+      options.binary,
+      '--run-web-tests',
+      'chrome://crash',
+      '--enable-crash-reporter',
+      '--crash-dumps-dir=%s' % crash_dir,
+    ]
     cmd += additional_arguments
 
     if options.verbose:
@@ -235,13 +254,19 @@ def run_test(options, crash_dir, symbols_dir, platform,
     return
   elif platform == 'win32':
     cdb_exe = os.path.join(options.build_dir, 'cdb', 'cdb.exe')
-    cmd = [cdb_exe, '-y', options.build_dir, '-c', '.lines;.excr;k30;q',
-           '-z', minidump]
+    cmd = [
+      cdb_exe,
+      '-y',
+      options.build_dir,
+      '-c',
+      '.lines;.excr;k30;q',
+      '-z',
+      minidump,
+    ]
     if options.verbose:
       print(' '.join(cmd))
     failure = 'Failed to run cdb.exe.'
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stack = proc.communicate()[0].decode('utf-8')
   else:
     minidump_stackwalk = os.path.join(options.build_dir, 'minidump_stackwalk')
@@ -249,8 +274,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
     if options.verbose:
       print(' '.join(cmd))
     failure = 'Failed to run minidump_stackwalk.'
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stack = proc.communicate()[0].decode('utf-8')
 
   # Check whether the stack contains a CrashIntentionally symbol.
@@ -272,33 +296,48 @@ def run_test(options, crash_dir, symbols_dir, platform,
       failure = 'Could not find reference to CrashIntentionally in stack.'
       raise Exception(failure)
 
+
 def main():
   global failure
 
   parser = argparse.ArgumentParser()
-  parser.add_argument('--build-dir', default='',
-                      help='The build output directory.')
-  parser.add_argument('--binary', default='',
-                      help='The path of the binary to generate symbols for and '
-                           'then run for the test.')
   parser.add_argument(
-      '--additional-binary',
-      default='',
-      help='An additional binary for which to generate '
-      'symbols. On Mac this is used for specifying the '
-      '"Content Shell Framework" library, which is not '
-      'linked into --binary.',
+    '--build-dir', default='', help='The build output directory.'
   )
-  parser.add_argument('--no-symbols', default=False, action='store_true',
-                      help='Symbols are not expected to work.')
-  parser.add_argument('-j', '--jobs', default=CONCURRENT_TASKS, type=int,
-                      help='Number of parallel tasks to run.')
-  parser.add_argument('-v', '--verbose', action='store_true',
-                      help='Print verbose status output.')
-  parser.add_argument('--json', default='',
-                      help='Path to JSON output.')
-  parser.add_argument('--platform', default=sys.platform,
-                      help='Platform to run the test on.')
+  parser.add_argument(
+    '--binary',
+    default='',
+    help='The path of the binary to generate symbols for and '
+    'then run for the test.',
+  )
+  parser.add_argument(
+    '--additional-binary',
+    default='',
+    help='An additional binary for which to generate '
+    'symbols. On Mac this is used for specifying the '
+    '"Content Shell Framework" library, which is not '
+    'linked into --binary.',
+  )
+  parser.add_argument(
+    '--no-symbols',
+    default=False,
+    action='store_true',
+    help='Symbols are not expected to work.',
+  )
+  parser.add_argument(
+    '-j',
+    '--jobs',
+    default=CONCURRENT_TASKS,
+    type=int,
+    help='Number of parallel tasks to run.',
+  )
+  parser.add_argument(
+    '-v', '--verbose', action='store_true', help='Print verbose status output.'
+  )
+  parser.add_argument('--json', default='', help='Path to JSON output.')
+  parser.add_argument(
+    '--platform', default=sys.platform, help='Platform to run the test on.'
+  )
   parser.add_argument('--product', help='Product bundle for Fuchsia.')
   parser.add_argument('--device-spec', help='Device spec for Fuchsia.')
 
@@ -338,14 +377,17 @@ def main():
       if options.additional_binary:
         bins.append(options.additional_binary)
       generate_symbols = os.path.join(
-          BREAKPAD_TOOLS_DIR, 'generate_breakpad_symbols.py')
+        BREAKPAD_TOOLS_DIR, 'generate_breakpad_symbols.py'
+      )
       for binary in bins:
-        cmd = [generate_symbols,
-               '--build-dir=%s' % options.build_dir,
-               '--binary=%s' % binary,
-               '--symbols-dir=%s' % symbols_dir,
-               '--jobs=%d' % options.jobs,
-               '--platform=%s' % options.platform]
+        cmd = [
+          generate_symbols,
+          '--build-dir=%s' % options.build_dir,
+          '--binary=%s' % binary,
+          '--symbols-dir=%s' % symbols_dir,
+          '--jobs=%d' % options.jobs,
+          '--platform=%s' % options.platform,
+        ]
         if options.verbose:
           cmd.append('--verbose')
           print(' '.join(cmd))
@@ -354,9 +396,9 @@ def main():
 
     run_test(options, crash_dir, symbols_dir, options.platform, unrecognized)
 
-  except:
+  except:  # noqa: E722
     if failure == '':
-        failure = '%s: %s' % sys.exc_info()[:2]
+      failure = '%s: %s' % sys.exc_info()[:2]
     print('FAIL: %s' % failure)
     if options.json:
       with open(options.json, 'w') as json_file:
@@ -379,13 +421,14 @@ def main():
       fuchsia_logs_dir = os.path.join(crash_dir, 'fuchsia_logs')
       if os.path.exists(fuchsia_logs_dir):
         try:
-          shutil.copytree(fuchsia_logs_dir, os.environ['ISOLATED_OUTDIR'],
-                          dirs_exist_ok=True)
+          shutil.copytree(
+            fuchsia_logs_dir, os.environ['ISOLATED_OUTDIR'], dirs_exist_ok=True
+          )
         except Exception as e:
           print('Failed to copy fuchsia logs to ISOLATED_OUTDIR: %s' % e)
     try:
       shutil.rmtree(crash_dir)
-    except:
+    except:  # noqa: E722
       print('Failed to delete temp directory "%s".' % crash_dir)
     if options.platform == 'android':
       clear_android_dumps(options, GetDevice())

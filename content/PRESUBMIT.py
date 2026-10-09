@@ -9,23 +9,23 @@ for more details about the presubmit API built into depot_tools.
 """
 
 _WARN_AGAINST_DCHECK_PREFIXES = (
-    'content/browser/renderer_host/navigation_request.h',
-    'content/browser/renderer_host/navigation_request.cc',
-    'content/browser/renderer_host/render_frame_host_android.cc',
-    'content/browser/renderer_host/render_frame_host_csp_context.cc',
-    'content/browser/renderer_host/render_frame_host_factory.cc',
-    'content/browser/renderer_host/render_frame_host_impl.h',
-    'content/browser/renderer_host/render_frame_host_impl.cc',
-    'content/browser/renderer_host/render_frame_host_manager.h',
-    'content/browser/renderer_host/render_frame_host_manager.cc',
-
-    # TODO(crbug.com/497761255): Enable this for:
-    # - content/browser/ (root files)
-    # - content/browser/renderer_host/
-    # - content/browser/loader/
-    # - content/browser/network/
-    # - content/browser/security/
+  'content/browser/renderer_host/navigation_request.h',
+  'content/browser/renderer_host/navigation_request.cc',
+  'content/browser/renderer_host/render_frame_host_android.cc',
+  'content/browser/renderer_host/render_frame_host_csp_context.cc',
+  'content/browser/renderer_host/render_frame_host_factory.cc',
+  'content/browser/renderer_host/render_frame_host_impl.h',
+  'content/browser/renderer_host/render_frame_host_impl.cc',
+  'content/browser/renderer_host/render_frame_host_manager.h',
+  'content/browser/renderer_host/render_frame_host_manager.cc',
+  # TODO(crbug.com/497761255): Enable this for:
+  # - content/browser/ (root files)
+  # - content/browser/renderer_host/
+  # - content/browser/loader/
+  # - content/browser/network/
+  # - content/browser/security/
 )
+
 
 def _WarnAgainstDCHECK(input_api, output_api):
   """
@@ -51,14 +51,34 @@ def _WarnAgainstDCHECK(input_api, output_api):
         problems.append(f'{f.LocalPath()}:{line_num}: {line.strip()}')
 
   if problems:
-    return [output_api.PresubmitPromptWarning(
+    return [
+      output_api.PresubmitPromptWarning(
         'DCHECK is discouraged in this file. CHECKs are cheap and are '
         'preferred when possible.',
-        problems)]
+        problems,
+      )
+    ]
   return []
 
+
+def _CommonChecks(input_api, output_api):
+  results = []
+  results.extend(_WarnAgainstDCHECK(input_api, output_api))
+  results.extend(input_api.canned_checks.RunRuff(input_api, output_api))
+  results.extend(
+    input_api.canned_checks.CheckPatchFormatted(
+      input_api,
+      output_api,
+      result_factory=output_api.PresubmitError,
+      bypass_warnings=False,
+    )
+  )
+  return results
+
+
 def CheckChangeOnUpload(input_api, output_api):
-  return _WarnAgainstDCHECK(input_api, output_api)
+  return _CommonChecks(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
-  return _WarnAgainstDCHECK(input_api, output_api)
+  return _CommonChecks(input_api, output_api)

@@ -79,7 +79,6 @@ class WebGpuCompatCtsIntegrationTest(
     gpu_info = cls.browser.GetSystemInfo().gpu
     cls._VerifyWebGPUCompatBackend(gpu_info)
 
-  # pylint: disable=unused-argument
   @classmethod
   def _VerifyWebGPUCompatBackend(
     cls, gpu_info: telemetry_gpu_info.GPUInfo

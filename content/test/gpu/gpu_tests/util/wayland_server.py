@@ -118,11 +118,9 @@ class WaylandServer:
       f'--wayland-display={self._socket_name}',
     ]
 
-    # pylint: disable=consider-using-with
     self._proc = subprocess.Popen(
       cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
-    # pylint: enable=consider-using-with
 
     start_time = time.monotonic()
     ready = False
@@ -156,7 +154,7 @@ class WaylandServer:
     """Stops the compositor instance and cleans up runtime directories."""
     try:
       atexit.unregister(self.Stop)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       pass
 
     if self._proc:

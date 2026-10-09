@@ -6,8 +6,8 @@
 import logging
 import threading
 
-import websockets  # pylint: disable=import-error
-import websockets.sync.server as sync_server  # pylint: disable=import-error
+import websockets
+import websockets.sync.server as sync_server
 
 WEBSOCKET_PORT_TIMEOUT_SECONDS = 10
 WEBSOCKET_SETUP_TIMEOUT_SECONDS = 5

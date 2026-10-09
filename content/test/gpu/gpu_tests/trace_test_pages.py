@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 # This is more akin to a .pyl/JSON file, so it's expected to be long.
-# pylint: disable=too-many-lines
 
 import dataclasses
 import functools

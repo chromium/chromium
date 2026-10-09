@@ -8,13 +8,15 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+import re  # noqa: F401
 
-import re
 
 def _FilterFile(affected_file):
   """Return true if the file could contain code requiring a presubmit check."""
   return affected_file.LocalPath().endswith(
-      ('.h', '.cc', '.cpp', '.cxx', '.mm'))
+    ('.h', '.cc', '.cpp', '.cxx', '.mm')
+  )
+
 
 def _CheckForUseOfGlobalTaskRunnerGetter(input_api, output_api):
   """Check that static getters in base::SingleThreadTaskRunner and
@@ -22,30 +24,37 @@ def _CheckForUseOfGlobalTaskRunnerGetter(input_api, output_api):
 
   problems = []
   getter_re = input_api.re.compile(
-      r'(^|\b)base::(SingleThread|Sequenced)TaskRunner::'
-      r'GetCurrent(Default|BestEffort)\(\)')
+    r'(^|\b)base::(SingleThread|Sequenced)TaskRunner::'
+    r'GetCurrent(Default|BestEffort)\(\)'
+  )
   for f in input_api.AffectedSourceFiles(_FilterFile):
     for line_number, line in f.ChangedContents():
       if getter_re.search(line):
         problems.append('%s:%d' % (f, line_number))
 
   if problems:
-    return [output_api.PresubmitPromptWarning(
+    return [
+      output_api.PresubmitPromptWarning(
         'The GetCurrentDefault() and GetCurrentBestEffort() methods of '
         'base::SingleThreadTaskRunner / base::SequencedTaskRunner are '
         'deprecated in renderer; please use RenderFrame::GetTaskRunner for '
         'production code and blink::scheduler::Get*TaskRunnerForTesting for '
         'tests. Please reach out to scheduler-dev@ if you have any questions.',
-        problems)]
+        problems,
+      )
+    ]
   return []
+
 
 def _CommonCheck(input_api, output_api):
   results = []
   results.extend(_CheckForUseOfGlobalTaskRunnerGetter(input_api, output_api))
   return results
 
+
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonCheck(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
   return _CommonCheck(input_api, output_api)

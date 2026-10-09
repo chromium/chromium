@@ -14,7 +14,7 @@ CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(GPU_DIR, '..', '..', '..'))
 
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
-from pytype_common import pytype_runner  # pylint: disable=wrong-import-position
+from pytype_common import pytype_runner  # noqa: E402
 
 # This list should be kept in sync with EXTRA_PATH_COMPONENTS in PRESUBMIT.py
 EXTRA_PATHS_COMPONENTS = [

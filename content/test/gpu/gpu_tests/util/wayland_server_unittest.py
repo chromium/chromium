@@ -6,11 +6,9 @@ import os
 import unittest
 from unittest import mock
 
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from gpu_tests.util import wayland_server
-
-# pylint: disable=protected-access
 
 
 class WaylandServerUnittest(fake_filesystem_unittest.TestCase):

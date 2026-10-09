@@ -136,7 +136,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       # related to Gold.
       try:
         self._UploadTestResultToSkiaGold(image_name, screenshot, test_case)
-      except Exception as gold_exception:  # pylint: disable=broad-except
+      except Exception as gold_exception:
         logging.error(str(gold_exception))
       raise
 

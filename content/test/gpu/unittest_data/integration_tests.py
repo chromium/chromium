@@ -13,7 +13,6 @@ from telemetry.testing import browser_test_context
 from gpu_tests import gpu_integration_test
 
 
-# pylint: disable=abstract-method
 class _BaseSampleIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _test_state = {}
 
@@ -50,9 +49,6 @@ class _BaseSampleIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     with open(test_state_json_path, 'w', encoding='utf-8') as f:
       json.dump(cls._test_state, f)
     super(_BaseSampleIntegrationTest, cls).TearDownProcess()
-
-
-# pylint: enable=abstract-method
 
 
 class SimpleTest(_BaseSampleIntegrationTest):
@@ -176,7 +172,7 @@ class BrowserCrashAfterStartTest(_BaseSampleIntegrationTest):
       # fetch of this tab to fail. crbug.com/682819
       try:
         browser.tabs[0].Navigate('chrome://crash')
-      except Exception:  # pylint: disable=broad-except
+      except Exception:
         pass
 
   @classmethod

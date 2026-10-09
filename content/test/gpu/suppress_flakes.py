@@ -23,15 +23,13 @@ import sys
 CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
-# pylint: disable=wrong-import-position
-from flake_suppressor_common import argument_parsing
-from flake_suppressor_common import result_output
-from flake_suppressor_common import tag_utils as common_tag_utils
-from flake_suppressor import gpu_expectations
-from flake_suppressor import gpu_queries
-from flake_suppressor import gpu_tag_utils as tag_utils
-from flake_suppressor import gpu_results as results_module
-# pylint: enable=wrong-import-position
+from flake_suppressor_common import argument_parsing  # noqa: E402
+from flake_suppressor_common import result_output  # noqa: E402
+from flake_suppressor_common import tag_utils as common_tag_utils  # noqa: E402
+from flake_suppressor import gpu_expectations  # noqa: E402
+from flake_suppressor import gpu_queries  # noqa: E402
+from flake_suppressor import gpu_tag_utils as tag_utils  # noqa: E402
+from flake_suppressor import gpu_results as results_module  # noqa: E402
 
 
 def main():

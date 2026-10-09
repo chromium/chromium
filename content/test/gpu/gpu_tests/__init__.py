@@ -3,6 +3,6 @@
 # found in the LICENSE file.
 
 import gpu_path_util
-from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import  # noqa: F401
 
 gpu_path_util.AddDirToPathIfNeeded(gpu_path_util.CHROMIUM_SRC_DIR, 'build')

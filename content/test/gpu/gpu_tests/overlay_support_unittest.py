@@ -9,14 +9,12 @@ import unittest
 from unittest import mock
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from gpu_tests import constants
 from gpu_tests import overlay_support
 
 rotation = overlay_support.VideoRotation
-
-# pylint: disable=too-many-public-methods
 
 
 class PresentationModeEventToStrUnittest(unittest.TestCase):
@@ -652,7 +650,7 @@ class GpuOverlayConfigUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       _ = config.nv12_overlay_support
 
-  def testDriverCanBeSetWithSameValue(self):  # pylint: disable=no-self-use
+  def testDriverCanBeSetWithSameValue(self):
     """Tests that the driver version can be set again with the same value."""
     config = (
       overlay_support.GpuOverlayConfig()
@@ -836,7 +834,7 @@ def _createMockGpu(vendor: constants.GpuVendor | int, device: int) -> mock.Mock:
 
 
 class GetOverlayConfigForGpuUnittest(unittest.TestCase):
-  def testKnownGpu(self):  # pylint: disable=no-self-use
+  def testKnownGpu(self):
     """Tests behavior when a known GPU is provided."""
     gpu = _createMockGpu(constants.GpuVendor.INTEL, 0x3E92)
 

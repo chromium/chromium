@@ -12,7 +12,7 @@ from unittest import mock
 import urllib.error
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from flake_suppressor import gpu_expectations
 

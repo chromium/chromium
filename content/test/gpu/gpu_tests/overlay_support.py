@@ -331,7 +331,6 @@ class GpuOverlayConfig:
       return PixelFormat.BGRA8
     return forced_pixel_format
 
-  # pylint: disable=too-many-return-statements
   def GetExpectedPresentationMode(
     self, expected_pixel_format: str, video_rotation: VideoRotation
   ) -> str:
@@ -370,7 +369,6 @@ class GpuOverlayConfig:
       f'presentation mode logic added'
     )
 
-  # pylint: enable=too-many-return-statements
 
   def GetExpectedZeroCopyUsage(
     self,

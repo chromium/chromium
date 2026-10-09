@@ -10,7 +10,7 @@ import time
 from typing import Any
 
 # vpython-provided modules.
-import bs4  # pylint: disable=import-error
+import bs4
 
 import gpu_path_util
 from gpu_tests import common_typing as ct
@@ -266,7 +266,6 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
     initial_scaling = PageHasViewportInitialScaling(test_path)
     tab.action_runner.EvaluateJavaScript(f'runTest("{url}", {initial_scaling})')
 
-  # pylint: disable=too-many-branches
   def HandleMessageLoop(
     self, test_timeout: float, tab_data: TabData, loop_state: LoopState
   ) -> None:
@@ -339,10 +338,8 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
         )
         if test_messages:
           logging.info('Logging messages from the test:\n%s', test_messages)
-      except Exception:  # pylint:disable=broad-except
+      except Exception:
         logging.warning('Could not retrieve messages from test page.')
-
-  # pylint: enable=too-many-branches
 
   def _GetMessageLoopTimeoutMultiplier(self) -> float:
     multiplier = 1

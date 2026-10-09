@@ -11,11 +11,9 @@ from unexpected_passes_common import data_types
 
 from machine_times import get_machine_times
 
-# pylint: disable=protected-access
-
 
 class EnsureBuildbucketAuthUnittest(unittest.TestCase):
-  def testValidAuth(self):  # pylint: disable=no-self-use
+  def testValidAuth(self):
     """Tests behavior when bb auth is valid."""
     with mock.patch.object(get_machine_times.subprocess, 'check_call'):
       get_machine_times._EnsureBuildbucketAuth()

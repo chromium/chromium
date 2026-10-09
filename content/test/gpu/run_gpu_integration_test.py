@@ -9,10 +9,8 @@ import os
 import sys
 
 # This needs to be before the Telemetry imports for importing to work correctly.
-# pylint: disable=wrong-import-order
-from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import  # noqa: F401
 
-# pylint: enable=wrong-import-order
 from telemetry.testing import browser_test_runner
 from telemetry.testing.serially_executed_browser_test_case import (
   SeriallyExecutedBrowserTestCase,
@@ -39,7 +37,7 @@ def FailIfScreenLockedOnMac():
   # tests.
   if not sys.platform.startswith('darwin'):
     return
-  import Quartz  # pylint: disable=import-outside-toplevel,import-error
+  import Quartz
 
   current_session = Quartz.CGSessionCopyCurrentDictionary()
   if not current_session:

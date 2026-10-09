@@ -28,11 +28,9 @@ GPU_TEST_HARNESS_JAVASCRIPT_DIR = os.path.join(GPU_TESTS_DIR, 'javascript')
 TOOLS_PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
 
 
-# pylint: disable=no-value-for-parameter
 def AddDirToPathIfNeeded(*path_parts):
   path = os.path.abspath(os.path.join(*path_parts))
   if os.path.isdir(path) and path not in sys.path:
     sys.path.append(path)
 
 
-# pylint: enable=no-value-for-parameter

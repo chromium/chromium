@@ -173,13 +173,6 @@ def CheckForNewSkipExpectations(input_api, output_api):
   return result
 
 
-def CheckPatchFormatted(input_api, output_api):
-  return input_api.canned_checks.CheckPatchFormatted(
-    input_api,
-    output_api,
-    result_factory=output_api.PresubmitError,
-    bypass_warnings=False,
-  )
 
 
 def CheckPytypePathsInSync(input_api, output_api):

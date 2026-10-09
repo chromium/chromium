@@ -3,6 +3,6 @@
 # found in the LICENSE file.
 
 # pylint: disable=unused-import
-from gpu_path_util import setup_testing_paths
-from gpu_path_util import setup_tools_perf_paths
+from gpu_path_util import setup_testing_paths  # noqa: F401
+from gpu_path_util import setup_tools_perf_paths  # noqa: F401
 # pylint: enable=unused-import

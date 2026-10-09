@@ -297,9 +297,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
 
-    # pylint:disable=protected-access
     cls._build_dir = cls.browser._browser_backend.build_dir
-    # pylint:enable=protected-access
     cls.SetStaticServerDirs(
       [
         os.path.join(cls._build_dir, 'gen', 'third_party', 'dawn'),
@@ -370,20 +368,20 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
     if cls._test_list is None:
       with open(TEST_LIST_FILE, encoding='utf-8') as f:
-        cls._test_list = [l for l in f.read().splitlines() if l]
+        cls._test_list = [l for l in f.read().splitlines() if l]  # noqa: E741
 
     if cls._worker_type != WorkerType.NONE:
       if cls._worker_test_globs is None:
         with open(WORKER_TEST_GLOB_FILE, encoding='utf-8') as f:
           contents = f.read()
-        cls._worker_test_globs = [l for l in contents.splitlines() if l]
+        cls._worker_test_globs = [l for l in contents.splitlines() if l]  # noqa: E741
 
     # Iterate through all valid test names. Generate a test for each one if not
     # running worker tests, or generate a test for each if we are running worker
     # tests and the test name matches a worker glob.
-    for line in cls._test_list:  # pylint:disable=not-an-iterable
+    for line in cls._test_list:
       if cls._worker_type != WorkerType.NONE:
-        for wg in cls._worker_test_globs:  # pylint:disable=not-an-iterable
+        for wg in cls._worker_test_globs:
           if fnmatch.fnmatch(line, wg):
             break
         else:
@@ -403,7 +401,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     try:
       tags = self.GetPlatformTags(self.browser)
       retry_on_config = 'win11' in tags and 'nvidia-0x2184' in tags
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       logging.warning(
         'Failed to determine platform tags, assuming no first test retry'
       )
@@ -539,7 +537,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       return SLOW_MULTIPLIER
     return 1
 
-  # pylint: disable=too-many-branches
   def HandleMessageLoop(self, first_load) -> WebGpuTestResult:
     """Helper function to handle the loop for the message protocol.
 
@@ -654,8 +651,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       finally:
         self._test_duration = time.time() - start_time
     return result
-
-  # pylint: enable=too-many-branches
 
   def HandleDurationTagOnFailure(
     self, message_state: dict[str, bool], test_timeout: float

@@ -9,12 +9,13 @@ import os
 import sys
 import zipfile
 
-SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
-    '..', '..', '..'))
+SRC_DIR = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 sys.path.append(os.path.join(SRC_DIR, 'build'))
 
-import action_helpers
-import zip_helpers
+import action_helpers  # noqa: E402
+import zip_helpers  # noqa: E402
 
 
 def GenerateService(i):
@@ -46,9 +47,10 @@ def DoMain(argv):
   with action_helpers.atomic_output(output) as f:
     with zipfile.ZipFile(f, 'w', zipfile.ZIP_STORED) as srcjar:
       for i in range(number):
-        zip_helpers.add_to_zip_hermetic(srcjar,
-                                        path_template.format(i),
-                                        data=GenerateService(i))
+        zip_helpers.add_to_zip_hermetic(
+          srcjar, path_template.format(i), data=GenerateService(i)
+        )
+
 
 if __name__ == '__main__':
   DoMain(sys.argv[1:])

@@ -38,16 +38,14 @@ import argparse
 import datetime
 import os
 
-from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
-from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import  # noqa: F401
+from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import  # noqa: F401
 
 # Must come after path setup.
-# pylint: disable=wrong-import-order
 from unexpected_passes_common import argument_parsing
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import result_output
-# pylint: enable=wrong-import-order
 
 from gpu_tests import gpu_integration_test
 
@@ -124,7 +122,6 @@ def ParseArgs() -> argparse.Namespace:
   return args
 
 
-# pylint: disable=too-many-locals
 def main() -> None:
   args = ParseArgs()
 
@@ -224,9 +221,6 @@ def main() -> None:
       result_output.OutputAffectedUrls(
         affected_urls, orphaned_urls, auto_close_bugs=args.auto_close_bugs
       )
-
-
-# pylint: enable=too-many-locals
 
 
 if __name__ == '__main__':

@@ -72,7 +72,6 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       }
     return serial_tests
 
-  # pylint: disable=too-many-branches
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
@@ -549,7 +548,6 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         ],
       )
 
-  # pylint: enable=too-many-branches
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     url = self.UrlOfStaticFilePath(posixpath.join(html_path, test_path))

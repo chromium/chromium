@@ -7,13 +7,11 @@ import os
 import subprocess
 
 # pylint: disable=unused-import
-from gpu_path_util import CHROMIUM_SRC_DIR, setup_fuchsia_paths
+from gpu_path_util import CHROMIUM_SRC_DIR, setup_fuchsia_paths  # noqa: F401
 # pylint: enable=unused-import
 
 # This needs to come after setup_fuchsia_paths so we can actually import this.
-# pylint: disable=wrong-import-order,import-error
 from common import register_common_args
-# pylint: enable=wrong-import-order,import-error
 
 
 def RunTestOnFuchsiaDevice(script_type):
