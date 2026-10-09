@@ -905,10 +905,6 @@ BASE_FEATURE(kWebUIInProcessResourceLoading,
 // Policy.
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Flag guard for fix for crbug.com/40942531.
-BASE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Please keep features in alphabetical order.
 
 bool IsEnforceSameDocumentOriginInvariantsEnabled() {

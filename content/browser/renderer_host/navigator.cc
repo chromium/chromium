@@ -567,8 +567,7 @@ void Navigator::DidNavigate(
   //    - This is a navigation from the initial document (in cases where this is
   //      a brand new tab that didn't inherit another origin from an opener).
   //      This part helps with tests. See crbug.com/367623929.
-  //    - This is a same origin navigation (or we're not limiting cross-origin
-  //      paint holding)
+  //    - This is a same origin navigation.
   //    - There is a user activation. This means that the user interacted with
   //      the page. Commonly used attacks are done without user activation --
   //      which will not enable paint holding. However, if the user interacts
@@ -587,9 +586,7 @@ void Navigator::DidNavigate(
       (allow_paint_holding_for_initial_empty_document ||
        old_frame_origin.IsSameOriginWith(params.origin) ||
        old_frame_host->HasStickyUserActivation() ||
-       client->AllowNonActivatedCrossOriginPaintHolding() ||
-       !base::FeatureList::IsEnabled(
-           features::kLimitCrossOriginNonActivatedPaintHolding));
+       client->AllowNonActivatedCrossOriginPaintHolding());
 
   // Only allow subframe paint holding for same origin.
   const bool allow_subframe_paint_holding =
