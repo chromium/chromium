@@ -32,6 +32,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/features.h"
 #include "base/win/winbase_shim.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/mman.h>
@@ -1256,6 +1257,14 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
   BOOL success = ::FlushViewOfFile(data(), length);
   DPCHECK(success);
+  // FlushViewOfFile() writes modified pages only to the operating system's
+  // file cache, not to physical storage. For synchronous flushes, commit the
+  // cache buffers to disk via FlushFileBuffers() to guarantee durability
+  // against sudden power loss or system crashes if the feature is enabled.
+  if (sync && mapped_file_->file().IsValid() &&
+      base::FeatureList::IsEnabled(features::kFlushFileBuffersOnSyncFlush)) {
+    ::FlushFileBuffers(mapped_file_->file().GetPlatformFile());
+  }
 #elif BUILDFLAG(IS_FUCHSIA)
   // Fuchsia's POSIX compatibility layer does not implement msync().
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_POSIX)

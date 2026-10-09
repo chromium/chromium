@@ -25,9 +25,14 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/features.h"
+#endif
 
 namespace base {
 
@@ -854,6 +859,14 @@ TEST(FilePersistentMemoryAllocatorTest, CreationTest) {
   // verify that it runs without CHECK violations.
   file.Flush(false);
   file.Flush(true);
+
+#if BUILDFLAG(IS_WIN)
+  {
+    test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kFlushFileBuffersOnSyncFlush);
+    file.Flush(true);
+  }
+#endif
 }
 
 TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {

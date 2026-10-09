@@ -79,6 +79,10 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUserBlockingAboveNormalPriority);
 BASE_EXPORT BASE_DECLARE_FEATURE(kRetryCreateFileMappingOnCommitLimit);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPreventReparsePointTraversal);
+
+// Controls whether FilePersistentMemoryAllocator calls ::FlushFileBuffers()
+// on the underlying file handle for synchronous flushes.
+BASE_EXPORT BASE_DECLARE_FEATURE(kFlushFileBuffersOnSyncFlush);
 #endif
 
 #if BUILDFLAG(IS_POSIX)

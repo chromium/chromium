@@ -231,6 +231,11 @@ BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
 // points (such as directory junctions). This protects against TOCTOU
 // vulnerabilities and prevents deleting files outside the target directory.
 BASE_FEATURE(kPreventReparsePointTraversal, FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, FilePersistentMemoryAllocator calls ::FlushFileBuffers() on the
+// underlying file handle during synchronous flushes to commit the cache buffers
+// to physical storage.
+BASE_FEATURE(kFlushFileBuffersOnSyncFlush, FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX)
