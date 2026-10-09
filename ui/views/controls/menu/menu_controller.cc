@@ -4031,7 +4031,10 @@ void MenuController::HandleMouseLocation(SubmenuView* source,
              pending_state_.item->GetParentMenuItem() &&
              !pending_state_.item->SubmenuIsShowing()) {
     // On exit if the user hasn't selected an item with a submenu, move the
-    // selection back to the parent menu item.
+    // selection back to the parent menu item. Note that if a submenu is already
+    // showing, Views intentionally follows Windows menu behavior across all
+    // platforms and keeps the submenu open (even when mousing away or across
+    // non-selectable areas) to accommodate imprecise mouse trajectories.
     SetSelection(pending_state_.item->GetParentMenuItem(),
                  SELECTION_OPEN_SUBMENU);
   }
