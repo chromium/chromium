@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -168,9 +169,9 @@ public class TabInteractionRecorder {
 
     @NativeMethods
     interface Natives {
-        TabInteractionRecorder getFromTab(Tab tab);
+        TabInteractionRecorder getFromTab(@JniType("TabAndroid*") Tab tab);
 
-        TabInteractionRecorder createForTab(Tab tab);
+        TabInteractionRecorder createForTab(@JniType("TabAndroid*") Tab tab);
 
         boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid);
 
