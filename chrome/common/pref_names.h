@@ -941,6 +941,14 @@ inline constexpr char kImportDialogSavedPasswords[] =
 inline constexpr char kImportDialogSearchEngine[] =
     "import_dialog_search_engine";
 
+// A dictionary mapping foreign session tags (see
+// `sync_sessions::SyncedSession::GetSessionTag()`) to `true` for synced devices
+// whose tabs the user has chosen to hide in this profile via
+// `chrome://settings/deviceTabVisibility`. Sessions are visible by default and
+// removed from the dictionary when re-enabled.
+inline constexpr char kDeviceTabVisibilityHiddenSessions[] =
+    "sync.device_tab_visibility_hidden_sessions";
+
 // Profile avatar and name
 inline constexpr char kProfileAvatarIndex[] = "profile.avatar_index";
 inline constexpr char kProfileName[] = "profile.name";
