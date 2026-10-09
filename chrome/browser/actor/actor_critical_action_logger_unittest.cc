@@ -212,6 +212,7 @@ TEST_F(ActorCriticalActionLoggerTest, LogsFormFillActionWithMetadata) {
   sub_req2.requested_data = autofill::ActorFormFillingRequestedData::kAddress;
 
   AttemptFormFillingToolRequest request(CreateTabHandle(), {sub_req1, sub_req2},
+                                        /*credit_card_opaque_token=*/"",
                                         /*enqueued_click=*/true);
   mojom::ActionResultPtr result = MakeOkResult();
 
@@ -311,8 +312,9 @@ TEST_F(ActorCriticalActionLoggerTest, FormFillingLoggingPreClickGating) {
   sub_req.requested_data = autofill::ActorFormFillingRequestedData::kAddress;
 
   // 1. If enqueued_click = false (pre-click), it should NOT log.
-  AttemptFormFillingToolRequest pre_click_request(CreateTabHandle(), {sub_req},
-                                                  /*enqueued_click=*/false);
+  AttemptFormFillingToolRequest pre_click_request(
+      CreateTabHandle(), {sub_req}, /*credit_card_opaque_token=*/"",
+      /*enqueued_click=*/false);
   mojom::ActionResultPtr result = MakeOkResult();
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), pre_click_request,
                                             *result, /*navigation_id=*/1012);
@@ -321,6 +323,7 @@ TEST_F(ActorCriticalActionLoggerTest, FormFillingLoggingPreClickGating) {
 
   // 2. If enqueued_click = true, it SHOULD log.
   AttemptFormFillingToolRequest click_request(CreateTabHandle(), {sub_req},
+                                              /*credit_card_opaque_token=*/"",
                                               /*enqueued_click=*/true);
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), click_request,
                                             *result, /*navigation_id=*/1013);
@@ -350,7 +353,7 @@ TEST_F(ActorCriticalActionLoggerTest, SkipsLoggingWhenFeatureDisabled) {
   result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
 
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,
-                                             /*navigation_id=*/1001);
+                                            /*navigation_id=*/1001);
 
   auto logged_actions = GetLoggedActions();
   EXPECT_TRUE(logged_actions.empty());
@@ -368,8 +371,7 @@ TEST_F(ActorCriticalActionLoggerTest, LogsWebMcpToolAction) {
 
   mojom::ActionResultPtr result = MakeOkResult();
   result->script_tool_response = mojom::ScriptToolResponse::New();
-  result->script_tool_response->input_arguments =
-      "{\"destination\":\"Paris\"}";
+  result->script_tool_response->input_arguments = "{\"destination\":\"Paris\"}";
   result->script_tool_response->tool = blink::mojom::ScriptTool::New();
   result->script_tool_response->tool->name = "flight_search";
   result->script_tool_response->tool->title = "Search Flights";

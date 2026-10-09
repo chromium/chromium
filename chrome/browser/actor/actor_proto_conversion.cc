@@ -696,8 +696,8 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
     requests.push_back(request);
   }
 
-  return std::make_unique<AttemptFormFillingToolRequest>(tab_handle,
-                                                         std::move(requests));
+  return std::make_unique<AttemptFormFillingToolRequest>(
+      tab_handle, std::move(requests), action.credit_card_opaque_token());
 }
 
 std::unique_ptr<ToolRequest> CreateAttemptOtpFillingRequest(

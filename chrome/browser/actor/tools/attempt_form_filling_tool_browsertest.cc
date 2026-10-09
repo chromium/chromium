@@ -126,7 +126,8 @@ std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     std::vector<FormFillingRequest> requests,
     bool enqueued_click = true) {
   return std::make_unique<AttemptFormFillingToolRequest>(
-      tab.GetHandle(), std::move(requests), enqueued_click);
+      tab.GetHandle(), std::move(requests), /*credit_card_opaque_token=*/"",
+      enqueued_click);
 }
 
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(

@@ -100,6 +100,9 @@ void AttemptFormFillingTool::Invoke(ToolCallback callback) {
           std::make_unique<AttemptFormFillingToolRequest>(
               actor_surface_handle_.GetTabHandle(),
               std::move(tool_fill_requests_),
+              // TODO(crbug.com/567655303): Pass the correct
+              // credit_card_opaque_token.
+              /*credit_card_opaque_token=*/"",
               /*enqueued_click=*/true));
 
       tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(

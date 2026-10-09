@@ -38,9 +38,11 @@ AttemptFormFillingToolRequest::FormFillingRequest::operator=(
 AttemptFormFillingToolRequest::AttemptFormFillingToolRequest(
     tabs::TabHandle tab_handle,
     std::vector<FormFillingRequest> requests,
+    std::string credit_card_opaque_token,
     bool enqueued_click)
     : TabToolRequest(tab_handle),
       requests_(std::move(requests)),
+      credit_card_opaque_token_(std::move(credit_card_opaque_token)),
       enqueued_click_(enqueued_click) {}
 
 AttemptFormFillingToolRequest::AttemptFormFillingToolRequest(

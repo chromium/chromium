@@ -36,8 +36,12 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
     std::vector<PageTarget> trigger_fields;
   };
 
+  // `credit_card_opaque_token` is an empty string unless a token for a credit
+  // card has been generated ahead of time and the user does not get to choose
+  // what data to fill.
   AttemptFormFillingToolRequest(tabs::TabHandle tab_handle,
                                 std::vector<FormFillingRequest> requests,
+                                std::string credit_card_opaque_token,
                                 bool enqueued_click = false);
   AttemptFormFillingToolRequest(const AttemptFormFillingToolRequest&);
   AttemptFormFillingToolRequest& operator=(
@@ -56,10 +60,15 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
     return requests_;
   }
 
+  const std::string& credit_card_opaque_token() const {
+    return credit_card_opaque_token_;
+  }
+
   bool enqueued_click() const { return enqueued_click_; }
 
  private:
   std::vector<FormFillingRequest> requests_;
+  std::string credit_card_opaque_token_;
   // Set to true if a click has already been enqueued for the target field of
   // this request. This prevents infinite click-delegation loops.
   bool enqueued_click_ = false;
