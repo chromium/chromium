@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -79,12 +80,15 @@ class GlicSelectionWidgetController
   // Virtual for testing.
   virtual void ShowSelectionOverlay();
 
+  // Shows the toast when the selection widget is hidden.
+  // Virtual for testing.
+  virtual void ShowHiddenToast(ToastId toast_id);
+
   // Returns true if the selection widget should be shown for the current page.
   bool ShouldShowSelectionWidget();
 
  private:
   void UpdatePageBlockedState();
-  void ShowHiddenToast(ToastId toast_id);
 
   content::WebContents* web_contents() const { return web_contents_.get(); }
 
@@ -104,6 +108,8 @@ class GlicSelectionWidgetController
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+
+  base::CallbackListSubscription overlay_closed_subscription_;
 
   std::unique_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
 };

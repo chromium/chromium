@@ -35,6 +35,9 @@
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -1845,8 +1848,8 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
   const DeepQuery kSelectionOverlay = {"selection-overlay-app",
                                        "glic-selection-overlay"};
 
-  auto OpenExplainCard(ui::ElementIdentifier tab,
-                       ui::ElementIdentifier overlay) {
+  auto OpenOverlayFromSmallChip(ui::ElementIdentifier tab,
+                                ui::ElementIdentifier overlay) {
     const DeepQuery kOverlayApp = {"selection-overlay-app"};
 
     // Text for the user to select.
@@ -1855,25 +1858,15 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
         document.body.innerHTML = '<p>Explain this sentence please</p>';
       }
     )js";
-    static constexpr char kClickExplainChipJs[] = R"js(
-      el => {
-        const chip = [...el.shadowRoot.querySelectorAll('.action-chip')].find(
-            c => c.querySelector('.chip-label')?.textContent === 'Explain');
-        chip?.click();
-        return !!chip;
-      }
-    )js";
 
     return Steps(
         InstrumentTab(tab), NavigateWebContents(tab, GetEmptyDocURL()),
         ExecuteJs(tab, kAddTextJs),
-        // Select the text. The small chip shows up on it. This avoids an OS
-        // mouse drag, which can hang on Windows bots.
-        WaitForWebContentsPainted(tab), Do([this] {
-          content::WebContents* contents =
-              browser()->tab_strip_model()->GetActiveWebContents();
-          contents->Focus();
-          contents->SelectAll();
+        // Focus the page and select the text. The small chip shows up on it.
+        // This avoids an OS mouse drag, which can hang on Windows bots.
+        WaitForWebContentsPainted(tab), MoveMouseTo(tab, DeepQuery{"p"}),
+        ClickMouse(), Do([this] {
+          browser()->tab_strip_model()->GetActiveWebContents()->SelectAll();
         }),
         // The chip is its own widget, outside the browser's context.
         InAnyContext(
@@ -1885,7 +1878,22 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
         InstrumentNonTabWebView(overlay, OverlayBaseController::kOverlayId),
         WaitForJsResultAt(overlay, kOverlayApp,
                           "el => el.screenshot_ !== null"),
-        WaitForElementVisible(overlay, kSelectionOverlay),
+        WaitForElementVisible(overlay, kSelectionOverlay));
+  }
+
+  auto OpenExplainCard(ui::ElementIdentifier tab,
+                       ui::ElementIdentifier overlay) {
+    static constexpr char kClickExplainChipJs[] = R"js(
+      el => {
+        const chip = [...el.shadowRoot.querySelectorAll('.action-chip')].find(
+            c => c.querySelector('.chip-label')?.textContent === 'Explain');
+        chip?.click();
+        return !!chip;
+      }
+    )js";
+
+    return Steps(
+        OpenOverlayFromSmallChip(tab, overlay),
         WaitForJsResultAt(overlay, kSelectionOverlay, kClickExplainChipJs));
   }
 
@@ -2023,6 +2031,63 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       OpenExplainCard(kActiveTab, kOverlayWebContentsId),
       WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs),
       CheckJsResultAt(kOverlayWebContentsId, kRenderer, kHandlesHiddenJs));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithCloseButtonShowsHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kCloseRegionButton = {
+      "selection-overlay-app", "glic-selection-overlay", "#closeRegionButton"};
+
+  RunTestSequence(
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      WaitForElementVisible(kOverlayWebContentsId, kCloseRegionButton),
+      ClickElement(kOverlayWebContentsId, kCloseRegionButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      CheckResult(
+          [this]() {
+            auto* toast_controller = ToastController::MaybeGetForWebContents(
+                browser()->tab_strip_model()->GetActiveWebContents());
+            return toast_controller ? toast_controller->GetCurrentToastId()
+                                    : std::nullopt;
+          },
+          std::optional<ToastId>(ToastId::kGlicSelectionHiddenForSite)));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithEscapeKeyShowsHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      SendKeyPress(OverlayBaseController::kOverlayId, ui::VKEY_ESCAPE),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      CheckResult(
+          [this]() {
+            auto* toast_controller = ToastController::MaybeGetForWebContents(
+                browser()->tab_strip_model()->GetActiveWebContents());
+            return toast_controller ? toast_controller->GetCurrentToastId()
+                                    : std::nullopt;
+          },
+          std::optional<ToastId>(ToastId::kGlicSelectionHiddenForSite)));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithBackgroundClickDoesNotShowHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(300, 300)),
+      ClickMouse(), WaitForHide(OverlayBaseController::kOverlayId),
+      EnsureNotPresent(toasts::ToastView::kToastViewId));
 }
 
 namespace {

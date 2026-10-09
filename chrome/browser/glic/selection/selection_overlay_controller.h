@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -54,6 +55,12 @@ class SelectionOverlayController
       public selection::SelectionOverlayPageHandler,
       public TabStripModelObserver {
  public:
+  enum class CloseReason {
+    kOther,
+    kCloseButton,
+    kEscapeKeyPress,
+  };
+
   SelectionOverlayController(tabs::TabInterface* tab,
                              PrefService* pref_service);
   ~SelectionOverlayController() override;
@@ -108,7 +115,11 @@ class SelectionOverlayController
   void ShowWithSelection(content::RenderFrameHost* selected_frame,
                          const gfx::Rect& selection_bounds,
                          selection::InteractionOptionsPtr interaction_options);
-  void Close();
+  void Close(CloseReason reason = CloseReason::kOther);
+
+  using OverlayClosedCallback = base::OnceCallback<void(CloseReason)>;
+  base::CallbackListSubscription RegisterOverlayClosedCallback(
+      OverlayClosedCallback callback);
 
   // `selection::SelectionOverlayPageHandler`:
   void DeleteRegion(const base::UnguessableToken& id,
@@ -279,6 +290,9 @@ class SelectionOverlayController
   // Scoped to the lifetime of that WebView.
   base::CallbackListSubscription overlay_web_view_focus_subscription_;
   std::unique_ptr<::selection::SuggestionTool> quick_answers_tool_;
+  std::optional<CloseReason> close_reason_;
+
+  base::OnceCallbackList<void(CloseReason)> overlay_closed_callbacks_;
 
   ui::ScopedUnownedUserData<SelectionOverlayController>
       scoped_unowned_user_data_;

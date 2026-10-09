@@ -546,8 +546,15 @@ void SelectionOverlayController::SetRegionFromBounds(
   }
 }
 
-void SelectionOverlayController::Close() {
+void SelectionOverlayController::Close(CloseReason reason) {
+  close_reason_ = reason;
   CloseUI();
+}
+
+base::CallbackListSubscription
+SelectionOverlayController::RegisterOverlayClosedCallback(
+    OverlayClosedCallback callback) {
+  return overlay_closed_callbacks_.Add(std::move(callback));
 }
 
 void SelectionOverlayController::OnFocusedTabChanged(
@@ -604,13 +611,25 @@ void SelectionOverlayController::CloseUI() {
   if (state() == State::kOff) {
     return;
   }
+  CloseReason close_reason = close_reason_.value_or(CloseReason::kOther);
   Reset();
   OverlayBaseController::CloseUI();
+  overlay_closed_callbacks_.Notify(close_reason);
 }
 
 void SelectionOverlayController::RequestSyncClose(
     DismissalSource dismissal_source) {
-  CloseUI();
+  switch (dismissal_source) {
+    case DismissalSource::kPreselectionToastExitButton:
+      Close(CloseReason::kCloseButton);
+      break;
+    case DismissalSource::kPreselectionToastEscapeKeyPress:
+      Close(CloseReason::kEscapeKeyPress);
+      break;
+    default:
+      Close(CloseReason::kOther);
+      break;
+  }
 }
 
 void SelectionOverlayController::InitializeOverlay() {
@@ -652,7 +671,7 @@ bool SelectionOverlayController::HandleKeyboardEvent(
     return false;
   }
   if (IsEscapeEvent(event)) {
-    CloseUI();
+    Close(CloseReason::kEscapeKeyPress);
     return true;
   }
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,
@@ -833,7 +852,14 @@ void SelectionOverlayController::TabForegrounded(tabs::TabInterface* tab) {
 
 void SelectionOverlayController::DismissOverlay(
     selection::DismissOverlayReason reason) {
-  CloseUI();
+  switch (reason) {
+    case selection::DismissOverlayReason::kCloseButton:
+      Close(CloseReason::kCloseButton);
+      break;
+    case selection::DismissOverlayReason::kBackgroundClick:
+      Close(CloseReason::kOther);
+      break;
+  }
 }
 
 void SelectionOverlayController::AdjustRegion(
@@ -863,7 +889,7 @@ void SelectionOverlayController::DeleteRegion(const base::UnguessableToken& id,
   if (selected_regions_.erase(id)) {
     if (selected_regions_.empty()) {
       active_region_id_.reset();
-      CloseUI();
+      Close(CloseReason::kCloseButton);
       return;
     }
     if (active_region_id_ == id) {
@@ -1175,6 +1201,7 @@ void SelectionOverlayController::Reset() {
   options_.reset();
   overlay_web_view_focus_subscription_ = {};
   active_tab_subscription_ = {};
+  close_reason_.reset();
 }
 
 void SelectionOverlayController::RenderPendingRegions() {

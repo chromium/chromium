@@ -264,6 +264,7 @@ source_set("unit_tests") {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",

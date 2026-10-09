@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -83,6 +84,8 @@ class TestGlicSelectionWidgetController : public GlicSelectionWidgetController {
     return show_selection_overlay_called_;
   }
 
+  std::optional<ToastId> shown_toast_id() const { return shown_toast_id_; }
+
   // Expose methods for testing.
   using GlicSelectionWidgetController::ShouldShowSelectionWidget;
 
@@ -93,10 +96,16 @@ class TestGlicSelectionWidgetController : public GlicSelectionWidgetController {
     GlicSelectionWidgetController::ShowSelectionOverlay();
   }
 
+  void ShowHiddenToast(ToastId toast_id) override {
+    shown_toast_id_ = toast_id;
+    GlicSelectionWidgetController::ShowHiddenToast(toast_id);
+  }
+
  private:
   bool dismiss_called_ = false;
   std::optional<DismissReason> dismiss_reason_;
   bool show_selection_overlay_called_ = false;
+  std::optional<ToastId> shown_toast_id_;
 };
 
 }  // namespace
@@ -158,9 +167,11 @@ TEST_F(GlicSelectionWidgetControllerTest, OnHideHidesSelectionWidget) {
             settings_map->GetContentSetting(
                 url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
   EXPECT_TRUE(ShouldShowSelectionWidget());
+  EXPECT_FALSE(controller->shown_toast_id().has_value());
 
   CallOnHide();
   EXPECT_FALSE(ShouldShowSelectionWidget());
+  EXPECT_EQ(ToastId::kGlicSelectionHiddenForSite, controller->shown_toast_id());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             settings_map->GetContentSetting(
                 url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
