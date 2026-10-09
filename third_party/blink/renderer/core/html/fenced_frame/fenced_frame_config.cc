@@ -90,6 +90,4 @@ V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {
   return Get<Attribute::kURL>();
 }
 
-void FencedFrameConfig::setSharedStorageContext(const String& context_string) {}
-
 }  // namespace blink

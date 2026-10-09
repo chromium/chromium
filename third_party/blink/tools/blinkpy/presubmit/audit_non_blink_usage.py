@@ -539,14 +539,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/common/shared_storage/module_script_downloader.cc',
-        ],
-        'allowed': [
-            'net::SiteForCookies',
-        ],
-    },
-    {
-        'paths': [
             'third_party/blink/common/service_worker/service_worker_loader_helpers.cc',
         ],
         'allowed': [
@@ -2981,7 +2973,6 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/scheduler/',
-            'third_party/blink/renderer/modules/shared_storage/',
         ],
         'allowed': [
             _DISALLOW_CONTINUATION_DATA_[0],

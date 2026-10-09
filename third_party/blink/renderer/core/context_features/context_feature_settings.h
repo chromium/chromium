@@ -48,14 +48,6 @@ class CORE_EXPORT ContextFeatureSettings final
     return enable_mojo_js_file_system_access_helper_;
   }
 
-  // ContextEnabled=PrivateAggregationInSharedStorage
-  void EnablePrivateAggregationInSharedStorage(bool enable) {
-    enable_private_aggregation_in_shared_storage_ = enable;
-  }
-  bool isPrivateAggregationInSharedStorageEnabled() const {
-    return enable_private_aggregation_in_shared_storage_;
-  }
-
   enum class UnboundedElementAuth {
     kDenied,
     kAllowedOpenWeb,
@@ -77,7 +69,6 @@ class CORE_EXPORT ContextFeatureSettings final
  private:
   bool enable_mojo_js_ = false;
   bool enable_mojo_js_file_system_access_helper_ = false;
-  bool enable_private_aggregation_in_shared_storage_ = false;
   bool enable_unbounded_element_ = false;
   bool enable_unbounded_element_privileged_ = false;
 };

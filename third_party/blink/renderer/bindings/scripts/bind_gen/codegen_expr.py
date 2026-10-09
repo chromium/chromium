@@ -290,7 +290,6 @@ def expr_from_exposure(
         "ServiceWorker": "IsServiceWorkerGlobalScope",
         "ShadowRealm": "IsShadowRealmGlobalScope",
         "SharedWorker": "IsSharedWorkerGlobalScope",
-        "SharedStorageWorklet": "IsSharedStorageWorkletGlobalScope",
         "Window": "IsWindow",
         "Worker": "IsWorkerGlobalScope",
         "Worklet": "IsWorkletGlobalScope",

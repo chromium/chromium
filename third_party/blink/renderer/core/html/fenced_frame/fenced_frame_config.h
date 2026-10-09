@@ -80,8 +80,6 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   V8UnionOpaquePropertyOrUnsignedLong* width() const;
   V8UnionOpaquePropertyOrUnsignedLong* height() const;
 
-  void setSharedStorageContext(const String& context_string);
-
   // Get attribute's value ignoring visibility.
   template <Attribute attr>
   auto GetValueIgnoringVisibility() const {
@@ -217,7 +215,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // compatibility.
   bool deprecated_should_freeze_initial_size_ = false;
 
-  static_assert(__LINE__ == 220, R"(
+  static_assert(__LINE__ == 218, R"(
 If adding or modifying a field in FencedFrameConfig, be sure to also make
 the field serializable. To do that:
 

@@ -6,7 +6,6 @@ the flags:
 --enable-features=
     FencedFrames:implementation_type/mparch,
     PrivacySandboxAdsAPIsOverride,
-    SharedStorageAPI,
     NoncedPartitionedCookies,
     Fledge,
     InterestGroupStorage,
@@ -16,16 +15,6 @@ the flags:
 --enable-blink-features=
     FencedFramesAPIChanges
 ```
-
-The `FencedFramesAPIChanges` feature is enabled for user to specify the behavior
-of `selectURL` by changing the boolean field `resolveToConfig` of
-`SharedStorageRunOperationMethodOptions`:
-1. `sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0}});`
-resolves to an urn::uuid.
-2. `sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
-resolveToConfig: false});` resolves to an urn::uuid.
-3. `sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
-resolveToConfig: true});` resolves to a fenced frame config object.
 
 
 See [crbug.com/1123606](crbug.com/1123606) and

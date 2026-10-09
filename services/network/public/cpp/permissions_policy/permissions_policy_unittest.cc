@@ -104,12 +104,6 @@ class PermissionsPolicyTest : public testing::Test {
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kClientHintDPR,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
-             {network::mojom::PermissionsPolicyFeature::
-                  kDeprecated_SharedStorage,
-              network::PermissionsPolicyFeatureDefault::EnableForSelf},
-             {network::mojom::PermissionsPolicyFeature::
-                  kDeprecated_SharedStorageSelectUrl,
-              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kLocalNetwork,
@@ -2950,11 +2944,6 @@ TEST_F(PermissionsPolicyTest, CreateFlexibleForFencedFrame) {
       policy1.get(), /*header_policy=*/{}, origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_FALSE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kDeprecated_SharedStorage));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
-                                   kDeprecated_SharedStorageSelectUrl));
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {

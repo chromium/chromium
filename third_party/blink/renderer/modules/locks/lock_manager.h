@@ -39,7 +39,7 @@ class MODULES_EXPORT LockManager final
   static const char kSupplementName[];
 
   // Web-exposed as navigator.locks
-  static LockManager* locks(NavigatorBase&, ExceptionState&);
+  static LockManager* locks(NavigatorBase&);
 
   explicit LockManager(NavigatorBase&);
 

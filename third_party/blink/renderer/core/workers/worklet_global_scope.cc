@@ -168,7 +168,6 @@ WorkletGlobalScope::~WorkletGlobalScope() = default;
 const BrowserInterfaceBrokerProxy&
 WorkletGlobalScope::GetBrowserInterfaceBroker() const {
   if (browser_interface_broker_proxy_.is_bound()) {
-    CHECK(IsSharedStorageWorkletGlobalScope());
     return browser_interface_broker_proxy_;
   }
 

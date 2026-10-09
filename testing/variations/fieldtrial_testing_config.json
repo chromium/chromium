@@ -15899,25 +15899,6 @@
             ]
         }
     ],
-    "SharedStorageDeprecation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "SharedStorageAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedTabGroups": [
         {
             "platforms": [
@@ -19378,6 +19359,22 @@
             ]
         }
     ],
+    "WebViewFencedFrames": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FencedFrames",
+                        "FencedFramesAPIChanges"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewIgnoreDuplicateNavs": [
         {
             "platforms": [
@@ -19615,22 +19612,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewRemoveInstantAppSupport"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewSharedStorageAPI": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FencedFrames",
-                        "FencedFramesAPIChanges"
                     ]
                 }
             ]

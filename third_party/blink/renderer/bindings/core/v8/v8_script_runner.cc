@@ -709,11 +709,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             produce_cache_options);
       }
 
-      // `SharedStorageWorkletGlobalScope` has a out-of-process worklet
-      // architecture that does not have a `page` associated.
-      // TODO(crbug.com/340920456): Figure out what should be done here.
-      if ((compile_options & v8::ScriptCompiler::kProduceCompileHints) != 0 &&
-          !execution_context->IsSharedStorageWorkletGlobalScope()) {
+      if ((compile_options & v8::ScriptCompiler::kProduceCompileHints) != 0) {
         CHECK(page);
         CHECK(frame);
         // We can produce both crowdsourced and local compile hints at the

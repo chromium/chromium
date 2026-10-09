@@ -26,8 +26,6 @@ constexpr char kAudioContextResumed[] = "audioContextResumed";
 constexpr char kAudioContextSuspended[] = "audioContextSuspended";
 constexpr char kCanvasContextCreated[] = "canvasContextCreated";
 constexpr char kScriptFirstStatement[] = "scriptFirstStatement";
-constexpr char kSharedStorageWorkletScriptFirstStatement[] =
-    "sharedStorageWorkletScriptFirstStatement";
 
 }  // namespace event_names
 
@@ -86,13 +84,6 @@ void InspectorEventBreakpointsAgent::Will(const probe::ExecuteScript& probe) {
           MaybeBuildBreakpointData(event_names::kScriptFirstStatement)) {
     ScheduleAsyncBreakpoint(*data);
     return;
-  }
-
-  if (probe.context && probe.context->IsSharedStorageWorkletGlobalScope()) {
-    if (auto data = MaybeBuildBreakpointData(
-            event_names::kSharedStorageWorkletScriptFirstStatement)) {
-      ScheduleAsyncBreakpoint(*data);
-    }
   }
 }
 

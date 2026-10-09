@@ -3981,11 +3981,6 @@
       status: "stable",
     },
     {
-      name: "InterestGroupsInSharedStorageWorklet",
-      public: true,
-      status: "stable",
-    },
-    {
       // If enabled, BeginMainFrame will always be requested when there are
       // active IntersectionObservers and also active composited animations.
       name: "IntersectionObserverCompositedAnimationsForceMainFrames",
@@ -6050,15 +6045,6 @@
       name: "SharedArrayBufferUnrestrictedAccessAllowed",
       base_feature: "none",
       public: true,
-    },
-    {
-      name: "SharedStorageAPI",
-      base_feature: "none",
-      public: true,
-    },
-    {
-      name: "SharedStorageWebLocks",
-      depends_on: ["SharedStorageAPI"],
     },
     {
       name: "SharedWorker",

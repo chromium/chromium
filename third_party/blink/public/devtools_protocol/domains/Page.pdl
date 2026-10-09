@@ -156,10 +156,6 @@ domain Page
       rewriter
       screen-wake-lock
       serial
-      # Deprecated.
-      shared-storage
-      # Deprecated.
-      shared-storage-select-url
       smart-card
       speaker-selection
       storage-access

@@ -7,7 +7,6 @@
     SecureContext,
     ImplementedAs=LockManager
 ] interface mixin NavigatorLocks {
-    [RaisesException]
     readonly attribute LockManager locks;
 };
 Navigator includes NavigatorLocks;

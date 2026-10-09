@@ -336,8 +336,6 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
       type = WorkerOrWorkletInterfaceNameType::kPaintWorkletGlobalScope;
     } else if (IsShadowRealmGlobalScope()) {
       type = WorkerOrWorkletInterfaceNameType::kShadowRealmGlobalScope;
-    } else if (IsSharedStorageWorkletGlobalScope()) {
-      type = WorkerOrWorkletInterfaceNameType::kSharedStorageWorkletGlobalScope;
     }
 
     base::UmaHistogramEnumeration("ServiceWorker.CountUse.CallerInterface",
