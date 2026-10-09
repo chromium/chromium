@@ -169,6 +169,9 @@ def main(argv):
         kotlinc_cmd = [
             _KOTLINC_GRAALVM_PATH,
             '-Xmx1G',
+            # Native images have no java.home, which -jdk-home needs in order
+            # to open the JDK's jrt:/ filesystem.
+            f'-Djava.home={build_utils.JAVA_HOME}',
             # The binary cannot infer this from its own location.
             '-kotlin-home',
             build_utils.KOTLIN_HOME,
@@ -189,8 +192,15 @@ def main(argv):
         # LINT.IfChange
         "-jvm-target",
         "25",
+        "-Xjdk-release=25",
         # LINT.ThenChange(//build/android/gyp/compile_java.py)
-        '-no-jdk',  # Avoid depending on the bundled JDK.
+        # Resolve JDK classes (java.*, javax.*, etc.) from our checked-in JDK
+        # so that Kotlin compiles in targets without android.jar on the
+        # classpath (javac does the same via --release). When android.jar is
+        # on the classpath, kotlinc still prefers its copy of a class and only
+        # falls back to the JDK for classes that android.jar lacks.
+        '-jdk-home',
+        build_utils.JAVA_HOME,
         # Avoid depending on the bundled Kotlin stdlib. This may have a version
         # skew with the one in //third_party/android_deps (which is the one we
         # prefer to use).
