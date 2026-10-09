@@ -901,7 +901,6 @@ void ManagePasswordsUIController::OnBubbleHidden() {
   } else if (GetState() ==
              password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
-    passwords_data_.clear_selected_password();
     update_icon = true;
   } else if (GetState() == password_manager::ui::MANAGE_STATE &&
              passwords_data_.single_credential_mode_credential().has_value()) {
