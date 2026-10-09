@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_copy_element_image_destination.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_copy_element_image_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_draw_element_image_destination.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_draw_element_image_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
@@ -471,47 +469,6 @@ bool GPUQueue::IsValidDestinationTexture(
     return false;
   }
   return true;
-}
-
-void GPUQueue::copyElementImageToTexture(
-    GPUCopyElementImageSource* source,
-    GPUCopyElementImageDestination* destination,
-    ExceptionState& exception_state) {
-  if (source->hasSx() != source->hasSy() ||
-      source->hasSx() != source->hasSwidth() ||
-      source->hasSx() != source->hasSheight()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Must specify all or none of (sx, sy, swidth, sheight).");
-    return;
-  }
-  if (destination->hasWidth() != destination->hasHeight()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Must specify neither or both of (width,height).");
-    return;
-  }
-  std::optional<float> sx;
-  std::optional<float> sy;
-  std::optional<float> swidth;
-  std::optional<float> sheight;
-  if (source->hasSx()) {
-    sx = source->sx();
-    sy = source->sy();
-    swidth = source->swidth();
-    sheight = source->sheight();
-  }
-
-  std::optional<uint32_t> width;
-  std::optional<uint32_t> height;
-  if (destination->hasWidth()) {
-    width = destination->width();
-    height = destination->height();
-  }
-
-  DrawElementImageToTextureInternal(source->source(), sx, sy, swidth, sheight,
-                                    width, height, destination->destination(),
-                                    exception_state);
 }
 
 void GPUQueue::drawElementImageToTexture(

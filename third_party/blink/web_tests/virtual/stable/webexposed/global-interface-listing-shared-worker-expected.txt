@@ -854,7 +854,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter label
 [Worker]     method constructor
-[Worker]     method copyElementImageToTexture
 [Worker]     method copyExternalImageToTexture
 [Worker]     method drawElementImageToTexture
 [Worker]     method onSubmittedWorkDone
