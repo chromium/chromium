@@ -37,28 +37,21 @@ class PlatformAuthManagerBrowserTest : public PlatformBrowserTest {
       const PlatformAuthManagerBrowserTest&) = delete;
 };
 
-// TODO(crbug.com/571205394): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DataWithoutOriginFiltering DISABLED_DataWithoutOriginFiltering
-#else
-#define MAYBE_DataWithoutOriginFiltering DataWithoutOriginFiltering
-#endif
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
-                       MAYBE_DataWithoutOriginFiltering) {
+                       DataWithoutOriginFiltering) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+
   // Install a mock provider.
   auto mock_provider =
       std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>();
   EXPECT_CALL(*mock_provider, SupportsOriginFiltering())
       .WillOnce(::testing::Return(false));
+  EXPECT_CALL(*mock_provider, FetchOrigins(_)).Times(0);
 
-  MockPlatformAuthProvider* unsafe_mock_provider = mock_provider.get();
-  ScopedSetProviderForTesting set_provider(std::move(mock_provider));
-
-  EXPECT_CALL(*unsafe_mock_provider, FetchOrigins(_)).Times(0);
-  // Issue a request to that origin and ensure that auth data is collected.
-  EXPECT_CALL(*unsafe_mock_provider, GetData(_, _))
-      .WillOnce([](const GURL& url,
+  // Issue a request to the test server and ensure that auth data is collected.
+  EXPECT_CALL(*mock_provider, GetData(url, _))
+      .WillOnce([](const GURL& request_url,
                    PlatformAuthProviderManager::GetDataCallback callback) {
         net::HttpRequestHeaders auth_headers;
         auth_headers.SetHeader(net::HttpRequestHeaders::kCookie,
@@ -66,16 +59,25 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
         std::move(callback).Run(std::move(auth_headers));
       });
 
+  // Without origin filtering, every navigation goes through the provider. The
+  // browser may start unrelated navigations in the background (e.g. the
+  // default search engine prewarm prerender on Android); ignore those.
+  EXPECT_CALL(*mock_provider, GetData(::testing::Ne(url), _))
+      .WillRepeatedly(
+          [](const GURL& request_url,
+             PlatformAuthProviderManager::GetDataCallback callback) {
+            std::move(callback).Run(net::HttpRequestHeaders());
+          });
+
+  // The provider instance will be destroyed when `set_provider` is destroyed.
+  EXPECT_CALL(*mock_provider, Die());
+  ScopedSetProviderForTesting set_provider(std::move(mock_provider));
+
   PlatformAuthProviderManager::GetInstance().SetEnabled(true,
                                                         base::OnceClosure());
 
-  EXPECT_TRUE(
-      content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
-                             embedded_test_server()->GetURL("/empty.html")));
-  ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
-
-  // The provider instance will be destroyed when `set_provider` is destroyed.
-  EXPECT_CALL(*unsafe_mock_provider, Die());
+  EXPECT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
