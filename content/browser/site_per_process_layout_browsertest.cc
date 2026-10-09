@@ -124,8 +124,9 @@ class UpdateViewportIntersectionMessageFilter
       override {
     intersection_state_ = std::move(intersection_state);
     msg_received_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   bool MessageReceived() const { return msg_received_; }
@@ -1113,8 +1114,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   // applied until the subsequent frame. So we wait for the minimum, then verify
   // afterwards.
   const int kExpectedNumberFrames = 101 + pre_scroll_frame_count;
-  while (frame_observer.render_frame_count() < kExpectedNumberFrames)
+  while (frame_observer.render_frame_count() < kExpectedNumberFrames) {
     frame_observer.WaitForAnyFrameSubmission();
+  }
 
   // We now wait for FrameSequenceTracker to time out in order for it to report.
   // This will occur once the minimum 100 frames have been produced, and 5s have
@@ -1205,7 +1207,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test that the view bounds for an out-of-process iframe are set and updated
 // correctly, including accounting for local frame offsets in the parent and
 // scroll positions.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ViewBoundsInNestedFrameTest) {
+// TODO(crbug.com/515693421): Flaky on Linux ASan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ViewBoundsInNestedFrameTest DISABLED_ViewBoundsInNestedFrameTest
+#else
+#define MAYBE_ViewBoundsInNestedFrameTest ViewBoundsInNestedFrameTest
+#endif
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       MAYBE_ViewBoundsInNestedFrameTest) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1509,8 +1518,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_CSSVisibilityChanged) {
   for (auto* ftn : web_contents()->GetPrimaryFrameTree().SubtreeNodes(
            first_cross_process_child)) {
     RenderFrameHostImpl* frame_host = ftn->current_frame_host();
-    if (!frame_host->is_local_root())
+    if (!frame_host->is_local_root()) {
       continue;
+    }
 
     child_widget_hosts.push_back(frame_host->GetRenderWidgetHost());
   }
@@ -1629,8 +1639,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   const int kFrameCountLimit = 20;
 
   // Wait for a minimum number of compositor frames for the second frame.
-  while (second_frame_counter.render_frame_count() < kFrameCountLimit)
+  while (second_frame_counter.render_frame_count() < kFrameCountLimit) {
     second_frame_counter.WaitForAnyFrameSubmission();
+  }
   ASSERT_LE(kFrameCountLimit, second_frame_counter.render_frame_count());
 
   // Now make sure all frames have roughly the counter value in the sense that
@@ -1674,8 +1685,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   third_frame_counter.ResetCounter();
 
   // We expect the second counter to keep running.
-  while (second_frame_counter.render_frame_count() < kFrameCountLimit)
+  while (second_frame_counter.render_frame_count() < kFrameCountLimit) {
     second_frame_counter.WaitForAnyFrameSubmission();
+  }
   ASSERT_LT(kFrameCountLimit, second_frame_counter.render_frame_count() + 1);
 
   // Verify that the counter for other two frames did not count much.
@@ -1750,8 +1762,9 @@ IN_PROC_BROWSER_TEST_P(
   // Wait for a certain number of swapped compositor frames generated for the
   // second child view. During the same interval the first frame should not have
   // swapped any compositor frames.
-  while (second_frame_counter.render_frame_count() < kFrameCountLimit)
+  while (second_frame_counter.render_frame_count() < kFrameCountLimit) {
     second_frame_counter.WaitForAnyFrameSubmission();
+  }
   ASSERT_LT(kFrameCountLimit, second_frame_counter.render_frame_count() + 1);
 
   float ratio = static_cast<float>(first_frame_counter.render_frame_count()) /
