@@ -6,12 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
+#import <utility>
+
 #import "base/test/run_until.h"
+#import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -305,23 +308,22 @@ TEST_F(TTCSessionControllerTest, TestAudioLevelDispatchedFromBackgroundThread) {
 }
 
 // Tests that TTCSessionController initializes with an injected conversation and
-// assigns itself as the delegate.
+// assigns its delegate bridge.
 TEST_F(TTCSessionControllerTest, TestCustomConversationInjection) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcConversation* conversation_ptr = conversation.get();
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
 
-  EXPECT_EQ(controller.conversation, conversation);
-  EXPECT_EQ(conversation.delegate,
-            static_cast<id<TTCConversationDelegate>>(controller));
+  EXPECT_EQ(controller.conversation, conversation_ptr);
+  EXPECT_NE(conversation_ptr->delegate(), nullptr);
   [controller disconnect];
 }
 
 // Tests that `initWithBackend:` creates a conversation backed by the provided
-// `ttc::TtcBackend` and assigns itself as the delegate.
+// `ttc::TtcBackend` and assigns its delegate bridge.
 TEST_F(TTCSessionControllerTest, TestInitWithBackend) {
   auto backend = std::make_unique<testing::NiceMock<ttc::MockTtcBackend>>();
   ttc::TtcBackend* backend_ptr = backend.get();
@@ -329,9 +331,8 @@ TEST_F(TTCSessionControllerTest, TestInitWithBackend) {
       [[TTCSessionController alloc] initWithBackend:std::move(backend)];
 
   ASSERT_TRUE(controller.conversation);
-  EXPECT_EQ(controller.conversation.backend, backend_ptr);
-  EXPECT_EQ(controller.conversation.delegate,
-            static_cast<id<TTCConversationDelegate>>(controller));
+  EXPECT_EQ(controller.conversation->backend(), backend_ptr);
+  EXPECT_NE(controller.conversation->delegate(), nullptr);
   [controller disconnect];
 }
 
@@ -339,10 +340,9 @@ TEST_F(TTCSessionControllerTest, TestInitWithBackend) {
 TEST_F(TTCSessionControllerTest, TestStartSessionDrivesConversation) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
 
   EXPECT_FALSE(fake_audio.isCapturing);
   [controller startSession];
@@ -355,10 +355,9 @@ TEST_F(TTCSessionControllerTest, TestStartSessionDrivesConversation) {
 TEST_F(TTCSessionControllerTest, TestStopSessionDrivesConversationStop) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
 
   [controller startSession];
   EXPECT_TRUE(fake_audio.isCapturing);
@@ -375,20 +374,18 @@ TEST_F(TTCSessionControllerTest, TestStopSessionDrivesConversationStop) {
 TEST_F(TTCSessionControllerTest, TestConversationEnergyForwardedToObserver) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcConversation* conversation_ptr = conversation.get();
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
   FakeTTCSessionControllerObserver* observer =
       [[FakeTTCSessionControllerObserver alloc] init];
   [controller addObserver:observer];
 
   [controller startSession];
+  ASSERT_NE(conversation_ptr->delegate(), nullptr);
 
-  // Conversation delegate invokes didUpdateAudioEnergy.
-  [static_cast<id<TTCConversationDelegate>>(controller)
-              conversation:conversation
-      didUpdateAudioEnergy:0.75f];
+  conversation_ptr->delegate()->OnAudioEnergyUpdated(0.75f);
 
   EXPECT_EQ(observer.audioLevelUpdateCount, 1);
   EXPECT_FLOAT_EQ(observer.lastAudioLevel, 0.75f);
@@ -401,43 +398,44 @@ TEST_F(TTCSessionControllerTest, TestConversationEnergyForwardedToObserver) {
 TEST_F(TTCSessionControllerTest, TestConversationErrorForwardedToObserver) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcConversation* conversation_ptr = conversation.get();
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
   FakeTTCSessionControllerObserver* observer =
       [[FakeTTCSessionControllerObserver alloc] init];
   [controller addObserver:observer];
 
   [controller startSession];
-  NSError* error = CreateTTCError(ttc::ErrorCode::kInternalBackendError);
-  [static_cast<id<TTCConversationDelegate>>(controller)
-           conversation:conversation
-      didEncounterError:error];
+  ASSERT_NE(conversation_ptr->delegate(), nullptr);
+  conversation_ptr->delegate()->OnConversationError(
+      ttc::ErrorCode::kInternalBackendError);
 
   EXPECT_EQ(observer.errorCount, 1);
-  EXPECT_NSEQ(observer.lastError, error);
+  ASSERT_TRUE(observer.lastError != nil);
+  EXPECT_NSEQ(observer.lastError.domain, kTTCErrorDomain);
+  EXPECT_EQ(observer.lastError.code,
+            static_cast<NSInteger>(ttc::ErrorCode::kInternalBackendError));
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kFinished);
   EXPECT_TRUE(fake_audio.didStopCapture);
 
   // Subsequent fatal errors must be ignored once a fatal error is reported.
-  [static_cast<id<TTCConversationDelegate>>(controller)
-           conversation:conversation
-      didEncounterError:CreateTTCError(ttc::ErrorCode::kSessionExpired)];
+  conversation_ptr->delegate()->OnConversationError(
+      ttc::ErrorCode::kSessionExpired);
   EXPECT_EQ(observer.errorCount, 1);
 
   [controller disconnect];
 }
 
-// Tests that conversationDidClose stops the session and transitions lifecycle
+// Tests that OnConversationClosed stops the session and transitions lifecycle
 // to kFinished.
 TEST_F(TTCSessionControllerTest, TestConversationDidCloseStopsSession) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcConversation* conversation_ptr = conversation.get();
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
   FakeTTCSessionControllerObserver* observer =
       [[FakeTTCSessionControllerObserver alloc] init];
   [controller addObserver:observer];
@@ -446,8 +444,8 @@ TEST_F(TTCSessionControllerTest, TestConversationDidCloseStopsSession) {
   [controller onSessionInitialized];
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kLive);
 
-  [static_cast<id<TTCConversationDelegate>>(controller)
-      conversationDidClose:conversation];
+  ASSERT_NE(conversation_ptr->delegate(), nullptr);
+  conversation_ptr->delegate()->OnConversationClosed();
 
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kFinished);
   EXPECT_EQ(observer.lastLifecycle, TTCSessionLifecycle::kFinished);
@@ -456,35 +454,35 @@ TEST_F(TTCSessionControllerTest, TestConversationDidCloseStopsSession) {
   [controller disconnect];
 }
 
-// Tests that TTCSessionController disconnect calls disconnect on the underlying
+// Tests that TTCSessionController disconnect calls Disconnect on the underlying
 // conversation.
 TEST_F(TTCSessionControllerTest, TestDisconnectCleansUpConversation) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcConversation* conversation_ptr = conversation.get();
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
 
   [controller startSession];
   EXPECT_TRUE(fake_audio.isCapturing);
 
   [controller disconnect];
   EXPECT_TRUE(fake_audio.didStopCapture);
-  EXPECT_EQ(conversation.delegate, nil);
+  EXPECT_EQ(conversation_ptr->delegate(), nullptr);
   EXPECT_EQ(fake_audio.delegate, nil);
 }
 
-// Tests that conversationDidInitialize transitions the lifecycle to kLive and
+// Tests that OnConversationInitialized transitions the lifecycle to kLive and
 // notifies observers.
 TEST_F(TTCSessionControllerTest,
        TestConversationDidInitializeTransitionsToLive) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
-  TTCSessionController* controller =
-      [[TTCSessionController alloc] initWithConversation:conversation];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcConversation* conversation_ptr = conversation.get();
+  TTCSessionController* controller = [[TTCSessionController alloc]
+      initWithConversation:std::move(conversation)];
   FakeTTCSessionControllerObserver* observer =
       [[FakeTTCSessionControllerObserver alloc] init];
   [controller addObserver:observer];
@@ -493,8 +491,8 @@ TEST_F(TTCSessionControllerTest,
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kInitializing);
   EXPECT_EQ(observer.lifecycleChangeCount, 0);
 
-  [static_cast<id<TTCConversationDelegate>>(controller)
-      conversationDidInitialize:conversation];
+  ASSERT_NE(conversation_ptr->delegate(), nullptr);
+  conversation_ptr->delegate()->OnConversationInitialized();
 
   EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kLive);
   EXPECT_EQ(observer.lifecycleChangeCount, 1);

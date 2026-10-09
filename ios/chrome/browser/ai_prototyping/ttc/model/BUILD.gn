@@ -6,7 +6,6 @@ source_set("model") {
   sources = [
     "ttc_conversation.h",
     "ttc_conversation.mm",
-    "ttc_conversation_delegate.h",
     "ttc_error_codes.h",
     "ttc_error_codes.mm",
     "ttc_keyed_service.h",

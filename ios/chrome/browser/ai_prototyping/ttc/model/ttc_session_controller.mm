@@ -10,27 +10,62 @@
 #import <utility>
 
 #import "base/check.h"
+#import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 
-@interface TTCSessionController () <TTCConversationDelegate>
-@end
+namespace {
+
+// Bridge forwarding C++ `TtcConversation::Delegate` callbacks to an Objective-C
+// `TTCSessionController`.
+class TtcConversationDelegateBridge : public TtcConversation::Delegate {
+ public:
+  explicit TtcConversationDelegateBridge(TTCSessionController* controller)
+      : controller_(controller) {}
+  ~TtcConversationDelegateBridge() override = default;
+
+  // `TtcConversation::Delegate` implementation:
+  void OnConversationInitialized() override {
+    [controller_ onSessionInitialized];
+  }
+
+  void OnConversationClosed() override { [controller_ stopSession]; }
+
+  void OnAudioEnergyUpdated(float energy) override {
+    [controller_ userAudioLevelDidUpdate:energy];
+  }
+
+  void OnConversationError(ttc::ErrorCode error) override {
+    [controller_ failWithError:CreateTTCError(error)];
+  }
+
+ private:
+  __weak TTCSessionController* controller_ = nil;
+};
+
+}  // namespace
 
 @implementation TTCSessionController {
+  // Declared before `_conversation` so `_conversation` is destroyed first
+  // during deallocation while the delegate bridge is still alive.
+  std::unique_ptr<TtcConversationDelegateBridge> _conversationDelegateBridge;
+  std::unique_ptr<TtcConversation> _conversation;
   NSHashTable<id<TTCSessionControllerObserver>>* _observers;
   BOOL _fatalErrorReported;
 }
 
-- (instancetype)initWithConversation:(TTCConversation*)conversation {
+- (instancetype)initWithConversation:
+    (std::unique_ptr<TtcConversation>)conversation {
   CHECK(conversation);
   self = [super init];
   if (self) {
-    _conversation = conversation;
-    _conversation.delegate = self;
+    _conversationDelegateBridge =
+        std::make_unique<TtcConversationDelegateBridge>(self);
+    _conversation = std::move(conversation);
+    _conversation->set_delegate(_conversationDelegateBridge.get());
     _lifecycle = TTCSessionLifecycle::kInitializing;
     _observers = [NSHashTable weakObjectsHashTable];
     _fatalErrorReported = NO;
@@ -40,14 +75,17 @@
 }
 
 - (instancetype)initWithBackend:(std::unique_ptr<ttc::TtcBackend>)backend {
-  TTCConversation* conversation = [[TTCConversation alloc]
-      initWithAudioController:[[TTCAudioEngine alloc] init]
-                      backend:std::move(backend)];
-  return [self initWithConversation:conversation];
+  return [self initWithConversation:std::make_unique<TtcConversation>(
+                                        [[TTCAudioEngine alloc] init],
+                                        std::move(backend))];
 }
 
 - (instancetype)init {
-  return [self initWithConversation:[[TTCConversation alloc] init]];
+  return [self initWithConversation:std::make_unique<TtcConversation>()];
+}
+
+- (TtcConversation*)conversation {
+  return _conversation.get();
 }
 
 #pragma mark - Session Lifecycle
@@ -56,7 +94,7 @@
   if (_lifecycle == TTCSessionLifecycle::kFinished) {
     return;
   }
-  [_conversation start];
+  _conversation->Start();
 }
 
 - (void)onSessionInitialized {
@@ -67,13 +105,13 @@
 }
 
 - (void)stopSession {
-  [_conversation stop];
+  _conversation->Stop();
   [self setLifecycle:TTCSessionLifecycle::kFinished];
 }
 
 - (void)disconnect {
   [self stopSession];
-  [_conversation disconnect];
+  _conversation->Disconnect();
   [self removeBackgroundObserver];
   [_observers removeAllObjects];
 }
@@ -91,26 +129,6 @@
       [observer sessionController:self didChangeLifecycle:_lifecycle];
     }
   }
-}
-
-#pragma mark - TTCConversationDelegate
-
-- (void)conversationDidInitialize:(TTCConversation*)conversation {
-  [self onSessionInitialized];
-}
-
-- (void)conversationDidClose:(TTCConversation*)conversation {
-  [self stopSession];
-}
-
-- (void)conversation:(TTCConversation*)conversation
-    didUpdateAudioEnergy:(float)energy {
-  [self userAudioLevelDidUpdate:energy];
-}
-
-- (void)conversation:(TTCConversation*)conversation
-    didEncounterError:(NSError*)error {
-  [self failWithError:error];
 }
 
 #pragma mark - Audio & Errors
