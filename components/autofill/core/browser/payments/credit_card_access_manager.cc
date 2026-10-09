@@ -24,13 +24,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -119,6 +120,33 @@ bool IsEligibleForCardInfoRetrievalAuthentication(
   }
 
   return true;
+}
+
+// Creates the card returned by RetrieveCreditCardForOpaqueToken().
+CreditCard CreateCardFromGetDataForAgentResponse(
+    const payments::GetDataForAgentResponseDetails& response_details) {
+  // FetchCreditCard() can fill a `CreditCard::RecordType::kLocalCard` without
+  // an unmasking flow.
+  CreditCard card;
+  card.set_record_type(CreditCard::RecordType::kLocalCard);
+  card.SetNumber(base::UTF8ToUTF16(response_details.card_number));
+  card.SetExpirationMonth(response_details.expiration_month);
+  card.SetExpirationYear(response_details.expiration_year);
+  card.set_cvc(base::UTF8ToUTF16(response_details.cvc));
+  return card;
+}
+
+void OnDidGetDataForAgent(
+    CreditCardAccessManager::OnCreditCardRetrievedForOpaqueTokenCallback
+        callback,
+    PaymentsRpcResult result,
+    const payments::GetDataForAgentResponseDetails& response_details) {
+  if (result != PaymentsRpcResult::kSuccess) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(
+      CreateCardFromGetDataForAgentResponse(response_details));
 }
 
 }  // namespace
@@ -440,27 +468,23 @@ void CreditCardAccessManager::FetchCreditCard(
 void CreditCardAccessManager::RetrieveCreditCardForOpaqueToken(
     const std::string& credit_card_opaque_token,
     OnCreditCardRetrievedForOpaqueTokenCallback callback) {
-  // Stubbed out: return a dummy credit card with mock data asynchronously.
-  // Note: The returned card must be a `CreditCard::RecordType::kLocalCard`.
-  // If a `kFullServerCard` were returned without being listed in
-  // `unmasked_card_cache_`, subsequent form filling via `FetchCreditCard`
-  // would reach a `NOTREACHED()` because `FetchCreditCard` assumes full server
-  // cards only originate from a previous unmasking on the same page and are
-  // served through the cache.
-  // TODO(crbug.com/567655303): Replace mock implementation with actual service
-  // call.
+  payments::MultipleRequestPaymentsNetworkInterface* network_interface =
+      payments_autofill_client().GetMultipleRequestPaymentsNetworkInterface();
+  if (credit_card_opaque_token.empty() || !network_interface) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
 
-  CreditCard dummy_card;
-  dummy_card.set_record_type(CreditCard::RecordType::kLocalCard);
-  dummy_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Mock User");
-  dummy_card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  dummy_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
-  dummy_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2030");
-  dummy_card.SetNickname(u"Mock Card");
-  dummy_card.set_cvc(u"123");
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(dummy_card)));
+  payments::GetDataForAgentRequestDetails request_details;
+  request_details.opaque_token = credit_card_opaque_token;
+  request_details.app_locale = payments_data_manager().app_locale();
+  // The token is single use, so a failed request is not retried. The response
+  // handler does not depend on `this`, so that `callback` is run even if
+  // `this` is destroyed while the request is in flight.
+  network_interface->GetDataForAgent(
+      request_details,
+      base::BindOnce(&OnDidGetDataForAgent, std::move(callback)));
 }
 
 bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
