@@ -71,6 +71,7 @@
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/feature_engagement_tracker_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/history_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/identity_manager_provider_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/manta_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/media_device_salt_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/password_reuse_manager_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/supervised_user_service_provider_impl.h"
@@ -976,6 +977,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       std::make_unique<FeatureEngagementTrackerProviderImpl>();
   history_service_provider_ = std::make_unique<HistoryServiceProviderImpl>();
   identity_manager_provider_ = std::make_unique<IdentityManagerProviderImpl>();
+  manta_service_provider_ = std::make_unique<MantaServiceProviderImpl>();
   media_device_salt_service_provider_ =
       std::make_unique<MediaDeviceSaltServiceProviderImpl>();
   password_reuse_manager_provider_ =

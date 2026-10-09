@@ -82,7 +82,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
@@ -137,6 +136,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "chromeos/ash/components/media_device_salt/media_device_salt_service_provider.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -489,8 +489,10 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                  content::WebUI* web_ui,
                  const GURL& url) -> std::unique_ptr<content::WebUIController> {
                 Profile* profile = Profile::FromWebUI(web_ui);
+                const AccountId& account_id = CHECK_DEREF(
+                    AnnotatedAccountId::Get(profile->GetOriginalProfile()));
                 manta::MantaService* manta_service =
-                    manta::MantaServiceFactory::GetForProfile(profile);
+                    MantaServiceProvider::Get().Find(account_id);
                 return personalization_app::CreatePersonalizationAppUI(
                     application_locale_storage,
                     std::move(shared_url_loader_factory), web_ui, url,
@@ -535,8 +537,10 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
              content::WebUI* web_ui,
              const GURL& url) -> std::unique_ptr<content::WebUIController> {
             Profile* profile = Profile::FromWebUI(web_ui);
+            const AccountId& account_id = CHECK_DEREF(
+                AnnotatedAccountId::Get(profile->GetOriginalProfile()));
             manta::MantaService* manta_service =
-                manta::MantaServiceFactory::GetForProfile(profile);
+                MantaServiceProvider::Get().Find(account_id);
             return vc_background_ui::CreateVcBackgroundUI(
                 application_locale_storage,
                 std::move(shared_url_loader_factory), web_ui, url,

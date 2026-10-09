@@ -13,6 +13,7 @@ group("keyed_service_provider") {
     ":feature_engagement_tracker_provider_impl",
     ":history_service_provider_impl",
     ":identity_manager_provider_impl",
+    ":manta_service_provider_impl",
     ":media_device_salt_service_provider_impl",
     ":password_reuse_manager_provider_impl",
     ":supervised_user_service_provider_impl",
@@ -169,6 +170,24 @@ source_set("identity_manager_provider_impl") {
     "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/signin:identity_manager_provider",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("manta_service_provider_impl") {
+  sources = [
+    "manta_service_provider_impl.cc",
+    "manta_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/manta",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/manta:manta_service_provider",
+    "//components/account_id",
+    "//content/public/browser",
   ]
 
   visibility = [ ":keyed_service_provider" ]
