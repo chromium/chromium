@@ -19,6 +19,7 @@ BackendModelImplAndroid::~BackendModelImplAndroid() = default;
 
 std::unique_ptr<BackendSession> BackendModelImplAndroid::CreateSession(
     const ScopedAdaptation* adaptation,
+    bool has_post_processor,
     on_device_model::mojom::SessionParamsPtr params) {
   return std::make_unique<BackendSessionImplAndroid>(feature_,
                                                      std::move(params));
@@ -33,6 +34,13 @@ BackendModelImplAndroid::LoadAdaptation(
 
 void BackendModelImplAndroid::UnloadAdaptation(uint32_t adaptation_id) {
   NOTIMPLEMENTED();
+}
+
+on_device_model::mojom::LoadModelResult
+BackendModelImplAndroid::LoadPostProcessor(
+    on_device_model::mojom::LoadPostProcessorParamsPtr params) {
+  NOTIMPLEMENTED();
+  return on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary;
 }
 
 }  // namespace on_device_model

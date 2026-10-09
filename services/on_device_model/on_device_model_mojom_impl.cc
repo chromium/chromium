@@ -340,13 +340,19 @@ struct OnDeviceModelMojomImpl::PendingTask {
   base::TimeTicks start = base::TimeTicks::Now();
 };
 
+OnDeviceModelMojomImpl::ReceiverContext::ReceiverContext() = default;
+OnDeviceModelMojomImpl::ReceiverContext::ReceiverContext(ReceiverContext&&) =
+    default;
+OnDeviceModelMojomImpl::ReceiverContext&
+OnDeviceModelMojomImpl::ReceiverContext::operator=(ReceiverContext&&) = default;
+OnDeviceModelMojomImpl::ReceiverContext::~ReceiverContext() = default;
+
 OnDeviceModelMojomImpl::OnDeviceModelMojomImpl(
     std::unique_ptr<BackendModel> model,
     mojo::PendingReceiver<mojom::OnDeviceModel> receiver,
     base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete)
     : model_(std::move(model)), on_delete_(std::move(on_delete)) {
-  receivers_.Add(this, std::move(receiver),
-                 std::unique_ptr<BackendModel::ScopedAdaptation>());
+  receivers_.Add(this, std::move(receiver), ReceiverContext());
   receivers_.set_disconnect_handler(
       base::BindRepeating(&OnDeviceModelMojomImpl::ModelDisconnected,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -380,10 +386,12 @@ void OnDeviceModelMojomImpl::StartSession(
   if (idle_timer_) {
     RestartIdleTimer();
   }
-  AddSession(std::move(session),
-             model_->CreateSession(receivers_.current_context().get(),
-                                   std::move(params)),
-             mojom::Priority::kForeground);
+  const ReceiverContext& context = receivers_.current_context();
+  AddSession(
+      std::move(session),
+      model_->CreateSession(context.adaptation.get(),
+                            context.has_post_processor, std::move(params)),
+      mojom::Priority::kForeground);
 }
 
 void OnDeviceModelMojomImpl::ClassifyTextSafety(
@@ -408,6 +416,21 @@ void OnDeviceModelMojomImpl::LoadAdaptation(
                      std::move(model), std::move(callback));
   AddAndRunPendingTask(
       base::IgnoreArgs<base::OnceClosure>(std::move(load_adaptation)),
+      /*session=*/nullptr);
+}
+
+void OnDeviceModelMojomImpl::LoadPostProcessor(
+    mojom::LoadPostProcessorParamsPtr params,
+    mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    LoadPostProcessorCallback callback) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelMojomImpl::LoadPostProcessor");
+  auto load_post_processor =
+      base::BindOnce(&OnDeviceModelMojomImpl::LoadPostProcessorInternal,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params),
+                     std::move(model), std::move(callback));
+  AddAndRunPendingTask(
+      base::IgnoreArgs<base::OnceClosure>(std::move(load_post_processor)),
       /*session=*/nullptr);
 }
 
@@ -456,9 +479,25 @@ void OnDeviceModelMojomImpl::LoadAdaptationInternal(
     LoadAdaptationCallback callback) {
   TRACE_EVENT("optimization_guide",
               "OnDeviceModelMojomImpl::LoadAdaptationInternal");
-  receivers_.Add(this, std::move(model),
-                 model_->LoadAdaptation(std::move(params)));
+  ReceiverContext context;
+  context.adaptation = model_->LoadAdaptation(std::move(params));
+  receivers_.Add(this, std::move(model), std::move(context));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
+}
+
+void OnDeviceModelMojomImpl::LoadPostProcessorInternal(
+    mojom::LoadPostProcessorParamsPtr params,
+    mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    LoadPostProcessorCallback callback) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelMojomImpl::LoadPostProcessorInternal");
+  mojom::LoadModelResult result = model_->LoadPostProcessor(std::move(params));
+  if (result == mojom::LoadModelResult::kSuccess) {
+    ReceiverContext context;
+    context.has_post_processor = true;
+    receivers_.Add(this, std::move(model), std::move(context));
+  }
+  std::move(callback).Run(result);
 }
 
 void OnDeviceModelMojomImpl::RunTaskIfPossible() {

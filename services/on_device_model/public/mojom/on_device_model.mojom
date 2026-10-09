@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module on_device_model.mojom;
 
@@ -116,6 +116,18 @@ interface ContextClient {
 struct LoadAdaptationParams {
   // Assets for an adaptation.
   AdaptationAssets assets;
+};
+
+// Params to describe a post-processor model to load (currently the ASR
+// polisher model).
+[Stable]
+struct LoadPostProcessorParams {
+  // Opened model weights and cache files for the post-processor model (e.g.
+  // CPU .litertlm for the ASR polisher model).
+  // TODO(b/313919363): This should also be a ReadOnlyFile.
+  mojo_base.mojom.File? weights;
+  mojo_base.mojom.File? cache;
+  uint32 max_tokens = 0;
 };
 
 // A set of capabilities that a model can have.
@@ -357,6 +369,14 @@ interface OnDeviceModel {
   // adaptation on top of the base model.
   LoadAdaptation@3(
       LoadAdaptationParams params, pending_receiver<OnDeviceModel> model)
+      => (LoadModelResult result);
+
+  // Loads a secondary post-processor model (e.g., ASR polisher) associated
+  // with this base model and binds a new OnDeviceModel receiver representing
+  // the combined pipeline.
+  [MinVersion=9]
+  LoadPostProcessor@4(
+      LoadPostProcessorParams params, pending_receiver<OnDeviceModel> model)
       => (LoadModelResult result);
 };
 

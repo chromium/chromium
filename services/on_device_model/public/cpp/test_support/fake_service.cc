@@ -491,6 +491,24 @@ void FakeOnDeviceModel::LoadAdaptation(
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
+void FakeOnDeviceModel::LoadPostProcessor(
+    mojom::LoadPostProcessorParamsPtr params,
+    mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    LoadPostProcessorCallback callback) {
+  TRACE_EVENT("optimization_guide", "FakeOnDeviceModel::LoadPostProcessor",
+              perfetto::Flow::FromPointer(this));
+  if (!params || !params->weights.IsValid()) {
+    std::move(callback).Run(mojom::LoadModelResult::kFailedToLoadLibrary);
+    return;
+  }
+  Data data = data_;
+  data.postprocessor_weight = ReadFile(params->weights);
+  auto test_model = std::make_unique<FakeOnDeviceModel>(
+      settings_, std::move(data), performance_hint_, backend_type_);
+  model_adaptation_receivers_.Add(std::move(test_model), std::move(model));
+  std::move(callback).Run(mojom::LoadModelResult::kSuccess);
+}
+
 FakeTextSafetyModel::FakeTextSafetyModel(
     on_device_model::mojom::TextSafetyModelParamsPtr params) {
   if (params->safety_model.IsValid()) {

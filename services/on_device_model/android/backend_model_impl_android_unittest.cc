@@ -111,7 +111,7 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithDefaultFactory) {
   java_helper_.SetDefaultAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   TestResponseHolder response_holder;
@@ -132,7 +132,7 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
   java_helper_.VerifySessionParams(/*index=*/0, kFeature, /*top_k=*/3,
                                    /*temperature=*/1.0f);
@@ -185,7 +185,7 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithUnknownError) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
   java_helper_.settings().SetGenerateResult(
       BackendSessionImplAndroid::GenerateResult::kUnknownError);
@@ -208,7 +208,7 @@ TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   {
@@ -248,7 +248,7 @@ TEST_F(BackendModelImplAndroidTest, GenerateCallbacksOnDifferentThread) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   {
@@ -276,7 +276,7 @@ TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   java_helper_.settings().SetCompleteAsync(true);
@@ -296,7 +296,7 @@ TEST_F(BackendModelImplAndroidTest, CloneSession) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
   java_helper_.VerifySessionParams(/*index=*/0, kFeature, /*top_k=*/3,
                                    /*temperature=*/1.0f);
@@ -358,7 +358,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTextInput) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   std::vector<ml::InputPiece> pieces;
@@ -377,7 +377,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTokenInput) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   std::vector<ml::InputPiece> pieces;
@@ -398,7 +398,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensCallbackOnDifferentThread) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   java_helper_.settings().SetSessionCallbackOnDifferentThread(true);
@@ -420,7 +420,7 @@ TEST_F(BackendModelImplAndroidTest, AppendBindsContextClient) {
   java_helper_.SetMockAiCoreFactory();
 
   std::unique_ptr<BackendSession> session = model_->CreateSession(
-      /*adaptation=*/nullptr,
+      /*adaptation=*/nullptr, /*has_post_processor=*/false,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   TestContextClient context_client;

@@ -21,10 +21,13 @@ class BackendModelImplAndroid : public BackendModel {
   // BackendModel:
   std::unique_ptr<BackendSession> CreateSession(
       const ScopedAdaptation* adaptation,
+      bool has_post_processor,
       on_device_model::mojom::SessionParamsPtr params) override;
   std::unique_ptr<ScopedAdaptation> LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params) override;
   void UnloadAdaptation(uint32_t adaptation_id) override;
+  on_device_model::mojom::LoadModelResult LoadPostProcessor(
+      on_device_model::mojom::LoadPostProcessorParamsPtr params) override;
 
  private:
   optimization_guide::proto::ModelExecutionFeature feature_;

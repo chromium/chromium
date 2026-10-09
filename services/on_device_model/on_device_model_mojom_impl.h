@@ -65,23 +65,39 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelMojomImpl
   void LoadAdaptation(mojom::LoadAdaptationParamsPtr params,
                       mojo::PendingReceiver<mojom::OnDeviceModel> model,
                       LoadAdaptationCallback callback) override;
+  void LoadPostProcessor(mojom::LoadPostProcessorParamsPtr params,
+                         mojo::PendingReceiver<mojom::OnDeviceModel> model,
+                         LoadPostProcessorCallback callback) override;
 
   struct PendingTask;
+  struct ReceiverContext {
+    ReceiverContext();
+    ReceiverContext(ReceiverContext&&);
+    ReceiverContext& operator=(ReceiverContext&&);
+    ~ReceiverContext();
+
+    std::unique_ptr<BackendModel::ScopedAdaptation> adaptation;
+    // Whether this receiver has a loaded post-processor model (currently the
+    // ASR polisher model), bound via `LoadPostProcessor()`.
+    bool has_post_processor = false;
+  };
 
   void ModelDisconnected();
   void LoadAdaptationInternal(mojom::LoadAdaptationParamsPtr params,
                               mojo::PendingReceiver<mojom::OnDeviceModel> model,
                               LoadAdaptationCallback callback);
+  void LoadPostProcessorInternal(
+      mojom::LoadPostProcessorParamsPtr params,
+      mojo::PendingReceiver<mojom::OnDeviceModel> model,
+      LoadPostProcessorCallback callback);
   void RunTaskIfPossible();
   void TaskFinished();
   void OnIdleTimeout();
 
   std::unique_ptr<BackendModel> model_;
+  mojo::ReceiverSet<mojom::OnDeviceModel, ReceiverContext> receivers_;
   std::set<std::unique_ptr<SessionWrapper>, base::UniquePtrComparator>
       sessions_;
-  mojo::ReceiverSet<mojom::OnDeviceModel,
-                    std::unique_ptr<BackendModel::ScopedAdaptation>>
-      receivers_;
   base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete_;
   std::list<std::unique_ptr<PendingTask>> pending_tasks_;
   bool is_running_ = false;

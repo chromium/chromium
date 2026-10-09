@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendModel {
   // Creates a session for this model based on `params`.
   virtual std::unique_ptr<BackendSession> CreateSession(
       const ScopedAdaptation* adaptation,
+      bool has_post_processor,
       on_device_model::mojom::SessionParamsPtr params) = 0;
 
   // Loads and returns an adaptation based on `params`.
@@ -45,6 +46,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendModel {
 
   // Unloads an adaptation previously loaded by `LoadAdaptation()`.
   virtual void UnloadAdaptation(uint32_t adaptation_id) = 0;
+
+  // Loads a post-processor (currently the ASR polisher model) based on
+  // `params`.
+  virtual on_device_model::mojom::LoadModelResult LoadPostProcessor(
+      on_device_model::mojom::LoadPostProcessorParamsPtr params) = 0;
 };
 
 }  // namespace on_device_model

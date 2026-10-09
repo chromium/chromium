@@ -32,7 +32,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       ChromeMLModel model,
       on_device_model::mojom::SessionParamsPtr params,
       on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
-      std::optional<uint32_t> adaptation_id);
+      std::optional<uint32_t> adaptation_id,
+      ChromeMLModel postprocessor_model = 0);
 
   ~SessionAccessor();
 
@@ -69,7 +70,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
 
   SessionAccessor(const ChromeML& chrome_ml,
                   scoped_refptr<base::SequencedTaskRunner> task_runner,
-                  ChromeMLModel model);
+                  ChromeMLModel model,
+                  ChromeMLModel postprocessor_model = 0);
 
   void CloneFrom(SessionAccessor* other);
   void CreateInternal(
@@ -105,6 +107,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   const raw_ref<const ChromeML> chrome_ml_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ChromeMLModel model_;
+  // Optional post-processor model (currently the ASR polisher model) passed to
+  // ASR streams created on this session.
+  ChromeMLModel postprocessor_model_ = 0;
   ChromeMLSession session_ = 0;
   ChromeMLASRStream asr_stream_ = 0;
 };

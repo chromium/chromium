@@ -182,9 +182,8 @@ class FakeFile {
 
   base::File Open() {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    return base::File(temp_file_.path(), base::File::FLAG_OPEN |
-                                             base::File::FLAG_WRITE |
-                                             base::File::FLAG_READ);
+    return base::File(temp_file_.path(),
+                      base::File::FLAG_OPEN | base::File::FLAG_READ);
   }
 
   base::FilePath Path() { return temp_file_.path(); }
@@ -244,6 +243,75 @@ class OnDeviceModelServiceTest : public testing::Test {
     auto params = mojom::LoadAdaptationParams::New();
     params->assets.weights_path = std::move(adaptation_path);
     return LoadAdaptationWithParams(model, std::move(params));
+  }
+
+  mojo::Remote<mojom::OnDeviceModel> LoadPostProcessorWithParams(
+      mojom::OnDeviceModel& model,
+      mojom::LoadPostProcessorParamsPtr params) {
+    mojo::Remote<mojom::OnDeviceModel> remote;
+    base::test::TestFuture<mojom::LoadModelResult> future;
+    model.LoadPostProcessor(std::move(params),
+                            remote.BindNewPipeAndPassReceiver(),
+                            future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::LoadModelResult::kSuccess);
+    return remote;
+  }
+
+  mojo::Remote<mojom::OnDeviceModel> LoadPostProcessor(
+      mojom::OnDeviceModel& model,
+      base::File postprocessor_data) {
+    auto params = mojom::LoadPostProcessorParams::New();
+    params->weights = std::move(postprocessor_data);
+    return LoadPostProcessorWithParams(model, std::move(params));
+  }
+
+  std::string GetAsrTranscript(mojom::OnDeviceModel& model) {
+    mojo::Remote<mojom::Session> session;
+    model.StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+    base::test::TestFuture<std::vector<mojom::SpeechRecognitionResultPtr>>
+        future;
+    class TestAsrResponder : public mojom::AsrStreamResponder {
+     public:
+      explicit TestAsrResponder(
+          base::OnceCallback<
+              void(std::vector<mojom::SpeechRecognitionResultPtr>)> callback)
+          : callback_(std::move(callback)) {}
+      void OnResponse(
+          std::vector<mojom::SpeechRecognitionResultPtr> result) override {
+        if (callback_) {
+          std::move(callback_).Run(std::move(result));
+        }
+      }
+
+     private:
+      base::OnceCallback<void(std::vector<mojom::SpeechRecognitionResultPtr>)>
+          callback_;
+    };
+
+    TestAsrResponder responder_impl(future.GetCallback());
+    mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
+    mojo::Receiver<mojom::AsrStreamResponder> receiver(
+        &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
+
+    auto options = mojom::AsrStreamOptions::New();
+    options->sample_rate_hz = kDefaultAsrSampleRateHz;
+    mojo::Remote<mojom::AsrStreamInput> asr_input;
+    session->AsrStream(std::move(options),
+                       asr_input.BindNewPipeAndPassReceiver(),
+                       std::move(responder_remote));
+
+    auto audio_data = mojom::AudioData::New();
+    audio_data->sample_rate = kDefaultAsrSampleRateHz;
+    audio_data->channel_count = 1;
+    audio_data->frame_count = 1;
+    audio_data->data = {0};
+    asr_input->AddAudioChunk(std::move(audio_data));
+    task_environment_.RunUntilIdle();
+
+    auto results = future.Take();
+    CHECK_EQ(results.size(), 1u);
+    return results[0]->transcript;
   }
 
   mojom::AppendOptionsPtr MakeInput(const std::string& input) {
@@ -913,6 +981,40 @@ TEST_F(OnDeviceModelServiceTest, LoadingAdaptationDoesNotCancelSession) {
   session.reset_on_disconnect();
 
   LoadAdaptation(*model, weights1.Open());
+  FlushService();
+  EXPECT_TRUE(session);
+}
+
+TEST_F(OnDeviceModelServiceTest, LoadsPostProcessor) {
+  FakeFile polisher_weights("Polisher1");
+  auto model = LoadModel();
+  auto postprocessor = LoadPostProcessor(*model, polisher_weights.Open());
+
+  EXPECT_EQ(GetAsrTranscript(*model), fake_ml::kFakeAsrTranscript);
+  EXPECT_EQ(
+      GetAsrTranscript(*postprocessor),
+      base::StrCat({fake_ml::kFakeAsrTranscript, " (Polisher: Polisher1)"}));
+}
+
+TEST_F(OnDeviceModelServiceTest, LoadsPostProcessorWithInvalidWeightsFails) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::OnDeviceModel> postprocessor;
+  base::test::TestFuture<mojom::LoadModelResult> future;
+  model->LoadPostProcessor(mojom::LoadPostProcessorParams::New(),
+                           postprocessor.BindNewPipeAndPassReceiver(),
+                           future.GetCallback());
+  EXPECT_EQ(future.Get(), mojom::LoadModelResult::kFailedToLoadLibrary);
+}
+
+TEST_F(OnDeviceModelServiceTest, LoadingPostProcessorDoesNotCancelSession) {
+  FakeFile polisher_weights("Polisher1");
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session.reset_on_disconnect();
+
+  LoadPostProcessor(*model, polisher_weights.Open());
   FlushService();
   EXPECT_TRUE(session);
 }

@@ -154,6 +154,7 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
 
     std::string base_weight = "";
     std::string adaptation_model_weight = "";
+    std::string postprocessor_weight = "";
     std::string cache_weight = "";
     std::string encoder_cache_weight = "";
     std::string adapter_cache_weight = "";
@@ -179,6 +180,10 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   void LoadAdaptation(mojom::LoadAdaptationParamsPtr params,
                       mojo::PendingReceiver<mojom::OnDeviceModel> model,
                       LoadAdaptationCallback callback) override;
+
+  void LoadPostProcessor(mojom::LoadPostProcessorParamsPtr params,
+                         mojo::PendingReceiver<mojom::OnDeviceModel> model,
+                         LoadPostProcessorCallback callback) override;
 
   void AddSession(
       mojo::PendingReceiver<on_device_model::mojom::Session> receiver,

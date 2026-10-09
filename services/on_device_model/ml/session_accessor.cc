@@ -186,9 +186,11 @@ SessionAccessor::Ptr SessionAccessor::Create(
     ChromeMLModel model,
     on_device_model::mojom::SessionParamsPtr params,
     on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
-    std::optional<uint32_t> adaptation_id) {
-  Ptr handle(new SessionAccessor(chrome_ml, task_runner, model),
-             base::OnTaskRunnerDeleter(task_runner));
+    std::optional<uint32_t> adaptation_id,
+    ChromeMLModel postprocessor_model) {
+  Ptr handle(
+      new SessionAccessor(chrome_ml, task_runner, model, postprocessor_model),
+      base::OnTaskRunnerDeleter(task_runner));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
   task_runner->PostTask(
       FROM_HERE,
@@ -209,14 +211,17 @@ SessionAccessor::~SessionAccessor() {
 SessionAccessor::SessionAccessor(
     const ChromeML& chrome_ml,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    ChromeMLModel model)
+    ChromeMLModel model,
+    ChromeMLModel postprocessor_model)
     : chrome_ml_(chrome_ml),
       task_runner_(std::move(task_runner)),
-      model_(model) {}
+      model_(model),
+      postprocessor_model_(postprocessor_model) {}
 
 SessionAccessor::Ptr SessionAccessor::Clone() {
   TRACE_EVENT("optimization_guide", "SessionAccessor::Clone");
-  Ptr handle(new SessionAccessor(chrome_ml_.get(), task_runner_, model_),
+  Ptr handle(new SessionAccessor(chrome_ml_.get(), task_runner_, model_,
+                                 postprocessor_model_),
              base::OnTaskRunnerDeleter(task_runner_));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
   task_runner_->PostTask(
@@ -529,6 +534,7 @@ std::optional<odmm::AsrError> SessionAccessor::CreateAsrStreamInternal(
       .decoder_prefill_backoff = -1,
       .language =
           asr_options->language ? asr_options->language->c_str() : nullptr,
+      .polisher_model = postprocessor_model_,
   };
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelAsrDecoderPrefill)) {

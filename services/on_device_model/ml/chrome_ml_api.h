@@ -456,6 +456,8 @@ struct ChromeMLASRStreamOptions {
   const ChromeMLASRStreamOutputFn* output_fn;
   int32_t decoder_prefill_backoff;
   const char* language;
+  // Optional model backing the post-processing polisher model.
+  ChromeMLModel polisher_model = 0;
 };
 
 struct ChromeMLASRAPI {

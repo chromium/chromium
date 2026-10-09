@@ -702,6 +702,14 @@ OnDeviceModelExecutor::OnDeviceModelExecutor(
 OnDeviceModelExecutor::~OnDeviceModelExecutor() {
   TRACE_EVENT("optimization_guide",
               "OnDeviceModelExecutor::~OnDeviceModelExecutor");
+  // Destroy the postprocessor model alongside the base model rather than when
+  // its `OnDeviceModel` receiver disconnects, ensuring all active sessions and
+  // ASR streams are destroyed before the postprocessor model.
+  if (postprocessor_model_ != 0) {
+    model_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DestroyModel, &chrome_ml_.get(), postprocessor_model_));
+  }
   if (model_ != 0) {
     model_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DestroyModel, &chrome_ml_.get(), model_));
@@ -729,6 +737,7 @@ OnDeviceModelExecutor::CreateWithResult(
 std::unique_ptr<on_device_model::BackendSession>
 OnDeviceModelExecutor::CreateSession(
     const ScopedAdaptation* adaptation,
+    bool has_post_processor,
     on_device_model::mojom::SessionParamsPtr params) {
   TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::CreateSession");
   std::optional<uint32_t> adaptation_id;
@@ -739,9 +748,11 @@ OnDeviceModelExecutor::CreateSession(
     CHECK(it != adaptation_params_.end());
     adaptation_params = it->second->Clone();
   }
+  ChromeMLModel postprocessor_model =
+      has_post_processor ? postprocessor_model_ : 0;
   auto session = SessionAccessor::Create(
       *chrome_ml_, model_task_runner_, model_, std::move(params),
-      std::move(adaptation_params), adaptation_id);
+      std::move(adaptation_params), adaptation_id, postprocessor_model);
   return std::make_unique<SessionImpl>(*this, std::move(session),
                                        max_tokens_ - kReserveTokensForSafety,
                                        adaptation_id);
@@ -759,6 +770,36 @@ OnDeviceModelExecutor::LoadAdaptation(
 void OnDeviceModelExecutor::UnloadAdaptation(uint32_t adaptation_id) {
   TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::UnloadAdaptation");
   adaptation_params_.erase(adaptation_id);
+}
+
+LoadModelResult OnDeviceModelExecutor::LoadPostProcessor(
+    on_device_model::mojom::LoadPostProcessorParamsPtr params) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::LoadPostProcessor");
+  if (!params || !params->weights.IsValid()) {
+    LOG(ERROR) << "Invalid LoadPostProcessorParams.";
+    return LoadModelResult::kFailedToLoadLibrary;
+  }
+  if (postprocessor_model_ != 0) {
+    return LoadModelResult::kSuccess;
+  }
+  ChromeMLModelData data;
+  data.weights_file = params->weights.TakePlatformFile();
+  data.cache_file = params->cache.IsValid() ? params->cache.TakePlatformFile()
+                                            : base::kInvalidPlatformFile;
+  ChromeMLModelDescriptor descriptor = {
+      .backend_type = ml::ModelBackendType::kCpuBackend,
+      .model_data = &data,
+      .max_tokens = params->max_tokens,
+  };
+  base::HangWatcher::InvalidateActiveExpectations();
+  postprocessor_model_ = chrome_ml_->SessionCreateModel(
+      &descriptor, reinterpret_cast<uintptr_t>(this),
+      OnDeviceModelExecutor::Schedule);
+  if (postprocessor_model_ == 0) {
+    LOG(ERROR) << "SessionCreateModel for postprocessor failed.";
+    return LoadModelResult::kFailedToLoadLibrary;
+  }
+  return LoadModelResult::kSuccess;
 }
 
 LoadModelResult OnDeviceModelExecutor::Init(

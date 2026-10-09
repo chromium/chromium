@@ -141,10 +141,13 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final
   // on_device_model::BackendModel:
   std::unique_ptr<on_device_model::BackendSession> CreateSession(
       const ScopedAdaptation* adaptation,
+      bool has_post_processor,
       on_device_model::mojom::SessionParamsPtr params) override;
   std::unique_ptr<ScopedAdaptation> LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params) override;
   void UnloadAdaptation(uint32_t adaptation_id) override;
+  on_device_model::mojom::LoadModelResult LoadPostProcessor(
+      on_device_model::mojom::LoadPostProcessorParamsPtr params) override;
 
  private:
   on_device_model::mojom::LoadModelResult Init(
@@ -160,6 +163,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final
       adaptation_params_;
 
   ChromeMLModel model_ = 0;
+  // Handle for the loaded post-processor model (currently the ASR polisher
+  // model).
+  ChromeMLModel postprocessor_model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
   uint32_t max_tokens_ = 0;
   uint32_t next_adaptation_id_ = 0;
