@@ -19,12 +19,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,35 +37,63 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DisplayCutoutTabHelperTest {
+    // Subclass needed to stub getEdgeToEdgeManager() and getIntentDataProvider() without running
+    // full ChromeActivity startup.
+    private static class TestCustomTabActivity extends CustomTabActivity {
+        private EdgeToEdgeManager mEdgeToEdgeManager;
+        private BrowserServicesIntentDataProvider mIntentDataProvider;
+
+        void setEdgeToEdgeManagerForTesting(EdgeToEdgeManager manager) {
+            mEdgeToEdgeManager = manager;
+        }
+
+        void setIntentDataProviderForTesting(BrowserServicesIntentDataProvider provider) {
+            mIntentDataProvider = provider;
+        }
+
+        @Override
+        public EdgeToEdgeManager getEdgeToEdgeManager() {
+            return mEdgeToEdgeManager;
+        }
+
+        @Override
+        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mIntentDataProvider;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
     @Mock private WindowAndroid mWindowAndroidA;
     @Mock private WindowAndroid mWindowAndroidB;
     @Mock private WindowAndroid mWindowAndroidNonCct;
-    @Mock private BaseCustomTabActivity mActivityA;
-    @Mock private BaseCustomTabActivity mActivityB;
-    @Mock private Activity mNonCustomTabActivity;
     @Mock private EdgeToEdgeManager mManagerA;
     @Mock private EdgeToEdgeManager mManagerB;
     @Mock private EdgeToEdgeStateProvider mProviderA;
     @Mock private EdgeToEdgeStateProvider mProviderB;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
+    private TestCustomTabActivity mActivityA;
+    private TestCustomTabActivity mActivityB;
+    private Activity mNonCustomTabActivity;
 
     @Before
     public void setUp() {
+        mActivityA = Robolectric.buildActivity(TestCustomTabActivity.class).get();
+        mActivityA.setEdgeToEdgeManagerForTesting(mManagerA);
+        mActivityA.setIntentDataProviderForTesting(mIntentDataProvider);
         when(mWindowAndroidA.getActivity()).thenReturn(new WeakReference<>(mActivityA));
-        when(mActivityA.getEdgeToEdgeManager()).thenReturn(mManagerA);
         when(mManagerA.getEdgeToEdgeStateProvider()).thenReturn(mProviderA);
         when(mProviderA.acquireEdgeToEdgeToken()).thenReturn(1);
 
+        mActivityB = Robolectric.buildActivity(TestCustomTabActivity.class).get();
+        mActivityB.setEdgeToEdgeManagerForTesting(mManagerB);
         when(mWindowAndroidB.getActivity()).thenReturn(new WeakReference<>(mActivityB));
-        when(mActivityB.getEdgeToEdgeManager()).thenReturn(mManagerB);
         when(mManagerB.getEdgeToEdgeStateProvider()).thenReturn(mProviderB);
         when(mProviderB.acquireEdgeToEdgeToken()).thenReturn(2);
 
+        mNonCustomTabActivity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidNonCct.getActivity())
                 .thenReturn(new WeakReference<>(mNonCustomTabActivity));
     }
@@ -73,7 +102,6 @@ public class DisplayCutoutTabHelperTest {
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testStandaloneShortEdgesRequiresParam() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
-        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
@@ -88,7 +116,6 @@ public class DisplayCutoutTabHelperTest {
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testFullscreenShortEdgesDoesNotRequireParam() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
-        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
@@ -101,7 +128,6 @@ public class DisplayCutoutTabHelperTest {
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testTwaFullscreenDoesNotUseShortEdges() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
-        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
@@ -116,7 +142,6 @@ public class DisplayCutoutTabHelperTest {
     public void testTwaStandaloneDoesNotUseShortEdgesWithParam() {
         ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
-        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
@@ -131,7 +156,6 @@ public class DisplayCutoutTabHelperTest {
     public void testMinimalUiDoesNotUseShortEdges() {
         ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
-        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.MINIMAL_UI);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =

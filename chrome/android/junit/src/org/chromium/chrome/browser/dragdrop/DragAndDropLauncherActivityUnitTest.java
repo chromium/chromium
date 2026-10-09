@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -55,12 +55,26 @@ import java.util.Map.Entry;
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DragAndDropLauncherActivityUnitTest {
+    // Subclass needed to stub getSupportedProfileType() without running full ChromeActivity
+    // startup.
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        private @SupportedProfileType int mSupportedProfileType = SupportedProfileType.UNSET;
+
+        void setSupportedProfileTypeForTesting(@SupportedProfileType int type) {
+            mSupportedProfileType = type;
+        }
+
+        @Override
+        public @SupportedProfileType int getSupportedProfileType() {
+            return mSupportedProfileType;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ExpectedException exception = ExpectedException.none();
     @Mock private Profile mProfile;
-    @Mock private ChromeTabbedActivity mActivity;
+    private TestChromeTabbedActivity mActivity;
     private Context mContext;
     private String mLinkUrl;
 
@@ -71,8 +85,7 @@ public class DragAndDropLauncherActivityUnitTest {
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        when(mActivity.getApplicationContext()).thenReturn(mContext);
-        when(mActivity.getSupportedProfileType()).thenReturn(SupportedProfileType.UNSET);
+        mActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
     }
 
     @Test
@@ -197,7 +210,7 @@ public class DragAndDropLauncherActivityUnitTest {
 
         int sourceWindowId = 1;
 
-        when(mActivity.getSupportedProfileType()).thenReturn(SupportedProfileType.OFF_THE_RECORD);
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                         dropData, mActivity, sourceWindowId, /* destWindowId= */ 2);
@@ -217,7 +230,7 @@ public class DragAndDropLauncherActivityUnitTest {
 
         int sourceWindowId = 1;
 
-        when(mActivity.getSupportedProfileType()).thenReturn(SupportedProfileType.REGULAR);
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                         dropData, mActivity, sourceWindowId, /* destWindowId= */ 2);

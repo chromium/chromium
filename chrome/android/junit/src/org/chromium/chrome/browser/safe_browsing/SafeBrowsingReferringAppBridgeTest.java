@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.safe_browsing;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -20,11 +19,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingReferringAppBridge.ReferringAppInfo;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingReferringAppBridge.ReferringAppInfo.ReferringAppSource;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
@@ -34,11 +34,24 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for SafeBrowsingReferringAppBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SafeBrowsingReferringAppBridgeTest {
+    // Subclass needed to stub getIntentDataProvider() without running full ChromeActivity startup.
+    private static class TestCustomTabActivity extends CustomTabActivity {
+        private BrowserServicesIntentDataProvider mIntentDataProvider;
+
+        void setIntentDataProviderForTesting(BrowserServicesIntentDataProvider provider) {
+            mIntentDataProvider = provider;
+        }
+
+        @Override
+        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mIntentDataProvider;
+        }
+    }
+
     @Mock private WindowAndroid mWindowAndroid;
 
-    @Mock private ChromeActivity mActivity;
+    private Activity mActivity;
 
     private WeakReference<Activity> mActivityRef;
 
@@ -46,6 +59,7 @@ public class SafeBrowsingReferringAppBridgeTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivityRef = new WeakReference<>(mActivity);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
     }
@@ -54,7 +68,7 @@ public class SafeBrowsingReferringAppBridgeTest {
     public void testFromKnownAppId() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA);
-        when(mActivity.getIntent()).thenReturn(intent);
+        mActivity.setIntent(intent);
 
         ReferringAppInfo info =
                 SafeBrowsingReferringAppBridge.getReferringAppInfo(mWindowAndroid, false);
@@ -70,7 +84,7 @@ public class SafeBrowsingReferringAppBridgeTest {
         String packageName = "uncommon.app.name";
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, packageName);
-        when(mActivity.getIntent()).thenReturn(intent);
+        mActivity.setIntent(intent);
 
         ReferringAppInfo info =
                 SafeBrowsingReferringAppBridge.getReferringAppInfo(mWindowAndroid, false);
@@ -86,7 +100,7 @@ public class SafeBrowsingReferringAppBridgeTest {
         String appReferrer = "android-app://app.name/";
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, appReferrer);
-        when(mActivity.getIntent()).thenReturn(intent);
+        mActivity.setIntent(intent);
 
         ReferringAppInfo info =
                 SafeBrowsingReferringAppBridge.getReferringAppInfo(mWindowAndroid, false);
@@ -116,19 +130,18 @@ public class SafeBrowsingReferringAppBridgeTest {
         final String webApkPackageName = "org.chromium.webapk.foo";
         final String webApkStartUrl = "https://example.test/app";
         final String webApkManifestId = "https://example.test/id";
-        // Set up the WebAPK referrer.
-        BaseCustomTabActivity mockCustomTabActivity = mock(BaseCustomTabActivity.class);
-        when(mockCustomTabActivity.getIntentDataProvider())
-                .thenReturn(
-                        new WebApkIntentDataProviderBuilder(webApkPackageName, webApkStartUrl)
-                                .setWebApkManifestId(webApkManifestId)
-                                .build());
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockCustomTabActivity));
         // Add a previous app referrer to the Intent, to test that both the previous referrer and
         // the WebAPK referrer are captured.
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA);
-        when(mockCustomTabActivity.getIntent()).thenReturn(intent);
+        // Set up the WebAPK referrer.
+        TestCustomTabActivity customTabActivity =
+                Robolectric.buildActivity(TestCustomTabActivity.class, intent).get();
+        customTabActivity.setIntentDataProviderForTesting(
+                new WebApkIntentDataProviderBuilder(webApkPackageName, webApkStartUrl)
+                        .setWebApkManifestId(webApkManifestId)
+                        .build());
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(customTabActivity));
 
         // Check that when WebAPK info is not explicitly requested, the fields are not populated.
         ReferringAppInfo infoWithoutWebApk =
@@ -154,7 +167,6 @@ public class SafeBrowsingReferringAppBridgeTest {
         extras.putParcelable(Intent.EXTRA_REFERRER, appReferrerUri);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtras(extras);
-        when(mActivity.getIntent()).thenReturn(intent);
-        when(mActivity.getReferrer()).thenReturn(appReferrerUri);
+        mActivity.setIntent(intent);
     }
 }
