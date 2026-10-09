@@ -159,6 +159,14 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     }
   }
 
+  // A snap fling constraint is valid only for the fling that set it. The
+  // cleanup in ScrollEnd() is deferred while a snap animation runs, so a new
+  // gesture can begin before that cleanup happens. Reset the constraint here so
+  // that it cannot clamp the scroll updates of the new gesture.
+  snap_fling_state_ = kNoFling;
+  fling_snap_constrain_x_ = std::nullopt;
+  fling_snap_constrain_y_ = std::nullopt;
+
   // This allows re-latch to an existing `CurrentlyScrollNode()`, if it is the
   // same scroll type - and animations / snaps have not yet been resolved on it.
   if (CurrentlyScrollingNode() && type == latched_scroll_type_ &&

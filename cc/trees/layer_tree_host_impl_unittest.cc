@@ -2517,6 +2517,72 @@ TEST_P(LayerTreeHostImplTest, HybridFlingNearExtremes) {
   handler.ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
+// A fast fling toward the last snap point constrains the fling to that snap
+// point. If the snap at scroll end then animates, the end-of-scroll cleanup is
+// deferred until the animation finishes. A new gesture that starts during that
+// animation must not inherit the constraint of the previous fling.
+TEST_P(LayerTreeHostImplTest,
+       HybridFlingNearExtremesNewGestureDuringSnapAnimation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSnapFlingNearExtremes);
+
+  gfx::Size view_size(100, 100);
+  gfx::Size overflow_size(100, 1000);
+  gfx::RectF snap_area_1(0, 0, 100, 100);
+  // The last snap position (899.5) is a fraction of a pixel short of the max
+  // scroll offset (900), so the snap at scroll end creates an animation.
+  gfx::RectF snap_area_2(0, 899.5, 100, 100);
+
+  SetupViewportLayersInnerScrolls(view_size, view_size);
+  LayerImpl* overflow =
+      AddScrollableLayer(OuterViewportScrollLayer(), view_size, overflow_size);
+
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
+  ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
+  GetScrollNode(overflow)->snap_container_data.emplace(container);
+  DrawFrame();
+
+  auto& handler = GetInputHandler();
+  gfx::PointF initial_offset, target_offset;
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kTouchscreen;
+
+  // Gesture 1: scroll to the max offset, then fling further toward the end.
+  // The fling is fast enough to reach the last snap point, so it becomes a
+  // constrained native fling instead of a snap fling.
+  handler.ScrollBegin(&*BeginState(position, gfx::Vector2dF(0, 100), type),
+                      type);
+  handler.ScrollUpdate(UpdateState(position, gfx::Vector2dF(0, 900), type));
+  EXPECT_POINTF_EQ(gfx::PointF(0, 900), CurrentScrollOffset(overflow));
+  EXPECT_FALSE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 10), gfx::Vector2dF(0, 250), &initial_offset,
+      &target_offset));
+
+  // The gesture ends 0.5px away from the snap position. The snap animates, so
+  // the scroll end is deferred and the latched node is released.
+  handler.ScrollEnd(/*should_snap=*/true, std::nullopt);
+  EXPECT_TRUE(handler.animating_for_snap_for_testing(overflow->element_id()));
+  EXPECT_FALSE(host_impl_->CurrentlyScrollingNode());
+
+  // Gesture 2 goes in the opposite direction before the snap animation
+  // finishes. It latches to the same scroller and must scroll freely.
+  handler.ScrollBegin(&*BeginState(position, gfx::Vector2dF(0, -12), type),
+                      type);
+  EXPECT_EQ(GetScrollNode(overflow), host_impl_->CurrentlyScrollingNode());
+  InputHandlerScrollResult result =
+      handler.ScrollUpdate(UpdateState(position, gfx::Vector2dF(0, -12), type));
+  EXPECT_FALSE(result.hit_snap_constraint);
+  EXPECT_TRUE(result.did_scroll);
+  EXPECT_POINTF_EQ(gfx::PointF(0, 888), CurrentScrollOffset(overflow));
+  handler.ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
 TEST_P(LayerTreeHostImplTest, LargeSnapAreaFling) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kSnapFlingNearExtremes);
