@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -25,7 +26,7 @@ public class TrustedCdn extends TabWebContentsUserData {
     @VisibleForTesting public static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
 
     private final Tab mTab;
-    private final long mNativeTrustedCdn;
+    private long mNativeTrustedCdn;
 
     /**
      * UnownedUserData shared across all tabs to get the publisher url visibility. This hangs off of
@@ -116,22 +117,31 @@ public class TrustedCdn extends TabWebContentsUserData {
     private TrustedCdn(Tab tab) {
         super(tab);
         mTab = tab;
-        mNativeTrustedCdn = TrustedCdnJni.get().init();
+        if (!ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
+            mNativeTrustedCdn = TrustedCdnJni.get().init();
+        }
     }
 
     @Override
     public void initWebContents(WebContents webContents) {
-        TrustedCdnJni.get().setWebContents(mNativeTrustedCdn, webContents);
+        if (mNativeTrustedCdn != 0) {
+            TrustedCdnJni.get().setWebContents(mNativeTrustedCdn, webContents);
+        }
     }
 
     @Override
     public void cleanupWebContents(@Nullable WebContents webContents) {
-        TrustedCdnJni.get().resetWebContents(mNativeTrustedCdn);
+        if (mNativeTrustedCdn != 0) {
+            TrustedCdnJni.get().resetWebContents(mNativeTrustedCdn);
+        }
     }
 
     @Override
     public void destroyInternal() {
-        TrustedCdnJni.get().onDestroyed(mNativeTrustedCdn);
+        if (mNativeTrustedCdn != 0) {
+            TrustedCdnJni.get().onDestroyed(mNativeTrustedCdn);
+            mNativeTrustedCdn = 0;
+        }
     }
 
     @VisibleForTesting
@@ -148,6 +158,10 @@ public class TrustedCdn extends TabWebContentsUserData {
         }
         int level = SecurityStateModel.getSecurityLevelForWebContents(mTab.getWebContents());
         if (level != ConnectionSecurityLevel.SECURE) return null;
+        if (mNativeTrustedCdn == 0) {
+            mNativeTrustedCdn = TrustedCdnJni.get().init();
+            TrustedCdnJni.get().setWebContents(mNativeTrustedCdn, webContents);
+        }
         GURL publisherUrl = TrustedCdnJni.get().getPublisherUrl(mNativeTrustedCdn);
         return publisherUrl.isValid() ? publisherUrl : null;
     }

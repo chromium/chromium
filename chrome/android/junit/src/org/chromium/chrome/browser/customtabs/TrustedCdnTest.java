@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -22,6 +24,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -76,6 +80,7 @@ public class TrustedCdnTest {
         mCustomTabTrustedCdnPublisherUrlVisibility =
                 new CustomTabTrustedCdnPublisherUrlVisibility(
                         mWindowAndroid, mLifecycleDispatcher, () -> mShouldPackageShowPublisherUrl);
+        doReturn(12345L).when(mTrustedCdnNatives).init();
         doReturn(PUBLISHER_URL)
                 .when(mTrustedCdnNatives)
                 .getPublisherUrl(ArgumentMatchers.anyLong());
@@ -97,5 +102,17 @@ public class TrustedCdnTest {
     public void publisherUrlIsNotUsed_dangerousSecurityLevel() {
         mConnectionSecurityLevel = ConnectionSecurityLevel.DANGEROUS;
         assertNull(TrustedCdn.getPublisherUrl(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testDeferredNativeInit_withStartupTabOptimizations() {
+        // When initialized in setUp() with optimizations enabled, native init is deferred.
+        verify(mTrustedCdnNatives, never()).init();
+
+        // Calling getPublisherUrl triggers lazy native initialization.
+        assertEquals(PUBLISHER_URL, TrustedCdn.getPublisherUrl(mTab));
+        verify(mTrustedCdnNatives).init();
+        verify(mTrustedCdnNatives).setWebContents(eq(12345L), eq(mWebContents));
     }
 }
