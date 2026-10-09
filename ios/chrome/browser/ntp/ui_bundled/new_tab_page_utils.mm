@@ -24,6 +24,10 @@ namespace {
 // Bottom padding between the MVT collection view and the bottom of its
 // container.
 constexpr CGFloat kMVTContainerBottomPadding = 10.0;
+
+// The height for the quick actions button row.
+constexpr CGFloat kQuickActionsHeight = 44.0;
+constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 }  // namespace
 
 bool ShouldShowTopOfFeedSyncPromo() {
@@ -123,4 +127,9 @@ CGFloat MostVisitedContainerHeight(UIView* containerView,
                     .height;
   }
   return mvtHeight;
+}
+
+CGFloat QuickActionsHeight() {
+  return IsNewTabPageUICleanupEnabled() ? kQuickActionsHeightUICleanup
+                                        : kQuickActionsHeight;
 }

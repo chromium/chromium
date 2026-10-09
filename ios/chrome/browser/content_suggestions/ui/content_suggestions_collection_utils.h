@@ -83,18 +83,23 @@ CGFloat FakeToolbarHeight();
 // The SizeClass of the `traitCollection` of the view displaying the search
 // field is used in the computation.
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection);
-// Returns the expected height of the header, based on `logo_state`.
+// Returns the expected height of the header, based on `logo_state` and whether
+// AIM is allowed (`aim_allowed`).
 CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
-                            UITraitCollection* trait_collection);
+                            UITraitCollection* trait_collection,
+                            bool aim_allowed = false);
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection);
 
-// Spacing helper methods for kNewTabPageUICleanup experiment arms.
+// Spacing helper methods for `kNewTabPageUICleanup` and `kAimButtonRefactor`
+// experiment arms.
 // Returns padding above the Google logo/doodle based on the enabled arm and
-// size class.
+// size class. If `aim_allowed` is true, accounts for header space
+// redistribution.
 CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
-                       UITraitCollection* trait_collection);
+                       UITraitCollection* trait_collection,
+                       bool aim_allowed = false);
 // Returns padding between the Google logo/doodle and fakebox based on the
 // enabled arm and size class.
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
@@ -102,8 +107,16 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
 // Returns top padding for Quick Actions based on the enabled arm and size
 // class.
 CGFloat QuickActionsTopPadding(UITraitCollection* trait_collection);
-// Returns top padding for Most Visited Tiles based on the
-// enabled arm and size class.
+// Returns whether the vertical space above the logo and below the fakebox
+// should be redistributed for `kAimButtonRefactor` arms where the Quick Actions
+// row is removed. Requires `aim_allowed` to be true.
+bool ShouldRedistributeHeaderSpace(bool aim_allowed);
+
+// Returns the bottom spacing below the header (above the first module) when
+// Quick Actions is removed by `kAimButtonRefactor`.
+CGFloat RedistributedHeaderBottomSpacing(UITraitCollection* trait_collection);
+// Returns top padding for Most Visited Tiles based on the enabled arm and size
+// class.
 CGFloat MostVisitedTopPadding(UITraitCollection* trait_collection);
 // Returns reduced spacing used between the MVT, Magic Stack, and Discover Feed
 // based on the enabled arm.

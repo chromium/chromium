@@ -603,6 +603,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)updateHeightAboveFeed {
   if (self.viewDidFinishLoading) {
+    if (!self.isFakeboxPinned && self.fakeOmniboxConstraints.count == 1) {
+      self.fakeOmniboxConstraints.firstObject.constant =
+          [self headerBottomSpacing];
+    }
     CGFloat oldHeightAboveFeed = self.collectionView.contentInset.top;
     CGFloat oldOffset = self.collectionView.contentOffset.y;
     [self updateFeedInsetsForContentAbove];
@@ -671,28 +675,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (CGFloat)heightAboveFeed {
   CGFloat heightAboveFeed = 0;
-  for (id obj in self.objectsAboveFeed) {
-    UIView* view = [self viewForAboveFeedObject:obj];
-    heightAboveFeed += view.frame.size.height;
-
-    // If the current object represents a module, account for the
-    // vertical spacing between modules.
-    if (obj == self.magicStackCollectionView ||
-        obj == self.contentSuggestionsViewController ||
-        obj == self.feedHeaderViewController) {
-      heightAboveFeed += content_suggestions::ReducedModuleSpacing();
-    }
-
-    if (obj == _quickActionsViewController) {
-      // First, subtract off the "standard" space that was added in the
-      // previous iteration of the loop because this module uses custom
-      // top and bottom spacing.
-      heightAboveFeed -= content_suggestions::ReducedModuleSpacing();
-      // Then add in the custom spacing used for this module.
-      heightAboveFeed +=
-          content_suggestions::QuickActionsTopPadding(self.traitCollection) +
-          [self quickActionsBottomSpacing];
-    }
+  for (NSUInteger i = 0; i < self.objectsAboveFeed.count; ++i) {
+    UIView* view = [self viewForAboveFeedObject:self.objectsAboveFeed[i]];
+    heightAboveFeed +=
+        view.frame.size.height + [self topSpacingForObjectAtIndex:i];
   }
   return heightAboveFeed;
 }
@@ -1155,6 +1141,13 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 #pragma mark - Private
 
+// Returns whether the vertical space above the logo and below the fakebox
+// should be redistributed for `kAimButtonRefactor` arms where the Quick Actions
+// row is removed.
+- (BOOL)shouldRedistributeHeaderSpace {
+  return content_suggestions::ShouldRedistributeHeaderSpace(_isAIMAllowed);
+}
+
 // Sets the background using the current color palette, or defaults if none is
 // set.
 - (void)applyBackgroundTheme {
@@ -1493,12 +1486,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       self.fakeOmniboxConstraints = @[
         [viewBelowHeader.topAnchor
             constraintEqualToAnchor:self.headerView.bottomAnchor
-                           constant:self.quickActionsVisible
-                                        ? content_suggestions::
-                                              QuickActionsTopPadding(
-                                                  self.traitCollection)
-                                        : content_suggestions::
-                                              ReducedModuleSpacing()],
+                           constant:[self headerBottomSpacing]],
       ];
     }
   }
@@ -1746,18 +1734,15 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         [self.objectsAboveFeed indexOfObject:self.headerView];
     if (headerIndex != NSNotFound && startIndex < self.objectsAboveFeed.count) {
       for (NSUInteger index = startIndex; index > headerIndex + 1; --index) {
-        BOOL isQuickActions =
-            _quickActionsViewController == self.objectsAboveFeed[index - 1];
-        UIView* view = [self viewForAboveFeedObject:self.objectsAboveFeed[index]];
+        UIView* view =
+            [self viewForAboveFeedObject:self.objectsAboveFeed[index]];
         UIView* viewAbove =
             [self viewForAboveFeedObject:self.objectsAboveFeed[index - 1]];
 
-        CGFloat spacingToUse =
-            isQuickActions ? [self quickActionsBottomSpacing]
-                           : content_suggestions::ReducedModuleSpacing();
         [NSLayoutConstraint activateConstraints:@[
-          [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
-                                         constant:spacingToUse],
+          [view.topAnchor
+              constraintEqualToAnchor:viewAbove.bottomAnchor
+                             constant:[self topSpacingForObjectAtIndex:index]],
         ]];
       }
     }
@@ -1957,6 +1942,43 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat currentInsetTop = self.collectionView.contentInset.top;
   return (currentInsetTop > 0 &&
           self.collectionView.contentOffset.y <= -currentInsetTop + 1.0);
+}
+
+// Spacing between the header view and the module directly below it.
+- (CGFloat)headerBottomSpacing {
+  if ([self shouldRedistributeHeaderSpace]) {
+    return content_suggestions::RedistributedHeaderBottomSpacing(
+        self.traitCollection);
+  }
+  return self.quickActionsVisible
+             ? content_suggestions::QuickActionsTopPadding(self.traitCollection)
+             : content_suggestions::ReducedModuleSpacing();
+}
+
+// Returns the vertical top spacing for the object at `index` in
+// `self.objectsAboveFeed`, unifying spacing across `-heightAboveFeed` and
+// collection view constraints.
+- (CGFloat)topSpacingForObjectAtIndex:(NSUInteger)index {
+  // Header view is at index 0, so it has no top spacing above it.
+  if (index == 0) {
+    return 0;
+  }
+  // The module directly below the header uses the header's bottom spacing.
+  if (index == 1) {
+    return [self headerBottomSpacing];
+  }
+  // Quick Actions uses its own custom bottom spacing.
+  if (self.objectsAboveFeed[index - 1] == _quickActionsViewController) {
+    return [self quickActionsBottomSpacing];
+  }
+  // Standard inter-module spacing for modules above the feed.
+  id currentObject = self.objectsAboveFeed[index];
+  if (currentObject == self.magicStackCollectionView ||
+      currentObject == self.contentSuggestionsViewController ||
+      currentObject == self.feedHeaderViewController) {
+    return content_suggestions::ReducedModuleSpacing();
+  }
+  return 0;
 }
 
 // Bottom spacing below the Quick Actions module, depending on whether Most

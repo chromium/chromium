@@ -13,6 +13,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/ntp_tiles",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/ui/cells:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
   ]

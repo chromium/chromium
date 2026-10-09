@@ -46,14 +46,18 @@ source_set("ui_util") {
     "content_suggestions_collection_utils.mm",
   ]
   deps = [
+    "//base",
     "//base:i18n",
+    "//components/ntp_tiles",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/public",
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ntp/ui_bundled:utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
