@@ -1905,7 +1905,6 @@ public class PdfCoordinator
 
         if (targetPackage == null) {
             targetPackage = PackageUtils.getDefaultAssistantPackageName(mActivity);
-            PdfUtils.recordGetAssistantPackageResult(targetPackage != null);
         }
 
         if (targetPackage != null) {
@@ -1943,7 +1942,6 @@ public class PdfCoordinator
             return null;
         }
         var assistantPackageName = PackageUtils.getDefaultAssistantPackageName(mActivity);
-        PdfUtils.recordGetAssistantPackageResult(assistantPackageName != null);
         if (assistantPackageName != null) {
             mActivity.grantUriPermission(
                     assistantPackageName, mUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);

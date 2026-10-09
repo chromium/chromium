@@ -5039,17 +5039,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Pdf.AssistContent.GetAssistantPackageResult"
-    enum="BooleanSuccess" expires_after="2025-09-07">
-  <owner>salg@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records whether we were able to get the package name of the default
-    assistant app from Android's settings. Recorded when AssistContent is
-    requested for pdf pages.
-  </summary>
-</histogram>
-
 <histogram name="Android.Pdf.AssistContent.IsEnterpriseInfoCached"
     enum="Boolean" expires_after="2027-02-14">
   <owner>shuyng@google.com</owner>
