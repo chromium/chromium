@@ -356,6 +356,20 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
       .SetProperty(actions::kActionItemPinnableKey, pinnable_state);
 }
 
+const gfx::VectorIcon& GetLensOverlayHomeworkIcon(Profile* profile) {
+  if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(profile)) {
+    return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                             : omnibox::kSearchSparkOldIcon;
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+  return features::IsRoundedIconsEnabled()
+             ? vector_icons::kSearchIcon
+             : vector_icons::kSearchChromeRefreshOldIcon;
+#endif
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(BrowserActions);
@@ -687,9 +701,15 @@ void BrowserActions::InitializeSidePanelActions() {
                 bwi))
             .SetActionId(kActionSidePanelShowContextualTasks)
             .SetText(l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
+                contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
+                    profile)
+                    ? IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE
+                    : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
             .SetTooltipText(l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
+                contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
+                    profile)
+                    ? IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE
+                    : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 features::IsRoundedIconsEnabled()
                     ? omnibox::kSearchSparkIcon
@@ -2131,14 +2151,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               bwi))
           .SetActionId(kActionLensOverlayHomework)
           .SetImage(ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-              vector_icons::kGoogleLensMonochromeLogoIcon
-#else
-              features::IsRoundedIconsEnabled()
-                  ? vector_icons::kSearchIcon
-                  : vector_icons::kSearchChromeRefreshOldIcon
-#endif
-              ))
+              GetLensOverlayHomeworkIcon(profile)))
           .SetText(l10n_util::GetStringUTF16(
               IDS_CONTENT_LENS_OVERLAY_ASK_GOOGLE_ENTRYPOINT_LABEL))
           .Build());
