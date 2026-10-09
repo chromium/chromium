@@ -4911,6 +4911,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED_MAX" desc="Title for the tabs decluttered statistic card when the user has hit the max shown number. [iOS only]">
         You organized 15+ tabs
       </message>
+      <message name="IDS_IOS_LEVEL_UP_TAB_GROUP_USER_EDUCATION" desc="Text of the bubble for the Level Up help bubble for how to add a tab to a group. [iOS only]">
+        Press and hold to create a tab group
+      </message>
       <message name="IDS_IOS_LEVEL_UP_TASKS_REMAINING" desc="Progress message explaining how many tasks remain to level up. [iOS only]">
         {count, plural,
           =1 {Complete 1 more task to level up}

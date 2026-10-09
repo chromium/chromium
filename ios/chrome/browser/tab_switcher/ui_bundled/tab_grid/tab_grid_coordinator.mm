@@ -1994,10 +1994,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return;
   }
 
-  NSString* title = l10n_util::GetNSString(
-      IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TITLE);
-  NSString* text = l10n_util::GetNSString(
-      IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TEXT);
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TAB_GROUP_USER_EDUCATION);
   UIView* anchorView = [LayoutGuideCenterForBrowser(self.regularBrowser)
       referencedViewUnderName:kSelectedRegularCellGuide];
   if (!anchorView) {
@@ -2025,7 +2023,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   BubbleViewControllerPresenter* presenter =
       [[BubbleViewControllerPresenter alloc]
                initWithText:text
-                      title:title
+                      title:nil
              arrowDirection:direction
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeDefault
