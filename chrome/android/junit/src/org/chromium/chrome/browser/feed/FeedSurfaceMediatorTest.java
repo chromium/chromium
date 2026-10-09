@@ -383,6 +383,54 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
+    public void testIsScrollViewInitialized_feedEnabledHeightChildCount() {
+        mFeedSurfaceMediator = createMediator();
+        mFeedSurfaceMediator.onSurfaceOpened();
+
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        mFeedSurfaceMediator.updateContent();
+
+        // (a) feed enabled, height>0, childCount==0, no restore state -> false AND
+        // isChildVisibleAtPosition(0)==false AND getVerticalScrollOffset()==0
+        mRecyclerView.layout(0, 0, 100, 100);
+        assertEquals(0, mRecyclerView.getChildCount());
+        assertFalse(
+                "Should be uninitialized (regression case)",
+                mFeedSurfaceMediator.isScrollViewInitialized());
+        assertFalse(mFeedSurfaceMediator.isChildVisibleAtPosition(0));
+        assertEquals(0, mFeedSurfaceMediator.getVerticalScrollOffset());
+
+        // (b) feed enabled, height>0, childCount>0 -> true
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+        View child = new View(mActivity);
+        mRecyclerView.addView(child);
+        assertTrue(mFeedSurfaceMediator.isScrollViewInitialized());
+
+        // (c) feed enabled, height>0, childCount==0 even with restoreSavedInstanceState position 3
+        // -> false
+        mRecyclerView.removeView(child);
+        FeedScrollState state = new FeedScrollState();
+        state.position = 3;
+        mFeedSurfaceMediator.restoreSavedInstanceState(state.toJson());
+        assertFalse(
+                "Should remain uninitialized until child views are laid out",
+                mFeedSurfaceMediator.isScrollViewInitialized());
+
+        // Reset scroll restore state for next checks (restore NO_POSITION)
+        mFeedSurfaceMediator.restoreSavedInstanceState(null);
+
+        // (d) feed enabled, height==0 -> false
+        mRecyclerView.layout(0, 0, 100, 0);
+        assertFalse(mFeedSurfaceMediator.isScrollViewInitialized());
+
+        // (e) feed disabled, height 0 / children 0 -> true (unchanged)
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(false);
+        mFeedSurfaceMediator.updateContent();
+        assertTrue(mFeedSurfaceMediator.isScrollViewInitialized());
+    }
+
+    @Test
     public void testScrollListenerRegisteredOnCreation() {
         mFeedSurfaceMediator = createMediator();
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);

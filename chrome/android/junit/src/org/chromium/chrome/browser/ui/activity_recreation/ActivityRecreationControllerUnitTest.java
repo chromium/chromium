@@ -268,6 +268,32 @@ public class ActivityRecreationControllerUnitTest {
     }
 
     @Test
+    public void testRestoreUiState_sidePanelFocused_nonBrowsingLayoutDoneShowing() {
+        ActivityRecreationUiState uiState = new ActivityRecreationUiState();
+        uiState.mIsSidePanelFocused = true;
+        doReturn(uiState).when(mSavedInstanceState).getParcelable(ACTIVITY_RECREATION_UI_STATE);
+        mActivityRecreationController.restoreUiState(mSavedInstanceState);
+        verify(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
+
+        mSidePanelContentView = mSidePanelView;
+        // A non-browsing layout (e.g. HUB) finishes showing.
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.HUB);
+        verify(mLayoutManager, never()).removeObserver(any());
+        verify(mHandler, never()).removeCallbacksAndMessages(any());
+        verify(mHandler, never()).post(any());
+
+        // Then BROWSING layout finishes showing.
+        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.BROWSING);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
+
+        verify(mHandler).post(mRunnableCaptor.capture());
+        assertFalse(mSidePanelView.hasFocus());
+        mRunnableCaptor.getValue().run();
+        verify(mLayoutManager).removeObserver(mLayoutStateObserverCaptor.getValue());
+        assertTrue(mSidePanelView.hasFocus());
+    }
+
+    @Test
     public void testRestoreUiState_urlBarFocused_layoutPendingShow() {
         String text = "hello";
         initializeSavedInstanceState(

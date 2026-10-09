@@ -253,6 +253,9 @@ public class ActivityRecreationController {
                     new LayoutStateObserver() {
                         @Override
                         public void onFinishedShowing(int layoutType) {
+                            if (layoutType != LayoutType.BROWSING) {
+                                return;
+                            }
                             assert layoutManager.isLayoutVisible(LayoutType.BROWSING)
                                     : "LayoutType is "
                                             + layoutManager.getActiveLayoutType()

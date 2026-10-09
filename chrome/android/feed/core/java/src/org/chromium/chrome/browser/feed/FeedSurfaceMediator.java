@@ -634,7 +634,12 @@ public class FeedSurfaceMediator
     @Override
     public boolean isScrollViewInitialized() {
         RecyclerView recyclerView = mCoordinator.getRecyclerView();
-        return recyclerView != null && (!mFeedEnabled || recyclerView.getHeight() > 0);
+        if (!mFeedEnabled) return true;
+        if (recyclerView.getHeight() <= 0) return false;
+        // The Litho/xsurface renderer binds item layouts asynchronously. A RecyclerView with
+        // height but no laid-out children must not be considered initialized (otherwise it is
+        // treated as 'scrolled past the header' incorrectly).
+        return recyclerView.getChildCount() > 0;
     }
 
     @Override

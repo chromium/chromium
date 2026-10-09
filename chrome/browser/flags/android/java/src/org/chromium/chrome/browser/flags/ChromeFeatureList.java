@@ -542,6 +542,7 @@ public abstract class ChromeFeatureList {
     public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
     public static final String DEFAULT_BROWSER_PROMO_ENTRY_POINT = "DefaultBrowserPromoEntryPoint";
     public static final String DEFAULT_BROWSER_PROMO_FRE = "DefaultBrowserPromoFre";
+    public static final String DEFER_DETACHED_NATIVE_PAGE_FREEZE = "DeferDetachedNativePageFreeze";
     public static final String DEFER_NAVIGATION_STATE_CHANGED = "DeferNavigationStateChanged";
     public static final String DESKTOP_ANDROID_FILE_PICKER_FOR_MEDIA =
             "DesktopAndroidFilePickerForMedia";
@@ -1777,6 +1778,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(DEBUG_TOOLBAR_POSITIONING, false);
     public static final MutableFlagWithSafeDefault sDefaultBrowserPromoFre =
             newMutableFlagWithSafeDefault(DEFAULT_BROWSER_PROMO_FRE, true);
+    public static final MutableFlagWithSafeDefault sDeferDetachedNativePageFreeze =
+            newMutableFlagWithSafeDefault(DEFER_DETACHED_NATIVE_PAGE_FREEZE, true);
     public static final MutableFlagWithSafeDefault sDisableGridTabSwitcher =
             newMutableFlagWithSafeDefault(DISABLE_GRID_TAB_SWITCHER, false);
     public static final MutableFlagWithSafeDefault sDownloadToolbarButtonForDesktop =

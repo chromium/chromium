@@ -180,6 +180,7 @@ BASE_DECLARE_FEATURE(kDebugToolbarPositioning);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid2);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoEntryPoint);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoFre);
+BASE_DECLARE_FEATURE(kDeferDetachedNativePageFreeze);
 BASE_DECLARE_FEATURE(kDeferNavigationStateChanged);
 BASE_DECLARE_FEATURE(kDesktopAndroidBackgroundTabLoading);
 BASE_DECLARE_FEATURE(kDesktopAndroidFilePickerForMedia);
