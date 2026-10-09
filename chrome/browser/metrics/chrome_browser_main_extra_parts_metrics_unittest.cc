@@ -22,6 +22,10 @@
 #include "chromeos/dbus/u2f/u2f_client.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "components/version_info/channel.h"
+#endif
+
 namespace {
 
 const char kSupportsHDRHistogramName[] = "Hardware.Display.SupportsHDR";
@@ -219,3 +223,26 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
   EXPECT_FALSE(IsBundleForMixedDeviceAccordingToVersionCode("5845-051-3-1"));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
+       GetTpmMetricsSamplingProbability) {
+#if BUILDFLAG(IS_WIN)
+  EXPECT_DOUBLE_EQ(
+      GetTpmMetricsSamplingProbability(version_info::Channel::STABLE),
+      1.0 / 512.0);
+#elif BUILDFLAG(IS_MAC)
+  EXPECT_DOUBLE_EQ(
+      GetTpmMetricsSamplingProbability(version_info::Channel::STABLE),
+      1.0 / 64.0);
+#endif
+  EXPECT_DOUBLE_EQ(
+      GetTpmMetricsSamplingProbability(version_info::Channel::CANARY), 1.0);
+  EXPECT_DOUBLE_EQ(GetTpmMetricsSamplingProbability(version_info::Channel::DEV),
+                   1.0);
+  EXPECT_DOUBLE_EQ(
+      GetTpmMetricsSamplingProbability(version_info::Channel::BETA), 1.0);
+  EXPECT_DOUBLE_EQ(
+      GetTpmMetricsSamplingProbability(version_info::Channel::UNKNOWN), 1.0);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

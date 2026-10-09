@@ -153,10 +153,13 @@ chromium-metrics-reviews@google.com.
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
-    Collected on Windows at startup. Records status for various virtual TPM
-    operations that Chrome artificially triggers on startup for measurement
-    purposes. Note that if new key creation fails, wrapped key creation and
-    message signing will not take place.
+    Collected on Windows at startup. Records duration for various virtual TPM
+    operations that Chrome artificially triggers for measurement purposes. Note
+    that if new key creation fails, wrapped key creation and message signing
+    will not take place.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
   <token key="Operation" variants="TpmOperation"/>
   <token key="SignatureAlgorithm" variants="TpmSignatureAlgorithm"/>
@@ -167,10 +170,13 @@ chromium-metrics-reviews@google.com.
   <owner>kristianm@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
-    Collected on Windows at startup. Records status for various TPM operations
-    that Chrome artificially triggers on startup for measurement purposes. Note
+    Collected on Windows and Mac at startup. Records duration for various TPM
+    operations that Chrome artificially triggers for measurement purposes. Note
     that if new key creation fails, wrapped key creation and message signing
     will not take place.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
   <token key="Operation" variants="TpmOperation">
     <variant name="KeyCertification" summary="key certification"/>
@@ -224,9 +230,12 @@ chromium-metrics-reviews@google.com.
   <owner>agl@chromium.org</owner>
   <summary>
     Collected on Windows at startup. Records status for various virtual TPM
-    actions that Chrome artificially triggers on startup for measurement
-    purposes. Note that if new key creation fails, wrapped key creation and
-    message signing will not take place.
+    actions that Chrome artificially triggers for measurement purposes. Note
+    that if new key creation fails, wrapped key creation and message signing
+    will not take place.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
   <token key="Operation" variants="TpmOperation">
     <variant name="MessageVerify" summary="message verification"/>
@@ -333,10 +342,13 @@ chromium-metrics-reviews@google.com.
   <owner>kristianm@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
-    Collected on Windows at startup. Records status for various TPM actions that
-    Chrome artificially triggers on startup for measurement purposes. Note that
-    if new key creation fails, wrapped key creation and message signing will not
-    take place.
+    Collected on Windows and Mac at startup. Records status for various TPM
+    actions that Chrome artificially triggers for measurement purposes. Note
+    that if new key creation fails, wrapped key creation and message signing
+    will not take place.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
   <token key="Operation" variants="TpmOperation">
     <variant name="KeyCertification" summary="key certification"/>
@@ -353,8 +365,11 @@ chromium-metrics-reviews@google.com.
   <owner>davidben@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
-    Collected on Windows at startup. Records whether a TPM is present and, if
-    so, what the best supported algorithm is.
+    Collected on Windows and Mac at startup. Records whether a TPM is present
+    and, if so, what the best supported algorithm is.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
 </histogram>
 
@@ -363,8 +378,11 @@ chromium-metrics-reviews@google.com.
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
-    Collected on Windows at startup. Records whether a virtual and/or hardware
-    TPM is present.
+    Collected on Windows and Mac at startup. Records whether a virtual and/or
+    hardware TPM is present.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
 </histogram>
 
@@ -601,6 +619,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Collected on Windows at startup. Records whether a virtual TPM is present
     and, if so, what the best supported algorithm is.
+
+    Starting in M157, collected with a 45-second delay after startup and
+    subsampled on Stable.
   </summary>
 </histogram>
 

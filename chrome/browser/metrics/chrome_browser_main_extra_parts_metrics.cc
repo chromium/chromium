@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service.h"
@@ -56,6 +58,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_switches.h"
+#include "components/version_info/channel.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -942,10 +945,6 @@ void RecordStartupMetrics() {
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  crypto::MaybeMeasureTpmOperations(unexportable_keys::GetDefaultConfig());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
   // Record whether Chrome is the default browser or not.
   // Disabled on Linux due to hanging browser tests, see crbug.com/40770414.
 #if !BUILDFLAG(IS_LINUX)
@@ -1011,6 +1010,29 @@ bool IsBundleForMixedDeviceAccordingToVersionCode(
   return arch_codes_mixed.count(arch_code) > 0 && variant == kTriChromeVariant;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// The startup TPM benchmark performs synchronous hardware crypto operations
+// that are invariant for a given machine. Subsample heavily on Stable, while
+// leaving pre-Stable channels unsampled for faster regression detection.
+double GetTpmMetricsSamplingProbability(version_info::Channel channel) {
+  switch (channel) {
+    case version_info::Channel::STABLE:
+      // Sampling rates are chosen to yield ~100K samples/day per platform.
+#if BUILDFLAG(IS_WIN)
+      return 1.0 / 512.0;
+#else
+      return 1.0 / 64.0;
+#endif
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
+    case version_info::Channel::UNKNOWN:
+      return 1.0;
+  }
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
     : display_count_(0) {}
@@ -1150,6 +1172,22 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
                           base::Seconds(45));
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Deliberately delayed and sampled to avoid contending with early crypto and
+  // DBSC operations right after startup. The measurement runs slow TPM
+  // operations, which must not block shutdown.
+  if (base::ShouldRecordSubsampledMetric(
+          GetTpmMetricsSamplingProbability(chrome::GetChannel()))) {
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&crypto::MaybeMeasureTpmOperations,
+                       unexportable_keys::GetDefaultConfig()),
+        base::Seconds(45));
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if defined(ARCH_CPU_X86_FAMILY) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))

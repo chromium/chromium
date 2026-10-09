@@ -53,6 +53,14 @@ BASE_DECLARE_FEATURE(kWindowsIsPinnedToTaskbar3);
 }  // namespace features
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
+double GetTpmMetricsSamplingProbability(version_info::Channel channel);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
                                            public display::DisplayObserver {
  public:
