@@ -104,10 +104,18 @@ class LiveCaptionSpeechRecognitionHost
   // Dispatches a speech recognition result for translation.
   void DispatchTranslation(const media::SpeechRecognitionResult& result);
 
+  // Dispatches the speech recognition result to the LiveCaptionController.
+  // Processes text for stabilization and updates `stop_transcriptions_`.
+  // Returns true if the transcription was successfully dispatched.
+  bool DispatchTranscription(const media::SpeechRecognitionResult& result);
+
+  // Returns true if Live Translate is enabled and the source and target
+  // languages differ.
+  bool IsLiveTranslateActive() const;
+
   std::unique_ptr<CaptionBubbleContextBrowser> context_;
 
-  // A flag used by the Live Translate feature indicating whether transcriptions
-  // should stop.
+  // A flag indicating whether transcriptions should stop.
   bool stop_transcriptions_ = false;
 
   // Flag indicating whether a translation request is currently in-flight.

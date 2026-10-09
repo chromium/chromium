@@ -159,8 +159,13 @@ LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
 
 void LiveCaptionSpeechRecognitionHost::DispatchTranslation(
     const media::SpeechRecognitionResult& result) {
-  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-  if (!live_caption_controller) {
+  if (!IsLiveTranslateActive()) {
+    translation_cache_.Clear();
+    DispatchTranscription(result);
+    return;
+  }
+
+  if (!GetLiveCaptionController()) {
     return;
   }
 
@@ -188,11 +193,8 @@ void LiveCaptionSpeechRecognitionHost::DispatchTranslation(
     return;
   }
   // The entire transcription was cached, dispatch the transcription.
-  stop_transcriptions_ = !live_caption_controller->DispatchTranscription(
-      &render_frame_host(), context_.get(),
-      media::SpeechRecognitionResult(
-          GetTextForDispatch(cached_translation, result.is_final),
-          result.is_final));
+  DispatchTranscription(
+      media::SpeechRecognitionResult(cached_translation, result.is_final));
   if (result.is_final) {
     translation_cache_.Clear();
   }
@@ -201,24 +203,14 @@ void LiveCaptionSpeechRecognitionHost::DispatchTranslation(
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
-  if (stop_transcriptions_) {
-    std::move(reply).Run(false);
-    return;
-  }
-  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-  if (!live_caption_controller) {
+  if (stop_transcriptions_ || !GetLiveCaptionController()) {
     std::move(reply).Run(false);
     return;
   }
 
-  std::string target_language =
-      prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
   // TODO(crbug.com/413823334): Forward `result.timing_information` even we are
   // live-translating a video.
-  if (media::IsLiveTranslateEnabled() &&
-      prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
-      base::i18n::GetLanguageSubtagUsingLanguageTag(target_language) !=
-          base::i18n::GetLanguageSubtagUsingLanguageTag(source_language_)) {
+  if (IsLiveTranslateActive()) {
     if (is_translating_) {
       // Translation in progress. Replace partial result with the latest or
       // queue if final.
@@ -236,11 +228,7 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     std::move(reply).Run(!stop_transcriptions_);
     return;
   }
-  std::move(reply).Run(live_caption_controller->DispatchTranscription(
-      &render_frame_host(), context_.get(),
-      media::SpeechRecognitionResult(
-          GetTextForDispatch(result.transcription, result.is_final),
-          result.is_final, result.timing_information)));
+  std::move(reply).Run(DispatchTranscription(result));
 }
 
 void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
@@ -357,12 +345,8 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
 
     auto text = base::StrCat({cached_translation, formatted_result});
 
-    LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-    if (live_caption_controller) {
-      stop_transcriptions_ = !live_caption_controller->DispatchTranscription(
-          &render_frame_host(), context_.get(),
-          media::SpeechRecognitionResult(GetTextForDispatch(text, is_final),
-                                         is_final));
+    if (IsLiveTranslateActive()) {
+      DispatchTranscription(media::SpeechRecognitionResult(text, is_final));
     }
   }
 
@@ -429,4 +413,29 @@ std::string LiveCaptionSpeechRecognitionHost::GetTextForDispatch(
 
   return text;
 }
+
+bool LiveCaptionSpeechRecognitionHost::DispatchTranscription(
+    const media::SpeechRecognitionResult& result) {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (!live_caption_controller) {
+    return false;
+  }
+  bool success = live_caption_controller->DispatchTranscription(
+      &render_frame_host(), context_.get(),
+      media::SpeechRecognitionResult(
+          GetTextForDispatch(result.transcription, result.is_final),
+          result.is_final, result.timing_information));
+  stop_transcriptions_ = !success;
+  return success;
+}
+
+bool LiveCaptionSpeechRecognitionHost::IsLiveTranslateActive() const {
+  std::string target_language =
+      prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
+  return media::IsLiveTranslateEnabled() &&
+         prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
+         base::i18n::GetLanguageSubtagUsingLanguageTag(target_language) !=
+             base::i18n::GetLanguageSubtagUsingLanguageTag(source_language_);
+}
+
 }  // namespace captions
