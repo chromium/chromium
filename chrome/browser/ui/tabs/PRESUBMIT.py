@@ -69,6 +69,12 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # glic::OnGuestAdded, WebUIContentsPreloadManager, and WebUIContentsWrapper,
   # so WebContents must own it.
   'PrefsTabHelper::CreateForWebContents',
+  # SafetyTipWebContentsObserver is queried on WebContents by
+  # chrome_security_state::GetVisibleSecurityState during
+  # SecurityStatePageLoadMetricsObserver::OnComplete in
+  # WebContentsDestroyed() after TabFeatures is destroyed, so the
+  # the WebContents must own it.
+  'SafetyTipWebContentsObserver::CreateForWebContents',
   # SiteEngagementService::Helper lives in //components/site_engagement/content
   # and is also attached to non-tab WebContents in WebUIContentsWrapper, so
   # WebContents must own it.

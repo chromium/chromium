@@ -51,6 +51,7 @@
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
@@ -1294,6 +1295,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile));
   }
+
+  SafetyTipWebContentsObserver::CreateForWebContents(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1896,6 +1899,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile));
   }
+
+  SafetyTipWebContentsObserver::CreateForWebContents(new_contents);
 }
 
 customize_chrome::SidePanelController*

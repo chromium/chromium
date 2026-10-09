@@ -181,6 +181,7 @@ source_set("tabs_impl") {
     "//chrome/browser/history",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/loader",
+    "//chrome/browser/lookalikes",
     "//chrome/browser/media",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/net",
