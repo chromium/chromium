@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] executionContexts triggers the reload of contexts
+  assert_true: Iframe re-loaded expected true got false
+[FAIL] * triggers the reload of contexts
+  assert_true: Iframe re-loaded expected true got false
+Harness: the test ran to completion.
+
