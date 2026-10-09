@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
@@ -15,6 +16,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -303,9 +305,7 @@ TEST_F(MojoFacadeTest, HasRegisteredInterfaces) {
   EXPECT_FALSE(binder->HasRegisteredInterfaces());
 
   binder->AddInterface("FakeInterface",
-                       base::BindRepeating([](mojo::GenericPendingReceiver*) {
-                         // Do nothing.
-                       }));
+                       /*callback=*/base::DoNothing());
   EXPECT_TRUE(binder->HasRegisteredInterfaces());
 
   binder->RemoveInterface("FakeInterface");
@@ -377,6 +377,35 @@ TEST_F(MojoFacadeTest, BindInterfaceWithInvalidHandle) {
   unsigned result = 0u;
   EXPECT_TRUE(base::StringToUint(response, &result));
   EXPECT_EQ(static_cast<unsigned>(MOJO_RESULT_INVALID_ARGUMENT), result);
+}
+
+// Tests that a same-document navigation (such as a location hash change)
+// preserves existing Mojo pipes.
+TEST_F(MojoFacadeTest, SameDocumentNavigationPreservesPipesAndWatchers) {
+  WebState::InterfaceBinder* binder =
+      web_state().GetInterfaceBinderForMainFrame();
+  binder->AddInterface("FakeInterface", /*callback=*/base::DoNothing());
+
+  uint32_t handle0, handle1;
+  CreateMessagePipe(&handle0, &handle1);
+  const int kCallbackId = 99;
+  WatchHandle(handle0, kCallbackId);
+
+  // Simulate a same-document navigation (e.g. changing window.location.hash),
+  // which triggers DidFinishNavigation followed by PageLoaded.
+  FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(true);
+  web_state().OnNavigationFinished(&context);
+  web_state().OnPageLoaded(PageLoadCompletionStatus::SUCCESS);
+  EXPECT_EQ("return await Mojo.internal.fetchNextMessageFromJS();",
+            WaitForLastJavaScriptCall());
+
+  // Existing pipes must remain active and accept messages.
+  WriteMessage(handle1, "QUJDRA==");  // "ABCD" in base-64
+
+  CloseHandle(handle0);
+  CloseHandle(handle1);
 }
 
 }  // namespace web

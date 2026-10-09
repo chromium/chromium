@@ -140,6 +140,8 @@ class MojoFacade : public web::WebStateObserver,
   mojo::ScopedMessagePipeHandle TakePipeFromId(int id);
 
   // WebStateObserver:
+  void DidFinishNavigation(WebState* web_state,
+                           NavigationContext* navigation_context) override;
   void PageLoaded(WebState* web_state,
                   PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(WebState* web_state) override;

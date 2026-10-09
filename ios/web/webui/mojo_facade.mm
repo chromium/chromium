@@ -24,6 +24,7 @@
 #import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/webui/web_ui_metrics.h"
@@ -484,6 +485,21 @@ void MojoFacade::WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
   }
 }
 
+void MojoFacade::DidFinishNavigation(WebState* web_state,
+                                     NavigationContext* navigation_context) {
+  DCHECK_CURRENTLY_ON(WebThread::UI);
+  DCHECK_EQ(web_state_, web_state);
+  if (!navigation_context->HasCommitted() ||
+      navigation_context->IsSameDocument()) {
+    return;
+  }
+  pipes_.clear();
+  watchers_.clear();
+  last_watch_id_ = 0;
+  is_awaiting_message_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void MojoFacade::PageLoaded(WebState* web_state,
                             PageLoadCompletionStatus load_completion_status) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
@@ -491,11 +507,6 @@ void MojoFacade::PageLoaded(WebState* web_state,
   if (load_completion_status == PageLoadCompletionStatus::SUCCESS &&
       GetMainWebFrame() &&
       web_state_->GetInterfaceBinderForMainFrame()->HasRegisteredInterfaces()) {
-    pipes_.clear();
-    watchers_.clear();
-    last_watch_id_ = 0;
-    is_awaiting_message_ = false;
-    weak_ptr_factory_.InvalidateWeakPtrs();
     AwaitNextMessage();
   }
 }
