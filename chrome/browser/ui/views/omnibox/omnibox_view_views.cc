@@ -1591,7 +1591,11 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
     // clobbers partial drag or double-click word selections made during mouse
     // interactions.
     if (location_bar_view_) {
-      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/true);
+      // A left-click focuses the omnibox and opens the suggestions dropdown. A
+      // right-click should focus the omnibox and select its text without
+      // showing suggestions, since the context menu follows this release.
+      location_bar_view_->OpenOmniboxPopup(
+          /*query_zps=*/event.IsOnlyLeftMouseButton());
 
       // Transfer selection to the full webui popup (necessary when the popup
       // is already open and double-click events are forwarded).
