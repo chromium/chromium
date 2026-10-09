@@ -1481,4 +1481,15 @@ bool AwContentBrowserClient::IsAndroidAdvancedProtectionEnabled() {
   return AwAdvancedProtectionStatusManagerBridge::IsUnderAdvancedProtection();
 }
 
+bool AwContentBrowserClient::IsClipboardPasteAllowed(
+    content::RenderFrameHost* render_frame_host) {
+  // Require browser-observed recent user interaction, mirroring the first prong
+  // of ChromeContentBrowserClient::IsClipboardPasteAllowed().
+  // WebView intentionally has no CLIPBOARD_READ_WRITE grant flow yet
+  // (crbug.com/1271620), so there is no permission-based prong to mirror.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  return web_contents && web_contents->HasRecentInteraction();
+}
+
 }  // namespace android_webview

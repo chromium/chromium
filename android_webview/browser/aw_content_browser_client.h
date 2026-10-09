@@ -306,6 +306,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin) override;
 
   bool IsAndroidAdvancedProtectionEnabled() override;
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;
