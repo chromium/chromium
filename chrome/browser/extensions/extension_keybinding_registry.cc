@@ -295,7 +295,9 @@ void ExtensionKeybindingRegistry::AddEventTarget(
   // Shortcuts except media keys have only one target in the list. See comment
   // about |event_targets_|.
   if (!accelerator.IsMediaKey()) {
-    CHECK_EQ(1u, event_targets_[accelerator].size(), base::NotFatalUntil::M161);
+    // TODO(crbug.com/571680756): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(1u, event_targets_[accelerator].size());
   } else {
     if (media_keys_listener_)
       media_keys_listener_->StartWatchingMediaKey(accelerator.key_code());
