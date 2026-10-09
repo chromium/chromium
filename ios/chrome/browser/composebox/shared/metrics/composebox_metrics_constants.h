@@ -12,7 +12,8 @@ enum class AiModeActivationSource {
   kNTPButton = 2,
   kImplicit = 3,
   kNTPCreateImageButton = 4,
-  kMaxValue = kNTPCreateImageButton,
+  kNTPGalleryButton = 5,
+  kMaxValue = kNTPGalleryButton,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AiModeActivationSource)
 

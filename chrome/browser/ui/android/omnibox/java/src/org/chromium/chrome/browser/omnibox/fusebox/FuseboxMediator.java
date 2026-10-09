@@ -151,6 +151,7 @@ import java.util.function.Supplier;
     private @Nullable PropertyModel mScrimModel;
     private boolean mPopupItemSelected;
     private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
+    private @Nullable Runnable mOnPickerInteractionSucceededCallback;
     private boolean mNeedUnfocusOnCancel;
     private @Nullable DriveConsentDialog mDriveConsentDialog;
 
@@ -266,6 +267,14 @@ import java.util.function.Supplier;
 
     public void setOnFirstPickerInteractionCanceledCallback(Runnable callback) {
         mOnFirstPickerInteractionCanceledCallback = callback;
+    }
+
+    /**
+     * Sets a callback invoked when a picker launched directly on focus (without the popup) returns
+     * content, signaling that the Omnibox should now be focused.
+     */
+    public void setOnPickerInteractionSucceededCallback(Runnable callback) {
+        mOnPickerInteractionSucceededCallback = callback;
     }
 
     boolean handleKeyEvent(int keyCode, KeyEvent event) {
@@ -399,6 +408,7 @@ import java.util.function.Supplier;
         }
 
         if (mInput != null) {
+            boolean shouldOpenGalleryPicker = false;
             // TODO(crbug.com/481365131): there must be a better way to do that.
             if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
                     && mInput.getFocusReason() == OmniboxFocusReason.NTP_AI_MODE) {
@@ -410,6 +420,10 @@ import java.util.function.Supplier;
             } else if (mInput.getFocusReason() == OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP) {
                 mNeedUnfocusOnCancel = true;
                 showPopup();
+            } else if (mInput.getFocusReason() == OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED) {
+                FuseboxMetrics.notifyAiModeActivated(AiModeActivationSource.NTP_GALLERY_BUTTON);
+                mNeedUnfocusOnCancel = true;
+                shouldOpenGalleryPicker = true;
             }
 
             mInput.getRequestTypeSupplier()
@@ -418,6 +432,12 @@ import java.util.function.Supplier;
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteStateChanged);
             mInput.getDisplayStateSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnDisplayStateChanged);
+
+            // Behave as if the gallery button in the Fusebox popup was clicked. Done after
+            // observers are registered so the session state is fully set up.
+            if (shouldOpenGalleryPicker) {
+                onImagePickerClicked();
+            }
         }
     }
 
@@ -874,6 +894,16 @@ import java.util.function.Supplier;
         }
     }
 
+    private void handlePickerSucceeded() {
+        if (!isInInputSession()) return;
+        if (mNeedUnfocusOnCancel) {
+            mNeedUnfocusOnCancel = false;
+            if (mOnPickerInteractionSucceededCallback != null) {
+                mOnPickerInteractionSucceededCallback.run();
+            }
+        }
+    }
+
     @VisibleForTesting
     /* package */ void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (!isInInputSession()) return;
@@ -1150,6 +1180,7 @@ import java.util.function.Supplier;
                                     FuseboxAttachmentButtonType.GALLERY);
                         }
                     }
+                    handlePickerSucceeded();
                 },
                 R.string.low_memory_error);
     }

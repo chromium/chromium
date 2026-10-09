@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -130,7 +131,7 @@ class SearchBoxMediator implements DestroyObserver {
         mNewTabPageManager.focusSearchBox(
                 /* beginVoiceSearch= */ false,
                 AutocompleteRequestType.SEARCH,
-                /* showFuseboxPopup= */ false,
+                OmniboxFocusReason.FAKE_BOX_TAP,
                 /* pastedText= */ null);
     }
 
@@ -138,7 +139,7 @@ class SearchBoxMediator implements DestroyObserver {
         mNewTabPageManager.focusSearchBox(
                 /* beginVoiceSearch= */ true,
                 AutocompleteRequestType.SEARCH,
-                /* showFuseboxPopup= */ false,
+                OmniboxFocusReason.FAKE_BOX_TAP,
                 /* pastedText= */ null);
     }
 
@@ -146,7 +147,7 @@ class SearchBoxMediator implements DestroyObserver {
         mNewTabPageManager.focusSearchBox(
                 /* beginVoiceSearch= */ false,
                 AutocompleteRequestType.SEARCH,
-                /* showFuseboxPopup= */ true,
+                OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP,
                 /* pastedText= */ null);
     }
 

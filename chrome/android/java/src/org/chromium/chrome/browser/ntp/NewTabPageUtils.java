@@ -48,14 +48,14 @@ public class NewTabPageUtils {
         ActionChips.DEFAULT,
         ActionChips.INCOGNITO,
         ActionChips.CREATE_IMAGE,
-        ActionChips.CANVAS
+        ActionChips.GALLERY
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionChips {
         int DEFAULT = 0;
         int INCOGNITO = 1;
         int CREATE_IMAGE = 2;
-        int CANVAS = 3;
+        int GALLERY = 3;
         int NUM_ENTRIES = 4;
     }
 

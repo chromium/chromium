@@ -36,6 +36,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -277,6 +278,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private ScrimManager mScrimManager;
     @Mock private BackPressManager mBackPressManager;
     @Mock private Runnable mOnFirstPickerInteractionCanceledCallback;
+    @Mock private Runnable mOnPickerInteractionSucceededCallback;
     @Mock private KeyEvent mKeyEvent;
     @Mock private Runnable mOnRemoveRunnable;
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -428,6 +430,7 @@ public class FuseboxMediatorUnitTest {
                         mOnFirstPickerInteractionCanceledCallback,
                         mHasAttachmentsSupplier,
                         mUrlTextWrappingSupplier);
+        mMediator.setOnPickerInteractionSucceededCallback(mOnPickerInteractionSucceededCallback);
     }
 
     /* Useful for testing logic in the mediator's constructor. */
@@ -2242,6 +2245,66 @@ public class FuseboxMediatorUnitTest {
         mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, mockIntent);
 
         verify(mOnFirstPickerInteractionCanceledCallback).run();
+    }
+
+    @Test
+    public void testBeginInput_ntpGalleryChipClicked_opensGalleryPicker() {
+        mInput.setFocusReason(OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED);
+        recreateMediator();
+
+        assertEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
+        assertTrue(mMediator.wasPopupItemSelected());
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        assertEquals(MimeTypeUtils.IMAGE_ANY_MIME_TYPE, mIntentCaptor.getValue().getType());
+    }
+
+    @Test
+    public void testBeginInput_notNtpGalleryChipClicked_doesNotOpenGalleryPicker() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP);
+        recreateMediator();
+
+        verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
+    }
+
+    @Test
+    public void testImagePickerResult_canceled_unfocuses_whenNtpGalleryChipClicked() {
+        mInput.setFocusReason(OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED);
+        recreateMediator();
+
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
+
+        verify(mOnFirstPickerInteractionCanceledCallback).run();
+        verify(mOnPickerInteractionSucceededCallback, never()).run();
+    }
+
+    @Test
+    public void testImagePickerResult_imagesSelected_signalsSuccess_whenNtpGalleryChipClicked() {
+        mInput.setFocusReason(OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED);
+        recreateMediator();
+
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        Intent result = new Intent().setData(Uri.parse("content://media/external/images/1"));
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, result);
+
+        verify(mOnPickerInteractionSucceededCallback).run();
+        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+    }
+
+    @Test
+    public void testImagePickerResult_imagesSelected_noSuccessSignal_whenNotFirstInteraction() {
+        mInput.setFocusReason(OmniboxFocusReason.OMNIBOX_TAP);
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        Intent result = new Intent().setData(Uri.parse("content://media/external/images/1"));
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, result);
+
+        verify(mOnPickerInteractionSucceededCallback, never()).run();
     }
 
     @Test

@@ -115,7 +115,6 @@ import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
-import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -286,7 +285,7 @@ public class NewTabPage
         public void focusSearchBox(
                 boolean beginVoiceSearch,
                 @AutocompleteRequestType int requestType,
-                boolean showFuseboxPopup,
+                @OmniboxFocusReason int focusReason,
                 @Nullable String pastedText) {
             if (mIsDestroyed) return;
             FeedReliabilityLogger feedReliabilityLogger =
@@ -304,20 +303,14 @@ public class NewTabPage
                     feedReliabilityLogger.onOmniboxFocused();
                 }
 
-                @OmniboxFocusReason
-                int focusReason =
-                        pastedText == null
-                                ? OmniboxFocusReason.FAKE_BOX_TAP
-                                : OmniboxFocusReason.FAKE_BOX_LONG_PRESS;
                 @AutocompleteState int autocompleteState = AutocompleteState.ENABLED;
-                if (ToolModeUtils.isAimRequest(requestType)) {
-                    focusReason = OmniboxFocusReason.NTP_AI_MODE;
-                } else if (showFuseboxPopup) {
-                    focusReason = OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP;
+                if (focusReason == OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP) {
                     autocompleteState =
                             OmniboxFeatures.sFocusFuseboxFromNtpPlusButton.getValue()
                                     ? AutocompleteState.ENABLED
                                     : AutocompleteState.STANDBY_NO_FOCUS;
+                } else if (focusReason == OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED) {
+                    autocompleteState = AutocompleteState.STANDBY_NO_FOCUS;
                 }
 
                 mOmniboxStub.beginInput(

@@ -117,6 +117,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
@@ -967,7 +968,28 @@ public class NewTabPageCoordinatorUnitTest {
                 .focusSearchBox(
                         /* beginVoiceSearch= */ false,
                         AutocompleteRequestType.IMAGE_GENERATION,
-                        /* showFuseboxPopup= */ false,
+                        OmniboxFocusReason.NTP_AI_MODE,
+                        /* pastedText= */ null);
+    }
+
+    /** Verifies that clicking the gallery chip focuses the search box to open the gallery. */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testGalleryButtonClicked_focusesSearchBoxForGallery() {
+        // The composeplate is created in setUp() since the default search engine is Google.
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
+
+        optionalButton.performClick();
+
+        verify(mManager)
+                .focusSearchBox(
+                        /* beginVoiceSearch= */ false,
+                        AutocompleteRequestType.AI_MODE,
+                        OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED,
                         /* pastedText= */ null);
     }
 
@@ -1139,12 +1161,12 @@ public class NewTabPageCoordinatorUnitTest {
                     .focusSearchBox(
                             /* beginVoiceSearch= */ false,
                             AutocompleteRequestType.AI_MODE,
-                            /* showFuseboxPopup= */ false,
+                            OmniboxFocusReason.NTP_AI_MODE,
                             /* pastedText= */ null);
         } else {
             verify(mManager, never())
                     .focusSearchBox(
-                            anyBoolean(), eq(AutocompleteRequestType.AI_MODE), anyBoolean(), any());
+                            anyBoolean(), eq(AutocompleteRequestType.AI_MODE), anyInt(), any());
         }
     }
 
@@ -1692,13 +1714,21 @@ public class NewTabPageCoordinatorUnitTest {
 
         searchBoxTextView.setText("first paste");
         verify(mManager)
-                .focusSearchBox(false, AutocompleteRequestType.SEARCH, false, "first paste");
+                .focusSearchBox(
+                        false,
+                        AutocompleteRequestType.SEARCH,
+                        OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
+                        "first paste");
         assertEquals("", searchBoxTextView.getText().toString());
 
         clearInvocations(mManager);
         searchBoxTextView.setText("second paste");
         verify(mManager)
-                .focusSearchBox(false, AutocompleteRequestType.SEARCH, false, "second paste");
+                .focusSearchBox(
+                        false,
+                        AutocompleteRequestType.SEARCH,
+                        OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
+                        "second paste");
         assertEquals("", searchBoxTextView.getText().toString());
     }
 

@@ -106,6 +106,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -551,7 +552,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0 || mNtpSearchBox == null) return;
                         mManager.focusSearchBox(
-                                false, AutocompleteRequestType.SEARCH, false, s.toString());
+                                /* beginVoiceSearch= */ false,
+                                AutocompleteRequestType.SEARCH,
+                                OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
+                                s.toString());
                         mNtpSearchBox.setSearchText("");
                     }
                 });
@@ -625,9 +629,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mComposeplateCoordinator.setOptionalButtonIcon(R.drawable.image_create_24dp);
             mComposeplateCoordinator.setOptionalButtonText(
                     mActivity.getString(R.string.ntp_action_chip_create_image));
-        } else if (chipType == NewTabPageUtils.ActionChips.CANVAS) {
+        } else if (chipType == NewTabPageUtils.ActionChips.GALLERY) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
-                    this::onCanvasButtonClicked, chipType);
+                    this::onGalleryButtonClicked, chipType);
         }
 
         updateComposeplateBackground();
@@ -649,7 +653,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                                 && OmniboxFeatures.sRedirectComposeplateButton.getValue()
                                 && !mIsLff))
                 && mIsComposeplatePolicyEnabled) {
-            mManager.focusSearchBox(false, AutocompleteRequestType.AI_MODE, false, null);
+            mManager.focusSearchBox(
+                    /* beginVoiceSearch= */ false,
+                    AutocompleteRequestType.AI_MODE,
+                    OmniboxFocusReason.NTP_AI_MODE,
+                    /* pastedText= */ null);
             return;
         }
 
@@ -663,12 +671,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mManager.focusSearchBox(
                 /* beginVoiceSearch= */ false,
                 AutocompleteRequestType.IMAGE_GENERATION,
-                /* showFuseboxPopup= */ false,
+                OmniboxFocusReason.NTP_AI_MODE,
                 /* pastedText= */ null);
     }
 
-    private void onCanvasButtonClicked(View view) {
-        // TODO(https://crbug.com/568005713): Handles the canvas button.
+    private void onGalleryButtonClicked(View view) {
+        mManager.focusSearchBox(
+                /* beginVoiceSearch= */ false,
+                AutocompleteRequestType.AI_MODE,
+                OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED,
+                /* pastedText= */ null);
     }
 
     private void onIncognitoButtonClicked(View view) {
@@ -1265,7 +1277,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /**
      * Updates the visibility of the composeplate's optional button. It is visible only when the
-     * default search engine is Google and the action chip type is either create image or canvas.
+     * default search engine is Google and the action chip type is either create image or gallery.
      * The composeplate's own visibility doesn't need to be checked, since hiding the composeplate
      * also hides the optional button.
      */
@@ -1276,7 +1288,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         boolean isOptionalButtonVisible =
                 mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                         && (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE
-                                || chipType == NewTabPageUtils.ActionChips.CANVAS);
+                                || chipType == NewTabPageUtils.ActionChips.GALLERY);
         mComposeplateCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
     }
 

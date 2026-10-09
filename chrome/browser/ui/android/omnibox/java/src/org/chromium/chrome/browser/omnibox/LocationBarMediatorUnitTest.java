@@ -258,6 +258,7 @@ public class LocationBarMediatorUnitTest {
 
     @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mOnInteractionCompletedCallbackCaptor;
+    @Captor private ArgumentCaptor<Runnable> mOnPickerInteractionSucceededCallbackCaptor;
     @Captor private ArgumentCaptor<UrlBarData> mUrlBarDataCaptor;
     @Captor private ArgumentCaptor<OmniboxPrerender> mOmniboxPrerenderCaptor;
     @Captor private ArgumentCaptor<FuseboxSessionState> mFuseboxSessionStateCaptor;
@@ -787,6 +788,26 @@ public class LocationBarMediatorUnitTest {
         mOnInteractionCompletedCallback.onResult(false);
 
         assertFalse(mSessionState.isSessionActive());
+    }
+
+    @Test
+    public void testOnPickerInteractionSucceeded_StandbyNoFocus_focusesOmnibox() {
+        verify(mFuseboxCoordinator, atLeastOnce())
+                .setOnPickerInteractionSucceededCallback(
+                        mOnPickerInteractionSucceededCallbackCaptor.capture());
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setFocusReason(OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED);
+        input.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
+        mMediator.beginInput(input);
+        clearInvocations(mUrlCoordinator);
+
+        // The first captured callback belongs to mMediator; setUp() also creates a tablet mediator.
+        mOnPickerInteractionSucceededCallbackCaptor.getAllValues().get(0).run();
+
+        assertAutocompleteState(AutocompleteState.ENABLED);
+        assertEquals(OmniboxFocusReason.FAKE_BOX_TAP, input.getFocusReason());
+        verify(mUrlCoordinator).requestFocus();
     }
 
     @Test

@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -581,7 +582,11 @@ public class SearchBoxMediatorUnitTest {
         assertNotNull(listener);
         listener.onClick(mView);
         verify(mNewTabPageManager)
-                .focusSearchBox(false, AutocompleteRequestType.SEARCH, false, null);
+                .focusSearchBox(
+                        false,
+                        AutocompleteRequestType.SEARCH,
+                        OmniboxFocusReason.FAKE_BOX_TAP,
+                        null);
     }
 
     @Test
@@ -591,7 +596,11 @@ public class SearchBoxMediatorUnitTest {
         assertNotNull(listener);
         listener.onClick(mView);
         verify(mNewTabPageManager)
-                .focusSearchBox(true, AutocompleteRequestType.SEARCH, false, null);
+                .focusSearchBox(
+                        true,
+                        AutocompleteRequestType.SEARCH,
+                        OmniboxFocusReason.FAKE_BOX_TAP,
+                        null);
     }
 
     @Test
@@ -601,7 +610,11 @@ public class SearchBoxMediatorUnitTest {
         assertNotNull(listener);
         listener.onClick(mView);
         verify(mNewTabPageManager)
-                .focusSearchBox(false, AutocompleteRequestType.SEARCH, true, null);
+                .focusSearchBox(
+                        false,
+                        AutocompleteRequestType.SEARCH,
+                        OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP,
+                        null);
     }
 
     @Test

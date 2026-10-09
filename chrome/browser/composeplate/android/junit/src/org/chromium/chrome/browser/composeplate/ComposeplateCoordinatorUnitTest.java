@@ -147,7 +147,7 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testOptionalButtonClickListener_Canvas() {
         testOptionalButtonClickListenerImpl(
-                ActionChips.CANVAS, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CANVAS_BUTTON);
+                ActionChips.GALLERY, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_GALLERY_BUTTON);
     }
 
     private void testOptionalButtonClickListenerImpl(

@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Manages the view interaction with the rest of the system. */
@@ -24,13 +25,13 @@ public interface NewTabPageManager extends SuggestionsUiDelegate {
      *
      * @param beginVoiceSearch Whether to begin a voice search.
      * @param requestType Type of request the focused omnibox should begin serving.
-     * @param showFuseboxPopup Whether the fusebox popup should be shown.
+     * @param focusReason The reason the omnibox is being focused.
      * @param pastedText Text to paste in the omnibox after it's been focused. May be null.
      */
     void focusSearchBox(
             boolean beginVoiceSearch,
             @AutocompleteRequestType int requestType,
-            boolean showFuseboxPopup,
+            @OmniboxFocusReason int focusReason,
             @Nullable String pastedText);
 
     /**

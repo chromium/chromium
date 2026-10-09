@@ -102,6 +102,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -609,7 +610,7 @@ public class NewTabPageTest {
                             .focusSearchBox(
                                     /* beginVoiceSearch= */ false,
                                     AutocompleteRequestType.SEARCH,
-                                    /* showFuseboxPopup= */ false,
+                                    OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
                                     /* pastedText= */ "");
                 });
     }
@@ -626,7 +627,7 @@ public class NewTabPageTest {
                             .focusSearchBox(
                                     /* beginVoiceSearch= */ true,
                                     AutocompleteRequestType.SEARCH,
-                                    /* showFuseboxPopup= */ false,
+                                    OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
                                     /* pastedText= */ "");
                 });
     }

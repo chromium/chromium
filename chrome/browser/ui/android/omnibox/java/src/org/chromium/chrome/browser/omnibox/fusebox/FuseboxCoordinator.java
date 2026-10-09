@@ -157,6 +157,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private boolean mDestroyed;
     private @Nullable Callback<Boolean> mOnInteractionCompletedCallback;
     private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
+    private @Nullable Runnable mOnPickerInteractionSucceededCallback;
     private final boolean mIsForcedPhoneStyleOmnibox;
     private final OmniboxResourceProvider mResourceProvider;
 
@@ -333,6 +334,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mOnFirstPickerInteractionCanceledCallback,
                         mHasAttachmentsSupplier,
                         assertNonNull(mUrlTextWrappingSupplier));
+        if (mOnPickerInteractionSucceededCallback != null) {
+            mMediator.setOnPickerInteractionSucceededCallback(
+                    mOnPickerInteractionSucceededCallback);
+        }
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
@@ -585,6 +590,17 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mOnFirstPickerInteractionCanceledCallback = callback;
         if (mMediator != null) {
             mMediator.setOnFirstPickerInteractionCanceledCallback(callback);
+        }
+    }
+
+    /**
+     * Set callback to be invoked when a picker launched directly on focus (e.g. from the NTP
+     * gallery chip) returns content.
+     */
+    public void setOnPickerInteractionSucceededCallback(Runnable callback) {
+        mOnPickerInteractionSucceededCallback = callback;
+        if (mMediator != null) {
+            mMediator.setOnPickerInteractionSucceededCallback(callback);
         }
     }
 

@@ -1837,6 +1837,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="NTP AI Mode button."/>
   <int value="20" label="NTP plus button."/>
   <int value="21" label="Keyboard navigation focus."/>
+  <int value="22" label="NTP gallery chip clicked."/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/OmniboxFocusReason.java:OmniboxFocusReason) -->

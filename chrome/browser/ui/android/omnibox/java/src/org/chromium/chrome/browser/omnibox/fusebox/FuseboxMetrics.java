@@ -109,7 +109,8 @@ public class FuseboxMetrics {
         AiModeActivationSource.DEDICATED_BUTTON,
         AiModeActivationSource.NTP_BUTTON,
         AiModeActivationSource.IMPLICIT,
-        AiModeActivationSource.NTP_CREATE_IMAGE_BUTTON
+        AiModeActivationSource.NTP_CREATE_IMAGE_BUTTON,
+        AiModeActivationSource.NTP_GALLERY_BUTTON
     })
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.TYPE_USE})
@@ -120,7 +121,8 @@ public class FuseboxMetrics {
         int NTP_BUTTON = 2;
         int IMPLICIT = 3;
         int NTP_CREATE_IMAGE_BUTTON = 4;
-        int COUNT = 5;
+        int NTP_GALLERY_BUTTON = 5;
+        int COUNT = 6;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AiModeActivationSource)
