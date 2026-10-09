@@ -68,15 +68,15 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         public @TriState int mIsRecommended;
 
         void apply(ImmersiveVideoPlaybackActivity activity) {
+            if (mVideoWidth != null && mVideoHeight != null) {
+                activity.updateVideoSize(mVideoWidth, mVideoHeight);
+            }
             if (mStereoMode != null || mProjectionType != null) {
                 int stereoMode = mStereoMode != null ? mStereoMode : ImmersiveStereoMode.MONO;
                 int projectionType =
                         mProjectionType != null ? mProjectionType : ImmersiveProjectionType.QUAD;
                 activity.setImmersiveVideoOptions(
                         stereoMode, projectionType, mIsRecommended == TriState.TRUE);
-            }
-            if (mVideoWidth != null && mVideoHeight != null) {
-                activity.updateVideoSize(mVideoWidth, mVideoHeight);
             }
             if (mPlaybackState != null) {
                 activity.setPlaybackState(mPlaybackState);

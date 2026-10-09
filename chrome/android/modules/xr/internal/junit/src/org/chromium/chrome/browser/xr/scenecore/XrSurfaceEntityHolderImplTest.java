@@ -76,9 +76,20 @@ public class XrSurfaceEntityHolderImplTest {
     }
 
     @Test
-    public void testAddCallback() {
+    public void testAddCallback_DoesNotNotifyUntilDimensionsSet() {
         mHolder.addCallback(mCallback);
         assertTrue(mHolder.hasCallbackForTesting(mCallback));
+        verify(mCallback, org.mockito.Mockito.never()).surfaceCreated(any());
+        verify(mCallback, org.mockito.Mockito.never())
+                .surfaceChanged(any(), org.mockito.Mockito.anyInt(), org.mockito.Mockito.anyInt());
+    }
+
+    @Test
+    public void testAddCallback_AfterDimensionsSet_NotifiesImmediately() {
+        mHolder.setSurfacePixelDimensions(100, 200);
+        mHolder.addCallback(mCallback);
+        verify(mCallback).surfaceCreated(any());
+        verify(mCallback).surfaceChanged(any(), eq(100), eq(200));
     }
 
     @Test
@@ -93,7 +104,12 @@ public class XrSurfaceEntityHolderImplTest {
     public void testSetSurfacePixelDimensions() {
         mHolder.addCallback(mCallback);
         mHolder.setSurfacePixelDimensions(100, 200);
+        verify(mCallback).surfaceCreated(any());
         verify(mCallback).surfaceChanged(any(), eq(100), eq(200));
+
+        mHolder.setSurfacePixelDimensions(300, 400);
+        verify(mCallback, org.mockito.Mockito.times(1)).surfaceCreated(any());
+        verify(mCallback).surfaceChanged(any(), eq(300), eq(400));
     }
 
     @Test
@@ -131,10 +147,15 @@ public class XrSurfaceEntityHolderImplTest {
     }
 
     @Test
-    public void testSetSurfaceShape_NotifiesCallback() {
+    public void testSetSurfaceShape_NotifiesCallbackOnlyAfterDimensionsSet() {
         mHolder.addCallback(mCallback);
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.HEMISPHERE);
+        verify(mCallback, org.mockito.Mockito.never())
+                .surfaceChanged(any(), org.mockito.Mockito.anyInt(), org.mockito.Mockito.anyInt());
+
+        mHolder.setSurfacePixelDimensions(100, 200);
         mHolder.setSurfaceShape(XrSurfaceEntityShape.SPHERE);
-        verify(mCallback, org.mockito.Mockito.times(2)).surfaceChanged(any(), eq(1), eq(1));
+        verify(mCallback, org.mockito.Mockito.times(2)).surfaceChanged(any(), eq(100), eq(200));
     }
 
     @Test

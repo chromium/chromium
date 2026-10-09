@@ -53,7 +53,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
                     XrSurfaceEntityStereoMode.TOP_BOTTOM, StereoMode.TOP_BOTTOM);
 
     private final CopyOnWriteArrayList<Callback> mCallbacks = new CopyOnWriteArrayList<>();
-    private IntSize2d mCurrentSurfaceDimensions = new IntSize2d(1, 1);
+    private @Nullable IntSize2d mCurrentSurfaceDimensions;
 
     /** Helper for managing custom meshes. */
     private @Nullable XrCustomMeshHolder<?> mCustomMeshHolder;
@@ -70,19 +70,33 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void addCallback(Callback callback) {
         if (!mCallbacks.contains(callback)) {
             mCallbacks.add(callback);
+            notifyCallbackIfSurfaceReady(callback);
+        }
+    }
 
-            Surface surface = getSurface();
-            if (surface != null && surface.isValid()) {
+    private void notifyCallbackIfSurfaceReady(Callback callback) {
+        Surface surface = getSurface();
+        if (mCurrentSurfaceDimensions != null && surface != null && surface.isValid()) {
+            callback.surfaceCreated(surface);
+            callback.surfaceChanged(
+                    surface,
+                    mCurrentSurfaceDimensions.getWidth(),
+                    mCurrentSurfaceDimensions.getHeight());
+        }
+    }
+
+    private void notifySurfaceCreated() {
+        if (mCurrentSurfaceDimensions == null) return;
+        Surface surface = getSurface();
+        if (surface != null && surface.isValid()) {
+            for (Callback callback : mCallbacks) {
                 callback.surfaceCreated(surface);
-                callback.surfaceChanged(
-                        surface,
-                        mCurrentSurfaceDimensions.getWidth(),
-                        mCurrentSurfaceDimensions.getHeight());
             }
         }
     }
 
     private void notifySurfaceChanged() {
+        if (mCurrentSurfaceDimensions == null) return;
         Surface surface = getSurface();
         if (surface != null && surface.isValid()) {
             for (Callback callback : mCallbacks) {
@@ -119,10 +133,14 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void setSurfacePixelDimensions(int width, int height) {
         assertDisposed();
         if (width <= 0 || height <= 0) return;
+        boolean wasInitialized = mCurrentSurfaceDimensions != null;
         mCurrentSurfaceDimensions = new IntSize2d(width, height);
         mEntity.setSurfacePixelDimensions(mCurrentSurfaceDimensions);
         if (mCustomMeshHolder != null) {
             mCustomMeshHolder.setSurfacePixelDimensions(width, height);
+        }
+        if (!wasInitialized) {
+            notifySurfaceCreated();
         }
         notifySurfaceChanged();
     }
@@ -169,22 +187,15 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         }
     }
 
-    private void notifySurfaceCreated(Surface surface) {
-        for (Callback callback : mCallbacks) {
-            callback.surfaceCreated(surface);
-        }
-    }
-
     private void updateSurfaceCallbacks(
             @Nullable Surface oldSurface, @Nullable Surface newSurface) {
+        if (mCurrentSurfaceDimensions == null) return;
         if (oldSurface != newSurface) {
             if (oldSurface != null) {
                 notifySurfaceDestroyed();
             }
-            if (newSurface != null && newSurface.isValid()) {
-                notifySurfaceCreated(newSurface);
-                notifySurfaceChanged();
-            }
+            notifySurfaceCreated();
+            notifySurfaceChanged();
         } else {
             notifySurfaceChanged();
         }
@@ -196,6 +207,10 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         if (getSurfaceShape() == shape) return;
         Surface oldSurface = getSurface();
         clearCustomState();
+        int surfaceWidth =
+                mCurrentSurfaceDimensions != null ? mCurrentSurfaceDimensions.getWidth() : 1;
+        int surfaceHeight =
+                mCurrentSurfaceDimensions != null ? mCurrentSurfaceDimensions.getHeight() : 1;
         switch (shape) {
             case XrSurfaceEntityShape.QUAD:
                 mEntity.setShape(new Shape.Quad(new FloatSize2d(1f, 1f)));
@@ -209,9 +224,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             case XrSurfaceEntityShape.SEAMLESS_SPHERE:
                 var sphereConfig =
                         new XrCurvedMeshGenerator.Config(
-                                getSurfaceStereoMode(),
-                                mCurrentSurfaceDimensions.getWidth(),
-                                mCurrentSurfaceDimensions.getHeight());
+                                getSurfaceStereoMode(), surfaceWidth, surfaceHeight);
                 var sphereGenerator = new XrSeamlessSphereMeshGenerator(sphereConfig);
                 var sphereHolder =
                         new XrCurvedMeshHolder(
@@ -226,9 +239,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             case XrSurfaceEntityShape.ROUNDED_QUAD:
                 var quadConfig =
                         new XrPlanarMeshGenerator.Config(
-                                getSurfaceStereoMode(),
-                                mCurrentSurfaceDimensions.getWidth(),
-                                mCurrentSurfaceDimensions.getHeight());
+                                getSurfaceStereoMode(), surfaceWidth, surfaceHeight);
                 var quadGenerator = new XrRoundedQuadMeshGenerator(quadConfig);
                 var quadHolder =
                         new XrPlanarMeshHolder(
@@ -376,7 +387,9 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void dispose() {
         if (!mIsDisposed) {
             clearCustomState();
-            notifySurfaceDestroyed();
+            if (mCurrentSurfaceDimensions != null) {
+                notifySurfaceDestroyed();
+            }
             mCallbacks.clear();
             super.dispose();
         }
