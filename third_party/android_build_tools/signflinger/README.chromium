@@ -12,9 +12,10 @@ URL: https://android.googlesource.com/platform/tools/base/+/refs/heads/mirror-go
 Description:
 Library from the Android Gradle Plugin that combines zipflinger (fast zip
 creation) with apksig (APK signing) so that an APK can be created and signed in
-a single pass. The CIPD package is a fat jar that also contains its
-dependencies (zipflinger, apksig) and a Chromium-authored main class,
-org.chromium.build.ZipBuilder (sources in java/), which is used by
+a single pass. The CIPD package contains signflinger.jar (a fat jar bundling
+zipflinger, apksig, and the Chromium-authored org.chromium.build.ZipBuilder
+main class from java/) as well as a GraalVM native-image executable
+(signflinger, for Linux x86_64 hosts with x86-64-v3 + SHA-NI), used by
 //build/android/gyp/apkbuilder.py and //build/android/gyp/dex.py.
 
 Local Modifications:

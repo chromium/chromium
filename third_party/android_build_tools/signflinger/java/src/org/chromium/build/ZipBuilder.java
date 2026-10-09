@@ -4,11 +4,16 @@
 
 package org.chromium.build;
 
-import com.android.apksig.ApkSignerEngine;
-import com.android.apksig.DefaultApkSignerEngine;
 import com.android.apksig.KeyConfig;
-import com.android.apksig.util.DataSource;
-import com.android.apksig.util.DataSources;
+import com.android.apksig.internal.apk.ApkSigningBlockUtils;
+import com.android.apksig.internal.apk.ContentDigestAlgorithm;
+import com.android.apksig.internal.apk.SignatureAlgorithm;
+import com.android.apksig.internal.apk.v2.V2SchemeSigner;
+import com.android.apksig.internal.apk.v3.V3SchemeSigner;
+import com.android.apksig.internal.apk.v4.V4SchemeSigner;
+import com.android.apksig.internal.apk.v4.V4Signature;
+import com.android.apksig.internal.util.Pair;
+import com.android.apksig.internal.zip.ZipUtils;
 import com.android.apksig.util.RunnablesExecutor;
 import com.android.signflinger.SignedApk;
 import com.android.signflinger.SignedApkOptions;
@@ -22,8 +27,12 @@ import com.android.zipflinger.ZipMap;
 import com.android.zipflinger.ZipSource;
 import com.android.zipflinger.ZipWriter;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
@@ -34,13 +43,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.KeyStore;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +64,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
 
 /**
@@ -89,8 +103,6 @@ import java.util.zip.CRC32;
  * <p>When --keystore is given, the output is signed using signflinger/apksig, so that the archive
  * is written only once rather than once by the zip tool and again by apksigner. When v4 signing is
  * enabled, the v4 signature is written to {@code OUT.idsig} (e.g. {@code foo.apk.idsig}).
- *
- * <p>See 3pp/3pp.py for why this runs on the JVM rather than as a GraalVM native-image.
  */
 public final class ZipBuilder {
     // apksig defaults to one digest thread per core. Beyond ~8 threads, wall
@@ -104,8 +116,52 @@ public final class ZipBuilder {
     // CheckedInputStream buffer (~113k read syscalls on libchrome.so).
     private static final int STORED_FILE_THRESHOLD = 64 * 1024;
     private static final int DIRECT_BUFFER_SIZE = 256 * 1024;
+    private static final int V2_CHUNK_SIZE = 1024 * 1024;
+    private static final int V4_PAGE_SIZE = 4096;
+    private static final int SHA256_DIGEST_SIZE = 32;
+
     private static final ThreadLocal<ByteBuffer> DIRECT_BUF =
             ThreadLocal.withInitial(() -> ByteBuffer.allocateDirect(DIRECT_BUFFER_SIZE));
+
+    private static final Method GENERATE_V2_BLOCK_METHOD;
+    private static final Method GENERATE_V3_BLOCK_METHOD;
+    private static final Constructor<V4Signature.HashingInfo> HASHING_INFO_CTOR;
+    private static final Method GENERATE_V4_SIGNATURE_METHOD;
+
+    static {
+        try {
+            GENERATE_V2_BLOCK_METHOD =
+                    V2SchemeSigner.class.getDeclaredMethod(
+                            "generateApkSignatureSchemeV2Block",
+                            List.class,
+                            Map.class,
+                            boolean.class,
+                            List.class);
+            GENERATE_V2_BLOCK_METHOD.setAccessible(true);
+
+            GENERATE_V3_BLOCK_METHOD =
+                    V3SchemeSigner.class.getDeclaredMethod(
+                            "generateApkSignatureSchemeV3Block", Map.class);
+            GENERATE_V3_BLOCK_METHOD.setAccessible(true);
+
+            HASHING_INFO_CTOR =
+                    V4Signature.HashingInfo.class.getDeclaredConstructor(
+                            int.class, byte.class, byte[].class, byte[].class);
+            HASHING_INFO_CTOR.setAccessible(true);
+
+            GENERATE_V4_SIGNATURE_METHOD =
+                    V4SchemeSigner.class.getDeclaredMethod(
+                            "generateSignature",
+                            V4SchemeSigner.SignerConfig.class,
+                            V4Signature.HashingInfo.class,
+                            Map.class,
+                            byte[].class,
+                            long.class);
+            GENERATE_V4_SIGNATURE_METHOD.setAccessible(true);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private static final class StoredFileSource extends Source {
         private final Path mPath;
@@ -471,23 +527,115 @@ public final class ZipBuilder {
         return privateKey;
     }
 
-    private static DefaultApkSignerEngine createSignerEngine(Options options, ExecutorService pool)
-            throws Exception {
+    private static final class FastSignerState {
+        final ApkSigningBlockUtils.SignerConfig v2Config;
+        final ApkSigningBlockUtils.SignerConfig v3Config;
+        final V4SchemeSigner.SignerConfig v4Config;
+        final List<ContentDigestAlgorithm> contentDigestAlgorithms;
+
+        FastSignerState(
+                ApkSigningBlockUtils.SignerConfig v2Config,
+                ApkSigningBlockUtils.SignerConfig v3Config,
+                V4SchemeSigner.SignerConfig v4Config,
+                List<ContentDigestAlgorithm> contentDigestAlgorithms) {
+            this.v2Config = v2Config;
+            this.v3Config = v3Config;
+            this.v4Config = v4Config;
+            this.contentDigestAlgorithms = contentDigestAlgorithms;
+        }
+    }
+
+    private static ApkSigningBlockUtils.SignerConfig buildBlockSignerConfig(
+            KeyConfig keyConfig,
+            List<X509Certificate> certificates,
+            List<SignatureAlgorithm> signatureAlgorithms,
+            int minSdkVersion,
+            int maxSdkVersion) {
+        ApkSigningBlockUtils.SignerConfig config = new ApkSigningBlockUtils.SignerConfig();
+        config.keyConfig = keyConfig;
+        config.certificates = certificates;
+        config.signatureAlgorithms = signatureAlgorithms;
+        config.minSdkVersion = minSdkVersion;
+        config.maxSdkVersion = maxSdkVersion;
+        return config;
+    }
+
+    private static FastSignerState createFastSignerState(Options options) throws Exception {
         List<X509Certificate> certificates = new ArrayList<>();
         PrivateKey privateKey = loadPrivateKey(options, certificates);
-        DefaultApkSignerEngine.SignerConfig signerConfig =
-                new DefaultApkSignerEngine.SignerConfig.Builder(
-                                "CERT", new KeyConfig.Jca(privateKey), certificates, false)
-                        .build();
-        DefaultApkSignerEngine engine =
-                new DefaultApkSignerEngine.Builder(List.of(signerConfig), options.minSdkVersion)
-                        .setV1SigningEnabled(options.v1SigningEnabled)
-                        .setV2SigningEnabled(options.v2SigningEnabled)
-                        .setV3SigningEnabled(options.v3SigningEnabled)
-                        .setOtherSignersSignaturesPreserved(false)
-                        .build();
-        engine.setExecutor(createExecutor(pool));
-        return engine;
+        PublicKey publicKey = certificates.get(0).getPublicKey();
+        KeyConfig keyConfig = new KeyConfig.Jca(privateKey);
+
+        Set<ContentDigestAlgorithm> digestAlgorithms = EnumSet.noneOf(ContentDigestAlgorithm.class);
+        ApkSigningBlockUtils.SignerConfig v2Config = null;
+        if (options.v2SigningEnabled) {
+            List<SignatureAlgorithm> sigAlgos =
+                    V2SchemeSigner.getSuggestedSignatureAlgorithms(
+                            publicKey,
+                            options.minSdkVersion,
+                            /* apkSigningBlockPaddingSupported= */ false,
+                            /* deterministicDsaSigning= */ false);
+            for (SignatureAlgorithm algo : sigAlgos) {
+                digestAlgorithms.add(algo.getContentDigestAlgorithm());
+            }
+            v2Config =
+                    buildBlockSignerConfig(
+                            keyConfig,
+                            certificates,
+                            sigAlgos,
+                            /* minSdkVersion= */ 0,
+                            /* maxSdkVersion= */ 0);
+        }
+
+        ApkSigningBlockUtils.SignerConfig v3Config = null;
+        if (options.v3SigningEnabled) {
+            List<SignatureAlgorithm> sigAlgos =
+                    V3SchemeSigner.getSuggestedSignatureAlgorithms(
+                            publicKey,
+                            options.minSdkVersion,
+                            /* verityEnabled= */ false,
+                            /* deterministicDsaSigning= */ false);
+            int v3MinSdk = Integer.MAX_VALUE;
+            for (SignatureAlgorithm algo : sigAlgos) {
+                digestAlgorithms.add(algo.getContentDigestAlgorithm());
+            }
+            for (SignatureAlgorithm algo : sigAlgos) {
+                int algoMinSdk = algo.getMinSdkVersion();
+                if (algoMinSdk < v3MinSdk) {
+                    v3MinSdk = algoMinSdk;
+                    if (algoMinSdk <= options.minSdkVersion || algoMinSdk <= 28) {
+                        break;
+                    }
+                }
+            }
+            v3Config =
+                    buildBlockSignerConfig(
+                            keyConfig,
+                            certificates,
+                            sigAlgos,
+                            v3MinSdk,
+                            /* maxSdkVersion= */ Integer.MAX_VALUE);
+        }
+
+        V4SchemeSigner.SignerConfig v4Config = null;
+        if (options.v4SigningEnabled) {
+            List<SignatureAlgorithm> sigAlgos =
+                    V4SchemeSigner.getSuggestedSignatureAlgorithms(
+                            publicKey,
+                            options.minSdkVersion,
+                            /* apkSigningBlockPaddingSupported= */ true,
+                            /* deterministicDsaSigning= */ false);
+            ApkSigningBlockUtils.SignerConfig innerV4 =
+                    buildBlockSignerConfig(
+                            keyConfig,
+                            certificates,
+                            sigAlgos,
+                            /* minSdkVersion= */ 0,
+                            /* maxSdkVersion= */ 0);
+            v4Config = new V4SchemeSigner.SignerConfig(List.of(innerV4), /* v3Config= */ null);
+        }
+
+        return new FastSignerState(v2Config, v3Config, v4Config, new ArrayList<>(digestAlgorithms));
     }
 
     private static Archive createV1Archive(Options options, ExecutorService pool) throws Exception {
@@ -510,53 +658,366 @@ public final class ZipBuilder {
         return new SignedApk(options.output.toFile(), builder.build());
     }
 
-    /**
-     * Performs v2/v3 and v4 signing using read-only {@link MappedByteBuffer}s rather than {@link
-     * SignedApk}'s {@code FileChannelDataSource}, which serializes all worker threads on {@code
-     * synchronized (mChannel)} and copies chunks through temporary direct buffers.
-     */
-    @SuppressWarnings("deprecation")
-    private static void signV2AndV4(
-            Path outputPath, ZipInfo zipInfo, DefaultApkSignerEngine signer, Options options)
+    private static String jcaDigestAlgorithm(ContentDigestAlgorithm algo) {
+        return algo == ContentDigestAlgorithm.CHUNKED_SHA512 ? "SHA-512" : "SHA-256";
+    }
+
+    private static int digestSizeBytes(ContentDigestAlgorithm algo) {
+        return algo == ContentDigestAlgorithm.CHUNKED_SHA512 ? 64 : SHA256_DIGEST_SIZE;
+    }
+
+    private static int getChunkCount(long size) {
+        return (int) ((size + V2_CHUNK_SIZE - 1) / V2_CHUNK_SIZE);
+    }
+
+    private static void setIntLE(int value, byte[] out, int offset) {
+        out[offset] = (byte) (value & 0xff);
+        out[offset + 1] = (byte) ((value >>> 8) & 0xff);
+        out[offset + 2] = (byte) ((value >>> 16) & 0xff);
+        out[offset + 3] = (byte) ((value >>> 24) & 0xff);
+    }
+
+    private static void hashSectionChunks(
+            ByteBuffer section,
+            int startChunkIndex,
+            List<ContentDigestAlgorithm> algos,
+            byte[][] chunkDigestsByAlgo)
             throws Exception {
-        if (options.v2SigningEnabled || options.v3SigningEnabled) {
-            try (FileChannel ch =
-                    FileChannel.open(
-                            outputPath, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-                MappedByteBuffer payloadMap =
-                        ch.map(
-                                FileChannel.MapMode.READ_ONLY,
-                                zipInfo.payload.first,
-                                zipInfo.payload.size());
-                DataSource payloadDs = DataSources.asDataSource(payloadMap);
-
-                int cdAndEocdSize = (int) (zipInfo.cd.size() + zipInfo.eocd.size());
-                ByteBuffer tailBuf =
-                        ByteBuffer.allocate(cdAndEocdSize).order(ByteOrder.LITTLE_ENDIAN);
-                ch.read(tailBuf, zipInfo.cd.first);
-                tailBuf.flip();
-
-                DataSource tailDs = DataSources.asDataSource(tailBuf);
-                DataSource cdDs = tailDs.slice(0, zipInfo.cd.size());
-                DataSource eocdDs = tailDs.slice(zipInfo.cd.size(), zipInfo.eocd.size());
-
-                ApkSignerEngine.OutputApkSigningBlockRequest req =
-                        signer.outputZipSections(payloadDs, cdDs, eocdDs);
-                req.done();
-                byte[] signingBlock = req.getApkSigningBlock();
-
-                tailBuf.putInt(cdAndEocdSize - 6, (int) (zipInfo.cd.first + signingBlock.length));
-                ch.position(zipInfo.cd.first);
-                ch.write(ByteBuffer.wrap(signingBlock));
-                tailBuf.position(0);
-                ch.write(tailBuf);
+        int basePos = section.position();
+        int size = section.remaining();
+        int chunks = getChunkCount(size);
+        byte[] header = new byte[5];
+        header[0] = (byte) 0xa5;
+        for (int a = 0; a < algos.size(); a++) {
+            ContentDigestAlgorithm algo = algos.get(a);
+            MessageDigest md = MessageDigest.getInstance(jcaDigestAlgorithm(algo));
+            int digestSize = digestSizeBytes(algo);
+            byte[] out = chunkDigestsByAlgo[a];
+            for (int c = 0; c < chunks; c++) {
+                int offset = c * V2_CHUNK_SIZE;
+                int chunkLen = Math.min(V2_CHUNK_SIZE, size - offset);
+                setIntLE(chunkLen, header, 1);
+                md.update(header, 0, 5);
+                int start = basePos + offset;
+                ByteBuffer slice = section.duplicate();
+                slice.position(start).limit(start + chunkLen);
+                md.update(slice);
+                md.digest(out, 5 + (startChunkIndex + c) * digestSize, digestSize);
             }
         }
-        if (options.v4SigningEnabled) {
-            try (FileChannel ch = FileChannel.open(outputPath, StandardOpenOption.READ)) {
-                MappedByteBuffer fullMap = ch.map(FileChannel.MapMode.READ_ONLY, 0, ch.size());
-                signer.signV4(
-                        DataSources.asDataSource(fullMap), idsigPath(options).toFile(), false);
+    }
+
+    private static void hashPayloadChunks(
+            ByteBuffer payloadMap,
+            long payloadSize,
+            int payloadChunks,
+            AtomicInteger nextChunk,
+            List<ContentDigestAlgorithm> algos,
+            int[] digestSizes,
+            byte[][] chunkDigestsByAlgo,
+            byte[] payloadLeafHashes)
+            throws Exception {
+        ByteBuffer localPayload = payloadMap.duplicate();
+        int numAlgos = algos.size();
+        MessageDigest[] v2Mds = new MessageDigest[numAlgos];
+        for (int a = 0; a < numAlgos; a++) {
+            v2Mds[a] = MessageDigest.getInstance(jcaDigestAlgorithm(algos.get(a)));
+        }
+        MessageDigest v4Md =
+                payloadLeafHashes != null ? MessageDigest.getInstance("SHA-256") : null;
+        byte[] chunkHeader = new byte[5];
+        chunkHeader[0] = (byte) 0xa5;
+
+        int chunkIndex;
+        while ((chunkIndex = nextChunk.getAndIncrement()) < payloadChunks) {
+            long chunkOffset = (long) chunkIndex * V2_CHUNK_SIZE;
+            int chunkLen = (int) Math.min(V2_CHUNK_SIZE, payloadSize - chunkOffset);
+            setIntLE(chunkLen, chunkHeader, 1);
+            for (int a = 0; a < numAlgos; a++) {
+                v2Mds[a].update(chunkHeader, 0, 5);
+            }
+
+            int startPos = (int) chunkOffset;
+            if (v4Md != null) {
+                int fullPages = chunkLen / V4_PAGE_SIZE;
+                int basePageIdx = chunkIndex * (V2_CHUNK_SIZE / V4_PAGE_SIZE);
+                for (int p = 0; p < fullPages; p++) {
+                    int pageStart = startPos + p * V4_PAGE_SIZE;
+                    localPayload.limit(pageStart + V4_PAGE_SIZE).position(pageStart);
+                    for (int a = 0; a < numAlgos; a++) {
+                        v2Mds[a].update(localPayload);
+                        localPayload.position(pageStart);
+                    }
+                    v4Md.update(localPayload);
+                    v4Md.digest(
+                            payloadLeafHashes,
+                            (basePageIdx + p) * SHA256_DIGEST_SIZE,
+                            SHA256_DIGEST_SIZE);
+                }
+                int rem = chunkLen - fullPages * V4_PAGE_SIZE;
+                if (rem > 0) {
+                    int tailStart = startPos + fullPages * V4_PAGE_SIZE;
+                    localPayload.limit(tailStart + rem).position(tailStart);
+                    for (int a = 0; a < numAlgos; a++) {
+                        v2Mds[a].update(localPayload);
+                        localPayload.position(tailStart);
+                    }
+                }
+            } else {
+                localPayload.limit(startPos + chunkLen).position(startPos);
+                for (int a = 0; a < numAlgos; a++) {
+                    v2Mds[a].update(localPayload);
+                    localPayload.position(startPos);
+                }
+            }
+
+            for (int a = 0; a < numAlgos; a++) {
+                int digestSize = digestSizes[a];
+                v2Mds[a].digest(chunkDigestsByAlgo[a], 5 + chunkIndex * digestSize, digestSize);
+            }
+        }
+    }
+
+    private static int[] calculateVerityLevelOffsets(long dataSize) {
+        List<Long> levelSizes = new ArrayList<>();
+        while (true) {
+            long chunkCount = (dataSize + V4_PAGE_SIZE - 1) / V4_PAGE_SIZE;
+            long levelDataSize = chunkCount * SHA256_DIGEST_SIZE;
+            long size = V4_PAGE_SIZE * ((levelDataSize + V4_PAGE_SIZE - 1) / V4_PAGE_SIZE);
+            levelSizes.add(size);
+            if (levelDataSize <= V4_PAGE_SIZE) {
+                break;
+            }
+            dataSize = levelDataSize;
+        }
+        int numLevels = levelSizes.size();
+        int[] levelOffset = new int[numLevels + 1];
+        for (int i = 0; i < numLevels; i++) {
+            levelOffset[i + 1] =
+                    levelOffset[i] + Math.toIntExact(levelSizes.get(numLevels - i - 1));
+        }
+        return levelOffset;
+    }
+
+    /**
+     * Performs single-pass zero-copy v2/v3 + v4 signing directly over a read-only {@link
+     * MappedByteBuffer}.
+     *
+     * <p>Unlike {@code DefaultApkSignerEngine}, which reads the entire APK twice (once in {@code
+     * ChunkSupplier} for v2/v3 and once in {@code VerityTreeBuilder} for v4) and allocates {@code 2
+     * x APK_SIZE} of heap buffers via {@code DataSource.copyTo}, this hashes the 1 MiB v2/v3 chunks
+     * and 4 KiB v4 verity leaves of {@code payload} (99.95% of the APK) together in a single
+     * parallel pass over direct {@link MappedByteBuffer} slices while each 4 KiB page is hot in L1
+     * cache, then finishes the ~320 KiB tail once the v2/v3 APK Signing Block is generated.
+     */
+    @SuppressWarnings("unchecked")
+    private static void signV2AndV4SinglePass(
+            Path outputPath,
+            ZipInfo zipInfo,
+            FastSignerState signerState,
+            Options options,
+            ExecutorService pool)
+            throws Exception {
+        long payloadSize = zipInfo.payload.size();
+        long cdOffset = zipInfo.cd.first;
+        int cdSize = Math.toIntExact(zipInfo.cd.size());
+        int eocdSize = Math.toIntExact(zipInfo.eocd.size());
+        int payloadChunks = getChunkCount(payloadSize);
+        int cdChunks = getChunkCount(cdSize);
+        int eocdChunks = getChunkCount(eocdSize);
+        int totalChunks = payloadChunks + cdChunks + eocdChunks;
+        boolean v4Enabled = options.v4SigningEnabled;
+
+        List<ContentDigestAlgorithm> algos = signerState.contentDigestAlgorithms;
+        int numAlgos = algos.size();
+        byte[][] chunkDigestsByAlgo = new byte[numAlgos][];
+        int[] digestSizes = new int[numAlgos];
+        for (int a = 0; a < numAlgos; a++) {
+            int digestSize = digestSizeBytes(algos.get(a));
+            digestSizes[a] = digestSize;
+            byte[] buf = new byte[5 + totalChunks * digestSize];
+            buf[0] = 0x5a;
+            setIntLE(totalChunks, buf, 1);
+            chunkDigestsByAlgo[a] = buf;
+        }
+
+        int numFullPayloadPages = v4Enabled ? Math.toIntExact(payloadSize / V4_PAGE_SIZE) : 0;
+        byte[] payloadLeafHashes =
+                v4Enabled ? new byte[numFullPayloadPages * SHA256_DIGEST_SIZE] : null;
+
+        byte[] signingBlock;
+        byte[] tailBytes = new byte[cdSize + eocdSize];
+        int payloadRem = (int) (payloadSize % V4_PAGE_SIZE);
+        byte[] payloadTailBytes = v4Enabled ? new byte[payloadRem] : null;
+        Map<Integer, byte[]> apkDigestsForV4 = new HashMap<>();
+
+        try (FileChannel ch =
+                FileChannel.open(outputPath, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            MappedByteBuffer payloadMap =
+                    ch.map(FileChannel.MapMode.READ_ONLY, zipInfo.payload.first, payloadSize);
+
+            AtomicInteger nextChunk = new AtomicInteger(0);
+            int workerCount = Math.min(MAX_THREADS, Math.max(1, payloadChunks));
+            List<Future<?>> futures = new ArrayList<>(workerCount);
+            for (int w = 0; w < workerCount; w++) {
+                futures.add(
+                        pool.submit(
+                                () -> {
+                                    hashPayloadChunks(
+                                            payloadMap,
+                                            payloadSize,
+                                            payloadChunks,
+                                            nextChunk,
+                                            algos,
+                                            digestSizes,
+                                            chunkDigestsByAlgo,
+                                            payloadLeafHashes);
+                                    return null;
+                                }));
+            }
+
+            // Read Central Directory and EOCD while worker threads hash payload.
+            ByteBuffer tailBuf = ByteBuffer.wrap(tailBytes);
+            while (tailBuf.hasRemaining()) {
+                if (ch.read(tailBuf, cdOffset + tailBuf.position()) < 0) {
+                    throw new IOException("Unexpected EOF reading central directory");
+                }
+            }
+            if (payloadTailBytes != null && payloadRem > 0) {
+                ByteBuffer tailSlice = payloadMap.duplicate();
+                tailSlice.position(numFullPayloadPages * V4_PAGE_SIZE).limit((int) payloadSize);
+                tailSlice.get(payloadTailBytes);
+            }
+
+            ByteBuffer cdSlice = ByteBuffer.wrap(tailBytes, 0, cdSize);
+            ByteBuffer eocdSlice =
+                    ByteBuffer.wrap(tailBytes, cdSize, eocdSize)
+                            .slice()
+                            .order(ByteOrder.LITTLE_ENDIAN);
+            ZipUtils.setZipEocdCentralDirectoryOffset(eocdSlice, payloadSize);
+
+            hashSectionChunks(cdSlice, payloadChunks, algos, chunkDigestsByAlgo);
+            hashSectionChunks(eocdSlice, payloadChunks + cdChunks, algos, chunkDigestsByAlgo);
+
+            for (Future<?> future : futures) {
+                future.get();
+            }
+
+            Map<ContentDigestAlgorithm, byte[]> contentDigests =
+                    new EnumMap<>(ContentDigestAlgorithm.class);
+            for (int a = 0; a < numAlgos; a++) {
+                ContentDigestAlgorithm algo = algos.get(a);
+                MessageDigest md = MessageDigest.getInstance(jcaDigestAlgorithm(algo));
+                contentDigests.put(algo, md.digest(chunkDigestsByAlgo[a]));
+            }
+
+            List<Pair<byte[], Integer>> schemeBlocks = new ArrayList<>(2);
+            byte[] bestDigestForV4 =
+                    v4Enabled ? ApkSigningBlockUtils.pickBestDigestForV4(contentDigests) : null;
+            if (options.v2SigningEnabled) {
+                Pair<byte[], Integer> v2Block =
+                        (Pair<byte[], Integer>)
+                                GENERATE_V2_BLOCK_METHOD.invoke(
+                                        null,
+                                        List.of(signerState.v2Config),
+                                        contentDigests,
+                                        options.v3SigningEnabled,
+                                        /* additionalAttributes= */ null);
+                schemeBlocks.add(v2Block);
+                if (bestDigestForV4 != null) {
+                    apkDigestsForV4.put(
+                            ApkSigningBlockUtils.VERSION_APK_SIGNATURE_SCHEME_V2, bestDigestForV4);
+                }
+            }
+            if (options.v3SigningEnabled) {
+                V3SchemeSigner v3Signer =
+                        new V3SchemeSigner.Builder(
+                                        /* beforeCentralDir= */ null,
+                                        /* centralDir= */ null,
+                                        /* eocd= */ null,
+                                        List.of(signerState.v3Config))
+                                .setBlockId(V3SchemeSigner.APK_SIGNATURE_SCHEME_V3_BLOCK_ID)
+                                .build();
+                Pair<byte[], Integer> v3Block =
+                        (Pair<byte[], Integer>)
+                                GENERATE_V3_BLOCK_METHOD.invoke(v3Signer, contentDigests);
+                schemeBlocks.add(v3Block);
+                if (bestDigestForV4 != null) {
+                    apkDigestsForV4.put(
+                            ApkSigningBlockUtils.VERSION_APK_SIGNATURE_SCHEME_V3, bestDigestForV4);
+                }
+            }
+
+            signingBlock = ApkSigningBlockUtils.generateApkSigningBlock(schemeBlocks);
+            ZipUtils.setZipEocdCentralDirectoryOffset(eocdSlice, cdOffset + signingBlock.length);
+
+            ch.position(cdOffset);
+            ch.write(ByteBuffer.wrap(signingBlock));
+            ch.write(ByteBuffer.wrap(tailBytes));
+        }
+
+        if (v4Enabled) {
+            long totalApkSize = payloadSize + signingBlock.length + tailBytes.length;
+            int[] levelOffset = calculateVerityLevelOffsets(totalApkSize);
+            byte[] tree = new byte[levelOffset[levelOffset.length - 1]];
+            int leafLevelOffset = levelOffset[levelOffset.length - 2];
+            System.arraycopy(payloadLeafHashes, 0, tree, leafLevelOffset, payloadLeafHashes.length);
+
+            int remBytes = payloadRem + signingBlock.length + tailBytes.length;
+            int remPages = (remBytes + V4_PAGE_SIZE - 1) / V4_PAGE_SIZE;
+            byte[] remBuf = new byte[remPages * V4_PAGE_SIZE];
+            if (payloadRem > 0) {
+                System.arraycopy(payloadTailBytes, 0, remBuf, 0, payloadRem);
+            }
+            System.arraycopy(signingBlock, 0, remBuf, payloadRem, signingBlock.length);
+            System.arraycopy(
+                    tailBytes, 0, remBuf, payloadRem + signingBlock.length, tailBytes.length);
+
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            int dstPos = leafLevelOffset + payloadLeafHashes.length;
+            for (int p = 0; p < remPages; p++) {
+                md.update(remBuf, p * V4_PAGE_SIZE, V4_PAGE_SIZE);
+                md.digest(tree, dstPos, SHA256_DIGEST_SIZE);
+                dstPos += SHA256_DIGEST_SIZE;
+            }
+
+            for (int level = levelOffset.length - 3; level >= 0; level--) {
+                int srcStart = levelOffset[level + 1];
+                int srcEnd = levelOffset[level + 2];
+                int outPos = levelOffset[level];
+                for (int pos = srcStart; pos < srcEnd; pos += V4_PAGE_SIZE) {
+                    md.update(tree, pos, V4_PAGE_SIZE);
+                    md.digest(tree, outPos, SHA256_DIGEST_SIZE);
+                    outPos += SHA256_DIGEST_SIZE;
+                }
+            }
+
+            md.update(tree, 0, V4_PAGE_SIZE);
+            byte[] rootHash = md.digest();
+
+            V4Signature.HashingInfo hashingInfo =
+                    HASHING_INFO_CTOR.newInstance(
+                            V4Signature.HASHING_ALGORITHM_SHA256,
+                            V4Signature.LOG2_BLOCK_SIZE_4096_BYTES,
+                            /* salt= */ null,
+                            rootHash);
+            V4Signature signature =
+                    (V4Signature)
+                            GENERATE_V4_SIGNATURE_METHOD.invoke(
+                                    null,
+                                    signerState.v4Config,
+                                    hashingInfo,
+                                    apkDigestsForV4,
+                                    /* additionalData= */ null,
+                                    totalApkSize);
+
+            try (OutputStream out =
+                    new BufferedOutputStream(Files.newOutputStream(idsigPath(options)))) {
+                signature.writeTo(out);
+                byte[] treeLenBytes = new byte[4];
+                setIntLE(tree.length, treeLenBytes, 0);
+                out.write(treeLenBytes);
+                out.write(tree);
             }
         }
     }
@@ -590,10 +1051,13 @@ public final class ZipBuilder {
         try {
             // zipflinger opens existing files for in-place modification.
             deleteOutputs(options);
-            boolean fastSign = options.keystore != null && !options.v1SigningEnabled;
+            boolean fastSign =
+                    options.keystore != null
+                            && !options.v1SigningEnabled
+                            && (options.v2SigningEnabled || options.v3SigningEnabled);
             Deque<Future<?>> items = parseSpec(options.spec, pool);
-            Future<DefaultApkSignerEngine> signerFuture =
-                    fastSign ? pool.submit(() -> createSignerEngine(options, pool)) : null;
+            Future<FastSignerState> signerFuture =
+                    fastSign ? pool.submit(() -> createFastSignerState(options)) : null;
 
             if (fastSign) {
                 ZipArchive archive = new ZipArchive(options.output);
@@ -606,14 +1070,12 @@ public final class ZipBuilder {
                     deleteOutputs(options);
                     throw e;
                 }
-                DefaultApkSignerEngine signer = signerFuture.get();
+                FastSignerState signerState = signerFuture.get();
                 try {
-                    signV2AndV4(options.output, zipInfo, signer, options);
+                    signV2AndV4SinglePass(options.output, zipInfo, signerState, options, pool);
                 } catch (Exception e) {
                     deleteOutputs(options);
                     throw e;
-                } finally {
-                    signer.close();
                 }
             } else {
                 try (Archive archive =
