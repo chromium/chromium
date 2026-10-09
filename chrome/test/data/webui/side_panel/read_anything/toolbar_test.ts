@@ -413,9 +413,14 @@ suite('Toolbar', () => {
     });
 
     test('opens appearance submenu on click when flag enabled', async () => {
-      settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
       visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+      toolbar.remove();
+      await createToolbar();
+      settingsMenu = toolbar.$.settingsMenu;
+      getButton('more')!.click();
+      settingsMenu.$.lazyMenu.get();
       await microtasksFinished();
+
       const targetItem = getMenuItem(SettingsOption.APPEARANCE);
       assertTrue(!!targetItem);
       targetItem.click();

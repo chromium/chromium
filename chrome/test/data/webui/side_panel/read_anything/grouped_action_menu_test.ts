@@ -10,14 +10,10 @@ import type {GroupedActionMenuElement} from 'chrome-untrusted://read-anything-si
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertTestSettingsAreNotDefaultSettings, getItemsInMenu, setupTestEnvironment} from './common.js';
+import {getItemsInMenu, setupTestEnvironment} from './common.js';
 
 suite('GroupedActionMenuElement', () => {
   let menu: GroupedActionMenuElement;
-
-  suiteSetup(() => {
-    assertTestSettingsAreNotDefaultSettings();
-  });
 
   setup(() => {
     setupTestEnvironment();

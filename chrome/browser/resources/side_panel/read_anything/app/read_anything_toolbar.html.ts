@@ -90,7 +90,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         iron-icon="cr:close" @click="${this.onCloseClick_}">
     </cr-icon-button>
   ` : ''}
-  <settings-menu id="settingsMenu" .settingsPrefs="${this.settingsPrefs}"
+  <settings-menu id="settingsMenu" .linksEnabled="${this.linksEnabled}"
+      .imagesEnabled="${this.imagesEnabled}"
       .isImmersiveMode="${this.isImmersiveMode}"
       .isReadAnythingPinned="${this.isReadAnythingPinned}"
       .isSpeechActive="${this.isSpeechActive}"
@@ -126,8 +127,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </font-menu>
   <line-focus-menu id="lineFocusMenu" class="settings-submenu"
-      .nonModal="${true}" .settingsPrefs="${this.settingsPrefs}"
-      .lineFocusStyle="${this.lineFocusStyle}"
+      .nonModal="${true}" .lineFocusStyle="${this.lineFocusStyle}"
       .lineFocusEnabled="${this.lineFocusEnabled}"
       .lineFocusMovement="${this.lineFocusMovement}"
       @close-all-menus="${this.onCloseAllMenus_}">
@@ -154,7 +154,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </text-menu>
   <media-menu id="mediaMenu" class="settings-submenu" non-modal
-      .settingsPrefs="${this.settingsPrefs}"
+      .linksEnabled="${this.linksEnabled}"
+      .imagesEnabled="${this.imagesEnabled}"
       .isSpeechActive="${this.isSpeechActive}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </media-menu>

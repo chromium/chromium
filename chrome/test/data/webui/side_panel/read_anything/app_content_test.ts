@@ -311,7 +311,8 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.linksEnabled = true;
+      // The toggle flips the pref, so start disabled.
+      visualBrowserProxy.linksEnabled = false;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
 
@@ -326,7 +327,7 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = true;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
 
@@ -352,7 +353,8 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.imagesEnabled = true;
+      // The toggle flips the pref, so start disabled.
+      visualBrowserProxy.imagesEnabled = false;
       const expectedHtmlWithImage = '<div><canvas alt="' + altText +
           '" class="downloaded-image"></canvas>' + textNodeContent + '</div>';
       emitEvent(app, ToolbarEvent.IMAGES);
@@ -369,7 +371,7 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = true;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
 
@@ -402,7 +404,7 @@ suite('AppContent', () => {
           assertTrue(app.$.containerParent.hidden);
           assertStringContains(emptyState.imagePath, 'empty_state.svg');
 
-          visualBrowserProxy.imagesEnabled = true;
+          // Each toggle flips the pref: off -> on.
           emitEvent(app, ToolbarEvent.IMAGES);
           await new Promise(resolve => requestAnimationFrame(resolve));
           await microtasksFinished();
@@ -411,7 +413,7 @@ suite('AppContent', () => {
           assertFalse(app.$.containerParent.hidden);
           assertEquals(captionText, app.$.container.textContent);
 
-          visualBrowserProxy.imagesEnabled = false;
+          // on -> off.
           emitEvent(app, ToolbarEvent.IMAGES);
           await microtasksFinished();
 
@@ -440,7 +442,7 @@ suite('AppContent', () => {
           assertTrue(app.$.containerParent.hidden);
           assertStringContains(emptyState.imagePath, 'empty_state.svg');
 
-          visualBrowserProxy.imagesEnabled = true;
+          // Each toggle flips the pref: off -> on.
           emitEvent(app, ToolbarEvent.IMAGES);
           await new Promise(resolve => requestAnimationFrame(resolve));
           await microtasksFinished();
@@ -449,7 +451,7 @@ suite('AppContent', () => {
           assertFalse(app.$.containerParent.hidden);
           assertEquals(captionText, app.$.container.textContent);
 
-          visualBrowserProxy.imagesEnabled = false;
+          // on -> off.
           emitEvent(app, ToolbarEvent.IMAGES);
           await microtasksFinished();
 

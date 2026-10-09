@@ -23,8 +23,8 @@ import type {ContentListener, ContentState} from '../content/content_controller.
 import {LineFocusController} from '../content/line_focus_controller.js';
 import type {LineFocusListener} from '../content/line_focus_controller.js';
 import {NodeStore} from '../content/node_store.js';
-import {DEFAULT_SETTINGS, LineFocusType} from '../content/read_anything_types.js';
-import type {LineFocusMovement, LineFocusStyle, SettingsPrefs} from '../content/read_anything_types.js';
+import {LineFocusType} from '../content/read_anything_types.js';
+import type {LineFocusMovement, LineFocusStyle} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import {RATE_OPTIONS} from '../menus/rate_menu.js';
 import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
@@ -91,7 +91,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       font_: {type: String},
       speechRate_: {type: Number},
       highlightGranularity_: {type: Number},
-      settingsPrefs_: {type: Object},
+      linksEnabled_: {type: Boolean},
+      imagesEnabled_: {type: Boolean},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
       previewVoicePlaying_: {type: Object},
@@ -171,7 +172,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   // layout. Tracked so rapid consecutive calls to updateContent can cancel
   // pending frames to avoid desynchronizing text node mapping with the AXTree.
   private renderedTextBlocksAnimationFrameHandle_: number|null = null;
-  protected accessor settingsPrefs_: SettingsPrefs = DEFAULT_SETTINGS;
 
   // Current user settings, mirrored from the browser proxies by
   // syncSettings_() and passed down to the toolbar.
@@ -181,6 +181,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor font_: string = '';
   protected accessor speechRate_: number = 1;
   protected accessor highlightGranularity_: number = 0;
+  protected accessor linksEnabled_: boolean = false;
+  protected accessor imagesEnabled_: boolean = false;
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
@@ -241,10 +243,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.nodeStore_.clear();
     this.showLoading();
 
-    this.settingsPrefs_ = {
-      linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
-      imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
-    };
     this.syncSettings_();
 
     this.visualBrowserProxy_.sendPinStateRequest();
@@ -423,10 +421,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onLinksToggle_() {
-    this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
-      linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
-    };
+    this.visualBrowserProxy_.onLinksEnabledToggled();
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
+    this.syncSettings_();
     this.updateLinks_();
   }
 
@@ -435,10 +433,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onImagesToggle_() {
-    this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
-      imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
-    };
+    this.visualBrowserProxy_.onImagesEnabledToggled();
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
+    this.syncSettings_();
     // Toggling the images toggle may mean that reading mode is going from
     // no content to content or from content to no content (e.g. on pages
     // with no text outside of image captions), so recompute if there's
@@ -712,6 +710,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.speechRate_ = getCurrentSpeechRate();
     this.highlightGranularity_ =
         this.audioBrowserProxy_.getHighlightGranularity();
+    this.linksEnabled_ = this.visualBrowserProxy_.isLinksEnabled();
+    this.imagesEnabled_ = this.visualBrowserProxy_.isImagesEnabled();
   }
 
   protected onSpeechRateChange_(event: CustomEvent<{data: number}>) {
@@ -726,10 +726,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   private restoreSettingsFromPrefs_() {
-    this.settingsPrefs_ = {
-      linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
-      imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
-    };
     this.syncSettings_();
     this.styleUpdater_.setAllTextStyles();
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {

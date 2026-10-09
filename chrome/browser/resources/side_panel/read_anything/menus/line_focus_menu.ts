@@ -12,8 +12,8 @@ import {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
@@ -44,7 +44,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
       lineFocusStyle: {type: Object},
       lineFocusEnabled: {type: Boolean},
@@ -53,7 +52,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
   accessor lineFocusStyle: LineFocusStyle|null = null;
   accessor lineFocusEnabled: boolean = false;

@@ -19,11 +19,10 @@ import {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import type {SettingsPrefs} from '../content/read_anything_types.js';
-import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
+import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 import {isActivationKey, isBackwardArrow, isForwardArrow, isVerticalArrow} from '../shared/keyboard_util.js';
-import {ReadAnythingSettingsAction, ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingSettingsAction} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {LINE_FOCUS_FEATURE_NAME} from './line_focus_menu.js';
@@ -202,7 +201,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       isReadAnythingPinned: {type: Boolean},
       isSpeechActive: {type: Boolean},
       showLineFocusNewBadge: {type: Boolean},
-      settingsPrefs: {type: Object},
+      linksEnabled: {type: Boolean},
+      imagesEnabled: {type: Boolean},
       currentOpenId_: {
         state: true,
         type: String,
@@ -215,7 +215,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor isReadAnythingPinned: boolean = false;
   accessor isSpeechActive: boolean = false;
   accessor showLineFocusNewBadge: boolean = false;
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor linksEnabled: boolean = false;
+  accessor imagesEnabled: boolean = false;
 
   protected accessor options_: SettingsItem[] = [];
   protected accessor currentOpenId_: string|null = null;
@@ -251,7 +252,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('settingsPrefs') ||
+    if (changedProperties.has('linksEnabled') ||
+        changedProperties.has('imagesEnabled') ||
         changedProperties.has('isImmersiveMode') ||
         changedProperties.has('isReadAnythingPinned') ||
         changedProperties.has('isSpeechActive') ||
@@ -344,13 +346,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       }
 
       if (id === SettingsOption.IMAGES) {
-        checked = this.visualBrowserProxy_.isImagesEnabled();
+        checked = this.imagesEnabled;
         disabled = this.isSpeechActive;
         ariaLabel = this.getImageItemLabels();
       }
 
       if (id === SettingsOption.LINKS) {
-        checked = this.visualBrowserProxy_.isLinksEnabled();
+        checked = this.linksEnabled;
         ariaLabel = this.getLinkItemLabels();
         // Since links are disabled when read aloud is playing, the links
         // toggle should also be disabled.
@@ -395,7 +397,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private getLinkItemLabels() {
-    if (this.visualBrowserProxy_.isLinksEnabled()) {
+    if (this.linksEnabled) {
       return loadTimeData.getString('disableLinksLabel');
     }
 
@@ -403,7 +405,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private getImageItemLabels() {
-    if (this.visualBrowserProxy_.isImagesEnabled()) {
+    if (this.imagesEnabled) {
       return loadTimeData.getString('disableImagesLabel');
     }
 
@@ -472,25 +474,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     if (item.id === SettingsOption.LINKS) {
-      this.logger_.logTextSettingsChange(
-          ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
-      this.visualBrowserProxy_.onLinksEnabledToggled();
       this.fire(ToolbarEvent.LINKS);
-      item.ariaLabel = this.getLinkItemLabels();
-      item.checked = this.visualBrowserProxy_.isLinksEnabled();
     } else if (item.id === SettingsOption.IMAGES) {
-      this.logger_.logTextSettingsChange(
-          ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
-      this.visualBrowserProxy_.onImagesEnabledToggled();
       this.fire(ToolbarEvent.IMAGES);
-      item.ariaLabel = this.getImageItemLabels();
-      item.checked = this.visualBrowserProxy_.isImagesEnabled();
     } else if (item.id === SettingsOption.PINNED_TO_TOOLBAR) {
       this.visualBrowserProxy_.togglePinState();
       this.visualBrowserProxy_.sendPinStateRequest();
     }
-
-    this.requestUpdate();
   }
 
   protected onPointerenter_(e: PointerEvent) {

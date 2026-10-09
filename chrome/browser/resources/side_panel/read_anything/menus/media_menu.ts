@@ -16,13 +16,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
-import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getCss} from './action_menu.css.js';
 import {getHtml} from './media_menu.html.js';
@@ -54,26 +50,25 @@ export class MediaMenuElement extends MediaMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      linksEnabled: {type: Boolean},
+      imagesEnabled: {type: Boolean},
       nonModal: {type: Boolean},
       isSpeechActive: {type: Boolean},
       options_: {type: Array},
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor linksEnabled: boolean = false;
+  accessor imagesEnabled: boolean = false;
   accessor nonModal: boolean = false;
   accessor isSpeechActive: boolean = false;
   protected accessor options_: SettingsItem[] = [];
 
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
-  private visualBrowserProxy_: VisualBrowserProxy =
-      VisualBrowserProxyImpl.getInstance();
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('settingsPrefs') ||
+    if (changedProperties.has('linksEnabled') ||
+        changedProperties.has('imagesEnabled') ||
         changedProperties.has('isSpeechActive')) {
       this.initializeMenuOptions_();
     }
@@ -88,7 +83,7 @@ export class MediaMenuElement extends MediaMenuElementBase implements
             'read-anything:links-enabled-old',
         title: loadTimeData.getString('linksLabel'),
         itemType: SettingsItemType.TOGGLE,
-        checked: this.settingsPrefs.linksEnabled,
+        checked: this.linksEnabled,
         disabled: this.isSpeechActive,
         ariaLabel: this.getLinkItemLabels_(),
       },
@@ -99,7 +94,7 @@ export class MediaMenuElement extends MediaMenuElementBase implements
             'read-anything:images-enabled-old',
         title: loadTimeData.getString('imagesLabel'),
         itemType: SettingsItemType.TOGGLE,
-        checked: this.settingsPrefs.imagesEnabled,
+        checked: this.imagesEnabled,
         disabled: this.isSpeechActive,
         ariaLabel: this.getImageItemLabels_(),
       },
@@ -117,17 +112,13 @@ export class MediaMenuElement extends MediaMenuElementBase implements
   }
 
   protected getImageItemLabels_(): string {
-    if (this.visualBrowserProxy_.isImagesEnabled()) {
-      return loadTimeData.getString('disableImagesLabel');
-    }
-    return loadTimeData.getString('enableImagesLabel');
+    return loadTimeData.getString(
+        this.imagesEnabled ? 'disableImagesLabel' : 'enableImagesLabel');
   }
 
   protected getLinkItemLabels_(): string {
-    if (this.visualBrowserProxy_.isLinksEnabled()) {
-      return loadTimeData.getString('disableLinksLabel');
-    }
-    return loadTimeData.getString('enableLinksLabel');
+    return loadTimeData.getString(
+        this.linksEnabled ? 'disableLinksLabel' : 'enableLinksLabel');
   }
 
   protected onToggleItemClick_(e: Event) {
@@ -143,22 +134,10 @@ export class MediaMenuElement extends MediaMenuElementBase implements
     }
 
     if (item.id === SettingsOption.LINKS) {
-      this.logger_.logTextSettingsChange(
-          ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
-      this.visualBrowserProxy_.onLinksEnabledToggled();
       this.fire(ToolbarEvent.LINKS);
-      item.ariaLabel = this.getLinkItemLabels_();
-      item.checked = this.visualBrowserProxy_.isLinksEnabled();
     } else if (item.id === SettingsOption.IMAGES) {
-      this.logger_.logTextSettingsChange(
-          ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
-      this.visualBrowserProxy_.onImagesEnabledToggled();
       this.fire(ToolbarEvent.IMAGES);
-      item.ariaLabel = this.getImageItemLabels_();
-      item.checked = this.visualBrowserProxy_.isImagesEnabled();
     }
-
-    this.requestUpdate();
   }
 }
 

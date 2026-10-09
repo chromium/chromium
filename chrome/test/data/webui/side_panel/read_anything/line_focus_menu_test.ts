@@ -11,17 +11,13 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-un
 import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/test_user_education_mixed_trust_handler.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('LineFocusMenuElement', () => {
   let lineFocusMenu: LineFocusMenuElement;
   let metrics: TestMetricsBrowserProxy;
   let userEducationHandler: TestUserEducationMixedTrustHandler;
-
-  suiteSetup(() => {
-    assertTestSettingsAreNotDefaultSettings();
-  });
 
   setup(() => {
     const result = setupTestEnvironment();

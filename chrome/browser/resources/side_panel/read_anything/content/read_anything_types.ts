@@ -193,17 +193,6 @@ export enum SettingsOption {
   VOICE_SELECTION = 'voice-selection',
 }
 
-// The user settings stored in preferences and restored on re-opening Reading
-// mode. Used to set the initial values for the toolbar buttons and menus.
-export interface SettingsPrefs {
-  linksEnabled: boolean;
-  imagesEnabled: boolean;
-}
-export const DEFAULT_SETTINGS: SettingsPrefs = {
-  linksEnabled: false,
-  imagesEnabled: false,
-};
-
 export interface ShowAtConfigPrefs {
   anchorAlignmentX?: AnchorAlignment;
   anchorAlignmentY?: AnchorAlignment;

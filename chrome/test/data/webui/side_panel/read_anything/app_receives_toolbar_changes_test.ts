@@ -759,6 +759,8 @@ suite('AppReceivesToolbarChanges', () => {
     visualBrowserProxy.lineSpacing = 2;
     visualBrowserProxy.fontName = 'Serif';
     visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
+    visualBrowserProxy.linksEnabled = false;
+    visualBrowserProxy.imagesEnabled = false;
     audioBrowserProxy.speechRate = 1.5;
     audioBrowserProxy.highlightGranularity = audioBrowserProxy.wordHighlighting;
 
@@ -770,6 +772,8 @@ suite('AppReceivesToolbarChanges', () => {
     assertEquals(2, toolbar.lineSpacing);
     assertEquals('Serif', toolbar.font);
     assertEquals(visualBrowserProxy.darkTheme, toolbar.theme);
+    assertFalse(toolbar.linksEnabled);
+    assertFalse(toolbar.imagesEnabled);
     assertEquals(1.5, toolbar.speechRate);
     assertEquals(
         audioBrowserProxy.wordHighlighting, toolbar.highlightGranularity);
@@ -795,7 +799,8 @@ suite('AppReceivesToolbarChanges', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.linksEnabled = true;
+      // The toggle flips the pref, so start disabled.
+      visualBrowserProxy.linksEnabled = false;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
 
@@ -810,7 +815,7 @@ suite('AppReceivesToolbarChanges', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = true;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
 
@@ -818,16 +823,19 @@ suite('AppReceivesToolbarChanges', () => {
           expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
     });
 
-    test('updates toolbar settingsPrefs', async () => {
-      visualBrowserProxy.linksEnabled = false;
-      emitEvent(app, ToolbarEvent.LINKS);
-      await microtasksFinished();
-      assertFalse(app.$.toolbar.settingsPrefs.linksEnabled);
-
+    test('toggles pref, logs, and updates toolbar', async () => {
       visualBrowserProxy.linksEnabled = true;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
-      assertTrue(app.$.toolbar.settingsPrefs.linksEnabled);
+      assertEquals(1, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
+      assertEquals(
+          ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
+          await metrics.whenCalled('recordTextSettingsChange'));
+      assertFalse(app.$.toolbar.linksEnabled);
+
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.linksEnabled);
     });
   });
 
@@ -848,7 +856,8 @@ suite('AppReceivesToolbarChanges', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.imagesEnabled = true;
+      // The toggle flips the pref, so start disabled.
+      visualBrowserProxy.imagesEnabled = false;
       const expectedHtmlWithImage = '<div><canvas alt="' + altText +
           '" class="downloaded-image"></canvas>' + textNodeContent + '</div>';
       emitEvent(app, ToolbarEvent.IMAGES);
@@ -865,23 +874,27 @@ suite('AppReceivesToolbarChanges', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      visualBrowserProxy.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = true;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
 
       assertEquals(expectedHtml, app.$.container.innerHTML);
     });
 
-    test('updates toolbar settingsPrefs', async () => {
-      visualBrowserProxy.imagesEnabled = false;
-      emitEvent(app, ToolbarEvent.IMAGES);
-      await microtasksFinished();
-      assertFalse(app.$.toolbar.settingsPrefs.imagesEnabled);
-
+    test('toggles pref, logs, and updates toolbar', async () => {
       visualBrowserProxy.imagesEnabled = true;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
-      assertTrue(app.$.toolbar.settingsPrefs.imagesEnabled);
+      assertEquals(
+          1, visualBrowserProxy.getCallCount('onImagesEnabledToggled'));
+      assertEquals(
+          ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE,
+          await metrics.whenCalled('recordTextSettingsChange'));
+      assertFalse(app.$.toolbar.imagesEnabled);
+
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.imagesEnabled);
     });
   });
 

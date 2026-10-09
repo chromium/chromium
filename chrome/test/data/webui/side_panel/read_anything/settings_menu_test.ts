@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {KEYBOARD_NAV_CLASS, LINE_FOCUS_FEATURE_NAME, MENU_SHOW_DELAY_MS, ReadAnythingSettingsChange, SUBMENU_SHOW_DELAY_MS, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {KEYBOARD_NAV_CLASS, LINE_FOCUS_FEATURE_NAME, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
@@ -15,12 +15,10 @@ import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/
 import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment} from './common.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
-  let metrics: TestMetricsBrowserProxy;
   let userEducationHandler: TestUserEducationMixedTrustHandler;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
@@ -31,13 +29,9 @@ suite('SettingsMenuElement', () => {
     return menuItems.find(item => item.id === SettingsOption.LINKS) || null;
   }
 
-  setup(async () => {
-    const result = setupTestEnvironment({lineFocusEnabled: true});
-    visualBrowserProxy = result.visualBrowserProxy;
-    metrics = result.metrics;
-    userEducationHandler = new TestUserEducationMixedTrustHandler();
-    userEducationProxyFactory.setInstance({handler: userEducationHandler});
-
+  // Feature flags are read when the menu is built, so tests that flip a flag
+  // need a fresh menu.
+  async function createSettingsMenu() {
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.id = 'settingsMenu';
     document.body.appendChild(settingsMenu);
@@ -48,6 +42,14 @@ suite('SettingsMenuElement', () => {
 
     settingsMenu.$.lazyMenu.get();
     await microtasksFinished();
+  }
+
+  setup(async () => {
+    const result = setupTestEnvironment({lineFocusEnabled: true});
+    visualBrowserProxy = result.visualBrowserProxy;
+    userEducationHandler = new TestUserEducationMixedTrustHandler();
+    userEducationProxyFactory.setInstance({handler: userEducationHandler});
+    await createSettingsMenu();
   });
 
   teardown(() => {
@@ -146,11 +148,6 @@ suite('SettingsMenuElement', () => {
     const whenFired = eventToPromise(ToolbarEvent.LINKS, settingsMenu);
     targetItem.click();
     await whenFired;
-    assertEquals(1, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
-    assertEquals(
-        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
-        await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(1, metrics.getCallCount('recordTextSettingsChange'));
   });
 
   test('images event is fired when images item is clicked', async () => {
@@ -164,11 +161,6 @@ suite('SettingsMenuElement', () => {
     const whenFired = eventToPromise(ToolbarEvent.IMAGES, settingsMenu);
     targetItem.click();
     await whenFired;
-    assertEquals(1, visualBrowserProxy.getCallCount('onImagesEnabledToggled'));
-    assertEquals(
-        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE,
-        await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(1, metrics.getCallCount('recordTextSettingsChange'));
   });
 
   test('images toggle is disabled when speech is active', async () => {
@@ -187,8 +179,10 @@ suite('SettingsMenuElement', () => {
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
 
+    let fired = false;
+    settingsMenu.addEventListener(ToolbarEvent.IMAGES, () => fired = true);
     targetItem.click();
-    assertEquals(0, visualBrowserProxy.getCallCount('onImagesEnabledToggled'));
+    assertFalse(fired);
   });
 
   test('links toggle is disabled when speech is active', async () => {
@@ -206,8 +200,10 @@ suite('SettingsMenuElement', () => {
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
 
+    let fired = false;
+    settingsMenu.addEventListener(ToolbarEvent.LINKS, () => fired = true);
     targetItem.click();
-    assertEquals(0, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
+    assertFalse(fired);
   });
 
   test('moving the mouse removes keyboard-nav class', () => {
@@ -365,10 +361,7 @@ suite('SettingsMenuElement', () => {
     assertFalse(event.defaultPrevented, 'Should not have canceled the event');
   });
 
-  test('links toggle has separator when visible', async () => {
-    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-    await microtasksFinished();
-
+  test('links toggle has separator when visible', () => {
     const linksToggle = queryLinksToggle();
     assertTrue(!!linksToggle);
     const previous = linksToggle.previousElementSibling;
@@ -431,7 +424,6 @@ suite('SettingsMenuElement', () => {
 
   test('only first toggle has separator', async () => {
     settingsMenu.isImmersiveMode = true;
-    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
     await microtasksFinished();
 
     const linksToggle = queryLinksToggle();
@@ -463,10 +455,10 @@ suite('SettingsMenuElement', () => {
   test(
       'improved ui menu requires isReadAnythingImprovedUiEnabled', async () => {
         visualBrowserProxy.readAnythingImprovedUiEnabled = true;
-        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-        await microtasksFinished();
+        settingsMenu.remove();
+        await createSettingsMenu();
 
-        const actionMenu = settingsMenu.$.lazyMenu.get();
+        let actionMenu = settingsMenu.$.lazyMenu.get();
         let menuItems = Array.from(
             actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
 
@@ -475,9 +467,10 @@ suite('SettingsMenuElement', () => {
         assertTrue(!menuItems.find(item => item.id === SettingsOption.COLOR));
 
         visualBrowserProxy.readAnythingImprovedUiEnabled = false;
-        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-        await microtasksFinished();
+        settingsMenu.remove();
+        await createSettingsMenu();
 
+        actionMenu = settingsMenu.$.lazyMenu.get();
         menuItems = Array.from(
             actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
         assertTrue(
@@ -487,10 +480,10 @@ suite('SettingsMenuElement', () => {
 
   test('LINE_FOCUS uses tools label and icon with improved ui', async () => {
     visualBrowserProxy.readAnythingImprovedUiEnabled = true;
-    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-    await microtasksFinished();
+    settingsMenu.remove();
+    await createSettingsMenu();
 
-    const actionMenu = settingsMenu.$.lazyMenu.get();
+    let actionMenu = settingsMenu.$.lazyMenu.get();
     let menuItems = Array.from(
         actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
     let lineFocusItem =
@@ -507,9 +500,10 @@ suite('SettingsMenuElement', () => {
         title.textContent.trim(), loadTimeData.getString('toolsLabel'));
 
     visualBrowserProxy.readAnythingImprovedUiEnabled = false;
-    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-    await microtasksFinished();
+    settingsMenu.remove();
+    await createSettingsMenu();
 
+    actionMenu = settingsMenu.$.lazyMenu.get();
     menuItems = Array.from(
         actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
     lineFocusItem =
@@ -531,8 +525,8 @@ suite('SettingsMenuElement', () => {
 
   test('translate action fires event when clicked', async () => {
     visualBrowserProxy.translateEntryPointEnabled = true;
-    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-    await microtasksFinished();
+    settingsMenu.remove();
+    await createSettingsMenu();
 
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =
@@ -550,8 +544,8 @@ suite('SettingsMenuElement', () => {
 
   test('clicking translate closes open submenu', async () => {
     visualBrowserProxy.translateEntryPointEnabled = true;
-    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-    await microtasksFinished();
+    settingsMenu.remove();
+    await createSettingsMenu();
 
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =

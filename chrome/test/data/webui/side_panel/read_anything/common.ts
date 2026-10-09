@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import type {AppElement, SettingsPrefs} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, DEFAULT_SETTINGS, LineFocusController, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, ReadAloudNodeStore, ReadAnythingLogger, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, TextSegmenter, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, VoiceNotificationManager, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, LineFocusController, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, ReadAloudNodeStore, ReadAnythingLogger, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, TextSegmenter, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, VoiceNotificationManager, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertNotDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -148,11 +148,6 @@ export async function setupAppTestEnvironment(flags?: AppTestFlags):
   };
 }
 
-export const TEST_RANDOM_VALUE_SETTINGS: SettingsPrefs = {
-  linksEnabled: true,
-  imagesEnabled: false,
-};
-
 export async function createApp(): Promise<AppElement> {
   const app = document.createElement('read-anything-app');
   document.body.appendChild(app);
@@ -281,10 +276,6 @@ export function setContent(
     model.setCurrentTextContent(text);
   }
   return node;
-}
-
-export function assertTestSettingsAreNotDefaultSettings() {
-  assertNotDeepEquals(DEFAULT_SETTINGS, TEST_RANDOM_VALUE_SETTINGS);
 }
 
 export function setWindowSize(height: number, width: number) {

@@ -9,14 +9,10 @@ import type {SimpleActionMenuElement} from 'chrome-untrusted://read-anything-sid
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertTestSettingsAreNotDefaultSettings, getItemsInMenu, setupTestEnvironment} from './common.js';
+import {getItemsInMenu, setupTestEnvironment} from './common.js';
 
 suite('SimpleActionMenuElement', () => {
   let menu: SimpleActionMenuElement;
-
-  suiteSetup(() => {
-    assertTestSettingsAreNotDefaultSettings();
-  });
 
   setup(() => {
     setupTestEnvironment();
