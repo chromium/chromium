@@ -35,6 +35,7 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_renderer.h"
 #include "media/base/audio_renderer_sink.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decryptor.h"
 #include "media/base/media_log.h"
 #include "media/base/time_source.h"
@@ -252,8 +253,8 @@ class MEDIA_EXPORT AudioRendererImpl
   // Updates |buffering_state_| and fires |buffering_state_cb_|.
   void SetBufferingState_Locked(BufferingState buffering_state);
 
-  // Configure's the channel mask for |algorithm_|. Must be called if the layout
-  // changes. Expect the layout in |last_decoded_channel_layout_|.
+  // Configure's the channel mask for `algorithm_`. Must be called if the layout
+  // changes. Expect the layout in `last_decoded_channel_layout_config_`.
   void ConfigureChannelMask();
 
   void EnableSpeechRecognition();
@@ -327,16 +328,13 @@ class MEDIA_EXPORT AudioRendererImpl
   // sample rate changes due to implicit AAC configuration change.
   int last_decoded_sample_rate_;
 
-  // Similar to |last_decoded_sample_rate_|, used to configure the channel mask
-  // given to the |algorithm_| for efficient playback rate changes.
-  ChannelLayout last_decoded_channel_layout_;
+  // Channel layout and count of the last decoded audio buffer. Used to detect
+  // layout changes and to configure the channel mask given to `algorithm_` for
+  // efficient playback rate changes.
+  ChannelLayoutConfig last_decoded_channel_layout_config_;
 
   // Whether the stream is possibly encrypted.
   bool is_encrypted_;
-
-  // Similar to |last_decoded_channel_layout_|, used to configure the channel
-  // mask given to the |algorithm_| for efficient playback rate changes.
-  int last_decoded_channels_;
 
   // Cached volume provided by SetVolume().
   float volume_;
