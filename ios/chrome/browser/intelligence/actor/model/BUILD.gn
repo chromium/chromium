@@ -111,6 +111,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/test:test_support",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/tools/model:navigate_tool",

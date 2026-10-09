@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
@@ -134,42 +135,6 @@
 
 @end
 
-@interface ActorTaskFakeInterventionDelegate
-    : NSObject <ActorTaskInterventionDelegate>
-
-@property(nonatomic, assign) BOOL requestConfirmationCalled;
-@property(nonatomic, assign) BOOL respondsSynchronously;
-@property(nonatomic, copy) NSString* confirmationTitle;
-@property(nonatomic, copy) NSString* confirmationSubtitle;
-@property(nonatomic, copy) NSString* confirmationButtonText;
-@property(nonatomic, copy) void (^confirmationCompletionHandler)(void);
-// Run right after a synchronous completion, while the delegate call is still
-// on the stack.
-@property(nonatomic, copy) void (^afterSynchronousCompletion)(void);
-
-@end
-
-@implementation ActorTaskFakeInterventionDelegate
-
-- (void)actorTask:(actor::ActorTaskId)taskID
-    requestUserInterventionWithTitle:(NSString*)title
-                            subtitle:(NSString*)subtitle
-                          buttonText:(NSString*)buttonText
-                   completionHandler:(void (^)(void))completionHandler {
-  _requestConfirmationCalled = YES;
-  _confirmationTitle = [title copy];
-  _confirmationSubtitle = [subtitle copy];
-  _confirmationButtonText = [buttonText copy];
-  _confirmationCompletionHandler = [completionHandler copy];
-  if (_respondsSynchronously && completionHandler) {
-    completionHandler();
-    if (_afterSynchronousCompletion) {
-      _afterSynchronousCompletion();
-    }
-  }
-}
-
-@end
 
 @interface BarebonesActorTaskUpdatesObserver
     : NSObject <ActorTaskUpdatesObserver>
@@ -1516,8 +1481,8 @@ TEST_F(ActorTaskBackgroundingTest, HeartbeatPersistsDuringWaitingOnUser) {
   task_->Act({}, "Act", base::DoNothing());
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   // Interrupt the task to wait on user input.
@@ -1761,8 +1726,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromActing) {
   EXPECT_EQ(helper->GetControlState(),
             actor::ActorControlState::kActorControlled);
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
@@ -1785,8 +1750,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromActing) {
 TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromReflecting) {
   SetTaskState(ActorTaskState::kReflecting);
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
@@ -1802,8 +1767,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromReflecting) {
 
 // Test that interrupting a task in non-executing states is ignored.
 TEST_F(ActorTaskTest, InterruptIgnoredWhenNotExecuting) {
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kPausedByUser);
@@ -1828,18 +1793,18 @@ TEST_F(ActorTaskTest, ResolveConfirmationResumesToReflecting) {
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kActing);
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Please confirm");
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return delegate.confirmationCompletionHandler != nil; }));
+      [&]() { return delegate.hasPendingUserIntervention; }));
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
 
-  delegate.confirmationCompletionHandler();
+  [delegate runUserInterventionCompletion];
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_FALSE(observer.didResolveConfirmationCalled);
   ASSERT_TRUE(base::test::RunUntil(
@@ -1853,22 +1818,22 @@ TEST_F(ActorTaskTest, ResolveConfirmationResumesToReflecting) {
 // Test that stopping an interrupted task transitions it to kCancelled and
 // subsequent completion block invocations are safely ignored.
 TEST_F(ActorTaskTest, StopWhileInterruptedIgnoresSubsequentCompletion) {
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kActing);
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Please confirm");
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return delegate.confirmationCompletionHandler != nil; }));
+      [&]() { return delegate.hasPendingUserIntervention; }));
   EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
 
   task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
   EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
 
   // Invoke completion block after task was stopped.
-  delegate.confirmationCompletionHandler();
+  [delegate runUserInterventionCompletion];
   FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
@@ -1877,8 +1842,8 @@ TEST_F(ActorTaskTest, StopWhileInterruptedIgnoresSubsequentCompletion) {
 // Test that the intervention delegate is not called if the task is stopped
 // before the posted confirmation request is delivered.
 TEST_F(ActorTaskTest, StopBeforeConfirmationShownSkipsDelegate) {
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kActing);
@@ -1894,8 +1859,8 @@ TEST_F(ActorTaskTest, StopBeforeConfirmationShownSkipsDelegate) {
 // Test that the confirmation request is dropped, without stopping the task, if
 // the intervention delegate goes away before the posted request is delivered.
 TEST_F(ActorTaskTest, DelegateRemovedBeforeConfirmationShownSkipsRequest) {
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kActing);
@@ -1933,8 +1898,8 @@ TEST_F(ActorTaskTest, InterruptWithEmptyConfirmationMessageStopsTask) {
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   SetTaskState(ActorTaskState::kActing);
@@ -1956,12 +1921,12 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationSyncResolution) {
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
-  delegate.respondsSynchronously = YES;
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  delegate.autoConfirmInterventions = YES;
   ActorTask* task = task_.get();
   __block std::optional<ActorTaskState> state_after_completion;
-  delegate.afterSynchronousCompletion = ^{
+  delegate.onUserInterventionCompleted = ^{
     state_after_completion = task->GetState();
   };
   task_->SetInterventionDelegate(delegate);
@@ -2002,8 +1967,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromInit) {
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
 
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   // The task yields on start: it is interrupted before any call to `Act()`.
@@ -2021,12 +1986,12 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromInit) {
   EXPECT_NSEQ(delegate.confirmationTitle, @"Please confirm before starting");
   EXPECT_EQ(delegate.confirmationSubtitle, nil);
   EXPECT_NSEQ(delegate.confirmationButtonText, @"Continue");
-  ASSERT_TRUE(delegate.confirmationCompletionHandler != nil);
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
 
   // Resolving resumes into kReflecting rather than back into kInit: a task
   // which yielded before acting still has to reflect before issuing its first
   // actions.
-  delegate.confirmationCompletionHandler();
+  [delegate runUserInterventionCompletion];
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.didResolveConfirmationCalled; }));
 
@@ -2043,8 +2008,8 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromInit) {
 // Test that interrupting a task which is already waiting on the user is
 // ignored and does not re-prompt the intervention delegate.
 TEST_F(ActorTaskTest, InterruptIgnoredWhenAlreadyWaitingOnUser) {
-  ActorTaskFakeInterventionDelegate* delegate =
-      [[ActorTaskFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   // Start from an executing state so this test isolates the "already waiting
@@ -2057,7 +2022,7 @@ TEST_F(ActorTaskTest, InterruptIgnoredWhenAlreadyWaitingOnUser) {
   ASSERT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
   ASSERT_TRUE(delegate.requestConfirmationCalled);
 
-  delegate.requestConfirmationCalled = NO;
+  [delegate resetRequestConfirmationCalled];
   task_->Interrupt(ActorTaskInterruptReason::kWaitingUserConfirmation,
                    "Second prompt");
   FlushCurrentSequence();

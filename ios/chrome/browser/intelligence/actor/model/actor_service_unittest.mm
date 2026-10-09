@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
@@ -120,35 +121,6 @@
   _stoppedCount++;
   _lastTaskID = taskID;
   _lastSourceType = sourceInfo.type;
-}
-
-@end
-
-@interface FakeActorServiceInterventionDelegate
-    : NSObject <ActorTaskInterventionDelegate>
-@property(nonatomic, assign) BOOL requestConfirmationCalled;
-@property(nonatomic, copy) NSString* confirmationTitle;
-@property(nonatomic, copy) NSString* confirmationSubtitle;
-@property(nonatomic, copy) NSString* confirmationButtonText;
-@property(nonatomic, copy) void (^confirmationCompletionHandler)(void);
-@property(nonatomic, copy) void (^onRequestIntervention)(void);
-@end
-
-@implementation FakeActorServiceInterventionDelegate
-
-- (void)actorTask:(actor::ActorTaskId)taskID
-    requestUserInterventionWithTitle:(NSString*)title
-                            subtitle:(NSString*)subtitle
-                          buttonText:(NSString*)buttonText
-                   completionHandler:(void (^)(void))completionHandler {
-  _requestConfirmationCalled = YES;
-  _confirmationTitle = [title copy];
-  _confirmationSubtitle = [subtitle copy];
-  _confirmationButtonText = [buttonText copy];
-  _confirmationCompletionHandler = [completionHandler copy];
-  if (_onRequestIntervention) {
-    _onRequestIntervention();
-  }
 }
 
 @end
@@ -1212,8 +1184,8 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
-  FakeActorServiceInterventionDelegate* delegate =
-      [[FakeActorServiceInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   service->SetTaskInterventionDelegate(task_id, delegate);
 
   // Transition task to kReflecting by executing an empty action sequence.
@@ -1234,11 +1206,11 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   EXPECT_TRUE(delegate.requestConfirmationCalled);
   EXPECT_NSEQ(@"Please confirm", delegate.confirmationTitle);
   EXPECT_NSEQ(@"Continue", delegate.confirmationButtonText);
-  ASSERT_TRUE(delegate.confirmationCompletionHandler != nil);
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
 
   // Resolving the confirmation resumes the task to kReflecting once the posted
   // completion runs.
-  delegate.confirmationCompletionHandler();
+  [delegate runUserInterventionCompletion];
   EXPECT_EQ(task->GetState(), ActorTaskState::kWaitingOnUser);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return task->GetState() == ActorTaskState::kReflecting; }));
@@ -1254,8 +1226,8 @@ TEST_F(ActorServiceTest, InterruptTaskBeforeFirstAct) {
   ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
-  FakeActorServiceInterventionDelegate* delegate =
-      [[FakeActorServiceInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   service->SetTaskInterventionDelegate(task_id, delegate);
 
   ActorTask* task = GetTask(service, task_id);
@@ -1273,11 +1245,11 @@ TEST_F(ActorServiceTest, InterruptTaskBeforeFirstAct) {
   EXPECT_TRUE(delegate.requestConfirmationCalled);
   EXPECT_NSEQ(@"Please confirm before starting", delegate.confirmationTitle);
   EXPECT_NSEQ(@"Continue", delegate.confirmationButtonText);
-  ASSERT_TRUE(delegate.confirmationCompletionHandler != nil);
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
 
   // Resolving the confirmation resumes the task to kReflecting once the posted
   // completion runs, from which it can perform its first actions.
-  delegate.confirmationCompletionHandler();
+  [delegate runUserInterventionCompletion];
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return task->GetState() == ActorTaskState::kReflecting; }));
 
@@ -1292,8 +1264,8 @@ TEST_F(ActorServiceTest, InterventionAndInterruptSafelyHandleUnknownTaskId) {
   ASSERT_NE(nullptr, service);
 
   ActorTaskId unknown_task_id = ActorTaskId(9999);
-  FakeActorServiceInterventionDelegate* delegate =
-      [[FakeActorServiceInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
 
   service->SetTaskInterventionDelegate(unknown_task_id, delegate);
   service->InterruptTask(unknown_task_id,
@@ -1340,9 +1312,9 @@ TEST_F(ActorServiceTest, InterruptTaskHandlesReentrantStopTask) {
   ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
-  FakeActorServiceInterventionDelegate* delegate =
-      [[FakeActorServiceInterventionDelegate alloc] init];
-  delegate.onRequestIntervention = ^{
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  delegate.onUserInterventionRequested = ^{
     service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
   };
   service->SetTaskInterventionDelegate(task_id, delegate);

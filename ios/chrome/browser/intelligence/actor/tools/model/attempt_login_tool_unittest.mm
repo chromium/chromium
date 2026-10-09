@@ -27,6 +27,7 @@
 #import "components/password_manager/ios/actor_login/actor_login_tool_delegate.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
@@ -48,37 +49,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-
-// A fake implementation of ActorTaskInterventionDelegate.
-@interface FakeActorTaskInterventionDelegate
-    : NSObject <ActorTaskInterventionDelegate>
-@property(nonatomic, assign) BOOL selectFromSuggestionsCalled;
-@property(nonatomic, strong) NSArray<ActorFormSuggestion*>* promptedSuggestions;
-@end
-
-@implementation FakeActorTaskInterventionDelegate {
-  void (^_completionHandler)(ActorFormSuggestion*, BOOL);
-}
-
-- (void)actorTask:(actor::ActorTaskId)taskID
-    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-        completionHandler:
-            (void (^)(ActorFormSuggestion* selectedSuggestion,
-                      BOOL shouldStorePermission))completionHandler {
-  _selectFromSuggestionsCalled = YES;
-  _promptedSuggestions = suggestions;
-  _completionHandler = [completionHandler copy];
-}
-
-- (void)runCompletionWithSuggestion:(ActorFormSuggestion*)selectedSuggestion
-              shouldStorePermission:(BOOL)shouldStorePermission {
-  if (_completionHandler) {
-    void (^_completion)(ActorFormSuggestion*, BOOL) = _completionHandler;
-    _completionHandler = nil;
-    _completion(selectedSuggestion, shouldStorePermission);
-  }
-}
-@end
 
 namespace actor {
 
