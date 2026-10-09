@@ -709,6 +709,7 @@ public class AutofillProfilesFragmentTest {
                                         .autofill_address_already_saved_in_account_record_type_notice)
                         .replace("$1", TestAccounts.ACCOUNT1.getEmail());
         onView(withText(expectedMessage))
+                .inRoot(isDialog())
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
 
         // Invalid input.
@@ -1447,10 +1448,10 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         rule.mClickUpdate.waitForCallback(callCount);
 
-        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click the "Done" button.
-        onView(withText("Done")).perform(click());
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
@@ -1502,11 +1503,11 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         rule.mClickUpdate.waitForCallback(callCount);
 
-        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click the "Done" button and trigger the local save fallback snackbar. Verify that the
         // snackbar is displayed.
-        onView(withText("Done")).perform(click());
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
         ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
@@ -1565,11 +1566,11 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         rule.mClickUpdate.waitForCallback(callCount);
 
-        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click the "Done" button and trigger the local save fallback snackbar. Verify that the
         // snackbar is displayed.
-        onView(withText("Done")).perform(click());
+        onView(withText("Done")).inRoot(isDialog()).perform(click());
         ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
@@ -1685,12 +1686,12 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         rule.mClickUpdate.waitForCallback(callCount);
 
-        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
 
         Context context = mSettingsTestRule.getFragment().getContext();
         String expectedNoticeText =
                 context.getString(R.string.autofill_ai_save_or_update_local_entity_source_notice);
-        onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
+        onView(withText(expectedNoticeText)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     @Test
@@ -1732,7 +1733,7 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         rule.mClickUpdate.waitForCallback(callCount);
 
-        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+        onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
 
         Context context = mSettingsTestRule.getFragment().getContext();
         String walletTitle = context.getString(R.string.autofill_google_wallet_title);
@@ -1744,7 +1745,7 @@ public class AutofillProfilesFragmentTest {
                         .replace("$3", TestAccounts.ACCOUNT1.getEmail())
                         .replace("<link>", "")
                         .replace("</link>", "");
-        onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
+        onView(withText(expectedNoticeText)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     @Test
