@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_data_types.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_data_types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -341,6 +342,16 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
   if (_actorService) {
     _actorService->RemoveTaskUpdatesObserver(self);
   }
+}
+
+#pragma mark - GeminiChatMessageHandler
+
+- (void)handleChatMessageRequest:(GeminiChatMessageRequest*)request
+                      completion:(void (^)(GeminiChatMessageResponse* response))
+                                     completion {
+  // TODO(crbug.com/567037227): Answer pending clarification requests.
+  // TODO(crbug.com/567036739): Stop paused tasks before sending.
+  completion([[GeminiChatMessageResponse alloc] initWithShouldConsume:NO]);
 }
 
 #pragma mark - GeminiActuationDelegate

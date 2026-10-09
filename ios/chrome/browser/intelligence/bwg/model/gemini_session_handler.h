@@ -17,6 +17,7 @@ namespace feature_engagement {
 class Tracker;
 }
 
+@protocol GeminiChatMessageHandler;
 @protocol GeminiCommands;
 @protocol SettingsCommands;
 
@@ -44,6 +45,10 @@ typedef void (^GeminiTabDetachedCallback)(NSString* tabID);
 
 // The Gemini commands handler used by this session handler.
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
+
+// The handler consulted before user chat messages are sent. Nil when no
+// feature intercepts chat messages, in which case every message is sent.
+@property(nonatomic, weak) id<GeminiChatMessageHandler> chatMessageHandler;
 
 // The settings commands handler used by this session handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;

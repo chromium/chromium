@@ -100,6 +100,7 @@
                                  ? actor_browser_agent->browser_id()
                                  : SessionID::InvalidValue()];
     _gateway.actuationHandler = _actuationHandler;
+    _sessionHandler.chatMessageHandler = _actuationHandler;
   }
 }
 

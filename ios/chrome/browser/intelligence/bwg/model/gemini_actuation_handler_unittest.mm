@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_data_types.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_data_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -180,6 +181,47 @@ TEST_F(GeminiActuationHandlerTest, CreateTask) {
   GeminiActuationHandler* handler = CreateHandler();
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
   EXPECT_FALSE(task_id.is_null());
+}
+
+// Test that chat messages are not consumed when there is no task.
+TEST_F(GeminiActuationHandlerTest, HandleChatMessageRequest_NoTask) {
+  GeminiActuationHandler* handler = CreateHandler();
+  GeminiChatMessageRequest* request =
+      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
+                                           sessionID:@"session_id"
+                                      conversationID:@"conversation_id"];
+  base::test::TestFuture<GeminiChatMessageResponse*> future;
+  base::test::TestFuture<GeminiChatMessageResponse*>* future_ptr = &future;
+  [handler handleChatMessageRequest:request
+                         completion:^(GeminiChatMessageResponse* response) {
+                           future_ptr->SetValue(response);
+                         }];
+  ASSERT_TRUE(future.IsReady());
+  GeminiChatMessageResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_FALSE(response.shouldConsume);
+}
+
+// Test that chat messages are not consumed while a task is active but has no
+// pending clarification request.
+TEST_F(GeminiActuationHandlerTest, HandleChatMessageRequest_ActiveTask) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  ASSERT_FALSE(task_id.is_null());
+  GeminiChatMessageRequest* request =
+      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
+                                           sessionID:@"session_id"
+                                      conversationID:@"conversation_id"];
+  base::test::TestFuture<GeminiChatMessageResponse*> future;
+  base::test::TestFuture<GeminiChatMessageResponse*>* future_ptr = &future;
+  [handler handleChatMessageRequest:request
+                         completion:^(GeminiChatMessageResponse* response) {
+                           future_ptr->SetValue(response);
+                         }];
+  ASSERT_TRUE(future.IsReady());
+  GeminiChatMessageResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_FALSE(response.shouldConsume);
 }
 
 // Tests that `dispatchActuationRequest` correctly injects the active tab ID

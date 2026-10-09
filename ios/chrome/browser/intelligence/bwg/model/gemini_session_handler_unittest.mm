@@ -11,6 +11,8 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_data_types.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -30,6 +32,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace ios::provider {
 void SetMockFeatureModeDisabledByQuota(bool disabled);
@@ -835,4 +838,82 @@ TEST_F(GeminiSessionHandlerTest, TestNewChatResetsLiveProcessingStatus) {
 
   histogram_tester_.ExpectUniqueSample(kSessionPromptCountHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSessionFirstPromptHistogram, true, 1);
+}
+
+// Test that chat messages are sent when no chat message handler is set.
+TEST_F(GeminiSessionHandlerTest, TestHandleChatMessageRequestWithoutHandler) {
+  GeminiChatMessageRequest* request =
+      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
+                                           sessionID:GetClientID()
+                                      conversationID:kTestServerID];
+  __block int completion_count = 0;
+  __block GeminiChatMessageResponse* received_response = nil;
+  [session_handler_
+      handleChatMessageRequest:request
+                    completion:^(GeminiChatMessageResponse* response) {
+                      ++completion_count;
+                      received_response = response;
+                    }];
+  EXPECT_EQ(1, completion_count);
+  ASSERT_TRUE(received_response);
+  EXPECT_FALSE(received_response.shouldConsume);
+}
+
+// Test that the request is forwarded unchanged to the chat message handler and
+// that a consuming response is passed back unchanged.
+TEST_F(GeminiSessionHandlerTest, TestHandleChatMessageRequestForwardsConsumed) {
+  GeminiChatMessageRequest* request =
+      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
+                                           sessionID:GetClientID()
+                                      conversationID:nil];
+  GeminiChatMessageResponse* handler_response =
+      [[GeminiChatMessageResponse alloc] initWithShouldConsume:YES];
+  id mock_handler = OCMProtocolMock(@protocol(GeminiChatMessageHandler));
+  id invoke_completion = [OCMArg invokeBlockWithArgs:handler_response, nil];
+  OCMExpect([mock_handler handleChatMessageRequest:request
+                                        completion:invoke_completion]);
+  session_handler_.chatMessageHandler = mock_handler;
+
+  __block int completion_count = 0;
+  __block GeminiChatMessageResponse* received_response = nil;
+  [session_handler_
+      handleChatMessageRequest:request
+                    completion:^(GeminiChatMessageResponse* response) {
+                      ++completion_count;
+                      received_response = response;
+                    }];
+  EXPECT_EQ(1, completion_count);
+  EXPECT_EQ(handler_response, received_response);
+  EXPECT_TRUE(received_response.shouldConsume);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+}
+
+// Test that a non-consuming response from the chat message handler is passed
+// back unchanged, so a hard-coded consuming answer would be caught.
+TEST_F(GeminiSessionHandlerTest,
+       TestHandleChatMessageRequestForwardsNotConsumed) {
+  GeminiChatMessageRequest* request =
+      [[GeminiChatMessageRequest alloc] initWithText:@"Hello"
+                                           sessionID:GetClientID()
+                                      conversationID:kTestServerID];
+  GeminiChatMessageResponse* handler_response =
+      [[GeminiChatMessageResponse alloc] initWithShouldConsume:NO];
+  id mock_handler = OCMProtocolMock(@protocol(GeminiChatMessageHandler));
+  id invoke_completion = [OCMArg invokeBlockWithArgs:handler_response, nil];
+  OCMExpect([mock_handler handleChatMessageRequest:request
+                                        completion:invoke_completion]);
+  session_handler_.chatMessageHandler = mock_handler;
+
+  __block int completion_count = 0;
+  __block GeminiChatMessageResponse* received_response = nil;
+  [session_handler_
+      handleChatMessageRequest:request
+                    completion:^(GeminiChatMessageResponse* response) {
+                      ++completion_count;
+                      received_response = response;
+                    }];
+  EXPECT_EQ(1, completion_count);
+  EXPECT_EQ(handler_response, received_response);
+  EXPECT_FALSE(received_response.shouldConsume);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
 }
