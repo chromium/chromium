@@ -767,17 +767,11 @@ bool GpuInitLegacy::InitializeAndStartSandbox(
       }
 
 #if defined(DAWN_USE_BUILT_DXC)
-      // TODO(crbug.com/40075751): Preload dxil.dll to avoid loader lock issues
-      // since dxcompiler.dll loads dxil.dll from DllMain.
-      {
-        TRACE_EVENT("gpu,startup", "Load dxil.dll");
-        base::LoadNativeLibrary(module_path.Append(L"dxil.dll"), nullptr);
-      }
       {
         TRACE_EVENT("gpu,startup", "Load dxcompiler.dll");
         base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
       }
-#endif  // defined(DAWN_USE_BUILT_DXC)
+#endif
 
 #if BUILDFLAG(ENABLE_ML_INTERNAL)
       if (base::FeatureList::IsEnabled(
