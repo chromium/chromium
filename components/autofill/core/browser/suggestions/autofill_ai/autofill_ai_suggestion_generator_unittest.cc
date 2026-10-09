@@ -41,6 +41,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace {
@@ -255,6 +256,16 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
         prediction.set_type(field_types[i]);
         return prediction;
       }()});
+    }
+  }
+
+  void SetMainFrameUrl(const GURL& url) {
+    client().set_last_committed_primary_main_frame_url(url);
+    if (form_structure_) {
+      for (const std::unique_ptr<AutofillField>& field :
+           form_structure_->fields()) {
+        field->set_origin(url::Origin::Create(url));
+      }
     }
   }
 
@@ -2548,8 +2559,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   SetForm({ORDER_ID});
 
   // 1. Set page URL to "https://example.com/checkout".
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://example.com/checkout"));
+  SetMainFrameUrl(GURL("https://example.com/checkout"));
 
   std::vector<Suggestion> suggestions1 =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -2564,8 +2574,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
                                        IDS_AUTOFILL_AI_OTHER_ORDERS))));
 
   // 2. Set page URL to "https://sub.other.com/checkout".
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://sub.other.com/checkout"));
+  SetMainFrameUrl(GURL("https://sub.other.com/checkout"));
 
   std::vector<Suggestion> suggestions2 =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -2581,8 +2590,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   // 3. Set page URL to a site that doesn't match either (e.g.
   // "https://random.com").
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://random.com"));
+  SetMainFrameUrl(GURL("https://random.com"));
 
   std::vector<Suggestion> suggestions3 =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -2590,6 +2598,44 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   // Both orders should be in the fallback menu since neither matches
   // random.com.
   EXPECT_THAT(suggestions3,
+              ShoppingSuggestionsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiOtherOrders,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
+       GetFillingSuggestions_OrderFilteringByDomain_CrossOriginIframe) {
+  SetEntities({
+      test::GetOrderEntityInstance({
+          .id = u"123",
+          .merchant_domain = u"example.com",
+          .guid = "00000000-0000-4000-8000-600000000001",
+      }),
+      test::GetOrderEntityInstance({
+          .id = u"456",
+          .merchant_domain = u"other.com",
+          .guid = "00000000-0000-4000-8000-600000000002",
+      }),
+  });
+  SetForm({ORDER_ID});
+
+  // 1. Legitimate main frame ("https://example.com/checkout") embedding a
+  // cross-origin iframe ("https://attacker.com").
+  SetMainFrameUrl(GURL("https://example.com/checkout"));
+  field(0).set_origin(url::Origin::Create(GURL("https://attacker.com")));
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              ShoppingSuggestionsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiOtherOrders,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS))));
+
+  // 2. Untrusted main frame ("https://attacker.com") embedding a legitimate
+  // cross-origin iframe ("https://example.com/checkout").
+  SetMainFrameUrl(GURL("https://attacker.com"));
+  field(0).set_origin(
+      url::Origin::Create(GURL("https://example.com/checkout")));
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               ShoppingSuggestionsAre(EqualsSuggestion(
                   SuggestionType::kAutofillAiOtherOrders,
                   l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS))));
@@ -2614,8 +2660,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   SetForm({SHIPMENT_TRACKING_NUMBER});
 
   // 1. Set page URL to "https://carrier.com/track".
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://carrier.com/track"));
+  SetMainFrameUrl(GURL("https://carrier.com/track"));
 
   std::vector<Suggestion> suggestions1 =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -2631,8 +2676,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
                                        IDS_AUTOFILL_AI_OTHER_SHIPMENTS))));
 
   // 2. Set page URL to "https://sub.other-carrier.com/track".
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://sub.other-carrier.com/track"));
+  SetMainFrameUrl(GURL("https://sub.other-carrier.com/track"));
 
   std::vector<Suggestion> suggestions2 =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -2648,8 +2692,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
                                        IDS_AUTOFILL_AI_OTHER_SHIPMENTS))));
 
   // 3. Set page URL to "https://random.com".
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://random.com"));
+  SetMainFrameUrl(GURL("https://random.com"));
 
   std::vector<Suggestion> suggestions3 =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -2666,8 +2709,6 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 // even if the older order has higher frecency.
 TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
        GetFillingSuggestions_PersonalContextOrdering_OrderDate) {
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://example.com"));
   EntityInstance order_recent = test::GetOrderEntityInstanceWithRandomGuid(
       {.id = u"ORD_RECENT",
        .date = u"2026-07-01",
@@ -2683,6 +2724,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   SetEntities({order_old, order_recent});
   SetForm({ORDER_ID});
+  SetMainFrameUrl(GURL("https://example.com"));
 
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(res, ShoppingSuggestionsAre(MaybeSuggestedByGeminiTitle(),
@@ -2694,8 +2736,6 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 // date, even if the older shipment has higher frecency.
 TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
        GetFillingSuggestions_PersonalContextOrdering_ShippedDate) {
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://carrier.com"));
   EntityInstance shipment_recent =
       test::GetShipmentEntityInstanceWithRandomGuid(
           {.tracking_number = u"TR_RECENT",
@@ -2712,6 +2752,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   SetEntities({shipment_old, shipment_recent});
   SetForm({SHIPMENT_TRACKING_NUMBER});
+  SetMainFrameUrl(GURL("https://carrier.com"));
 
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(res, ShoppingSuggestionsAre(MaybeSuggestedByGeminiTitle(),
@@ -2725,10 +2766,6 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 // the older order has higher frecency.
 TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
        GetFillingSuggestions_FallbackSuggestions_Ordering) {
-  // Set the site domain to something that does not match either order domain,
-  // so that both orders appear in the fallback menu.
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://random.com"));
   EntityInstance order_recent = test::GetOrderEntityInstanceWithRandomGuid(
       {.id = u"ORD_RECENT",
        .date = u"2026-07-01",
@@ -2744,6 +2781,9 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   SetEntities({order_old, order_recent});
   SetForm({ORDER_ID});
+  // Set the site domain to something that does not match either order domain,
+  // so that both orders appear in the fallback menu.
+  SetMainFrameUrl(GURL("https://random.com"));
 
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(
@@ -2768,8 +2808,6 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 // the lower-priority one is deduplicated.
 TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
        GetFillingSuggestions_FallbackSuggestions_Deduplication) {
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://random.com"));
   EntityInstance order_server = test::GetOrderEntityInstanceWithRandomGuid(
       {.id = u"123",
        .merchant_domain = u"example.com",
@@ -2781,6 +2819,7 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   SetEntities({pcontext, order_server});
   SetForm({ORDER_ID});
+  SetMainFrameUrl(GURL("https://random.com"));
 
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
   // Since `order_pcontext` is a subset/duplicate of `order_server`, only one
@@ -2842,10 +2881,9 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
 
 TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
        SuggestionsFooterContainsManageAutofillAiShoppingSuggestion) {
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://example.com"));
   SetEntities({test::GetOrderEntityInstanceWithRandomGuid()});
   SetForm({ORDER_ID});
+  SetMainFrameUrl(GURL("https://example.com"));
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(
@@ -3008,8 +3046,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherOrdersSuggestion) {
 
   SetEntities({order_a, order_b, order_c});
   SetForm({ORDER_ID, ORDER_MERCHANT_NAME});
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://amazon.com/checkout"));
+  SetMainFrameUrl(GURL("https://amazon.com/checkout"));
 
   // Generate suggestions.
   std::vector<Suggestion> suggestions =
@@ -3063,8 +3100,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   SetEntities({order_bestbuy, order_costco});
   SetForm({ORDER_ID, ORDER_MERCHANT_NAME});
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://amazon.com/checkout"));
+  SetMainFrameUrl(GURL("https://amazon.com/checkout"));
 
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(1));
@@ -3112,8 +3148,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherShipmentsSuggestion) {
 
   SetEntities({shipment_a, shipment_b, shipment_c});
   SetForm({SHIPMENT_TRACKING_NUMBER});
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://carrier.com/track"));
+  SetMainFrameUrl(GURL("https://carrier.com/track"));
 
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
@@ -3163,8 +3198,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   SetEntities({shipment_a, shipment_b});
   SetForm({SHIPMENT_TRACKING_NUMBER});
-  client().set_last_committed_primary_main_frame_url(
-      GURL("https://random.com"));
+  SetMainFrameUrl(GURL("https://random.com"));
 
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));

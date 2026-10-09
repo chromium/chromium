@@ -73,6 +73,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace autofill {
@@ -902,15 +903,22 @@ std::optional<AttributeType> GetDomainFilterAttributeType(
   }
 }
 
-// Returns whether the `entity` is allowed to be suggested on `page_url`.
+// Returns whether the `entity` is allowed to be suggested as a primary
+// suggestion for `trigger_field_origin` on `client`.
 // For domain-constrained entity types (such as `kOrder` or `kShipment`), this
-// requires their associated domain to match the domain of `page_url` (via PSL
+// requires `trigger_field_origin` to match the primary main frame's origin and
+// the entity's associated domain to match the primary main frame's URL (via PSL
 // matching). For other entity types, returns true.
-bool IsAllowedForPageUrl(const EntityInstance& entity, const GURL& page_url) {
+bool IsAllowedForPageUrl(const EntityInstance& entity,
+                         const AutofillClient& client,
+                         const url::Origin& trigger_field_origin) {
   std::optional<AttributeType> domain_attr_type =
       GetDomainFilterAttributeType(entity.type());
   if (!domain_attr_type) {
     return true;
+  }
+  if (client.GetLastCommittedPrimaryMainFrameOrigin() != trigger_field_origin) {
+    return false;
   }
   base::optional_ref<const AttributeInstance> domain_attr =
       entity.attribute(*domain_attr_type);
@@ -922,27 +930,27 @@ bool IsAllowedForPageUrl(const EntityInstance& entity, const GURL& page_url) {
     return false;
   }
   return affiliations::IsExtendedPublicSuffixDomainMatch(
-      GetGURLFromDomain(domain_val), page_url, {});
+      GetGURLFromDomain(domain_val),
+      client.GetLastCommittedPrimaryMainFrameURL(), {});
 }
 
 std::vector<const EntityInstance*> GetEntitiesForSuggestion(
     std::vector<const EntityInstance*> entities,
     const AttributeTypeAssignment& assignment,
-    const FieldGlobalId& trigger_field_id,
-    const std::string& app_locale,
-    const GURL& page_url) {
+    const FormFieldData& trigger_field,
+    const AutofillClient& client) {
   std::erase_if(entities, [&](const EntityInstance* entity) {
     base::optional_ref<const AutofillFieldWithAttributeType>
-        trigger_field_with_type =
-            FindField(assignment.Find(entity->type()), trigger_field_id);
+        trigger_field_with_type = FindField(assignment.Find(entity->type()),
+                                            trigger_field.global_id());
     return !trigger_field_with_type ||
            !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
-                                          app_locale) ||
-           !IsAllowedForPageUrl(*entity, page_url);
+                                          client.GetAppLocale()) ||
+           !IsAllowedForPageUrl(*entity, client, trigger_field.origin());
   });
   return DedupedEntitiesForSuggestions(
       OrderedEntitiesForSuggestion(std::move(entities)), assignment,
-      app_locale);
+      client.GetAppLocale());
 }
 
 std::vector<Suggestion> CreateFetchingAmbientSuggestions() {
@@ -1132,7 +1140,6 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
     bool has_primary_suggestions,
     base::span<const EntityInstance> all_entities,
     const AttributeTypeAssignment& assignment,
-    const GURL& page_url,
     AutofillClient& client,
     DenseSet<AutofillAiUiSection>* ui_sections) {
   if (!CanFieldBeFilledByEntityType(assignment, trigger_field.global_id(),
@@ -1142,7 +1149,8 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
 
   std::vector<const EntityInstance*> fallback_entities;
   for (const EntityInstance& entity : all_entities) {
-    if (entity.type() != entity_type || IsAllowedForPageUrl(entity, page_url)) {
+    if (entity.type() != entity_type ||
+        IsAllowedForPageUrl(entity, client, trigger_field.origin())) {
       continue;
     }
 
@@ -1215,9 +1223,7 @@ void AppendDomainFallbackSuggestions(
         if (std::optional<Suggestion> fallback_suggestion =
                 CreateDomainFallbackSuggestion(
                     form, trigger_field, entity_type, has_primary_suggestions,
-                    all_entities, assignment,
-                    client.GetLastCommittedPrimaryMainFrameURL(), client,
-                    &ui_sections)) {
+                    all_entities, assignment, client, &ui_sections)) {
           suggestions.push_back(std::move(*fallback_suggestion));
         }
         break;
@@ -1415,8 +1421,7 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
   }
 
   std::vector<const EntityInstance*> entities = GetEntitiesForSuggestion(
-      GetFillableEntityInstances(client), assignment, trigger_field.global_id(),
-      client.GetAppLocale(), client.GetLastCommittedPrimaryMainFrameURL());
+      GetFillableEntityInstances(client), assignment, trigger_field, client);
 
   std::vector<Suggestion> suggestions = CreateAutofillAiFillingSuggestions(
       *form_structure, *trigger_autofill_field,
