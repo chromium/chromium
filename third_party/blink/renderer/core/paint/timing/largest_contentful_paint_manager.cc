@@ -112,7 +112,7 @@ void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
   largest_contentful_paint_calculator_->OnImageFirstPaint(record);
 }
 
-void LargestContentfulPaintManager::OnPaintFinished(
+OptionalPaintTimingCallback LargestContentfulPaintManager::OnPaintFinished(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records) {
   CHECK(largest_contentful_paint_calculator_);
@@ -144,6 +144,7 @@ void LargestContentfulPaintManager::OnPaintFinished(
       record->SetIsNeededForLargestContentfulPaint(true);
     }
   }
+  return std::nullopt;
 }
 
 void LargestContentfulPaintManager::OnImageRemoved(const LayoutObject& object,
@@ -164,7 +165,6 @@ void LargestContentfulPaintManager::OnImageRemoved(const LayoutObject& object,
 void LargestContentfulPaintManager::OnFramePresented(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records,
-    const HeapVector<Member<ElementTimingInfo>>&,
     const DOMPaintTimingInfo&) {
   // `largest_contentful_paint_calculator_` can be null if input arrived between
   // paint and presentation time.

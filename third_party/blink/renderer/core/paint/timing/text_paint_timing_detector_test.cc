@@ -891,12 +891,13 @@ class TestClient : public GarbageCollected<TestClient>,
 
   Type GetType() const override { return Type::kTest; }
 
-  void OnPaintFinished(
+  OptionalPaintTimingCallback OnPaintFinished(
       const HeapVector<Member<ImageRecord>>&,
       const HeapVector<Member<TextRecord>>& text_records) override {
     for (auto& record : text_records) {
       record->SetIsNeededForLargestContentfulPaint(true);
     }
+    return std::nullopt;
   }
 };
 

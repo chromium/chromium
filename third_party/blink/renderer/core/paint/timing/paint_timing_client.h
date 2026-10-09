@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_CLIENT_H_
 
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 struct DOMPaintTimingInfo;
-struct ElementTimingInfo;
 class ImageRecord;
 class LayoutObject;
 class MediaTiming;
@@ -47,18 +46,16 @@ class PaintTimingClient : public GarbageCollectedMixin {
   // override this unless caching the `ImageRecord`.
   virtual void OnImageRemoved(const LayoutObject&, const MediaTiming*) {}
 
-  // Called when the paint phase has finished.
-  virtual void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
-                               const HeapVector<Member<TextRecord>>&) {}
+  // Called when the paint phase has finished. Returns an optional callback to
+  // be invoked when presentation time is available for this frame.
+  virtual OptionalPaintTimingCallback OnPaintFinished(
+      const HeapVector<Member<ImageRecord>>&,
+      const HeapVector<Member<TextRecord>>&) = 0;
 
   // Called when paint and presentation time is available for the given image
   // and text records.
-  //
-  // TODO(crbug.com/535432431): Remove the ElementTimingInfo vector once
-  // ElementTiming uses ImagePaintTimingDetector.
   virtual void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                                 const HeapVector<Member<TextRecord>>&,
-                                const HeapVector<Member<ElementTimingInfo>>&,
                                 const DOMPaintTimingInfo&) {}
 
   // Called when a discrete input or non-programmatic scroll has been detected.

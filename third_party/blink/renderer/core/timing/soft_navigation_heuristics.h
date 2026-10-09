@@ -80,11 +80,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   // update the underlying LCP calculator's "largest pending image" like we do
   // for hard navs.
   Type GetType() const override;
-  void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
-                       const HeapVector<Member<TextRecord>>&) override;
+  OptionalPaintTimingCallback OnPaintFinished(
+      const HeapVector<Member<ImageRecord>>&,
+      const HeapVector<Member<TextRecord>>&) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
-                        const HeapVector<Member<ElementTimingInfo>>&,
                         const DOMPaintTimingInfo&) override;
   void OnInputOrScroll() override;
 

@@ -68,12 +68,9 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
 
   // PaintTimingClient overrides:
   Type GetType() const override;
-  void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
-                       const HeapVector<Member<TextRecord>>&) override;
-  void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
-                        const HeapVector<Member<TextRecord>>&,
-                        const HeapVector<Member<ElementTimingInfo>>&,
-                        const DOMPaintTimingInfo&) override;
+  OptionalPaintTimingCallback OnPaintFinished(
+      const HeapVector<Member<ImageRecord>>&,
+      const HeapVector<Member<TextRecord>>&) override;
   void OnImageRemoved(const LayoutObject&, const MediaTiming*) override;
   void Trace(Visitor*) const override;
 
@@ -99,15 +96,16 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
 
-  // Takes `ElementTimingInfo`s captured during the current paint phase.
-  HeapVector<Member<ElementTimingInfo>> TakeElementTimingsOnPaintFinished();
-
  private:
   friend class ElementTimingTest;
 
   bool CanReportToElementTiming() const;
 
-  void OnElementPresented(const ElementTimingInfo&, const DOMPaintTimingInfo&);
+  void FlushElementTimingsOnFramePresented(
+      GCedHeapVector<Member<ElementTimingInfo>>*,
+      const base::TimeTicks&,
+      const DOMPaintTimingInfo&);
+  void FlushElementTiming(const ElementTimingInfo&, const DOMPaintTimingInfo&);
 
   void NotifyImagePaintedInternal(
       Node& generating_node,

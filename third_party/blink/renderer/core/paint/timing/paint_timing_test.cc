@@ -56,13 +56,15 @@ class MockPaintTimingClient : public GarbageCollected<MockPaintTimingClient>,
     // Set things up to ensure tests get all lifecycle events.
     ON_CALL(*this, OnPaintFinished(_, _))
         .WillByDefault([](const HeapVector<Member<ImageRecord>>& image_records,
-                          const HeapVector<Member<TextRecord>>& text_records) {
+                          const HeapVector<Member<TextRecord>>& text_records)
+                           -> OptionalPaintTimingCallback {
           for (auto& record : text_records) {
             record->SetIsNeededForLargestContentfulPaint(true);
           }
           for (auto& record : image_records) {
             record->SetIsNeededForLargestContentfulPaint(true);
           }
+          return std::nullopt;
         });
   }
 
@@ -75,7 +77,7 @@ class MockPaintTimingClient : public GarbageCollected<MockPaintTimingClient>,
               OnImageRemoved,
               (const LayoutObject&, const MediaTiming*),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(OptionalPaintTimingCallback,
               OnPaintFinished,
               (const HeapVector<Member<ImageRecord>>&,
                const HeapVector<Member<TextRecord>>&),
@@ -84,7 +86,6 @@ class MockPaintTimingClient : public GarbageCollected<MockPaintTimingClient>,
               OnFramePresented,
               (const HeapVector<Member<ImageRecord>>&,
                const HeapVector<Member<TextRecord>>&,
-               const HeapVector<Member<ElementTimingInfo>>&,
                const DOMPaintTimingInfo&),
               (override));
   MOCK_METHOD(void, OnInputOrScroll, (), (override));
@@ -152,9 +153,8 @@ TEST_F(PaintTimingTest, PaintTimingClientTextRenderingCallbacks) {
   VerifyAndClearExpectations();
 
   // Present the frame.
-  EXPECT_CALL(
-      Client(),
-      OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), _));
   SimulatePresentationTime();
   VerifyAndClearExpectations();
 }
@@ -173,9 +173,8 @@ TEST_F(PaintTimingTest, PaintTimingClientTextRepaint) {
       OnPaintFinished(IsEmpty(),
                       ElementsAre(AllOf(ForNode(target),
                                         WithWasPreviouslyReported(false)))));
-  EXPECT_CALL(
-      Client(),
-      OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), _));
   SimulateRenderingAndPresentationTime();
   VerifyAndClearExpectations();
 
@@ -199,9 +198,8 @@ TEST_F(PaintTimingTest, PaintTimingClientTextRepaint) {
       OnPaintFinished(IsEmpty(),
                       ElementsAre(AllOf(ForNode(target),
                                         WithWasPreviouslyReported(true)))));
-  EXPECT_CALL(
-      Client(),
-      OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), _));
   SimulateRenderingAndPresentationTime();
   VerifyAndClearExpectations();
 }
@@ -237,14 +235,14 @@ TEST_F(PaintTimingTest, PaintTimingClientDelayedPresentationFeedback_Text) {
   VerifyAndClearExpectations();
 
   // Present frame 1.
-  EXPECT_CALL(Client(), OnFramePresented(IsEmpty(), ElementsAre(ForNode(node1)),
-                                         IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(node1)), _));
   SimulatePresentationTime();
   VerifyAndClearExpectations();
 
   // Present frame 2.
-  EXPECT_CALL(Client(), OnFramePresented(IsEmpty(), ElementsAre(ForNode(node2)),
-                                         IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(node2)), _));
   SimulatePresentationTime();
   VerifyAndClearExpectations();
 }
@@ -270,8 +268,8 @@ TEST_F(PaintTimingTest, PaintTimingClientImageRenderingCallbacks) {
   }
 
   // Present the frame.
-  EXPECT_CALL(Client(), OnFramePresented(ElementsAre(ForNode(target)),
-                                         IsEmpty(), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(ElementsAre(ForNode(target)), IsEmpty(), _));
   SimulatePresentationTime();
   VerifyAndClearExpectations();
 }
@@ -339,14 +337,14 @@ TEST_F(PaintTimingTest, PaintTimingClientDelayedPresentationFeedback_Image) {
   }
 
   // Present frame 1.
-  EXPECT_CALL(Client(), OnFramePresented(ElementsAre(ForNode(img1)), IsEmpty(),
-                                         IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(ElementsAre(ForNode(img1)), IsEmpty(), _));
   SimulatePresentationTime();
   VerifyAndClearExpectations();
 
   // Present frame 2.
-  EXPECT_CALL(Client(), OnFramePresented(ElementsAre(ForNode(img2)), IsEmpty(),
-                                         IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(ElementsAre(ForNode(img2)), IsEmpty(), _));
   SimulatePresentationTime();
   VerifyAndClearExpectations();
 }
@@ -396,8 +394,8 @@ TEST_F(PaintTimingTest, LoadedImageRemoval) {
     EXPECT_CALL(Client(), OnElementFirstContentfulPaint(ForNode(target)));
     EXPECT_CALL(Client(),
                 OnPaintFinished(ElementsAre(ForNode(target)), IsEmpty()));
-    EXPECT_CALL(Client(), OnFramePresented(ElementsAre(ForNode(target)),
-                                           IsEmpty(), IsEmpty(), _));
+    EXPECT_CALL(Client(),
+                OnFramePresented(ElementsAre(ForNode(target)), IsEmpty(), _));
     SimulateRenderingAndPresentationTime();
     VerifyAndClearExpectations();
   }
@@ -425,9 +423,8 @@ TEST_F(PaintTimingTest, DiscreteInput) {
       OnPaintFinished(IsEmpty(),
                       ElementsAre(AllOf(ForNode(target),
                                         WithWasPreviouslyReported(false)))));
-  EXPECT_CALL(
-      Client(),
-      OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), _));
   SimulateRenderingAndPresentationTime();
   VerifyAndClearExpectations();
   EXPECT_NE(GetPaintTiming().GetLargestContentfulPaintManager(), nullptr);
@@ -459,9 +456,8 @@ TEST_F(PaintTimingTest, UserInitiatedScroll) {
       OnPaintFinished(IsEmpty(),
                       ElementsAre(AllOf(ForNode(target),
                                         WithWasPreviouslyReported(false)))));
-  EXPECT_CALL(
-      Client(),
-      OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), _));
   SimulateRenderingAndPresentationTime();
   VerifyAndClearExpectations();
   EXPECT_NE(GetPaintTiming().GetLargestContentfulPaintManager(), nullptr);
@@ -493,9 +489,8 @@ TEST_F(PaintTimingTest, ProgrammaticScroll) {
       OnPaintFinished(IsEmpty(),
                       ElementsAre(AllOf(ForNode(target),
                                         WithWasPreviouslyReported(false)))));
-  EXPECT_CALL(
-      Client(),
-      OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), IsEmpty(), _));
+  EXPECT_CALL(Client(),
+              OnFramePresented(IsEmpty(), ElementsAre(ForNode(target)), _));
   SimulateRenderingAndPresentationTime();
   VerifyAndClearExpectations();
   EXPECT_NE(GetPaintTiming().GetLargestContentfulPaintManager(), nullptr);
@@ -632,19 +627,19 @@ TEST_P(PaintTimingOutOfOrderPresentationTimeTest, CallbackOrder) {
       OnFramePresented(
           IsEmpty(),
           ElementsAre(AllOf(ForNode(div1), WithPresentationTime(timestamp1))),
-          IsEmpty(), _));
+          _));
   EXPECT_CALL(
       Client(),
       OnFramePresented(
           IsEmpty(),
           ElementsAre(AllOf(ForNode(div2), WithPresentationTime(timestamp2))),
-          IsEmpty(), _));
+          _));
   EXPECT_CALL(
       Client(),
       OnFramePresented(
           IsEmpty(),
           ElementsAre(AllOf(ForNode(div3), WithPresentationTime(timestamp3))),
-          IsEmpty(), _));
+          _));
   InvokeLastPresentationCallback();
   InvokeLastPresentationCallback();
   InvokeLastPresentationCallback();
@@ -856,8 +851,10 @@ TEST_F(PaintTimingTest, PseudoElementPendingBackgroundImage) {
   EXPECT_CALL(Client(),
               OnPaintFinished(ElementsAre(ForNode(new_target)), IsEmpty()))
       .WillOnce([&](const HeapVector<Member<ImageRecord>>& image_records,
-                    const HeapVector<Member<TextRecord>>&) {
+                    const HeapVector<Member<TextRecord>>&)
+                    -> OptionalPaintTimingCallback {
         painted_record = image_records[0].Get();
+        return std::nullopt;
       });
   SimulateRendering();
 

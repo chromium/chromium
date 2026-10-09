@@ -76,11 +76,12 @@ class PaintTimingRecordObserverClient final
 
   Type GetType() const override { return Type::kTest; }
 
-  void OnPaintFinished(
+  OptionalPaintTimingCallback OnPaintFinished(
       const HeapVector<Member<ImageRecord>>& image_records,
       const HeapVector<Member<TextRecord>>& text_records) override {
     painted_text_record_count_ += text_records.size();
     painted_image_record_count_ += image_records.size();
+    return std::nullopt;
   }
 
   void OnElementFirstContentfulPaint(ImageRecord*) override {

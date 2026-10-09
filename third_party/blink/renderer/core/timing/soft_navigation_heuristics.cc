@@ -472,7 +472,7 @@ PaintTimingClient::Type SoftNavigationHeuristics::GetType() const {
   return Type::kSoftNavigationHeuristics;
 }
 
-void SoftNavigationHeuristics::OnPaintFinished(
+OptionalPaintTimingCallback SoftNavigationHeuristics::OnPaintFinished(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records) {
   LocalFrame* frame = window_->GetFrame();
@@ -502,6 +502,7 @@ void SoftNavigationHeuristics::OnPaintFinished(
       MaybeCommitNavigationOrEmitSoftNavigation(context);
     }
   }
+  return std::nullopt;
 }
 
 template <IsDerivedFromPaintTimingRecord T>
@@ -533,7 +534,6 @@ void SoftNavigationHeuristics::OnInputOrScroll() {
 void SoftNavigationHeuristics::OnFramePresented(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records,
-    const HeapVector<Member<ElementTimingInfo>>&,
     const DOMPaintTimingInfo&) {
   // First, group the records by context, ignoring records that aren't needed.
   ContextToCandidatesMap candidates_per_context;
