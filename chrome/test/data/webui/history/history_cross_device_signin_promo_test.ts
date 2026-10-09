@@ -62,17 +62,6 @@ suite('HistoryCrossDeviceSigninPromoTest', function() {
   let testBrowserProxy: TestHistoryCrossDeviceSigninPromoBrowserProxy;
   let handlerRemote: TestHistoryCrossDeviceSigninPromoHandlerRemote;
 
-  function deferActionReply(): () => void {
-    let resolveReply: () => void = () => {};
-    handlerRemote.onPromoCardActionClicked = () => {
-      handlerRemote.methodCalled('onPromoCardActionClicked');
-      return new Promise<void>(resolve => {
-        resolveReply = resolve;
-      });
-    };
-    return () => resolveReply();
-  }
-
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestHistoryCrossDeviceSigninPromoBrowserProxy();
@@ -114,16 +103,11 @@ suite('HistoryCrossDeviceSigninPromoTest', function() {
         assertFalse(shouldShowVal);
       });
 
-  test('Action button click hides promo once action completes', async () => {
-    const resolveAction = deferActionReply();
-
+  test('Action button click keeps promo visible', async () => {
     let eventFired = false;
-    let shouldShowVal = true;
     element.addEventListener(
-        'should-show-history-cross-device-signin-promo', (e: Event) => {
+        'should-show-history-cross-device-signin-promo', () => {
           eventFired = true;
-          shouldShowVal =
-              (e as CustomEvent<{shouldShow: boolean}>).detail.shouldShow;
         });
 
     assertFalse(element.$.actionButton.disabled);
@@ -136,12 +120,6 @@ suite('HistoryCrossDeviceSigninPromoTest', function() {
     // The button is only disabled by the browser's bubble state updates.
     assertFalse(element.$.actionButton.disabled);
     assertFalse(eventFired);
-
-    resolveAction();
-    await microtasksFinished();
-
-    assertTrue(eventFired);
-    assertFalse(shouldShowVal);
   });
 
   test('Bubble state changes toggle the action button', async () => {

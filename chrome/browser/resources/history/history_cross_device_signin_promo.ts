@@ -79,9 +79,7 @@ export class HistoryCrossDeviceSigninPromoElement extends
   private receiver_: HistoryCrossDeviceSigninPromoPageReceiver|null = null;
 
   protected onActionButtonClick_() {
-    this.handler_.onPromoCardActionClicked().then(() => {
-      this.propagateShouldShowPromo_(false);
-    });
+    this.handler_.onPromoCardActionClicked();
   }
 
   protected onCloseClick_() {
