@@ -112,7 +112,9 @@ bool SmbUrl::IsValid() const {
 }
 
 std::string SmbUrl::GetWindowsUNCString() const {
-  CHECK(IsValid(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/571528520): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(IsValid());
 
   return windows_unc_;
 }
