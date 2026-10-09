@@ -647,9 +647,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    // Required because setting a custom passphrase permanently modifies the shared sync engine
-    // encryption state.
-    @RequiresRestart
     public void testPassphraseCreation() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -708,6 +705,11 @@ public class ManageSyncSettingsTest {
         setText(confirmPassphrase, "foo");
         clickButton(okButton);
         Assert.assertFalse(pcdf.isResumed());
+        // Wait for the async passphrase creation to complete on the UI thread before teardown;
+        // otherwise OnPassphraseAccepted races with sign-out and hits a CHECK failure in
+        // SyncUserSettingsImpl::SetEncryptionBootstrapToken.
+        CriteriaHelper.pollUiThread(
+                () -> mSyncTestRule.getSyncService().isUsingExplicitPassphrase());
     }
 
     @Test
