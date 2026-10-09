@@ -25,7 +25,6 @@ static_library("preferences") {
     "//ash",
     "//ash/constants",
     "//base:i18n",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:global_features",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/base",

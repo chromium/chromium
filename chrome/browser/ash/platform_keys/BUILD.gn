@@ -13,8 +13,6 @@ static_library("platform_keys") {
     "platform_keys_service_nss.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//base",
@@ -43,8 +41,6 @@ static_library("keystore_service") {
     "keystore_service_factory.cc",
     "keystore_service_factory.h",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":platform_keys",
@@ -77,6 +73,8 @@ static_library("test_support") {
     "platform_keys_service_test_util.cc",
     "platform_keys_service_test_util.h",
   ]
+
+  configs += [ "//build/config/linux/nss" ]
 
   deps = [
     ":platform_keys",

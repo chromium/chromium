@@ -32,8 +32,6 @@ static_library("settings") {
     "supervised_user_cros_settings_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

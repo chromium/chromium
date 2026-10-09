@@ -28,8 +28,6 @@ static_library("status_collector") {
     "tpm_status_combiner.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//base",

@@ -10,8 +10,6 @@ static_library("report_controller_initializer") {
     "report_controller_initializer.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//base",
     "//chrome/browser/ash/login",

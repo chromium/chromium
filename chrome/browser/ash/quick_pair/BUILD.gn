@@ -15,7 +15,6 @@ static_library("quick_pair") {
   public_deps = [
     "//ash/quick_pair/common",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/services/quick_pair/public/mojom",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",

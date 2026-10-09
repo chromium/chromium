@@ -16,7 +16,6 @@ static_library("shimless_rma") {
   public_deps = [
     "//ash/webui/shimless_rma/backend",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//components/webapps/common",
     "//url",
   ]

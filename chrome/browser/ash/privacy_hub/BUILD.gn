@@ -21,7 +21,6 @@ static_library("privacy_hub") {
   public_deps = [
     "//ash",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
   ]
 }
 
