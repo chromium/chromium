@@ -291,6 +291,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   // Records whether handling of first click's mouse up selected all text.
   private didSelectAllOnClickOne_: boolean = false;
+  private didUnelideOnClickOne_: boolean = false;
 
   // The time when we last acquired focus. This is used so that mouse down
   // handling can tell whether it previously had focus or it was acquired
@@ -667,8 +668,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         // due to existing selection, so clear it again to let normal behavior
         // happen.
         input.setSelectionRange(0, 0);
-      } else {
-        // If we did not select all, we may have elided, so default behavior
+      } else if (this.didUnelideOnClickOne_) {
+        // If we did not select all, we may have unelided, so default behavior
         // could screw up and select the wrong word. Fortunately, in that case
         // selectionStart will be correct, including adjustment, so we select
         // the word it points at.
@@ -710,6 +711,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       unelision = this.unelideAndUpdateSelection(
           event.detail === 1 ? UnelisionGesture.MOUSE_RELEASE :
                                UnelisionGesture.DOUBLE_CLICK);
+    }
+
+    if (event.detail === 1) {
+      this.didUnelideOnClickOne_ = unelision;
     }
 
     if (willSelectAll) {
