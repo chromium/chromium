@@ -7247,6 +7247,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxPersistentAimButtonWithX)},
 
+    {"composebox-personalized-hint-text",
+     flag_descriptions::kComposeboxPersonalizedHintTextName,
+     flag_descriptions::kComposeboxPersonalizedHintTextDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxPersonalizedHintText)},
+
     {"composebox-realbox-outside-click",
      flag_descriptions::kComposeboxRealboxOutsideClickName,
      flag_descriptions::kComposeboxRealboxOutsideClickDescription, kOsDesktop,

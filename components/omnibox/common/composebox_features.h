@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kSuggestRequestSendsMultifileCgiParam);
 // focus out of the composebox dropdown.
 BASE_DECLARE_FEATURE(kComposeboxUnselectMatchOnTabExit);
 
+// If enabled, personalizes the composebox placeholder hint text with the user's
+// given name when browser and AIM identities match.
+BASE_DECLARE_FEATURE(kComposeboxPersonalizedHintText);
+
 // Parameter determining the daily limit for the context menu animation.
 extern const base::FeatureParam<int> kContextMenuAnimationDailyLimit;
 

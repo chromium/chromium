@@ -18861,6 +18861,7 @@ from previous Chrome versions.
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
+  <int value="1195198637" label="ComposeboxPersonalizedHintText:disabled"/>
   <int value="1195608413" label="AndroidAutoProjected:disabled"/>
   <int value="1196407590" label="SmdsDbusMigration:disabled"/>
   <int value="1196560551" label="AutofillEnableWalletBrandingV2:disabled"/>
@@ -19178,6 +19179,7 @@ from previous Chrome versions.
   <int value="1282551250" label="IgnoreHoverEventAnr:enabled"/>
   <int value="1282810683" label="DirectSocketsInSharedWorkers:enabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
+  <int value="1283275478" label="ComposeboxPersonalizedHintText:enabled"/>
   <int value="1283455082" label="DeskProfiles:disabled"/>
   <int value="1283642596" label="ExtensionDisableUnsupportedDeveloper:enabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
