@@ -1658,7 +1658,7 @@ public class CompositorViewHolder extends FrameLayout
                     });
         }
 
-        repositionTabViewForSideUi(sideUiSpecs);
+        repositionTabViewForSideUi(sideUiSpecs, isLiveResize);
         onViewportChanged();
         // TODO(crbug.com/483748424): Update #getWindowViewport and #getVisibleViewport through
         //  #onViewportChanged as well. This change is not trivial, since other items, such as
@@ -1671,10 +1671,26 @@ public class CompositorViewHolder extends FrameLayout
         Tab currentTab = getCurrentTab();
         if (mSideUiStateProvider == null || currentTab == null) return;
 
-        repositionTabViewForSideUi(mSideUiStateProvider.getExpectedSideUiSpecsForTab(currentTab));
+        repositionTabViewForSideUi(
+                mSideUiStateProvider.getExpectedSideUiSpecsForTab(currentTab),
+                /* isLiveResize= */ false);
     }
 
     private void repositionTabViewForSideUi(SideUiSpecs sideUiSpecs) {
+        repositionTabViewForSideUi(sideUiSpecs, /* isLiveResize= */ false);
+    }
+
+    /**
+     * Repositions the current tab's custom view or native page to account for the given {@link
+     * SideUiSpecs}.
+     *
+     * @param sideUiSpecs The {@link SideUiSpecs} to apply.
+     * @param isLiveResize Whether the update is part of a live resize drag. If true, the view is
+     *     only translated, keeping its committed width, the same way the composited web contents
+     *     are only offset during a drag. This avoids a layout pass of the view on every drag frame.
+     *     The margins are applied once the resize is committed.
+     */
+    private void repositionTabViewForSideUi(SideUiSpecs sideUiSpecs, boolean isLiveResize) {
         Tab currentTab = getCurrentTab();
         if (mSideUiStateProvider == null || mView == null || currentTab == null) return;
 
@@ -1687,7 +1703,14 @@ public class CompositorViewHolder extends FrameLayout
         // TODO(b/496307238): verify if need to explicitly trigger repositionTabViewForSideUi again
         // after layout params are set.
         if (layoutParams == null) return;
-        layoutParams.leftMargin = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
+        @Px int leftReservedWidth = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
+        if (isLiveResize) {
+            mView.setTranslationX(leftReservedWidth - layoutParams.leftMargin);
+            return;
+        }
+        // Drop any translation left over from a live resize drag.
+        mView.setTranslationX(0);
+        layoutParams.leftMargin = leftReservedWidth;
         layoutParams.rightMargin = sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         mView.setLayoutParams(layoutParams);
     }

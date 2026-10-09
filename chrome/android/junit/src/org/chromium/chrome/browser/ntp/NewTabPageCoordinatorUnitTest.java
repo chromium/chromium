@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
@@ -101,6 +102,11 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -175,7 +181,9 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private MostVisitedTilesCoordinator mMockTiles;
     @Mock private ComposeplateCoordinator mMockComposeplate;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
+    @Captor private ArgumentCaptor<SideUiObserver> mSideUiObserverCaptor;
 
     private Activity mActivity;
     private View mSearchBoxView;
@@ -184,6 +192,8 @@ public class NewTabPageCoordinatorUnitTest {
     private NewTabPageCoordinator mCoordinator;
     private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
     private final OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
+            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private final SettableNullableObservableSupplier<AiModeButtonUiConfig>
             mAiModeButtonUiConfigSupplier = ObservableSuppliers.createNullable();
@@ -477,7 +487,7 @@ public class NewTabPageCoordinatorUnitTest {
                         mSnackbarManager,
                         isLff,
                         mTabStripHeightSupplier,
-                        new OneshotSupplierImpl<>(),
+                        mSideUiStateProviderSupplier,
                         mHomeSurfaceTracker,
                         mBackPressManager,
                         mTemplateUrlService);
@@ -1650,6 +1660,32 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    public void testSideUiObserver_liveResize_doesNotUpdateUiConfigInset() {
+        SideUiObserver observer = captureSideUiObserver();
+
+        observer.onSideUiSpecsChanged(
+                new SideUiSpecs(/* leftContainerWidth= */ 300, /* rightContainerWidth= */ 0),
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
+
+        verify(mUiConfig, never()).setHorizontalInset(anyInt());
+    }
+
+    @Test
+    public void testSideUiObserver_resizeCommitted_updatesUiConfigInset() {
+        SideUiObserver observer = captureSideUiObserver();
+
+        int leftWidthPx = 300;
+        observer.onSideUiSpecsChanged(
+                new SideUiSpecs(leftWidthPx, /* rightContainerWidth= */ 0),
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_COMMITTED));
+
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        verify(mUiConfig).setHorizontalInset(Math.round(leftWidthPx / density));
+    }
+
+    @Test
     public void testSearchBoxTextWatcher_ForwardsTextAndClearsSearchBox() {
         TextView searchBoxTextView = mNewTabPageLayout.findViewById(R.id.search_box_text);
         assertNotNull(searchBoxTextView);
@@ -1664,5 +1700,21 @@ public class NewTabPageCoordinatorUnitTest {
         verify(mManager)
                 .focusSearchBox(false, AutocompleteRequestType.SEARCH, false, "second paste");
         assertEquals("", searchBoxTextView.getText().toString());
+    }
+
+    /**
+     * Makes the {@link SideUiStateProvider} available to the coordinator created in {@link
+     * #setUp()}, and returns the {@link SideUiObserver} it registers. Invocations on {@link
+     * #mUiConfig} made during registration are cleared.
+     */
+    private SideUiObserver captureSideUiObserver() {
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(
+                        new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0));
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        ShadowLooper.idleMainLooper();
+        verify(mSideUiStateProvider).addObserver(mSideUiObserverCaptor.capture());
+        clearInvocations(mUiConfig);
+        return mSideUiObserverCaptor.getValue();
     }
 }

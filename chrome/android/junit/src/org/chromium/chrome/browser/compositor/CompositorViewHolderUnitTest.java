@@ -1649,6 +1649,49 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
+    public void testOnSideUiSpecsChanged_liveResize_customViewTranslatedWithoutMarginUpdate() {
+        View customView = setUpCustomViewWithCommittedSideUiSpecs();
+
+        int liveStartWidth = SIDE_UI_START_WIDTH + 50;
+        mCompositorViewHolder.onSideUiSpecsChanged(
+                new SideUiSpecs(liveStartWidth, SIDE_UI_END_WIDTH),
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
+
+        // The view follows the rail by translation only, keeping its committed margins and width.
+        assertEquals(
+                "Unexpected translation.",
+                liveStartWidth - SIDE_UI_START_WIDTH,
+                customView.getTranslationX(),
+                /* delta= */ 0f);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) customView.getLayoutParams();
+        assertEquals("Unexpected left margin.", SIDE_UI_START_WIDTH, layoutParams.leftMargin);
+        assertEquals("Unexpected right margin.", SIDE_UI_END_WIDTH, layoutParams.rightMargin);
+    }
+
+    @Test
+    public void testOnSideUiSpecsChanged_resizeCommitted_customViewTranslationReset() {
+        View customView = setUpCustomViewWithCommittedSideUiSpecs();
+
+        int newStartWidth = SIDE_UI_START_WIDTH + 50;
+        SideUiSpecs newSpecs = new SideUiSpecs(newStartWidth, SIDE_UI_END_WIDTH);
+        mCompositorViewHolder.onSideUiSpecsChanged(
+                newSpecs,
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
+        mCompositorViewHolder.onSideUiSpecsChanged(
+                newSpecs,
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_COMMITTED));
+
+        // Committing drops the translation and applies the new margins.
+        assertEquals("Unexpected translation.", 0f, customView.getTranslationX(), /* delta= */ 0f);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) customView.getLayoutParams();
+        assertEquals("Unexpected left margin.", newStartWidth, layoutParams.leftMargin);
+        assertEquals("Unexpected right margin.", SIDE_UI_END_WIDTH, layoutParams.rightMargin);
+    }
+
+    @Test
     public void testOnContentChanged_customViewMarginsUpdatedUsingExpectedSpecs() {
         // Setup custom view.
         View customView = new View(mContext);
@@ -1984,5 +2027,38 @@ public class CompositorViewHolderUnitTest {
     private static void verifyDragEndNotForwarded(ContentView contentView) {
         verify(contentView, never()).onDrag(any(), any());
         verify(contentView, never()).onDragEvent(any());
+    }
+
+    /**
+     * Shows a custom view for {@link #mTab} and lays it out with committed {@link SideUiSpecs} of
+     * {@link #SIDE_UI_START_WIDTH} and {@link #SIDE_UI_END_WIDTH}.
+     *
+     * @return The custom view.
+     */
+    private View setUpCustomViewWithCommittedSideUiSpecs() {
+        View customView = new View(mContext);
+        when(mTab.isShowingCustomView()).thenReturn(true);
+        when(mTab.getView()).thenReturn(customView);
+
+        reset(mWebContents);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mCompositorViewHolder.onContentChanged();
+
+        SideUiSpecs committedSpecs = new SideUiSpecs(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(committedSpecs);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab)).thenReturn(committedSpecs);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
+        mCompositorViewHolder.onSideUiSpecsChanged(
+                committedSpecs,
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
+
+        MarginLayoutParams layoutParams = (MarginLayoutParams) customView.getLayoutParams();
+        assertEquals(SIDE_UI_START_WIDTH, layoutParams.leftMargin);
+        assertEquals(SIDE_UI_END_WIDTH, layoutParams.rightMargin);
+        assertEquals(0f, customView.getTranslationX(), /* delta= */ 0f);
+        return customView;
     }
 }
