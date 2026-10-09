@@ -22,6 +22,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -46,10 +48,14 @@ void WriteDataElementBytesToPipe(
     scoped_refptr<base::RefCountedData<base::ScopedFD>> write_fd_wrapper,
     const network::DataElementBytes* bytes,
     scoped_refptr<network::ResourceRequestBody> request_body,
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+    scoped_refptr<base::RefCountedData<uint64_t>> total_payload_size) {
   DCHECK(sequenced_task_runner->RunsTasksInCurrentSequence());
   DCHECK(write_fd_wrapper);
   DCHECK(bytes);
+  if (total_payload_size) {
+    total_payload_size->data += bytes->bytes().size();
+  }
   if (!base::WriteFileDescriptor(write_fd_wrapper->data.get(),
                                  bytes->AsStringView())) {
     LOG(ERROR) << "Failed to write data element bytes to pipe";
@@ -60,7 +66,8 @@ void WriteDataElementFileToPipe(
     scoped_refptr<base::RefCountedData<base::ScopedFD>> write_fd_wrapper,
     const network::DataElementFile* file_element,
     scoped_refptr<network::ResourceRequestBody> request_body,
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+    scoped_refptr<base::RefCountedData<uint64_t>> total_payload_size) {
   DCHECK(sequenced_task_runner->RunsTasksInCurrentSequence());
   DCHECK(write_fd_wrapper);
   DCHECK(file_element);
@@ -81,6 +88,9 @@ void WriteDataElementFileToPipe(
       return;
     }
     length = static_cast<uint64_t>(file_len) - offset;
+  }
+  if (total_payload_size) {
+    total_payload_size->data += length;
   }
 
   if (file.Seek(base::File::FROM_BEGIN, static_cast<int64_t>(offset)) < 0) {
@@ -479,29 +489,42 @@ void AwContentRestrictionURLLoaderThrottle::WriteRequestBodyToPipe(
   std::vector<network::DataElement>* elements =
       request_body->elements_mutable();
   DCHECK(elements);
+  scoped_refptr<base::RefCountedData<uint64_t>> total_payload_size =
+      base::MakeRefCounted<base::RefCountedData<uint64_t>>(0);
   for (network::DataElement& element : *elements) {
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.ContentRestriction.RequestPayloadType",
+            ContentRestrictionRequestPayloadType::kBytes);
         // Pass the `request_body` to guarantee safe memory access
         // until the request body is fully written to the pipe.
         sequenced_task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(&WriteDataElementBytesToPipe, write_fd_wrapper,
                            &element.As<network::DataElementBytes>(),
-                           request_body, sequenced_task_runner_));
+                           request_body, sequenced_task_runner_,
+                           total_payload_size));
         break;
       }
       case network::DataElement::Tag::kFile: {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.ContentRestriction.RequestPayloadType",
+            ContentRestrictionRequestPayloadType::kFile);
         // Pass the `request_body` to guarantee safe memory access
         // until file contents are fully written to the pipe.
         sequenced_task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(&WriteDataElementFileToPipe, write_fd_wrapper,
                            &element.As<network::DataElementFile>(),
-                           request_body, sequenced_task_runner_));
+                           request_body, sequenced_task_runner_,
+                           total_payload_size));
         break;
       }
       case network::DataElement::Tag::kDataPipe: {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.ContentRestriction.RequestPayloadType",
+            ContentRestrictionRequestPayloadType::kDataStream);
         std::unique_ptr<NonChunkedDataPipeStreamer> streamer =
             NonChunkedDataPipeStreamer::Create(
                 write_fd_wrapper,
@@ -514,6 +537,9 @@ void AwContentRestrictionURLLoaderThrottle::WriteRequestBodyToPipe(
         break;
       }
       case network::DataElement::Tag::kChunkedDataPipe: {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.ContentRestriction.RequestPayloadType",
+            ContentRestrictionRequestPayloadType::kChunkedDataStream);
         // Because we cannot clone a ChunkedDataPipeGetter, we will need to
         // regenerate the request payload post classification. We will spool
         // data as we receive them so it can be subsequently used by the proxy
@@ -526,6 +552,18 @@ void AwContentRestrictionURLLoaderThrottle::WriteRequestBodyToPipe(
       }
     }
   }
+
+  // Record the total payload size after all fixed-size payloads have been
+  // processed.
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<base::RefCountedData<uint64_t>> total_payload_size) {
+            base::UmaHistogramCounts10M(
+                "Android.WebView.ContentRestriction.RequestPayloadSize",
+                base::saturated_cast<int>(total_payload_size->data));
+          },
+          total_payload_size));
 }
 
 void AwContentRestrictionURLLoaderThrottle::WriteChunkedDataPipeToPipe(
@@ -579,8 +617,13 @@ void AwContentRestrictionURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   DCHECK(content_restriction_manager_client_);
-  if (navigation_id_.has_value() &&
-      content_restriction_manager_client_->IsContentRestrictionEnabled()) {
+  const bool should_classify =
+      navigation_id_.has_value() &&
+      content_restriction_manager_client_->IsContentRestrictionEnabled();
+  base::UmaHistogramBoolean(
+      "Android.WebView.ContentRestriction.RequestClassifiedByThrottle",
+      should_classify);
+  if (should_classify) {
     *defer = true;
 
     const int64_t navigation_id = navigation_id_.value();

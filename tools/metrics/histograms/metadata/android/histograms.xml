@@ -7619,6 +7619,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.ContentRestriction.RequestClassifiedByThrottle"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>vshenvi@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether a WebView request is classified by the content restriction
+    URL loader throttle. True when requests are classified, false when the URL
+    loader throttle ignores the request.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ContentRestriction.RequestPayloadSize"
+    units="bytes" expires_after="2027-04-01">
+  <owner>vshenvi@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the size in bytes of the request payload when there is a request
+    body with the classifiable request.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ContentRestriction.RequestPayloadType"
+    enum="ContentRestrictionRequestPayloadType" expires_after="2027-04-01">
+  <owner>vshenvi@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the type of request payload (fixed size bytes, files, data streams,
+    chunked data streams) for classifiable requests.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ContentRestriction.Timeout"
     enum="BooleanTimedOut" expires_after="2027-04-01">
   <owner>vshenvi@google.com</owner>

@@ -21,6 +21,19 @@ namespace android_webview {
 class AwContentRestrictionManagerClient;
 class AwContentRestrictionBlockedNavigationTracker;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ContentRestrictionRequestPayloadType)
+enum class ContentRestrictionRequestPayloadType {
+  kBytes = 0,
+  kFile = 1,
+  kDataStream = 2,
+  kChunkedDataStream = 3,
+  kMaxValue = kChunkedDataStream,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ContentRestrictionRequestPayloadType)
+
 // URLLoaderThrottle implementation for enforcing content restriction in
 // WebViews.
 class AwContentRestrictionURLLoaderThrottle : public blink::URLLoaderThrottle {

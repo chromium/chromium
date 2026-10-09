@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -790,6 +791,138 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRedirectRequest) {
   EXPECT_TRUE(delegate_.cancel_called());
   EXPECT_EQ(delegate_.error_code(), net::ERR_BLOCKED_BY_CLIENT);
   EXPECT_TRUE(tracker_.IsNavigationBlocked(kTestNavigationId));
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       RecordsRequestClassifiedByThrottle) {
+  base::HistogramTester histogram_tester;
+  MockRequestContentClassification(true);
+
+  network::ResourceRequest request =
+      CreateTestResourceRequest(/*method=*/"GET");
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestClassifiedByThrottle", true,
+      1);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       RecordsRequestNotClassifiedByThrottleWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, false);
+
+  network::ResourceRequest request =
+      CreateTestResourceRequest(/*method=*/"GET");
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestClassifiedByThrottle", false,
+      1);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       RecordsRequestNotClassifiedByThrottleWithNoNavigationId) {
+  base::HistogramTester histogram_tester;
+  TestThrottleDelegate delegate;
+  AwContentRestrictionURLLoaderThrottle throttle{client_.get(), &tracker_,
+                                                 std::nullopt};
+  throttle.set_delegate(&delegate);
+
+  network::ResourceRequest request =
+      CreateTestResourceRequest(/*method=*/"GET");
+  bool defer = false;
+  throttle.WillStartRequest(&request, &defer);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestClassifiedByThrottle", false,
+      1);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       RecordsFixedSizeBytePayloadMetadata) {
+  base::HistogramTester histogram_tester;
+  base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
+  MockRequestContentClassification(false);
+
+  const std::string body_data(kTestRequestPayloadContent);
+  network::ResourceRequest request = CreatePostRequestWithElements(
+      network::DataElement(network::DataElementBytes(
+          std::vector<uint8_t>(body_data.begin(), body_data.end()))));
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestPayloadSize", body_data.size(),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestPayloadType",
+      ContentRestrictionRequestPayloadType::kBytes, 1);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest, RecordsFilePayloadMetadata) {
+  // Create a temporary file on disk with mock content.
+  base::HistogramTester histogram_tester;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_file = temp_dir.GetPath().AppendASCII("test_upload.txt");
+  const std::string file_content(kTestRequestPayloadContent);
+  ASSERT_TRUE(base::WriteFile(temp_file, file_content));
+
+  base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
+  MockRequestContentClassification(true);
+  network::ResourceRequest request = CreatePostRequestWithElements(
+      network::DataElement(network::DataElementFile(
+          temp_file, 0, std::numeric_limits<uint64_t>::max(), base::Time())));
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestPayloadSize",
+      file_content.size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestPayloadType",
+      ContentRestrictionRequestPayloadType::kFile, 1);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       RecordsDataStreamPayloadType) {
+  base::HistogramTester histogram_tester;
+  base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
+  MockRequestContentClassification(true);
+
+  const std::string body_data(kTestRequestPayloadContent);
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+  network::TestDataPipeGetter data_pipe_getter(
+      body_data, data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
+  network::ResourceRequest request =
+      CreatePostRequestWithElements(network::DataElement(
+          network::DataElementDataPipe(std::move(data_pipe_getter_remote))));
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestPayloadType",
+      ContentRestrictionRequestPayloadType::kDataStream, 1);
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       RecordsChunkedDataStreamPayloadType) {
+  base::HistogramTester histogram_tester;
+  base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
+  MockRequestContentClassification(true);
+
+  const std::string body_data(kTestRequestPayloadContent);
+  FakeChunkedDataPipeGetter chunked_data_pipe_getter(body_data);
+  network::ResourceRequest request = CreatePostRequestWithElements(
+      network::DataElement(network::DataElementChunkedDataPipe(
+          chunked_data_pipe_getter.Bind(),
+          network::DataElementChunkedDataPipe::ReadOnlyOnce(true))));
+  bool defer = false;
+  throttle_->WillStartRequest(&request, &defer);
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.ContentRestriction.RequestPayloadType",
+      ContentRestrictionRequestPayloadType::kChunkedDataStream, 1);
 }
 
 }  // namespace

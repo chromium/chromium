@@ -1201,6 +1201,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//android_webview/browser/content_restriction/aw_content_restriction_manager_client.h:ContentRestrictionFailureFallbackReason) -->
 
+<!-- LINT.IfChange(ContentRestrictionRequestPayloadType) -->
+
+<enum name="ContentRestrictionRequestPayloadType">
+  <int value="0" label="Fixed size bytes"/>
+  <int value="1" label="File"/>
+  <int value="2" label="Data stream"/>
+  <int value="3" label="Chunked data stream"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/content_restriction/aw_content_restriction_url_loader_throttle.h:ContentRestrictionRequestPayloadType) -->
+
 <enum name="CpuAbiBitnessSupport">
   <int value="0" label="Neither"/>
   <int value="1" label="32-bit only"/>
