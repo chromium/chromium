@@ -33,6 +33,7 @@ import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -85,6 +86,8 @@ public class SiteSearchTest {
                     service.load();
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(KEYWORD_SPACE_TRIGGERING_ENABLED_PREF, true);
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, false);
                 });
 
         CriteriaHelper.pollUiThread(
