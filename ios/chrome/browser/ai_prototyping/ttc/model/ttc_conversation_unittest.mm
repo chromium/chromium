@@ -18,6 +18,7 @@
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -393,4 +394,13 @@ TEST_F(TtcConversationTest, TestStopIdempotentAndNoReentrantLoop) {
   conversation_->Stop();
   observer->OnBackendClosed();
   EXPECT_TRUE(fake_audio_controller_.didStopCapture);
+}
+
+// Tests that the default constructor creates a TTCAudioSessionController.
+TEST_F(TtcConversationTest,
+       TestDefaultConstructorCreatesAudioSessionController) {
+  TtcConversation default_conversation;
+  EXPECT_TRUE([default_conversation.audio_controller()
+      isKindOfClass:[TTCAudioSessionController class]]);
+  default_conversation.Disconnect();
 }

@@ -155,6 +155,12 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
   // Audio converter for resampling hardware input to 16kHz mono Float32.
   AVAudioConverter* _inputConverter;
 
+  // Weak reference to the input node on which the tap is currently installed.
+  __weak AVAudioInputNode* _tappedInputNode;
+
+  // Format of `_tappedInputNode` when the tap was installed.
+  AVAudioFormat* _tappedInputFormat;
+
   // Tracks whether the audio tap has been installed on the input node.
   BOOL _hasInstalledTap;
 
@@ -186,69 +192,83 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
 - (BOOL)installTapOnInputNode:(AVAudioInputNode*)inputNode
                         error:(NSError**)error {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_isRecording) {
+  AVAudioFormat* inputFormat = [inputNode inputFormatForBus:kAudioInputBus];
+  if (!inputFormat || inputFormat.sampleRate <= 0.0 ||
+      inputFormat.channelCount == 0) {
+    inputFormat = [inputNode outputFormatForBus:kAudioInputBus];
+  }
+  if (!inputFormat || inputFormat.sampleRate <= 0.0 ||
+      inputFormat.channelCount == 0) {
+    if (error) {
+      *error = [NSError
+          errorWithDomain:kTTCAudioRecorderErrorDomain
+                     code:kErrorCodeInvalidInputFormat
+                 userInfo:@{
+                   NSLocalizedDescriptionKey : @"Audio input node format is "
+                                               @"invalid or transiently zero."
+                 }];
+    }
+    return NO;
+  }
+
+  if (_hasInstalledTap && _tappedInputNode == inputNode &&
+      [_tappedInputFormat isEqual:inputFormat]) {
+    _isRecording = YES;
     return YES;
   }
 
-  if (!_hasInstalledTap) {
-    AVAudioFormat* inputFormat = [inputNode inputFormatForBus:kAudioInputBus];
-    if (!inputFormat || inputFormat.sampleRate <= 0.0 ||
-        inputFormat.channelCount == 0) {
-      inputFormat = [inputNode outputFormatForBus:kAudioInputBus];
-    }
-    if (!inputFormat || inputFormat.sampleRate <= 0.0 ||
-        inputFormat.channelCount == 0) {
-      if (error) {
-        *error = [NSError
-            errorWithDomain:kTTCAudioRecorderErrorDomain
-                       code:kErrorCodeInvalidInputFormat
-                   userInfo:@{
-                     NSLocalizedDescriptionKey : @"Audio input node format is "
-                                                 @"invalid or transiently zero."
-                   }];
+  AVAudioFormat* micTapFormat = _micTapFormat;
+  AVAudioConverter* inputConverter = nil;
+  if (![inputFormat isEqual:micTapFormat]) {
+    inputConverter = [[AVAudioConverter alloc] initFromFormat:inputFormat
+                                                     toFormat:micTapFormat];
+#if TARGET_OS_SIMULATOR
+    // `AVAudioConverter` on Simulator requires an explicit channel map during
+    // downmixing to prevent outputting a silent buffer.
+    if (inputFormat.channelCount > micTapFormat.channelCount) {
+      NSMutableArray<NSNumber*>* channelMap = [NSMutableArray array];
+      for (uint32_t i = 0; i < micTapFormat.channelCount; ++i) {
+        [channelMap addObject:@(i)];
       }
-      return NO;
+      inputConverter.channelMap = channelMap;
     }
+#endif  // TARGET_OS_SIMULATOR
+  }
+  _inputConverter = inputConverter;
 
-    AVAudioFormat* micTapFormat = _micTapFormat;
-    AVAudioConverter* inputConverter = nil;
-    if (![inputFormat isEqual:micTapFormat]) {
-      inputConverter = [[AVAudioConverter alloc] initFromFormat:inputFormat
-                                                       toFormat:micTapFormat];
+  // Create a block that processes the input buffer on the CoreAudio thread
+  // and then hops to the current sequence (which is likely different) to
+  // invoke -bufferWasProcessed: to ensure the TTCAudioRecorder is never
+  // accessed from a CoreAudio background thread.
+  __weak TTCAudioRecorder* weakSelf = self;
+  void (^block)(AVAudioPCMBuffer*, AVAudioTime*) = base::CallbackToBlock(
+      base::BindRepeating(&ProcessInputBuffer, _micTapFormat, _inputConverter)
+          .Then(base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindRepeating(^(ProcessedAudioBuffer processed) {
+                [weakSelf bufferWasProcessed:std::move(processed)];
+              }))));
+
+  @try {
+    [inputNode removeTapOnBus:kAudioInputBus];
+    [inputNode installTapOnBus:kAudioInputBus
+                    bufferSize:kMicTapBufferSize
+                        format:inputFormat
+                         block:block];
+    _hasInstalledTap = YES;
+    _tappedInputNode = inputNode;
+    _tappedInputFormat = inputFormat;
+  } @catch (NSException* exception) {
+    if (error) {
+      *error =
+          [NSError errorWithDomain:kTTCAudioRecorderErrorDomain
+                              code:kErrorCodeTapInstallationFailed
+                          userInfo:@{
+                            NSLocalizedDescriptionKey : exception.reason
+                                ?: @"Failed to install microphone audio tap."
+                          }];
     }
-    _inputConverter = inputConverter;
-
-    // Create a block that process the input buffer on the CoreAudio thread
-    // and then hop to the current sequence (which is likely different) to
-    // invoke -bufferWasProcessed: to ensure the TTCAudioRecorder is never
-    // accessed from a CoreAudio background thread.
-    __weak TTCAudioRecorder* weakSelf = self;
-    void (^block)(AVAudioPCMBuffer*, AVAudioTime*) = base::CallbackToBlock(
-        base::BindRepeating(&ProcessInputBuffer, _micTapFormat, _inputConverter)
-            .Then(base::BindPostTask(
-                base::SequencedTaskRunner::GetCurrentDefault(),
-                base::BindRepeating(^(ProcessedAudioBuffer processed) {
-                  [weakSelf bufferWasProcessed:std::move(processed)];
-                }))));
-
-    @try {
-      [inputNode installTapOnBus:kAudioInputBus
-                      bufferSize:kMicTapBufferSize
-                          format:inputFormat
-                           block:block];
-      _hasInstalledTap = YES;
-    } @catch (NSException* exception) {
-      if (error) {
-        *error =
-            [NSError errorWithDomain:kTTCAudioRecorderErrorDomain
-                                code:kErrorCodeTapInstallationFailed
-                            userInfo:@{
-                              NSLocalizedDescriptionKey : exception.reason
-                                  ?: @"Failed to install microphone audio tap."
-                            }];
-      }
-      return NO;
-    }
+    return NO;
   }
 
   _isRecording = YES;
@@ -261,24 +281,30 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
     return;
   }
 
-  if (_hasInstalledTap && inputNode) {
+  AVAudioInputNode* targetNode = inputNode ?: _tappedInputNode;
+  if (_hasInstalledTap && targetNode) {
     @try {
-      [inputNode removeTapOnBus:kAudioInputBus];
+      [targetNode removeTapOnBus:kAudioInputBus];
     } @catch (NSException* exception) {
       // Tap was already detached or node was invalidated.
     }
-    _hasInstalledTap = NO;
   }
 
+  _hasInstalledTap = NO;
+  _tappedInputNode = nil;
+  _tappedInputFormat = nil;
   _inputConverter = nil;
   _isRecording = NO;
 }
 
 - (void)reset {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_hasInstalledTap && _tappedInputNode) {
+    [self removeTapFromInputNode:_tappedInputNode];
+  }
   _inputConverter = nil;
-  DCHECK(!_hasInstalledTap)
-      << "reset called while tap was still installed on input node.";
+  _tappedInputNode = nil;
+  _tappedInputFormat = nil;
   _hasInstalledTap = NO;
   _isRecording = NO;
 }

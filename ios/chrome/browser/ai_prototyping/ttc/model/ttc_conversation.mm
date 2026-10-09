@@ -14,7 +14,7 @@
 #import "base/check.h"
 #import "base/containers/span.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 
@@ -93,7 +93,7 @@ TtcConversation::TtcConversation(id<TTCAudioController> audio_controller,
 }
 
 TtcConversation::TtcConversation()
-    : TtcConversation([[TTCAudioEngine alloc] init],
+    : TtcConversation([[TTCAudioSessionController alloc] init],
                       std::make_unique<TtcWebSocketBackend>()) {}
 
 TtcConversation::~TtcConversation() {

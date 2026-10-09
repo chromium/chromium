@@ -47,9 +47,12 @@
 
 @end
 
-// Defines the unified interface for the TTC audio subsystem,
-// abstracting microphone capture, speaker playback, barge-in clearing, and
-// acoustic route inspection.
+// High-level consumer-facing interface for the TTC audio subsystem used by
+// `TtcConversation` (implemented in production by `TTCAudioSessionController`).
+// Abstracts the full audio conversation lifecycle—including microphone
+// permissions, `AVAudioSession` activation, microphone capture, streaming
+// speaker playback, barge-in queue clearing, and developer diagnostics—behind
+// a single protocol.
 @protocol TTCAudioController <NSObject>
 
 // Delegate receiving audio buffers, energy updates, and lifecycle events.

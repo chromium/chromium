@@ -16,10 +16,14 @@ source_set("audio") {
     "ttc_audio_recorder.h",
     "ttc_audio_recorder.mm",
     "ttc_audio_recorder_delegate.h",
+    "ttc_audio_session_controller.h",
+    "ttc_audio_session_controller.mm",
     "ttc_audio_session_manager.h",
     "ttc_audio_session_manager.mm",
     "ttc_audio_session_manager_delegate.h",
   ]
+  public_deps =
+      [ "//ios/public/provider/chrome/browser/intelligence:intelligence_api" ]
   deps = [ "//base" ]
   frameworks = [
     "AVFAudio.framework",
@@ -35,12 +39,14 @@ source_set("unit_tests") {
     "ttc_audio_metrics_unittest.mm",
     "ttc_audio_player_unittest.mm",
     "ttc_audio_recorder_unittest.mm",
+    "ttc_audio_session_controller_unittest.mm",
     "ttc_audio_session_manager_unittest.mm",
   ]
   deps = [
     ":audio",
     "//base",
     "//base/test:test_support",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

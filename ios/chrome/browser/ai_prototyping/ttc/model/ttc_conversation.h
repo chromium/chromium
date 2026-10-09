@@ -48,8 +48,8 @@ class TtcConversation : public ttc::TtcBackend::Observer {
     virtual void OnConversationError(ttc::ErrorCode error) = 0;
   };
 
-  // Convenience constructor using a default `TTCAudioEngine` and default
-  // `TtcWebSocketBackend`.
+  // Convenience constructor using a default `TTCAudioSessionController` and
+  // default `TtcWebSocketBackend`.
   TtcConversation();
 
   // Constructs a conversation with a custom `audio_controller` and `backend`.

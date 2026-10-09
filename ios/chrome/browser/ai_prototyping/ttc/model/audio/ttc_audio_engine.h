@@ -7,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
+#import "ios/public/provider/chrome/browser/intelligence/ttc_audio_engine_protocol.h"
 
+@class AVAudioEngine;
 @class TTCAudioPlayer;
 @class TTCAudioRecorder;
-@class TTCAudioSessionManager;
 
 // Domain for errors originated by TTCAudioEngine.
 extern NSString* const kTTCAudioEngineErrorDomain;
@@ -21,19 +21,36 @@ enum class TTCAudioEngineErrorCode : NSInteger {
   kInputNodeUnavailable = -1,
   kStartupCancelled = -2,
   kPermissionDenied = -3,
+  kEngineStartFailed = -4,
 };
 
-// Audio engine managing audio hardware graph orchestration, session
-// configuration, and microphone capture and speaker playback delegation for
-// TTC.
-@interface TTCAudioEngine : NSObject <TTCAudioController>
+// Default open-source `TTCAudioEngineProtocol` audio graph implementation
+// backed by Apple's `AVAudioEngine`, `TTCAudioRecorder`, and `TTCAudioPlayer`.
+//
+// Responsibilities:
+// - Owns the `AVAudioEngine` instance, enables hardware voice processing
+//   (`VoiceProcessingIO`) on `inputNode` when `aecMode` is `kHardware`, and
+//   starts/stops the processing graph.
+// - Installs `TTCAudioRecorder` taps on `inputNode`, converts captured 16kHz
+//   Float32 buffers into clamped signed 16-bit PCM bytes, and forwards them
+//   with normalized RMS input energy to `TTCAudioEngineDelegate`.
+// - Attaches `TTCAudioPlayer` (`AVAudioPlayerNode`) to `mainMixerNode` to
+//   schedule and drain 24kHz signed 16-bit PCM playback buffers.
+// - Observes `AVAudioEngineConfigurationChangeNotification` scoped to its
+//   `AVAudioEngine` to reinstall taps and resume playback after internal graph
+//   resets.
+//
+// Assumes `AVAudioSession` is already active. Does not manage `AVAudioSession`
+// category/activation, microphone permissions, or routing policy; those are
+// owned by `TTCAudioSessionController` and `TTCAudioSessionManager`.
+@interface TTCAudioEngine : NSObject <TTCAudioEngineProtocol>
 
-// Designated initializer. Initializes with the specified audio recorder,
-// audio player, and audio session manager components. Passing nil for any
+// Designated initializer. Initializes with the specified `AVAudioEngine`,
+// `TTCAudioRecorder`, and `TTCAudioPlayer` components. Passing nil for any
 // component instantiates a default instance.
-- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
-                          player:(TTCAudioPlayer*)player
-                  sessionManager:(TTCAudioSessionManager*)sessionManager
+- (instancetype)initWithAudioEngine:(AVAudioEngine*)audioEngine
+                           recorder:(TTCAudioRecorder*)recorder
+                             player:(TTCAudioPlayer*)player
     NS_DESIGNATED_INITIALIZER;
 
 @end

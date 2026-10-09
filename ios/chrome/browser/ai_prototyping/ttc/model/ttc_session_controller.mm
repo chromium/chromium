@@ -12,7 +12,7 @@
 #import "base/check.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
@@ -76,7 +76,7 @@ class TtcConversationDelegateBridge : public TtcConversation::Delegate {
 
 - (instancetype)initWithBackend:(std::unique_ptr<ttc::TtcBackend>)backend {
   return [self initWithConversation:std::make_unique<TtcConversation>(
-                                        [[TTCAudioEngine alloc] init],
+                                        [[TTCAudioSessionController alloc] init],
                                         std::move(backend))];
 }
 
