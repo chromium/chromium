@@ -20,6 +20,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_service.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
@@ -34,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_device_authorization_service_factory.h"
 #import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -208,6 +211,19 @@ void IOSChromePasskeyClient::FetchKeys(
                         credential:nil
                            purpose:purpose
                         completion:completion_block];
+}
+
+void IOSChromePasskeyClient::FetchDeviceAuthorizationKeys(
+    webauthn::FetchDeviceAuthKeysCallback callback) {
+  webauthn::DeviceAuthorizationService* service =
+      IOSDeviceAuthorizationServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run(webauthn::DeviceAuthFetchResult());
+    return;
+  }
+
+  // TODO(crbug.com/405036154): Show the ReAuth UI if ReAuth is required.
+  service->GetOrFetchKeys(std::move(callback));
 }
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(

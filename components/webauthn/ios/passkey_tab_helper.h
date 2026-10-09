@@ -8,12 +8,14 @@
 #import <optional>
 #import <string_view>
 #import <variant>
+#import <vector>
 
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/remote_validation.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
@@ -219,14 +221,37 @@ class PasskeyTabHelper : public web::WebStateObserver,
                                SharedKeyList shared_key_list,
                                bool did_complete_uv);
 
+  // Callback which continues `StartPasskeyAssertion()` with the fetched
+  // device authorization keys. Defers the request to the renderer if they
+  // couldn't be fetched, and fetches the trusted vault keys otherwise.
+  void OnDeviceAuthorizationKeysFetched(
+      AssertionRequestParams params,
+      sync_pb::WebauthnCredentialSpecifics passkey,
+      std::string client_data_json,
+      bool did_complete_uv,
+      DeviceAuthFetchResult result);
+
+  // Fetches the trusted vault keys and continues with
+  // `CompletePasskeyAssertion()`. `device_authorization_keys` is empty for
+  // passkeys that aren't in the `security_domain_encrypted` format.
+  void FetchTrustedVaultKeysForAssertion(
+      AssertionRequestParams params,
+      sync_pb::WebauthnCredentialSpecifics passkey,
+      std::string client_data_json,
+      DeviceAuthorizationKeys device_authorization_keys,
+      bool did_complete_uv);
+
   // Callback which uses the provided passkey for assertion given the provided
-  // shared keys list and params. The parameters required to resolve the
-  // PublicKeyCredential request are sent to PasskeyJavaScriptFeature.
-  void CompletePasskeyAssertion(AssertionRequestParams params,
-                                sync_pb::WebauthnCredentialSpecifics passkey,
-                                std::string client_data_json,
-                                SharedKeyList shared_key_list,
-                                bool did_complete_uv);
+  // shared keys list, device authorization keys and params. The parameters
+  // required to resolve the PublicKeyCredential request are sent to
+  // PasskeyJavaScriptFeature.
+  void CompletePasskeyAssertion(
+      AssertionRequestParams params,
+      sync_pb::WebauthnCredentialSpecifics passkey,
+      std::string client_data_json,
+      DeviceAuthorizationKeys device_authorization_keys,
+      SharedKeyList shared_key_list,
+      bool did_complete_uv);
 
   // Starts remote validation for the given origin and RP ID. If validation
   // starts successfully, the loader is stored in `loaders_` with

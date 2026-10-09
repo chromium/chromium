@@ -4,16 +4,29 @@
 
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client.h"
 
+#import <cstdint>
+#import <memory>
+#import <string>
+#import <string_view>
+#import <utility>
+
+#import "base/notreached.h"
+#import "base/test/protobuf_matchers.h"
+#import "base/test/test_future.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_service.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_device_authorization_service_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -24,7 +37,38 @@
 
 namespace {
 
+using ::base::test::EqualsProto;
 using ::testing::Return;
+
+constexpr int32_t kDeviceAuthorizationKeyVersion = 1;
+constexpr std::string_view kDeviceAuthorizationKey = "device_authorization_key";
+
+// Replies to key fetches with the configured result.
+class FakeDeviceAuthorizationService
+    : public webauthn::DeviceAuthorizationService {
+ public:
+  // webauthn::DeviceAuthorizationService:
+  void GetOrFetchKeys(webauthn::FetchDeviceAuthKeysCallback callback) override {
+    std::move(callback).Run(result_);
+  }
+  void FetchKeysWithReAuthToken(
+      std::string reauth_proof_token,
+      webauthn::FetchDeviceAuthKeysCallback callback) override {
+    NOTREACHED();
+  }
+
+  void set_result(webauthn::DeviceAuthFetchResult result) {
+    result_ = std::move(result);
+  }
+
+ private:
+  webauthn::DeviceAuthFetchResult result_;
+};
+
+std::unique_ptr<KeyedService> BuildFakeDeviceAuthorizationService(
+    ProfileIOS* profile) {
+  return std::make_unique<FakeDeviceAuthorizationService>();
+}
 
 class IOSChromePasskeyClientTest : public PlatformTest {
  public:
@@ -37,12 +81,19 @@ class IOSChromePasskeyClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        IOSDeviceAuthorizationServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeDeviceAuthorizationService));
     profile_ = std::move(builder).Build();
 
     fake_web_state_.SetBrowserState(profile_.get());
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
+    device_authorization_service_ =
+        static_cast<FakeDeviceAuthorizationService*>(
+            IOSDeviceAuthorizationServiceFactory::GetForProfile(
+                profile_.get()));
 
     client_ = std::make_unique<IOSChromePasskeyClient>(&fake_web_state_);
   }
@@ -57,6 +108,8 @@ class IOSChromePasskeyClientTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState fake_web_state_;
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
+  raw_ptr<FakeDeviceAuthorizationService> device_authorization_service_ =
+      nullptr;
   std::unique_ptr<IOSChromePasskeyClient> client_;
 };
 
@@ -197,6 +250,43 @@ TEST_F(IOSChromePasskeyClientTest, AutomaticPasskeyUpgradePref) {
   profile_->GetPrefs()->SetBoolean(
       password_manager::prefs::kAutomaticPasskeyUpgrades, true);
   EXPECT_TRUE(client_->IsAutomaticPasskeyUpgradeEnabled());
+}
+
+// Tests that the fetched device authorization keys are passed to the caller.
+TEST_F(IOSChromePasskeyClientTest, FetchDeviceAuthorizationKeys) {
+  webauthn::DeviceAuthorizationKeys keys;
+  webauthn::DeviceAuthorizationKey* key = keys.add_keys();
+  key->set_version(kDeviceAuthorizationKeyVersion);
+  key->set_key(kDeviceAuthorizationKey);
+  device_authorization_service_->set_result({keys});
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client_->FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  const webauthn::DeviceAuthorizationKeys* fetched_keys = future.Get().keys();
+  ASSERT_TRUE(fetched_keys);
+  EXPECT_THAT(*fetched_keys, EqualsProto(keys));
+}
+
+// Tests that fetching device authorization keys fails when the device
+// authorization service is null.
+TEST_F(IOSChromePasskeyClientTest, DeviceAuthorizationServiceNull) {
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      IOSDeviceAuthorizationServiceFactory::GetInstance(),
+      base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+        return nullptr;
+      }));
+  auto profile = std::move(builder).Build();
+  web::FakeWebState fake_web_state;
+  fake_web_state.SetBrowserState(profile.get());
+  IOSChromePasskeyClient client(&fake_web_state);
+
+  base::test::TestFuture<webauthn::DeviceAuthFetchResult> future;
+  client.FetchDeviceAuthorizationKeys(future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(),
+            webauthn::DeviceAuthFetchResult::Status::kError);
 }
 
 }  // namespace

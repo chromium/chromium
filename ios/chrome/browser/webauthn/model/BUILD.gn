@@ -55,11 +55,13 @@ source_set("ios_chrome_passkey_client") {
     "ios_chrome_passkey_client.mm",
   ]
   deps = [
+    ":model",
     "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
+    "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
     "//components/webauthn/ios:passkey_types",

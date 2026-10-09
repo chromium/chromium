@@ -31,6 +31,12 @@ void FakeIOSPasskeyClient::FetchKeys(
   }
 }
 
+void FakeIOSPasskeyClient::FetchDeviceAuthorizationKeys(
+    FetchDeviceAuthKeysCallback callback) {
+  fetch_device_authorization_keys_called_ = true;
+  std::move(callback).Run(device_auth_fetch_result_);
+}
+
 void FakeIOSPasskeyClient::ShowSuggestionBottomSheet(RequestInfo request_info) {
   show_suggestion_bottom_sheet_called_ = true;
 }
@@ -56,6 +62,15 @@ bool FakeIOSPasskeyClient::DidShowCreationBottomSheet() const {
 
 bool FakeIOSPasskeyClient::DidFetchKeys() const {
   return fetch_keys_called_;
+}
+
+bool FakeIOSPasskeyClient::DidFetchDeviceAuthorizationKeys() const {
+  return fetch_device_authorization_keys_called_;
+}
+
+void FakeIOSPasskeyClient::SetDeviceAuthFetchResult(
+    DeviceAuthFetchResult result) {
+  device_auth_fetch_result_ = std::move(result);
 }
 
 bool FakeIOSPasskeyClient::DidShowInterstitial() const {
