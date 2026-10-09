@@ -8,7 +8,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -51,7 +53,7 @@ class AlternateNavInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   std::u16string GetMessageText() const override;
   std::u16string GetMessageTextTemplate() const override;
-  const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+  base::span<const MessageSubstitution> GetMessageSubstitutions()
       const override;
   bool InlineSubstitutionLinkClicked(
       size_t index,

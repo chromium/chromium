@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -90,8 +90,7 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Returns the list of substitutions to be used with the template
   // returned by GetMessageTextTemplate().
-  virtual const std::vector<MessageSubstitution>& GetMessageSubstitutions()
-      const;
+  virtual base::span<const MessageSubstitution> GetMessageSubstitutions() const;
 
   // Returns the elide behavior for the message string.
   // Not supported on Android.

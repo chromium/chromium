@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -112,7 +113,7 @@ std::u16string AlternateNavInfoBarDelegate::GetMessageTextTemplate() const {
   return l10n_util::GetStringUTF16(IDS_ALTERNATE_NAV_URL_VIEW_LABEL);
 }
 
-const std::vector<MessageSubstitution>&
+base::span<const MessageSubstitution>
 AlternateNavInfoBarDelegate::GetMessageSubstitutions() const {
   return substitutions_;
 }

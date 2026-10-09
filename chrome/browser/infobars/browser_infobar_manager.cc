@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -120,7 +121,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     return spec_.message_text_template();
   }
 
-  const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+  base::span<const MessageSubstitution> GetMessageSubstitutions()
       const override {
     if (!substitutions_.has_value()) {
       substitutions_ = spec_.substitutions_callback()

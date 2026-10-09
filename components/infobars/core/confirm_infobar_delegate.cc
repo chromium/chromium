@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,10 +43,9 @@ std::u16string ConfirmInfoBarDelegate::GetMessageTextTemplate() const {
   return std::u16string();
 }
 
-const std::vector<MessageSubstitution>&
+base::span<const MessageSubstitution>
 ConfirmInfoBarDelegate::GetMessageSubstitutions() const {
-  static const base::NoDestructor<std::vector<MessageSubstitution>> empty_subs;
-  return *empty_subs;
+  return {};
 }
 
 MessageSubstitution::MessageSubstitution(

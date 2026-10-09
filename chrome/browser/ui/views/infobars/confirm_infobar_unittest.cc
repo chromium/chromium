@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -135,7 +136,7 @@ class InlineSubstitutionTestDelegate : public FakeConfirmInfoBarDelegate {
         clicked_index_out_(clicked_index_out) {}
 
   std::u16string GetMessageTextTemplate() const override { return template_; }
-  const std::vector<MessageSubstitution>& GetMessageSubstitutions()
+  base::span<const MessageSubstitution> GetMessageSubstitutions()
       const override {
     return substitutions_;
   }
