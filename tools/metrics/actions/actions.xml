@@ -10213,6 +10213,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.SidePanel.UserAction.Close.AskGoogle">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user closes the side panel for a session entered via an
+    Ask Google entry point.
+  </description>
+</action>
+
 <action name="ContextualTasks.SidePanel.UserAction.Close.LensOverlay">
   <owner>nguyenbryan@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

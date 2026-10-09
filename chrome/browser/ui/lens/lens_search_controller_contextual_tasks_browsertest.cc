@@ -1278,6 +1278,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
                        ExecAskGoogleAboutThisPageOpensSidePanel) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
   chrome::ExecAskGoogleAboutThisPage(
       browser()->GetActiveTabInterface()->GetBrowserWindowInterface(),
@@ -1285,12 +1286,19 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
       omnibox::ChromeAimEntryPoint::
           DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
 
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AskGoogle.Invoked",
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuPage, 1);
+
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
 
   auto* panel_controller =
       contextual_tasks::ContextualTasksPanelController::From(browser());
   ASSERT_TRUE(panel_controller);
+  EXPECT_EQ(panel_controller->GetActiveEntrySource(),
+            contextual_tasks::ContextualTasksPanelController::EntrySource::
+                kAskGoogle);
   auto* session_handle =
       panel_controller->GetContextualSearchSessionHandleForPanel();
   ASSERT_TRUE(session_handle);
@@ -1311,11 +1319,16 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
                        ExecAskGoogleAboutThisPageFromAppMenuOpensSidePanel) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
   chrome::ExecAskGoogleAboutThisPage(
       browser()->GetActiveTabInterface()->GetBrowserWindowInterface(),
       lens::LensOverlayInvocationSource::kAppMenu,
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AskGoogle.Invoked",
+      lens::LensOverlayInvocationSource::kAppMenu, 1);
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
@@ -1323,6 +1336,9 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
   auto* panel_controller =
       contextual_tasks::ContextualTasksPanelController::From(browser());
   ASSERT_TRUE(panel_controller);
+  EXPECT_EQ(panel_controller->GetActiveEntrySource(),
+            contextual_tasks::ContextualTasksPanelController::EntrySource::
+                kAskGoogle);
   auto* session_handle =
       panel_controller->GetContextualSearchSessionHandleForPanel();
   ASSERT_TRUE(session_handle);

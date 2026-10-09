@@ -74,6 +74,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContextualTasks.AskGoogle.Invoked"
+    enum="LensOverlayInvocationSource" expires_after="2027-06-18">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user invokes 'Ask Google about this page' via any of the
+    updated entry points (context menu, app menu, pinned toolbar button, or
+    homework action chip).
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.BackButton.UserAction.NavigatedFromSidePanelToFullTab"
     enum="Boolean" expires_after="2027-03-07">
@@ -583,6 +594,16 @@ chromium-metrics-reviews@google.com.
     Recorded when the user clicks the side panel close button, for sessions that
     were entered via AIO2Cobr (AI Overviews to CoBrowse) flows. Always recorded
     as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SidePanel.UserAction.Close.AskGoogle"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the side panel close button, for sessions that
+    were entered via the Ask Google entry points. Always recorded as true.
   </summary>
 </histogram>
 

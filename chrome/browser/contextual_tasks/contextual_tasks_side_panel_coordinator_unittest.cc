@@ -385,6 +385,12 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
 
   EXPECT_EQ(ContextualTasksPanelController::EntrySource::kAioToCobr,
             coordinator_->GetActiveEntrySource());
+
+  coordinator_->Show(false, omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kAskGoogle,
+            coordinator_->GetActiveEntrySource());
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
@@ -793,6 +799,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                 "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "ContextualTasks.SidePanel.UserAction.Close.Other"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -831,6 +839,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                    "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "ContextualTasks.SidePanel.UserAction.Close.Other"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -871,8 +881,52 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                 "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "ContextualTasks.SidePanel.UserAction.Close.AioToCobr"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Session.Duration.AioToCobr", 0);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_AskGoogle) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Show the side panel with an Ask Google entry point.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
+
+  // Call Close() programmatically (simulating framework close).
+  coordinator_->Close();
+
+  // Trigger the close event via user action (simulating UI transition
+  // completion).
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  // Verify that the Ask Google close metric was recorded.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.AskGoogle", true, 1);
+
+  // Verify that other close metrics were NOT recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AioToCobr"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -917,6 +971,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                 "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "ContextualTasks.SidePanel.UserAction.Close.Other"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,

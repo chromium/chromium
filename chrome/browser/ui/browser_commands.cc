@@ -3161,6 +3161,8 @@ void ExecAskGoogleAboutThisPage(
   if (!browser) {
     return;
   }
+  base::UmaHistogramEnumeration("ContextualTasks.AskGoogle.Invoked",
+                                invocation_source);
   if (auto* const user_education =
           BrowserUserEducationInterface::From(browser)) {
     user_education->NotifyNewBadgeFeatureUsed(
