@@ -15,6 +15,9 @@ BASE_DECLARE_FEATURE(kEnableEnterpriseIsolatedMode);
 // Enables Milestone 2 of Enterprise Isolated Mode.
 BASE_DECLARE_FEATURE(kEnterpriseIsolatedModeMilestone2);
 
+// Returns whether CAA is enabled in Isolated Mode.
+bool IsCaaEnabledInIsolatedMode();
+
 namespace switches {
 inline constexpr char kForceEnterpriseIsolatedModeReplacesIncognito[] =
     "force-enterprise-isolated-mode";
