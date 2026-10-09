@@ -270,6 +270,47 @@ TEST(GlicInvokeMetricsTest,
             static_cast<int64_t>(blocking.GetInvocationId()));
 }
 
+// Wire values of GlicClientLoadState in structured.xml. These must not change.
+constexpr int kLoadingWireValue = 0;
+constexpr int kReadyWireValue = 1;
+constexpr int kErrorWireValue = 2;
+
+TEST(GlicInvokeMetricsTest, InvokeTerminatedHasClientLoadStateAtStart) {
+  struct {
+    ClientLoadState state;
+    int wire_value;
+  } const kCases[] = {
+      {ClientLoadState::kLoading, kLoadingWireValue},
+      {ClientLoadState::kReady, kReadyWireValue},
+      {ClientLoadState::kError, kErrorWireValue},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.state));
+    ScopedStructuredEventCapture capture;
+    GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+    metrics.SetClientLoadStateAtStart(test_case.state);
+    metrics.RecordStarted();
+    metrics.RecordError(GlicInvokeError::kClientLoadError,
+                        GlicTaskType::kWaitForClientReady);
+
+    auto events = capture.GetEvents("InvokeTerminated");
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(GetIntMetric(*events[0], "ClientLoadStateAtStart"),
+              test_case.wire_value);
+  }
+}
+
+TEST(GlicInvokeMetricsTest,
+     InvokeTerminatedOmitsClientLoadStateAtStartWhenNeverStarted) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+  metrics.RecordError(GlicInvokeError::kProfileNotEnabled);
+
+  auto events = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "ClientLoadStateAtStart"), std::nullopt);
+}
+
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 }  // namespace

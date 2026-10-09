@@ -46,6 +46,12 @@ class GlicInvokeMetrics {
   void SetEmbedderType(EmbedderType embedder_type) {
     embedder_type_ = embedder_type;
   }
+  // The targeted host's load state when the invocation starts. Attached to
+  // InvokeTerminated so that an invocation that fails on a failure left over
+  // from an earlier show can be told apart from one that watched it happen.
+  void SetClientLoadStateAtStart(ClientLoadState state) {
+    client_load_state_at_start_ = state;
+  }
 
   // Called when the invocation orchestrator starts execution.
   void RecordStarted() const;
@@ -83,6 +89,7 @@ class GlicInvokeMetrics {
   uint64_t invocation_id_;
   std::optional<mojom::FeatureMode> feature_mode_;
   std::optional<EmbedderType> embedder_type_;
+  std::optional<ClientLoadState> client_load_state_at_start_;
 };
 
 }  // namespace glic

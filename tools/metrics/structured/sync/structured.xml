@@ -3736,6 +3736,12 @@
     <variant value="2">TAB</variant>
     <variant value="3">UNKNOWN</variant>
   </enum>
+
+  <enum name="GlicClientLoadState">
+    <variant value="0">LOADING</variant>
+    <variant value="1">READY</variant>
+    <variant value="2">LOAD_ERROR</variant>
+  </enum>
   <event name="InvokeStarted">
     <summary>
       Recorded when a Glic invocation is initiated.
@@ -3825,6 +3831,18 @@
         InvokeStarted.EmbedderType for invocations rejected before they start
         (see InvocationSource). Absent if the invocation was rejected before its
         target surface was resolved (e.g. kProfileNotEnabled).
+      </summary>
+    </metric>
+    <metric name="ClientLoadStateAtStart" type="GlicClientLoadState">
+      <summary>
+        Host::client_load_state() of the targeted instance when the invocation
+        started, before any of its tasks ran. For invocations that end with
+        kClientLoadError this tells a failure the invocation inherited from an
+        earlier show of the panel (LOAD_ERROR), which it would terminate on
+        synchronously and so without any InvokeWebUiStateReached or
+        ClientLoadError event of its own, apart from one it watched happen
+        (LOADING, or READY if the client was lost mid-invocation). Absent for
+        invocations rejected before they start.
       </summary>
     </metric>
   </event>

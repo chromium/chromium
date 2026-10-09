@@ -433,7 +433,10 @@ void GlicInvokeHandler::Invoke() {
           weak_ptr_factory_.GetWeakPtr()));
 
   // The feature mode and embedder type were set on `metrics_` by the
-  // coordinator while resolving this invocation.
+  // coordinator while resolving this invocation. The client load state is
+  // captured here, before any task has run, so it reflects what the
+  // invocation inherited rather than what it caused.
+  metrics_->SetClientLoadStateAtStart(instance_->host().client_load_state());
   metrics_->RecordStarted();
   instance_->instance_metrics().SetActiveInvocationId(
       metrics_->GetInvocationId());

@@ -46,6 +46,22 @@ ToStructuredEmbedderType(EmbedderType embedder_type) {
       return StructuredEmbedderType::UNKNOWN;
   }
 }
+
+// As above, for ClientLoadState.
+metrics::structured::events::v2::glic::GlicClientLoadState
+ToStructuredClientLoadState(ClientLoadState state) {
+  using StructuredClientLoadState =
+      metrics::structured::events::v2::glic::GlicClientLoadState;
+  switch (state) {
+    case ClientLoadState::kLoading:
+      return StructuredClientLoadState::LOADING;
+    case ClientLoadState::kReady:
+      return StructuredClientLoadState::READY;
+    case ClientLoadState::kError:
+      // Not ERROR: that is a macro on Windows (see base/logging.h).
+      return StructuredClientLoadState::LOAD_ERROR;
+  }
+}
 #endif
 
 }  // namespace
@@ -188,6 +204,10 @@ void GlicInvokeMetrics::RecordTerminated(
   }
   if (in_progress_invocation_id.has_value()) {
     event.SetInProgressInvocationId(*in_progress_invocation_id);
+  }
+  if (client_load_state_at_start_.has_value()) {
+    event.SetClientLoadStateAtStart(
+        ToStructuredClientLoadState(*client_load_state_at_start_));
   }
   metrics::structured::StructuredMetricsClient::Record(std::move(event));
 #endif
