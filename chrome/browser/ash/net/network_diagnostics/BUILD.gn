@@ -56,8 +56,6 @@ static_library("network_diagnostics") {
     "video_conferencing_routine.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":hosts_connectivity_diagnostics_proto",
     "//ash",

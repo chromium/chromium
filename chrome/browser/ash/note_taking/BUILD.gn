@@ -12,8 +12,6 @@ static_library("note_taking") {
     "note_taking_helper.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//apps",
     "//ash/constants",

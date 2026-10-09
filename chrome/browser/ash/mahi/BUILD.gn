@@ -10,8 +10,6 @@ static_library("mahi_availability") {
     "mahi_availability.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//base",
@@ -34,8 +32,6 @@ static_library("mahi") {
     "mahi_manager_impl.cc",
     "mahi_manager_impl.h",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":mahi_availability",

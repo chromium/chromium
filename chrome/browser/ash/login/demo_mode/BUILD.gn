@@ -22,7 +22,6 @@ static_library("demo_mode") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/dbus/power",
@@ -95,10 +94,7 @@ static_library("demo_mode_login") {
     "demo_login_controller.h",
   ]
 
-  public_deps = [
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ "//base" ]
 
   deps = [
     "//ash/constants",
