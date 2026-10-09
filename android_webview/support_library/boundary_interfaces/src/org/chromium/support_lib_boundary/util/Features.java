@@ -515,9 +515,9 @@ public class Features {
     public static final String CROSS_ORIGIN_ISOLATED_ALLOW_LIST =
             "CROSS_ORIGIN_ISOLATED_ALLOW_LIST";
 
-    // Navigation.getResponseHeaders
+    // NavigationState.getResponseHeaders
     //
-    // WebViewNavigationListener.onNavigationRedirected(WebViewNavigation,
+    // WebViewNavigationListener.onNavigationRedirected(WebViewNavigationState,
     // NavigationRedirectParameters)
     //
     // NavigationRedirectParameters.getResponseHeaders
@@ -525,7 +525,7 @@ public class Features {
     // NavigationRedirectParameters.getStatusCode
     public static final String NAVIGATION_GET_RESPONSE_HEADERS = "NAVIGATION_GET_RESPONSE_HEADERS";
 
-    // WebViewNavigation.getNavigationStartUptimeMillis
+    // WebViewNavigationState.getNavigationStartUptimeMillis
     public static final String NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS =
             "NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS";
 
@@ -535,4 +535,19 @@ public class Features {
 
     // WebChromeClientCompat.onReceivedThemeColor
     public static final String THEME_COLOR_CALLBACK = "THEME_COLOR_CALLBACK";
+
+    // WebViewNavigationListener.onNavigationStarted(WebViewNavigationState)
+    // WebViewNavigationListener.onNavigationRedirected(WebViewNavigationState)
+    // WebViewNavigationListener.onNavigationCompleted(WebViewNavigationState)
+    // WebViewNavigationListener.onPageDeleted(WebViewPageState)
+    // WebViewNavigationListener.onPageLoadEventFired(WebViewPageState)
+    // WebViewNavigationListener.onPageDOMContentLoadedEventFired(WebViewPageState)
+    // WebViewNavigationListener.onFirstContentfulPaintMillis(WebViewPageState)
+    // WebViewNavigationListener.onLargestContentfulPaintMillis(WebViewPageState)
+    // WebViewNavigationListener.onPerformanceMarkMillis(WebViewPageState)
+    //
+    // Navigation.snapshotState
+    // Page.snapshotState
+    public static final String NAVIGATION_LISTENER_NAVIGATION_STATE =
+            "NAVIGATION_LISTENER_NAVIGATION_STATE";
 }

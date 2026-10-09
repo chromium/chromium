@@ -966,6 +966,26 @@ chromium-metrics-reviews@google.com.
   <int value="211" label="WebViewProviderFactory.createWebSurface"/>
   <int value="212" label="NavigationRedirectParameters.getResponseHeaders"/>
   <int value="213" label="NavigationRedirectParameters.getStatusCode"/>
+  <int value="214" label="NavigationState.getUrl"/>
+  <int value="215" label="NavigationState.wasInitiatedByPage"/>
+  <int value="216" label="NavigationState.isSameDocument"/>
+  <int value="217" label="NavigationState.isReload"/>
+  <int value="218" label="NavigationState.isHistory"/>
+  <int value="219" label="NavigationState.isRestore"/>
+  <int value="220" label="NavigationState.isBack"/>
+  <int value="221" label="NavigationState.isForward"/>
+  <int value="222" label="NavigationState.didCommit"/>
+  <int value="223" label="NavigationState.didCommitErrorPage"/>
+  <int value="224" label="NavigationState.getStatusCode"/>
+  <int value="225" label="NavigationState.getNavigationStartUptimeMillis"/>
+  <int value="226" label="NavigationState.getPageState"/>
+  <int value="227" label="NavigationState.getWebResourceError"/>
+  <int value="228" label="NavigationState.getResponseHeaders"/>
+  <int value="229" label="NavigationState.getNavigation"/>
+  <int value="230" label="PageState.getUrl"/>
+  <int value="231" label="PageState.getPage"/>
+  <int value="232" label="Navigation.snapshotState"/>
+  <int value="233" label="Page.snapshotState"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

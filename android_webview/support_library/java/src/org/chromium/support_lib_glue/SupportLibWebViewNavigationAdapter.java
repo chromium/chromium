@@ -179,6 +179,16 @@ class SupportLibWebViewNavigationAdapter implements WebViewNavigationBoundaryInt
     }
 
     @Override
+    public /* NavigationState */ InvocationHandler snapshotState() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_SNAPSHOT_STATE")) {
+            recordApiCall(ApiCall.NAVIGATION_SNAPSHOT_STATE);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebViewNavigationStateAdapter(mNavigation.snapshotState()));
+        }
+    }
+
+    @Override
     public Object getOrCreatePeer(Callable<Object> creationCallable) {
         return mNavigation.getOrCreateSupportLibObject(creationCallable);
     }

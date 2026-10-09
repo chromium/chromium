@@ -10,8 +10,10 @@ import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebViewPageBoundaryInterface;
+import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
+import java.lang.reflect.InvocationHandler;
 import java.util.concurrent.Callable;
 
 /**
@@ -37,6 +39,15 @@ class SupportLibWebViewPageAdapter implements WebViewPageBoundaryInterface {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PAGE_GET_URL")) {
             recordApiCall(ApiCall.PAGE_GET_URL);
             return mPage.getUrl();
+        }
+    }
+
+    @Override
+    public /* PageState */ InvocationHandler snapshotState() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PAGE_SNAPSHOT_STATE")) {
+            recordApiCall(ApiCall.PAGE_SNAPSHOT_STATE);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebViewPageStateAdapter(mPage.snapshotState()));
         }
     }
 }

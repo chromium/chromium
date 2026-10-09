@@ -166,6 +166,7 @@ public class SupportLibWebViewChromiumFactory
                 WebFeatures.WEB_SURFACE + WebFeatures.DEV_SUFFIX,
                 Features.ADD_QUIC_HINTS_WILDCARDS,
                 Features.THEME_COLOR_CALLBACK + Features.DEV_SUFFIX,
+                Features.NAVIGATION_LISTENER_NAVIGATION_STATE + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -405,6 +406,26 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.CREATE_WEB_SURFACE,
         ApiCall.REDIRECT_PARAMETERS_GET_RESPONSE_HEADERS,
         ApiCall.REDIRECT_PARAMETERS_GET_STATUS_CODE,
+        ApiCall.NAVIGATION_STATE_GET_URL,
+        ApiCall.NAVIGATION_STATE_WAS_INITIATED_BY_PAGE,
+        ApiCall.NAVIGATION_STATE_IS_SAME_DOCUMENT,
+        ApiCall.NAVIGATION_STATE_IS_RELOAD,
+        ApiCall.NAVIGATION_STATE_IS_HISTORY,
+        ApiCall.NAVIGATION_STATE_IS_RESTORE,
+        ApiCall.NAVIGATION_STATE_IS_BACK,
+        ApiCall.NAVIGATION_STATE_IS_FORWARD,
+        ApiCall.NAVIGATION_STATE_DID_COMMIT,
+        ApiCall.NAVIGATION_STATE_DID_COMMIT_ERROR_PAGE,
+        ApiCall.NAVIGATION_STATE_GET_STATUS_CODE,
+        ApiCall.NAVIGATION_STATE_GET_NAVIGATION_START_UPTIME_MILLIS,
+        ApiCall.NAVIGATION_STATE_GET_PAGE_STATE,
+        ApiCall.NAVIGATION_STATE_GET_WEB_RESOURCE_ERROR,
+        ApiCall.NAVIGATION_STATE_GET_RESPONSE_HEADERS,
+        ApiCall.NAVIGATION_STATE_GET_NAVIGATION,
+        ApiCall.PAGE_STATE_GET_URL,
+        ApiCall.PAGE_STATE_GET_PAGE,
+        ApiCall.NAVIGATION_SNAPSHOT_STATE,
+        ApiCall.PAGE_SNAPSHOT_STATE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -626,8 +647,28 @@ public class SupportLibWebViewChromiumFactory
         int CREATE_WEB_SURFACE = 211;
         int REDIRECT_PARAMETERS_GET_RESPONSE_HEADERS = 212;
         int REDIRECT_PARAMETERS_GET_STATUS_CODE = 213;
+        int NAVIGATION_STATE_GET_URL = 214;
+        int NAVIGATION_STATE_WAS_INITIATED_BY_PAGE = 215;
+        int NAVIGATION_STATE_IS_SAME_DOCUMENT = 216;
+        int NAVIGATION_STATE_IS_RELOAD = 217;
+        int NAVIGATION_STATE_IS_HISTORY = 218;
+        int NAVIGATION_STATE_IS_RESTORE = 219;
+        int NAVIGATION_STATE_IS_BACK = 220;
+        int NAVIGATION_STATE_IS_FORWARD = 221;
+        int NAVIGATION_STATE_DID_COMMIT = 222;
+        int NAVIGATION_STATE_DID_COMMIT_ERROR_PAGE = 223;
+        int NAVIGATION_STATE_GET_STATUS_CODE = 224;
+        int NAVIGATION_STATE_GET_NAVIGATION_START_UPTIME_MILLIS = 225;
+        int NAVIGATION_STATE_GET_PAGE_STATE = 226;
+        int NAVIGATION_STATE_GET_WEB_RESOURCE_ERROR = 227;
+        int NAVIGATION_STATE_GET_RESPONSE_HEADERS = 228;
+        int NAVIGATION_STATE_GET_NAVIGATION = 229;
+        int PAGE_STATE_GET_URL = 230;
+        int PAGE_STATE_GET_PAGE = 231;
+        int NAVIGATION_SNAPSHOT_STATE = 232;
+        int PAGE_SNAPSHOT_STATE = 233;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 214;
+        int COUNT = 234;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

@@ -1,8 +1,10 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.support_lib_boundary;
+
+import androidx.annotation.AnyThread;
 
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -10,9 +12,10 @@ import org.jspecify.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.util.Map;
 
-/** Boundary interface for WebViewNavigation. */
+/** Boundary interface for WebViewNavigationState. */
+@AnyThread
 @NullMarked
-public interface WebViewNavigationBoundaryInterface extends IsomorphicObjectBoundaryInterface {
+public interface WebViewNavigationStateBoundaryInterface {
     String getUrl();
 
     boolean wasInitiatedByPage();
@@ -37,11 +40,11 @@ public interface WebViewNavigationBoundaryInterface extends IsomorphicObjectBoun
 
     long getNavigationStartUptimeMillis();
 
-    /* WebViewPage */ @Nullable InvocationHandler getPage();
+    @Nullable /* WebViewPageState */ InvocationHandler getPageState();
 
-    /* WebResourceError */ @Nullable InvocationHandler getWebResourceError();
+    @Nullable /* WebResourceError */ InvocationHandler getWebResourceError();
 
     @Nullable Map<String, String> getResponseHeaders();
 
-    /* WebViewNavigationState */ InvocationHandler snapshotState();
+    /* WebViewNavigation */ InvocationHandler getNavigation();
 }

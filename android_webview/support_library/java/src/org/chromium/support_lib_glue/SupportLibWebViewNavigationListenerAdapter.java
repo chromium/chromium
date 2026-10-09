@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.support_lib_glue;
 
+import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwNavigationListener;
 import org.chromium.android_webview.AwNavigationState;
+import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.AwPageState;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.build.annotations.NullMarked;
@@ -62,12 +64,22 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onNavigationStartedThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewNavigationStateAdapter(
+                                                    navigationState))));
+            return;
+        }
+        AwNavigation navigation = navigationState.getNavigation();
         mExecutor.execute(
                 () ->
                         mImpl.onNavigationStarted(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewNavigationAdapter(
-                                                navigationState.getNavigation()))));
+                                        new SupportLibWebViewNavigationAdapter(navigation))));
     }
 
     @Override
@@ -75,29 +87,31 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
             AwNavigationState navigationState,
             Map<String, String> responseHeaders,
             int statusCode) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
+            return;
+        }
+        // also requires feature NAVIGATION_GET_RESPONSE_HEADERS, but both features are implemented
+        // in the same AndroidX version.
         if (BoundaryInterfaceReflectionUtil.containsFeature(
-                mSupportedFeatures, Features.NAVIGATION_GET_RESPONSE_HEADERS)) {
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
             mExecutor.execute(
                     () ->
-                            mImpl.onNavigationRedirected(
+                            mImpl.onNavigationRedirectedThreadsafe(
                                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                            new SupportLibWebViewNavigationAdapter(
-                                                    navigationState.getNavigation())),
+                                            new SupportLibWebViewNavigationStateAdapter(
+                                                    navigationState)),
                                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                             new SupportLibNavigationRedirectParametersAdapter(
                                                     responseHeaders, statusCode))));
             return;
         }
-        if (!BoundaryInterfaceReflectionUtil.containsFeature(
-                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
-            return;
-        }
+        AwNavigation navigation = navigationState.getNavigation();
         mExecutor.execute(
                 () ->
                         mImpl.onNavigationRedirected(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewNavigationAdapter(
-                                                navigationState.getNavigation()))));
+                                        new SupportLibWebViewNavigationAdapter(navigation))));
     }
 
     @Override
@@ -106,12 +120,22 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onNavigationCompletedThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewNavigationStateAdapter(
+                                                    navigationState))));
+            return;
+        }
+        AwNavigation navigation = navigationState.getNavigation();
         mExecutor.execute(
                 () ->
                         mImpl.onNavigationCompleted(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewNavigationAdapter(
-                                                navigationState.getNavigation()))));
+                                        new SupportLibWebViewNavigationAdapter(navigation))));
     }
 
     @Override
@@ -120,12 +144,22 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onNavigationVisibleThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewNavigationStateAdapter(
+                                                    navigationState))));
+            return;
+        }
+        AwNavigation navigation = navigationState.getNavigation();
         mExecutor.execute(
                 () ->
                         mImpl.onNavigationVisible(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewNavigationAdapter(
-                                                navigationState.getNavigation()))));
+                                        new SupportLibWebViewNavigationAdapter(navigation))));
     }
 
     @Override
@@ -134,11 +168,21 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onPageDeletedThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageStateAdapter(pageState))));
+            return;
+        }
+        AwPage page = pageState.getPage();
         mExecutor.execute(
                 () ->
                         mImpl.onPageDeleted(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewPageAdapter(pageState.getPage()))));
+                                        new SupportLibWebViewPageAdapter(page))));
     }
 
     @Override
@@ -147,11 +191,21 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onPageLoadEventFiredThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageStateAdapter(pageState))));
+            return;
+        }
+        AwPage page = pageState.getPage();
         mExecutor.execute(
                 () ->
                         mImpl.onPageLoadEventFired(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewPageAdapter(pageState.getPage()))));
+                                        new SupportLibWebViewPageAdapter(page))));
     }
 
     @Override
@@ -160,34 +214,57 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onPageDOMContentLoadedEventFiredThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageStateAdapter(pageState))));
+            return;
+        }
+        AwPage page = pageState.getPage();
         mExecutor.execute(
                 () ->
                         mImpl.onPageDOMContentLoadedEventFired(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewPageAdapter(pageState.getPage()))));
+                                        new SupportLibWebViewPageAdapter(page))));
     }
 
     @Override
     public void onFirstContentfulPaint(AwPageState pageState, long durationMillis) {
+        AwPage page = pageState.getPage();
         if (BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             mExecutor.execute(
                     () ->
                             mImpl.onFirstContentfulPaint(
                                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                            new SupportLibWebViewPageAdapter(pageState.getPage())),
+                                            new SupportLibWebViewPageAdapter(page)),
                                     TimeUnit.MILLISECONDS.toMicros(durationMillis)));
         }
 
-        if (BoundaryInterfaceReflectionUtil.containsFeature(
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
+            return;
+        }
+
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
             mExecutor.execute(
                     () ->
-                            mImpl.onFirstContentfulPaintMillis(
+                            mImpl.onFirstContentfulPaintMillisThreadsafe(
                                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                            new SupportLibWebViewPageAdapter(pageState.getPage())),
+                                            new SupportLibWebViewPageStateAdapter(pageState)),
                                     durationMillis));
+            return;
         }
+        mExecutor.execute(
+                () ->
+                        mImpl.onFirstContentfulPaintMillis(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibWebViewPageAdapter(page)),
+                                durationMillis));
     }
 
     @Override
@@ -196,11 +273,22 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onLargestContentfulPaintMillisThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageStateAdapter(pageState)),
+                                    durationMillis));
+            return;
+        }
+        AwPage page = pageState.getPage();
         mExecutor.execute(
                 () ->
                         mImpl.onLargestContentfulPaintMillis(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewPageAdapter(pageState.getPage())),
+                                        new SupportLibWebViewPageAdapter(page)),
                                 durationMillis));
     }
 
@@ -210,11 +298,23 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
             return;
         }
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_LISTENER_NAVIGATION_STATE)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onPerformanceMarkMillisThreadsafe(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageStateAdapter(pageState)),
+                                    markName,
+                                    markTimeMillis));
+            return;
+        }
+        AwPage page = pageState.getPage();
         mExecutor.execute(
                 () ->
                         mImpl.onPerformanceMarkMillis(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibWebViewPageAdapter(pageState.getPage())),
+                                        new SupportLibWebViewPageAdapter(page)),
                                 markName,
                                 markTimeMillis));
     }
