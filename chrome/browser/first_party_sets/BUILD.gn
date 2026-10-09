@@ -36,7 +36,6 @@ source_set("impl") {
     "first_party_sets_policy_service_factory.cc",
     "scoped_mock_first_party_sets_handler.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":first_party_sets",
     "//base",

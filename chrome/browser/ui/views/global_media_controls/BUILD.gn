@@ -81,7 +81,6 @@ source_set("impl") {
     "//components/vector_icons",
     "//ui/strings:ui_strings",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {

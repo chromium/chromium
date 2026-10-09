@@ -52,7 +52,6 @@ source_set("impl") {
     "//components/user_education/webui",
     "//ui/base/unowned_user_data",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

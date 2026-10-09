@@ -78,7 +78,6 @@ source_set("impl") {
       "//ui/native_theme",
     ]
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (is_win || is_mac || is_linux) {

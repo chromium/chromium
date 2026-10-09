@@ -75,8 +75,6 @@ source_set("impl") {
     "//ui/compositor",
     "//ui/gfx/animation",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("browser_tests") {

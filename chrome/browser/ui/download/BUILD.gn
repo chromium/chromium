@@ -59,7 +59,6 @@ source_set("impl") {
     "//ui/base:features",
     "//ui/views",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

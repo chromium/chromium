@@ -52,10 +52,7 @@ source_set("save_to_memory_bank_bubble_controller") {
 
 source_set("save_to_memory_bank_bubble_controller_impl") {
   sources = [ "save_to_memory_bank_bubble_controller.cc" ]
-  public_deps = [
-    ":save_to_memory_bank_bubble_controller",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":save_to_memory_bank_bubble_controller" ]
   deps = [
     ":save_to_memory_bank_bubble_view",
     "//chrome/browser/profiles:profile",

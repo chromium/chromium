@@ -37,8 +37,6 @@ source_set("impl") {
     "discounts_page_action_controller.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":commerce",
     "//chrome/browser/feature_engagement",

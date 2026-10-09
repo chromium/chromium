@@ -55,7 +55,6 @@ source_set("impl") {
   if (enable_downgrade_processing) {
     deps += [
       "//chrome/browser:browser_process",
-      "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile_manager",

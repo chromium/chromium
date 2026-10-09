@@ -52,10 +52,7 @@ source_set("popup_impl") {
     "popup_row_view.cc",
     "popup_view_utils.cc",
   ]
-  public_deps = [
-    ":popup",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":popup" ]
   deps = [
     ":custom_cursor_suppressor",
     ":lazy_loading_image_view",
@@ -133,10 +130,7 @@ source_set("popup_view_views") {
 
 source_set("popup_view_views_impl") {
   sources = [ "popup_view_views.cc" ]
-  public_deps = [
-    ":popup_view_views",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":popup_view_views" ]
   deps = [
     ":lazy_loading_image_view",
     ":password_favicon_loader",

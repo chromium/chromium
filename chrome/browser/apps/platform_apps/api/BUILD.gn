@@ -31,8 +31,6 @@ source_set("api") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:primitives",

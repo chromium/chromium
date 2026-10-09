@@ -16,7 +16,6 @@ source_set("pin_infobar") {
     "//ui/base/unowned_user_data",
   ]
   deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//components/infobars/core",
     "//components/vector_icons",
     "//ui/gfx:native_ui_types",

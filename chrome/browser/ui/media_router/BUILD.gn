@@ -83,8 +83,6 @@ source_set("impl") {
     "//ui/display",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("browser_tests") {

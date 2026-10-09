@@ -32,13 +32,6 @@ source_set("impl") {
     "//ui/events",
     "//ui/views",
   ]
-
-  # fullscreen_control_host.cc includes
-  # chrome/browser/ui/views/frame/browser_view.h, still compiled in
-  # //chrome/browser/ui:ui with no BrowserWindowInterface accessor yet. Reach
-  # it via browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("interactive_ui_tests") {

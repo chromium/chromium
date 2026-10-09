@@ -185,10 +185,7 @@ source_set("autofill_field_promo_view_impl") {
 
 source_set("autofill_field_promo_view_impl_impl") {
   sources = [ "autofill_field_promo_view_impl.cc" ]
-  public_deps = [
-    ":autofill_field_promo_view_impl",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":autofill_field_promo_view_impl" ]
   deps = [
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/autofill/popup",
@@ -211,10 +208,7 @@ source_set("at_memory_promo_bubble_view") {
 
 source_set("at_memory_promo_bubble_view_impl") {
   sources = [ "at_memory_promo_bubble_view.cc" ]
-  public_deps = [
-    ":at_memory_promo_bubble_view",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":at_memory_promo_bubble_view" ]
   deps = [
     "//base",
     "//chrome/app/theme:theme_resources",

@@ -43,10 +43,7 @@ source_set("impl") {
     "download_display_controller.cc",
   ]
 
-  public_deps = [
-    ":bubble",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":bubble" ]
 
   deps = [
     "//chrome/browser:browser_process",

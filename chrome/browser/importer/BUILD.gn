@@ -34,8 +34,6 @@ source_set("importer") {
 }
 
 source_set("impl") {
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   sources = [
     "external_process_importer_client.cc",
     "external_process_importer_host.cc",

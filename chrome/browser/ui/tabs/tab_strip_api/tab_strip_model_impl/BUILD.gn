@@ -23,9 +23,6 @@ source_set("tab_strip_model_impl") {
     "tab_strip_model_injector.h",
   ]
 
-  # Remove this once tab_ui_helper.cc is modularized.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "converters",
     "tree_builder",

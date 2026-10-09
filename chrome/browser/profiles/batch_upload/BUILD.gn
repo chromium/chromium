@@ -43,7 +43,6 @@ source_set("impl") {
     "//components/sync/service",
     "//ui/base",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {
