@@ -7920,10 +7920,6 @@ inline constexpr char kGlanceablesTimeManagementTasksViewDescription[] =
     "Enables Google Tasks integration on the Time Management Glanceables "
     "surface (via Calendar entry point).";
 
-inline constexpr char kHelpAppAppsListName[] = "Help App apps list";
-inline constexpr char kHelpAppAppsListDescription[] =
-    "If enabled, the Help app will render the Apps List page and entry point.";
-
 inline constexpr char kHelpAppAutoTriggerInstallDialogName[] =
     "Help App Auto Trigger Install Dialog";
 inline constexpr char kHelpAppAutoTriggerInstallDialogDescription[] =

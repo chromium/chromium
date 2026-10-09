@@ -165,8 +165,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     // them in the background page.
     source->AddBoolean("HelpAppAppsGamesBannerV2", true);
     source->AddBoolean("HelpAppAppDetailPage", true);
-    source->AddBoolean("HelpAppAppsList", base::FeatureList::IsEnabled(
-                                              ash::features::kHelpAppAppsList));
+    source->AddBoolean("HelpAppAppsList", true);
     source->AddBoolean("HelpAppHomePageAppArticles",
                        base::FeatureList::IsEnabled(
                            ash::features::kHelpAppHomePageAppArticles));

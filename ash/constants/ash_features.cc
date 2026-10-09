@@ -941,9 +941,6 @@ BASE_FEATURE(kHeliumArcvmKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 // Should stay disabled by default.
 BASE_FEATURE(kHeliumArcvmKioskDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Help app will render the Apps List page and entry point.
-BASE_FEATURE(kHelpAppAppsList, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the logic that auto triggers the install dialog during the web app
 // install flow initiated from the Help App.
 BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
