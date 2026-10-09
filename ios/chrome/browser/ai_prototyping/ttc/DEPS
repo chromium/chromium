@@ -2,7 +2,10 @@ include_rules = [
   # keep-sorted start
   "+components/actor/public/mojom",
   "+components/keyed_service/core",
-  "+components/ttc/app/public",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+components/ttc/app",
+  "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/shared/public/features",
   # keep-sorted end

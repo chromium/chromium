@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/run_until.h"
+#import "components/ttc/app/test_utils.h"
+#import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
@@ -314,6 +316,21 @@ TEST_F(TTCSessionControllerTest, TestCustomConversationInjection) {
 
   EXPECT_EQ(controller.conversation, conversation);
   EXPECT_EQ(conversation.delegate,
+            static_cast<id<TTCConversationDelegate>>(controller));
+  [controller disconnect];
+}
+
+// Tests that `initWithBackend:` creates a conversation backed by the provided
+// `ttc::TtcBackend` and assigns itself as the delegate.
+TEST_F(TTCSessionControllerTest, TestInitWithBackend) {
+  auto backend = std::make_unique<testing::NiceMock<ttc::MockTtcBackend>>();
+  ttc::TtcBackend* backend_ptr = backend.get();
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithBackend:std::move(backend)];
+
+  ASSERT_TRUE(controller.conversation);
+  EXPECT_EQ(controller.conversation.backend, backend_ptr);
+  EXPECT_EQ(controller.conversation.delegate,
             static_cast<id<TTCConversationDelegate>>(controller));
   [controller disconnect];
 }

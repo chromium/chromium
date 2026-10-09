@@ -4,7 +4,6 @@
 
 source_set("model") {
   sources = [
-    "ttc_backend.h",
     "ttc_conversation.h",
     "ttc_conversation.mm",
     "ttc_conversation_delegate.h",
@@ -18,15 +17,21 @@ source_set("model") {
     "ttc_session_controller.mm",
     "ttc_session_controller_observer.h",
     "ttc_states.h",
-    "ttc_websocket_backend+Testing.h",
     "ttc_websocket_backend.h",
     "ttc_websocket_backend.mm",
   ]
-  public_deps = [ "//components/ttc/app/public" ]
+  public_deps = [
+    "//components/ttc/app",
+    "//components/ttc/app/public",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/ttc/app:impl",
     "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
@@ -52,6 +57,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/ttc/app",
+    "//components/ttc/app:test_support",
     "//components/ttc/app/public",
     "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -59,8 +67,10 @@ source_set("unit_tests") {
     "//ios/chrome/test/providers/intelligence",
     "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
   frameworks = [
     "Foundation.framework",

@@ -7,8 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
+namespace ttc {
+class TtcBackend;
+}  // namespace ttc
+
 @protocol TTCAudioController;
-@protocol TTCBackend;
 @protocol TTCConversationDelegate;
 
 // Coordinates between audio input/output and the transport session for TTC on
@@ -22,11 +27,12 @@
 @property(nonatomic, readonly) id<TTCAudioController> audioController;
 
 // Underlying model execution backend.
-@property(nonatomic, readonly) id<TTCBackend> backend;
+@property(nonatomic, readonly) ttc::TtcBackend* backend;
 
 // Designated initializer injecting a custom audio controller and backend.
 - (instancetype)initWithAudioController:(id<TTCAudioController>)audioController
-                                backend:(id<TTCBackend>)backend
+                                backend:
+                                    (std::unique_ptr<ttc::TtcBackend>)backend
     NS_DESIGNATED_INITIALIZER;
 
 // Convenience initializer using a default `TTCAudioEngine` and default backend.

@@ -8,6 +8,7 @@
 
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -27,7 +28,9 @@ TTCKeyedServiceFactory* TTCKeyedServiceFactory::GetInstance() {
 }
 
 TTCKeyedServiceFactory::TTCKeyedServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("TTCKeyedService") {}
+    : ProfileKeyedServiceFactoryIOS("TTCKeyedService") {
+  DependsOn(OptimizationGuideServiceFactory::GetInstance());
+}
 
 TTCKeyedServiceFactory::~TTCKeyedServiceFactory() = default;
 

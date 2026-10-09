@@ -6,7 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
+#import <utility>
+
 #import "base/check.h"
+#import "components/ttc/app/ttc_backend.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_engine.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
@@ -32,6 +37,13 @@
     [self registerBackgroundObserver];
   }
   return self;
+}
+
+- (instancetype)initWithBackend:(std::unique_ptr<ttc::TtcBackend>)backend {
+  TTCConversation* conversation = [[TTCConversation alloc]
+      initWithAudioController:[[TTCAudioEngine alloc] init]
+                      backend:std::move(backend)];
+  return [self initWithConversation:conversation];
 }
 
 - (instancetype)init {

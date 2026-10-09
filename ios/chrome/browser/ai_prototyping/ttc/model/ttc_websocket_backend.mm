@@ -4,19 +4,25 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 
-#import <string>
+#import <stddef.h>
+#import <stdint.h>
 
+#import <string>
+#import <vector>
+
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend+Testing.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
 #import "url/gurl.h"
 
@@ -31,7 +37,7 @@ constexpr NSTimeInterval kHeartbeatIntervalSeconds = 10.0;
 // `NSURLSessionWebSocketTask` does not expose underlying buffer levels (unlike
 // browser JS `WebSocket.bufferedAmount`), so a small window prevents stale
 // audio buffer buildup under network latency.
-constexpr NSUInteger kMaxInFlightAudioSends = 5;
+constexpr size_t kMaxInFlightAudioSends = 5;
 
 // Milliseconds of prefix padding for automatic speech activity detection.
 constexpr int kPrefixPaddingMs = 20;
@@ -39,59 +45,30 @@ constexpr int kPrefixPaddingMs = 20;
 // HTTP status code for rate limiting / quota exhaustion.
 constexpr int kHTTPStatusTooManyRequests = 429;
 
-// Internal connection states for the WebSocket transport.
-enum class WebSocketState {
-  kDisconnected = 0,
-  kConnecting,
-  kHandshaking,
-  kConnected,
-  kFailed,
-};
-
 }  // namespace
 
-@class TTCWebSocketSessionDelegate;
-
-@interface TTCWebSocketBackend ()
-
-// Invoked on the sequence when the underlying WebSocket opens.
-- (void)webSocketTask:(NSURLSessionWebSocketTask*)webSocketTask
-    didOpenWithProtocol:(NSString*)protocol;
-
-// Invoked on the sequence when the remote connection closes.
-- (void)webSocketTask:(NSURLSessionWebSocketTask*)webSocketTask
-     didCloseWithCode:(NSURLSessionWebSocketCloseCode)closeCode
-               reason:(NSData*)reason;
-
-// Invoked on the sequence when an underlying transport task completes with an
-// error.
-- (void)webSocketTask:(NSURLSessionTask*)task
-    didCompleteWithError:(NSError*)error;
-
-@end
-
-// Private delegate that prevents NSURLSession from strongly
-// retaining TTCWebSocketBackend.
+// Objective-C bridge forwarding `NSURLSessionWebSocketDelegate` callbacks to
+// the C++ `TtcWebSocketBackend` on its sequenced task runner.
 @interface TTCWebSocketSessionDelegate
     : NSObject <NSURLSessionWebSocketDelegate>
 
-- (instancetype)initWithBackend:(TTCWebSocketBackend*)backend
+- (instancetype)initWithBackend:(TtcWebSocketBackend*)backend
                      taskRunner:
                          (scoped_refptr<base::SequencedTaskRunner>)taskRunner;
 
 @end
 
 @implementation TTCWebSocketSessionDelegate {
-  __weak TTCWebSocketBackend* _backend;
+  base::WeakPtr<TtcWebSocketBackend> _backend;
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 }
 
-- (instancetype)initWithBackend:(TTCWebSocketBackend*)backend
+- (instancetype)initWithBackend:(TtcWebSocketBackend*)backend
                      taskRunner:
                          (scoped_refptr<base::SequencedTaskRunner>)taskRunner {
   self = [super init];
   if (self) {
-    _backend = backend;
+    _backend = backend->GetWeakPtr();
     _taskRunner = taskRunner;
   }
   return self;
@@ -100,295 +77,258 @@ enum class WebSocketState {
 - (void)URLSession:(NSURLSession*)session
           webSocketTask:(NSURLSessionWebSocketTask*)webSocketTask
     didOpenWithProtocol:(NSString*)protocol {
-  __weak TTCWebSocketBackend* weakBackend = _backend;
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          [weakBackend webSocketTask:webSocketTask
-                                 didOpenWithProtocol:protocol];
-                        }));
+  _taskRunner->PostTask(FROM_HERE,
+                        base::BindOnce(&TtcWebSocketBackend::OnWebSocketOpened,
+                                       _backend, webSocketTask, protocol));
 }
 
 - (void)URLSession:(NSURLSession*)session
        webSocketTask:(NSURLSessionWebSocketTask*)webSocketTask
     didCloseWithCode:(NSURLSessionWebSocketCloseCode)closeCode
               reason:(NSData*)reason {
-  __weak TTCWebSocketBackend* weakBackend = _backend;
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          [weakBackend webSocketTask:webSocketTask
-                                    didCloseWithCode:closeCode
-                                              reason:reason];
-                        }));
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(&TtcWebSocketBackend::OnWebSocketClosed,
+                                _backend, webSocketTask, closeCode, reason));
 }
 
 - (void)URLSession:(NSURLSession*)session
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
-  __weak TTCWebSocketBackend* weakBackend = _backend;
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          [weakBackend webSocketTask:task
-                                didCompleteWithError:error];
-                        }));
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(&TtcWebSocketBackend::OnWebSocketTaskCompleted,
+                                _backend, task, error));
 }
 
 @end
 
-@implementation TTCWebSocketBackend {
-  SEQUENCE_CHECKER(_sequenceChecker);
-
-  // Provider configuration specifying endpoint URL, model, voice, and API key.
-  ios::provider::TTCConfig _config;
-
-  // Active URL session managing the WebSocket task.
-  NSURLSession* _session;
-
-  // Session delegate avoiding a strong retain cycle with NSURLSession.
-  TTCWebSocketSessionDelegate* _sessionDelegate;
-
-  // Indicates whether an asynchronous receiveMessage call is currently in
-  // flight.
-  BOOL _isReceiving;
-
-  // Active WebSocket task for bidirectional streaming.
-  NSURLSessionWebSocketTask* _task;
-
-  // Periodic timer sending WebSocket pings to keep the connection alive.
-  NSTimer* _heartbeatTimer;
-
-  // Current lifecycle state of the WebSocket transport.
-  WebSocketState _state;
-
-  // Current count of audio messages sent upstream awaiting acknowledgment.
-  NSUInteger _inFlightSends;
-}
-
-@synthesize delegate = _delegate;
-
 #pragma mark - Initializers
 
-- (instancetype)initWithSession:(NSURLSession*)session {
-  self = [super init];
-  if (self) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-    _config = ios::provider::GetTTCConfig();
-    _session = session;
-    _isReceiving = NO;
-    _state = WebSocketState::kDisconnected;
-    _inFlightSends = 0;
-  }
-  return self;
+TtcWebSocketBackend::TtcWebSocketBackend()
+    : config_(ios::provider::GetTTCConfig()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-- (instancetype)init {
-  return [self initWithSession:nil];
+TtcWebSocketBackend::~TtcWebSocketBackend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Close();
 }
 
 #pragma mark - TTCBackend Properties
 
-- (BOOL)isConnected {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  return _state == WebSocketState::kConnected;
+bool TtcWebSocketBackend::is_transport_connected() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return state_ == WebSocketState::kConnected;
 }
 
 #pragma mark - TTCBackend Connection Lifecycle
 
-- (void)connect {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_state != WebSocketState::kDisconnected &&
-      _state != WebSocketState::kFailed) {
+void TtcWebSocketBackend::Connect(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observer);
+
+  if (state_ != WebSocketState::kDisconnected &&
+      state_ != WebSocketState::kFailed) {
     return;
   }
+  observer_ = observer;
 
   // Refresh configuration in case test mocks or credentials were set after
   // init.
-  _config = ios::provider::GetTTCConfig();
+  config_ = ios::provider::GetTTCConfig();
 
   // `is_valid()` validates that endpoint URL and model are non-empty. In
   // addition, an API key is required to authenticate with the streaming
   // service.
-  if (!_config.is_valid() || _config.api_key.empty()) {
-    _state = WebSocketState::kFailed;
-    [self.delegate backend:self
-          didFailWithError:ttc::ErrorCode::kInternalBackendError];
+  if (!config_.is_valid() || config_.api_key.empty()) {
+    state_ = WebSocketState::kFailed;
+    observer_->OnBackendError(ttc::ErrorCode::kInternalBackendError);
     return;
   }
 
-  GURL endpointGURL(_config.endpoint_url);
-  if (!endpointGURL.is_valid() || !endpointGURL.SchemeIsWSOrWSS()) {
-    _state = WebSocketState::kFailed;
-    [self.delegate backend:self
-          didFailWithError:ttc::ErrorCode::kInternalBackendError];
+  GURL endpoint_gurl(config_.endpoint_url);
+  if (!endpoint_gurl.is_valid() || !endpoint_gurl.SchemeIsWSOrWSS()) {
+    state_ = WebSocketState::kFailed;
+    observer_->OnBackendError(ttc::ErrorCode::kInternalBackendError);
     return;
   }
 
   NSURLComponents* components = [NSURLComponents
-      componentsWithString:base::SysUTF8ToNSString(_config.endpoint_url)];
-  NSMutableArray<NSURLQueryItem*>* queryItems =
+      componentsWithString:base::SysUTF8ToNSString(config_.endpoint_url)];
+  NSMutableArray<NSURLQueryItem*>* query_items =
       [NSMutableArray arrayWithArray:components.queryItems ?: @[]];
-  [queryItems
+  [query_items
       addObject:[NSURLQueryItem queryItemWithName:@"key"
                                             value:base::SysUTF8ToNSString(
-                                                      _config.api_key)]];
-  components.queryItems = queryItems;
-  NSURL* endpointUrl = components.URL;
-  if (!endpointUrl) {
-    _state = WebSocketState::kFailed;
-    [self.delegate backend:self
-          didFailWithError:ttc::ErrorCode::kInternalBackendError];
+                                                      config_.api_key)]];
+  components.queryItems = query_items;
+  NSURL* endpoint_url = components.URL;
+  if (!endpoint_url) {
+    state_ = WebSocketState::kFailed;
+    observer_->OnBackendError(ttc::ErrorCode::kInternalBackendError);
     return;
   }
 
-  _state = WebSocketState::kConnecting;
-  _inFlightSends = 0;
+  state_ = WebSocketState::kConnecting;
+  in_flight_sends_ = 0;
 
-  if (!_session) {
-    NSURLSessionConfiguration* sessionConfig =
+  if (!session_) {
+    NSURLSessionConfiguration* session_config =
         [NSURLSessionConfiguration defaultSessionConfiguration];
-    _sessionDelegate = [[TTCWebSocketSessionDelegate alloc]
-        initWithBackend:self
-             taskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
-    _session = [NSURLSession sessionWithConfiguration:sessionConfig
-                                             delegate:_sessionDelegate
+    TTCWebSocketSessionDelegate* session_delegate =
+        [[TTCWebSocketSessionDelegate alloc]
+            initWithBackend:this
+                 taskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
+    session_ = [NSURLSession sessionWithConfiguration:session_config
+                                             delegate:session_delegate
                                         delegateQueue:nil];
   }
 
-  _task = [_session webSocketTaskWithURL:endpointUrl];
-  [_task resume];
+  task_ = [session_ webSocketTaskWithURL:endpoint_url];
+  [task_ resume];
 }
 
-- (void)disconnect {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self stopHeartbeat];
+void TtcWebSocketBackend::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopHeartbeat();
 
-  if (_task) {
-    [_task cancelWithCloseCode:NSURLSessionWebSocketCloseCodeNormalClosure
+  if (task_) {
+    [task_ cancelWithCloseCode:NSURLSessionWebSocketCloseCodeNormalClosure
                         reason:nil];
-    _task = nil;
+    task_ = nil;
   }
 
-  if (_session) {
-    [_session invalidateAndCancel];
-    _session = nil;
-    _sessionDelegate = nil;
+  if (session_) {
+    [session_ invalidateAndCancel];
+    session_ = nil;
   }
 
-  _state = WebSocketState::kDisconnected;
-  _inFlightSends = 0;
-  _isReceiving = NO;
+  observer_ = nullptr;
+  state_ = WebSocketState::kDisconnected;
+  in_flight_sends_ = 0;
+  is_receiving_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 #pragma mark - TTCBackend Upstream Data
 
-- (void)sendAudioChunk:(NSData*)audioData {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_state != WebSocketState::kConnected || !audioData.length) {
+void TtcWebSocketBackend::SendToolSetUpdate(
+    const std::vector<ttc::ToolDefinition>& tools) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Dynamic tool set updates will be wired in a subsequent change.
+}
+
+void TtcWebSocketBackend::SendAudioChunk(base::span<const int16_t> audio_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ != WebSocketState::kConnected || audio_data.empty()) {
     return;
   }
 
-  if (!_task || _inFlightSends >= kMaxInFlightAudioSends) {
+  if (!task_ || in_flight_sends_ >= kMaxInFlightAudioSends) {
     return;
   }
 
-  NSData* payload = [[self class] createAudioChunkPayloadWithPCMData:audioData];
+  base::span<const uint8_t> audio_bytes = base::as_byte_span(audio_data);
+  NSData* pcm_data = [NSData dataWithBytes:audio_bytes.data()
+                                    length:audio_bytes.size()];
+  NSData* payload = CreateAudioChunkPayload(pcm_data);
   if (!payload) {
     return;
   }
 
-  NSString* messageText = [[NSString alloc] initWithData:payload
-                                                encoding:NSUTF8StringEncoding];
-  if (!messageText) {
+  NSString* message_text = [[NSString alloc] initWithData:payload
+                                                 encoding:NSUTF8StringEncoding];
+  if (!message_text) {
     return;
   }
 
-  _inFlightSends++;
+  in_flight_sends_++;
   NSURLSessionWebSocketMessage* message =
-      [[NSURLSessionWebSocketMessage alloc] initWithString:messageText];
+      [[NSURLSessionWebSocketMessage alloc] initWithString:message_text];
 
-  NSURLSessionWebSocketTask* currentTask = _task;
-  __weak __typeof(self) weakSelf = self;
+  NSURLSessionWebSocketTask* current_task = task_;
   void (^completion)(NSError*) = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(^(NSError* error) {
-        [weakSelf handleSendMessageFinishedForTask:currentTask withError:error];
-      })));
-  [_task sendMessage:message completionHandler:completion];
+      base::BindOnce(&TtcWebSocketBackend::HandleSendMessageFinishedForTask,
+                     weak_ptr_factory_.GetWeakPtr(), current_task)));
+  [task_ sendMessage:message completionHandler:completion];
 }
 
-- (void)sendTextInput:(NSString*)text {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_state != WebSocketState::kConnected || !text.length || !_task) {
+void TtcWebSocketBackend::SendTextInput(const std::string& text) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ != WebSocketState::kConnected || text.empty() || !task_) {
     return;
   }
 
-  NSData* payload = [[self class] createTextInputPayloadWithText:text];
+  NSData* payload = CreateTextInputPayload(base::SysUTF8ToNSString(text));
   if (!payload) {
     return;
   }
 
-  NSString* messageText = [[NSString alloc] initWithData:payload
-                                                encoding:NSUTF8StringEncoding];
-  if (!messageText) {
+  NSString* message_text = [[NSString alloc] initWithData:payload
+                                                 encoding:NSUTF8StringEncoding];
+  if (!message_text) {
     return;
   }
 
   NSURLSessionWebSocketMessage* message =
-      [[NSURLSessionWebSocketMessage alloc] initWithString:messageText];
+      [[NSURLSessionWebSocketMessage alloc] initWithString:message_text];
 
-  NSURLSessionWebSocketTask* currentTask = _task;
-  __weak __typeof(self) weakSelf = self;
+  NSURLSessionWebSocketTask* current_task = task_;
   void (^completion)(NSError*) = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(^(NSError* error) {
-        if (error) {
-          [weakSelf handleFatalErrorForTask:currentTask withError:error];
-        }
-      })));
-  [_task sendMessage:message completionHandler:completion];
+      base::BindOnce(&TtcWebSocketBackend::HandleFatalErrorForTask,
+                     weak_ptr_factory_.GetWeakPtr(), current_task)));
+  [task_ sendMessage:message completionHandler:completion];
 }
 
-- (void)sendContextUpdateWithURL:(const GURL&)url
-                           title:(NSString*)title
-                         content:(NSString*)content {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+void TtcWebSocketBackend::SendContextUpdate(
+    const GURL& url,
+    const std::string& title,
+    const optimization_guide::proto::AnnotatedPageContent& apc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Context update streaming will be implemented in a subsequent change.
 }
 
-- (void)reportPlaybackStatus:(int64_t)lastPlayedSequenceNumber {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+void TtcWebSocketBackend::ReportPlaybackStatus(
+    int64_t last_played_sequence_number) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Playback sequence status reported for server-side jitter buffer alignment.
 }
 
 #pragma mark - Session Delegate Notifications (Called on Sequence)
 
-- (void)webSocketTask:(NSURLSessionWebSocketTask*)webSocketTask
-    didOpenWithProtocol:(NSString*)protocol {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_task != webSocketTask || _state == WebSocketState::kDisconnected) {
+void TtcWebSocketBackend::OnWebSocketOpened(NSURLSessionWebSocketTask* task,
+                                            NSString* protocol) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_ != task || state_ == WebSocketState::kDisconnected) {
     return;
   }
-  [self handleConnectionOpened];
+  HandleConnectionOpened();
 }
 
-- (void)webSocketTask:(NSURLSessionWebSocketTask*)webSocketTask
-     didCloseWithCode:(NSURLSessionWebSocketCloseCode)closeCode
-               reason:(NSData*)reason {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_task != webSocketTask || _state == WebSocketState::kDisconnected) {
+void TtcWebSocketBackend::OnWebSocketClosed(
+    NSURLSessionWebSocketTask* task,
+    NSURLSessionWebSocketCloseCode close_code,
+    NSData* reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_ != task || state_ == WebSocketState::kDisconnected) {
     return;
   }
-  [self handleConnectionClosed];
+  HandleConnectionClosed();
 }
 
-- (void)webSocketTask:(NSURLSessionTask*)task
-    didCompleteWithError:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_task != task || !error) {
+void TtcWebSocketBackend::OnWebSocketTaskCompleted(NSURLSessionTask* task,
+                                                   NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_ != task || !error) {
     return;
   }
-  if (_state == WebSocketState::kDisconnected ||
+  if (state_ == WebSocketState::kDisconnected ||
       ([error.domain isEqualToString:NSURLErrorDomain] &&
        error.code == NSURLErrorCancelled)) {
     return;
   }
-  [self handleFatalErrorWithError:error];
+  HandleFatalError(error);
 }
 
 #pragma mark - Private Connection Handlers
@@ -396,194 +336,189 @@ enum class WebSocketState {
 // Handles successful TCP/TLS connection open and HTTP 101 upgrade.
 // Transitions state to handshaking, transmits the initial setup payload,
 // and starts the heartbeat and receive loops.
-- (void)handleConnectionOpened {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _state = WebSocketState::kHandshaking;
-  [self sendSetupFrame];
-  [self startHeartbeat];
-  [self listenForNextMessage];
+void TtcWebSocketBackend::HandleConnectionOpened() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_ = WebSocketState::kHandshaking;
+  SendSetupFrame();
+  StartHeartbeat();
+  ListenForNextMessage();
 }
 
 // Handles clean connection closure signaled by the server or transport.
-- (void)handleConnectionClosed {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self stopHeartbeat];
-  if (_task) {
-    [_task cancelWithCloseCode:NSURLSessionWebSocketCloseCodeNormalClosure
+void TtcWebSocketBackend::HandleConnectionClosed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopHeartbeat();
+  if (task_) {
+    [task_ cancelWithCloseCode:NSURLSessionWebSocketCloseCodeNormalClosure
                         reason:nil];
-    _task = nil;
+    task_ = nil;
   }
-  if (_session) {
-    [_session invalidateAndCancel];
-    _session = nil;
-    _sessionDelegate = nil;
+  if (session_) {
+    [session_ invalidateAndCancel];
+    session_ = nil;
   }
-  _state = WebSocketState::kDisconnected;
-  _isReceiving = NO;
-  _inFlightSends = 0;
-  [self.delegate backendDidClose:self];
+  state_ = WebSocketState::kDisconnected;
+  is_receiving_ = false;
+  in_flight_sends_ = 0;
+  if (observer_) {
+    observer_->OnBackendClosed();
+  }
 }
 
 // Handles unrecoverable network, transport, or protocol errors.
-- (void)handleFatalErrorWithError:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_state == WebSocketState::kDisconnected ||
-      _state == WebSocketState::kFailed) {
+void TtcWebSocketBackend::HandleFatalError(NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == WebSocketState::kDisconnected ||
+      state_ == WebSocketState::kFailed) {
     return;
   }
   if (error && [error.domain isEqualToString:NSURLErrorDomain] &&
       error.code == NSURLErrorCancelled) {
     return;
   }
-  [self stopHeartbeat];
-  if (_task) {
-    [_task cancelWithCloseCode:NSURLSessionWebSocketCloseCodeAbnormalClosure
+  StopHeartbeat();
+  if (task_) {
+    [task_ cancelWithCloseCode:NSURLSessionWebSocketCloseCodeAbnormalClosure
                         reason:nil];
-    _task = nil;
+    task_ = nil;
   }
-  if (_session) {
-    [_session invalidateAndCancel];
-    _session = nil;
-    _sessionDelegate = nil;
+  if (session_) {
+    [session_ invalidateAndCancel];
+    session_ = nil;
   }
-  _state = WebSocketState::kFailed;
-  _isReceiving = NO;
-  _inFlightSends = 0;
-  [self.delegate backend:self
-        didFailWithError:ttc::ErrorCode::kExecutionSessionCreationFailed];
+  state_ = WebSocketState::kFailed;
+  is_receiving_ = false;
+  in_flight_sends_ = 0;
+  if (observer_) {
+    observer_->OnBackendError(ttc::ErrorCode::kExecutionSessionCreationFailed);
+  }
 }
 
 // Handles explicit server-level error frames (e.g., HTTP 429 quota exhaustion).
-- (void)handleServerError:(ttc::ErrorCode)errorCode {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self stopHeartbeat];
-  if (_task) {
-    [_task cancelWithCloseCode:NSURLSessionWebSocketCloseCodePolicyViolation
+void TtcWebSocketBackend::HandleServerError(ttc::ErrorCode error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopHeartbeat();
+  if (task_) {
+    [task_ cancelWithCloseCode:NSURLSessionWebSocketCloseCodePolicyViolation
                         reason:nil];
-    _task = nil;
+    task_ = nil;
   }
-  if (_session) {
-    [_session invalidateAndCancel];
-    _session = nil;
-    _sessionDelegate = nil;
+  if (session_) {
+    [session_ invalidateAndCancel];
+    session_ = nil;
   }
-  _state = WebSocketState::kFailed;
-  _isReceiving = NO;
-  _inFlightSends = 0;
-  [self.delegate backend:self didFailWithError:errorCode];
+  state_ = WebSocketState::kFailed;
+  is_receiving_ = false;
+  in_flight_sends_ = 0;
+  if (observer_) {
+    observer_->OnBackendError(error_code);
+  }
 }
 
-- (void)handleFatalErrorForTask:(NSURLSessionWebSocketTask*)task
-                      withError:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_task != task) {
+void TtcWebSocketBackend::HandleFatalErrorForTask(
+    NSURLSessionWebSocketTask* task,
+    NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_ != task || !error) {
     return;
   }
-  [self handleFatalErrorWithError:error];
+  HandleFatalError(error);
 }
 
-- (void)handleSendMessageFinishedForTask:(NSURLSessionWebSocketTask*)task
-                               withError:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_task != task) {
+void TtcWebSocketBackend::HandleSendMessageFinishedForTask(
+    NSURLSessionWebSocketTask* task,
+    NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_ != task) {
     return;
   }
-  [self handleSendMessageFinishedWithError:error];
+  HandleSendMessageFinished(error);
 }
 
-- (void)handleReceivedMessage:(NSURLSessionWebSocketMessage*)message
-                      forTask:(NSURLSessionWebSocketTask*)task
-                        error:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_task != task) {
+void TtcWebSocketBackend::HandleReceivedMessageForTask(
+    NSURLSessionWebSocketTask* task,
+    NSURLSessionWebSocketMessage* message,
+    NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_ != task) {
     return;
   }
-  [self handleReceivedMessage:message error:error];
+  HandleReceivedMessage(message, error);
 }
 
 // Serializes and transmits the initial setup frame configuring the session.
-- (void)sendSetupFrame {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSString* model = base::SysUTF8ToNSString(_config.model);
-  NSString* voice = base::SysUTF8ToNSString(_config.voice_name);
-  NSString* instruction = base::SysUTF8ToNSString(_config.system_instruction);
+void TtcWebSocketBackend::SendSetupFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NSString* model = base::SysUTF8ToNSString(config_.model);
+  NSString* voice = base::SysUTF8ToNSString(config_.voice_name);
+  NSString* instruction = base::SysUTF8ToNSString(config_.system_instruction);
 
-  NSData* payload = [[self class] createSetupPayloadWithModel:model
-                                                    voiceName:voice
-                                            systemInstruction:instruction];
+  NSData* payload = CreateSetupPayload(model, voice, instruction);
   if (!payload) {
-    [self handleFatalErrorWithError:nil];
+    HandleFatalError(nil);
     return;
   }
 
-  NSString* messageText = [[NSString alloc] initWithData:payload
-                                                encoding:NSUTF8StringEncoding];
-  if (!messageText) {
-    [self handleFatalErrorWithError:nil];
+  NSString* message_text = [[NSString alloc] initWithData:payload
+                                                 encoding:NSUTF8StringEncoding];
+  if (!message_text) {
+    HandleFatalError(nil);
     return;
   }
   NSURLSessionWebSocketMessage* message =
-      [[NSURLSessionWebSocketMessage alloc] initWithString:messageText];
+      [[NSURLSessionWebSocketMessage alloc] initWithString:message_text];
 
-  NSURLSessionWebSocketTask* currentTask = _task;
-  __weak __typeof(self) weakSelf = self;
+  NSURLSessionWebSocketTask* current_task = task_;
   void (^completion)(NSError*) = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(^(NSError* error) {
-        if (error) {
-          [weakSelf handleFatalErrorForTask:currentTask withError:error];
-        }
-      })));
-  [_task sendMessage:message completionHandler:completion];
+      base::BindOnce(&TtcWebSocketBackend::HandleFatalErrorForTask,
+                     weak_ptr_factory_.GetWeakPtr(), current_task)));
+  [task_ sendMessage:message completionHandler:completion];
 }
 
 // Arms the asynchronous receive loop to await the next message from the server.
-- (void)listenForNextMessage {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_task || _state == WebSocketState::kDisconnected ||
-      _state == WebSocketState::kFailed) {
+void TtcWebSocketBackend::ListenForNextMessage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_ || state_ == WebSocketState::kDisconnected ||
+      state_ == WebSocketState::kFailed) {
     return;
   }
 
-  if (_isReceiving) {
+  if (is_receiving_) {
     return;
   }
-  _isReceiving = YES;
+  is_receiving_ = true;
 
-  NSURLSessionWebSocketTask* currentTask = _task;
-  __weak __typeof(self) weakSelf = self;
+  NSURLSessionWebSocketTask* current_task = task_;
   void (^completion)(NSURLSessionWebSocketMessage*, NSError*) =
       base::CallbackToBlock(base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(
-              ^(NSURLSessionWebSocketMessage* message, NSError* error) {
-                [weakSelf handleReceivedMessage:message
-                                        forTask:currentTask
-                                          error:error];
-              })));
-  [_task receiveMessageWithCompletionHandler:completion];
+          base::BindOnce(&TtcWebSocketBackend::HandleReceivedMessageForTask,
+                         weak_ptr_factory_.GetWeakPtr(), current_task)));
+  [task_ receiveMessageWithCompletionHandler:completion];
 }
 
 // Processes a message received from the server and re-arms the receive loop.
-- (void)handleReceivedMessage:(NSURLSessionWebSocketMessage*)message
-                        error:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _isReceiving = NO;
+void TtcWebSocketBackend::HandleReceivedMessage(
+    NSURLSessionWebSocketMessage* message,
+    NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_receiving_ = false;
 
-  if (_state == WebSocketState::kDisconnected ||
-      _state == WebSocketState::kFailed) {
+  if (state_ == WebSocketState::kDisconnected ||
+      state_ == WebSocketState::kFailed) {
     return;
   }
 
   if (error) {
-    [self handleFatalErrorWithError:error];
+    HandleFatalError(error);
     return;
   }
 
   if (!message) {
-    if (_state == WebSocketState::kConnected ||
-        _state == WebSocketState::kHandshaking) {
-      [self listenForNextMessage];
+    if (state_ == WebSocketState::kConnected ||
+        state_ == WebSocketState::kHandshaking) {
+      ListenForNextMessage();
     }
     return;
   }
@@ -595,72 +530,68 @@ enum class WebSocketState {
     payload = message.data;
   }
   if (payload) {
-    [self parseServerMessage:payload];
+    ParseServerMessage(payload);
   }
 
-  if (_state == WebSocketState::kConnected ||
-      _state == WebSocketState::kHandshaking) {
-    [self listenForNextMessage];
+  if (state_ == WebSocketState::kConnected ||
+      state_ == WebSocketState::kHandshaking) {
+    ListenForNextMessage();
   }
 }
 
 // Updates backpressure bookkeeping after an upstream message completes.
-- (void)handleSendMessageFinishedWithError:(NSError*)error {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_inFlightSends > 0) {
-    _inFlightSends--;
+void TtcWebSocketBackend::HandleSendMessageFinished(NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (in_flight_sends_ > 0) {
+    in_flight_sends_--;
   }
   if (error) {
-    [self handleFatalErrorWithError:error];
+    HandleFatalError(error);
   }
 }
 
 // Schedules a repeating ping timer to keep intermediate NATs and proxies alive.
-- (void)startHeartbeat {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self stopHeartbeat];
-  __weak __typeof(self) weakSelf = self;
-  _heartbeatTimer = [NSTimer timerWithTimeInterval:kHeartbeatIntervalSeconds
-                                           repeats:YES
-                                             block:^(NSTimer* timer) {
-                                               [weakSelf sendHeartbeatPing];
-                                             }];
-  [[NSRunLoop currentRunLoop] addTimer:_heartbeatTimer
+void TtcWebSocketBackend::StartHeartbeat() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopHeartbeat();
+  base::WeakPtr<TtcWebSocketBackend> weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  heartbeat_timer_ = [NSTimer timerWithTimeInterval:kHeartbeatIntervalSeconds
+                                            repeats:YES
+                                              block:^(NSTimer* timer) {
+                                                if (weak_ptr) {
+                                                  weak_ptr->SendHeartbeatPing();
+                                                }
+                                              }];
+  [[NSRunLoop currentRunLoop] addTimer:heartbeat_timer_
                                forMode:NSRunLoopCommonModes];
 }
 
 // Invalidates and clears the active heartbeat ping timer.
-- (void)stopHeartbeat {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_heartbeatTimer) {
-    [_heartbeatTimer invalidate];
-    _heartbeatTimer = nil;
+void TtcWebSocketBackend::StopHeartbeat() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (heartbeat_timer_) {
+    [heartbeat_timer_ invalidate];
+    heartbeat_timer_ = nil;
   }
 }
 
 // Sends a WebSocket ping to verify connection health and receive a pong
 // response.
-- (void)sendHeartbeatPing {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_task || _state != WebSocketState::kConnected) {
+void TtcWebSocketBackend::SendHeartbeatPing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!task_ || state_ != WebSocketState::kConnected) {
     return;
   }
-  NSURLSessionWebSocketTask* currentTask = _task;
-  __weak __typeof(self) weakSelf = self;
-  void (^pongHandler)(NSError*) = base::CallbackToBlock(base::BindPostTask(
+  NSURLSessionWebSocketTask* current_task = task_;
+  void (^pong_handler)(NSError*) = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(^(NSError* error) {
-        if (error) {
-          [weakSelf handleFatalErrorForTask:currentTask withError:error];
-        }
-      })));
-  [_task sendPingWithPongReceiveHandler:pongHandler];
+      base::BindOnce(&TtcWebSocketBackend::HandleFatalErrorForTask,
+                     weak_ptr_factory_.GetWeakPtr(), current_task)));
+  [task_ sendPingWithPongReceiveHandler:pong_handler];
 }
 
-#pragma mark - TTCWebSocketBackend (Testing)
-
-- (void)parseServerMessage:(NSData*)payload {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+void TtcWebSocketBackend::ParseServerMessage(NSData* payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSError* error = nil;
   id json = [NSJSONSerialization JSONObjectWithData:payload
                                             options:0
@@ -671,94 +602,113 @@ enum class WebSocketState {
   NSDictionary* root = (NSDictionary*)json;
 
   // 1. Server Error Response.
-  id errorObj = root[@"error"];
-  if (errorObj && ![errorObj isKindOfClass:[NSNull class]]) {
+  id error_obj = root[@"error"];
+  if (error_obj && ![error_obj isKindOfClass:[NSNull class]]) {
     int code = 0;
-    if ([errorObj isKindOfClass:[NSDictionary class]]) {
-      id codeObj = ((NSDictionary*)errorObj)[@"code"];
-      if ([codeObj respondsToSelector:@selector(intValue)]) {
-        code = [codeObj intValue];
+    if ([error_obj isKindOfClass:[NSDictionary class]]) {
+      id code_obj = ((NSDictionary*)error_obj)[@"code"];
+      if ([code_obj respondsToSelector:@selector(intValue)]) {
+        code = [code_obj intValue];
       }
     }
-    ttc::ErrorCode ttcErrorCode = (code == kHTTPStatusTooManyRequests)
-                                      ? ttc::ErrorCode::kRateLimited
-                                      : ttc::ErrorCode::kInternalBackendError;
-    [self handleServerError:ttcErrorCode];
+    ttc::ErrorCode ttc_error_code = (code == kHTTPStatusTooManyRequests)
+                                        ? ttc::ErrorCode::kRateLimited
+                                        : ttc::ErrorCode::kInternalBackendError;
+    HandleServerError(ttc_error_code);
     return;
   }
 
   // 2. Setup Acknowledgement.
-  id setupCompleteObj = root[@"setupComplete"];
-  if (setupCompleteObj && ![setupCompleteObj isKindOfClass:[NSNull class]]) {
-    if (_state == WebSocketState::kHandshaking) {
-      _state = WebSocketState::kConnected;
-      [self.delegate backendDidInitialize:self];
+  id setup_complete_obj = root[@"setupComplete"];
+  if (setup_complete_obj &&
+      ![setup_complete_obj isKindOfClass:[NSNull class]]) {
+    if (state_ == WebSocketState::kHandshaking) {
+      state_ = WebSocketState::kConnected;
+      if (observer_) {
+        observer_->OnBackendInitialized();
+      }
     }
     return;
   }
 
   // 3. Server Content.
-  id serverContentObj = root[@"serverContent"];
-  if ([serverContentObj isKindOfClass:[NSDictionary class]]) {
-    NSDictionary* serverContent = (NSDictionary*)serverContentObj;
+  id server_content_obj = root[@"serverContent"];
+  if ([server_content_obj isKindOfClass:[NSDictionary class]]) {
+    base::WeakPtr<TtcWebSocketBackend> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
+    NSDictionary* server_content = (NSDictionary*)server_content_obj;
 
     // Input speech transcription (server ASR).
-    id inputTranscriptionObj = serverContent[@"inputTranscription"];
-    if ([inputTranscriptionObj isKindOfClass:[NSDictionary class]]) {
-      id userTranscript = inputTranscriptionObj[@"text"];
-      if ([userTranscript isKindOfClass:[NSString class]] &&
-          [userTranscript length] > 0) {
-        [self.delegate backend:self
-            didReceiveInputTranscription:userTranscript];
+    std::string input_text;
+    id input_transcription_obj = server_content[@"inputTranscription"];
+    if ([input_transcription_obj isKindOfClass:[NSDictionary class]]) {
+      id user_transcript = input_transcription_obj[@"text"];
+      if ([user_transcript isKindOfClass:[NSString class]]) {
+        input_text = base::SysNSStringToUTF8(user_transcript);
       }
     }
 
     // Output model speech transcription.
-    id outputTranscriptionObj = serverContent[@"outputTranscription"];
-    if ([outputTranscriptionObj isKindOfClass:[NSDictionary class]]) {
-      id modelTranscript = outputTranscriptionObj[@"text"];
-      if ([modelTranscript isKindOfClass:[NSString class]] &&
-          [modelTranscript length] > 0) {
-        [self.delegate backend:self
-            didReceiveOutputTranscription:modelTranscript];
+    std::string output_text;
+    id output_transcription_obj = server_content[@"outputTranscription"];
+    if ([output_transcription_obj isKindOfClass:[NSDictionary class]]) {
+      id model_transcript = output_transcription_obj[@"text"];
+      if ([model_transcript isKindOfClass:[NSString class]]) {
+        output_text = base::SysNSStringToUTF8(model_transcript);
+      }
+    }
+
+    if ((!input_text.empty() || !output_text.empty()) && observer_) {
+      observer_->OnTranscriptions(input_text, output_text);
+      if (!weak_this) {
+        return;
       }
     }
 
     // Server-side VAD interruption (barge-in).
-    id interruptedObj = serverContent[@"interrupted"];
-    if ([interruptedObj respondsToSelector:@selector(boolValue)] &&
-        [interruptedObj boolValue]) {
-      [self.delegate backend:self
-          didChangeGenerationStateStarted:NO
-                                completed:NO
-                              interrupted:YES];
+    id interrupted_obj = server_content[@"interrupted"];
+    if ([interrupted_obj respondsToSelector:@selector(boolValue)] &&
+        [interrupted_obj boolValue]) {
+      if (observer_) {
+        observer_->OnGenerationStateChanged(/*started=*/false,
+                                            /*completed=*/false,
+                                            /*interrupted=*/true);
+      }
       return;
     }
 
     // Audio stream output.
-    id modelTurnObj = serverContent[@"modelTurn"];
-    if ([modelTurnObj isKindOfClass:[NSDictionary class]]) {
-      id partsObj = modelTurnObj[@"parts"];
-      if ([partsObj isKindOfClass:[NSArray class]]) {
-        for (id part in (NSArray*)partsObj) {
+    id model_turn_obj = server_content[@"modelTurn"];
+    if ([model_turn_obj isKindOfClass:[NSDictionary class]]) {
+      id parts_obj = model_turn_obj[@"parts"];
+      if ([parts_obj isKindOfClass:[NSArray class]]) {
+        for (id part in (NSArray*)parts_obj) {
           if (![part isKindOfClass:[NSDictionary class]]) {
             continue;
           }
-          id inlineDataObj = part[@"inlineData"];
-          if (![inlineDataObj isKindOfClass:[NSDictionary class]]) {
+          id inline_data_obj = part[@"inlineData"];
+          if (![inline_data_obj isKindOfClass:[NSDictionary class]]) {
             continue;
           }
-          id mimeType = inlineDataObj[@"mimeType"];
-          id base64Str = inlineDataObj[@"data"];
-          if ([mimeType isKindOfClass:[NSString class]] &&
-              [mimeType hasPrefix:@"audio/"] &&
-              [base64Str isKindOfClass:[NSString class]] &&
-              [base64Str length] > 0) {
-            NSData* audioData =
-                [[NSData alloc] initWithBase64EncodedString:base64Str
+          id mime_type = inline_data_obj[@"mimeType"];
+          id base64_str = inline_data_obj[@"data"];
+          if ([mime_type isKindOfClass:[NSString class]] &&
+              [mime_type hasPrefix:@"audio/"] &&
+              [base64_str isKindOfClass:[NSString class]] &&
+              [base64_str length] > 0) {
+            NSData* audio_data =
+                [[NSData alloc] initWithBase64EncodedString:base64_str
                                                     options:0];
-            if (audioData.length > 0) {
-              [self.delegate backend:self didReceiveAudioOutput:audioData];
+            base::span<const uint8_t> raw_bytes =
+                base::apple::NSDataToSpan(audio_data);
+            if (!raw_bytes.empty() && raw_bytes.size() % sizeof(int16_t) == 0 &&
+                observer_) {
+              observer_->OnAudioOutput(
+                  base::subtle::reinterpret_span<const int16_t>(raw_bytes),
+                  /*sequence_number=*/0);
+              if (!weak_this) {
+                return;
+              }
             }
           }
         }
@@ -766,37 +716,40 @@ enum class WebSocketState {
     }
 
     // Turn completion.
-    id turnCompleteObj = serverContent[@"turnComplete"];
-    if ([turnCompleteObj respondsToSelector:@selector(boolValue)] &&
-        [turnCompleteObj boolValue]) {
-      [self.delegate backend:self
-          didChangeGenerationStateStarted:NO
-                                completed:YES
-                              interrupted:NO];
+    id turn_complete_obj = server_content[@"turnComplete"];
+    if ([turn_complete_obj respondsToSelector:@selector(boolValue)] &&
+        [turn_complete_obj boolValue]) {
+      if (observer_) {
+        observer_->OnGenerationStateChanged(/*started=*/false,
+                                            /*completed=*/true,
+                                            /*interrupted=*/false);
+      }
+      return;
     }
   }
 }
 
-+ (NSData*)createSetupPayloadWithModel:(NSString*)model
-                             voiceName:(NSString*)voiceName
-                     systemInstruction:(NSString*)systemInstruction {
+// static
+NSData* TtcWebSocketBackend::CreateSetupPayload(NSString* model,
+                                                NSString* voice_name,
+                                                NSString* system_instruction) {
   NSMutableDictionary* setup = [NSMutableDictionary dictionary];
   if (model.length > 0) {
     setup[@"model"] = model;
   }
 
-  NSMutableDictionary* generationConfig = [NSMutableDictionary dictionary];
-  generationConfig[@"responseModalities"] = @[ @"AUDIO" ];
-  if (voiceName.length > 0) {
-    generationConfig[@"speechConfig"] = @{
+  NSMutableDictionary* generation_config = [NSMutableDictionary dictionary];
+  generation_config[@"responseModalities"] = @[ @"AUDIO" ];
+  if (voice_name.length > 0) {
+    generation_config[@"speechConfig"] = @{
       @"voiceConfig" : @{
         @"prebuiltVoiceConfig" : @{
-          @"voiceName" : voiceName,
+          @"voiceName" : voice_name,
         }
       }
     };
   }
-  setup[@"generationConfig"] = generationConfig;
+  setup[@"generationConfig"] = generation_config;
   setup[@"inputAudioTranscription"] = @{};
   setup[@"outputAudioTranscription"] = @{};
   setup[@"realtimeInputConfig"] = @{
@@ -806,9 +759,9 @@ enum class WebSocketState {
     }
   };
 
-  if (systemInstruction.length > 0) {
+  if (system_instruction.length > 0) {
     setup[@"systemInstruction"] = @{
-      @"parts" : @[ @{@"text" : systemInstruction} ],
+      @"parts" : @[ @{@"text" : system_instruction} ],
     };
   }
 
@@ -816,36 +769,50 @@ enum class WebSocketState {
   return [NSJSONSerialization dataWithJSONObject:root options:0 error:nil];
 }
 
-- (NSUInteger)inFlightSends {
-  return _inFlightSends;
+void TtcWebSocketBackend::SetObserverForTesting(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observer_ = observer;
 }
 
-- (void)setInFlightSends:(NSUInteger)inFlightSends {
-  _inFlightSends = inFlightSends;
+void TtcWebSocketBackend::SimulateHandshakingStateForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_ = WebSocketState::kHandshaking;
 }
 
-- (void)simulateHandshakingStateForTesting {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _state = WebSocketState::kHandshaking;
+void TtcWebSocketBackend::HandleFatalErrorForTesting(NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HandleFatalError(error);
 }
 
-+ (NSData*)createAudioChunkPayloadWithPCMData:(NSData*)pcmData {
-  if (!pcmData.length) {
+void TtcWebSocketBackend::HandleConnectionClosedForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HandleConnectionClosed();
+}
+
+void TtcWebSocketBackend::ParseServerMessageForTesting(NSData* payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ParseServerMessage(payload);
+}
+
+// static
+NSData* TtcWebSocketBackend::CreateAudioChunkPayload(NSData* pcm_data) {
+  if (!pcm_data.length) {
     return nil;
   }
-  NSString* base64Audio = [pcmData base64EncodedStringWithOptions:0];
+  NSString* base64_audio = [pcm_data base64EncodedStringWithOptions:0];
   NSDictionary* root = @{
     @"realtimeInput" : @{
       @"audio" : @{
         @"mimeType" : @"audio/pcm;rate=16000",
-        @"data" : base64Audio,
+        @"data" : base64_audio,
       }
     }
   };
   return [NSJSONSerialization dataWithJSONObject:root options:0 error:nil];
 }
 
-+ (NSData*)createTextInputPayloadWithText:(NSString*)text {
+// static
+NSData* TtcWebSocketBackend::CreateTextInputPayload(NSString* text) {
   if (!text.length) {
     return nil;
   }
@@ -860,5 +827,3 @@ enum class WebSocketState {
   };
   return [NSJSONSerialization dataWithJSONObject:root options:0 error:nil];
 }
-
-@end

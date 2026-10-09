@@ -4,19 +4,33 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 
+#import <stdint.h>
+
+#import <memory>
+#import <string>
+#import <utility>
+#import <vector>
+
+#import "base/containers/span.h"
+#import "base/memory/raw_ptr.h"
+#import "components/ttc/app/public/error_codes.h"
+#import "components/ttc/app/test_utils.h"
+#import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "url/gurl.h"
 
-// Expose internal delegates to unit tests to simulate engine/backend callbacks.
-@interface TTCConversation (Testing) <TTCAudioControllerDelegate,
-                                      TTCBackendDelegate>
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::NiceMock;
+
+// Expose internal audio delegate to unit tests to simulate engine callbacks.
+@interface TTCConversation (Testing) <TTCAudioControllerDelegate>
 @end
 
 #pragma mark - Fake Audio Controller
@@ -85,49 +99,6 @@
 
 @end
 
-#pragma mark - Fake Backend
-
-@interface FakeTTCBackend : NSObject <TTCBackend>
-
-@property(nonatomic, weak) id<TTCBackendDelegate> delegate;
-@property(nonatomic, assign, getter=isConnected) BOOL connected;
-@property(nonatomic, assign) BOOL didConnect;
-@property(nonatomic, assign) BOOL didDisconnect;
-@property(nonatomic, strong) NSData* lastSentAudioChunk;
-@property(nonatomic, strong) NSString* lastSentPrompt;
-
-@end
-
-@implementation FakeTTCBackend
-
-- (void)connect {
-  self.connected = YES;
-  self.didConnect = YES;
-}
-
-- (void)disconnect {
-  self.connected = NO;
-  self.didDisconnect = YES;
-}
-
-- (void)sendAudioChunk:(NSData*)pcmData {
-  self.lastSentAudioChunk = pcmData;
-}
-
-- (void)sendTextInput:(NSString*)text {
-  self.lastSentPrompt = text;
-}
-
-- (void)sendContextUpdateWithURL:(const GURL&)url
-                           title:(NSString*)title
-                         content:(NSString*)content {
-}
-
-- (void)reportPlaybackStatus:(int64_t)lastPlayedSequenceNumber {
-}
-
-@end
-
 #pragma mark - Fake Conversation Delegate
 
 @interface FakeTTCConversationDelegate : NSObject <TTCConversationDelegate>
@@ -175,27 +146,35 @@ class TTCConversationTest : public PlatformTest {
  protected:
   TTCConversationTest() {
     fake_audio_controller_ = [[FakeTTCAudioController alloc] init];
-    fake_backend_ = [[FakeTTCBackend alloc] init];
+    auto backend = std::make_unique<NiceMock<ttc::MockTtcBackend>>();
+    mock_backend_ = backend.get();
     delegate_ = [[FakeTTCConversationDelegate alloc] init];
     conversation_ =
         [[TTCConversation alloc] initWithAudioController:fake_audio_controller_
-                                                 backend:fake_backend_];
+                                                 backend:std::move(backend)];
     conversation_.delegate = delegate_;
+  }
+
+  ~TTCConversationTest() override {
+    mock_backend_ = nullptr;
+    conversation_ = nil;
   }
 
   web::WebTaskEnvironment task_environment_;
   FakeTTCAudioController* fake_audio_controller_ = nil;
-  FakeTTCBackend* fake_backend_ = nil;
+  raw_ptr<NiceMock<ttc::MockTtcBackend>> mock_backend_ = nullptr;
   FakeTTCConversationDelegate* delegate_ = nil;
   TTCConversation* conversation_ = nil;
 };
 
 // Tests that start successfully begins capture and connects the backend.
 TEST_F(TTCConversationTest, TestStartSuccess) {
+  EXPECT_CALL(*mock_backend_, Connect(_));
+
   [conversation_ start];
 
   EXPECT_TRUE(fake_audio_controller_.isCapturing);
-  EXPECT_TRUE(fake_backend_.didConnect);
+  EXPECT_TRUE(mock_backend_->is_transport_connected());
 }
 
 // Tests that start failure stops the conversation and forwards error to
@@ -218,11 +197,12 @@ TEST_F(TTCConversationTest, TestStartFailure) {
 TEST_F(TTCConversationTest, TestStopHaltsCaptureAndPlayback) {
   [conversation_ start];
 
+  EXPECT_CALL(*mock_backend_, Close());
   [conversation_ stop];
 
   EXPECT_TRUE(fake_audio_controller_.didStopCapture);
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
-  EXPECT_TRUE(fake_backend_.didDisconnect);
+  EXPECT_FALSE(mock_backend_->is_transport_connected());
 }
 
 // Tests that calling stop while capture is starting invalidates the async
@@ -252,9 +232,9 @@ TEST_F(TTCConversationTest, TestStopInvalidatesAsyncStartCallback) {
 // interrupt assistant playback.
 TEST_F(TTCConversationTest, TestBargeInDisallowedDuringPlayback) {
   [conversation_ start];
-  const uint8_t raw_pcm[] = {0x00, 0x01};
-  [conversation_ backend:fake_backend_
-      didReceiveAudioOutput:[NSData dataWithBytes:raw_pcm length:2]];
+  ASSERT_TRUE(mock_backend_->observer());
+  const int16_t raw_pcm[] = {0x0001};
+  mock_backend_->observer()->OnAudioOutput(raw_pcm, 0);
 
   // Simulate loud microphone energy while talking.
   [conversation_ audioController:fake_audio_controller_
@@ -284,10 +264,11 @@ TEST_F(TTCConversationTest, TestAudioControllerErrorHandling) {
 TEST_F(TTCConversationTest, TestAudioControllerExternalStopCapture) {
   [conversation_ start];
 
+  EXPECT_CALL(*mock_backend_, Close());
   [conversation_ audioControllerDidStopCapture:fake_audio_controller_];
 
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
-  EXPECT_TRUE(fake_backend_.didDisconnect);
+  EXPECT_FALSE(mock_backend_->is_transport_connected());
 }
 
 // Tests that disconnect stops capture and playback, disconnects the audio
@@ -309,17 +290,19 @@ TEST_F(TTCConversationTest, TestDisconnect) {
 
 // Tests that start connects to the backend.
 TEST_F(TTCConversationTest, TestStartConnectsBackend) {
+  EXPECT_CALL(*mock_backend_, Connect(_));
   [conversation_ start];
-  EXPECT_TRUE(fake_backend_.didConnect);
+  EXPECT_TRUE(mock_backend_->is_transport_connected());
 }
 
 // Tests that stop disconnects the backend.
 TEST_F(TTCConversationTest, TestStopDisconnectsBackend) {
   [conversation_ start];
-  EXPECT_TRUE(fake_backend_.didConnect);
+  EXPECT_TRUE(mock_backend_->is_transport_connected());
 
+  EXPECT_CALL(*mock_backend_, Close());
   [conversation_ stop];
-  EXPECT_TRUE(fake_backend_.didDisconnect);
+  EXPECT_FALSE(mock_backend_->is_transport_connected());
 }
 
 // Tests that microphone chunks captured by the audio controller are forwarded
@@ -327,29 +310,32 @@ TEST_F(TTCConversationTest, TestStopDisconnectsBackend) {
 TEST_F(TTCConversationTest, TestAudioCaptureForwardsToBackend) {
   [conversation_ start];
 
-  const uint8_t mic_pcm[] = {0xAA, 0xBB};
+  const int16_t mic_pcm[] = {0x1122, 0x3344};
   NSData* chunk = [NSData dataWithBytes:mic_pcm length:sizeof(mic_pcm)];
 
+  EXPECT_CALL(*mock_backend_, SendAudioChunk(ElementsAre(0x1122, 0x3344)));
   [conversation_ audioController:fake_audio_controller_
             didCaptureAudioChunk:chunk];
-
-  EXPECT_NSEQ(fake_backend_.lastSentAudioChunk, chunk);
 }
 
 // Tests that backend initialization forwards to conversation delegate.
 TEST_F(TTCConversationTest, TestBackendDidInitializeForwardsToDelegate) {
+  [conversation_ start];
+  ASSERT_TRUE(mock_backend_->observer());
   EXPECT_FALSE(delegate_.didInitialize);
 
-  [conversation_ backendDidInitialize:fake_backend_];
+  mock_backend_->observer()->OnBackendInitialized();
 
   EXPECT_TRUE(delegate_.didInitialize);
 }
 
 // Tests that backend closure forwards to conversation delegate.
 TEST_F(TTCConversationTest, TestBackendDidCloseForwardsToDelegate) {
+  [conversation_ start];
+  ASSERT_TRUE(mock_backend_->observer());
   EXPECT_FALSE(delegate_.didClose);
 
-  [conversation_ backendDidClose:fake_backend_];
+  mock_backend_->observer()->OnBackendClosed();
 
   EXPECT_TRUE(delegate_.didClose);
 }
@@ -357,28 +343,28 @@ TEST_F(TTCConversationTest, TestBackendDidCloseForwardsToDelegate) {
 // Tests that receiving audio output from the backend plays audio.
 TEST_F(TTCConversationTest, TestBackendAudioOutputPlaysResponseAudio) {
   [conversation_ start];
+  ASSERT_TRUE(mock_backend_->observer());
 
-  const uint8_t raw_pcm[] = {0x12, 0x34};
-  NSData* chunk = [NSData dataWithBytes:raw_pcm length:sizeof(raw_pcm)];
+  const int16_t raw_pcm[] = {0x1234};
+  NSData* expected_chunk = [NSData dataWithBytes:raw_pcm
+                                          length:sizeof(raw_pcm)];
 
-  [conversation_ backend:fake_backend_ didReceiveAudioOutput:chunk];
+  mock_backend_->observer()->OnAudioOutput(raw_pcm, 0);
 
-  EXPECT_NSEQ(fake_audio_controller_.lastPlayedChunk, chunk);
+  EXPECT_NSEQ(fake_audio_controller_.lastPlayedChunk, expected_chunk);
   EXPECT_TRUE(fake_audio_controller_.isPlaying);
 }
 
 // Tests that generation interruption clears playback.
 TEST_F(TTCConversationTest, TestBackendGenerationInterruptedClearsPlayback) {
   [conversation_ start];
+  ASSERT_TRUE(mock_backend_->observer());
 
-  const uint8_t raw_pcm[] = {0x12, 0x34};
-  NSData* chunk = [NSData dataWithBytes:raw_pcm length:sizeof(raw_pcm)];
-  [conversation_ backend:fake_backend_ didReceiveAudioOutput:chunk];
+  const int16_t raw_pcm[] = {0x1234};
+  mock_backend_->observer()->OnAudioOutput(raw_pcm, 0);
 
-  [conversation_ backend:fake_backend_
-      didChangeGenerationStateStarted:NO
-                            completed:NO
-                          interrupted:YES];
+  mock_backend_->observer()->OnGenerationStateChanged(
+      /*started=*/false, /*completed=*/false, /*interrupted=*/true);
 
   EXPECT_TRUE(fake_audio_controller_.didClearPlaybackQueue);
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
@@ -388,9 +374,10 @@ TEST_F(TTCConversationTest, TestBackendGenerationInterruptedClearsPlayback) {
 // `ttc::ErrorCode`.
 TEST_F(TTCConversationTest, TestBackendErrorForwardsToDelegate) {
   [conversation_ start];
+  ASSERT_TRUE(mock_backend_->observer());
 
-  [conversation_ backend:fake_backend_
-        didFailWithError:ttc::ErrorCode::kInternalBackendError];
+  mock_backend_->observer()->OnBackendError(
+      ttc::ErrorCode::kInternalBackendError);
 
   ASSERT_TRUE(delegate_.lastError != nil);
   EXPECT_NSEQ(delegate_.lastError.domain, kTTCErrorDomain);
@@ -402,28 +389,28 @@ TEST_F(TTCConversationTest, TestBackendErrorForwardsToDelegate) {
 // and dropped while response audio is playing (barge-in disabled).
 TEST_F(TTCConversationTest, TestAudioCaptureSuppressedWhilePlaying) {
   [conversation_ start];
+  ASSERT_TRUE(mock_backend_->observer());
 
-  const uint8_t raw_pcm[] = {0x12, 0x34};
-  [conversation_ backend:fake_backend_
-      didReceiveAudioOutput:[NSData dataWithBytes:raw_pcm
-                                           length:sizeof(raw_pcm)]];
+  const int16_t raw_pcm[] = {0x1234};
+  mock_backend_->observer()->OnAudioOutput(raw_pcm, 0);
 
-  const uint8_t mic_pcm[] = {0xAA, 0xBB};
+  const int16_t mic_pcm[] = {0x5678};
   NSData* chunk = [NSData dataWithBytes:mic_pcm length:sizeof(mic_pcm)];
+  EXPECT_CALL(*mock_backend_, SendAudioChunk(_)).Times(0);
   [conversation_ audioController:fake_audio_controller_
             didCaptureAudioChunk:chunk];
-
-  EXPECT_NSEQ(fake_backend_.lastSentAudioChunk, nil);
 }
 
 // Tests that calling `stop` is idempotent and safe against re-entrancy loops.
 TEST_F(TTCConversationTest, TestStopIdempotentAndNoReentrantLoop) {
   [conversation_ start];
+  ttc::TtcBackend::Observer* observer = mock_backend_->observer();
+  ASSERT_TRUE(observer);
 
   [conversation_ stop];
 
   // Calling stop again or receiving closure must not trigger loops or crashes.
   [conversation_ stop];
-  [conversation_ backendDidClose:fake_backend_];
+  observer->OnBackendClosed();
   EXPECT_TRUE(fake_audio_controller_.didStopCapture);
 }

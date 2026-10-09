@@ -7,7 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
+
+namespace ttc {
+class TtcBackend;
+}  // namespace ttc
 
 @class TTCConversation;
 @protocol TTCSessionControllerObserver;
@@ -25,6 +31,9 @@
 // Designated initializer injecting a custom conversation coordinator.
 - (instancetype)initWithConversation:(TTCConversation*)conversation
     NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer creating a `TTCConversation` with `backend`.
+- (instancetype)initWithBackend:(std::unique_ptr<ttc::TtcBackend>)backend;
 
 // Convenience initializer using a default `TTCConversation`.
 - (instancetype)init;
