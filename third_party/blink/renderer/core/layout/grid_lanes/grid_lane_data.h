@@ -19,12 +19,14 @@ using ItemIndexPath = Vector<wtf_size_t>;
 struct GridLanesItemPlacementData
     : public GarbageCollected<GridLanesItemPlacementData> {
   explicit GridLanesItemPlacementData(
-      const GridItemPlacementData& placement_data)
-      : placement_data(placement_data) {}
+      const GridItemPlacementData& placement_data,
+      LayoutUnit margin_block_end)
+      : placement_data(placement_data), margin_block_end(margin_block_end) {}
 
   void Trace(Visitor*) const {}
 
   GridItemPlacementData placement_data;
+  LayoutUnit margin_block_end;
 
   // Space available for alignment in the stacking axis. Fragmentation may
   // increase this if the track opening expands.

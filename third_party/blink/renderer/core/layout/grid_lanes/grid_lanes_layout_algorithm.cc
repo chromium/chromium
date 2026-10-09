@@ -1069,8 +1069,12 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         physical_fragment.GetBreakToken()->IsAtBlockEnd();
     LayoutUnit item_block_end = offset.block_offset + fragment.BlockSize();
     if (is_at_block_end) {
-      // TODO(almaher): Persist and include the item's block-end margin once it
-      // reaches the end of its content.
+      // Only add the block-end margin if the item has reached the end of its
+      // content. Then re-set it to avoid adding it more than once.
+      item_block_end +=
+          grid_lanes_item->grid_lanes_placement_data->margin_block_end;
+      grid_lanes_item->grid_lanes_placement_data->margin_block_end =
+          LayoutUnit();
     } else if (is_columns) {
       // A spanner occupies every lane it spans, so its break defers the rest of
       // the content in all of them.
@@ -1770,7 +1774,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
             MakeGarbageCollected<GridLanesItemPlacementData>(
                 GridItemPlacementData(
                     placement_offset,
-                    result->HasDescendantThatDependsOnPercentageBlockSize()));
+                    result->HasDescendantThatDependsOnPercentageBlockSize()),
+                margins.block_end);
 
         // Store the item start in forward order. The gap accumulator applies
         // fill-reverse and content alignment later.
