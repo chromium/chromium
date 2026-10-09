@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 
+#import <memory>
 #import <optional>
 #import <string>
 #import <string_view>
@@ -19,6 +20,7 @@
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom-forward.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -26,17 +28,12 @@
 #import "ios/web/public/web_state_observer.h"
 
 @class BackgroundContinuedProcessingTaskContext;
-@class NSError;
 @class PostedObserverList<ObserverType>;
 @protocol ActorTaskInterventionDelegate;
 @protocol ActorTaskUpdatesObserver;
 
 class Browser;
 class BrowserList;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace web {
 class WebState;
@@ -65,7 +62,8 @@ class ActorWebStatePolicyDecider;
 //   delegate completions) are wrapped with `BindPostTaskToCurrentDefault`.
 // Callbacks handed to the engine or timers stay synchronous.
 class ActorTask : public web::WebStateObserver,
-                  public ActorEngine::ExecutionUpdatesDelegate {
+                  public ActorEngine::ExecutionUpdatesDelegate,
+                  public ActorTaskBackgroundWorker::TaskStateDelegate {
  public:
   ActorTask(ActorTaskId task_id,
             const std::string& title,
@@ -237,6 +235,11 @@ class ActorTask : public web::WebStateObserver,
   void OnWillExecuteTool(ToolType tool_type,
                          web::WebStateID web_state_id) override;
 
+  // ActorTaskBackgroundWorker::TaskStateDelegate.
+  std::vector<web::WebState*> GetControlledWebStates() override;
+  ActorTaskState GetTaskState() const override;
+  const std::string& GetLastTaskUpdate() const override;
+
   // Returns the Browser associated with the given `window_id`.
   Browser* GetBrowserForWindowId(int32_t window_id) const;
 
@@ -262,37 +265,6 @@ class ActorTask : public web::WebStateObserver,
 
   // Handles the user resolving the confirmation.
   void OnInterruptConfirmationResolved();
-
-  // Updates the subtitle of the background continued processing task to match
-  // `task_update`. Does nothing if `task_update` is empty or identical to the
-  // current value.
-  void UpdateBackgroundTaskSubtitle(const std::string& task_update);
-
-  // Advances the background task progress by one discrete step using the
-  // context's stepped progress tracker.
-  void UpdateBackgroundTaskProgress();
-
-  // Finalizes the background task, reporting whether it succeeded.
-  void FinalizeBackgroundTask(bool success);
-
-  // Starts the JavaScript heartbeat ping timer if backgrounding is enabled and
-  // the timer is not already running.
-  // TODO(crbug.com/561253684): Ensure we only start the heartbeat timer when
-  // the app is backgrounded.
-  void StartHeartbeatTimer();
-
-  // Stops the JavaScript heartbeat ping timer.
-  void StopHeartbeatTimer();
-
-  // Sends a lightweight JavaScript ping to all controlled WebStates to keep
-  // their out-of-process WebContent processes alive.
-  void SendHeartbeatPing();
-
-  // Handles completion or failure of a JavaScript heartbeat ping for
-  // `web_state_id`. Failed pings are logged to the journal.
-  void OnHeartbeatPingResponse(web::WebStateID web_state_id,
-                               const base::Value* result,
-                               NSError* error);
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
@@ -357,12 +329,8 @@ class ActorTask : public web::WebStateObserver,
   // their reply before observers see the resulting state change.
   __strong PostedObserverList<id<ActorTaskUpdatesObserver>>* observers_ = nil;
 
-  // Active context for background continued processing, if requested.
-  __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
-      nil;
-
-  // Repeating timer for sending JavaScript heartbeat pings.
-  base::RepeatingTimer heartbeat_timer_;
+  // Handles the background continued processing task and the heartbeat.
+  std::unique_ptr<ActorTaskBackgroundWorker> background_worker_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

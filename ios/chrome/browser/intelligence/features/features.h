@@ -311,6 +311,18 @@ extern const char kGeminiActorBackgroundingParam[];
 // Returns true if backgrounding for Gemini Actor is enabled.
 bool IsGeminiActorBackgroundingEnabled();
 
+// Parameter for the interval between JS heartbeat pings that keep controlled
+// WebState WebContent processes alive in the background. The default, 400ms,
+// was found to be the sweet spot for keeping renderer processes alive and
+// accepting IPC messages (otherwise they drop their keep-alive assertions after
+// about 1 second of inactivity).
+extern const char
+    kGeminiActorBackgroundWebStateKeepAliveHeartbeatIntervalParam[];
+
+// Returns the interval between JS heartbeat pings that keep controlled WebState
+// WebContent processes alive in the background.
+base::TimeDelta GetGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval();
+
 // Enables the GeminiUnaryMigration feature.
 BASE_DECLARE_FEATURE(kGeminiUnaryMigration);
 

@@ -656,6 +656,16 @@ BASE_FEATURE_PARAM(bool,
                    kGeminiActorBackgroundingParam,
                    true);
 
+const char kGeminiActorBackgroundWebStateKeepAliveHeartbeatIntervalParam[] =
+    "background_web_state_keep_alive_heartbeat_interval";
+
+BASE_FEATURE_PARAM(
+    base::TimeDelta,
+    kGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval,
+    &kGeminiActor,
+    kGeminiActorBackgroundWebStateKeepAliveHeartbeatIntervalParam,
+    base::Milliseconds(400));
+
 bool IsGeminiActorEnabled() {
   if (!IsPageActionMenuEnabled() || !IsActorEnabled() ||
       !IsGeminiClientMigrationEnabled()) {
@@ -669,6 +679,10 @@ bool IsGeminiActorBackgroundingEnabled() {
     return false;
   }
   return kGeminiActorBackgrounding.Get();
+}
+
+base::TimeDelta GetGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval() {
+  return kGeminiActorBackgroundWebStateKeepAliveHeartbeatInterval.Get();
 }
 
 BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_ENABLED_BY_DEFAULT);
