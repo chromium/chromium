@@ -31,7 +31,6 @@ namespace tab_groups {
 class STGTabsMenuModel : public ui::SimpleMenuModel,
                          public ui::SimpleMenuModel::Delegate {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseGroup);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLeaveGroupMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
@@ -73,6 +72,7 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   raw_ptr<BrowserWindowInterface> browser_;
   base::CancelableTaskTracker cancelable_task_tracker_;
   bool should_enable_move_menu_item_;
+  bool should_enable_open_menu_item_;
   std::optional<base::Uuid> sync_id_;
   TabGroupMenuContext context_;
 

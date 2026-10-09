@@ -20,7 +20,6 @@ struct TabGroupMenuAction {
   enum class Type {
     DEFAULT = -1,
     OPEN_IN_BROWSER,
-    CLOSE_GROUP,
     OPEN_OR_MOVE_TO_NEW_WINDOW,
     FOCUS_OR_UNFOCUS_GROUP,
     PIN_OR_UNPIN_GROUP,

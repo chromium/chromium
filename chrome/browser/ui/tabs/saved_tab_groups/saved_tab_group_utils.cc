@@ -888,27 +888,6 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
       }
       break;
     }
-    case TabGroupMenuAction::Type::CLOSE_GROUP: {
-      std::optional<tab_groups::SavedTabGroup> saved_group =
-          tab_group_service->GetGroup(uuid);
-      if (!saved_group.has_value() ||
-          !saved_group->local_group_id().has_value()) {
-        break;
-      }
-
-      base::RecordAction(base::UserMetricsAction(
-          "TabGroups_SavedTabGroups_TabGroupSubmenu_Closed"));
-
-      if (saved_group->is_shared_tab_group()) {
-        saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
-            saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-                kClosed);
-      }
-
-      SavedTabGroupUtils::RemoveGroupFromTabstrip(
-          /*browser=*/nullptr, saved_group->local_group_id().value());
-      break;
-    }
     case TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
       base::RecordAction(base::UserMetricsAction(
           "TabGroups_SavedTabGroups_MoveGroupToNewWindow"));
