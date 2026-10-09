@@ -102,8 +102,7 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
             net::EmbeddedTestServer::TYPE_HTTPS)} {
     scoped_feature_list_.InitWithFeatures(
         {features::kReleaseNotesNotificationAllChannels},
-        {features::kHelpAppOpensInsteadOfReleaseNotesNotification,
-         ::features::kWebAppInstallDialog});
+        {::features::kWebAppInstallDialog});
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
   }
 
@@ -147,13 +146,6 @@ class HelpAppIntegrationTestWithFirstRunEnabled
     HelpAppIntegrationTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kForceFirstRunUI);
   }
-};
-
-class HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification
-    : public HelpAppIntegrationTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kHelpAppOpensInsteadOfReleaseNotesNotification};
 };
 
 }  // namespace
@@ -423,9 +415,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(
-    HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification,
-    OpensHelpApp) {
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, OpensHelpApp) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
   GURL expected_trusted_frame_url = GURL(kExploreUpdatesPageUrl);
@@ -455,9 +445,7 @@ IN_PROC_BROWSER_TEST_P(
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(
-    HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification,
-    HelpAppRemainsClosed) {
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppRemainsClosed) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
   GURL expected_trusted_frame_url = GURL(kExploreUpdatesPageUrl);
@@ -1231,7 +1219,4 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification);
 }  // namespace ash

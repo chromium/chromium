@@ -74,7 +74,6 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -129,9 +128,7 @@ void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   ash::SystemAppLaunchParams params;
   params.url =
-      base::FeatureList::IsEnabled(
-          ash::features::kHelpAppOpensInsteadOfReleaseNotesNotification) &&
-              source == apps::LaunchSource::kFromReleaseNotesNotification
+      source == apps::LaunchSource::kFromReleaseNotesNotification
           ? GURL("chrome://help-app/updates?launchSource=version-update")
           : GURL("chrome://help-app/updates");
   params.launch_source = source;

@@ -65,19 +65,8 @@ void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
   if (!release_notes_storage.ShouldNotify()) {
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kHelpAppOpensInsteadOfReleaseNotesNotification)) {
-    chrome::LaunchReleaseNotes(profile_, apps::LaunchSource::kFromOsLogin);
-    release_notes_storage.MarkNotificationShown();
-    return;
-  }
-
-  if (!release_notes_notification_) {
-    release_notes_notification_ =
-        std::make_unique<ReleaseNotesNotification>(profile_);
-  }
-  // Let the ReleaseNotesNotification decide if it should show itself.
-  release_notes_notification_->MaybeShowReleaseNotes();
+  chrome::LaunchReleaseNotes(profile_, apps::LaunchSource::kFromOsLogin);
+  release_notes_storage.MarkNotificationShown();
 }
 
 }  // namespace ash

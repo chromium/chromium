@@ -7928,13 +7928,6 @@ inline constexpr char kHelpAppHomePageAppArticlesDescription[] =
     "If enabled, the home page of the Help App will show a section containing"
     "articles about apps.";
 
-inline constexpr char kHelpAppOpensInsteadOfReleaseNotesNotificationName[] =
-    "Help App opens instead of release notes notification";
-inline constexpr char
-    kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
-        "Enables opening the Help App's What's New page immediately instead of "
-        "showing a notification to open the help app.";
-
 inline constexpr char kIdbSqliteBackingStoreName[] = "IDB SQLite Backing Store";
 inline constexpr char kIdbSqliteBackingStoreDescription[] =
     "Uses a SQLite-powered backing store for IndexedDB. No data is migrated "

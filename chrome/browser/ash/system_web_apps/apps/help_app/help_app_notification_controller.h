@@ -14,8 +14,6 @@ class Profile;
 
 namespace ash {
 
-class ReleaseNotesNotification;
-
 // Class to show notifications under the Help App.
 class HelpAppNotificationController {
  public:
@@ -32,7 +30,6 @@ class HelpAppNotificationController {
 
  private:
   const raw_ptr<Profile> profile_;
-  std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
 
   base::WeakPtrFactory<HelpAppNotificationController> weak_ptr_factory_{this};
 };

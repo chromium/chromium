@@ -80,8 +80,7 @@ class HelpAppNotificationControllerTest
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kReleaseNotesNotificationAllChannels,
-         features::kHelpAppOpensInsteadOfReleaseNotesNotification},
+        {features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{
             features::kReleaseNotesNotificationAlwaysEligible});
   }
@@ -93,7 +92,6 @@ class HelpAppNotificationControllerTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kReleaseNotesNotificationAllChannels,
-         features::kHelpAppOpensInsteadOfReleaseNotesNotification,
          features::kReleaseNotesNotificationAlwaysEligible},
         /*disabled_features=*/{});
   }
@@ -118,67 +116,6 @@ class HelpAppNotificationControllerTest
     }
   }
 };
-
-class HelpAppNotificationControllerTestWithHelpAppOpensInsteadDisabled
-    : public HelpAppNotificationControllerTest {
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            features::kReleaseNotesNotificationAllChannels,
-        },
-        /*disabled_features=*/{
-            features::kReleaseNotesNotificationAlwaysEligible,
-            features::kHelpAppOpensInsteadOfReleaseNotesNotification});
-  }
-};
-
-// Tests for regular profiles.
-TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadDisabled,
-       DoesNotShowAnyNotificationIfNewRegularProfile) {
-  Profile* profile = CreateRegularProfile();
-  auto controller = std::make_unique<HelpAppNotificationController>(profile);
-
-  controller->MaybeShowReleaseNotesNotification();
-  EXPECT_EQ(0, notification_count_);
-  EXPECT_FALSE(HasReleaseNotesNotification());
-}
-
-TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadDisabled,
-       DoesNotShowsReleaseNotesNotificationIfShownInOlderMilestone) {
-  Profile* profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(
-      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
-  auto controller = std::make_unique<HelpAppNotificationController>(profile);
-
-  controller->MaybeShowReleaseNotesNotification();
-  EXPECT_EQ(0, notification_count_);
-  EXPECT_FALSE(HasReleaseNotesNotification());
-}
-
-TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadDisabled,
-       DoesNotShowReleaseNotificationIfAlreadyShownInCurrentMilestone) {
-  Profile* profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(
-      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone,
-      CurrentMilestone());
-  auto controller = std::make_unique<HelpAppNotificationController>(profile);
-
-  controller->MaybeShowReleaseNotesNotification();
-  EXPECT_EQ(0, notification_count_);
-  EXPECT_FALSE(HasReleaseNotesNotification());
-}
-
-// Tests for Child profile.
-TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadDisabled,
-       DoesNotShowAnyNotificationIfNewChildProfile) {
-  Profile* profile = CreateChildProfile();
-  auto controller = std::make_unique<HelpAppNotificationController>(profile);
-
-  controller->MaybeShowReleaseNotesNotification();
-  EXPECT_EQ(0, notification_count_);
-  EXPECT_FALSE(HasReleaseNotesNotification());
-}
 
 // Tests that help app opens instead of release notes notification by default.
 TEST_F(HelpAppNotificationControllerTest, DoesNotShowNotification) {

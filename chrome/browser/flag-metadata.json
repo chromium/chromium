@@ -6081,11 +6081,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "help-app-opens-instead-of-release-notes-notification",
-    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "hid-get-feature-report-fix",
     "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 152
