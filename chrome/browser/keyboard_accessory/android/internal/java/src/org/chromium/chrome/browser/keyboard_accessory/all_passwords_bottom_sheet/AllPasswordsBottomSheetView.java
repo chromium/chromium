@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
@@ -50,17 +51,24 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
             new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                    assert mDismissHandler != null;
-                    mDismissHandler.onResult(reason);
-                    mBottomSheetController.removeObserver(mBottomSheetObserver);
+                    onDismissed(reason);
                 }
 
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
-                    assert mDismissHandler != null;
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
-                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+                    onDismissed(BottomSheetController.StateChangeReason.NONE);
+                }
+
+                private void onDismissed(@BottomSheetController.StateChangeReason int reason) {
+                    assert mDismissHandler != null;
+                    if (BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden.isEnabled()
+                            && mBottomSheetController.getCurrentSheetContent()
+                                    != AllPasswordsBottomSheetView.this) {
+                        return;
+                    }
+                    mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                 }
             };

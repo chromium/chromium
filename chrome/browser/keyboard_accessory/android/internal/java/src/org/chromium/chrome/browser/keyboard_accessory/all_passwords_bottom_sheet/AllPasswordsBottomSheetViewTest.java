@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,7 @@ import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
@@ -51,7 +53,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -232,6 +236,43 @@ public class AllPasswordsBottomSheetViewTest {
         assertEquals(
                 Integer.valueOf(BottomSheetController.StateChangeReason.NONE),
                 mDismissHandler.getOnlyPayloadBlocking());
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testDismissesOnceOnBackPressWhenDeferContentSwapDisabled() {
+        addDefaultCredentialsToTheModel();
+
+        mModel.set(VISIBLE, true);
+        waitForSheetState(SheetState.FULL);
+        mBottomSheetController.hideContent(
+                mAllPasswordsBottomSheetView,
+                /* animate= */ true,
+                BottomSheetController.StateChangeReason.BACK_PRESS);
+        waitForSheetState(SheetState.HIDDEN);
+        assertEquals(
+                Integer.valueOf(BottomSheetController.StateChangeReason.BACK_PRESS),
+                mDismissHandler.getOnlyPayloadBlocking());
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testPreemptingLowPrioritySheetDoesNotDismissAllPasswordsSheet() {
+        TestBottomSheetContent lowPriorityContent =
+                new TestBottomSheetContent(
+                        mAllPasswordsBottomSheetView.getContentView().getContext());
+        lowPriorityContent.setCanBeSuppressed(true);
+
+        assertTrue(mBottomSheetController.requestShowContent(lowPriorityContent, false));
+        waitForSheetState(SheetState.PEEK);
+        assertThat(mBottomSheetController.getCurrentSheetContent(), is(lowPriorityContent));
+
+        mModel.set(VISIBLE, true);
+        waitForSheetState(SheetState.FULL);
+
+        assertEquals(0, mDismissHandler.getCallCount());
+        assertThat(
+                mBottomSheetController.getCurrentSheetContent(), is(mAllPasswordsBottomSheetView));
     }
 
     @Test

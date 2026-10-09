@@ -62,6 +62,7 @@ android_library("java") {
     ":java_resources",
     "//base:build_info_java",
     "//base:callback_java",
+    "//base:features_java",
     "//base:lifetime_java",
     "//base:metrics_java",
     "//base:supplier_java",
