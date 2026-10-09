@@ -247,6 +247,7 @@ linux_memory_builder(
                     # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 8,
                 ),
