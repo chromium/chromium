@@ -13,6 +13,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
 class ProfileIOS;
@@ -58,6 +59,11 @@ class TTCKeyedService : public KeyedService {
   // active.
   TTCSessionController* session_controller() const;
 
+  // Returns the shared session journal for this service. Entries persist across
+  // `EndSession()` and are cleared on the next `StartSession()`.
+  TTCJournal& journal() { return journal_; }
+  const TTCJournal& journal() const { return journal_; }
+
   // Registers a callback to be notified whenever `TTCServiceState` changes.
   base::CallbackListSubscription RegisterStateChangedCallback(
       base::RepeatingCallback<void(TTCServiceState)> callback);
@@ -76,6 +82,10 @@ class TTCKeyedService : public KeyedService {
 
   // Active session coordinator, or nil when no session is in progress.
   TTCSessionController* session_controller_ = nil;
+
+  // Shared session journal retaining entries for the current or most recent
+  // session.
+  TTCJournal journal_;
 
   // List of callbacks notified when `TTCServiceState` changes.
   base::RepeatingCallbackList<void(TTCServiceState)> state_changed_callbacks_;

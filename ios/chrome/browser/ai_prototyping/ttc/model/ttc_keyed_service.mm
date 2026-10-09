@@ -76,6 +76,7 @@ void TTCKeyedService::StartSession() {
     [session_controller_ disconnect];
     session_controller_ = nil;
   }
+  journal_.Clear();
 
   const ios::provider::TTCConfig config = ios::provider::GetTTCConfig();
   std::unique_ptr<ttc::TtcBackend> backend;

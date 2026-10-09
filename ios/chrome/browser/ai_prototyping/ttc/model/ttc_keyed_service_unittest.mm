@@ -205,3 +205,24 @@ TEST_F(TTCKeyedServiceTest, TestWeakPtrValidity) {
   base::WeakPtr<TTCKeyedService> weak_ptr = service->GetWeakPtr();
   EXPECT_EQ(weak_ptr.get(), service);
 }
+
+// Test that journal entries logged during a session survive EndSession and are
+// cleared when the next session starts.
+TEST_F(TTCKeyedServiceTest,
+       TestJournalSurvivesEndSessionAndClearsOnNextStartSession) {
+  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  ASSERT_TRUE(service != nullptr);
+
+  service->StartSession();
+  service->journal().Log(TTCJournalComponent::kSession, "SessionStarted");
+  service->journal().LogError(TTCJournalComponent::kBackend, "BackendError");
+  ASSERT_EQ(service->journal().entries().size(), 2u);
+
+  service->EndSession();
+  EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->journal().entries().size(), 2u);
+
+  service->StartSession();
+  EXPECT_TRUE(service->journal().entries().empty());
+  service->EndSession();
+}
