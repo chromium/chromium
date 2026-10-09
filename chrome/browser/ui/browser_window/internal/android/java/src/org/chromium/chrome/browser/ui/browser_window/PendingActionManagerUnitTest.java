@@ -23,9 +23,7 @@ import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.Pendin
 public class PendingActionManagerUnitTest {
     private static final @PendingAction int[] ALL_ACTIONS = {
         PendingAction.SHOW,
-        PendingAction.HIDE,
         PendingAction.SHOW_INACTIVE,
-        PendingAction.CLOSE,
         PendingAction.ACTIVATE,
         PendingAction.DEACTIVATE,
         PendingAction.MAXIMIZE,
@@ -35,7 +33,7 @@ public class PendingActionManagerUnitTest {
     };
 
     private static final @PendingAction int[] NO_INPUT_GLOBAL_OVERRIDE_ACTIONS = {
-        PendingAction.HIDE, PendingAction.CLOSE, PendingAction.MINIMIZE,
+        PendingAction.MINIMIZE,
     };
 
     private static final @PendingAction int[] SECONDARY_ACTIONS = {
@@ -71,7 +69,6 @@ public class PendingActionManagerUnitTest {
     public void testRequestShow_afterSingleLowerPrecedenceAction_clearsActionAndAddsShow() {
         @PendingAction
         int[] lowerPrecedenceActions = {
-            PendingAction.HIDE,
             PendingAction.SHOW_INACTIVE,
             PendingAction.ACTIVATE,
             PendingAction.DEACTIVATE,
@@ -88,10 +85,7 @@ public class PendingActionManagerUnitTest {
     public void testRequestShow_afterSingleHigherPrecedenceAction_ignoresShowAndRetainsOther() {
         @PendingAction
         int[] higherPrecedenceActions = {
-            PendingAction.CLOSE,
-            PendingAction.MAXIMIZE,
-            PendingAction.RESTORE,
-            PendingAction.SET_BOUNDS
+            PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS
         };
 
         doTestActionRetainsHigherPrecedenceAction(PendingAction.SHOW, higherPrecedenceActions);
@@ -199,9 +193,7 @@ public class PendingActionManagerUnitTest {
         @PendingAction
         int[] lowerPrecedenceActions = {
             PendingAction.SHOW,
-            PendingAction.HIDE,
             PendingAction.SHOW_INACTIVE,
-            PendingAction.CLOSE,
             PendingAction.ACTIVATE,
             PendingAction.DEACTIVATE,
             PendingAction.MINIMIZE,
@@ -240,7 +232,6 @@ public class PendingActionManagerUnitTest {
         @PendingAction
         int[] lowerPrecedenceActions = {
             PendingAction.SHOW,
-            PendingAction.HIDE,
             PendingAction.ACTIVATE,
             PendingAction.DEACTIVATE,
             PendingAction.MINIMIZE
@@ -248,20 +239,6 @@ public class PendingActionManagerUnitTest {
 
         doTestActionOverridesLowerPrecedenceAction(
                 PendingAction.SHOW_INACTIVE, lowerPrecedenceActions);
-    }
-
-    @Test
-    public void testRequestShowInactive_afterClose_ignoresShowInactive() {
-        // Arrange.
-        mManager.requestAction(PendingAction.CLOSE);
-
-        // Act.
-        mManager.requestAction(PendingAction.SHOW_INACTIVE);
-
-        // Assert.
-        var pendingActions = mManager.getPendingActionsForTesting();
-        assertEquals("Primary action should be CLOSE.", PendingAction.CLOSE, pendingActions[0]);
-        assertEquals("Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
     }
 
     // Examples:
@@ -297,17 +274,14 @@ public class PendingActionManagerUnitTest {
     public void testRequestActivate_afterSingleLowerPrecedenceAction_clearsActionAndAddsActivate() {
         @PendingAction
         int[] lowerPrecedenceActions = {
-            PendingAction.HIDE,
-            PendingAction.SHOW_INACTIVE,
-            PendingAction.DEACTIVATE,
-            PendingAction.MINIMIZE
+            PendingAction.SHOW_INACTIVE, PendingAction.DEACTIVATE, PendingAction.MINIMIZE
         };
 
         doTestActionOverridesLowerPrecedenceAction(PendingAction.ACTIVATE, lowerPrecedenceActions);
     }
 
     // Examples:
-    // Request: CLOSE->ACTIVATE, Result: CLOSE.
+    // Request: SHOW->ACTIVATE, Result: SHOW.
     // Request: MAXIMIZE->ACTIVATE, Result: MAXIMIZE.
     @Test
     public void
@@ -315,7 +289,6 @@ public class PendingActionManagerUnitTest {
         @PendingAction
         int[] higherPrecedenceActions = {
             PendingAction.SHOW,
-            PendingAction.CLOSE,
             PendingAction.MAXIMIZE,
             PendingAction.RESTORE,
             PendingAction.SET_BOUNDS
@@ -373,16 +346,12 @@ public class PendingActionManagerUnitTest {
                 PendingAction.DEACTIVATE, higherPrecedenceActions);
     }
 
-    // Examples:
-    // Request: CLOSE->DEACTIVATE, Result: CLOSE.
+    // Example:
     // Request: MINIMIZE->DEACTIVATE, Result: MINIMIZE.
     @Test
     public void
             testRequestDeactivate_afterSingleHigherPrecedenceAction_ignoresDeactivateAndRetainsOther() {
-        @PendingAction
-        int[] higherPrecedencePrimaryActions = {
-            PendingAction.HIDE, PendingAction.CLOSE, PendingAction.MINIMIZE
-        };
+        @PendingAction int[] higherPrecedencePrimaryActions = {PendingAction.MINIMIZE};
 
         for (@PendingAction int higherPrecedenceAction : higherPrecedencePrimaryActions) {
             // Arrange.
@@ -444,9 +413,8 @@ public class PendingActionManagerUnitTest {
         }
     }
 
-    // Examples:
+    // Example:
     // Request: MAXIMIZE->DEACTIVATE->MINIMIZE, Result: MINIMIZE.
-    // Request: SET_BOUNDS->SHOW_INACTIVE->CLOSE, Result: CLOSE.
     @Test
     public void testRequestGlobalOverrideAction_afterTwoPendingActions_overridesBothActions() {
         for (@PendingAction int globalOverrideAction : NO_INPUT_GLOBAL_OVERRIDE_ACTIONS) {

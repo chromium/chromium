@@ -33,9 +33,7 @@ final class PendingActionManager {
         PendingAction.MAXIMIZE,
         PendingAction.RESTORE,
         PendingAction.SHOW,
-        PendingAction.HIDE,
         PendingAction.SHOW_INACTIVE,
-        PendingAction.CLOSE,
         PendingAction.ACTIVATE,
         PendingAction.DEACTIVATE,
         PendingAction.MINIMIZE
@@ -47,9 +45,7 @@ final class PendingActionManager {
         int MAXIMIZE = 2;
         int RESTORE = 3;
         int SHOW = 4;
-        int HIDE = 5;
         int SHOW_INACTIVE = 6;
-        int CLOSE = 7;
         int ACTIVATE = 8;
         int DEACTIVATE = 9;
         int MINIMIZE = 10;
@@ -135,8 +131,6 @@ final class PendingActionManager {
             case PendingAction.DEACTIVATE:
                 requestDeactivate();
                 break;
-            case PendingAction.HIDE:
-            case PendingAction.CLOSE:
             case PendingAction.MINIMIZE:
                 requestGlobalOverrideAction(action);
                 break;
@@ -238,8 +232,7 @@ final class PendingActionManager {
         mPendingActions[1] = PendingAction.NONE;
 
         // Retain higher precedence primary action and ignore SHOW.
-        if (mPendingActions[0] == PendingAction.CLOSE
-                || mPendingActions[0] == PendingAction.MAXIMIZE
+        if (mPendingActions[0] == PendingAction.MAXIMIZE
                 || mPendingActions[0] == PendingAction.RESTORE
                 || mPendingActions[0] == PendingAction.SET_BOUNDS) {
             return;
@@ -253,16 +246,10 @@ final class PendingActionManager {
     private void requestShowInactive() {
         // Clear lower precedence primary action.
         if (mPendingActions[0] == PendingAction.SHOW
-                || mPendingActions[0] == PendingAction.HIDE
                 || mPendingActions[0] == PendingAction.ACTIVATE
                 || mPendingActions[0] == PendingAction.DEACTIVATE
                 || mPendingActions[0] == PendingAction.MINIMIZE) {
             mPendingActions[0] = PendingAction.NONE;
-        }
-
-        // Retain higher precedence action and ignore SHOW_INACTIVE.
-        if (mPendingActions[0] == PendingAction.CLOSE) {
-            return;
         }
 
         // Run SHOW_INACTIVE along with one of the other higher precedence primary actions.
@@ -276,7 +263,6 @@ final class PendingActionManager {
 
         // Retain higher precedence primary action and ignore ACTIVATE.
         if (mPendingActions[0] == PendingAction.SHOW
-                || mPendingActions[0] == PendingAction.CLOSE
                 || mPendingActions[0] == PendingAction.MAXIMIZE
                 || mPendingActions[0] == PendingAction.RESTORE
                 || mPendingActions[0] == PendingAction.SET_BOUNDS) {
@@ -296,9 +282,7 @@ final class PendingActionManager {
         }
 
         // Retain higher precedence action and ignore DEACTIVATE.
-        if (mPendingActions[0] == PendingAction.HIDE
-                || mPendingActions[0] == PendingAction.CLOSE
-                || mPendingActions[0] == PendingAction.MINIMIZE
+        if (mPendingActions[0] == PendingAction.MINIMIZE
                 || mPendingActions[1] == PendingAction.SHOW_INACTIVE) {
             return;
         }
@@ -337,7 +321,6 @@ final class PendingActionManager {
                 case PendingAction.SHOW_INACTIVE:
                 case PendingAction.MINIMIZE:
                 case PendingAction.DEACTIVATE:
-                case PendingAction.CLOSE:
                     mIsActiveFuture = false;
                     break;
                 default:
@@ -353,7 +336,6 @@ final class PendingActionManager {
                     mIsVisibleFuture = true;
                     break;
                 case PendingAction.MINIMIZE:
-                case PendingAction.CLOSE:
                     mIsVisibleFuture = false;
                     break;
                 default:
@@ -365,8 +347,6 @@ final class PendingActionManager {
                     mIsMaximizedFuture = true;
                     break;
                 case PendingAction.MINIMIZE:
-                case PendingAction.CLOSE:
-                case PendingAction.HIDE:
                 case PendingAction.RESTORE:
                 case PendingAction.SET_BOUNDS:
                     mIsMaximizedFuture = false;
