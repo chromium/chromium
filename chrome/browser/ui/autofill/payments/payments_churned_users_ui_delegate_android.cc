@@ -55,6 +55,10 @@ void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
             base::BindOnce(&PaymentsChurnedUsersUiDelegateAndroid::
                                ShowConfirmationSnackbar,
                            weak_ptr_factory_.GetWeakPtr()));
+        if (is_showing_opt_in_ui_) {
+          autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+              autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
+        }
       } else if (closed_callback) {
         std::move(closed_callback).Run(PaymentsUiClosedReason::kUnknown);
       }
@@ -134,8 +138,7 @@ void PaymentsChurnedUsersUiDelegateAndroid::OnOptInUiClosed(
   if (!closed_callback_) {
     return;
   }
-  if (GetTreatmentArm() ==
-      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage) {
+  if (closed_reason != PaymentsUiClosedReason::kUnknown) {
     autofill_metrics::LogPaymentsChurnedUsersUiResult(closed_reason);
   }
   std::move(closed_callback_).Run(closed_reason);
