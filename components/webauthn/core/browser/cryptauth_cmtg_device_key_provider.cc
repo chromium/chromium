@@ -21,9 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
@@ -32,7 +30,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "crypto/random.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -66,6 +63,7 @@ constexpr char kEmptyRequestBody[] = "{}";
 
 // JSON field names for the response messages in cmtg_key_service.proto.
 constexpr char kCmtgWrapperKeyInfoField[] = "cmtgWrapperKeyInfo";
+constexpr char kCmtgWrapperKeysField[] = "cmtgWrapperKeys";
 constexpr char kKeyMaterialField[] = "keyMaterial";
 constexpr char kKeyAlgorithmField[] = "keyAlgorithm";
 constexpr char kAes256GcmAlgorithm[] = "AES256_GCM";
@@ -120,10 +118,20 @@ GURL GetBaseUrl() {
   return GURL(kCmtgServiceUrl);
 }
 
-GURL GetGetOrCreateUrl() {
-  return net::AppendQueryParameter(GetBaseUrl().Resolve(kCmtgGetOrCreatePath),
-                                   kQueryParameterAlternateOutputKey,
-                                   kQueryParameterAlternateOutputJson);
+const char* GetEndpointPath(CmtgDeviceKeyProvider::Operation operation) {
+  switch (operation) {
+    case CmtgDeviceKeyProvider::Operation::kMakeCredential:
+      return kCmtgGetOrCreatePath;
+    case CmtgDeviceKeyProvider::Operation::kGetAssertion:
+      return kCmtgBatchGetPath;
+  }
+  NOTREACHED();
+}
+
+GURL GetEndpointUrl(CmtgDeviceKeyProvider::Operation operation) {
+  return net::AppendQueryParameter(
+      GetBaseUrl().Resolve(GetEndpointPath(operation)),
+      kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputJson);
 }
 
 // Parses the JSON encoding of a `CmtgWrapperKeyInfo` message and returns the
@@ -167,6 +175,30 @@ KeysOrError ParseGetOrCreateResponse(const base::DictValue& response) {
   return keys;
 }
 
+// Parses the JSON encoding of a `GetCmtgWrapperKeysResponse` message. Invalid
+// keys are skipped so that one bad key does not prevent using the others. A
+// missing key list is treated as an empty one, matching proto3 JSON semantics
+// for empty repeated fields.
+KeysOrError ParseGetKeysResponse(const base::DictValue& response) {
+  std::vector<std::vector<uint8_t>> keys;
+  const base::ListValue* key_list = response.FindList(kCmtgWrapperKeysField);
+  if (!key_list) {
+    return keys;
+  }
+  for (const base::Value& entry : *key_list) {
+    const base::DictValue* key_info = entry.GetIfDict();
+    if (!key_info) {
+      FIDO_LOG(ERROR) << "Skipping CMTG wrapper key that is not a dictionary";
+      continue;
+    }
+    std::optional<std::vector<uint8_t>> key = ParseWrapperKeyInfo(*key_info);
+    if (key) {
+      keys.push_back(std::move(*key));
+    }
+  }
+  return keys;
+}
+
 CmtgDeviceKeysResult ToMetricResult(const KeysOrError& result) {
   if (result.has_value()) {
     return CmtgDeviceKeysResult::kSuccess;
@@ -196,14 +228,6 @@ class RequestImpl : public CmtgDeviceKeyProvider::Request {
   ~RequestImpl() override = default;
 
   void Start() {
-    if (operation_ == CmtgDeviceKeyProvider::Operation::kGetAssertion) {
-      // TODO(crbug.com/485888879): Fetch keys from the batchGet endpoint.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&RequestImpl::FinishWithMockKeys,
-                                    weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-
     access_token_fetcher_ =
         std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
             signin::OAuthConsumerId::kCmtgDeviceKeyProvider,
@@ -226,7 +250,7 @@ class RequestImpl : public CmtgDeviceKeyProvider::Request {
     }
 
     auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = GetGetOrCreateUrl();
+    resource_request->url = GetEndpointUrl(operation_);
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     resource_request->headers.SetHeader(
@@ -267,18 +291,15 @@ class RequestImpl : public CmtgDeviceKeyProvider::Request {
       return;
     }
 
-    Finish(ParseGetOrCreateResponse(*response));
-  }
-
-  void FinishWithMockKeys() {
-    static const base::NoDestructor<std::vector<std::vector<uint8_t>>> kKeys(
-        [] {
-          std::vector<uint8_t> key(kWrapperKeySize);
-          crypto::RandBytes(key);
-          return std::vector<std::vector<uint8_t>>{std::move(key)};
-        }());
-
-    Finish(*kKeys);
+    switch (operation_) {
+      case CmtgDeviceKeyProvider::Operation::kMakeCredential:
+        Finish(ParseGetOrCreateResponse(*response));
+        return;
+      case CmtgDeviceKeyProvider::Operation::kGetAssertion:
+        Finish(ParseGetKeysResponse(*response));
+        return;
+    }
+    NOTREACHED();
   }
 
   void Finish(KeysOrError result) {

@@ -39,8 +39,13 @@ using KeysFuture =
 constexpr char kGetOrCreateUrl[] =
     "https://cryptauthfidoenrollment.pa.googleapis.com/v1/users/me/"
     "cmtgWrapperKeys:getOrCreate?alt=json";
+constexpr char kBatchGetUrl[] =
+    "https://cryptauthfidoenrollment.pa.googleapis.com/v1/users/me/"
+    "cmtgWrapperKeys:batchGet?alt=json";
 
 constexpr char kKeyMaterial[] = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+constexpr char kOtherKeyMaterial[] =
+    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=";
 
 constexpr char kGetOrCreateResponse[] = R"({
   "cmtgWrapperKeyInfo": {
@@ -80,6 +85,18 @@ class CryptauthCmtgDeviceKeyProviderTest : public testing::Test {
     KeysFuture future;
     StartRequest(CmtgDeviceKeyProvider::Operation::kMakeCredential, future);
     test_url_loader_factory_.SimulateResponseForPendingRequest(kGetOrCreateUrl,
+                                                               response);
+    return future.Take();
+  }
+
+  // Runs a GetAssertion request that receives `response` and returns the
+  // result.
+  base::expected<std::vector<std::vector<uint8_t>>,
+                 CmtgDeviceKeyProvider::Error>
+  GetAssertionWithResponse(const std::string& response) {
+    KeysFuture future;
+    StartRequest(CmtgDeviceKeyProvider::Operation::kGetAssertion, future);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(kBatchGetUrl,
                                                                response);
     return future.Take();
   }
@@ -158,16 +175,84 @@ TEST_F(CryptauthCmtgDeviceKeyProviderTest, MakeCredentialInvalidResponses) {
   }
 }
 
-// TODO(crbug.com/485888879): Replace with real tests once GetAssertion uses
-// the batchGet endpoint.
-TEST_F(CryptauthCmtgDeviceKeyProviderTest, GetAssertionReturnsMockKey) {
+TEST_F(CryptauthCmtgDeviceKeyProviderTest, GetAssertionSuccess) {
+  base::HistogramTester histogram_tester;
   KeysFuture future;
-  auto request = provider_->GetDeviceKeys(
-      CmtgDeviceKeyProvider::Operation::kGetAssertion, future.GetCallback());
+
+  const network::ResourceRequest& resource_request =
+      StartRequest(CmtgDeviceKeyProvider::Operation::kGetAssertion, future);
+  EXPECT_EQ(resource_request.url, GURL(kBatchGetUrl));
+  EXPECT_EQ(resource_request.method, net::HttpRequestHeaders::kPostMethod);
+  EXPECT_EQ(resource_request.headers.GetHeader(
+                net::HttpRequestHeaders::kAuthorization),
+            "Bearer test_access_token");
+  EXPECT_EQ(
+      resource_request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
+      "application/json");
+  EXPECT_EQ(network::GetUploadData(resource_request), "{}");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kBatchGetUrl, R"({
+    "cmtgWrapperKeys": [
+      {
+        "keyMaterial": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "keyAlgorithm": "AES256_GCM",
+        "createTime": "2026-10-02T16:03:33.021202Z"
+      },
+      {
+        "keyMaterial": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
+        "keyAlgorithm": "AES256_GCM",
+        "createTime": "2026-10-02T16:03:33.021202Z"
+      }
+    ]
+  })");
+
   ASSERT_TRUE(future.Get().has_value());
-  ASSERT_EQ(future.Get()->size(), 1u);
-  EXPECT_EQ(future.Get()->front().size(), 32u);
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  ASSERT_EQ(future.Get()->size(), 2u);
+  EXPECT_EQ(future.Get()->at(0), *base::Base64Decode(kKeyMaterial));
+  EXPECT_EQ(future.Get()->at(1), *base::Base64Decode(kOtherKeyMaterial));
+  histogram_tester.ExpectUniqueSample("WebAuthentication.CmtgDeviceKeys.Result",
+                                      CmtgDeviceKeysResult::kSuccess, 1);
+}
+
+TEST_F(CryptauthCmtgDeviceKeyProviderTest, GetAssertionSkipsInvalidKeys) {
+  auto result = GetAssertionWithResponse(R"({
+    "cmtgWrapperKeys": [
+      "not a dict",
+      {"keyMaterial": "AAAA", "keyAlgorithm": "AES256_GCM"},
+      {"keyMaterial": "!!!", "keyAlgorithm": "AES256_GCM"},
+      {"keyAlgorithm": "AES256_GCM"},
+      {"keyMaterial": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="},
+      {
+        "keyMaterial": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "keyAlgorithm": "KEY_ALGORITHM_UNSPECIFIED"
+      },
+      {
+        "keyMaterial": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "keyAlgorithm": "AES256_GCM"
+      }
+    ]
+  })");
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result->size(), 1u);
+  EXPECT_EQ(result->front(), *base::Base64Decode(kKeyMaterial));
+}
+
+TEST_F(CryptauthCmtgDeviceKeyProviderTest, GetAssertionNoKeys) {
+  for (const char* response : {"{}", R"({"cmtgWrapperKeys": []})"}) {
+    SCOPED_TRACE(response);
+    auto result = GetAssertionWithResponse(response);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->empty());
+  }
+}
+
+TEST_F(CryptauthCmtgDeviceKeyProviderTest, GetAssertionInvalidResponses) {
+  for (const char* response : {"not json", "[]"}) {
+    SCOPED_TRACE(response);
+    auto result = GetAssertionWithResponse(response);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), CmtgDeviceKeyProvider::Error::kParseError);
+  }
 }
 
 TEST_F(CryptauthCmtgDeviceKeyProviderTest, AccessTokenFailure) {

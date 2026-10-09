@@ -4991,7 +4991,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
 // Tests creating a credential with a CMTG key, then asserting it.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyRoundTrip) {
-  UseFakeCmtgDeviceKeyProviderDirectly();
   SetTrustedVaultEmpty();
 
   content::WebContents* web_contents =
@@ -5029,6 +5028,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyRoundTrip) {
   EXPECT_EQ(make_script_result, get_script_result);
 
   histogram_tester_.ExpectTotalCount("WebAuthentication.Cmtg.BlockedDelay", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CmtgDeviceKeys.Result",
+      webauthn::CmtgDeviceKeysResult::kSuccess, 2);
 
   // Ensure the CMTG device keys are redacted from logs.
   const std::string device_log = GetDeviceLog();
@@ -5044,7 +5046,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyRoundTrip) {
 // first.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        CmtgKeyAssertionCreatesKey) {
-  UseFakeCmtgDeviceKeyProviderDirectly();
   SetTrustedVaultEmpty();
 
   content::WebContents* web_contents =
@@ -5095,6 +5096,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
       << "Got: " << get_script_result_2;
 
   EXPECT_EQ(get_script_result_1, get_script_result_2);
+  // Only the two assertions fetch CMTG keys.
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CmtgDeviceKeys.Result",
+      webauthn::CmtgDeviceKeysResult::kSuccess, 2);
 }
 
 // Tests that when the CMTG key fetch times out, the flow proceeds and returns
@@ -5135,7 +5140,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyTimeout) {
 // Tests that when the CMTG key fetch for an assertion returns an empty list of
 // keys, the flow proceeds instantly and returns no CMTG key.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyEmptyKeys) {
-  UseFakeCmtgDeviceKeyProviderDirectly();
   SetTrustedVaultEmpty();
 
   content::WebContents* web_contents =
@@ -5170,6 +5174,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyEmptyKeys) {
 
   EXPECT_EQ(content::EvalJs(web_contents, "window.cmtgPromise").ExtractString(),
             "cmtg NONE");
+  // Only the assertion fetches CMTG keys, and an empty list is not an error.
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CmtgDeviceKeys.Result",
+      webauthn::CmtgDeviceKeysResult::kSuccess, 1);
 }
 
 // Tests that when the CMTG key fetch returns a provider error, the flow
@@ -5208,7 +5216,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyError) {
 // key the credential was created with.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        CmtgKeyMultipleKeysSelection) {
-  UseFakeCmtgDeviceKeyProviderDirectly();
   // Make credential on the first device.
   SetTrustedVaultEmpty();
   content::WebContents* web_contents =
@@ -5266,6 +5273,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_TRUE(base::StartsWith(get_script_result_both, "cmtg OK:"))
       << "Got: " << get_script_result_both;
   EXPECT_EQ(get_script_result_both, make_script_result);
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CmtgDeviceKeys.Result",
+      webauthn::CmtgDeviceKeysResult::kSuccess, 3);
 }
 
 }  // namespace

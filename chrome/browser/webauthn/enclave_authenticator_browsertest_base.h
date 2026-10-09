@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/test/scoped_logging_settings.h"
@@ -127,17 +126,11 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
 
   void WaitForEnclaveLoaded();
 
-  // Returns the fake CMTG device key provider. By default it acts as the
-  // CryptAuth CMTG wrapper key service behind the real
-  // CryptauthCmtgDeviceKeyProvider.
+  // Returns the fake CMTG device key provider. It acts as the CryptAuth CMTG
+  // wrapper key service behind the real CryptauthCmtgDeviceKeyProvider.
   webauthn::FakeCmtgDeviceKeyProvider& cmtg_device_key_provider_fake() {
     return *cmtg_device_key_provider_fake_;
   }
-
-  // Installs `cmtg_device_key_provider_fake()` as the CmtgDeviceKeyProvider
-  // itself, bypassing the real client.
-  // TODO(crbug.com/485888879): Remove once GetAssertion uses batchGet.
-  void UseFakeCmtgDeviceKeyProviderDirectly();
 
   scoped_refptr<base::TestMockTimeTaskRunner> timer_task_runner_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -163,12 +156,8 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
       scoped_icloud_keychain_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
-  // Owns the CMTG device key provider fake unless
-  // `UseFakeCmtgDeviceKeyProviderDirectly()` handed it to the keyed service
-  // factory.
   std::unique_ptr<webauthn::FakeCmtgDeviceKeyProvider>
-      owned_cmtg_device_key_provider_fake_;
-  raw_ptr<webauthn::FakeCmtgDeviceKeyProvider> cmtg_device_key_provider_fake_;
+      cmtg_device_key_provider_fake_;
   std::unique_ptr<WebAuthnScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   std::unique_ptr<crypto::ScopedUserVerifyingKeysSupportedOverride>
       uvkey_override_;
