@@ -8882,3 +8882,4 @@ crbug.com/551802307 http/tests/devtools/sources/debugger-ui/sourcemap-src-not-lo
 
 # Gardener 2026-10-09
 crbug.com/569736364 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
+crbug.com/560328170 external/wpt/webdriver/tests/bidi/storage/set_cookie/cookie_same_site.py [ Failure Pass ]
