@@ -1014,6 +1014,10 @@ void AutocompleteController::
     base::UmaHistogramBoolean("Omnibox.SuggestionUsed.TruncationOq",
                               *match->search_terms_args->is_oq_truncated);
   }
+  if (match->search_terms_args->is_q_truncated.has_value()) {
+    base::UmaHistogramBoolean("Omnibox.SuggestionUsed.TruncationQ",
+                              *match->search_terms_args->is_q_truncated);
+  }
 }
 
 void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(

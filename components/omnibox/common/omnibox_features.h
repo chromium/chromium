@@ -167,9 +167,12 @@ BASE_DECLARE_FEATURE(kAiModeStartPack);
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
 BASE_DECLARE_FEATURE(kReportApplicationLanguageInSearchRequest);
 BASE_DECLARE_FEATURE(kOmniboxAppendInvocationSource);
-BASE_DECLARE_FEATURE(kTruncateSearchSuggestOq);
-inline constexpr base::FeatureParam<int> kTruncateSearchSuggestOqLength{
-    &kTruncateSearchSuggestOq, "truncate_search_suggest_oq_length", 2048};
+BASE_DECLARE_FEATURE(kTruncateSearchUrlOq);
+inline constexpr base::FeatureParam<int> kTruncateSearchUrlOqLength{
+    &kTruncateSearchUrlOq, "truncate_search_url_oq_length", 2048};
+BASE_DECLARE_FEATURE(kTruncateSearchUrlQ);
+inline constexpr base::FeatureParam<int> kTruncateSearchUrlQLength{
+    &kTruncateSearchUrlQ, "truncate_search_url_q_length", 2048};
 
 BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);
 BASE_DECLARE_FEATURE(kOmniboxFuseboxAsyncInflation);
