@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -64,6 +65,15 @@ class FontDataServiceImpl : public mojom::FontDataService {
   }
   size_t GetUnmatchedFamilyCountForTesting() const {
     return unmatched_families_.size();
+  }
+
+  size_t GetMatchLocalFontCacheSizeForTesting() const {
+    return local_unique_name_to_match_result_.size();
+  }
+
+  void SetLocalFontMatcherForTesting(
+      std::unique_ptr<LocalFontMatcher> matcher) {
+    local_font_matcher_ = std::move(matcher);
   }
 
   // FontDataService:
@@ -184,6 +194,10 @@ class FontDataServiceImpl : public mojom::FontDataService {
   absl::flat_hash_map<intptr_t, size_t> address_to_asset_index_;
 
   absl::flat_hash_map<base::FilePath, uint64_t> unique_path_ids_;
+
+  // A mapping from font unique name to its local font match result.
+  absl::flat_hash_map<std::string, std::optional<LocalFontMatchResult>>
+      local_unique_name_to_match_result_;
 
   // Handles local font matching by PostScript name or full font name.
   std::unique_ptr<LocalFontMatcher> local_font_matcher_;

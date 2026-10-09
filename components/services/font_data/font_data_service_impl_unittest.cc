@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/services/font_data/local_font_matcher.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -58,6 +59,26 @@ class TestFontDataService : public FontDataServiceImpl {
 
  private:
   bool use_memory_fallback_ = false;
+};
+
+class FakeLocalFontMatcher : public LocalFontMatcher {
+ public:
+  explicit FakeLocalFontMatcher(
+      std::optional<LocalFontMatchResult> match_result)
+      : match_result_(std::move(match_result)) {}
+  ~FakeLocalFontMatcher() override = default;
+
+  std::optional<LocalFontMatchResult> MatchLocalFont(
+      const std::string& font_unique_name) override {
+    ++match_calls_;
+    return match_result_;
+  }
+
+  int match_calls() const { return match_calls_; }
+
+ private:
+  std::optional<LocalFontMatchResult> match_result_;
+  int match_calls_ = 0;
 };
 
 class FontDataServiceImplUnitTest : public testing::Test {
@@ -493,6 +514,75 @@ TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_NotFound) {
   mojom::MatchFamilyNameResultPtr out_result;
   font_service_->MatchLocalFont("NonExistentFontXYZ_12345", &out_result);
   EXPECT_FALSE(out_result);
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_Cache) {
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 0U);
+
+  mojom::MatchFamilyNameResultPtr first_result;
+  font_service_->MatchLocalFont("ArialMT", &first_result);
+  ASSERT_TRUE(first_result);
+  ExpectValidTypefaceData(first_result->typeface_data);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 1U);
+
+  // Calling MatchLocalFont again with the same font name (including different
+  // casing) should use the cache.
+  mojom::MatchFamilyNameResultPtr second_result;
+  font_service_->MatchLocalFont("ArialMT", &second_result);
+  ASSERT_TRUE(second_result);
+  ExpectValidTypefaceData(second_result->typeface_data);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 1U);
+
+  mojom::MatchFamilyNameResultPtr case_insensitive_result;
+  font_service_->MatchLocalFont("arialmt", &case_insensitive_result);
+  ASSERT_TRUE(case_insensitive_result);
+  ExpectValidTypefaceData(case_insensitive_result->typeface_data);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 1U);
+
+  // Calling MatchLocalFont with a different font name should add a new entry to
+  // the cache.
+  mojom::MatchFamilyNameResultPtr third_result;
+  font_service_->MatchLocalFont("TimesNewRomanPSMT", &third_result);
+  ASSERT_TRUE(third_result);
+  ExpectValidTypefaceData(third_result->typeface_data);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 2U);
+}
+
+TEST_F(FontDataServiceImplUnitTest,
+       MatchLocalFont_CacheDoesNotReinvokeMatcher) {
+  auto fake_matcher = std::make_unique<FakeLocalFontMatcher>(std::nullopt);
+  FakeLocalFontMatcher* raw_matcher = fake_matcher.get();
+  impl_.SetLocalFontMatcherForTesting(std::move(fake_matcher));
+
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 0U);
+  EXPECT_EQ(raw_matcher->match_calls(), 0);
+
+  mojom::MatchFamilyNameResultPtr first_result;
+  font_service_->MatchLocalFont("SomeFontName", &first_result);
+  EXPECT_FALSE(first_result);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 1U);
+  EXPECT_EQ(raw_matcher->match_calls(), 1);
+
+  // Subsequent calls for the same font (including different casing) should hit
+  // the cache and not call the matcher again.
+  mojom::MatchFamilyNameResultPtr second_result;
+  font_service_->MatchLocalFont("SomeFontName", &second_result);
+  EXPECT_FALSE(second_result);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 1U);
+  EXPECT_EQ(raw_matcher->match_calls(), 1);
+
+  mojom::MatchFamilyNameResultPtr case_insensitive_result;
+  font_service_->MatchLocalFont("somefontname", &case_insensitive_result);
+  EXPECT_FALSE(case_insensitive_result);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 1U);
+  EXPECT_EQ(raw_matcher->match_calls(), 1);
+
+  // Call for a different font name should invoke the matcher once more.
+  mojom::MatchFamilyNameResultPtr third_result;
+  font_service_->MatchLocalFont("OtherFontName", &third_result);
+  EXPECT_FALSE(third_result);
+  EXPECT_EQ(impl_.GetMatchLocalFontCacheSizeForTesting(), 2U);
+  EXPECT_EQ(raw_matcher->match_calls(), 2);
 }
 
 // Test fixture that sideloads the Ahem test font before constructing the

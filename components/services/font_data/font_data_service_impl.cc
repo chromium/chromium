@@ -553,14 +553,22 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(
 void FontDataServiceImpl::MatchLocalFont(const std::string& font_unique_name,
                                          MatchLocalFontCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto folded_name = base::UTF16ToUTF8(
+      base::i18n::FoldCase(base::UTF8ToUTF16(font_unique_name)));
   TRACE_EVENT("fonts", "FontDataServiceImpl::MatchLocalFont",
-              "font_unique_name", font_unique_name);
+              "font_unique_name", font_unique_name, "folded", folded_name);
   base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
                                 FontDataServiceIPC::kMatchLocalFont);
 
   if (local_font_matcher_) {
-    std::optional<LocalFontMatchResult> match =
-        local_font_matcher_->MatchLocalFont(font_unique_name);
+    auto iter = local_unique_name_to_match_result_.find(folded_name);
+    if (iter == local_unique_name_to_match_result_.end()) {
+      iter = local_unique_name_to_match_result_
+                 .try_emplace(folded_name,
+                              local_font_matcher_->MatchLocalFont(folded_name))
+                 .first;
+    }
+    const std::optional<LocalFontMatchResult>& match = iter->second;
     base::UmaHistogramBoolean(
         "Chrome.FontDataService.MatchLocalFont.FilterSuccess",
         match.has_value());
