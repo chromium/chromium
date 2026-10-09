@@ -69,10 +69,6 @@ ProcessExactAndPSLForms(
         form.match_type = affiliations::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
-        if (IsExtendedPSLMatch(form, digest, psl_extensions)) {
-          form.match_type = affiliations::MatchType::kPSL;
-        }
-        break;
       case MatchResult::FEDERATED_PSL_MATCH:
         if (IsExtendedPSLMatch(form, digest, psl_extensions)) {
           form.match_type = affiliations::MatchType::kPSL;
