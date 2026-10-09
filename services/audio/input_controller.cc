@@ -597,6 +597,10 @@ void InputController::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioInputController.CloseTime");
 
+  // Errors arriving during or after teardown are of no interest to the
+  // EventHandler.
+  can_report_error_ = false;
+
   if (!stream_) {
     return;
   }
@@ -751,7 +755,7 @@ void InputController::DoCreate(
         ml_model_manager, audio_manager->GetAudioDebugRecordingManager(),
         params, std::move(deliver_processed_audio_callback));
     if (!voice_isolation_handler) {
-      event_handler_->OnError(STREAM_CREATE_ERROR);
+      DoReportError(STREAM_CREATE_ERROR);
       LogCaptureStartupResult(ParamsToStreamType(params),
                               CAPTURE_STARTUP_VOICE_ISOLATION_ERROR);
       return;
@@ -794,7 +798,7 @@ void InputController::DoCreate(
 
   if (!stream) {
     LogCaptureStartupResult(CAPTURE_STARTUP_CREATE_STREAM_FAILED);
-    event_handler_->OnError(STREAM_CREATE_ERROR);
+    DoReportError(STREAM_CREATE_ERROR);
     return;
   }
 
@@ -802,7 +806,7 @@ void InputController::DoCreate(
   if (open_outcome != OpenOutcome::kSuccess) {
     stream->Close();
     LogCaptureStartupResult(CAPTURE_STARTUP_OPEN_STREAM_FAILED);
-    event_handler_->OnError(MapOpenOutcomeToErrorCode(open_outcome));
+    DoReportError(MapOpenOutcomeToErrorCode(open_outcome));
     return;
   }
 
@@ -843,6 +847,15 @@ void InputController::DoCreate(
 
 void InputController::DoReportError(ErrorCode error_code) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  // At most one error is reported to the EventHandler. Asynchronous errors
+  // arriving after DoCreate() failed or after Close(), as well as repeated
+  // runtime errors before teardown, are ignored.
+  if (!can_report_error_) {
+    SendLogMessage(base::StringPrintf("%s({error_code=%d}) => (ignored)",
+                                      __func__, error_code));
+    return;
+  }
+  can_report_error_ = false;
   event_handler_->OnError(error_code);
 }
 

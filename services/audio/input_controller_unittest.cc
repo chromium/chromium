@@ -581,6 +581,13 @@ class InputControllerTestHelper {
         ->OnReferenceStreamError();
   }
 
+  // Reports an error directly, bypassing the production triggers. Prefer
+  // CallOnReferenceStreamError() where a real trigger suffices; this is for
+  // error codes and states (e.g. after Close()) that have no public trigger.
+  void DoReportError(InputController::ErrorCode error_code) {
+    controller_->DoReportError(error_code);
+  }
+
  private:
   raw_ptr<InputController> controller_;
 };
@@ -599,9 +606,10 @@ class MockReferenceSignalProvider : public ReferenceSignalProvider {
 };
 
 template <base::test::TaskEnvironment::TimeSource TimeSource =
-              base::test::TaskEnvironment::TimeSource::MOCK_TIME>
+              base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+          AudioManagerType audio_manager_type = AudioManagerType::FAKE>
 class TimeSourceInputControllerTestWithReferenceSignalProvider
-    : public TimeSourceInputControllerTest<TimeSource> {
+    : public TimeSourceInputControllerTest<TimeSource, audio_manager_type> {
  public:
   TimeSourceInputControllerTestWithReferenceSignalProvider() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -610,6 +618,17 @@ class TimeSourceInputControllerTestWithReferenceSignalProvider
         .WillByDefault(
             []() { return base::MakeRefCounted<FakeMlModelHandle>(); });
 #endif
+  }
+
+  // Spins until VoiceIsolationHandler has handled the ThreadPool reply, i.e.
+  // OnComponentCreated() ran (success or failure).
+  [[nodiscard]] bool WaitForVoiceIsolationStartupToFinish() {
+    return base::test::RunUntil([&]() {
+      return std::ranges::any_of(
+          this->event_handler_.log_messages(), [](const auto& m) {
+            return m.find("OnComponentCreated") != std::string::npos;
+          });
+    });
   }
 
   ~TimeSourceInputControllerTestWithReferenceSignalProvider() override {
@@ -983,6 +1002,42 @@ TEST_F(InputControllerTestWithReferenceSignalProvider, ReferenceStreamError) {
   controller_->Close();
 }
 
+// Verifies that only the first error reaches the EventHandler: a repeat of the
+// same error and a subsequent different error are both dropped.
+TEST_F(InputControllerTestWithReferenceSignalProvider,
+       RepeatedErrorsReportedAtMostOnce) {
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  EXPECT_CALL(event_handler_, OnCreated(_));
+  CreateAudioController();
+  ASSERT_TRUE(controller_);
+
+  EXPECT_CALL(event_handler_, OnError(InputController::REFERENCE_STREAM_ERROR))
+      .Times(1);
+  helper_->CallOnReferenceStreamError();
+
+  // Same error again, then a different one: neither may be dispatched.
+  helper_->CallOnReferenceStreamError();
+  helper_->DoReportError(InputController::STREAM_ERROR);
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
+}
+
+// Verifies that an error surfacing after Close() is not reported, even if the
+// controller had not reported any error before.
+TEST_F(InputControllerTestWithReferenceSignalProvider,
+       ErrorsAfterCloseAreIgnored) {
+  EXPECT_CALL(event_handler_, OnCreated(_));
+  CreateAudioController();
+  ASSERT_TRUE(controller_);
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
+
+  EXPECT_CALL(event_handler_, OnError(_)).Times(0);
+  helper_->DoReportError(InputController::STREAM_ERROR);
+}
+
 class ParameterizedInputControllerUmaDelayTest
     : public SystemTimeInputControllerTestWithReferenceSignalProvider,
       public ::testing::WithParamInterface<DelayUmaTestData> {};
@@ -1291,12 +1346,106 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   controller_->Close();
 
   // Wait for background creation failure to be handled and logged.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::any_of(
-        event_handler_.log_messages(), [](const auto& m) {
-          return m.find("OnComponentCreated") != std::string::npos;
-        });
-  }));
+  EXPECT_TRUE(WaitForVoiceIsolationStartupToFinish());
+}
+
+using SystemTimeInputControllerTestWithMockAudioManager =
+    TimeSourceInputControllerTestWithReferenceSignalProvider<
+        base::test::TaskEnvironment::TimeSource::SYSTEM_TIME,
+        AudioManagerType::MOCK>;
+
+// Verifies that if stream creation fails synchronously while voice isolation
+// initialization is still in flight on the ThreadPool:
+// 1. The EventHandler receives exactly one error (STREAM_CREATE_ERROR); the
+//    later voice isolation startup failure is not reported as a second error.
+// 2. The failing model is still invalidated.
+TEST_F(
+    SystemTimeInputControllerTestWithMockAudioManager,
+    VoiceIsolationStartupFailureAfterStreamCreateErrorInvalidatesModelWithoutSecondError) {
+  params_.Reset(params_.format(), params_.channel_layout_config(),
+                kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  processing_config_->settings.voice_isolation = true;
+
+  scoped_refptr<media::MlModelHandle> failing_model =
+      base::MakeRefCounted<FakeInvalidMlModelHandle>();
+  ON_CALL(ml_model_manager_,
+          GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillByDefault(Return(failing_model));
+  EXPECT_CALL(ml_model_manager_,
+              InvalidateModel(mojom::MlModelType::kVoiceIsolationDenoiser,
+                              failing_model));
+
+  auto* mock_audio_manager =
+      static_cast<media::MockAudioManager*>(audio_manager_.get());
+  mock_audio_manager->SetInputStreamParameters(params_);
+  // Explicit: MockAudioManager already returns nullptr without a callback.
+  mock_audio_manager->SetMakeInputStreamCB(base::BindRepeating(
+      [](const media::AudioParameters&,
+         const std::string&) -> media::AudioInputStream* { return nullptr; }));
+
+  // EventHandler should receive exactly one STREAM_CREATE_ERROR from DoCreate,
+  // and NOT receive a second STREAM_ERROR when the background task completes.
+  EXPECT_CALL(event_handler_, OnError(InputController::STREAM_CREATE_ERROR))
+      .Times(1);
+
+  CreateAudioController();
+  ASSERT_TRUE(controller_);
+  // The handler must survive until the ThreadPool reply for this test to
+  // exercise the race; if MaybeSetUpAudioProcessing() bailed out, fail here
+  // rather than by RunUntil() timeout.
+  ASSERT_TRUE(helper_->HasVoiceIsolation());
+
+  // Wait for the background thread pool task to complete and reply.
+  EXPECT_TRUE(WaitForVoiceIsolationStartupToFinish());
+}
+
+// Verifies that if stream Open() fails synchronously while voice isolation
+// initialization is still in flight on the ThreadPool:
+// 1. The EventHandler receives exactly one error (STREAM_OPEN_ERROR); the
+//    later voice isolation startup failure is not reported as a second error.
+// 2. The failing model is still invalidated.
+TEST_F(
+    SystemTimeInputControllerTestWithMockAudioManager,
+    VoiceIsolationStartupFailureAfterStreamOpenErrorInvalidatesModelWithoutSecondError) {
+  params_.Reset(params_.format(), params_.channel_layout_config(),
+                kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  processing_config_->settings.voice_isolation = true;
+
+  scoped_refptr<media::MlModelHandle> failing_model =
+      base::MakeRefCounted<FakeInvalidMlModelHandle>();
+  ON_CALL(ml_model_manager_,
+          GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillByDefault(Return(failing_model));
+  EXPECT_CALL(ml_model_manager_,
+              InvalidateModel(mojom::MlModelType::kVoiceIsolationDenoiser,
+                              failing_model));
+
+  MockAudioInputStream mock_stream;
+  EXPECT_CALL(mock_stream, Open())
+      .WillOnce(Return(media::AudioInputStream::OpenOutcome::kFailed));
+  EXPECT_CALL(mock_stream, Close());
+
+  auto* mock_audio_manager =
+      static_cast<media::MockAudioManager*>(audio_manager_.get());
+  mock_audio_manager->SetInputStreamParameters(params_);
+  mock_audio_manager->SetMakeInputStreamCB(base::BindRepeating(
+      [](media::AudioInputStream* stream, const media::AudioParameters&,
+         const std::string&) { return stream; },
+      &mock_stream));
+
+  // EventHandler should receive exactly one STREAM_OPEN_ERROR from DoCreate,
+  // and NOT receive a second STREAM_ERROR when the background task completes.
+  EXPECT_CALL(event_handler_, OnError(InputController::STREAM_OPEN_ERROR))
+      .Times(1);
+
+  CreateAudioController();
+  ASSERT_TRUE(controller_);
+  ASSERT_TRUE(helper_->HasVoiceIsolation());
+
+  // Wait for the background thread pool task to complete and reply.
+  EXPECT_TRUE(WaitForVoiceIsolationStartupToFinish());
 }
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 

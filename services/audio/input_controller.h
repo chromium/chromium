@@ -265,6 +265,9 @@ class InputController final {
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       raw_ptr<MlModelManager> ml_model_manager);
+  // Forwards `error_code` to the EventHandler at most once. Subsequent calls
+  // (e.g. second runtime errors, or errors arriving after DoCreate() failure
+  // or Close()) are ignored.
   void DoReportError(ErrorCode error_code);
   void DoLogAudioLevels(float level_dbfs, int microphone_volume_percent);
 
@@ -396,6 +399,10 @@ class InputController final {
   base::TimeTicks stream_create_time_;
 
   bool is_muted_ = false;
+
+  // Cleared once an error has been reported to the EventHandler or Close() has
+  // been called, so that at most one error is ever dispatched.
+  bool can_report_error_ = true;
 
   // Mute state changes are monitored by either a platform subscription or,
   // when subscriptions are not supported, the polling timer.
