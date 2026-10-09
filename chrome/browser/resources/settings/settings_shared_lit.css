@@ -29,6 +29,14 @@
   .cr-row:has(.cr-title-text) {
     padding: 0;
   }
+
+  cr-input.stroked {
+    --cr-input-hover-background-color: transparent;
+  }
+
+  cr-input.stroked[disabled] {
+    --cr-input-background-color: var(--cr-hover-background-color);
+  }
 }
 
 /* Common styles for Material Design settings. */
