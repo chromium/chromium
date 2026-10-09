@@ -5341,7 +5341,7 @@ crbug.com/359253683 external/wpt/css/css-highlight-api/highlight-text-decoration
 crbug.com/588760 [ Release Win ] external/wpt/html/semantics/disabled-elements/event-propagate-disabled.tentative.html [ Failure ]
 
 # Sheriff
-crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Crash Failure Pass Timeout ]
+crbug.com/571671616 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-06-25
 # Flaky on Webkit Linux Leak
