@@ -261,7 +261,7 @@ TEST_F(UniversalOptOutServiceTest,
   EXPECT_TRUE(pref_service_.GetBoolean(prefs::kUniversalOptOutEligible));
 }
 
-TEST_F(UniversalOptOutServiceTest, RemainsEligibleWhenToggleOn) {
+TEST_F(UniversalOptOutServiceTest, BecomesIneligibleEvenWhenToggleOn) {
   EnableFeatureWithTargetLocations("us-nc");
 
   // User is currently eligible and has the toggle turned ON.
@@ -277,9 +277,9 @@ TEST_F(UniversalOptOutServiceTest, RemainsEligibleWhenToggleOn) {
   SetGeoLevel1("us-ga");
   auto service = CreateService();
 
-  // Because the toggle is enabled, the user does NOT become ineligible.
-  EXPECT_TRUE(service->IsEligible());
-  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kUniversalOptOutEligible));
+  // The toggle state does not affect eligibility; the user becomes ineligible.
+  EXPECT_FALSE(service->IsEligible());
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kUniversalOptOutEligible));
 }
 
 TEST_F(UniversalOptOutServiceTest, PrunesExpiredHistory) {

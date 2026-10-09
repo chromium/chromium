@@ -296,18 +296,19 @@ void UniversalOptOutService::UpdateEligibility(base::Time current_day) {
 
   bool currently_eligible =
       pref_service_->GetBoolean(prefs::kUniversalOptOutEligible);
-  bool is_opt_out_enabled =
-      pref_service_->GetBoolean(prefs::kUniversalOptOutEnabled);
 
-  bool new_eligible = currently_eligible;
-  if (currently_eligible) {
-    if (!is_opt_out_enabled && category == EligibilityCategory::kIneligible) {
-      new_eligible = false;
-    }
-  } else {
-    if (category == EligibilityCategory::kEligible) {
+  bool new_eligible;
+  switch (category) {
+    case EligibilityCategory::kEligible:
       new_eligible = true;
-    }
+      break;
+    case EligibilityCategory::kTrailingEligible:
+      // In the trailing window, preserve the current eligibility state.
+      new_eligible = currently_eligible;
+      break;
+    case EligibilityCategory::kIneligible:
+      new_eligible = false;
+      break;
   }
 
   if (new_eligible != currently_eligible) {
