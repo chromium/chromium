@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/omnibox_popup/full_webui_omnibox_layout_helper.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -52,7 +53,6 @@
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/webui/webui_util.h"
 
@@ -145,7 +145,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   PopulateAiModeButtonUiConfig(source, profile_);
 
   source->AddBoolean("isTopChromeSearchbox", true);
-  source->AddBoolean("isTouchUi", ui::TouchUiController::Get()->touch_ui());
+  FullWebUIOmniboxLayoutHelper::PopulateLoadTimeData(source);
   source->AddString("searchboxDefaultIcon",
                     GetDefaultSearchProviderIcon(
                         TemplateURLServiceFactory::GetForProfile(profile_)));

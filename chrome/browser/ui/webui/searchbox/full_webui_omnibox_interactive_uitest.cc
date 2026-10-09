@@ -735,6 +735,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
               [r.x, r.y, r.width, r.height];
             )");
         const auto& rect = result.ExtractList();
+        ASSERT_EQ(rect.size(), 4u);
         const gfx::Point origin = webui->GetBoundsInScreen().origin();
         EXPECT_EQ(std::round(origin.x() + rect[0].GetDouble()),
                   location_bar_bounds.x());

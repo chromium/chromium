@@ -145,16 +145,6 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
-      // TODO(b/517218130): Ensure Omnibox is laid out correctly when
-      //   `isTouchUi_` is true.
-      isTouchUi_: {
-        type: Boolean,
-        reflect: true,
-      },
-      isMac_: {
-        type: Boolean,
-        reflect: true,
-      },
       /**
        * Whether this page, rather than the Views frame, paints the popup's
        * drop shadow. See `omnibox::kOmniboxFullWebUIShadow`.
@@ -266,10 +256,6 @@ export class OmniboxPopupSearchboxElement extends
   protected accessor useWebkitSearchIcons_: boolean = false;
   override accessor multiLineEnabled: boolean =
       loadTimeData.getBoolean('searchboxMultiline');
-  // TODO(b/519185419): Remove `isTouchUi_` property and from `loadTimeData` and
-  // get layout constants and font sizes from a C++ layout helper instead.
-  protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
-  protected accessor isMac_: boolean = isMac;
   protected accessor webuiShadowEnabled_: boolean =
       loadTimeData.getBoolean('omniboxFullWebUIShadowEnabled');
   protected accessor searchboxDynamicColorScheme_: boolean =
@@ -390,8 +376,38 @@ export class OmniboxPopupSearchboxElement extends
     this.popupPageHandler_ = popupBrowserProxy.handler;
   }
 
+  private updateLayoutConstants_() {
+    if (!loadTimeData.valueExists('alignmentInsetTop')) {
+      return;
+    }
+    this.style.setProperty(
+        '--alignment-inset-top',
+        `${loadTimeData.getInteger('alignmentInsetTop')}px`);
+    this.style.setProperty(
+        '--alignment-inset-horizontal',
+        `${loadTimeData.getInteger('alignmentInsetHorizontal')}px`);
+    this.style.setProperty(
+        '--alignment-inset-bottom',
+        `${loadTimeData.getInteger('alignmentInsetBottom')}px`);
+    this.style.setProperty(
+        '--cr-searchbox-height',
+        `${loadTimeData.getInteger('locationBarHeight')}px`);
+    this.style.setProperty(
+        '--cr-searchbox-font-size',
+        `${loadTimeData.getInteger('locationBarFontSize')}px`);
+    this.style.setProperty(
+        '--cr-searchbox-icon-size-in-searchbox',
+        `${loadTimeData.getInteger('locationBarIconSize')}px`);
+    this.style.setProperty(
+        '--location-bar-page-info-icon-vertical-padding',
+        `${
+            loadTimeData.getInteger(
+                'locationBarPageInfoIconVerticalPadding')}px`);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
+    this.updateLayoutConstants_();
     // TODO(crbug.com/497883783): Move autocompleteResultChangedListenerId_
     // property to SearchboxMixin.
     this.listenerIds_ = [

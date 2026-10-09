@@ -24,34 +24,11 @@
       var(--cr-searchbox-height) -
       2 * var(--location-bar-page-info-icon-vertical-padding));
   --cr-searchbox-width: calc(100% - 2 * var(--alignment-inset-horizontal));
-  border-radius: var(--cr-searchbox-border-radius);
-  display: block;
-  font-size: var(--cr-searchbox-font-size, 16px);
-  margin-top: 0;
-  margin-inline: auto;
-  height: var(--cr-searchbox-height);
-  width: var(--cr-searchbox-width);
-  z-index: 99;
-}
 
-/* TODO(b/519185419): Get layout constants and font sizes from a C++ layout
- *    helper instead of manually defining them here. */
-:host([is-touch-ui_]) {
-  /* Match Touch UI insets: 6px top, 1px horizontal. */
-  --alignment-inset-top: 6px;
-  --alignment-inset-horizontal: 1px;
-  --alignment-inset-bottom: 5px;
-  --cr-searchbox-font-size: 15px;
-  --cr-searchbox-height: 36px;
-  --cr-searchbox-icon-size-in-searchbox: 20px;
-  --location-bar-page-info-icon-vertical-padding: 3px;
-}
-
-/* TODO(b/519185419): Get layout constants and font sizes from a C++ layout
- *    helper instead of manually defining them here. */
-:host(:not([is-touch-ui_])) {
-  /* Alignment insets from C++ (OmniboxPopupFullPresenter::GetLocationBarAlignmentInsets).
-   * Standard: 5px top, 6px horizontal. */
+  /* Baseline layout constants matching 'FullWebUIOmniboxLayoutHelper'. In
+   * production, these are dynamically overridden as inline style properties
+   * on ':host' by 'updateLayoutConstants_()' via 'loadTimeData' to reflect
+   * the active platform and Touch UI mode. */
   --alignment-inset-top: 5px;
   --alignment-inset-horizontal: 6px;
   --alignment-inset-bottom: 5px;
@@ -59,12 +36,15 @@
   --cr-searchbox-height: 34px;
   --cr-searchbox-icon-size-in-searchbox: 16px;
   --location-bar-page-info-icon-vertical-padding: 5px;
-}
 
-:host([is-mac_]:not([is-touch-ui_])) {
-  --alignment-inset-top: 5px;
-  --alignment-inset-horizontal: 5px;
-  --alignment-inset-bottom: 4px;
+  border-radius: var(--cr-searchbox-border-radius);
+  display: block;
+  font-size: var(--cr-searchbox-font-size);
+  margin-top: 0;
+  margin-inline: auto;
+  height: var(--cr-searchbox-height);
+  width: var(--cr-searchbox-width);
+  z-index: 99;
 }
 
 :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
@@ -80,7 +60,6 @@
   --cr-searchbox-icon-right-position: 2px;
   --cr-searchbox-shadow: inset 0 0 0 1px var(--color-location-bar-border-on-mismatch);
   box-sizing: border-box;
-  margin-inline: auto;
   margin-top: var(--alignment-inset-top);
   margin-bottom: var(--alignment-inset-bottom);
 }
