@@ -56,12 +56,13 @@ TEST_F(GetDetailsForUpsertPassRequestTest, OnResponse_Success) {
   GetDetailsForUpsertPassRequest request(
       WalletHttpClient::PassType::kVehicleRegistration, callback.GetCallback());
 
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
+  const std::string raw_token = "test_token_\xff\xfe";
   api::GetDetailsForUpsertPassResponse response_proto;
-  response_proto.set_context_token("test_context_token");
   response_proto.set_user_eligibility(
       api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_ELIGIBLE);
   LegalMessage* legal_message = response_proto.mutable_legal_message();
-  legal_message->set_token("test_legal_message_token");
+  legal_message->set_token(raw_token);
   LegalMessage::Line* line = legal_message->add_line();
   line->set_template_("By continuing, you agree to {0}.");
   LegalMessage::Link* param = line->add_template_parameter();
@@ -72,10 +73,10 @@ TEST_F(GetDetailsForUpsertPassRequestTest, OnResponse_Success) {
 
   ASSERT_TRUE(callback.Wait());
   ASSERT_TRUE(callback.Get().has_value());
-  EXPECT_EQ(callback.Get()->context_token, "test_context_token");
   EXPECT_EQ(callback.Get()->user_eligibility,
             WalletHttpClient::UserEligibility::kEligible);
   ASSERT_TRUE(callback.Get()->legal_message.has_value());
+  EXPECT_EQ(callback.Get()->legal_message->token(), raw_token);
   EXPECT_EQ(callback.Get()->legal_message->SerializeAsString(),
             response_proto.legal_message().SerializeAsString());
 }
@@ -94,7 +95,6 @@ TEST_F(GetDetailsForUpsertPassRequestTest, OnResponse_Ineligible) {
 
   ASSERT_TRUE(callback.Wait());
   ASSERT_TRUE(callback.Get().has_value());
-  EXPECT_FALSE(callback.Get()->context_token.has_value());
   EXPECT_FALSE(callback.Get()->legal_message.has_value());
   EXPECT_EQ(callback.Get()->user_eligibility,
             WalletHttpClient::UserEligibility::kIneligible);

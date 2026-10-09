@@ -2177,8 +2177,8 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(offer);
   VISIT(order);
   VISIT(shipment);
-  VISIT(context_token);
   VISIT(pass_view_url);
+  VISIT_BYTES(legal_message_token);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {

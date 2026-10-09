@@ -1153,42 +1153,47 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Shipment) {
             "Product 1, Product 2");
 }
 
-TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_WithContextToken) {
+TEST(EntitySyncUtilTest,
+     CreateSpecificsFromEntityInstance_WithLegalMessageToken) {
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
+  const std::string raw_token = "sample_token_\xff\xfe";
   EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromEntityInstance(vehicle_entity,
-                                        /*base_specifics=*/{},
-                                        "sample_context_token");
-  EXPECT_TRUE(specifics.has_context_token());
-  EXPECT_EQ(specifics.context_token(), "sample_context_token");
+                                        /*base_specifics=*/{}, raw_token);
+  EXPECT_TRUE(specifics.has_legal_message_token());
+  EXPECT_EQ(specifics.legal_message_token(), raw_token);
 }
 
 TEST(EntitySyncUtilTest,
-     CreateSpecificsFromEntityInstance_WithoutContextToken) {
+     CreateSpecificsFromEntityInstance_WithoutLegalMessageToken) {
   EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromEntityInstance(vehicle_entity,
                                         /*base_specifics=*/{});
-  EXPECT_FALSE(specifics.has_context_token());
+  EXPECT_FALSE(specifics.has_legal_message_token());
 
   sync_pb::AutofillValuableSpecifics specifics_empty_token =
       CreateSpecificsFromEntityInstance(vehicle_entity,
                                         /*base_specifics=*/{},
                                         /*context_token=*/"");
-  EXPECT_FALSE(specifics_empty_token.has_context_token());
+  EXPECT_FALSE(specifics_empty_token.has_legal_message_token());
 }
 
-TEST(EntitySyncUtilTest, CreateEntityDataFromEntityInstance_WithContextToken) {
+TEST(EntitySyncUtilTest,
+     CreateEntityDataFromEntityInstance_WithLegalMessageToken) {
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
+  const std::string raw_token = "sample_token_\xff\xfe";
   EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromEntityInstance(vehicle_entity,
-                                         /*base_specifics=*/{},
-                                         "sample_context_token");
+                                         /*base_specifics=*/{}, raw_token);
   ASSERT_TRUE(entity_data);
   ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
-  EXPECT_TRUE(entity_data->specifics.autofill_valuable().has_context_token());
-  EXPECT_EQ(entity_data->specifics.autofill_valuable().context_token(),
-            "sample_context_token");
+  EXPECT_TRUE(
+      entity_data->specifics.autofill_valuable().has_legal_message_token());
+  EXPECT_EQ(entity_data->specifics.autofill_valuable().legal_message_token(),
+            raw_token);
 }
 
 // Tests that the pass_view_url is used as management URL.

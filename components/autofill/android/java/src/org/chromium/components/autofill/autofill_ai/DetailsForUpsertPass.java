@@ -18,22 +18,22 @@ import java.util.List;
 @NullMarked
 public class DetailsForUpsertPass {
     private final List<LegalMessageLine> mLegalMessageLines;
-    private final String mContextToken;
+    private final byte[] mLegalMessageToken;
 
     @CalledByNative
     public DetailsForUpsertPass(
             @JniType("std::vector<autofill::LegalMessageLine>")
                     List<LegalMessageLine> legalMessageLines,
-            @JniType("std::string") String contextToken) {
+            byte[] legalMessageToken) {
         mLegalMessageLines = legalMessageLines;
-        mContextToken = contextToken;
+        mLegalMessageToken = legalMessageToken;
     }
 
     public List<LegalMessageLine> getLegalMessageLines() {
         return mLegalMessageLines;
     }
 
-    public String getContextToken() {
-        return mContextToken;
+    public byte[] getLegalMessageToken() {
+        return mLegalMessageToken;
     }
 }

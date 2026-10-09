@@ -116,14 +116,15 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // to accept it. Note that these resources IDs are only used for logging
   // purposes, in the case of adding a new private entity that will stored in
   // Google Wallet.
-  void AddOrUpdateEntityInstance(JNIEnv* env,
-                                 const jni_zero::JavaRef<jobject>& jEntity,
-                                 int32_t description_string_id,
-                                 int32_t accept_button_string_id,
-                                 std::optional<std::string> context_token,
-                                 base::OnceClosure on_local_save_fallback);
+  void AddOrUpdateEntityInstance(
+      JNIEnv* env,
+      const jni_zero::JavaRef<jobject>& jEntity,
+      int32_t description_string_id,
+      int32_t accept_button_string_id,
+      const jni_zero::JavaRef<jbyteArray>& j_legal_message_token,
+      base::OnceClosure on_local_save_fallback);
 
-  // Pre-fetches the details (legal message and context token) required to
+  // Pre-fetches the details (legal message and legal message token) required to
   // upsert a pass from Wallet servers and populates an internal cache.
   void PreloadDetailsForUpsertPass(JNIEnv* env, int entity_type);
 
@@ -248,7 +249,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
       EntityInstance::RecordType targeted_record_type,
       int description_string_id,
       int accept_button_string_id,
-      std::optional<std::string> context_token,
+      std::optional<std::string> legal_message_token,
       base::OnceClosure on_local_save_fallback);
 
   // Called after an attempt to save a private pass to Google Wallet.

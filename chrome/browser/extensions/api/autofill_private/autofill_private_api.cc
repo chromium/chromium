@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1202,12 +1203,25 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
     return RespondNow(NoArguments());
   }
 
+  // `context_token` is Base64-encoded in
+  // `AutofillPrivateGetDetailsForUpsertPassFunction::Run()` so that raw binary
+  // token bytes can be transported over the Extensions IDL `DOMString` API.
+  // Decode it back to raw bytes before forwarding to `EntityDataManager`.
+  std::optional<std::string> legal_message_token;
+  if (private_api_entity_instance.context_token &&
+      !private_api_entity_instance.context_token->empty()) {
+    std::string decoded_token;
+    if (base::Base64Decode(*private_api_entity_instance.context_token,
+                           &decoded_token)) {
+      legal_message_token = std::move(decoded_token);
+    }
+  }
+
   // Handles the following scenarios:
   // 1. Save/Update entity locally.
   // 2. Save entity to Wallet via Chrome sync.
-  edm->AddOrUpdateEntityInstance(
-      std::move(entity_instance.value()),
-      std::move(parameters->entity_instance.context_token));
+  edm->AddOrUpdateEntityInstance(std::move(entity_instance.value()),
+                                 std::move(legal_message_token));
   if (private_api_entity_instance.stored_in_wallet.value_or(false) &&
       !is_eligible_for_wallet_storage && autofill_client()) {
     autofill_client()->ShowAutofillAiLocalSaveNotification();
@@ -1445,7 +1459,13 @@ AutofillPrivateGetDetailsForUpsertPassFunction::Run() {
   }
 
   api::autofill_private::UpsertPassDetails details;
-  details.context_token = std::move(response->context_token);
+  // `response->context_token` contains raw encrypted binary bytes, whereas
+  // `base::Value(std::string)` (used by Extensions IDL serialization) enforces
+  // `DCHECK(IsStringUTF8AllowingNoncharacters(...))`. Base64-encode the token
+  // for transport to the WebUI;
+  // `AutofillPrivateAddOrUpdateEntityInstanceFunction` decodes it back to raw
+  // bytes via `base::Base64Decode`.
+  details.context_token = base::Base64Encode(response->context_token);
   details.legal_message_lines.reserve(response->legal_message_lines.size());
   for (const auto& line : response->legal_message_lines) {
     api::autofill_private::LegalMessageLine idl_line;

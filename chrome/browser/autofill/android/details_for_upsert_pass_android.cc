@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/android/details_for_upsert_pass_android.h"
 
+#include "base/android/jni_array.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -18,7 +19,8 @@ ToJniType<autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse>(
     const autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse&
         response) {
   return autofill::Java_DetailsForUpsertPass_Constructor(
-      env, response.legal_message_lines, response.context_token);
+      env, response.legal_message_lines,
+      base::android::ToJavaByteArray(env, response.context_token));
 }
 
 }  // namespace jni_zero

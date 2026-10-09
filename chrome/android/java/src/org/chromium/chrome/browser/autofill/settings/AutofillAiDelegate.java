@@ -160,7 +160,7 @@ public class AutofillAiDelegate {
                         EntityInstance entityInstance,
                         int descriptionStringId,
                         int acceptButtonStringId,
-                        @Nullable String contextToken) {
+                        byte @Nullable [] legalMessageToken) {
                     EntityDataManager entityDataManager =
                             EntityDataManagerFactory.getForProfile(mFragment.getProfile());
                     if (entityDataManager == null) {
@@ -170,7 +170,7 @@ public class AutofillAiDelegate {
                             entityInstance,
                             descriptionStringId,
                             acceptButtonStringId,
-                            contextToken,
+                            legalMessageToken,
                             () -> onLocalSaveFallback());
                 }
 
@@ -216,9 +216,9 @@ public class AutofillAiDelegate {
                     ChromeFeatureList.AUTOFILL_ENABLE_WALLET_DISCLOSURE_NOTICE_PUBLIC_PASS)) {
                 // Opening the entity editor is a synchronous UI action when the user clicks "Add".
                 // To avoid UI latency or showing a spinner, prefetch the legal message disclosure
-                // and context token for all eligible entity types asynchronously ahead of time.
-                // If the prefetch fails or is still in flight when the user opens the editor, the
-                // editor gracefully falls back to saving the entity locally.
+                // and legal message token for all eligible entity types asynchronously ahead of
+                // time. If the prefetch fails or is still in flight when the user opens the editor,
+                // the editor gracefully falls back to saving the entity locally.
                 for (@EntityTypeName int type : getEntityTypesToPrefetch(entityDataManager)) {
                     if (entityDataManager.isEligibleForWalletNotice(
                             type, RecordType.SERVER_WALLET)) {
@@ -751,8 +751,8 @@ public class AutofillAiDelegate {
                     entityDataManager.extractPreloadedDetailsForUpsertPass(entityType);
             if (detailsForUpsertPass == null) {
                 // If preloading failed, returned invalid details for an eligible user, or did not
-                // complete in time, the required legal disclosures and context token cannot be
-                // presented to the user. Rather than blocking the user from saving, fall back to
+                // complete in time, the required legal disclosures and legal message token cannot
+                // be presented to the user. Rather than blocking the user from saving, fall back to
                 // storing the entity locally on device as `RecordType.LOCAL`.
                 entityInstance.setRecordType(RecordType.LOCAL);
             }

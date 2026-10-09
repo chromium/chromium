@@ -248,7 +248,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     const jni_zero::JavaRef<jobject>& jEntity,
     int32_t description_string_id,
     int32_t accept_button_string_id,
-    std::optional<std::string> context_token,
+    const jni_zero::JavaRef<jbyteArray>& j_legal_message_token,
     base::OnceClosure on_local_save_fallback) {
   EntityInstanceAndroid entity_android =
       EntityInstanceAndroid::FromJavaEntityInstance(env, jEntity);
@@ -263,9 +263,15 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
       entity_android.ToEntityInstance(entity_data_manager_->GetEntityInstance(
           EntityInstance::EntityId(entity_android.metadata.guid)));
 
+  std::optional<std::string> legal_message_token;
+  if (j_legal_message_token) {
+    base::android::JavaByteArrayToString(env, j_legal_message_token,
+                                         &legal_message_token.emplace());
+  }
+
   AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
                             description_string_id, accept_button_string_id,
-                            std::move(context_token),
+                            std::move(legal_message_token),
                             std::move(on_local_save_fallback));
 }
 
@@ -301,7 +307,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     EntityInstance::RecordType targeted_record_type,
     int description_string_id,
     int accept_button_string_id,
-    std::optional<std::string> context_token,
+    std::optional<std::string> legal_message_token,
     base::OnceClosure on_local_save_fallback) {
   const bool is_new_entity =
       !entity_data_manager().GetEntityInstance(entity_instance.guid());
@@ -344,11 +350,11 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
         std::move(on_local_save_fallback).Run();
       }
       entity_data_manager().AddOrUpdateEntityInstance(
-          std::move(entity_instance), std::move(context_token));
+          std::move(entity_instance), std::move(legal_message_token));
     }
   } else {
-    entity_data_manager().AddOrUpdateEntityInstance(std::move(entity_instance),
-                                                    std::move(context_token));
+    entity_data_manager().AddOrUpdateEntityInstance(
+        std::move(entity_instance), std::move(legal_message_token));
   }
 }
 

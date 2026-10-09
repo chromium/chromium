@@ -92,7 +92,7 @@ public class EntityDataManagerTest {
                 mEntityInstance,
                 descriptionStringId,
                 acceptButtonStringId,
-                /* contextToken= */ null,
+                /* legalMessageToken= */ null,
                 localSaveFallback);
         verify(mEntityDataManagerJniMock)
                 .addOrUpdateEntityInstance(
@@ -105,16 +105,16 @@ public class EntityDataManagerTest {
     }
 
     @Test
-    public void testAddOrUpdateEntityInstance_withContextToken() {
+    public void testAddOrUpdateEntityInstance_withLegalMessageToken() {
         Runnable localSaveFallback = () -> {};
         int descriptionStringId = 123;
         int acceptButtonStringId = 456;
-        String contextToken = "context_token";
+        byte[] legalMessageToken = new byte[] {1, 2, 3};
         mEntityDataManager.addOrUpdateEntityInstance(
                 mEntityInstance,
                 descriptionStringId,
                 acceptButtonStringId,
-                contextToken,
+                legalMessageToken,
                 localSaveFallback);
         verify(mEntityDataManagerJniMock)
                 .addOrUpdateEntityInstance(
@@ -122,7 +122,7 @@ public class EntityDataManagerTest {
                         mEntityInstance,
                         descriptionStringId,
                         acceptButtonStringId,
-                        contextToken,
+                        legalMessageToken,
                         localSaveFallback);
     }
 
@@ -149,7 +149,7 @@ public class EntityDataManagerTest {
     @Test
     public void testExtractPreloadedDetailsForUpsertPass() {
         DetailsForUpsertPass details =
-                new DetailsForUpsertPass(Collections.emptyList(), "context_token");
+                new DetailsForUpsertPass(Collections.emptyList(), new byte[] {1, 2, 3});
         when(mEntityDataManagerJniMock.extractPreloadedDetailsForUpsertPass(
                         NATIVE_PTR, EntityTypeName.VEHICLE))
                 .thenReturn(details);

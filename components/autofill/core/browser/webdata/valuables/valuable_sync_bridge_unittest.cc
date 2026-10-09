@@ -1102,8 +1102,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
       .WillOnce([](const std::string&,
                    std::unique_ptr<syncer::EntityData> entity_data,
                    syncer::MetadataChangeList*) {
-        EXPECT_FALSE(
-            entity_data->specifics.autofill_valuable().has_context_token());
+        EXPECT_FALSE(entity_data->specifics.autofill_valuable()
+                         .has_legal_message_token());
       });
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
@@ -1113,8 +1113,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
       .WillOnce([](const std::string&,
                    std::unique_ptr<syncer::EntityData> entity_data,
                    syncer::MetadataChangeList*) {
-        EXPECT_FALSE(
-            entity_data->specifics.autofill_valuable().has_context_token());
+        EXPECT_FALSE(entity_data->specifics.autofill_valuable()
+                         .has_legal_message_token());
       });
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::UPDATE, vehicle.guid(),
@@ -1122,8 +1122,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
       /*context_token=*/std::nullopt);
 }
 
-// Tests that `EntityInstanceChanged()` includes the context token.
-TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_WithContextToken) {
+// Tests that `EntityInstanceChanged()` includes the legal message token.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_WithLegalMessageToken) {
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
   const EntityInstance vehicle = GetServerVehicleEntityInstance();
 
@@ -1132,8 +1132,9 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_WithContextToken) {
                            std::unique_ptr<syncer::EntityData> entity_data,
                            syncer::MetadataChangeList* metadata) {
         ASSERT_EQ(storage_key, vehicle.guid().value());
-        EXPECT_EQ(entity_data->specifics.autofill_valuable().context_token(),
-                  "test_token");
+        EXPECT_EQ(
+            entity_data->specifics.autofill_valuable().legal_message_token(),
+            "test_token");
       });
 
   bridge().EntityInstanceChanged(

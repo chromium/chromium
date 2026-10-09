@@ -112,13 +112,11 @@ message GetDetailsForUpsertPassRequest {
 
 // Response for the GetDetailsForUpsertPass RPC.
 message GetDetailsForUpsertPassResponse {
+  reserved 2;
+
   // Localized legal disclosure message to render in the save dialog.
   // Empty if the user/account is not eligible for disclosures.
   optional LegalMessage legal_message = 1;
-
-  // Encrypted context token carrying disclosure session & audit metadata.
-  // Empty if the user/account is not eligible for disclosures.
-  optional string context_token = 2;
 
   // The user's eligibility status for privacy disclosure.
   enum UserEligibility {
@@ -132,7 +130,6 @@ message GetDetailsForUpsertPassResponse {
   }
 
   // The user's eligibility status for receiving privacy disclosures.
-  // When not USER_ELIGIBILITY_ELIGIBLE, legal_message and context_token will
-  // not be populated.
+  // When not USER_ELIGIBILITY_ELIGIBLE, legal_message will not be populated.
   optional UserEligibility user_eligibility = 3;
 }

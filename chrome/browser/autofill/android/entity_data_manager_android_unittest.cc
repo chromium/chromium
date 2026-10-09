@@ -8,13 +8,17 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/autofill/android/details_for_upsert_pass_android.h"
 #include "chrome/browser/autofill/android/entity_data_manager_android_test_api.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +30,7 @@
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -48,7 +53,18 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::SaveArg;
+
+class MockWebDataServiceObserver
+    : public AutofillWebDataServiceObserverOnDBSequence {
+ public:
+  MOCK_METHOD(void,
+              EntityInstanceChanged,
+              (const EntityInstanceChange& change,
+               std::optional<std::string_view> legal_message_token),
+              (override));
+};
 
 class EntityDataManagerAndroidTest : public testing::Test {
  public:
@@ -123,24 +139,35 @@ TEST_F(EntityDataManagerAndroidTest,
               testing::ElementsAre(entity));
 }
 
-// Test that when saving a public pass with a context token, it is forwarded
-// to EntityDataManager.
+// Test that when saving a public pass with a legal message token byte array
+// from Java, it is converted to a string and forwarded to EntityDataManager.
 TEST_F(EntityDataManagerAndroidTest,
-       AddOrUpdate_PublicPass_PassesContextToken) {
+       AddOrUpdate_PublicPass_PassesLegalMessageToken) {
   EntityInstance entity = test::GetVehicleEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
 
   ASSERT_TRUE(GetWalletPassType(entity.type(), entity.record_type()) ==
               EntityInstance::WalletPassType::kPublic);
 
-  test_api(*entity_data_manager_android_)
-      .AddOrUpdateEntityInstance(
-          entity, entity.record_type(), /*description_string_id=*/0,
-          /*accept_button_string_id=*/0, "context_token");
-  webdata_helper_.WaitUntilIdle();
+  NiceMock<MockWebDataServiceObserver> db_observer;
+  base::ScopedObservation<AutofillWebDataService,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      observation(&db_observer);
+  observation.Observe(webdata_helper_.autofill_webdata_service().get());
 
-  EXPECT_THAT(entity_data_manager().GetEntityInstances(),
-              testing::ElementsAre(entity));
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
+  const std::string raw_token = "raw_token_\xff\xfe";
+  EXPECT_CALL(db_observer,
+              EntityInstanceChanged(_, Optional(std::string_view(raw_token))));
+
+  EntityInstanceAndroid entity_android(entity, /*is_enabled=*/true,
+                                       /*is_eligible_for_wallet_storage=*/true,
+                                       /*requires_reauth_to_see=*/false);
+  entity_data_manager_android_->AddOrUpdateEntityInstance(
+      env(), jni_zero::ToJniType(env(), entity_android),
+      /*description_string_id=*/0, /*accept_button_string_id=*/0,
+      base::android::ToJavaByteArray(env(), raw_token), base::DoNothing());
+  webdata_helper_.WaitUntilIdle();
 }
 
 // Test that when save to wallet fails, it falls back to local save.
@@ -452,18 +479,23 @@ TEST_F(EntityDataManagerAndroidTest, PreloadDetailsForUpsertPass) {
 
 TEST_F(EntityDataManagerAndroidTest,
        ExtractPreloadedDetailsForUpsertPass_EligibleUserSuccess) {
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_response{
       .legal_message_lines = {TestLegalMessageLine("Legal message")},
-      .context_token = "test_context_token",
+      .context_token = "raw_token_\xff\xfe",
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               ExtractPreloadedDetailsForUpsertPass(
                   EntityType(EntityTypeName::kVehicle)))
       .WillOnce(testing::Return(expected_response));
 
-  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
-                env(), static_cast<int>(EntityTypeName::kVehicle)),
-            expected_response);
+  std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+      response =
+          entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+              env(), static_cast<int>(EntityTypeName::kVehicle));
+  ASSERT_EQ(response, expected_response);
+  // Verify that `ToJniType` converts raw binary bytes to a Java byte array.
+  EXPECT_TRUE(jni_zero::ToJniType(env(), *response));
 
   // Invalid entity type returns std::nullopt without calling the manager.
   EXPECT_CALL(mock_wallet_pass_access_manager(),
@@ -495,10 +527,10 @@ TEST_F(
   // Missing `legal_message_lines`.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse
       missing_legal_message{
-          .context_token = "test_context_token",
+          .context_token = "test_legal_message_token",
           .user_eligibility =
               WalletPassAccessManager::UserEligibility::kEligible};
-  // Missing `context_token`.
+  // Missing `legal_message_token`.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse missing_token{
       .legal_message_lines = {TestLegalMessageLine("Legal message")},
       .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};

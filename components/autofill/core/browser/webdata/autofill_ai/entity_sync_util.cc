@@ -728,18 +728,19 @@ ChromeValuablesMetadata SerializeChromeValuablesMetadata(
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics,
-    std::string_view context_token) {
+    std::string_view legal_message_token) {
   // WARNING: if you are adding support for new `AutofillValuableSpecifics`
   // fields, you need to update the
   // `TrimAutofillValuableSpecificsDataForCaching` function accordingly
   DCHECK_EQ(0u, TrimAutofillValuableSpecificsDataForCaching(
                     CreateSpecificsFromEntityInstance(entity,
                                                       /*base_specifics=*/{},
-                                                      context_token))
+                                                      legal_message_token))
                     .ByteSizeLong());
 
   sync_pb::AutofillValuableSpecifics valuable_specifics =
-      CreateSpecificsFromEntityInstance(entity, base_specifics, context_token);
+      CreateSpecificsFromEntityInstance(entity, base_specifics,
+                                        legal_message_token);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = valuable_specifics.id();
@@ -752,7 +753,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
 sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics,
-    std::string_view context_token) {
+    std::string_view legal_message_token) {
   sync_pb::AutofillValuableSpecifics specifics;
   switch (entity.type().name()) {
     case EntityTypeName::kFlightReservation:
@@ -784,8 +785,8 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
       break;
   }
 
-  if (!context_token.empty()) {
-    specifics.set_context_token(std::string(context_token));
+  if (!legal_message_token.empty()) {
+    specifics.set_legal_message_token(std::string(legal_message_token));
   }
 
   if (const auto* wallet_payload =

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -887,8 +888,10 @@ class AutofillPrivateApiPublicPassTest : public AutofillPrivateApiBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
                        GetDetailsForUpsertPass_ReturnsDetailsWhenEnabled) {
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
+  const std::string raw_token = "test_token_\xff\xfe";
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
-  response.context_token = "test_token_123";
+  response.context_token = raw_token;
   response.user_eligibility =
       autofill::WalletPassAccessManager::UserEligibility::kEligible;
   autofill::LegalMessageLine::Links links;
@@ -914,7 +917,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
   EXPECT_THAT(
       result,
       Optional(AllOf(
-          DictionaryHasValue("contextToken", base::Value("test_token_123")),
+          DictionaryHasValue("contextToken",
+                             base::Value(base::Base64Encode(raw_token))),
           DictionaryHasValue("legalMessageLines", base::test::ParseJson(R"([
             {
               "links": [
@@ -1072,7 +1076,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
           entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
   api_entity.guid = "";
   api_entity.stored_in_wallet = true;
-  api_entity.context_token = "valid_context_token";
+  // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
+  api_entity.context_token = base::Base64Encode("valid_token_\xff\xfe");
 
   base::ListValue args;
   args.Append(api_entity.ToValue());

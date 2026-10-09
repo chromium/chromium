@@ -43,13 +43,11 @@ class WalletHttpClient {
 
   // Details retrieved prior to upserting a pass.
   struct PassUpsertDetails {
-    // Encrypted context token carrying disclosure session and audit metadata.
-    // This is `std::nullopt` if the user or account is ineligible for legal
-    // disclosures (e.g. non-US regions).
-    std::optional<std::string> context_token;
-    // The localized legal disclosure message to present to the user. This is
-    // also `std::nullopt` if the user or account is ineligible for legal
-    // disclosures.
+    // The localized legal disclosure message to present to the user, along
+    // with the encrypted context token (`LegalMessage::token`) carrying
+    // disclosure session and audit metadata. This is `std::nullopt` if the
+    // user or account is ineligible for legal disclosures (e.g. non-US
+    // regions).
     std::optional<LegalMessage> legal_message;
     // The user's eligibility status for receiving privacy disclosures.
     UserEligibility user_eligibility = UserEligibility::kUnspecified;
@@ -101,10 +99,10 @@ class WalletHttpClient {
   virtual void GetUnmaskedPass(std::string_view pass_id,
                                GetUnmaskedPassCallback callback) = 0;
 
-  // Retrieves details (legal message and context token) needed prior to
-  // upserting a pass. If the user or account is not eligible for disclosures
-  // (e.g. outside the US), `PassUpsertDetails::context_token` and
-  // `PassUpsertDetails::legal_message` will be `std::nullopt`.
+  // Retrieves details (legal message and its embedded context token) needed
+  // prior to upserting a pass. If the user or account is not eligible for
+  // disclosures (e.g. outside the US), `PassUpsertDetails::legal_message`
+  // will be `std::nullopt`.
   virtual void GetDetailsForUpsertPass(
       PassType pass_type,
       GetDetailsForUpsertPassCallback callback) {}

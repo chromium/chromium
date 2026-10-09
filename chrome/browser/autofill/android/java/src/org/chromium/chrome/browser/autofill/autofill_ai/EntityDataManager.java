@@ -96,12 +96,12 @@ public class EntityDataManager implements Destroyable {
         return EntityDataManagerJni.get().getEntityInstance(mNativeEntityDataManagerAndroid, guid);
     }
 
-    /** Saves or update an entity with an optional context token. */
+    /** Saves or update an entity with an optional legal message token. */
     public void addOrUpdateEntityInstance(
             EntityInstance entity,
             int descriptionStringId,
             int acceptButtonStringId,
-            @Nullable String contextToken,
+            byte @Nullable [] legalMessageToken,
             Runnable onLocalSaveFallback) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get()
@@ -110,12 +110,12 @@ public class EntityDataManager implements Destroyable {
                         entity,
                         descriptionStringId,
                         acceptButtonStringId,
-                        contextToken,
+                        legalMessageToken,
                         onLocalSaveFallback);
     }
 
     /**
-     * Pre-fetches the details (legal message and context token) required to upsert a pass.
+     * Pre-fetches the details (legal message and legal message token) required to upsert a pass.
      *
      * @param entityType The type of the entity to upsert.
      */
@@ -126,13 +126,14 @@ public class EntityDataManager implements Destroyable {
     }
 
     /**
-     * Synchronously extracts and removes the cached details (legal message and context token)
+     * Synchronously extracts and removes the cached details (legal message and legal message token)
      * required to upsert a pass from a previous {@link #preloadDetailsForUpsertPass} call.
      *
      * @param entityType The type of the entity to upsert.
-     * @return The preloaded details (with empty legal message and context token if the user does
-     *     not need to see the legal disclosure notice), or null if saving must fall back to local
-     *     storage (e.g. nothing is cached or required details for an eligible user are missing).
+     * @return The preloaded details (with empty legal message and legal message token if the user
+     *     does not need to see the legal disclosure notice), or null if saving must fall back to
+     *     local storage (e.g. nothing is cached or required details for an eligible user are
+     *     missing).
      */
     public @Nullable DetailsForUpsertPass extractPreloadedDetailsForUpsertPass(
             @EntityTypeName int entityType) {
@@ -422,7 +423,7 @@ public class EntityDataManager implements Destroyable {
                 EntityInstance entity,
                 int descriptionStringId,
                 int acceptButtonStringId,
-                @Nullable @JniType("std::optional<std::string>") String contextToken,
+                byte @Nullable [] legalMessageToken,
                 @JniType("base::OnceClosure") Runnable onLocalSaveFallback);
 
         void preloadDetailsForUpsertPass(

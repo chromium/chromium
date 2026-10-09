@@ -471,10 +471,10 @@ TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Success) {
             base::StrCat({"Bearer ", kAccessToken}));
 
   api::GetDetailsForUpsertPassResponse response;
-  response.set_context_token("test_context_token");
   response.set_user_eligibility(
       api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_ELIGIBLE);
   auto* legal_message = response.mutable_legal_message();
+  legal_message->set_token("test_legal_message_token");
   auto* line = legal_message->add_line();
   line->set_template_("Legal text {0}");
   auto* param = line->add_template_parameter();
@@ -486,10 +486,10 @@ TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Success) {
 
   ASSERT_TRUE(callback.Wait());
   EXPECT_TRUE(callback.Get().has_value());
-  EXPECT_EQ(callback.Get()->context_token, "test_context_token");
   EXPECT_EQ(callback.Get()->user_eligibility,
             WalletHttpClient::UserEligibility::kEligible);
   ASSERT_TRUE(callback.Get()->legal_message.has_value());
+  EXPECT_EQ(callback.Get()->legal_message->token(), "test_legal_message_token");
   histogram_tester.ExpectUniqueSample("Wallet.NetworkRequest.OauthError",
                                       GoogleServiceAuthError::NONE, 1);
 }
@@ -546,7 +546,7 @@ TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_ResponseSize) {
       kAccessToken, base::Time::Max());
 
   api::GetDetailsForUpsertPassResponse response;
-  response.set_context_token("test_context_token");
+  response.mutable_legal_message()->set_token("test_legal_message_token");
   std::string response_string = response.SerializeAsString();
   test_url_loader_factory()->SimulateResponseForPendingRequest(
       GetDetailsForUpsertPassUrl().spec(), response_string);

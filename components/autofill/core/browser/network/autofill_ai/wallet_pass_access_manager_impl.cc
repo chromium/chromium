@@ -137,16 +137,21 @@ ToGetDetailsForUpsertPassResponse(
     return base::unexpected(response.error());
   }
   LegalMessageLines legal_message_lines;
+  std::string legal_message_token;
   if (response->legal_message) {
     if (!LegalMessageLine::Parse(LegalMessageToDict(*response->legal_message),
                                  &legal_message_lines,
                                  /*escape_apostrophes=*/true)) {
       return base::unexpected(WalletRequestError::kParseResponseFailed);
     }
+    if (response->legal_message->has_token()) {
+      legal_message_token =
+          std::move(*response->legal_message->mutable_token());
+    }
   }
   return WalletPassAccessManager::GetDetailsForUpsertPassResponse{
       .legal_message_lines = std::move(legal_message_lines),
-      .context_token = std::move(response->context_token).value_or(""),
+      .context_token = std::move(legal_message_token),
       .user_eligibility = response->user_eligibility,
   };
 }
@@ -410,8 +415,8 @@ void WalletPassAccessManagerImpl::CacheUnmaskResult(EntityInstance entity) {
       kCacheTTL);
 }
 
-// Google Wallet `context_token`s and legal disclosure lines are issued for a
-// specific pass type and validate that the user was presented with the
+// Google Wallet `legal_message_token`s and legal disclosure lines are issued
+// for a specific pass type and validate that the user was presented with the
 // required disclosures before upserting a pass. Because they do not depend on
 // any client-side entity instances, responses are safely cached regardless of
 // any intervening changes to `EntityDataManager`.

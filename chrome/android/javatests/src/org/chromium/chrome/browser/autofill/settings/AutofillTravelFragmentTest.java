@@ -336,10 +336,11 @@ public class AutofillTravelFragmentTest {
         LegalMessageLine legalMessageLine = new LegalMessageLine("Legal disclaimer with link.");
         legalMessageLine.links.add(
                 new LegalMessageLine.Link(0, 5, "https://policies.google.com/privacy"));
+        byte[] legalMessageToken = new byte[] {1, 2, 3};
         DetailsForUpsertPass eligibleUserResponse =
-                new DetailsForUpsertPass(List.of(legalMessageLine), "context_token_1");
+                new DetailsForUpsertPass(List.of(legalMessageLine), legalMessageToken);
         DetailsForUpsertPass ineligibleUserResponse =
-                new DetailsForUpsertPass(Collections.emptyList(), "");
+                new DetailsForUpsertPass(Collections.emptyList(), new byte[0]);
 
         when(mEntityDataManager.extractPreloadedDetailsForUpsertPass(EntityTypeName.VEHICLE))
                 .thenReturn(eligibleUserResponse, ineligibleUserResponse, null);
@@ -353,7 +354,7 @@ public class AutofillTravelFragmentTest {
         verify(mEntityDataManager).preloadDetailsForUpsertPass(EntityTypeName.VEHICLE);
 
         // First entity addition extracts `eligibleUserResponse` and saves to Wallet with the
-        // context token.
+        // legal message token.
         int callCount = editorReadyHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         editorReadyHelper.waitForCallback(callCount);
@@ -370,11 +371,11 @@ public class AutofillTravelFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
-                        eq("context_token_1"),
+                        eq(legalMessageToken),
                         any());
 
         // Second entity addition extracts `ineligibleUserResponse` (empty legal message and
-        // context token) and still saves to Wallet, passing a null context token.
+        // legal message token) and still saves to Wallet, passing a null legal message token.
         callCount = editorReadyHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         editorReadyHelper.waitForCallback(callCount);

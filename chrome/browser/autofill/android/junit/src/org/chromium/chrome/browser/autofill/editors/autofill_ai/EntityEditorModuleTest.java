@@ -546,7 +546,7 @@ public class EntityEditorModuleTest {
         legalMessageLine.links.add(
                 new LegalMessageLine.Link(0, 5, "https://policies.google.com/privacy"));
         DetailsForUpsertPass response =
-                new DetailsForUpsertPass(List.of(legalMessageLine), "context_token");
+                new DetailsForUpsertPass(List.of(legalMessageLine), new byte[] {1, 2, 3});
 
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -579,12 +579,13 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    public void testSaveWalletEntity_PassesContextToken() {
+    public void testSaveWalletEntity_PassesLegalMessageToken() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
 
+        byte[] legalMessageToken = new byte[] {1, 2, 3};
         DetailsForUpsertPass details =
                 new DetailsForUpsertPass(
-                        List.of(new LegalMessageLine("Legal disclaimer.")), "test_context_token");
+                        List.of(new LegalMessageLine("Legal disclaimer.")), legalMessageToken);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -602,20 +603,16 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         verify(mDelegate)
-                .onDone(
-                        mEntityInstanceCaptor.capture(),
-                        anyInt(),
-                        anyInt(),
-                        eq("test_context_token"));
+                .onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), eq(legalMessageToken));
         histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testSaveWalletEntity_PassesNullContextTokenWhenLegalMessageEmpty() {
+    public void testSaveWalletEntity_PassesNullLegalMessageTokenWhenLegalMessageEmpty() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
 
         DetailsForUpsertPass details =
-                new DetailsForUpsertPass(Collections.emptyList(), "test_context_token");
+                new DetailsForUpsertPass(Collections.emptyList(), new byte[] {1, 2, 3});
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

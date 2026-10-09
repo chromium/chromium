@@ -102,7 +102,7 @@ class EntityEditorMediator {
     private final PersonalDataManager mPersonalDataManager;
     private final EntityInstance mEntityInstance;
     private final @Nullable List<LegalMessageLine> mLegalMessageLines;
-    private final @Nullable String mContextToken;
+    private final byte @Nullable [] mLegalMessageToken;
     private final PropertyModel mEditorModel;
     private final Map<AttributeType, PropertyModel> mAttributeFields = new HashMap<>();
     private @Nullable EditorItem mRequiredSourceNotice;
@@ -116,7 +116,7 @@ class EntityEditorMediator {
             PersonalDataManager personalDataManager,
             EntityInstance entityInstance,
             @Nullable List<LegalMessageLine> legalMessageLines,
-            @Nullable String contextToken) {
+            byte @Nullable [] legalMessageToken) {
         mContext = context;
         mDelegate = delegate;
         mProfile = profile;
@@ -124,7 +124,7 @@ class EntityEditorMediator {
         mPersonalDataManager = personalDataManager;
         mEntityInstance = entityInstance;
         mLegalMessageLines = legalMessageLines;
-        mContextToken = contextToken;
+        mLegalMessageToken = legalMessageToken;
         mEditorModel = buildEditorModel();
     }
 
@@ -209,7 +209,7 @@ class EntityEditorMediator {
                         ? R.string.autofill_ai_save_or_update_local_entity_source_notice
                         : R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice,
                 R.string.done,
-                hasLegalMessage() ? mContextToken : null);
+                hasLegalMessage() ? mLegalMessageToken : null);
     }
 
     /**
