@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://settings/lazy_load.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsRadioGroupElement} from 'chrome://settings/settings.js';
@@ -13,6 +15,7 @@ import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 suite('SettingsRadioGroup', function() {
   let radioGroup: SettingsRadioGroupElement;
   let proxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
   const initialPrefs = [
     {
@@ -26,7 +29,8 @@ suite('SettingsRadioGroup', function() {
     proxy = new TestPrefsBrowserProxy(initialPrefs);
     PrefsBrowserProxy.setInstance(proxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     radioGroup = document.createElement('settings-radio-group');
@@ -36,13 +40,14 @@ suite('SettingsRadioGroup', function() {
   // Test the old 'pref' mechanism.
   test('prefProperty', function() {
     const prefCopy = structuredClone(initialPrefs[0]);
+    radioGroup.selectableElements = 'settings-collapse-radio-button';
     radioGroup.pref = prefCopy;
     flush();
 
-    const button1 = document.createElement('controlled-radio-button');
+    const button1 = document.createElement('settings-collapse-radio-button');
     button1.name = 'option1';
     button1.pref = prefCopy;
-    const button2 = document.createElement('controlled-radio-button');
+    const button2 = document.createElement('settings-collapse-radio-button');
     button2.name = 'option2';
     button2.pref = prefCopy;
 
@@ -78,7 +83,7 @@ suite('SettingsRadioGroup', function() {
     radioGroup.selected = 'option2';
     radioGroup.sendPrefChange();
 
-    const servicePref = PrefService.getInstance().getPref<string>('test.pref');
+    const servicePref = prefService.getPref<string>('test.pref');
     assertEquals('option2', servicePref.value);
 
     await microtasksFinished();

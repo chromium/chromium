@@ -620,6 +620,7 @@ build_webui("build") {
     "clear_browsing_data_dialog/clear_browsing_data_time_picker.css",
     "clear_browsing_data_dialog/other_google_data_dialog.css",
     "controls/controlled_button.css",
+    "controls/controlled_radio_button.css",
     "controls/settings_dropdown_menu.css",
     "controls/settings_slider.css",
     "downloads_page/downloads_page.css",

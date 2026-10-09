@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
-import {CrRadioButtonMixin} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
-import {assert} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
+import {CrRadioButtonMixinLit} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin_lit.js';
+import {CrRippleMixin} from '//resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {prefToString} from '/shared/settings/prefs/pref_util.js';
-import {CrRippleMixinPolymer} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin_polymer.js';
 
-import {getTemplate} from './controlled_radio_button.html.js';
-import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
+import {getCss} from './controlled_radio_button.css.js';
+import {getHtml} from './controlled_radio_button.html.js';
+import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 
-const ControlledRadioButtonElementBase = PrefKeyObserverMixin(
-    CrRippleMixinPolymer(CrRadioButtonMixin(PrefControlMixin(PolymerElement))));
+const ControlledRadioButtonElementBase =
+    PrefKeyObserverMixinLit(CrRippleMixin(CrRadioButtonMixinLit(CrLitElement)));
 
 export class ControlledRadioButtonElement extends
     ControlledRadioButtonElementBase {
@@ -25,45 +23,52 @@ export class ControlledRadioButtonElement extends
     return 'controlled-radio-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get observers() {
-    return [
-      'updateDisabled_(pref.enforcement)',
-    ];
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  // Overridden from CrRadioButtonMixin
-  override getPaperRipple() {
-    return this.getRipple();
+  static override get properties() {
+    return {
+      pref: {type: Object},
+    };
   }
 
-  // Overridden from CrRippleMixinPolymer
+  protected accessor pref: chrome.settingsPrivate.PrefObject|undefined =
+      undefined;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('pref')) {
+      this.disabled = this.pref?.enforcement ===
+          chrome.settingsPrivate.Enforcement.ENFORCED;
+    }
+  }
+
+  // Overridden from CrRippleMixin
   override createRipple() {
-    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    this.rippleContainer = this.shadowRoot.querySelector('.disc-wrapper');
     const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');
     return ripple;
   }
 
-  private updateDisabled_() {
-    this.disabled =
-        this.pref!.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-  }
-
-  private showIndicator_(): boolean {
-    if (!this.disabled) {
+  protected showIndicator_(): boolean {
+    if (!this.disabled || !this.pref) {
       return false;
     }
 
-    assert(this.pref);
     return this.name === prefToString(this.pref);
   }
 
-  private onIndicatorClick_(e: Event) {
+  protected onIndicatorClick_(e: Event) {
     // Disallow <controlled-radio-button on-click="..."> when disabled.
     e.preventDefault();
     e.stopPropagation();
