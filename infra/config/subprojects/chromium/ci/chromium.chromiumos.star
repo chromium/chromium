@@ -678,6 +678,9 @@ ci.builder(
                     shards = 60,
                 ),
             ),
+            "components_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "content_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 6,
