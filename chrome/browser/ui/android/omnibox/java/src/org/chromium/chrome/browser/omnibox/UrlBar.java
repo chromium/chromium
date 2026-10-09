@@ -1453,27 +1453,25 @@ public class UrlBar extends AutocompleteEditText {
 
     /** Scrolls the omnibox text to show the very beginning of the text entered. */
     @VisibleForTesting
-    /* package */ void scrollToBeginning() {
+    void scrollToBeginning() {
         // Clear the visible text hint as this path is not used for normal browser navigation.
         // If that changes in the future, update this to actually calculate the visible text hints.
         mVisibleTextPrefixHint = null;
 
         Editable text = getText();
+        int measuredWidth = getVisibleMeasuredViewportWidth();
         float scrollPos = 0f;
         Layout layout = assumeNonNull(getLayout());
         if (TextUtils.isEmpty(text)) {
-            if (getLayoutDirection() == LAYOUT_DIRECTION_RTL
-                    && getHint() != null
-                    && BidiFormatter.getInstance().isRtl(getHint())) {
+            if (getLayoutDirection() == LAYOUT_DIRECTION_RTL && getHint() != null) {
                 // Compared to below that uses getPrimaryHorizontal(1) due to 0 returning an
                 // invalid value, if the text is empty, getPrimaryHorizontal(0) returns the actual
                 // max scroll amount.
-                scrollPos = (int) layout.getPrimaryHorizontal(0) - getMeasuredWidth();
+                scrollPos = (int) layout.getPrimaryHorizontal(0) - measuredWidth;
             }
         } else if (BidiFormatter.getInstance().isRtl(text)) {
             // RTL.
             float endPointX = layout.getPrimaryHorizontal(text.length());
-            int measuredWidth = getMeasuredWidth();
             float width = layout.getPaint().measureText(text.toString());
             scrollPos = Math.max(0, endPointX - measuredWidth + width);
         }

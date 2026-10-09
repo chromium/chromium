@@ -820,7 +820,7 @@ public class UrlBarUnitTest {
         // This is also the implicit default value until text is measured, but don't rely on this.
         mUrlBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mUrlBar.setHint("hint text");
-        mUrlBar.setScrollX(42);
+        mUrlBar.setScrollX(0);
         resetTextLayout();
 
         // As long as layouts are not available, no action should be taken.
@@ -828,22 +828,27 @@ public class UrlBarUnitTest {
         // has not yet completed the full measure/layout cycle.
         mUrlBar.scrollDisplayText(
                 UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
-        assertEquals(42, mUrlBar.getScrollX());
+        assertEquals(0, mUrlBar.getScrollX());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
-        // RTL layouts should scroll to 0 too, because that's the natural origin of LTR text.
+        // RTL layout always positions hint text at the view start (right edge), even if the hint
+        // text is LTR, because fixupTextDirection() sets TEXT_ALIGNMENT_VIEW_START when empty.
         measureAndLayoutUrlBar();
-        assertEquals(0, mUrlBar.getScrollX());
+        int expectedScrollX =
+                (int) mUrlBar.getLayout().getPrimaryHorizontal(0)
+                        - (URL_BAR_WIDTH - mUrlBar.getPaddingLeft() - mUrlBar.getPaddingRight());
+        assertNotEquals(0, expectedScrollX);
+        assertEquals(expectedScrollX, mUrlBar.getScrollX());
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
         // Simulate request to update scroll type with no changes of scroll type, text, or view
         // size. This should avoid recalculations and simply re-set the scroll position.
         mUrlBar.setVisibleTextPrefixHintForTesting("");
-        mUrlBar.setScrollX(42);
+        mUrlBar.setScrollX(0);
         mUrlBar.scrollDisplayText(
                 UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals("", mUrlBar.getVisibleTextPrefixHint());
-        assertEquals(0, mUrlBar.getScrollX());
+        assertEquals(expectedScrollX, mUrlBar.getScrollX());
     }
 
     @Test
@@ -898,10 +903,14 @@ public class UrlBarUnitTest {
         assertEquals(0, mUrlBar.getScrollX());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
-        // RTL layout should position RTL text at an appropriate offset relative to view end.
+        // RTL layout should position RTL text at an appropriate offset relative to view end,
+        // accounting for horizontal padding.
         measureAndLayoutUrlBar();
-        int expectedScrollX = mUrlBar.getScrollX();
+        int expectedScrollX =
+                (int) mUrlBar.getLayout().getPrimaryHorizontal(0)
+                        - (URL_BAR_WIDTH - mUrlBar.getPaddingLeft() - mUrlBar.getPaddingRight());
         assertNotEquals(0, expectedScrollX);
+        assertEquals(expectedScrollX, mUrlBar.getScrollX());
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
         // Simulate request to update scroll type with no changes of scroll type, text, or view
@@ -911,6 +920,24 @@ public class UrlBarUnitTest {
         mUrlBar.scrollDisplayText(
                 UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals("", mUrlBar.getVisibleTextPrefixHint());
+        assertEquals(expectedScrollX, mUrlBar.getScrollX());
+    }
+
+    @Test
+    public void scrollToBeginning_rtlText_accountsForPadding() {
+        String rtlText = "ابحث في Google أو اكتب عنوان URL";
+        mUrlBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        mUrlBar.setText(rtlText);
+        measureAndLayoutUrlBar();
+
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+
+        float endPointX = mUrlBar.getLayout().getPrimaryHorizontal(rtlText.length());
+        int visibleViewportWidth =
+                URL_BAR_WIDTH - mUrlBar.getPaddingLeft() - mUrlBar.getPaddingRight();
+        float width = mUrlBar.getLayout().getPaint().measureText(rtlText);
+        int expectedScrollX = (int) Math.max(0, endPointX - visibleViewportWidth + width);
         assertEquals(expectedScrollX, mUrlBar.getScrollX());
     }
 
