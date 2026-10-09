@@ -534,6 +534,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Notification.FetchConversationId.Status"
+    enum="ActorFetchConversationIdStatus" expires_after="2027-10-09">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when the user clicks an Actor notification to bring Chrome to the
+    foreground. Captures the status of resolving the Glic conversation ID for
+    the associated Actor task when routing the notification click. Note that
+    this metric is only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Notification.FetchTabId.Status"
     enum="ActorFetchTabIdStatus" expires_after="2027-10-08">
   <owner>bbetini@google.com</owner>
