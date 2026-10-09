@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -45,6 +44,8 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
@@ -502,8 +503,8 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
   Profile* active_user_profile() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
-    Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-    return profile;
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   }
 };
 
@@ -632,7 +633,7 @@ class PolicyProvidedCertsForSigninExtensionTest
     SigninProfileExtensionsPolicyTestBase::SetUpOnMainThread();
 
     signin_profile_ = GetInitialProfile();
-    ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_));
+    ASSERT_TRUE(ash::IsSigninBrowserContext(signin_profile_));
 
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(signin_profile_);
