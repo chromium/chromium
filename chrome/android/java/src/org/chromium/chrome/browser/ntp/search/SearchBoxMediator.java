@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensController;
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -98,6 +98,11 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, this::onLensClick);
         mModel.set(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK, this::onAiChipClick);
         mModel.set(SearchBoxProperties.APPLY_ELEVATION, OmniboxCapabilities.isDesktopPlatform());
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_ROTATION, 0f);
+        mModel.set(SearchBoxProperties.HINT_TEXT_ALPHA, 1f);
+        mModel.set(
+                SearchBoxProperties.PLUS_BUTTON_TINT,
+                context.getColorStateList(R.color.default_icon_color_tint_list));
 
         updateAiChip();
         updateStartIcon();
@@ -258,6 +263,7 @@ class SearchBoxMediator implements DestroyObserver {
         ColorStateList colorStateList =
                 ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_TINT, colorStateList);
 
         mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW, apply);
 

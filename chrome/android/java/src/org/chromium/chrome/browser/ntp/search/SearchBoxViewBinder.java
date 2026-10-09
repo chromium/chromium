@@ -46,6 +46,8 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT == propertyKey) {
             view.mHintTextView.setEnabled(
                     model.get(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT));
+        } else if (SearchBoxProperties.HINT_TEXT_ALPHA == propertyKey) {
+            view.mHintTextView.setAlpha(model.get(SearchBoxProperties.HINT_TEXT_ALPHA));
         } else if (SearchBoxProperties.LENS_CLICK_CALLBACK == propertyKey) {
             view.mLensButton.setOnClickListener(model.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         } else if (SearchBoxProperties.LENS_VISIBILITY == propertyKey) {
@@ -54,6 +56,11 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK == propertyKey) {
             view.setPlusButtonClickListener(
                     model.get(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK));
+        } else if (SearchBoxProperties.PLUS_BUTTON_ROTATION == propertyKey) {
+            view.mPlusButton.setRotation(model.get(SearchBoxProperties.PLUS_BUTTON_ROTATION));
+        } else if (SearchBoxProperties.PLUS_BUTTON_TINT == propertyKey) {
+            ImageViewCompat.setImageTintList(
+                    view.mPlusButton, model.get(SearchBoxProperties.PLUS_BUTTON_TINT));
         } else if (SearchBoxProperties.PLUS_BUTTON_VISIBILITY == propertyKey) {
             boolean visible = model.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY);
             view.updateStartIconVisibility(visible);
@@ -121,7 +128,6 @@ class SearchBoxViewBinder
             ColorStateList tint = model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST);
             ImageViewCompat.setImageTintList(view.mVoiceSearchButton, tint);
             ImageViewCompat.setImageTintList(view.mLensButton, tint);
-            ImageViewCompat.setImageTintList(view.mPlusButton, tint);
         } else if (SearchBoxProperties.VOICE_SEARCH_VISIBILITY == propertyKey) {
             view.mVoiceSearchButton.setVisibility(
                     model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)

@@ -333,6 +333,7 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+        assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_TINT));
         assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
         verifyApplyBackground(mSearchBoxView);
 
@@ -347,6 +348,7 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+        assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_TINT));
         assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
         verifyResetBackground(mSearchBoxView, defaultBackground);
     }

@@ -30,11 +30,14 @@ interface SearchBoxProperties {
     WritableObjectPropertyKey<Drawable> DSE_ICON_DRAWABLE = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<ColorStateList> DSE_ICON_TINT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey ENABLE_SEARCH_BOX_EDIT_TEXT = new WritableBooleanPropertyKey();
+    WritableFloatPropertyKey HINT_TEXT_ALPHA = new WritableFloatPropertyKey();
     WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey LENS_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> PLUS_BUTTON_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
+    WritableFloatPropertyKey PLUS_BUTTON_ROTATION = new WritableFloatPropertyKey();
+    WritableObjectPropertyKey<ColorStateList> PLUS_BUTTON_TINT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey PLUS_BUTTON_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> SEARCH_BOX_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
@@ -68,9 +71,12 @@ interface SearchBoxProperties {
                 DSE_ICON_DRAWABLE,
                 DSE_ICON_TINT,
                 ENABLE_SEARCH_BOX_EDIT_TEXT,
+                HINT_TEXT_ALPHA,
                 LENS_CLICK_CALLBACK,
                 LENS_VISIBILITY,
                 PLUS_BUTTON_CLICK_CALLBACK,
+                PLUS_BUTTON_ROTATION,
+                PLUS_BUTTON_TINT,
                 PLUS_BUTTON_VISIBILITY,
                 SEARCH_BOX_CLICK_CALLBACK,
                 SEARCH_BOX_DRAG_CALLBACK,
