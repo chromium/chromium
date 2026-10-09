@@ -8,6 +8,7 @@
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_metrics_util.h"
@@ -43,6 +44,19 @@ SitePermissionSetting SitePermissionSettingForContentSetting(
       return SitePermissionSetting::kNeverAllow;
     default:
       return SitePermissionSetting::kAllowOnce;
+  }
+}
+
+// Returns the `IOSPermissionSetting` corresponding to `setting`.
+IOSPermissionSetting IOSPermissionSettingForSitePermissionSetting(
+    SitePermissionSetting setting) {
+  switch (setting) {
+    case SitePermissionSetting::kAllowOnce:
+      return IOSPermissionSetting::kAllowOnce;
+    case SitePermissionSetting::kAlwaysAllow:
+      return IOSPermissionSetting::kAlwaysAllow;
+    case SitePermissionSetting::kNeverAllow:
+      return IOSPermissionSetting::kNeverAllow;
   }
 }
 
@@ -115,14 +129,17 @@ SitePermissionSetting SitePermissionSettingForContentSetting(
   if (!_webState) {
     return;
   }
+
   if (IsDomainLevelSitePermissionsEnabled()) {
     [self persistSetting:permissionInfo.setting
            forPermission:permissionInfo.permission];
-    // TODO(crbug.com/552563362): Record domain-level permission dropdown
-    // selection histogram.
+    RecordPermissionSettingChanged(
+        IOSPermissionSettingChangeSurface::kPageInfo, permissionInfo.permission,
+        IOSPermissionSettingForSitePermissionSetting(permissionInfo.setting));
   } else {
     RecordPermissionToogled();
   }
+
   _webState->SetStateForPermission(permissionInfo.state,
                                    permissionInfo.permission);
   RecordPermissionEventFromOrigin(

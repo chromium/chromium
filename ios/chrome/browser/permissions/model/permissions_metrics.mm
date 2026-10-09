@@ -70,3 +70,35 @@ void RecordPermissionPromptAction(NSArray<NSNumber*>* permissions,
         kPermissionsPromptAudioCaptureModalDialogActionHistogram, action);
   }
 }
+
+void RecordPermissionSettingChanged(IOSPermissionSettingChangeSurface surface,
+                                    web::Permission permission,
+                                    IOSPermissionSetting setting) {
+  switch (surface) {
+    case IOSPermissionSettingChangeSurface::kPageActionMenu:
+      switch (permission) {
+        case web::PermissionCamera:
+          base::UmaHistogramEnumeration(
+              kPermissionPageActionMenuSettingChangedCameraHistogram, setting);
+          break;
+        case web::PermissionMicrophone:
+          base::UmaHistogramEnumeration(
+              kPermissionPageActionMenuSettingChangedMicrophoneHistogram,
+              setting);
+          break;
+      }
+      break;
+    case IOSPermissionSettingChangeSurface::kPageInfo:
+      switch (permission) {
+        case web::PermissionCamera:
+          base::UmaHistogramEnumeration(
+              kPermissionPageInfoSettingChangedCameraHistogram, setting);
+          break;
+        case web::PermissionMicrophone:
+          base::UmaHistogramEnumeration(
+              kPermissionPageInfoSettingChangedMicrophoneHistogram, setting);
+          break;
+      }
+      break;
+  }
+}

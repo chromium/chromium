@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/page_info/coordinator/page_info_permissions_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -81,10 +83,11 @@ TEST_F(PageInfoPermissionsTest, TestUpdateStateForPermission) {
 }
 
 // Test that `updatePermissionInfo:` persists Always Allow, Never Allow,
-// and Allow Once to `HostContentSettingsMap` and updates the web state when
-// `kDomainLevelSitePermissions` is enabled.
+// and Allow Once to `HostContentSettingsMap`, updates the web state, and
+// records metrics when `kDomainLevelSitePermissions` is enabled.
 TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
   GURL url(kTestUrl);
 
   // Select Always Allow for Camera.
@@ -99,6 +102,9 @@ TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   EXPECT_EQ(settings_map()->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_ALLOW);
+  histogram_tester.ExpectBucketCount(
+      kPermissionPageInfoSettingChangedCameraHistogram,
+      IOSPermissionSetting::kAlwaysAllow, 1);
 
   // Select Never Allow for Camera.
   PermissionInfo* cameraNeverAllow = [[PermissionInfo alloc] init];
@@ -112,6 +118,9 @@ TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   EXPECT_EQ(settings_map()->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_BLOCK);
+  histogram_tester.ExpectBucketCount(
+      kPermissionPageInfoSettingChangedCameraHistogram,
+      IOSPermissionSetting::kNeverAllow, 1);
 
   // Select Allow Once for Camera.
   PermissionInfo* cameraAllowOnce = [[PermissionInfo alloc] init];
@@ -125,6 +134,12 @@ TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   EXPECT_EQ(settings_map()->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_ASK);
+  histogram_tester.ExpectBucketCount(
+      kPermissionPageInfoSettingChangedCameraHistogram,
+      IOSPermissionSetting::kAllowOnce, 1);
+  histogram_tester.ExpectTotalCount(
+      kPermissionPageInfoSettingChangedCameraHistogram, 3);
+  histogram_tester.ExpectTotalCount("IOS.Permission.PageInfo.Events", 3);
 }
 
 // Test that setting a consumer when `kDomainLevelSitePermissions` is enabled

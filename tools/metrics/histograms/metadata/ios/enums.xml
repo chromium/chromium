@@ -1689,6 +1689,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/permissions/model/permissions_metrics.h:IOSPermissionRequestResolution) -->
 
+<!-- LINT.IfChange(IOSPermissionSetting) -->
+
+<enum name="IOSPermissionSetting">
+  <int value="0" label="Allow once"/>
+  <int value="1" label="Always allow"/>
+  <int value="2" label="Never allow"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/permissions/model/permissions_metrics.h:IOSPermissionSetting) -->
+
 <!-- LINT.IfChange(IOSPersistTabContextDeleteDirectoryResult) -->
 
 <enum name="IOSPersistTabContextDeleteDirectoryResult">

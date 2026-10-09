@@ -9,6 +9,10 @@
 
 #import <string_view>
 
+namespace web {
+enum Permission : NSUInteger;
+}  // namespace web
+
 // Histogram names for permission prompts and request resolution.
 inline constexpr std::string_view kPermissionsPromptShownHistogram =
     "Permissions.Prompt.Shown";
@@ -29,6 +33,18 @@ inline constexpr std::string_view
 inline constexpr std::string_view
     kPermissionRequestResolutionCameraAndMicrophoneHistogram =
         "IOS.Permission.RequestResolution.CameraAndMicrophone";
+inline constexpr std::string_view
+    kPermissionPageActionMenuSettingChangedCameraHistogram =
+        "IOS.Permission.PageActionMenu.SettingChanged.Camera";
+inline constexpr std::string_view
+    kPermissionPageActionMenuSettingChangedMicrophoneHistogram =
+        "IOS.Permission.PageActionMenu.SettingChanged.Microphone";
+inline constexpr std::string_view
+    kPermissionPageInfoSettingChangedCameraHistogram =
+        "IOS.Permission.PageInfo.SettingChanged.Camera";
+inline constexpr std::string_view
+    kPermissionPageInfoSettingChangedMicrophoneHistogram =
+        "IOS.Permission.PageInfo.SettingChanged.Microphone";
 
 // Values for the `IOS.Permission.RequestResolution.*` histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -71,6 +87,25 @@ enum class PermissionRequestTypeForUma {
   kMaxValue = kPermissionMediaStreamCamera,
 };
 
+// Surface from which a site permission setting was changed.
+enum class IOSPermissionSettingChangeSurface {
+  kPageActionMenu,
+  kPageInfo,
+};
+
+// Values for the `IOS.Permission.{Surface}.SettingChanged.{PermissionType}`
+// histograms.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSPermissionSetting)
+enum class IOSPermissionSetting {
+  kAllowOnce = 0,
+  kAlwaysAllow = 1,
+  kNeverAllow = 2,
+  kMaxValue = kNeverAllow,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSPermissionSetting)
+
 // Records how a site permission request for `permissions` (`web::Permission`
 // values) was resolved.
 void RecordPermissionRequestResolution(
@@ -85,5 +120,11 @@ void RecordPermissionPromptShown(NSArray<NSNumber*>* permissions);
 // permission dialog requesting `permissions` (`web::Permission` values).
 void RecordPermissionPromptAction(NSArray<NSNumber*>* permissions,
                                   PermissionPromptAction action);
+
+// Records `IOS.Permission.{Surface}.SettingChanged.{PermissionType}` when the
+// user changes `permission` to `setting` on `surface`.
+void RecordPermissionSettingChanged(IOSPermissionSettingChangeSurface surface,
+                                    web::Permission permission,
+                                    IOSPermissionSetting setting);
 
 #endif  // IOS_CHROME_BROWSER_PERMISSIONS_MODEL_PERMISSIONS_METRICS_H_

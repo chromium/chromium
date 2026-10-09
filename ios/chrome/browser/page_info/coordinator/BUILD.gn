@@ -90,6 +90,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/page_info/ui",
+    "//ios/chrome/browser/permissions/model:tab_helper",
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/browser/shared/model/profile/test",

@@ -703,6 +703,9 @@ SectionIdentifier PermissionSectionForItem(ItemIdentifier item_identifier) {
 - (void)didSelectSetting:(SitePermissionSetting)setting
            forPermission:(web::Permission)permission {
   CHECK(IsDomainLevelSitePermissionsEnabled());
+  if ([self currentSettingForPermission:permission] == setting) {
+    return;
+  }
   PermissionInfo* permissionDescription = [[PermissionInfo alloc] init];
   permissionDescription.permission = permission;
   permissionDescription.state = (setting == SitePermissionSetting::kNeverAllow)

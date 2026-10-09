@@ -6165,6 +6165,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Permission.{Surface}.SettingChanged.{PermissionType}"
+    enum="IOSPermissionSetting" expires_after="2027-06-01">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records the new site permission setting selected by the user when changing
+    the {PermissionType} permission from {Surface}.
+  </summary>
+  <token key="Surface">
+    <variant name="PageActionMenu" summary="the Page Tools menu"/>
+    <variant name="PageInfo" summary="Site Info"/>
+  </token>
+  <token key="PermissionType">
+    <variant name="Camera" summary="camera"/>
+    <variant name="Microphone" summary="microphone"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.PersistTabContext.CreateDirectoryResult"
     enum="BooleanSuccess" expires_after="2027-02-11">
   <owner>cloutierc@google.com</owner>
