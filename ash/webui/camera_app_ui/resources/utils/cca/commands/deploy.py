@@ -105,7 +105,7 @@ def _reload_cca(device: str, changed_files: List[str]):
                 "/dev/null",
             ]
         )
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         print(
             "Failed to reload CCA on DUT, "
             "please make sure that the DUT is logged in "

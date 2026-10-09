@@ -39,7 +39,8 @@ def _check_lit_analyzer(build_dir: Optional[pathlib.Path]) -> Optional[int]:
     if shutil.which("lit-analyzer") is None:
         logging.info(
             "lit-analyzer is not installed locally. For better lint checks "
-            "for Lit please install it by `npm install lit-analyzer -g`.")
+            "for Lit please install it by `npm install lit-analyzer -g`."
+        )
         return
 
     if build_dir is None:
@@ -73,8 +74,9 @@ def _check_lit_analyzer(build_dir: Optional[pathlib.Path]) -> Optional[int]:
             cwd=util.get_cra_root(),
         )
     except subprocess.CalledProcessError as e:
-        logging.error("lit-analyzer check failed, return code = %d",
-                      e.returncode)
+        logging.error(
+            "lit-analyzer check failed, return code = %d", e.returncode
+        )
         return e.returncode
 
 
@@ -86,10 +88,12 @@ def _check_lit_analyzer(build_dir: Optional[pathlib.Path]) -> Optional[int]:
 @cli.option("--fix", action="store_true")
 @cli.option("--eslintrc", help="use alternative eslintrc")
 @util.build_dir_option(optional=True)
-def cmd(fix: bool, eslintrc: Optional[str],
-        build_dir: Optional[pathlib.Path]) -> int:
-    eslintrc = eslintrc or str(util.get_chromium_root() /
-                            "tools/web_dev_style/eslint.config.mjs")
+def cmd(
+    fix: bool, eslintrc: Optional[str], build_dir: Optional[pathlib.Path]
+) -> int:
+    eslintrc = eslintrc or str(
+        util.get_chromium_root() / "tools/web_dev_style/eslint.config.mjs"
+    )
     eslint_ret = _check_eslint(fix, eslintrc)
     lit_analyzer_ret = _check_lit_analyzer(build_dir)
     # TODO(pihsun): Add stylelint check as an local only optional check similar

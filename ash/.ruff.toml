@@ -1,0 +1,8 @@
+line-length = 80
+indent-width = 2
+
+[format]
+quote-style = "preserve"
+
+[lint]
+unfixable = ["F401"]

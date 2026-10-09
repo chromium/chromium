@@ -32,24 +32,28 @@ import sys
 
 def parse_arguments(arguments):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root_out_dir',
-                        help='The root dir of gn output directory.',
-                        required=True)
+    parser.add_argument(
+        '--root_out_dir',
+        help='The root dir of gn output directory.',
+        required=True,
+    )
     parser.add_argument(
         '--gn_target',
         help='The typescript gn build target which builds the source code '
-             'files',
-        required=True)
+        'files',
+        required=True,
+    )
     parser.add_argument(
         '--custom_def_files',
         help='Comma separate file list which will be added to "files" section '
-             'in tsconfig as additional type definitions',
-        required=False)
+        'in tsconfig as additional type definitions',
+        required=False,
+    )
     return parser.parse_args(arguments)
 
 
 def normalize_path(root_dir, relative_dir):
-    """ normalize the combined path, also make it absolute. """
+    """normalize the combined path, also make it absolute."""
     abs_root_dir = os.path.abspath(root_dir)
     return os.path.normpath(os.path.join(abs_root_dir, relative_dir))
 
@@ -59,7 +63,8 @@ def main(args):
     # execute the ts build target to generate the tsconfig.json file.
     subprocess.check_call(
         ['autoninja', '-C', arguments.root_out_dir, arguments.gn_target],
-        stdout=subprocess.DEVNULL)
+        stdout=subprocess.DEVNULL,
+    )
 
     gn_target_src_dir, gn_target_suffix = arguments.gn_target.split(':')
 
@@ -69,10 +74,12 @@ def main(args):
         'gen/',
         # build target's location in gen/ folder
         gn_target_src_dir,
-        f'tsconfig_{gn_target_suffix}.json')
+        f'tsconfig_{gn_target_suffix}.json',
+    )
     if not os.path.exists(out_json_path):
-        print('Can not find the auto generated tsconfig.json file:',
-              out_json_path)
+        print(
+            'Can not find the auto generated tsconfig.json file:', out_json_path
+        )
         return
 
     with open(out_json_path, 'r') as f:
@@ -89,8 +96,9 @@ def main(args):
             'allowJs': out_json['compilerOptions'].get('allowJs', False),
             'rootDirs': [
                 '.',
-                normalize_path(out_json_dir,
-                               out_json['compilerOptions']['rootDir']),
+                normalize_path(
+                    out_json_dir, out_json['compilerOptions']['rootDir']
+                ),
             ],
             'noEmit': True,
             'paths': {
@@ -101,15 +109,17 @@ def main(args):
         'files': [
             # Add the .d.ts files.
             normalize_path(out_json_dir, path)
-            for path in out_json['files'] if path.endswith(tuple(definitions))
+            for path in out_json['files']
+            if path.endswith(tuple(definitions))
         ],
         'include': [
             # Include every source file underneath the generated tsconfig.json.
             '**/*'
         ],
-        'references': [{
-            'path': normalize_path(out_json_dir, path['path'])
-        } for path in out_json['references']],
+        'references': [
+            {'path': normalize_path(out_json_dir, path['path'])}
+            for path in out_json['references']
+        ],
     }
 
     output_path = os.path.join(gn_target_src_dir, 'tsconfig.json')

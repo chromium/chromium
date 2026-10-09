@@ -46,7 +46,8 @@ def _resolve_build_dir(build_dir: str) -> pathlib.Path:
 
     assert resolved_build_dir.is_dir(), (
         f"Failed to find the build output dir {build_dir}."
-        " Please check and build Chrome at least once.")
+        " Please check and build Chrome at least once."
+    )
 
     return resolved_build_dir
 

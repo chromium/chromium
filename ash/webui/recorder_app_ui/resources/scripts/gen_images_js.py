@@ -21,24 +21,34 @@ def gen_images_js(images: List[pathlib.Path], root_dir: pathlib.Path) -> str:
             id = str(relative_path.parent / relative_path.stem)
             image_dict[id] = f.read().strip()
 
-    formatted_images = '[' + ','.join(
-        f'[{json.dumps(name)}, svg`{svg}`]'
-        for name, svg in image_dict.items()) + ']'
+    formatted_images = (
+        '['
+        + ','.join(
+            f'[{json.dumps(name)}, svg`{svg}`]'
+            for name, svg in image_dict.items()
+        )
+        + ']'
+    )
 
-    return ('import {svg} from "chrome://resources/mwc/lit/index.js";\n'
-            f'export const images = new Map({formatted_images});')
+    return (
+        'import {svg} from "chrome://resources/mwc/lit/index.js";\n'
+        f'export const images = new Map({formatted_images});'
+    )
 
 
 def main():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument(
-        '--images_file', help='File contains a list of images to be appended')
+        '--images_file', help='File contains a list of images to be appended'
+    )
     argument_parser.add_argument(
         '--root_dir',
         help='Root directory of the images.'
-        ' The image id will be generated based on this.')
+        ' The image id will be generated based on this.',
+    )
     argument_parser.add_argument(
-        '--output_file', help='The output js file containing all images')
+        '--output_file', help='The output js file containing all images'
+    )
     args = argument_parser.parse_args()
 
     with open(args.images_file) as f:

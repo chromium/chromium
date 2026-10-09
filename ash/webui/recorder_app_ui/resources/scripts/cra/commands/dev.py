@@ -42,7 +42,8 @@ def _stub_chrome_url(request_path: _RequestPath, s: str) -> str:
     # into 'chrome_stub' by pathlib.
     chrome_stub_path = f"{_get_root_relative_path(request_path)}/chrome_stub/"
     return s.replace("chrome://", chrome_stub_path).replace(
-        "//resources/", f"{chrome_stub_path}resources/")
+        "//resources/", f"{chrome_stub_path}resources/"
+    )
 
 
 class _Route(NamedTuple):
@@ -56,12 +57,14 @@ class _Route(NamedTuple):
 # importmap tag to make the import of /images/images.js independent of the base
 # path. The import is absolute because of build issue (See comment in
 # resources/BUILD.gn on ts_path_mappings).
-IMPORT_MAP = ('<script type="importmap">' +
-              '{"imports":{"/images/": "./images/"}}' + '</script>')
+IMPORT_MAP = (
+    '<script type="importmap">'
+    + '{"imports":{"/images/": "./images/"}}'
+    + '</script>'
+)
 
 
 class RequestHandler:
-
     def __init__(
         self,
         cra_root: pathlib.Path,
@@ -98,8 +101,9 @@ class RequestHandler:
     def _transform_js(self, request_path: _RequestPath, js: str) -> str:
         return _stub_chrome_url(request_path, js)
 
-    def _transform_platforms_index_js(self, request_path: _RequestPath,
-                                      js: str) -> str:
+    def _transform_platforms_index_js(
+        self, request_path: _RequestPath, js: str
+    ) -> str:
         # TODO(pihsun): The inline source would still be wrong, have some hacky
         # way to fix that too.
         js = js.replace("'./swa/handler.js'", "'./dev/handler.js'")
@@ -126,33 +130,39 @@ class RequestHandler:
             name = message.getAttribute("name")
             value = get_message_text_content(message).strip()
             assert name.startswith("IDS_RECORDER_")
-            id = name[len("IDS_RECORDER_"):]
+            id = name[len("IDS_RECORDER_") :]
             id = util.to_camel_case(id)
             strings[id] = value
         return strings
 
     def _handle_dev_strings_js(
-            self, _request_path: _RequestPath) -> tuple[bytes, str]:
+        self, _request_path: _RequestPath
+    ) -> tuple[bytes, str]:
         grd_strings = self._load_grd_strings()
 
-        return (f"export const strings = {json.dumps(grd_strings)};".encode(),
-                "text/javascript")
+        return (
+            f"export const strings = {json.dumps(grd_strings)};".encode(),
+            "text/javascript",
+        )
 
-    def _handle_images_js(self,
-                          request_path: _RequestPath) -> tuple[bytes, str]:
+    def _handle_images_js(
+        self, request_path: _RequestPath
+    ) -> tuple[bytes, str]:
         # TODO(pihsun): With watch, we can cache the result and only
         # re-generate when any image files are changed.
-        return (self._transform_js(request_path,
-                                   build.gen_images_js()).encode(),
-                "text/javascript")
+        return (
+            self._transform_js(request_path, build.gen_images_js()).encode(),
+            "text/javascript",
+        )
 
     def _handle_static_file(
         self,
         request_path: _RequestPath,
         *,
         root: Optional[pathlib.Path] = None,
-        path: Optional[Union[_RequestPath, Callable[[_RequestPath],
-                                                    _RequestPath]]] = None,
+        path: Optional[
+            Union[_RequestPath, Callable[[_RequestPath], _RequestPath]]
+        ] = None,
         transform: Optional[Callable[[_RequestPath, str], str]] = None,
         content_type: Optional[str] = None,
     ) -> tuple[bytes, str]:
@@ -169,7 +179,8 @@ class RequestHandler:
             content_type = mimetypes.guess_type(path)[0]
             if content_type is None:
                 raise RuntimeError(
-                    f"Can't guess MIME type for {request_path} ({path}).")
+                    f"Can't guess MIME type for {request_path} ({path})."
+                )
 
         with open(root / path, "rb") as f:
             content = f.read()
@@ -244,8 +255,9 @@ class RequestHandler:
             # index.html.
             _Route(
                 _RequestPath("index.html"),
-                functools.partial(self._handle_static_file,
-                                  transform=self._transform_html),
+                functools.partial(
+                    self._handle_static_file, transform=self._transform_html
+                ),
             ),
             # Other request path without extension, assuming that it's handled
             # by client side navigation.
@@ -255,9 +267,11 @@ class RequestHandler:
             # represented by "." by pathlib.
             _Route(
                 re.compile(r"[^.]*|\."),
-                functools.partial(self._handle_static_file,
-                                  path=_RequestPath("index.html"),
-                                  transform=self._transform_html),
+                functools.partial(
+                    self._handle_static_file,
+                    path=_RequestPath("index.html"),
+                    transform=self._transform_html,
+                ),
             ),
         ]
 
@@ -276,7 +290,6 @@ class RequestHandler:
 
 
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
-
     def __init__(
         self,
         handler: RequestHandler,
@@ -301,15 +314,13 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         # Remove query parameters, and transform to relative path.
         path = _RequestPath(urllib_parse.urlparse(self.path).path).relative_to(
-            _RequestPath("/"))
+            _RequestPath("/")
+        )
 
         try:
             resp = self._handler.handle(path)
         except Exception as e:
-            logging.debug("Error while handling %r: %r",
-                          path,
-                          e,
-                          exc_info=True)
+            logging.debug("Error while handling %r: %r", path, e, exc_info=True)
             self.send_response(404)
             self.end_headers()
             return
@@ -365,10 +376,15 @@ def cmd(build_dir: pathlib.Path, port: int) -> int:
             "--noUnusedParameters",
             "false",
         ],
-        cwd=util.get_cra_root())
+        cwd=util.get_cra_root(),
+    )
 
-    handler = RequestHandler(util.get_cra_root(), _DEV_OUTPUT_TEMP_DIR,
-                             build_dir, util.get_strings_dir())
+    handler = RequestHandler(
+        util.get_cra_root(),
+        _DEV_OUTPUT_TEMP_DIR,
+        build_dir,
+        util.get_strings_dir(),
+    )
     dev_server = http.server.ThreadingHTTPServer(
         ("localhost", port),
         lambda *args: DevServerHandler(handler, *args),

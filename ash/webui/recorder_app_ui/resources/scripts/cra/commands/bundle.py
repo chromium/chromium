@@ -28,11 +28,13 @@ def _assert_exist(val: Optional[T]) -> T:
 
 
 def _get_static_paths(cra_root: pathlib.Path) -> set[_RequestPath]:
-    static_paths = set([
-        _RequestPath('index.html'),
-        _RequestPath("chrome_stub/theme/typography.css"),
-        _RequestPath("chrome_stub/theme/colors.css"),
-    ])
+    static_paths = set(
+        [
+            _RequestPath('index.html'),
+            _RequestPath("chrome_stub/theme/typography.css"),
+            _RequestPath("chrome_stub/theme/colors.css"),
+        ]
+    )
     static_root = cra_root / "static"
 
     # Path.walk() is only available in Python 3.12, and glinux default system
@@ -86,10 +88,12 @@ def cmd(build_dir: pathlib.Path) -> int:
             "--noUnusedParameters",
             "false",
         ],
-        cwd=cra_root)
+        cwd=cra_root,
+    )
 
-    handler = dev_cmd.RequestHandler(cra_root, _BUNDLE_TSC_OUTPUT_TEMP_DIR,
-                                     build_dir, util.get_strings_dir())
+    handler = dev_cmd.RequestHandler(
+        cra_root, _BUNDLE_TSC_OUTPUT_TEMP_DIR, build_dir, util.get_strings_dir()
+    )
 
     output_folder = cra_root / "dist"
     shutil.rmtree(output_folder, ignore_errors=True)
@@ -126,8 +130,11 @@ def cmd(build_dir: pathlib.Path) -> int:
         path = js_paths.get_nowait()
         dir = path.parent
         response = handle(path).decode()
-        for match in re.finditer(r'^import\s+(?:[^;]*?)([\'"])([^\'"]*?)\1',
-                                 response, re.MULTILINE | re.DOTALL):
+        for match in re.finditer(
+            r'^import\s+(?:[^;]*?)([\'"])([^\'"]*?)\1',
+            response,
+            re.MULTILINE | re.DOTALL,
+        ):
             # Why is there no normpath in pathlib... T_T
             import_path = _RequestPath(os.path.normpath(dir / match[2]))
             add_path(import_path)

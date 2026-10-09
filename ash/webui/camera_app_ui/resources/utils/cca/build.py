@@ -7,7 +7,7 @@ import glob
 import json
 import os
 import re
-import tempfile
+import tempfile  # noqa: F401
 from typing import Dict, List
 
 from cca import util

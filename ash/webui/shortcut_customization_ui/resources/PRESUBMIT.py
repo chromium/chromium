@@ -7,8 +7,9 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import sys
+import sys  # noqa: F401
 from importlib.util import module_from_spec, spec_from_file_location
+
 
 # Use existing SemanticCssChecker to advise use of cros approved colors
 # and semantic variables which support dark-mode display.
@@ -17,8 +18,9 @@ def _CheckSemanticCssColors(input_api, output_api):
     join = input_api.os_path.join
     src_root = input_api.change.RepositoryRoot()
     # Build OS independent path to semantic checker.
-    module_path = join(src_root, 'ui', 'chromeos', 'styles',
-                       'semantic_css_checker.py')
+    module_path = join(
+        src_root, 'ui', 'chromeos', 'styles', 'semantic_css_checker.py'
+    )
     spec = spec_from_file_location('semantic_css_checker', module_path)
     checker = module_from_spec(spec)
     # Load checker so it can be used.

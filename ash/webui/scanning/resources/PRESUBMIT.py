@@ -9,6 +9,7 @@ for more details about the presubmit API built into depot_tools.
 
 import sys
 
+
 # Use existing SemanticCssChecker to advise use of cros approved colors
 # and semantic variables which support dark-mode display.
 # See: ui/chromeos/styles/semantic_css_checker.py
@@ -28,15 +29,15 @@ def _CheckSemanticCssColors(input_api, output_api):
 
 
 def _CommonChecks(input_api, output_api):
-    """Checks common to both upload and commit."""
-    results = []
-    results.extend(_CheckSemanticCssColors(input_api, output_api))
-    return results
+  """Checks common to both upload and commit."""
+  results = []
+  results.extend(_CheckSemanticCssColors(input_api, output_api))
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+  return _CommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+  return _CommonChecks(input_api, output_api)

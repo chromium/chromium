@@ -69,7 +69,8 @@ class _Command:
                 if child._name is None:
                     raise CLIError(
                         f"Children {child._func} should be wrapped with"
-                        " @command")
+                        " @command"
+                    )
                 subparser = subparsers.add_parser(child._name, **child._kwargs)
                 child.build_parsers(subparser)
 
@@ -129,10 +130,9 @@ def _ensure_command(cmd: _MaybeCommand) -> _Command:
 _Decorator = Callable[[_MaybeCommand], _Command]
 
 
-def command(name: str,
-            *,
-            children: Optional[list[_Command]] = None,
-            **kwargs) -> _Decorator:
+def command(
+    name: str, *, children: Optional[list[_Command]] = None, **kwargs
+) -> _Decorator:
     """Decorator to create a new command.
 
     Args:

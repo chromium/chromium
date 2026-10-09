@@ -45,16 +45,18 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
 
     cros_components_dir = resources_dir / "cros_components/to_be_rewritten"
 
-    metrics_dir = (build_dir /
-                   "gen/ash/webui/common/resources/preprocessed/metrics")
+    metrics_dir = (
+        build_dir / "gen/ash/webui/common/resources/preprocessed/metrics"
+    )
 
     return {
         "//resources/*": [str(resources_dir / "*")],
         "chrome://resources/*": [str(resources_dir / "*")],
         "chrome://resources/mwc/lit/index.js": [str(lit_d_ts)],
         "chrome://resources/mwc/@material/*": [str(mwc_components_dir / "*")],
-        "chrome://resources/cros_components/*":
-        [str(cros_components_dir / "*")],
+        "chrome://resources/cros_components/*": [
+            str(cros_components_dir / "*")
+        ],
         "/images/*": [str(images_dir / "*")],
         "chrome://resources/ash/common/metrics/*": [str(metrics_dir / "*")],
         "/strings.m.js": [str(typescript_definition_dir / "strings.d.ts")],
@@ -65,13 +67,18 @@ def _make_mojom_symlink(build_dir: pathlib.Path):
     cra_root = util.get_cra_root()
     root_dir = util.get_chromium_root()
 
-    preprocessed_mojo_dir = build_dir / "gen" / cra_root.relative_to(
-        root_dir) / "preprocessed/mojom"
+    preprocessed_mojo_dir = (
+        build_dir
+        / "gen"
+        / cra_root.relative_to(root_dir)
+        / "preprocessed/mojom"
+    )
     cra_mojo_dir = cra_root / "mojom"
 
     assert preprocessed_mojo_dir.exists(), (
         f"{preprocessed_mojo_dir} doesn't exist, "
-        "is Chrome compiled at least once?")
+        "is Chrome compiled at least once?"
+    )
 
     if cra_mojo_dir.is_symlink():
         if cra_mojo_dir.readlink() != preprocessed_mojo_dir:
@@ -83,8 +90,10 @@ def _make_mojom_symlink(build_dir: pathlib.Path):
     elif cra_mojo_dir.exists():
         # Some other things are at the mojom path. cra.py won't work in
         # this case.
-        raise Exception("resources/mojom exists but not a symlink."
-                        " Please remove it and try again.")
+        raise Exception(
+            "resources/mojom exists but not a symlink."
+            " Please remove it and try again."
+        )
     else:
         cra_mojo_dir.symlink_to(preprocessed_mojo_dir)
 
@@ -92,21 +101,20 @@ def _make_mojom_symlink(build_dir: pathlib.Path):
 def _get_tsc_references(build_dir: pathlib.Path) -> list[dict[str, str]]:
     mwc_gen_dir = build_dir / "gen/third_party/material_web_components/"
     cros_components_tsconfig = (
-        build_dir /
-        "gen/third_party/cros-components/tsconfig_cros_components_ts.json")
+        build_dir
+        / "gen/third_party/cros-components/tsconfig_cros_components_ts.json"
+    )
 
     ash_common_tsconfig = (
-        build_dir / "gen/ash/webui/common/resources/tsconfig_build_ts.json")
+        build_dir / "gen/ash/webui/common/resources/tsconfig_build_ts.json"
+    )
 
-    return [{
-        "path": str(mwc_gen_dir / "tsconfig_library.json")
-    }, {
-        "path": str(mwc_gen_dir / "tsconfig_bundle_lit_ts.json")
-    }, {
-        "path": str(cros_components_tsconfig)
-    }, {
-        "path": str(ash_common_tsconfig)
-    }]
+    return [
+        {"path": str(mwc_gen_dir / "tsconfig_library.json")},
+        {"path": str(mwc_gen_dir / "tsconfig_bundle_lit_ts.json")},
+        {"path": str(cros_components_tsconfig)},
+        {"path": str(ash_common_tsconfig)},
+    ]
 
 
 def generate_tsconfig(build_dir: pathlib.Path):
@@ -121,16 +129,16 @@ def generate_tsconfig(build_dir: pathlib.Path):
     _make_mojom_symlink(build_dir)
 
     tsconfig["files"] = [
-        str(p) for p in cra_root.glob("**/*.ts")
+        str(p)
+        for p in cra_root.glob("**/*.ts")
         if not str(p).endswith("_test.ts")
     ]
     tsconfig["compilerOptions"]["rootDir"] = str(cra_root)
     tsconfig["compilerOptions"]["noEmit"] = True
     tsconfig["compilerOptions"]["paths"] = _get_tsc_paths(build_dir)
-    tsconfig["compilerOptions"]["plugins"] = [{
-        "name": "ts-lit-plugin",
-        "strict": True
-    }]
+    tsconfig["compilerOptions"]["plugins"] = [
+        {"name": "ts-lit-plugin", "strict": True}
+    ]
     tsconfig["references"] = _get_tsc_references(build_dir)
 
     with open(cra_root / "tsconfig.json", "w") as f:

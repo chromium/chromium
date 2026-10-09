@@ -15,10 +15,12 @@ def _CommonChecks(input_api, output_api):
   results = []
   try:
     import sys
+
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
     from web_dev_style import presubmit_support
+
     results += presubmit_support.CheckStyle(input_api, output_api)
   finally:
     sys.path = old_sys_path

@@ -12,13 +12,15 @@ from cra.commands import lint
 from cra.commands import tsc
 
 
-@cli.root(children=[
-    add_strings.cmd,
-    bundle.cmd,
-    dev.cmd,
-    lint.cmd,
-    tsc.cmd,
-])
+@cli.root(
+    children=[
+        add_strings.cmd,
+        bundle.cmd,
+        dev.cmd,
+        lint.cmd,
+        tsc.cmd,
+    ]
+)
 @cli.option(
     "--debug",
     action="store_true",

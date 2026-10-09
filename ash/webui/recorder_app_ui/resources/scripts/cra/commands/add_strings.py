@@ -38,8 +38,10 @@ def _add_string_to_grdp(id: str) -> bool:
         return None
 
     next_sibling = find_next_sibling(grd_name)
-    if next_sibling is not None and next_sibling.getAttribute(
-            "name") == grd_name:
+    if (
+        next_sibling is not None
+        and next_sibling.getAttribute("name") == grd_name
+    ):
         return False
 
     new_message = dom.createElement('message')
@@ -57,9 +59,9 @@ def _add_string_to_grdp(id: str) -> bool:
     # The encoding='UTF-8' is for adding xml header.
     xml = dom.toxml(encoding='UTF-8').decode() + "\n"
     # Make the header looks a bit better.
-    xml = xml.replace('encoding="UTF-8"?>',
-                      'encoding="UTF-8"?>\n').replace('<grit-part>',
-                                                      '\n\n<grit-part>')
+    xml = xml.replace('encoding="UTF-8"?>', 'encoding="UTF-8"?>\n').replace(
+        '<grit-part>', '\n\n<grit-part>'
+    )
 
     with open(grd_path, "w") as grd_file:
         grd_file.write(xml)
@@ -78,13 +80,16 @@ def _add_string_to_resource_h(id: str):
         pairs = re.findall(r'\{"(\w+)",\s*(\w+)\}', content)
         pairs.append((util.to_camel_case(id), _get_grd_name(id)))
         pairs.sort()
-        return ''.join(f'{{"{cra_id}", {grd_id}}},\n'
-                       for cra_id, grd_id in pairs)
+        return ''.join(
+            f'{{"{cra_id}", {grd_id}}},\n' for cra_id, grd_id in pairs
+        )
 
-    resource_header = re.sub(r'(?<=kLocalizedStrings\[\] = \{)(.*)(?=\};)',
-                             handle_replace,
-                             resource_header,
-                             flags=re.DOTALL)
+    resource_header = re.sub(
+        r'(?<=kLocalizedStrings\[\] = \{)(.*)(?=\};)',
+        handle_replace,
+        resource_header,
+        flags=re.DOTALL,
+    )
     with open(resource_header_path, "w") as f:
         f.write(resource_header)
     util.run(["clang-format", "-i", str(resource_header_path)], cwd=cra_root)
@@ -105,10 +110,12 @@ def _add_string_to_i18n_ts(id: str):
         ids.sort()
         return ''.join(f'  {id},\n' for id in ids)
 
-    i18n_ts = re.sub(r'(?<=noArgStringNames = \[\n)(.*?)(?=\])',
-                     handle_replace,
-                     i18n_ts,
-                     flags=re.DOTALL)
+    i18n_ts = re.sub(
+        r'(?<=noArgStringNames = \[\n)(.*?)(?=\])',
+        handle_replace,
+        i18n_ts,
+        flags=re.DOTALL,
+    )
     with open(i18n_ts_path, "w") as f:
         f.write(i18n_ts)
 
@@ -132,26 +139,32 @@ def _add_string(id: str) -> Optional[str]:
     return
 
 
-@cli.command("add-strings",
-             help="add new string entries",
-             description="add new string entries to recorder app")
-@cli.option("ids",
-            metavar="ID",
-            nargs="+",
-            help="ID for the strings to be added. "
-            "Should be in CAPITAL_CASE without IDS_RECORDER_ prefix.")
+@cli.command(
+    "add-strings",
+    help="add new string entries",
+    description="add new string entries to recorder app",
+)
+@cli.option(
+    "ids",
+    metavar="ID",
+    nargs="+",
+    help="ID for the strings to be added. "
+    "Should be in CAPITAL_CASE without IDS_RECORDER_ prefix.",
+)
 def cmd(ids: list[str]) -> int:
     for id in ids:
         err = _add_string(id)
         if err is not None:
             logging.error(f"Error when trying to add {id}: {err}")
 
-    print("All strings added.\n"
-          "Next steps:\n"
-          "  * In /chromeos/strings/recorder_strings.grdp,"
-          " add description and the text to newly added entries.\n"
-          "  * In core/i18n.ts, if any string use arguments ($1, $2, ...),"
-          " move those ID from noArgStrings to withArgsStrings"
-          " and annotate with correct argument types.")
+    print(
+        "All strings added.\n"
+        "Next steps:\n"
+        "  * In /chromeos/strings/recorder_strings.grdp,"
+        " add description and the text to newly added entries.\n"
+        "  * In core/i18n.ts, if any string use arguments ($1, $2, ...),"
+        " move those ID from noArgStrings to withArgsStrings"
+        " and annotate with correct argument types."
+    )
 
     return 0
