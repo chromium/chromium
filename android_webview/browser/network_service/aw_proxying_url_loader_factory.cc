@@ -20,6 +20,7 @@
 #include "android_webview/browser/aw_contents_statics.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/aw_settings.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
@@ -111,6 +112,24 @@ const char kResponseHeaderViaShouldInterceptRequestName[] = "Client-Via";
 const char kResponseHeaderViaShouldInterceptRequestValue[] =
     "shouldInterceptRequest";
 const char kAutoLoginHeaderName[] = "X-Auto-Login";
+
+void RecordRequestBypassedDueToIntercept(
+    scoped_refptr<AwBrowserContextIoThreadHandle> handle) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!handle) {
+    return;
+  }
+  auto* aw_browser_context = handle->GetOnUiThread();
+  if (!aw_browser_context) {
+    return;
+  }
+  auto* client = aw_browser_context->GetContentRestrictionManagerClient();
+  if (client && client->IsContentRestrictionEnabled()) {
+    base::UmaHistogramEnumeration(
+        "Android.WebView.ContentRestriction.RequestBypassedThrottleReason",
+        ContentRestrictionRequestBypassedThrottleReason::kRequestIntercept);
+  }
+}
 
 // Handles intercepted, in-progress requests/responses, so that they can be
 // controlled and modified accordingly.
@@ -512,6 +531,12 @@ void InterceptedRequest::InterceptResponseReceived(
   }
 
   if (async_result.response && async_result.response->HasResponse(env)) {
+    if (base::FeatureList::IsEnabled(
+            android_webview::features::kWebViewContentRestrictionSupport)) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&RecordRequestBypassedDueToIntercept,
+                                    browser_context_handle_));
+    }
     // non-null response: make sure to use it as an override for the
     // normal network data.
     ContinueAfterInterceptWithOverride(async_result.response->GetResponse(env),

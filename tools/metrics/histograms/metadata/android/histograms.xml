@@ -7620,6 +7620,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.ContentRestriction.RequestBypassedThrottleReason"
+    enum="ContentRestrictionRequestBypassedThrottleReason"
+    expires_after="2027-04-01">
+  <owner>vshenvi@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records reasons why a web request bypasses the content restriction URL
+    loader throttle (e.g. same page navigation, URL override, or request
+    interception).
+  </summary>
+</histogram>
+
+<histogram
     name="Android.WebView.ContentRestriction.RequestClassifiedByThrottle"
     enum="Boolean" expires_after="2027-04-01">
   <owner>vshenvi@google.com</owner>

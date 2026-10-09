@@ -40,6 +40,18 @@ enum class ContentRestrictionFailureFallbackReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ContentRestrictionFailureFallbackReason)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
+// LINT.IfChange(ContentRestrictionRequestBypassedThrottleReason)
+enum class ContentRestrictionRequestBypassedThrottleReason {
+  kSamePageNavigation = 0,
+  kUrlOverride = 1,
+  kRequestIntercept = 2,
+  kMaxValue = kRequestIntercept,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ContentRestrictionRequestBypassedThrottleReason)
+
 // Client implementation for managing interactions with the
 // `ContentRestrictionManager` system service via the
 // `AwContentRestrictionManagerBridge`.

@@ -1201,6 +1201,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//android_webview/browser/content_restriction/aw_content_restriction_manager_client.h:ContentRestrictionFailureFallbackReason) -->
 
+<!-- LINT.IfChange(ContentRestrictionRequestBypassedThrottleReason) -->
+
+<enum name="ContentRestrictionRequestBypassedThrottleReason">
+  <int value="0" label="Same page navigation"/>
+  <int value="1" label="Request intercepted (via shouldOverrideUrlLoading)"/>
+  <int value="2" label="Request interception (via shouldInterceptRequest)"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/content_restriction/aw_content_restriction_manager_client.h:ContentRestrictionRequestBypassedThrottleReason) -->
+
 <!-- LINT.IfChange(ContentRestrictionRequestPayloadType) -->
 
 <enum name="ContentRestrictionRequestPayloadType">

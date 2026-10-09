@@ -22,6 +22,7 @@
 #include "android_webview/browser/aw_renderer_priority.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/gfx/aw_picture.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
@@ -1774,6 +1775,26 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
 
 void AwContents::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Record histogram when we detect same-page navigations and content
+  // restriction is enabled for tracking purposes.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewContentRestrictionSupport) &&
+      navigation_handle->IsSameDocument() && web_contents_) {
+    auto* aw_browser_context =
+        static_cast<AwBrowserContext*>(web_contents_->GetBrowserContext());
+    if (aw_browser_context) {
+      auto* crm_client =
+          aw_browser_context->GetContentRestrictionManagerClient();
+      if (crm_client && crm_client->IsContentRestrictionEnabled()) {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.ContentRestriction."
+            "RequestBypassedThrottleReason",
+            ContentRestrictionRequestBypassedThrottleReason::
+                kSamePageNavigation);
+      }
+    }
+  }
+
   // If this request was blocked in any way, broadcast an error.
   net::Error error_code = navigation_handle->GetNetErrorCode();
   if (!net::IsRequestBlockedError(error_code) &&

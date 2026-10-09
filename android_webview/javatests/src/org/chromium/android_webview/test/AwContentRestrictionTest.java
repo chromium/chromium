@@ -30,8 +30,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.ContentRestrictionRequestBypassedThrottleReason;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
@@ -39,6 +42,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.BufferedReader;
@@ -65,6 +69,8 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
     private static final String ALLOWED_PAYLOAD = "allowed";
     private static final String BLOCKED_PAYLOAD = "blocked";
     private static final String REDIRECT_SITE_PATH = "/redirect.html";
+    private static final String REQUEST_BYPASSED_THROTTLE_HISTOGRAM =
+            "Android.WebView.ContentRestriction.RequestBypassedThrottleReason";
 
     private AwContents mAwContents;
     private TestWebServer mWebServer;
@@ -93,7 +99,7 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
         public Promise<Boolean> requestContentRestrictionClassification(
                 Uri uri, ParcelFileDescriptor requestBody, String mimeType, Executor executor) {
             boolean allow = true;
-            if (uri.getPath().contains(BLOCKED_SITE_PATH)) {
+            if (uri.getPath() != null && uri.getPath().contains(BLOCKED_SITE_PATH)) {
                 allow = false;
             }
             if (requestBody != null) {
@@ -407,5 +413,79 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
                 "isContentRestrictionEnabled JNI should not be queried during navigations",
                 initialCallCount,
                 sTestAconfigDelegate.getIsContentRestrictionEnabledCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordRequestBypassedThrottle_samePageNavigation() throws Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH));
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        REQUEST_BYPASSED_THROTTLE_HISTOGRAM,
+                        ContentRestrictionRequestBypassedThrottleReason.SAME_PAGE_NAVIGATION)) {
+            mActivityTestRule.loadUrlSync(
+                    mAwContents,
+                    mContentsClient.getOnPageFinishedHelper(),
+                    mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH) + "#section");
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordRequestBypassedThrottle_urlOverride() throws Throwable {
+        // shouldOverrideUrlLoading is only triggered with renderer initiated navigations,
+        // so we create a page with a link and simulate a link click.
+        final String pageWithLink =
+                CommonResources.makeHtmlPageWithSimpleLinkTo(
+                        mWebServer.getResponseUrl(ALLOWED_SITE_2_PATH));
+        final String pageWithLinkUrl =
+                mWebServer.setResponse("/page_with_link.html", pageWithLink, null);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithLinkUrl);
+
+        TestAwContentsClient.ShouldOverrideUrlLoadingHelper urlOverrideHelper =
+                mContentsClient.getShouldOverrideUrlLoadingHelper();
+        urlOverrideHelper.setShouldOverrideUrlLoadingReturnValue(true);
+        int callCount = urlOverrideHelper.getCallCount();
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        REQUEST_BYPASSED_THROTTLE_HISTOGRAM,
+                        ContentRestrictionRequestBypassedThrottleReason.URL_OVERRIDE)) {
+            clickLinkById("link");
+            urlOverrideHelper.waitForCallback(callCount);
+        } finally {
+            urlOverrideHelper.setShouldOverrideUrlLoadingReturnValue(false);
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordRequestBypassedThrottle_requestIntercept() throws Throwable {
+        final String interceptedPath = "/intercepted.html";
+        TestAwContentsClient.ShouldInterceptRequestHelper interceptHelper =
+                mContentsClient.getShouldInterceptRequestHelper();
+        interceptHelper.enqueueHtmlResponse("<html><body>intercepted</body></html>", null);
+        int callCount = interceptHelper.getCallCount();
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        REQUEST_BYPASSED_THROTTLE_HISTOGRAM,
+                        ContentRestrictionRequestBypassedThrottleReason.REQUEST_INTERCEPT)) {
+            mActivityTestRule.loadUrlSync(
+                    mAwContents,
+                    mContentsClient.getOnPageFinishedHelper(),
+                    mWebServer.getResponseUrl(interceptedPath));
+            interceptHelper.waitForCallback(callCount);
+            // Ensure UI thread has processed the posted histogram recording task.
+            ThreadUtils.runOnUiThreadBlocking(CallbackUtils.emptyRunnable());
+        }
     }
 }
