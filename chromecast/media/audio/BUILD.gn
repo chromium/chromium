@@ -197,29 +197,6 @@ if (is_android) {
   }
 }
 
-source_set("dummy_external_audio_pipeline") {
-  sources = [ "external_audio_pipeline_dummy.cc" ]
-
-  public_deps = [ "//chromecast/public/media" ]
-}
-
-cast_shared_library("libcast_external_audio_pipeline_1.0") {
-  public_deps = [ ":dummy_external_audio_pipeline" ]
-}
-
-source_set("fake_external_audio_pipeline") {
-  sources = [
-    "fake_external_audio_pipeline.cc",
-    "fake_external_audio_pipeline_support.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromecast/public",
-    "//chromecast/public/media",
-  ]
-}
-
 buildflag_header("audio_buildflags") {
   header = "audio_buildflags.h"
 
