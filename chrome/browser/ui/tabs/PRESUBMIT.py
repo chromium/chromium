@@ -21,6 +21,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # extensions::BookmarkManagerPrivateDragEventRouter, so the WebContents
   # must own it.
   'BookmarkTabHelper::CreateForWebContents',
+  # PopupBlockerTabHelper lives in //components/blocked_content and is looked up
+  # from arbitrary WebContents by PopupBlocker,
+  # ChromeContentBrowserClient::CanCreateWindow, and PopupOpenerTabHelper, so
+  # the WebContents must own it.
+  'blocked_content::PopupBlockerTabHelper::CreateForWebContents',
   # BreadcrumbManagerTabHelper is looked up on old_contents by
   # BreadcrumbManagerBrowserAgent::OnTabStripModelChanged
   # (TabStripModelChange::kReplaced) after TabFeatures::WillDiscardContents

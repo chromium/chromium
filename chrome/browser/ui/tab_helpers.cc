@@ -40,7 +40,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -198,9 +197,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     pm_registry->SetPageType(web_contents, performance_manager::PageType::kTab);
   }
   permissions::PermissionRequestManager::CreateForWebContents(web_contents);
-  // The PopupBlockerTabHelper has an implicit dependency on
-  // ChromeSubresourceFilterClient being available in its constructor.
-  blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (g_browser_process->safe_browsing_service()) {

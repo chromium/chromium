@@ -125,6 +125,7 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/actor/core/actor_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
@@ -709,6 +710,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     HistoryClustersTabHelper::CreateForWebContents(
         web_contents, HistoryTabHelper::FromWebContents(web_contents));
   }
+
+  blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
 
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       web_contents);

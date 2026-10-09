@@ -242,6 +242,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
@@ -1325,6 +1326,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         HistoryTabHelper::FromWebContents(tab.GetContents()));
   }
 
+  blocked_content::PopupBlockerTabHelper::CreateForWebContents(
+      tab.GetContents());
+
   resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
       tab.GetContents());
 
@@ -1949,6 +1953,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     HistoryClustersTabHelper::CreateForWebContents(
         new_contents, HistoryTabHelper::FromWebContents(new_contents));
   }
+
+  blocked_content::PopupBlockerTabHelper::CreateForWebContents(new_contents);
 
   resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
       new_contents);

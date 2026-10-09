@@ -1424,7 +1424,6 @@ source_set("tab_helpers_impl") {
     "//chrome/common:buildflags",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
-    "//components/blocked_content",
     "//components/breadcrumbs/core:status",
     "//components/captive_portal/core:buildflags",
     "//components/client_hints/browser",
