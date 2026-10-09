@@ -6,6 +6,8 @@
 
 #include <absl/container/flat_hash_set.h>
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -20,6 +22,7 @@
 #include "components/signin/core/browser/account_preview_heuristic.h"
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
+#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -28,7 +31,15 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/schemeful_site.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace signin {
 
@@ -196,6 +207,7 @@ void WriteAccountPreviewPreferenceToPrefs(
 }  // namespace
 
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
+    SigninClient* signin_client,
     IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     PrefService* local_state,
@@ -204,7 +216,8 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
     version_info::Channel channel,
     const metrics::ProfileMetricsService* profile_metrics_service)
-    : identity_manager_(identity_manager),
+    : signin_client_(signin_client),
+      identity_manager_(identity_manager),
       sync_service_(sync_service),
       local_state_(local_state),
       profile_prefs_(profile_prefs),
@@ -214,6 +227,7 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
       metrics_recorder_(*profile_prefs,
                         *identity_manager,
                         *profile_metrics_service) {
+  CHECK(signin_client_);
   CHECK(network_delay_helper_);
   pref_change_registrar_.Init(profile_prefs_);
   pref_change_registrar_.Add(
@@ -711,7 +725,48 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
     return;
   }
 
+  // Preconnect to the Sync Preview server before starting the fetcher (which
+  // first requests an OAuth access token) so the connection handshake runs in
+  // parallel with token acquisition.
+  MaybePreconnectSockets();
   it->second->Start();
+}
+
+void AccountPreviewDataServiceImpl::MaybePreconnectSockets() {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewDataFetchOptimizations) ||
+      !switches::kAccountPreviewDataPreconnect.Get()) {
+    return;
+  }
+
+  // Only preconnect if no other fetcher in the current batch has started yet,
+  // avoiding redundant PreconnectSockets IPCs when fetching multiple accounts.
+  if (std::ranges::any_of(active_fetchers_, [](const auto& pair) {
+        return pair.second->is_started();
+      })) {
+    return;
+  }
+
+  // Preconnect the HTTPS socket to the Sync Preview server while the OAuth
+  // token is being fetched, saving connection establishment round-trips.
+  // Using the base URL is sufficient because socket pools are keyed by origin,
+  // and both statistics and entity previews requests are multiplexed over the
+  // same HTTP/2 or HTTP/3 connection.
+  // Note: `AccountPreviewDataFetcher::kCredentialsMode` (`kOmit` ->
+  // `PRIVACY_MODE_ENABLED`) and the same-site `NetworkAnonymizationKey` must
+  // match the `ResourceRequest`s created by `AccountPreviewDataFetcher` (which
+  // get an automatically assigned same-site `IsolationInfo` from the browser
+  // process `URLLoaderFactory`) so the preconnected socket is reused.
+  const GURL base_url =
+      AccountPreviewDataFetcher::GetBaseUrlForChannel(channel_);
+  signin_client_->GetNetworkContext()->PreconnectSockets(
+      /*num_streams=*/1, base_url, AccountPreviewDataFetcher::kCredentialsMode,
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(base_url)),
+      network::GetNoOpNetworkRestrictionsId(),
+      net::MutableNetworkTrafficAnnotationTag(
+          AccountPreviewDataFetcher::GetTrafficAnnotation()),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 std::vector<AccountPreviewHeuristicContext>

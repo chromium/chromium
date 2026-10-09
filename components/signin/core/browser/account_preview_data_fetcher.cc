@@ -238,6 +238,50 @@ base::span<const syncer::DataType> GetRequestedDataTypes() {
   return kLegacyRequestedDataTypes;
 }
 
+// static
+net::NetworkTrafficAnnotationTag
+AccountPreviewDataFetcher::GetTrafficAnnotation() {
+  return net::DefineNetworkTrafficAnnotation("chrome_sync_preview_fetcher", R"(
+        semantics {
+          sender: "Chrome Sync Preview Fetcher"
+          description:
+            "Fetches preview data (statistics and entities previews) for "
+            "signed-in Google accounts to personalize sign-in promotions."
+          trigger:
+            "Triggered once every 24 hours for each signed-in account, or on "
+            "startup."
+          data:
+            "OAuth2 access token for the account."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-signin-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2026-05-22"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "The fetch is only performed for accounts that have valid cookies."
+          chrome_policy {
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+          }
+        })");
+}
+
+// static
+GURL AccountPreviewDataFetcher::GetBaseUrlForChannel(
+    version_info::Channel channel) {
+  return GURL(GetBaseUrl(channel));
+}
+
 // The list of data types to fetch statistics for.
 // static
 GURL AccountPreviewDataFetcher::GetStatsUrlForChannel(
@@ -338,40 +382,8 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
       base::BindOnce(&AccountPreviewDataFetcher::OnFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("chrome_sync_preview_fetcher", R"(
-        semantics {
-          sender: "Chrome Sync Preview Fetcher"
-          description:
-            "Fetches preview data (statistics and entities previews) for "
-            "signed-in Google accounts to personalize sign-in promotions."
-          trigger:
-            "Triggered once every 24 hours for each signed-in account, or on "
-            "startup."
-          data:
-            "OAuth2 access token for the account."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-              email: "chrome-signin-team@google.com"
-            }
-          }
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          last_reviewed: "2026-05-22"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "The fetch is only performed for accounts that have valid cookies."
-          chrome_policy {
-            BrowserSignin {
-              policy_options {mode: MANDATORY}
-              BrowserSignin: 0
-            }
-          }
-        })");
+  const net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetTrafficAnnotation();
 
   // `SimpleURLLoader` defaults to `net::IDLE`, which can starve behind
   // background traffic. Use `net::MEDIUM` across all fetches (still below
@@ -385,10 +397,13 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
       switches::kAccountPreviewDataMediumPriority.Get();
 
   // 1. Stats Request
+  // Note: `kCredentialsMode` and the default browser-process `IsolationInfo`
+  // (no custom `trusted_params`) must match `MaybePreconnectSockets()` so that
+  // requests reuse the preconnected socket pool partition.
   auto stats_request = std::make_unique<network::ResourceRequest>();
   stats_request->url = GetStatsUrlForChannel(channel_);
   stats_request->method = "GET";
-  stats_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  stats_request->credentials_mode = kCredentialsMode;
   if (use_medium_priority) {
     stats_request->priority = net::MEDIUM;
   }
@@ -408,7 +423,7 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
     auto previews_request = std::make_unique<network::ResourceRequest>();
     previews_request->url = GetPreviewsUrlForChannel(channel_);
     previews_request->method = "GET";
-    previews_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    previews_request->credentials_mode = kCredentialsMode;
     if (use_medium_priority) {
       previews_request->priority = net::MEDIUM;
     }

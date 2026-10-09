@@ -312,8 +312,14 @@ BASE_FEATURE_PARAM(bool,
                    kAccountPreviewDataReducedTypes,
                    &kEnableAccountPreviewDataFetchOptimizations,
                    true);
-// Controls whether account preview data network requests use MEDIUM priority
-// instead of the default IDLE priority.
+// Controls whether sockets are preconnected to the Sync Preview server before
+// fetching account preview data.
+BASE_FEATURE_PARAM(bool,
+                   kAccountPreviewDataPreconnect,
+                   &kEnableAccountPreviewDataFetchOptimizations,
+                   true);
+// Controls whether account preview data network requests use `net::MEDIUM`
+// priority instead of the default `net::IDLE` priority.
 BASE_FEATURE_PARAM(bool,
                    kAccountPreviewDataMediumPriority,
                    &kEnableAccountPreviewDataFetchOptimizations,

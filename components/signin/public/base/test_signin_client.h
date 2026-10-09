@@ -96,6 +96,10 @@ class TestSigninClient : public SigninClient {
   CreateBoundSessionOAuthMultiloginDelegate() const override;
 
   network::mojom::NetworkContext* GetNetworkContext() override;
+  void set_network_context(
+      std::unique_ptr<network::mojom::NetworkContext> network_context) {
+    network_context_ = std::move(network_context);
+  }
 
   // Returns |test_url_loader_factory_| if it is specified. Otherwise, lazily
   // creates a default factory and returns it.

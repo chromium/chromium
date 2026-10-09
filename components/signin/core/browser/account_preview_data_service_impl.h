@@ -27,6 +27,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class PrefService;
+class SigninClient;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -59,6 +60,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
 
   AccountPreviewDataServiceImpl(
+      SigninClient* signin_client,
       IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       PrefService* local_state,
@@ -126,6 +128,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void EnsureAllAccountsFetched(FetchTriggerCause cause);
   void FetchAccountPreviewData(const GaiaId& gaia_id);
   void StartFetch(const GaiaId& gaia_id);
+  void MaybePreconnectSockets();
   void OnSingleFetchCompleted(const GaiaId& gaia_id,
                               std::optional<AccountPreviewData> data,
                               bool hit_429);
@@ -177,6 +180,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void CleanUpExternalAppAccountIfNotOnDevice();
 #endif
 
+  raw_ptr<SigninClient> signin_client_ = nullptr;
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   raw_ptr<PrefService> local_state_ = nullptr;

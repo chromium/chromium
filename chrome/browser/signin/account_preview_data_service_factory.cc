@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
@@ -25,6 +26,7 @@
 
 AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
     : ProfileKeyedServiceFactory("AccountPreviewDataService") {
+  DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ProfileMetricsServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
@@ -65,6 +67,7 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
       ProfileMetricsServiceFactory::GetForProfile(profile);
 
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
+      ChromeSigninClientFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
       g_browser_process->local_state(), profile->GetPrefs(),

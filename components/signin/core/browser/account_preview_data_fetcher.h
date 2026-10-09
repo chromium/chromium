@@ -22,6 +22,8 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -109,6 +111,14 @@ class AccountPreviewDataFetcher {
   void Start();
   bool is_started() const { return is_started_; }
 
+  // Shared with `AccountPreviewDataServiceImpl::MaybePreconnectSockets()` so
+  // preconnected sockets and actual requests use the same privacy mode in the
+  // socket pool key.
+  static constexpr auto kCredentialsMode =
+      network::mojom::CredentialsMode::kOmit;
+
+  static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
+  static GURL GetBaseUrlForChannel(version_info::Channel channel);
   static GURL GetStatsUrlForChannel(version_info::Channel channel);
   static GURL GetPreviewsUrlForChannel(version_info::Channel channel);
 
