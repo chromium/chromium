@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
@@ -71,6 +72,7 @@ namespace blink {
 namespace {
 
 constexpr size_t kRenderQuantumFrames = 128;
+constexpr char kWorkletScriptUrl[] = "https://example.com/worklet.js";
 
 }  // namespace
 
@@ -268,6 +270,29 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     waitable_event.Wait();
   }
 
+  void RunProcessMethodUndefinedTest(WorkerThread* thread) {
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(&AudioWorkletGlobalScopeTest::
+                                RunProcessMethodUndefinedTestOnWorkletThread,
+                            CrossThreadUnretained(this),
+                            CrossThreadUnretained(thread),
+                            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+  }
+
+  void RunProcessThrowingTest(WorkerThread* thread) {
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &AudioWorkletGlobalScopeTest::RunProcessThrowingTestOnWorkletThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(thread),
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+  }
+
  private:
   void ExpectEvaluateScriptModule(AudioWorkletGlobalScope* global_scope,
                                   const String& source_code,
@@ -275,7 +300,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     ScriptState* script_state =
         global_scope->ScriptController()->GetScriptState();
     EXPECT_TRUE(script_state);
-    KURL js_url("https://example.com/worklet.js");
+    KURL js_url(kWorkletScriptUrl);
     v8::Local<v8::Module> module =
         ModuleTestBase::CompileModule(script_state, source_code, js_url);
     EXPECT_FALSE(module.IsEmpty());
@@ -780,6 +805,131 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     wait_event->Signal();
   }
 
+  AudioWorkletProcessor* CreateAndProcessProcessor(
+      AudioWorkletGlobalScope* global_scope,
+      const String& name) {
+    Vector<scoped_refptr<AudioBus>> input_buses;
+    Vector<scoped_refptr<AudioBus>> output_buses;
+    HashMap<String, base::span<const float>> param_data_map;
+    scoped_refptr<AudioBus> output_bus =
+        AudioBus::Create(1, kRenderQuantumFrames);
+    output_bus->Zero();
+    output_buses.push_back(output_bus);
+
+    auto* channel = MakeGarbageCollected<MessageChannel>(global_scope);
+    MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
+    AudioWorkletProcessor* processor =
+        global_scope->CreateProcessor(name, std::move(dummy_port_channel),
+                                      SerializedScriptValue::NullValue());
+    EXPECT_TRUE(processor);
+    EXPECT_FALSE(processor->Process(input_buses, output_buses, param_data_map));
+    EXPECT_TRUE(processor->hasErrorOccurred());
+    return processor;
+  }
+
+  // Verifies error details reported when `process` is non-callable: missing,
+  // data property, or getter returning a non-callable value reports
+  // kProcessMethodUndefinedError with a synthetic TypeError message and no
+  // source location.
+  void RunProcessMethodUndefinedTestOnWorkletThread(
+      WorkerThread* thread,
+      base::WaitableEvent* wait_event) {
+    EXPECT_TRUE(thread->IsCurrentThread());
+
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
+    ScriptState* script_state =
+        global_scope->ScriptController()->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
+
+    String source_code =
+        R"JS(
+          class UndefinedProcessProcessor extends AudioWorkletProcessor {}
+          registerProcessor('undefinedProcess', UndefinedProcessProcessor);
+
+          class NonCallableDataProcessor extends AudioWorkletProcessor {
+            constructor() {
+              super();
+              this.process = 42;
+            }
+          }
+          registerProcessor('nonCallableData', NonCallableDataProcessor);
+
+          class NonCallableGetterProcessor extends AudioWorkletProcessor {
+            get process() {
+              return 'not a function';
+            }
+          }
+          registerProcessor('nonCallableGetter', NonCallableGetterProcessor);
+        )JS";
+    ExpectEvaluateScriptModule(global_scope, source_code, true);
+
+    for (const char* name :
+         {"undefinedProcess", "nonCallableData", "nonCallableGetter"}) {
+      SCOPED_TRACE(name);
+      AudioWorkletProcessor* processor =
+          CreateAndProcessProcessor(global_scope, name);
+      const AudioWorkletProcessorErrorDetails& details =
+          processor->GetErrorDetails();
+      EXPECT_EQ(details.error_state,
+                AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
+      EXPECT_TRUE(details.error_message.starts_with("TypeError"));
+      EXPECT_TRUE(details.source_url.empty());
+      EXPECT_EQ(details.line_number, 0);
+      EXPECT_EQ(details.column_number, 0);
+    }
+
+    wait_event->Signal();
+  }
+
+  // Verifies error details reported when `process` throws an exception: an
+  // exception thrown by the `process` getter or by process() itself reports
+  // kProcessError with the exception's own message and location.
+  void RunProcessThrowingTestOnWorkletThread(WorkerThread* thread,
+                                             base::WaitableEvent* wait_event) {
+    EXPECT_TRUE(thread->IsCurrentThread());
+
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
+    ScriptState* script_state =
+        global_scope->ScriptController()->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
+
+    String source_code =
+        R"JS(
+          class ThrowingGetterProcessor extends AudioWorkletProcessor {
+            get process() {
+              throw new Error('process getter threw an error');
+            }
+          }
+          registerProcessor('throwingGetter', ThrowingGetterProcessor);
+
+          class ThrowingProcessProcessor extends AudioWorkletProcessor {
+            process() {
+              throw new Error('process threw an error');
+            }
+          }
+          registerProcessor('throwingProcess', ThrowingProcessProcessor);
+        )JS";
+    ExpectEvaluateScriptModule(global_scope, source_code, true);
+
+    for (const char* name : {"throwingGetter", "throwingProcess"}) {
+      SCOPED_TRACE(name);
+      AudioWorkletProcessor* processor =
+          CreateAndProcessProcessor(global_scope, name);
+      const AudioWorkletProcessorErrorDetails& details =
+          processor->GetErrorDetails();
+      EXPECT_EQ(details.error_state,
+                AudioWorkletProcessorErrorState::kProcessError);
+      EXPECT_FALSE(details.error_message.empty());
+      EXPECT_EQ(details.source_url, kWorkletScriptUrl);
+      EXPECT_GT(details.line_number, 0);
+      EXPECT_GT(details.column_number, 0);
+    }
+
+    wait_event->Signal();
+  }
+
   std::unique_ptr<WorkerReportingProxy> reporting_proxy_;
 };
 
@@ -851,6 +1001,22 @@ TEST_F(AudioWorkletGlobalScopeTest, AudioWorkletHandlerParamSizing) {
   std::unique_ptr<OfflineAudioWorkletThread> thread =
       CreateAudioWorkletThread();
   RunAudioWorkletHandlerProcessTest(thread.get());
+  thread->Terminate();
+  thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, ProcessMethodUndefined) {
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
+  RunProcessMethodUndefinedTest(thread.get());
+  thread->Terminate();
+  thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, ProcessThrowing) {
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
+  RunProcessThrowingTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }

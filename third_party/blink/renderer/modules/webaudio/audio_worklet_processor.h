@@ -60,6 +60,18 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   const String& Name() const { return name_; }
   const AudioWorkletProcessorErrorDetails& GetErrorDetails() const;
 
+  // Builds error details from the exception captured in `try_catch`. Falls
+  // back to `fallback_message` with no source location when nothing was
+  // caught or V8 provides no message. Must be called on the isolate's thread
+  // while `try_catch` is still live. Never returns null strings so the result
+  // can be copied across threads by AudioWorkletProcessorErrorDetails.
+  static AudioWorkletProcessorErrorDetails ErrorDetailsFromTryCatch(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      const v8::TryCatch& try_catch,
+      AudioWorkletProcessorErrorState error_state,
+      const String& fallback_message);
+
  private:
   void SetErrorDetails(const AudioWorkletProcessorErrorDetails& error_details);
 

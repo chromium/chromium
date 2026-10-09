@@ -21,7 +21,8 @@ enum class AudioWorkletProcessorErrorState : unsigned {
   // An exception thrown from the process method.
   kProcessError = 2,
 
-  // An exception thrown if the process method is undefined.
+  // The process property is missing or not callable (e.g. a non-function data
+  // property or a getter returning a non-function); reported as a TypeError.
   kProcessMethodUndefinedError = 3,
 };
 
