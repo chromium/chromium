@@ -11,13 +11,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -42,18 +40,15 @@ class PinTextfield : public views::Textfield {
 
     set_controller(controller);
     GetViewAccessibility().SetName(*label);
+
+    constexpr int kBottomBorderThickness = 2;
+    SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(0, 0, kBottomBorderThickness, 0),
+        kColorWebAuthnPinTextfieldBottomBorder));
   }
   PinTextfield(const PinTextfield&) = delete;
   PinTextfield& operator=(const PinTextfield&) = delete;
   ~PinTextfield() override = default;
-
-  void OnThemeChanged() override {
-    views::Textfield::OnThemeChanged();
-    constexpr int kBottomBorderThickness = 2;
-    SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, kBottomBorderThickness, 0),
-        GetColorProvider()->GetColor(kColorWebAuthnPinTextfieldBottomBorder)));
-  }
 };
 
 BEGIN_METADATA(PinTextfield)
@@ -79,28 +74,31 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(2, views::TableLayout::kFixedSize);
 
-  pin_label_ = AddChildView(std::make_unique<views::Label>(
+  auto* pin_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_PIN_LABEL),
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
-  pin_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  pin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  pin_label->SetEnabledColor(ui::kColorAccent);
 
+  views::Label* confirmation_label = nullptr;
   if (show_confirmation_text_field_) {
-    confirmation_label_ = AddChildView(std::make_unique<views::Label>(
+    confirmation_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_SETUP_CONFIRMATION_LABEL),
         views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
-    confirmation_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    confirmation_label->SetEnabledColor(ui::kColorAccent);
+    confirmation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   } else {
     // For TableLayout, we must add a filler view to the empty cell.
     AddChildView(std::make_unique<views::View>());
   }
 
   pin_text_field_ =
-      AddChildView(std::make_unique<PinTextfield>(this, pin_label_));
+      AddChildView(std::make_unique<PinTextfield>(this, pin_label));
 
   if (show_confirmation_text_field_) {
-    DCHECK(confirmation_label_);
+    DCHECK(confirmation_label);
     confirmation_text_field_ =
-        AddChildView(std::make_unique<PinTextfield>(this, confirmation_label_));
+        AddChildView(std::make_unique<PinTextfield>(this, confirmation_label));
   } else {
     AddChildView(std::make_unique<views::View>());
   }
@@ -110,16 +108,6 @@ AuthenticatorClientPinEntryView::~AuthenticatorClientPinEntryView() = default;
 
 void AuthenticatorClientPinEntryView::RequestFocus() {
   pin_text_field_->RequestFocus();
-}
-
-void AuthenticatorClientPinEntryView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const auto* const color_provider = GetColorProvider();
-  const SkColor label_color = color_provider->GetColor(ui::kColorAccent);
-  pin_label_->SetEnabledColor(label_color);
-  if (confirmation_label_) {
-    confirmation_label_->SetEnabledColor(label_color);
-  }
 }
 
 void AuthenticatorClientPinEntryView::ContentsChanged(

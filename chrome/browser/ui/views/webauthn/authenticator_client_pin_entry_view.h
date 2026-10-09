@@ -13,7 +13,6 @@
 #include "ui/views/view.h"
 
 namespace views {
-class Label;
 class Textfield;
 }  // namespace views
 
@@ -43,7 +42,6 @@ class AuthenticatorClientPinEntryView : public views::View,
  private:
   // views::View:
   void RequestFocus() override;
-  void OnThemeChanged() override;
 
   // views::TextFieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -52,8 +50,6 @@ class AuthenticatorClientPinEntryView : public views::View,
                       const ui::KeyEvent& key_event) override;
 
   const raw_ptr<Delegate> delegate_;
-  raw_ptr<views::Label> pin_label_ = nullptr;
-  raw_ptr<views::Label> confirmation_label_ = nullptr;
   raw_ptr<views::Textfield> pin_text_field_ = nullptr;
   raw_ptr<views::Textfield> confirmation_text_field_ = nullptr;
   const bool show_confirmation_text_field_;
