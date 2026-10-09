@@ -4502,6 +4502,7 @@ test("base_unittests") {
       "android/application_status_listener_unittest.cc",
       "android/child_process_unittest.cc",
       "android/content_uri_utils_unittest.cc",
+      "android/input_hint_checker_unittest.cc",
       "android/java_handler_thread_unittest.cc",
       "android/jni_android_unittest.cc",
       "android/jni_array_unittest.cc",
@@ -6496,8 +6497,10 @@ if (is_android) {
 
   generate_jni("base_unittest_support_jni") {
     testonly = true
-    sources =
-        [ "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java" ]
+    sources = [
+      "test/android/java/src/org/chromium/base/InputHintCheckerTestUtil.java",
+      "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java",
+    ]
   }
 
   # Used by gtests and not by robolectric / instrumentation tests.
@@ -6514,6 +6517,7 @@ if (is_android) {
 
     sources = [
       "test/android/java/src/org/chromium/base/ContentUriTestUtils.java",
+      "test/android/java/src/org/chromium/base/InputHintCheckerTestUtil.java",
       "test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java",
       "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java",
     ]

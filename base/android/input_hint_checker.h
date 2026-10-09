@@ -126,15 +126,8 @@ class BASE_EXPORT InputHintChecker {
   // initialization.
   ScopedJavaGlobalRef<jobject> view_class_;
 
-  // Represents a reference to object of type j.l.reflect.Method for
-  // View#probablyHasInput().
-  ScopedJavaGlobalRef<jobject> reflect_method_for_has_input_;
-
-  // The ID corresponding to j.l.reflect.Method#invoke(Object, Object...).
-  jmethodID invoke_id_;
-
-  // The ID corresponding to j.l.Boolean#booleanValue().
-  jmethodID boolean_value_id_;
+  // The ID corresponding to android.view.View#probablyHasInput().
+  jmethodID has_input_method_id_ = nullptr;
   THREAD_CHECKER(thread_checker_);
 };
 
