@@ -44,7 +44,8 @@ template("rust_target") {
   _target_name = target_name
 
   # NOTE: TargetName=>CrateName mangling algorithm should be updated
-  # simultaneously in 3 places: here, //build/rust/rust_static_library.gni,
+  # simultaneously in 4 places: here, //build/rust/rust_static_library.gni,
+  # //build/rust/rust_api_from_cpp.gni,
   # //build/rust/chromium_prelude/import_attribute.rs
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name

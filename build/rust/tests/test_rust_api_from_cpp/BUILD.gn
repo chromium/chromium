@@ -12,9 +12,7 @@ rust_static_library("test_rust_api_from_cpp") {
   sources = [ crate_root ]
   deps = [
     ":self_contained_target_rs_api",
-
-    # TODO(https://crbug.com/40226863): Also cover and test
-    # `:target_depending_on_another_rs_api`.
+    ":target_depending_on_another_rs_api",
     "//testing/rust_gtest_interop",
   ]
 }

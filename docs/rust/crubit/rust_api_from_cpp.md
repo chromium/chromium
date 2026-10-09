@@ -104,8 +104,71 @@ $ head -3 out/rel/gen/build/rust/tests/test_rust_api_from_cpp/self_contained_tar
 
 ## Specifying binding dependencies
 
-TODO(https://crbug.com/40226863): Fill this section after landing
-https://crrev.com/c/8027730.
+If public APIs from `public_headers` use types from another C++ target, then
+the bindings for that other target need to be listed in the `deps` attribute
+of `rust_api_from_cpp`.
+
+Example (`CreateCcPodStructFromValue` below returns `CcPodStruct` from the
+`self_contained_target` used in the earlier examples):
+
+```cpp
+// build/rust/tests/test_rust_api_from_cpp/target_depending_on_another.h:
+
+#include "build/rust/tests/test_rust_api_from_cpp/self_contained_target_header2.h"
+
+inline CcPodStruct CreateCcPodStructFromValue(int x) {
+  return CcPodStruct{.value = x};
+}
+```
+
+```gn
+# build/rust/tests/test_rust_api_from_cpp/BUILD.gn
+
+source_set("target_depending_on_another") {
+  sources = [ "target_depending_on_another.h" ]
+  public_deps = [ ":self_contained_target" ]
+}
+
+rust_api_from_cpp("target_depending_on_another_rs_api") {
+  bindings_target = ":target_depending_on_another"
+  public_headers = [ "target_depending_on_another.h" ]
+
+  # Parallels `public_deps` of `target_depending_on_another`.
+  deps = [ ":self_contained_target_rs_api" ]
+}
+
+rust_static_library("test_rust_api_from_cpp") {
+  crate_root = "tests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":self_contained_target_rs_api",
+    ":target_depending_on_another_rs_api",
+  ]
+}
+```
+
+```rust
+// build/rust/tests/test_rust_api_from_cpp/tests.rs:
+
+chromium::import! {
+    "//build/rust/tests/test_rust_api_from_cpp:target_depending_on_another_rs_api";
+}
+
+fn foo() {
+    // `x` is a `::self_contained_target_rs_api::CcPodStruct`.
+    let x = ::target_depending_on_another_rs_api::CreateCcPodStructFromValue(456);
+    assert_eq!(x.value, 456);
+}
+```
+
+Notes:
+
+* `deps` of `rust_api_from_cpp` list other `rust_api_from_cpp` targets (e.g.
+  `self_contained_target_rs_api` above) - not the C++ targets (e.g. not
+  `self_contained_target`).
+* `deps` only need to cover the C++ targets whose types appear in the public
+  APIs from `public_headers`.  Other `deps` of the `bindings_target` (e.g.
+  ones used only by its `.cc` files) do not need Rust bindings.
 
 ## Troubleshooting
 
@@ -118,6 +181,22 @@ how to report a new bug.
 
 If `rust_api_from_cpp` is unable to generate bindings for a given C++ API,
 then the generated `.rs` file will contain a comment explaining why.
+
+#### Crubit is not enabled on defining target
+
+If you see an error like:
+
+```
+$ cat out/rel/gen/build/rust/tests/test_rust_api_from_cpp/target_depending_on_another_rs_api.rs
+...
+// error: function `CreateCcPodStructFromValue` could not be bound
+//   Cannot use an error type `CcPodStruct` by value:
+//     Crubit is not enabled on defining target:
+//       ../../build/rust/tests/test_rust_api_from_cpp/self_contained_target_header2.h
+...
+```
+
+Then you want to read the "Specifying binding dependencies" section above.
 
 ### Different bindings on different target platforms
 

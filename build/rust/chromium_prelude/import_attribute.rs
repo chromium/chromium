@@ -124,8 +124,9 @@ impl Parse for Import {
 /// ("globally" means: within a GN build graph).
 ///
 /// NOTE: When updating GnTarget=>CrateName mangling algorithm, it needs to
-/// be updated and kept in sync in 3 places: this function,
-/// `//build/rust/rust_target.gni`, `//build/rust/rust_static_library.gni`.
+/// be updated and kept in sync in 4 places: this function,
+/// `//build/rust/rust_target.gni`, `//build/rust/rust_static_library.gni`,
+/// `//build/rust/rust_api_from_cpp.gni`.
 ///
 /// # Example
 ///

@@ -123,11 +123,14 @@ template("cpp_api_from_rust") {
     }
   }
 
+  # Metadata targets (see `_metadata_target_name` above) of the dependencies.
   _rspgen_deps = []
   foreach(_dep, _original_attributes.deps) {
     _dep_dir = get_label_info(_dep, "dir")
     _dep_name = get_label_info(_dep, "name")
-    _rspgen_deps += [ "${_dep_dir}:${_dep_name}_crubit_metadata" ]
+    _dep_toolchain = get_label_info(_dep, "toolchain")
+    _rspgen_deps +=
+        [ "${_dep_dir}:${_dep_name}_crubit_metadata(${_dep_toolchain})" ]
   }
 
   generated_file(_rspgen_target_name) {

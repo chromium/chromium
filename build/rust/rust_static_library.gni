@@ -200,7 +200,8 @@ template("rust_static_library") {
       # force the linker to always include the whole archive.
 
       # NOTE: TargetName=>CrateName mangling algorithm should be updated
-      # simultaneously in 3 places: here, //build/rust/rust_target.gni,
+      # simultaneously in 4 places: here, //build/rust/rust_target.gni,
+      # //build/rust/rust_api_from_cpp.gni,
       # //build/rust/chromium_prelude/import_attribute.rs
       if (defined(invoker.crate_name)) {
         _crate_name = invoker.crate_name

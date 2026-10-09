@@ -46,14 +46,10 @@ _globally_enabled_crubit_features = [ "supported" ]
 #     `bindings_target`, because typically only a *subset* of headers provides
 #     the *public* API that bindings are needed for.
 #
-#   deps:
-#     TODO(https://crbug.com/40226863): Finish implementing `deps` attribute
-#     (see https://crrev.com/c/8027730/2).  The description below is
-#     kind of aspirational today :-)
-#
+#   deps: (optional)
 #     Other `rust_api_from_cpp` targets that the bindings need to depend on.
 #
-#     `//docs/rust/crubit/rust_api_from_cpp.md` [will] contain more info and
+#     `//docs/rust/crubit/rust_api_from_cpp.md` contains more info and
 #     examples, but basically, if public APIs from `public_headers` depend on
 #     types from other targets, then `deps` should list the `rust_api_from_cpp`
 #     targets that generate bindings for types from these other targets.
@@ -118,6 +114,14 @@ template("rust_api_from_cpp") {
   _rs_out_path = "${target_gen_dir}/${_lib_target_name}.rs"
   _cc_out_path = "${target_gen_dir}/${_lib_target_name}_impl.cc"
 
+  # Crubit needs to know the crate name of the generated bindings (and of their
+  # `_deps`) to refer to them from the generated code - see `c` below.
+  #
+  # NOTE: TargetName=>CrateName mangling algorithm should be kept in sync with
+  # `rust_target.gni` (see the NOTE there; `chromium::import!` relies on it).
+  _dir_hash = string_hash(get_label_info(":${_lib_target_name}", "dir"))
+  _lib_target_crate_name = "${_lib_target_name}_${_dir_hash}"
+
   # Metadata targets (see `_metadata_target_name` below) of `_deps`.
   _deps_metadata_targets = []
   foreach(_dep, _deps) {
@@ -144,13 +148,10 @@ template("rust_api_from_cpp") {
       # `--target_args` cmdline argument of `rs_bindings_from_cc`.
       crubit_target_and_args = [
         {
-          # The `get_label_info` call below expands ":foo_rs_api" into
-          # something like "//dir/bar/baz:foo_rs_api".  Crubit assumes that
-          # there is a colon + uses the after-colon-suffix as the name of the
-          # crate.
           t = _current_lib_target_full_label
           h = _rebased_public_headers
           f = _globally_enabled_crubit_features
+          c = _lib_target_crate_name
         },
       ]
     }
@@ -209,6 +210,9 @@ template("rust_api_from_cpp") {
       "//build/rust/crubit:rust_api_from_cpp_bindings_rs_deps",
     ]
 
+    # Explicitly setting `crate_name` guarantees that it matches the name passed
+    # to Crubit (via `c` in the metadata above).
+    crate_name = _lib_target_crate_name
     crate_root = _rs_out_path
     sources = [ crate_root ]
 
