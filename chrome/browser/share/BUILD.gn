@@ -40,10 +40,7 @@ source_set("impl") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [
-    ":share",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":share" ]
 
   deps = [
     "//base",

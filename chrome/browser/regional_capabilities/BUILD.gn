@@ -63,7 +63,6 @@ source_set("metrics_provider_impl") {
     "//components/regional_capabilities",
     "//components/regional_capabilities:data",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

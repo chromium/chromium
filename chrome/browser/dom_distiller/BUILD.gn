@@ -54,8 +54,6 @@ source_set("impl") {
       "//components/navigation_interception",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 if (!is_android) {

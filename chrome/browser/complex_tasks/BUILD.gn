@@ -27,8 +27,6 @@ source_set("impl") {
       "//chrome/browser/android:tabs_public",
     ]
   }
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

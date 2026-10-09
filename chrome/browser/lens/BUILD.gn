@@ -24,14 +24,12 @@ if (is_android) {
       "android/lens_prefs.cc",
     ]
 
-    public_deps = [
-      ":lens",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":lens" ]
 
     deps = [
       ":jni_headers",
       "//chrome/android:jni_headers",
+      "//chrome/browser:browser_process",
       "//components/policy/core/common:common_constants",
       "//components/prefs",
     ]

@@ -67,10 +67,7 @@ source_set("impl") {
     "push_messaging_unsubscribed_entry.cc",
   ]
 
-  public_deps = [
-    ":service_impl_public",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":service_impl_public" ]
 
   deps = [
     ":push_messaging",

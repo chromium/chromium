@@ -44,10 +44,7 @@ if (is_android) {
       "feed_service_factory.cc",
     ]
 
-    public_deps = [
-      ":feed",
-      "//chrome/browser:browser_public_dependencies",
-    ]
+    public_deps = [ ":feed" ]
 
     deps = [
       "//chrome/android:chrome_jni_headers",
@@ -69,6 +66,7 @@ if (is_android) {
       "//components/keyed_service/core",
       "//components/metrics",
       "//components/offline_pages/core",
+      "//components/offline_pages/core:switches",
       "//components/prefs",
       "//components/regional_capabilities",
       "//components/search_engines",

@@ -44,7 +44,6 @@ source_set("impl") {
     "//services/network/public/mojom:mojom_permissions_policy",
     "//skia",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

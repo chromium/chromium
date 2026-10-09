@@ -116,10 +116,6 @@ source_set("impl") {
       deps += [ "//chrome/browser/extensions" ]
     }
   }
-
-  # This target has circular dependencies with //chrome/browser:browser
-  # until more of //chrome/browser is modularized.
-  deps += [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

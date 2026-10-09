@@ -29,7 +29,6 @@ source_set("android_impl") {
     "partner_bookmarks_reader.cc",
     "partner_bookmarks_shim.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":android",
     ":java_enums",
@@ -37,8 +36,11 @@ source_set("android_impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
     "//components/favicon/core",
+    "//components/image_fetcher/core",
     "//components/pref_registry",
+    "//content/public/browser",
   ]
 }
 
