@@ -46,6 +46,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/intents/CustomTabIntentDataHolderUnitTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/MergedWebappInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappInfoTest.java",
@@ -53,12 +54,14 @@ robolectric_library("junit") {
   ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/libs/common:splash_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//chrome/browser/android/intents:java",
+    "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/webapk/android/libs/common:java",
     "//components/webapps/browser/android:java",

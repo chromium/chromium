@@ -63,7 +63,6 @@ import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetDecorationT
 import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCornersPosition;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
@@ -552,8 +551,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         } else {
             var builder = new CustomTabIntentDataHolder.Builder();
 
-            CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-            var session = token != null ? SessionHolder.of(token) : null;
+            var session = SessionHolder.getSessionHolderFromIntent(intent);
 
             builder.setSessionHolder(session);
             builder.setClientPackageName(

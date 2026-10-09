@@ -20,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
 
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -36,6 +37,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
+import org.chromium.chrome.browser.browserservices.intents.CustomTabIntentDataHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.ui.base.TestActivity;
@@ -212,5 +214,41 @@ public class AuthTabIntentDataProviderUnitTest {
         assertFalse(
                 "Ephemeral AuthTab should not support optional button",
                 mIntentDataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    public void testReconstructFromSavedDataHolder() {
+        mIntent.putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, SCHEME);
+        mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST, HOST);
+        mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH, PATH);
+        mIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        AuthTabIntentDataProvider originalProvider =
+                new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        AuthTabIntentDataProvider restoredProvider =
+                new AuthTabIntentDataProvider(
+                        new Intent(), mActivity, COLOR_SCHEME_LIGHT, restoredHolder);
+        assertEquals(
+                originalProvider.getClientPackageName(), restoredProvider.getClientPackageName());
+        assertEquals(
+                originalProvider.getAuthRedirectScheme(), restoredProvider.getAuthRedirectScheme());
+        assertEquals(
+                originalProvider.getAuthRedirectHost(), restoredProvider.getAuthRedirectHost());
+        assertEquals(
+                originalProvider.getAuthRedirectPath(), restoredProvider.getAuthRedirectPath());
+        assertEquals(originalProvider.getCustomTabMode(), restoredProvider.getCustomTabMode());
+        assertEquals(originalProvider.getActivityType(), restoredProvider.getActivityType());
     }
 }

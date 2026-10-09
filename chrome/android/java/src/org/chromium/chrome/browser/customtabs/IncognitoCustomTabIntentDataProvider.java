@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.util.Pair;
 
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -87,8 +86,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             builder.setCustomTabMode(CustomTabProfileType.INCOGNITO);
             builder.setDisableDownload(true);
 
-            CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-            var session = token != null ? SessionHolder.of(token) : null;
+            var session = SessionHolder.getSessionHolderFromIntent(intent);
             builder.setSessionHolder(session);
             builder.setClientPackageName(
                     getClientPackageNameFromSessionOrCallingActivity(intent, session));

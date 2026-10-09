@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.auth.AuthTabIntent;
-import androidx.browser.auth.AuthTabSessionToken;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
@@ -88,8 +87,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
             builder.setDisableStar(true);
             builder.setDisableDownload(true);
 
-            AuthTabSessionToken token = AuthTabSessionToken.createSessionTokenFromIntent(intent);
-            var session = token != null ? SessionHolder.of(token) : null;
+            var session = SessionHolder.getSessionHolderFromIntent(intent);
             builder.setSessionHolder(session);
             builder.setClientPackageName(
                     IntentUtils.safeGetStringExtra(

@@ -43,6 +43,7 @@ import android.net.Network;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.view.ContextThemeWrapper;
 import android.view.WindowManager;
 
@@ -84,6 +85,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
+import org.chromium.chrome.browser.browserservices.intents.CustomTabIntentDataHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BackgroundInteractBehavior;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -2725,5 +2727,86 @@ public class CustomTabIntentDataProviderTest {
         CustomTabIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertNull(dataProvider.getShareData());
+    }
+
+    @Test
+    public void testReconstructFromSavedDataHolder() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        setIsTrustedCustomTab(intent);
+        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        intent.putExtra(
+                CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
+        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+
+        CustomTabIntentDataProvider originalProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        // Reconstruct with an empty Intent to verify values come from restoredHolder.
+        CustomTabIntentDataProvider restoredProvider =
+                new CustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, restoredHolder);
+        assertEquals(originalProvider.getSession(), restoredProvider.getSession());
+        assertEquals(
+                originalProvider.getClientPackageName(), restoredProvider.getClientPackageName());
+        assertEquals(originalProvider.isTrustedIntent(), restoredProvider.isTrustedIntent());
+        assertEquals(originalProvider.getCustomTabMode(), restoredProvider.getCustomTabMode());
+        assertEquals(
+                originalProvider.getTitleVisibilityState(),
+                restoredProvider.getTitleVisibilityState());
+        assertEquals(
+                originalProvider.shouldEnableUrlBarHiding(),
+                restoredProvider.shouldEnableUrlBarHiding());
+        assertEquals(
+                originalProvider.getInitialActivityHeight(),
+                restoredProvider.getInitialActivityHeight());
+    }
+
+    @Test
+    public void testReconstructIncognitoFromSavedDataHolder() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        setIsTrustedCustomTab(intent);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        intent.putExtra(
+                CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
+
+        IncognitoCustomTabIntentDataProvider originalProvider =
+                new IncognitoCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        IncognitoCustomTabIntentDataProvider restoredProvider =
+                new IncognitoCustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, restoredHolder);
+        assertEquals(originalProvider.getSession(), restoredProvider.getSession());
+        assertEquals(
+                originalProvider.getClientPackageName(), restoredProvider.getClientPackageName());
+        assertEquals(originalProvider.isTrustedIntent(), restoredProvider.isTrustedIntent());
+        assertEquals(originalProvider.getCustomTabMode(), restoredProvider.getCustomTabMode());
+        assertEquals(
+                originalProvider.getTitleVisibilityState(),
+                restoredProvider.getTitleVisibilityState());
     }
 }

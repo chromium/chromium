@@ -160,6 +160,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public abstract class BaseCustomTabActivity extends ChromeActivity {
+    private static final String KEY_CUSTOM_TAB_INTENT_DATA_HOLDER =
+            "CustomTabActivity.custom_tab_intent_data_holder";
+
     /**
      * Prevents Tapjacking on T-. See crbug.com/40063907.
      *
@@ -294,11 +297,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
      */
     protected @Nullable BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
-        return buildIntentDataProvider(intent, colorScheme, /* dataHolder= */ null);
+        if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
+            return new AuthTabIntentDataProvider(intent, this, colorScheme);
+        } else if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
+                intent, /* recordMetrics= */ true)) {
+            return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
+        }
+        return new CustomTabIntentDataProvider(intent, this, colorScheme);
     }
 
     /** Builds {@link BrowserServicesIntentDataProvider} for this {@link CustomTabActivity}. */
-    protected BrowserServicesIntentDataProvider buildIntentDataProvider(
+    protected @Nullable BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent,
             @CustomTabsIntent.ColorScheme int colorScheme,
             @Nullable CustomTabIntentDataHolder dataHolder) {
@@ -312,13 +321,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             return new CustomTabIntentDataProvider(intent, this, colorScheme, dataHolder);
         }
 
-        if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
-            return new AuthTabIntentDataProvider(intent, this, colorScheme);
-        } else if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
-                intent, /* recordMetrics= */ true)) {
-            return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
-        }
-        return new CustomTabIntentDataProvider(intent, this, colorScheme);
+        return buildIntentDataProvider(intent, colorScheme);
     }
 
     /**
@@ -652,7 +655,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         // the Activity parameters, including the background of the page.
         // Note that color scheme is fixed for the lifetime of Activity: if the system setting
         // changes, we recreate the activity.
-        var intentDataProvider = buildIntentDataProvider(getIntent(), getColorScheme());
+        Bundle savedInstanceState = getSavedInstanceState();
+        CustomTabIntentDataHolder dataHolder =
+                savedInstanceState != null
+                        ? IntentUtils.safeGetParcelable(
+                                savedInstanceState, KEY_CUSTOM_TAB_INTENT_DATA_HOLDER)
+                        : null;
+        var intentDataProvider = buildIntentDataProvider(getIntent(), getColorScheme(), dataHolder);
 
         if (intentDataProvider == null) {
             // |mIntentDataProvider| is null if the WebAPK server vended an invalid WebAPK (WebAPK
@@ -1557,6 +1566,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCipherFactory.saveToBundle(outState);
+        if (mIntentDataProvider != null) {
+            CustomTabIntentDataHolder dataHolder =
+                    mIntentDataProvider.getCustomTabIntentDataHolder();
+            if (dataHolder != null) {
+                outState.putParcelable(KEY_CUSTOM_TAB_INTENT_DATA_HOLDER, dataHolder);
+            }
+        }
     }
 
     public TabObserverRegistrar getTabObserverRegistrar() {

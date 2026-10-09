@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.AuthTabSessionToken;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
@@ -29,7 +35,8 @@ import org.chromium.build.annotations.Nullable;
  * }</pre>
  */
 @NullMarked
-public sealed interface SessionHolder permits SessionHolder.CustomTab, SessionHolder.AuthTab {
+public sealed interface SessionHolder extends Parcelable
+        permits SessionHolder.CustomTab, SessionHolder.AuthTab {
     /** Returns a holder for the given Custom Tab session. */
     static CustomTab of(CustomTabsSessionToken token) {
         return new CustomTab(token);
@@ -52,8 +59,43 @@ public sealed interface SessionHolder permits SessionHolder.CustomTab, SessionHo
             return token != null ? of(token) : null;
         }
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        return token != null ? of(token) : null;
+        if (token == null) return null;
+        // Unlike AuthTabSessionToken, CustomTabsSessionToken#getCallbackBinder() and #getId() are
+        // package-private, so we extract and retain them from the intent here to support
+        // Parcelable serialization.
+        IBinder callbackBinder =
+                IntentUtils.safeGetBinderExtra(intent, CustomTabsIntent.EXTRA_SESSION);
+        PendingIntent sessionId =
+                IntentUtils.safeGetParcelableExtra(intent, CustomTabsIntent.EXTRA_SESSION_ID);
+        return new CustomTab(token, callbackBinder, sessionId);
     }
+
+    @Override
+    default int describeContents() {
+        return 0;
+    }
+
+    Parcelable.Creator<SessionHolder> CREATOR =
+            new Parcelable.Creator<>() {
+                @Override
+                public @Nullable SessionHolder createFromParcel(Parcel in) {
+                    // Reads the values written in `CustomTab#writeToParcel` and
+                    // `AuthTab#writeToParcel`.
+                    boolean isAuthTab = in.readBoolean();
+                    IBinder callbackBinder = in.readStrongBinder();
+                    PendingIntent sessionId = in.readTypedObject(PendingIntent.CREATOR);
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, isAuthTab);
+                    bundle.putBinder(CustomTabsIntent.EXTRA_SESSION, callbackBinder);
+                    bundle.putParcelable(CustomTabsIntent.EXTRA_SESSION_ID, sessionId);
+                    return getSessionHolderFromIntent(new Intent().putExtras(bundle));
+                }
+
+                @Override
+                public SessionHolder[] newArray(int size) {
+                    return new SessionHolder[size];
+                }
+            };
 
     /** Whether the session has an id. */
     boolean hasId();
@@ -79,14 +121,33 @@ public sealed interface SessionHolder permits SessionHolder.CustomTab, SessionHo
     /** Holds the session of a Custom Tab. */
     final class CustomTab implements SessionHolder {
         private final CustomTabsSessionToken mToken;
+        private final @Nullable IBinder mCallbackBinder;
+        private final @Nullable PendingIntent mSessionId;
 
         private CustomTab(CustomTabsSessionToken token) {
+            this(token, null, null);
+        }
+
+        private CustomTab(
+                CustomTabsSessionToken token,
+                @Nullable IBinder callbackBinder,
+                @Nullable PendingIntent sessionId) {
             mToken = token;
+            mCallbackBinder = callbackBinder;
+            mSessionId = sessionId;
         }
 
         /** Returns the token identifying the Custom Tab session. */
         public CustomTabsSessionToken getToken() {
             return mToken;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            assert mCallbackBinder != null || mSessionId != null;
+            dest.writeBoolean(false);
+            dest.writeStrongBinder(mCallbackBinder);
+            dest.writeTypedObject(mSessionId, flags);
         }
 
         @Override
@@ -116,6 +177,13 @@ public sealed interface SessionHolder permits SessionHolder.CustomTab, SessionHo
         /** Returns the token identifying the Auth Tab session. */
         public AuthTabSessionToken getToken() {
             return mToken;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeBoolean(true);
+            dest.writeStrongBinder(mToken.getCallbackBinder());
+            dest.writeTypedObject(mToken.getId(), flags);
         }
 
         @Override

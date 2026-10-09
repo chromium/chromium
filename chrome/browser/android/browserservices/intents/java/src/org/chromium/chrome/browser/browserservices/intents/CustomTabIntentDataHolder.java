@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Network;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Px;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +34,7 @@ import java.util.List;
  * a form that can be put into the saved instance state.
  */
 @NullMarked
-public class CustomTabIntentDataHolder {
+public class CustomTabIntentDataHolder implements Parcelable {
     public final @Nullable SessionHolder mSessionHolder;
     public final @Nullable String mClientPackageName;
     public final boolean mIsTrustedIntent;
@@ -127,6 +130,151 @@ public class CustomTabIntentDataHolder {
         mAuthRedirectScheme = builder.mAuthRedirectScheme;
         mAuthRedirectHost = builder.mAuthRedirectHost;
         mAuthRedirectPath = builder.mAuthRedirectPath;
+    }
+
+    private CustomTabIntentDataHolder(Parcel in) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        mSessionHolder = in.readTypedObject(SessionHolder.CREATOR);
+        mClientPackageName = in.readString();
+        mIsTrustedIntent = in.readBoolean();
+        mAnimationBundle = in.readBundle(classLoader);
+        mKeepAliveServiceIntent = in.readTypedObject(Intent.CREATOR);
+        mNetwork = in.readTypedObject(Network.CREATOR);
+        mIsOpenedByChrome = in.readBoolean();
+        mUiType = in.readInt();
+        mTitleVisibilityState = in.readInt();
+        mInitialActivityHeight = in.readInt();
+        mInitialActivityWidth = in.readInt();
+        mBreakPointDp = in.readInt();
+        mPartialTabToolbarCornerRadius = in.readInt();
+        mActivityType = in.readInt();
+        mCustomTabMode = in.readInt();
+        mMediaViewerUrl = in.readString();
+        mEnableEmbeddedMediaExperience = in.readBoolean();
+        mIsFromMediaLauncherActivity = in.readBoolean();
+        mDisableStar = in.readBoolean();
+        mDisableDownload = in.readBoolean();
+        mTwaAdditionalOrigins = in.createStringArrayList();
+        mTwaDisplayMode = readTwaDisplayMode(in, classLoader);
+        mTwaDisplayOverrideMode = readTwaDisplayOverrideMode(in);
+        mEnableUrlBarHiding = in.readBoolean();
+        mIsCloseButtonEnabled = in.readBoolean();
+        mCloseButtonIcon = in.readTypedObject(Bitmap.CREATOR);
+        mRemoteViews = in.readTypedObject(RemoteViews.CREATOR);
+        mSideSheetDecorationType = in.readInt();
+        mSideSheetRoundedCornersPosition = in.readInt();
+        mClickableViewIds = in.createIntArray();
+        mRemoteViewsPendingIntent = in.readTypedObject(PendingIntent.CREATOR);
+        mSecondaryToolbarSwipeUpPendingIntent = in.readTypedObject(PendingIntent.CREATOR);
+        mOpenInBrowserState = in.readInt();
+        mTranslateLanguage = in.readString();
+        mAutoTranslateLanguage = in.readString();
+        mDefaultOrientation = in.readInt();
+        mGsaExperimentIds = in.createIntArray();
+        mIsPartialCustomTabFixedHeight = in.readBoolean();
+        mContentScrollMayResizeTab = in.readBoolean();
+        mInteractWithBackground = in.readBoolean();
+        mCctTabSwitcherEnabledForChromeExperiment = in.readBoolean();
+        mCctTabSwitcherEnabledForEmbedderExperiment = in.readBoolean();
+        mAuthRedirectScheme = in.readString();
+        mAuthRedirectHost = in.readString();
+        mAuthRedirectPath = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedObject(mSessionHolder, flags);
+        dest.writeString(mClientPackageName);
+        dest.writeBoolean(mIsTrustedIntent);
+        dest.writeBundle(mAnimationBundle);
+        dest.writeTypedObject(mKeepAliveServiceIntent, flags);
+        dest.writeTypedObject(mNetwork, flags);
+        dest.writeBoolean(mIsOpenedByChrome);
+        dest.writeInt(mUiType);
+        dest.writeInt(mTitleVisibilityState);
+        dest.writeInt(mInitialActivityHeight);
+        dest.writeInt(mInitialActivityWidth);
+        dest.writeInt(mBreakPointDp);
+        dest.writeInt(mPartialTabToolbarCornerRadius);
+        dest.writeInt(mActivityType);
+        dest.writeInt(mCustomTabMode);
+        dest.writeString(mMediaViewerUrl);
+        dest.writeBoolean(mEnableEmbeddedMediaExperience);
+        dest.writeBoolean(mIsFromMediaLauncherActivity);
+        dest.writeBoolean(mDisableStar);
+        dest.writeBoolean(mDisableDownload);
+        dest.writeStringList(mTwaAdditionalOrigins);
+        dest.writeBundle(mTwaDisplayMode != null ? mTwaDisplayMode.toBundle() : null);
+        List<Bundle> twaDisplayOverrideBundles = new ArrayList<>(mTwaDisplayOverrideMode.size());
+        for (TrustedWebActivityDisplayMode mode : mTwaDisplayOverrideMode) {
+            twaDisplayOverrideBundles.add(mode.toBundle());
+        }
+        dest.writeTypedList(twaDisplayOverrideBundles);
+        dest.writeBoolean(mEnableUrlBarHiding);
+        dest.writeBoolean(mIsCloseButtonEnabled);
+        dest.writeTypedObject(mCloseButtonIcon, flags);
+        dest.writeTypedObject(mRemoteViews, flags);
+        dest.writeInt(mSideSheetDecorationType);
+        dest.writeInt(mSideSheetRoundedCornersPosition);
+        dest.writeIntArray(mClickableViewIds);
+        dest.writeTypedObject(mRemoteViewsPendingIntent, flags);
+        dest.writeTypedObject(mSecondaryToolbarSwipeUpPendingIntent, flags);
+        dest.writeInt(mOpenInBrowserState);
+        dest.writeString(mTranslateLanguage);
+        dest.writeString(mAutoTranslateLanguage);
+        dest.writeInt(mDefaultOrientation);
+        dest.writeIntArray(mGsaExperimentIds);
+        dest.writeBoolean(mIsPartialCustomTabFixedHeight);
+        dest.writeBoolean(mContentScrollMayResizeTab);
+        dest.writeBoolean(mInteractWithBackground);
+        dest.writeBoolean(mCctTabSwitcherEnabledForChromeExperiment);
+        dest.writeBoolean(mCctTabSwitcherEnabledForEmbedderExperiment);
+        dest.writeString(mAuthRedirectScheme);
+        dest.writeString(mAuthRedirectHost);
+        dest.writeString(mAuthRedirectPath);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<CustomTabIntentDataHolder> CREATOR =
+            new Parcelable.Creator<>() {
+                @Override
+                public CustomTabIntentDataHolder createFromParcel(Parcel in) {
+                    return new CustomTabIntentDataHolder(in);
+                }
+
+                @Override
+                public CustomTabIntentDataHolder[] newArray(int size) {
+                    return new CustomTabIntentDataHolder[size];
+                }
+            };
+
+    private static @Nullable TrustedWebActivityDisplayMode readTwaDisplayMode(
+            Parcel in, @Nullable ClassLoader classLoader) {
+        Bundle bundle = in.readBundle(classLoader);
+        if (bundle == null) return null;
+        try {
+            return TrustedWebActivityDisplayMode.fromBundle(bundle);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    private static List<TrustedWebActivityDisplayMode> readTwaDisplayOverrideMode(Parcel in) {
+        List<Bundle> bundles = in.createTypedArrayList(Bundle.CREATOR);
+        if (bundles == null) return List.of();
+        List<TrustedWebActivityDisplayMode> modes = new ArrayList<>(bundles.size());
+        for (Bundle bundle : bundles) {
+            try {
+                modes.add(TrustedWebActivityDisplayMode.fromBundle(bundle));
+            } catch (Throwable e) {
+                // If the given value isn't a valid display mode, skip it.
+            }
+        }
+        return modes;
     }
 
     public static final class Builder {
