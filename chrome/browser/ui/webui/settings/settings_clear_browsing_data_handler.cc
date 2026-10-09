@@ -396,12 +396,6 @@ base::DictValue ClearBrowsingDataHandler::CreateSyncStateEvent() {
   base::DictValue event;
   event.Set("signedIn", identity_manager && identity_manager->HasPrimaryAccount(
                                                 signin::ConsentLevel::kSignin));
-  event.Set("syncingHistory", sync_service_ &&
-                                  sync_service_->IsSyncFeatureActive() &&
-                                  sync_service_->GetActiveDataTypes().Has(
-                                      syncer::HISTORY_DELETE_DIRECTIVES));
-  event.Set("shouldShowCookieException",
-            browsing_data_counter_utils::ShouldShowCookieException(profile_));
 
   event.Set("isNonGoogleDse", false);
   const TemplateURLService* template_url_service =
