@@ -34,11 +34,6 @@ struct GridLanesItemPlacementData
   // fill-reverse may move the item without changing this position.
   LayoutUnit forward_stacking_start;
 
-  // Unique item identifier within a placement pass. All lane entries for a
-  // spanner share this value. It also breaks ties between equal final
-  // `CrossGap` centers.
-  wtf_size_t placement_sequence = 0;
-
   // Index of the item's fragment in the container builder during normal layout.
   // Unset during fragmentation collection.
   wtf_size_t builder_child_index = kNotFound;
@@ -66,10 +61,6 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
 
   LayoutUnit ForwardStackingStart() const {
     return grid_lanes_placement_data->forward_stacking_start;
-  }
-
-  wtf_size_t PlacementSequence() const {
-    return grid_lanes_placement_data->placement_sequence;
   }
 
   void AddDenselyPackedItem(GridLanesItemData* packed_item) {

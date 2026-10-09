@@ -1377,10 +1377,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
   const bool builds_graph = out_grid_lanes && is_for_layout &&
                             placement_phase == PlacementPhase::kFinalPlacement;
 
-  // Stable per-item order used as the tie breaker when two `CrossGap`s have the
-  // same offset in the stacking axis.
-  wtf_size_t next_placement_sequence = 0;
-
   const auto& container_space = GetConstraintSpace();
   const auto& style = Style();
   const auto border_scrollbar_padding = BorderScrollbarPadding();
@@ -1780,8 +1776,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         // fill-reverse and content alignment later.
         grid_lanes_placement_data->forward_stacking_start =
             start_offset_in_stacking_axis;
-        grid_lanes_placement_data->placement_sequence =
-            next_placement_sequence++;
 
         // Save the child index before `AddResult` appends it. Self-alignment
         // uses this index to update the child.
