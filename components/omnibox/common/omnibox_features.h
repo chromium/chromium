@@ -341,6 +341,13 @@ extern const base::FeatureParam<bool> kAskGComposeboxPlaceholder;
 extern const base::FeatureParam<bool> kAskGBypassPrivacyNotice;
 // Whether to show a chip instead of action for Ask G.
 extern const base::FeatureParam<bool> kAskGShowChip;
+// Whether the AskG entrypoint match and the contextual suggestions should use
+// an "Opens in side panel" description (with a side panel icon) instead of the
+// page host / "Ask Google about this page", when AskG opens the cobrowse side
+// panel.
+// Note that this parameter is created for a follow-up iteration of the current
+// Ask G LE. This may be moved to another base param in the future.
+extern const base::FeatureParam<bool> kAskGSuggestionSidePanelDescription;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

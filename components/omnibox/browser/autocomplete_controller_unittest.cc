@@ -3695,6 +3695,42 @@ TEST_F(AutocompleteControllerTest,
       controller_.internal_result_.match_at(0)->description);
 }
 
+TEST_F(AutocompleteControllerTest,
+       UpdateKeywordDescriptions_ContextualSearchSidePanelDescription) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGSuggestionSidePanelDescription", "true"}});
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"Google");
+  turl_data.SetKeyword(u"google.com");
+  turl_data.SetURL("https://google.com/search?q={searchTerms}");
+  controller_.template_url_service_->Add(
+      std::make_unique<TemplateURL>(turl_data));
+
+  AutocompleteMatch match(nullptr, 1100, false,
+                          omnibox::AutocompleteMatchType::kSearchSuggest);
+  match.keyword = u"google.com";
+  match.subtypes = {omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH};
+  SetAutocompleteMatches({match});
+
+  // The AskG action falls back to the Lens overlay.
+  EXPECT_CALL(*provider_client(), ShouldOpenCoBrowsePanel())
+      .WillRepeatedly(testing::Return(false));
+  controller_.UpdateKeywordDescriptions(&controller_.internal_result_);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL),
+      controller_.internal_result_.match_at(0)->description);
+
+  // The AskG action opens the cobrowse side panel.
+  EXPECT_CALL(*provider_client(), ShouldOpenCoBrowsePanel())
+      .WillRepeatedly(testing::Return(true));
+  controller_.UpdateKeywordDescriptions(&controller_.internal_result_);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL),
+      controller_.internal_result_.match_at(0)->description);
+}
+
 TEST_F(AutocompleteControllerTest, ExcludedProviderStoppedAndUpdatesIgnored) {
   // Set up an excluded provider, e.g., OnDeviceHeadProvider which does not run
   // in keyword mode.

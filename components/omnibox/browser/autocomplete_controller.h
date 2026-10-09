@@ -343,6 +343,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(
       AutocompleteControllerTest,
       UpdateKeywordDescriptions_StaticContextualSearchSuggestion);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutocompleteControllerTest,
+      UpdateKeywordDescriptions_ContextualSearchSidePanelDescription);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            FilterMatchesForInstantKeywordWithBareAt);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,

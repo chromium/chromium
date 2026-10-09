@@ -782,6 +782,9 @@ const base::FeatureParam<bool> kAskGBypassPrivacyNotice{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGBypassPrivacyNotice", false};
 const base::FeatureParam<bool> kAskGShowChip{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGShowChip", false};
+const base::FeatureParam<bool> kAskGSuggestionSidePanelDescription{
+    &kWebUIOmniboxAskGAboutThisPage,
+    "Omnibox_AskGSuggestionSidePanelDescription", false};
 
 // Note: no new flags beyond this point.
 

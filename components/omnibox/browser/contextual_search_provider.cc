@@ -41,6 +41,7 @@
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -335,11 +336,17 @@ AutocompleteMatch ContextualSearchProvider::CreateLensEntrypointMatch(
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
   match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
 
-  // Lens invocation action with secondary text that shows URL host.
+  // Lens invocation action with secondary text that shows URL host, or, when
+  // the action opens the cobrowse side panel, an "Opens in side panel" hint.
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchOpenLensAction>();
-  match.contents =
-      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().GetHost()));
+  if (ShouldShowSidePanelDescription(client())) {
+    match.contents =
+        l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL);
+  } else {
+    match.contents = base::UTF8ToUTF16(
+        url_formatter::StripWWW(input.current_url().GetHost()));
+  }
   if (!match.contents.empty()) {
     match.contents_class = {{0, ACMatchClassification::DIM}};
   }
@@ -349,6 +356,17 @@ AutocompleteMatch ContextualSearchProvider::CreateLensEntrypointMatch(
   }
   match.fill_into_edit = match.description;
   return match;
+}
+
+// static
+bool ContextualSearchProvider::ShouldShowSidePanelDescription(
+    const AutocompleteProviderClient* client) {
+  // Mirrors the routing in `ContextualSearchOpenLensAction::Execute()`:
+  // composebox takes precedence over cobrowse, and if neither applies the
+  // action falls back to the Lens overlay (which is not a side panel).
+  return omnibox::kAskGSuggestionSidePanelDescription.Get() &&
+         !client->ShouldOpenComposeboxForAskG() &&
+         client->ShouldOpenCoBrowsePanel();
 }
 
 // static

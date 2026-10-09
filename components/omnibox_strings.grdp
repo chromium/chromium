@@ -34,6 +34,9 @@
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT2" desc="Second alternative label text for the action match that opens lens.">
     Ask Google Search about this page
   </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL" desc="Secondary text shown next to the 'Ask Google about this page' omnibox suggestion and contextual suggestions, informing the user that selecting the suggestion opens the results in the browser side panel.">
+    Opens in side panel
+  </message>
   <message name="IDS_OMNIBOX_TOOLBELT_LABEL" desc="The label shown before actions in the omnibox toolbelt.">
     Search shortcuts
   </message>
