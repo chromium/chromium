@@ -22,9 +22,9 @@
 dictionary CheckVisibilityOptions {
   boolean checkOpacity = false;
   boolean checkVisibilityCSS = false;
-  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean contentVisibilityAuto = false;
-  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean opacityProperty = false;
-  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean visibilityProperty = false;
+  boolean contentVisibilityAuto = false;
+  boolean opacityProperty = false;
+  boolean visibilityProperty = false;
 };
 
 // Options dictionary for setHTML and setHTMLUnsafe.

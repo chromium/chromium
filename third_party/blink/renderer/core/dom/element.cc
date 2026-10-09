@@ -13741,8 +13741,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   // display locked at all. This is because, content-visibility: hidden is
   // always checked, so regardless of _why_ we're locked, the answer will be
   // false if we're locked.
-  if (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
-      options->contentVisibilityAuto() &&
+  if (options->contentVisibilityAuto() &&
       DisplayLockUtilities::IsDisplayLockedPreventingPaint(this)) {
     return false;
   }
@@ -13766,9 +13765,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   }
 
   DCHECK(options);
-  if ((options->checkVisibilityCSS() ||
-       (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
-        options->visibilityProperty())) &&
+  if ((options->checkVisibilityCSS() || options->visibilityProperty()) &&
       style->Visibility() != EVisibility::kVisible) {
     return false;
   }
@@ -13786,9 +13783,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
       }
 
       // Check for opacity:0
-      if (options->checkOpacity() ||
-          (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
-           options->opacityProperty())) {
+      if (options->checkOpacity() || options->opacityProperty()) {
         if (style = ancestor_element->GetComputedStyle(); style) {
           if (style->Opacity() == 0.f) {
             return false;
