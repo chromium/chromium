@@ -16,6 +16,7 @@
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -509,6 +510,21 @@ TEST_F(ArcActivationNecessityCheckerTest,
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ArcActivationNecessityCheckerTest,
+       ActivateWhenAutoLaunchAppsConfigured) {
+  base::HistogramTester histogram_tester;
+  base::ListValue auto_launch_apps;
+  auto_launch_apps.Append("com.example.app");
+  profile_->GetPrefs()->SetList(prefs::kArcAutoLaunchApps,
+                                std::move(auto_launch_apps));
+
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
 }
 
 }  // namespace

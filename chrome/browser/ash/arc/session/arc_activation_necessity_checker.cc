@@ -57,6 +57,14 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
     return;
   }
 
+  // Activate ARC if Auto-Launch apps are configured by policy.
+  // AutoLaunchAndroidAppsPolicyHandler validates and filters entries,
+  // so any entry in the pref is a valid package name.
+  if (!profile_->GetPrefs()->GetList(prefs::kArcAutoLaunchApps).empty()) {
+    OnChecked(std::move(callback), true);
+    return;
+  }
+
   // Activate ARC if Coral feature is enabled, since it depends on the on-device
   // safety service which is powered inside arc.
   if (ash::features::IsCoralFeatureEnabled()) {
