@@ -3466,6 +3466,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "MigratedAutomation": "true",
                         "MigratedBadFlags": "true",
                         "MigratedChromeForTesting": "true",
                         "MigratedCollectedCookies": "true",
