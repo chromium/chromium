@@ -228,6 +228,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                 "Accelerate all canvases in webview."),
+        Flag.baseFeature(
+                BlinkFeatures.RUSTY_ICO_FEATURE,
+                "When enabled, uses Rust `image` crate to decode ICO images."),
         Flag.baseFeature("RustyJpegFeature", "Enables Rust-based JPEG image decoding."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_BOOST_RENDERER_PRIORITY_ON_NAVIGATION,
