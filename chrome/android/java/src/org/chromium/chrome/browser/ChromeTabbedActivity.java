@@ -118,6 +118,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bottombar.BottomBarEnabledChangeObserver;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -1678,6 +1679,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             super.finishNativeInitialization();
 
             TabbedStartupCoordinator.onNativeInitialized(originalProfile);
+
+            if (BottomBarConfigUtils.shouldShowSettingsToggle(this)) {
+                new BottomBarEnabledChangeObserver(
+                        this,
+                        getLifecycleDispatcher(),
+                        mBottomBarHostManager != null,
+                        this::doRecreateActivity);
+            }
 
             // Deliberately not deferred to onDeferredStartup(): this timestamp is not just a
             // metric, it gates feature eligibility (e.g. the Setup List time window, which treats

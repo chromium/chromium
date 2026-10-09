@@ -3603,11 +3603,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * Do the tab re-parenting during activity recreation.
+     * Recreates the activity, re-parenting tabs so they survive the recreation. Subclasses should
+     * prefer this over {@link #recreate()} whenever a setting that is only applied at activity
+     * creation changes (e.g. theme, bottom bar) and the tab reparenting controller is available.
      *
      * @return whether the activity is recreated.
      */
-    private boolean doRecreateActivity() {
+    protected boolean doRecreateActivity() {
         TabletMode tabletMode = getTabletMode();
         if (UiAndroidFeatureList.sConnectedDisplayDensityDebugLogs.isEnabled()) {
             Log.i(
