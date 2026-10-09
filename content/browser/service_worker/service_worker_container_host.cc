@@ -612,8 +612,10 @@ void ServiceWorkerContainerHostForClient::SendSetController(
 
   CHECK(service_worker_client().controller_registration(),
         base::NotFatalUntil::M159);
-  CHECK_EQ(service_worker_client().controller_registration()->active_version(),
-           controller(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/571334917): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(service_worker_client().controller_registration()->active_version(),
+            controller());
 
   // TODO(crbug.com/331279951): Remove these crash keys after investigation.
   SCOPED_CRASH_KEY_NUMBER(
