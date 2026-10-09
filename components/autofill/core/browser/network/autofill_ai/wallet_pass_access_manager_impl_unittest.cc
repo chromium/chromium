@@ -41,6 +41,7 @@ namespace autofill {
 
 namespace {
 
+using ::base::Bucket;
 using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceCallbackRepeatedly;
@@ -1016,9 +1017,8 @@ TEST_P(WalletPassAccessManagerImplTest,
       histogram_tester.GetAllSamples(
           "Autofill.Ai.WalletNotice.Settings.CacheStatus"),
       BucketsAre(
-          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kHit, 1),
-          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight,
-                       1)));
+          Bucket(AutofillAiUpsertDetailsCacheStatus::kHit, 1),
+          Bucket(AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight, 1)));
 }
 
 // Tests that `ExtractPreloadedDetailsForUpsertPass` returns `std::nullopt`
@@ -1054,9 +1054,8 @@ TEST_P(WalletPassAccessManagerImplTest,
       histogram_tester.GetAllSamples(
           "Autofill.Ai.WalletNotice.Settings.CacheStatus"),
       BucketsAre(
-          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kHit, 1),
-          base::Bucket(AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight,
-                       1)));
+          Bucket(AutofillAiUpsertDetailsCacheStatus::kHit, 1),
+          Bucket(AutofillAiUpsertDetailsCacheStatus::kMissRequestInFlight, 1)));
 }
 
 #if GTEST_HAS_DEATH_TEST
