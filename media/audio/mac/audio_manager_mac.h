@@ -58,6 +58,7 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   std::string GetAssociatedOutputDeviceID(
       const std::string& input_device_id) override;
   const std::string_view GetName() override;
+  bool UsesQueuedOutputStream(const AudioParameters& params) const override;
 
   // Implementation of AudioManagerBase.
   AudioOutputStream* MakeLinearOutputStream(

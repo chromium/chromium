@@ -853,8 +853,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
   // able to tell the OS to use Spatial Audio. Robust support for Spatial Audio
   // playback via AVFoundation in third-party applications requires macOS 27+.
   if (__builtin_available(macOS 27, *)) {
-    if (base::FeatureList::IsEnabled(kMacAVFoundationPlayback) &&
-        params.latency_tag() == AudioLatency::Type::kPlayback) {
+    if (UsesQueuedOutputStream(params)) {
       DVLOG(1) << __func__ << ": Creating AVFoundationOutputStream for "
                << ChannelLayoutToString(params.channel_layout()) << " layout.";
       auto* stream = new AVFoundationOutputStream(this, params, device_id);
@@ -866,6 +865,11 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
       new AUHALStream(this, params, device, device_id, log_callback);
   output_streams_.insert(stream);
   return stream;
+}
+
+bool AudioManagerMac::UsesQueuedOutputStream(
+    const AudioParameters& params) const {
+  return IsMacAVFoundationPlaybackSupported(params);
 }
 
 std::string AudioManagerMac::GetDefaultOutputDeviceID() {
@@ -984,12 +988,7 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   // The AVFoundation backend can handle multichannel audio and perform mixing
   // itself. In this case, we can pass the original layout to the OS instead of
   // downmixing. This is only done for playback streams.
-  bool use_avf_streams = false;
-  if (__builtin_available(macOS 27, *)) {
-    use_avf_streams =
-        base::FeatureList::IsEnabled(kMacAVFoundationPlayback) &&
-        input_params.latency_tag() == AudioLatency::Type::kPlayback;
-  }
+  const bool use_avf_streams = UsesQueuedOutputStream(input_params);
 
   if (!has_valid_input_params ||
       (base::checked_cast<uint32_t>(output_channels) > hardware_channels &&

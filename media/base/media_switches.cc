@@ -16,6 +16,7 @@
 #include "build/chromecast_buildflags.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/base/audio_parameters.h"
 #include "media/media_buildflags.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_utils.h"
@@ -2026,4 +2027,19 @@ int GetAecDelayNumFilters() {
 }
 
 #endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+
+bool IsMacAVFoundationPlaybackSupported(const AudioParameters& params) {
+#if BUILDFLAG(IS_MAC)
+  if (__builtin_available(macOS 27, *)) {
+    const bool pcm =
+        params.IsValid() &&
+        (params.format() == AudioParameters::AUDIO_PCM_LOW_LATENCY ||
+         params.format() == AudioParameters::AUDIO_PCM_LINEAR);
+    return pcm && base::FeatureList::IsEnabled(kMacAVFoundationPlayback) &&
+           params.latency_tag() == AudioLatency::Type::kPlayback;
+  }
+#endif
+  return false;
+}
+
 }  // namespace media

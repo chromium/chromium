@@ -87,6 +87,26 @@ class AVFoundationOutputStreamTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(AVFoundationOutputStreamTest, QueuedOutputStreamRequiresPlaybackTag) {
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         ChannelLayoutConfig::Stereo(), 48000, 480);
+  EXPECT_FALSE(manager_->UsesQueuedOutputStream(params));
+  params.set_latency_tag(AudioLatency::Type::kPlayback);
+  if (@available(macOS 27, *)) {
+    EXPECT_TRUE(manager_->UsesQueuedOutputStream(params));
+    params.set_format(AudioParameters::AUDIO_PCM_LINEAR);
+    EXPECT_TRUE(manager_->UsesQueuedOutputStream(params));
+  } else {
+    EXPECT_FALSE(manager_->UsesQueuedOutputStream(params));
+  }
+  params.set_format(AudioParameters::AUDIO_FAKE);
+  EXPECT_FALSE(manager_->UsesQueuedOutputStream(params));
+  params.set_format(AudioParameters::AUDIO_PCM_LOW_LATENCY);
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(kMacAVFoundationPlayback);
+  EXPECT_FALSE(manager_->UsesQueuedOutputStream(params));
+}
+
 TEST_F(AVFoundationOutputStreamTest, CreateClose) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
   Create()->Close();

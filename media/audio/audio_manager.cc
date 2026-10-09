@@ -138,6 +138,10 @@ AudioManager* AudioManager::Get() {
   return g_last_created;
 }
 
+bool AudioManager::UsesQueuedOutputStream(const AudioParameters& params) const {
+  return false;
+}
+
 std::optional<base::CallbackListSubscription>
 AudioManager::AddInputMuteStateChangeCallback(
     base::RepeatingCallback<void(bool)> /*callback*/) {

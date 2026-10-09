@@ -126,6 +126,8 @@ MEDIA_EXPORT extern const char kHardwareVideoDevicePath[];
 
 namespace media {
 
+class AudioParameters;
+
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
@@ -562,6 +564,13 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 
 // Return bitmask of audio formats supported by EDID.
 MEDIA_EXPORT uint32_t GetPassthroughAudioFormats();
+
+// Whether `params` selects the macOS AVFoundation playback backend. This is
+// not a no-argument platform capability: macOS 27 or newer,
+// kMacAVFoundationPlayback, linear or low-latency PCM, and a playback latency
+// tag are all required. False on every other platform.
+MEDIA_EXPORT bool IsMacAVFoundationPlaybackSupported(
+    const AudioParameters& params);
 
 // Returns true if application audio loopback capture is implemented for the
 // current OS.
