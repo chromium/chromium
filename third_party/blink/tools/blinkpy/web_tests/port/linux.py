@@ -61,6 +61,8 @@ class LinuxPort(base.Port):
         if not self.get_option('disable_breakpad'):
             self._dump_reader = DumpReaderLinux(host, self.build_path())
         self._original_home = None
+        self._original_cipd_cache_dir = None
+        self._dummy_home_dir = None
         self._original_display = None
         self._xvfb_process = None
         self._xvfb_stdout = None
@@ -165,14 +167,14 @@ class LinuxPort(base.Port):
         """
         self._original_home = self.host.environ.get('HOME')
         self._original_cipd_cache_dir = self.host.environ.get('CIPD_CACHE_DIR')
-        dummy_home = str(self._filesystem.mkdtemp())
-        self.host.environ['HOME'] = dummy_home
+        self._dummy_home_dir = str(self._filesystem.mkdtemp())
+        self.host.environ['HOME'] = self._dummy_home_dir
         # When using a dummy home directory, CIPD cache directory needs to be
         # specified explicitly to make vpython work.
         self.host.environ['CIPD_CACHE_DIR'] = os.path.join(
-            dummy_home, '.vpython_cipd_cache'
+            self._dummy_home_dir, '.vpython_cipd_cache'
         )
-        self._setup_files_in_dummy_home_dir(dummy_home)
+        self._setup_files_in_dummy_home_dir(self._dummy_home_dir)
 
     def _setup_files_in_dummy_home_dir(self, dummy_home):
         # Note: This may be unnecessary.
@@ -193,14 +195,19 @@ class LinuxPort(base.Port):
 
     def _clean_up_dummy_home_dir(self):
         """Cleans up the dummy dir and resets the HOME environment variable."""
-        dummy_home = self.host.environ['HOME']
-        assert dummy_home != self._original_home
-        self._filesystem.rmtree(dummy_home)
-        self.host.environ['HOME'] = self._original_home
+        if not self._dummy_home_dir:
+            return
+        assert self._dummy_home_dir != self._original_home
+        self._filesystem.rmtree(self._dummy_home_dir)
+        self._dummy_home_dir = None
+        if self._original_home is not None:
+            self.host.environ['HOME'] = self._original_home
+        else:
+            self.host.environ.pop('HOME', None)
         if self._original_cipd_cache_dir:
             self.host.environ['CIPD_CACHE_DIR'] = self._original_cipd_cache_dir
         else:
-            del self.host.environ['CIPD_CACHE_DIR']
+            self.host.environ.pop('CIPD_CACHE_DIR', None)
 
     def _start_xvfb(self):
         display = self._find_display()

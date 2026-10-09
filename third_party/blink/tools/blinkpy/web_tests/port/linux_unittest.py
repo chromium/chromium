@@ -134,6 +134,23 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertEqual(port.host.environ['HOME'], '/home/user')
         self.assertFalse(port.host.filesystem.exists(temp_home_dir))
 
+    def test_clean_up_test_run_when_xvfb_fails_preserves_home(self):
+        def run_command_fake(args):
+            return 0  # xdpyinfo != 1 means no free display found.
+
+        port = self.make_port()
+        port.host.executive = MockExecutive(run_command_fn=run_command_fake)
+        port.host.environ['HOME'] = '/home/user'
+        port.host.filesystem.write_text_file(
+            '/home/user/important_file', 'data'
+        )
+        self.assertEqual(port.setup_test_run(), SYS_DEPS_EXIT_STATUS)
+        port.clean_up_test_run()
+        self.assertEqual(port.host.environ['HOME'], '/home/user')
+        self.assertTrue(
+            port.host.filesystem.isfile('/home/user/important_file')
+        )
+
     def test_xvfb_flags(self):
         port = self.make_port()
         port._xvfb_supports_maxclients = False
