@@ -20,10 +20,8 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
-#include "media/base/webvtt_util.h"
 #include "media/formats/webm/webm_constants.h"
 #include "media/formats/webm/webm_crypto_helpers.h"
-#include "media/formats/webm/webm_webvtt_parser.h"
 
 namespace media {
 

@@ -106,8 +106,6 @@ source_set("formats") {
     "webm/webm_tracks_parser.h",
     "webm/webm_video_client.cc",
     "webm/webm_video_client.h",
-    "webm/webm_webvtt_parser.cc",
-    "webm/webm_webvtt_parser.h",
   ]
 
   deps = [
@@ -335,7 +333,6 @@ source_set("unit_tests") {
     "webm/webm_stream_parser_unittest.cc",
     "webm/webm_tracks_parser_unittest.cc",
     "webm/webm_video_client_unittest.cc",
-    "webm/webm_webvtt_parser_unittest.cc",
   ]
 
   deps = [

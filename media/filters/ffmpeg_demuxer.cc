@@ -40,7 +40,6 @@
 #include "media/base/supported_types.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
-#include "media/base/webvtt_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/filters/ffmpeg_aac_bitstream_converter.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"

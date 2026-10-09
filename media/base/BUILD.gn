@@ -404,7 +404,6 @@ source_set("base") {
     "wall_clock_time_source.h",
     "watch_time_keys.cc",
     "watch_time_keys.h",
-    "webvtt_util.h",
   ]
 
   defines = []
