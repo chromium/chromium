@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/bubble_manager_impl.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -29,7 +30,6 @@ namespace {
 
 using ::testing::NiceMock;
 using ::testing::Return;
-using GmailOtpOptInResult = GmailOtpOptInBubbleController::GmailOtpOptInResult;
 
 class MockAutofillBubble : public AutofillBubbleBase {
  public:
