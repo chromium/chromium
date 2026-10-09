@@ -367,13 +367,6 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
   return picture_buffer;
 }
 
-D3DStatus D3D11VideoDecoderBackend::WaitForDecodeComplete(
-    D3DPictureBuffer* picture_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(picture_buffer);
-  return picture_buffer->WaitForDecodeCompleteGPU(device_context_.Get());
-}
-
 bool D3D11VideoDecoderBackend::ShouldUseDXVADeviceForHEVCRangeExtension(
     const VideoDecoderConfig& config) const {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

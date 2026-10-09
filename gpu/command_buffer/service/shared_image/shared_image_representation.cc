@@ -1199,14 +1199,37 @@ VideoImageRepresentation::VideoImageRepresentation(SharedImageManager* manager,
 
 VideoImageRepresentation::~VideoImageRepresentation() = default;
 
+#if BUILDFLAG(IS_WIN)
+void VideoImageRepresentation::EndWriteAccessVideo(
+    scoped_refptr<gfx::D3DSharedFence> fence) {
+  // We do not expect any fences in the default case. They are only handled in
+  // the `D3DVideoImageRepresentation`, therefore CHECK that the caller doesn't
+  // expect any fence management for this implementation.
+  CHECK(!fence);
+  EndWriteAccess();
+}
+#endif
+
 VideoImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
     base::PassKey<VideoImageRepresentation> /* pass_key */,
     VideoImageRepresentation* representation)
     : ScopedAccessBase(representation, AccessMode::kWrite) {}
 
 VideoImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
+#if BUILDFLAG(IS_WIN)
+  representation()->EndWriteAccessVideo(std::move(end_access_fence_));
+#else
   representation()->EndWriteAccess();
+#endif
 }
+
+#if BUILDFLAG(IS_WIN)
+void VideoImageRepresentation::ScopedWriteAccess::SetEndAccessFence(
+    scoped_refptr<gfx::D3DSharedFence> fence) {
+  CHECK(fence);
+  end_access_fence_ = std::move(fence);
+}
+#endif
 
 std::unique_ptr<VideoImageRepresentation::ScopedWriteAccess>
 VideoImageRepresentation::BeginScopedWriteAccess() {

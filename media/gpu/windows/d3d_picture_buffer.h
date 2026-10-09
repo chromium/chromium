@@ -71,8 +71,7 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   D3DPictureBuffer(const D3DPictureBuffer&) = delete;
   D3DPictureBuffer& operator=(const D3DPictureBuffer&) = delete;
 
-  // Initialize |shared_image_dest|; return true if successful.
-  // |input_color_space| is the color space of our input texture.
+  // Initialize |shared_image_dest|.
   D3DStatus ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest);
   ComD3D11Texture2D Texture() const;
@@ -82,7 +81,6 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   D3DStatus::Or<ID3D12Resource*> ToD3D12Resource(ID3D12Device* device);
 
   void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
-  D3DStatus WaitForDecodeCompleteGPU(ID3D11DeviceContext* context);
 
   size_t picture_index() const { return picture_index_; }
 
@@ -129,7 +127,10 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
   // The cached pointer of D3D12 version of texture, if ToD3D12Resource() has
   // been called.
   ComD3D12Resource d3d12_resource_;
-  std::pair<scoped_refptr<D3D12Fence>, uint64_t> fence_and_value_;
+
+  // Reused across submissions for this picture buffer. The buffer is not
+  // decoded into again until its previous accesses have completed.
+  scoped_refptr<gfx::D3DSharedFence> shared_decode_fence_;
 };
 
 }  // namespace media

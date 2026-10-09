@@ -110,8 +110,6 @@ class D3DVideoDecoderBackend {
       base::OnceCallback<void(scoped_refptr<D3DPictureBuffer>)>
           init_done_cb) = 0;
 
-  virtual D3DStatus WaitForDecodeComplete(D3DPictureBuffer* picture_buffer) = 0;
-
   // Returns true if standard DXVA HEVC range-extension profiles should be used
   // for `config`.
   virtual bool ShouldUseDXVADeviceForHEVCRangeExtension(

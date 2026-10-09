@@ -14,6 +14,10 @@
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_status.h"
 
+namespace gfx {
+class D3DSharedFence;
+}
+
 namespace media {
 
 // D3D12Fence wraps a ID3D12Fence pointer and its last signaled fence value.
@@ -31,6 +35,10 @@ class MEDIA_GPU_EXPORT D3D12Fence
   // Get the underlying ID3D12Fence pointer.
   ID3D12Fence* Get() const;
 
+  // Create a shared fence that waits for |fence_value|.
+  scoped_refptr<gfx::D3DSharedFence> CreateSharedFence(
+      uint64_t fence_value) const;
+
   // Get the last signaled fence value.
   uint64_t Value() const;
 
@@ -44,11 +52,6 @@ class MEDIA_GPU_EXPORT D3D12Fence
   // Wait on CPU until the |fence_value| is signaled.
   D3DStatus WaitCPU(uint64_t fence_value) const;
 
-  // Let D3D11 |device_context| wait on GPU until the |fence_value| is signaled.
-  // The D3D11Fence should have been checked to be supported before calling
-  // this.
-  D3DStatus WaitGPU(ID3D11DeviceContext& device_context, uint64_t fence_value);
-
   // Signal the fence and wait on CPU until the fence is signaled.
   D3DStatus SignalAndWaitCPU(ID3D12CommandQueue& command_queue);
 
@@ -58,8 +61,6 @@ class MEDIA_GPU_EXPORT D3D12Fence
 
   ComD3D12Fence fence_;
   uint64_t fence_value_ = 0;
-
-  ComD3D11Fence d3d11_fence_;
 };
 
 }  // namespace media

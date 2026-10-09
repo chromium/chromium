@@ -67,7 +67,8 @@ D3DStatus D3DPictureBuffer::Init(
 
 D3DStatus D3DPictureBuffer::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
-  return texture_wrapper_->ProcessTexture(shared_image_dest);
+  return texture_wrapper_->ProcessTexture(shared_image_dest,
+                                          shared_decode_fence_);
 }
 
 ComD3D11Texture2D D3DPictureBuffer::Texture() const {
@@ -122,13 +123,14 @@ D3DStatus::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
 
 void D3DPictureBuffer::SetFenceAndValue(scoped_refptr<D3D12Fence> fence,
                                         uint64_t value) {
-  fence_and_value_ = std::make_pair(std::move(fence), value);
-}
-
-D3DStatus D3DPictureBuffer::WaitForDecodeCompleteGPU(
-    ID3D11DeviceContext* context) {
-  const auto& [fence, value] = fence_and_value_;
-  return !fence ? D3DStatus::Codes::kOk : fence->WaitGPU(*context, value);
+  CHECK(fence);
+  if (!shared_decode_fence_) {
+    shared_decode_fence_ = fence->CreateSharedFence(value);
+  } else {
+    CHECK_EQ(shared_decode_fence_->GetD3D12Fence().Get(), fence->Get());
+    CHECK_GE(value, shared_decode_fence_->GetFenceValue());
+    shared_decode_fence_->Update(value);
+  }
 }
 
 }  // namespace media

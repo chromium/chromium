@@ -129,8 +129,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   bool BeginAccessD3D(const D3DAccessObject& access_object,
                       bool write_access,
                       bool is_overlay_access = false);
-  void EndAccessD3D(const D3DAccessObject& access_object,
-                    bool is_overlay_access = false);
+  void EndAccessD3D(
+      const D3DAccessObject& access_object,
+      bool is_overlay_access = false,
+      scoped_refptr<gfx::D3DSharedFence> external_fence = nullptr);
 
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::BackendType backend_type,

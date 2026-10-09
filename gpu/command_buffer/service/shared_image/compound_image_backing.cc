@@ -799,6 +799,11 @@ class WrappedVideoCompoundImageRepresentation
   D3D11TextureAndArrayIndex GetD3D11Texture() const override {
     return wrapped_->GetD3D11Texture();
   }
+  void EndWriteAccessVideo(scoped_refptr<gfx::D3DSharedFence> fence) override {
+    wrapped_->EndWriteAccessVideo(std::move(fence));
+    compound_backing()->NotifyEndAccess(wrapped_->backing(),
+                                        AccessMode::kWrite);
+  }
 #endif
 #if BUILDFLAG(IS_ANDROID)
   AHardwareBuffer* GetAHardwareBuffer() const override {

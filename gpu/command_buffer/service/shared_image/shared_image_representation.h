@@ -1218,6 +1218,11 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
     D3D11TextureAndArrayIndex GetD3D11Texture() const {
       return representation()->GetD3D11Texture();
     }
+
+    void SetEndAccessFence(scoped_refptr<gfx::D3DSharedFence> fence);
+
+   private:
+    scoped_refptr<gfx::D3DSharedFence> end_access_fence_;
 #endif  // BUILDFLAG(IS_WIN)
   };
 
@@ -1254,6 +1259,8 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
 
 #if BUILDFLAG(IS_WIN)
   virtual D3D11TextureAndArrayIndex GetD3D11Texture() const = 0;
+  virtual void EndWriteAccessVideo(
+      scoped_refptr<gfx::D3DSharedFence> end_access_fence);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

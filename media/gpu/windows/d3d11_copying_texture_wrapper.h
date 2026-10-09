@@ -39,7 +39,8 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   D3DStatus BeginSharedImageAccess() override;
 
   D3DStatus ProcessTexture(
-      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest,
+      scoped_refptr<gfx::D3DSharedFence> decode_fence) override;
 
   D3DStatus Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
                  GetCommandBufferHelperCB get_helper_cb,

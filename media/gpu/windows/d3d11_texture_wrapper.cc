@@ -65,10 +65,16 @@ D3DStatus DefaultTexture2DWrapper::BeginSharedImageAccess() {
 }
 
 D3DStatus DefaultTexture2DWrapper::ProcessTexture(
-    scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
+    scoped_refptr<gpu::ClientSharedImage>& shared_image_dest,
+    scoped_refptr<gfx::D3DSharedFence> decode_fence) {
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
   // TODO(liberato): Return the error.
+  if (decode_fence) {
+    CHECK(shared_image_access_);
+    shared_image_access_->SetEndAccessFence(std::move(decode_fence));
+  }
+
   if (shared_image_access_) {
     TRACE_EVENT0("gpu", "D3D11TextureWrapper::EndScopedWriteAccess");
     shared_image_access_.reset();

@@ -4,12 +4,11 @@
 
 #include "media/gpu/windows/d3d12_fence.h"
 
-#include <d3d11_4.h>
-
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 
 namespace media {
 
@@ -32,6 +31,11 @@ scoped_refptr<D3D12Fence> D3D12Fence::Create(ID3D12Device* device,
 
 ID3D12Fence* D3D12Fence::Get() const {
   return fence_.Get();
+}
+
+scoped_refptr<gfx::D3DSharedFence> D3D12Fence::CreateSharedFence(
+    uint64_t fence_value) const {
+  return gfx::D3DSharedFence::CreateFromD3D12Fence(fence_, fence_value);
 }
 
 uint64_t D3D12Fence::Value() const {
@@ -68,51 +72,6 @@ D3DStatus D3D12Fence::WaitCPU(uint64_t fence_value) const {
   return WaitForSingleObject(fence_event.Get(), INFINITE) == WAIT_OBJECT_0
              ? D3DStatusCode::kOk
              : D3DStatusCode::kWaitForFenceFailed;
-}
-
-D3DStatus D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
-                              uint64_t fence_value) {
-  HRESULT hr;
-  if (!d3d11_fence_) {
-    Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
-    CHECK_EQ(fence_->GetDevice(IID_PPV_ARGS(&d3d12_device)), S_OK);
-
-    HANDLE handle;
-    hr = d3d12_device->CreateSharedHandle(fence_.Get(), nullptr, GENERIC_ALL,
-                                          nullptr, &handle);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to create shared handle for fence: "
-                 << logging::SystemErrorCodeToString(hr);
-      return D3DStatusCode::kCreateSharedHandleFailed;
-    }
-    base::win::ScopedHandle scoped_handle(handle);
-
-    Microsoft::WRL::ComPtr<ID3D11Device> device;
-    device_context.GetDevice(&device);
-    Microsoft::WRL::ComPtr<ID3D11Device5> device5;
-    // We have checked that D3D11Fence is supported in d3d_video_decoder.cc
-    CHECK_EQ(device.As(&device5), S_OK);
-
-    hr = device5->OpenSharedFence(scoped_handle.get(),
-                                  IID_PPV_ARGS(&d3d11_fence_));
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to open shared fence: "
-                 << logging::SystemErrorCodeToString(hr);
-      return D3DStatusCode::kCreateFenceFailed;
-    }
-  }
-  CHECK(d3d11_fence_);
-
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext4> device_context4;
-  // We have checked that D3D11Fence is supported in d3d_video_decoder.cc
-  CHECK_EQ(device_context.QueryInterface(IID_PPV_ARGS(&device_context4)), S_OK);
-  hr = device_context4->Wait(d3d11_fence_.Get(), fence_value);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "ID3D11DeviceContext4 failed to wait for fence: "
-               << logging::SystemErrorCodeToString(hr);
-    return D3DStatusCode::kWaitForFenceFailed;
-  }
-  return D3DStatusCode::kOk;
 }
 
 D3DStatus D3D12Fence::SignalAndWaitCPU(ID3D12CommandQueue& command_queue) {

@@ -140,6 +140,8 @@ class D3DVideoImageRepresentation : public VideoImageRepresentation {
  private:
   bool BeginWriteAccess() override;
   void EndWriteAccess() override;
+  void EndWriteAccessVideo(
+      scoped_refptr<gfx::D3DSharedFence> end_access_fence) override;
   bool BeginReadAccess() override;
   void EndReadAccess() override;
   D3D11TextureAndArrayIndex GetD3D11Texture() const override;

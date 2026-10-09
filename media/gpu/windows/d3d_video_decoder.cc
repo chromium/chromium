@@ -808,11 +808,7 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
   DCHECK(texture_selector_);
   TRACE_EVENT0("gpu", "D3DVideoDecoder::OutputResult");
 
-  D3DStatus result = backend_->WaitForDecodeComplete(picture_buffer);
-  if (!result.is_ok()) {
-    NotifyError(std::move(result).AddHere());
-    return false;
-  }
+  CHECK(picture_buffer);
   picture_buffer->add_client_use();
 
   // Note: The pixel format doesn't matter.
@@ -825,7 +821,7 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
   base::TimeDelta timestamp = picture_buffer->timestamp_;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image;
-  result = picture_buffer->ProcessTexture(shared_image);
+  D3DStatus result = picture_buffer->ProcessTexture(shared_image);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;

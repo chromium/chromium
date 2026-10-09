@@ -272,8 +272,14 @@ bool D3DVideoImageRepresentation::BeginWriteAccess() {
 }
 
 void D3DVideoImageRepresentation::EndWriteAccess() {
+  EndWriteAccessVideo(nullptr);
+}
+
+void D3DVideoImageRepresentation::EndWriteAccessVideo(
+    scoped_refptr<gfx::D3DSharedFence> end_access_fence) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D(access_object_);
+  d3d_image_backing->EndAccessD3D(access_object_, /*is_overlay_access=*/false,
+                                  std::move(end_access_fence));
 }
 
 bool D3DVideoImageRepresentation::BeginReadAccess() {

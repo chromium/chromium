@@ -22,6 +22,7 @@
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_status.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -67,9 +68,11 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   virtual D3DStatus BeginSharedImageAccess() = 0;
 
   // Import |texture|, |array_slice| and return the shared image that can be
-  // used to refer to it.
+  // used to refer to it. |decode_fence|, when non-null, signals completion of
+  // writes to |texture|.
   virtual D3DStatus ProcessTexture(
-      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest_out) = 0;
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest_out,
+      scoped_refptr<gfx::D3DSharedFence> decode_fence) = 0;
 
   virtual const gfx::Size& GetSize() const = 0;
 };
@@ -110,7 +113,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   D3DStatus BeginSharedImageAccess() override;
 
   D3DStatus ProcessTexture(
-      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest,
+      scoped_refptr<gfx::D3DSharedFence> decode_fence) override;
 
   const gfx::Size& GetSize() const override;
 

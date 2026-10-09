@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -20,10 +21,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_win.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 
 using ::testing::_;
 using ::testing::Bool;
 using ::testing::Combine;
+using ::testing::InSequence;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
 
@@ -85,7 +89,8 @@ class MockTexture2DWrapper : public Texture2DWrapper {
   MockTexture2DWrapper() {}
 
   D3DStatus ProcessTexture(
-      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override {
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest,
+      scoped_refptr<gfx::D3DSharedFence>) override {
     return MockProcessTexture();
   }
 
@@ -116,6 +121,10 @@ class MockTexture2DWrapper : public Texture2DWrapper {
 
 CommandBufferHelperPtr UselessHelper() {
   return nullptr;
+}
+
+GetCommandBufferHelperCB CreateMockHelperCB() {
+  return base::BindRepeating(&UselessHelper);
 }
 
 class D3D11CopyingTexture2DWrapperTest
@@ -175,10 +184,6 @@ class D3D11CopyingTexture2DWrapperTest
     return result;
   }
 
-  GetCommandBufferHelperCB CreateMockHelperCB() {
-    return base::BindRepeating(&UselessHelper);
-  }
-
   bool InitSucceeds() {
     return GetProcessorProxyInit() && GetTextureWrapperInit();
   }
@@ -233,8 +238,9 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   if (GetProcessorProxyInit()) {
     EXPECT_EQ(texture_wrapper_raw->gpu_task_runner_, gpu_task_runner_);
   }
-  EXPECT_EQ(wrapper->ProcessTexture(shared_image).is_ok(),
-            ProcessTextureSucceeds());
+  EXPECT_EQ(
+      wrapper->ProcessTexture(shared_image, /*decode_fence=*/nullptr).is_ok(),
+      ProcessTextureSucceeds());
 
   if (InitSucceeds()) {
     // Also expect that the input and copy spaces were provided to the video
@@ -403,6 +409,129 @@ TEST_F(CopyingTexture2DWrapperColorSpaceTest,
   ExpectVideoProcessorDxgiColorSpaces(
       rec709_yuv, rec709_yuv, DXGI_FORMAT_NV12, DXGI_FORMAT_NV12,
       /*enable_workaround=*/true, DxgiExpectation::kFromColorSpaces);
+}
+
+class CopyingTexture2DWrapperDecodeFenceTest : public ::testing::Test {
+ public:
+  const uint64_t kDecodeFenceValue = 5;
+
+  void SetUp() override {
+    // Mock out D3D functions.
+    device_ = MakeComPtr<NiceMock<D3D11DeviceMock>>();
+    device_context_ = MakeComPtr<NiceMock<D3D11DeviceContextMock>>();
+    d3d11_fence_ = MakeComPtr<NiceMock<D3D11FenceMock>>();
+    input_texture_ = MakeComPtr<NiceMock<D3D11Texture2DMock>>();
+    signal_device_ = MakeComPtr<NiceMock<D3D11DeviceMock>>();
+    ON_CALL(*signal_device_.Get(), QueryInterface(__uuidof(ID3D11Device5), _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(signal_device_.Get()));
+    ON_CALL(*signal_device_.Get(),
+            CreateFence(0, D3D11_FENCE_FLAG_SHARED, __uuidof(ID3D11Fence), _))
+        .WillByDefault(SetComPointeeAndReturnOk<3>(d3d11_fence_.Get()));
+    ON_CALL(*d3d11_fence_.Get(),
+            CreateSharedHandle(nullptr, GENERIC_ALL, nullptr, _))
+        .WillByDefault(
+            [](const SECURITY_ATTRIBUTES*, DWORD, LPCWSTR, HANDLE* handle) {
+              *handle = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+              return *handle ? S_OK : HRESULT_FROM_WIN32(::GetLastError());
+            });
+    ON_CALL(*input_texture_.Get(), GetDevice(_))
+        .WillByDefault(SetComPointee<0>(device_.Get()));
+    ON_CALL(*device_.Get(), QueryInterface(__uuidof(ID3D11Device5), _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(device_.Get()));
+    ON_CALL(*device_.Get(), OpenSharedFence(_, __uuidof(ID3D11Fence), _))
+        .WillByDefault(SetComPointeeAndReturnOk<2>(d3d11_fence_.Get()));
+    ON_CALL(*device_.Get(), GetImmediateContext(_))
+        .WillByDefault(SetComPointee<0>(device_context_.Get()));
+    ON_CALL(*device_context_.Get(),
+            QueryInterface(__uuidof(ID3D11DeviceContext4), _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(device_context_.Get()));
+
+    // Ensures that wait will be called by returning a completed value less
+    // than the decode fence value.
+    ON_CALL(*d3d11_fence_.Get(), GetCompletedValue())
+        .WillByDefault(Return(kDecodeFenceValue - 1));
+
+    processor_ = base::MakeRefCounted<MockVideoProcessorProxy>();
+    ON_CALL(*processor_, MockInit(_, _))
+        .WillByDefault(Return(D3DStatus::Codes::kOk));
+
+    auto output_wrapper = std::make_unique<MockTexture2DWrapper>();
+    output_wrapper_ = output_wrapper.get();
+    ON_CALL(*output_wrapper_, MockInit())
+        .WillByDefault(Return(D3DStatus::Codes::kOk));
+    wrapper_ = std::make_unique<CopyingTexture2DWrapper>(
+        gfx::Size(), gfx::ColorSpace::CreateREC709(),
+        gfx::ColorSpace::CreateREC709(), std::move(output_wrapper), processor_,
+        /*output_texture=*/nullptr, gpu::GpuDriverBugWorkarounds());
+    ASSERT_TRUE(wrapper_
+                    ->Init(task_environment_.GetMainThreadTaskRunner(),
+                           CreateMockHelperCB(), input_texture_,
+                           /*array_slice=*/0, /*picture_buffer=*/nullptr,
+                           /*picture_buffer_gpu_resource_init_done_cb=*/
+                           base::DoNothing())
+                    .is_ok());
+  }
+
+  scoped_refptr<gfx::D3DSharedFence> CreateDecodeFence() {
+    scoped_refptr<gfx::D3DSharedFence> fence =
+        gfx::D3DSharedFence::CreateForD3D11(signal_device_);
+    CHECK(fence);
+    fence->Update(kDecodeFenceValue);
+    return fence;
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  Microsoft::WRL::ComPtr<NiceMock<D3D11DeviceMock>> signal_device_;
+  Microsoft::WRL::ComPtr<NiceMock<D3D11DeviceMock>> device_;
+  Microsoft::WRL::ComPtr<NiceMock<D3D11DeviceContextMock>> device_context_;
+  Microsoft::WRL::ComPtr<NiceMock<D3D11FenceMock>> d3d11_fence_;
+  Microsoft::WRL::ComPtr<NiceMock<D3D11Texture2DMock>> input_texture_;
+  scoped_refptr<MockVideoProcessorProxy> processor_;
+  std::unique_ptr<CopyingTexture2DWrapper> wrapper_;
+  raw_ptr<MockTexture2DWrapper> output_wrapper_ = nullptr;
+};
+
+// The video processor reads the decoded texture, so the copy must be ordered
+// after the decode fence on the input texture's device.
+TEST_F(CopyingTexture2DWrapperDecodeFenceTest, WaitsForDecodeFenceBeforeCopy) {
+  {
+    // Make sure calls are in order.
+    InSequence sequence;
+    // Expect the decode fence to be waited on before any processing occurs.
+    EXPECT_CALL(
+        *device_context_.Get(),
+        Wait(static_cast<ID3D11Fence*>(d3d11_fence_.Get()), kDecodeFenceValue))
+        .WillOnce(Return(S_OK));
+
+    EXPECT_CALL(*output_wrapper_, MockBeginSharedImageAccess())
+        .WillOnce(Return(D3DStatus::Codes::kOk));
+    EXPECT_CALL(*processor_, MockVideoProcessorBlt()).WillOnce(Return(S_OK));
+    EXPECT_CALL(*output_wrapper_, MockProcessTexture())
+        .WillOnce(Return(D3DStatus::Codes::kOk));
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  EXPECT_TRUE(
+      wrapper_->ProcessTexture(shared_image, CreateDecodeFence()).is_ok());
+}
+
+TEST_F(CopyingTexture2DWrapperDecodeFenceTest,
+       DoesNotCopyIfDecodeFenceWaitFails) {
+  {
+    // Make sure calls are in order.
+    InSequence sequence;
+    // Expect the decode fence to be waited on before any processing occurs.
+    EXPECT_CALL(*device_context_.Get(), Wait(_, kDecodeFenceValue))
+        .WillOnce(Return(E_FAIL));
+    EXPECT_CALL(*output_wrapper_, MockBeginSharedImageAccess()).Times(0);
+    EXPECT_CALL(*processor_, MockVideoProcessorBlt()).Times(0);
+    EXPECT_CALL(*output_wrapper_, MockProcessTexture()).Times(0);
+  }
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  D3DStatus status =
+      wrapper_->ProcessTexture(shared_image, CreateDecodeFence());
+  EXPECT_EQ(status.code(), D3DStatus::Codes::kWaitForFenceFailed);
 }
 
 }  // namespace media

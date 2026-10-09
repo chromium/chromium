@@ -1753,8 +1753,10 @@ bool D3DImageBacking::BeginAccessD3D(const D3DAccessObject& access_device,
   return true;
 }
 
-void D3DImageBacking::EndAccessD3D(const D3DAccessObject& access_device,
-                                   bool is_overlay_access) {
+void D3DImageBacking::EndAccessD3D(
+    const D3DAccessObject& access_device,
+    bool is_overlay_access,
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
   const bool is_texture_device = IsSameAccessObject(access_device);
   // If shared handle is not present, we can only access on the same device.
   AutoLock auto_lock(this);
@@ -1764,7 +1766,13 @@ void D3DImageBacking::EndAccessD3D(const D3DAccessObject& access_device,
   // the texture on one device or using a keyed mutex. The fence is lazily
   // created on the first access from another device in GetPendingWaitFences().
   D3DSharedFenceSet signaled_fence;
-  if (use_cross_device_fence_synchronization()) {
+  if (external_fence) {
+    // External fences are created and owned outside of D3DImageBacking. We
+    // avoid caching them in `signaled_fence_map_` as it would cause the backing
+    // to re-signal them; hence publish them directly as a write fence and avoid
+    // the `signaled_fence_map_` lookup.
+    signaled_fence.insert(std::move(external_fence));
+  } else if (use_cross_device_fence_synchronization()) {
     auto& signal_fence = signaled_fence_map_[access_device];
     // If the accessing device was not the texture's original device, create
     // the fence so that future access of the backing waits for all pending work
