@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/pipeline_status.h"
@@ -140,7 +141,7 @@ class CourierRenderer final : public Renderer {
       std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Called when |current_media_time_| is updated.
-  void OnMediaTimeUpdated();
+  void OnMediaTimeUpdated(base::TimeDelta current_media_time);
 
   // Called to update the |video_stats_queue_|.
   void UpdateVideoStatsQueue(int video_frames_decoded,
@@ -174,12 +175,10 @@ class CourierRenderer final : public Renderer {
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
-  // Current renderer playback time information.
-  base::TimeDelta current_media_time_;
-  base::TimeDelta current_max_time_;
-  // Both |current_media_time_| and |current_max_time_| should be protected by
-  // lock because it can be accessed from both media and render main thread.
   base::Lock time_lock_;
+  // Can be accessed from both media and render main threads.
+  base::TimeDelta current_media_time_ GUARDED_BY(time_lock_);
+  base::TimeDelta current_max_time_ GUARDED_BY(time_lock_);
 
   raw_ptr<MediaResource> media_resource_;
   raw_ptr<RendererClient> client_;

@@ -524,15 +524,17 @@ void CourierRenderer::OnTimeUpdate(
   if (time_usec < 0 || max_time_usec < 0 || time_usec > max_time_usec)
     return;
 
+  const base::TimeDelta media_time = base::Microseconds(time_usec);
+  const base::TimeDelta max_time = base::Microseconds(max_time_usec);
   {
     // Updates current time information.
     base::AutoLock auto_lock(time_lock_);
-    current_media_time_ = base::Microseconds(time_usec);
-    current_max_time_ = base::Microseconds(max_time_usec);
+    current_media_time_ = media_time;
+    current_max_time_ = max_time;
   }
 
   metrics_recorder_.OnEvidenceOfPlayoutAtReceiver();
-  OnMediaTimeUpdated();
+  OnMediaTimeUpdated(media_time);
 }
 
 void CourierRenderer::OnBufferingStateChange(
@@ -677,7 +679,7 @@ void CourierRenderer::OnFatalError(StopTrigger stop_trigger) {
     std::move(flush_cb_).Run();
 }
 
-void CourierRenderer::OnMediaTimeUpdated() {
+void CourierRenderer::OnMediaTimeUpdated(base::TimeDelta current_media_time) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (flush_cb_)
     return;  // Don't manage and check the queue when Flush() is on-going.
@@ -689,7 +691,7 @@ void CourierRenderer::OnMediaTimeUpdated() {
     return;  // Not stable yet.
 
   media_time_queue_.push_back(
-      std::make_pair(current_time, current_media_time_));
+      std::make_pair(current_time, current_media_time));
   base::TimeDelta window_duration =
       current_time - media_time_queue_.front().first;
   if (window_duration < kTrackingWindow)

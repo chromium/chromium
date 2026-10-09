@@ -394,6 +394,7 @@ class CourierRendererTest : public testing::Test {
 
   void ValidateCurrentTime(base::TimeDelta current,
                            base::TimeDelta current_max) const {
+    base::AutoLock auto_lock(renderer_->time_lock_);
     ASSERT_EQ(renderer_->current_media_time_, current);
     ASSERT_EQ(renderer_->current_max_time_, current_max);
   }
