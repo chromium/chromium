@@ -2527,12 +2527,20 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       child_bfc_block_offset = PositionSelfCollapsingChildWithParentBfc(
           child, child_space, *child_data, *layout_result);
 
-      // We may need to relayout this child if it had any (adjoining) objects
-      // which were positioned in the incorrect place.
-      if (layout_result->GetPhysicalFragment()
-              .HasAdjoiningObjectDescendants() &&
-          *child_bfc_block_offset != child_space.ExpectedBfcBlockOffset()) {
-        self_collapsing_child_needs_relayout = true;
+      if (*child_bfc_block_offset != child_space.ExpectedBfcBlockOffset()) {
+        // We need to relayout this child if it had any (adjoining) objects
+        // which were positioned in the incorrect place. Also need relayout if
+        // we're inside block fragmentation, in case there are OOFs that may
+        // fragment differently now.
+        //
+        // TODO(crbug.com/40267498): Should eventually be possible to only do
+        // this if there actually are any OOFs inside.
+        const PhysicalFragment& fragment = layout_result->GetPhysicalFragment();
+        if (fragment.HasAdjoiningObjectDescendants() ||
+            (GetConstraintSpace().HasBlockFragmentation() &&
+             RuntimeEnabledFeatures::FragmentedOofInCbEnabled())) {
+          self_collapsing_child_needs_relayout = true;
+        }
       }
     }
   } else if (!child_had_clearance && !is_self_collapsing) {
