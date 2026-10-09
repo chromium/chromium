@@ -9495,6 +9495,11 @@ void Element::UpdateToVideoAd() {
   }
 }
 
+void Element::SetIsOverlayPopupAd() {
+  CHECK(IsAdRelated());
+  RareData()->GetDisplayAdElementMonitor()->SetIsOverlayPopupAd();
+}
+
 bool Element::IsAdRelated() const {
   if (const NodeRareData* data = RareData()) {
     return data->GetDisplayAdElementMonitor();
@@ -9506,6 +9511,15 @@ bool Element::IsVideoAd() const {
   if (const NodeRareData* data = RareData()) {
     if (auto* monitor = data->GetDisplayAdElementMonitor()) {
       return monitor->IsVideoAd();
+    }
+  }
+  return false;
+}
+
+bool Element::IsOverlayPopupAd() const {
+  if (const NodeRareData* data = RareData()) {
+    if (const auto* monitor = data->GetDisplayAdElementMonitor()) {
+      return monitor->IsOverlayPopupAd();
     }
   }
   return false;

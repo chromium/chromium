@@ -54,6 +54,9 @@ class CORE_EXPORT DisplayAdElementMonitor final
   bool IsVideoAd() const { return is_video_ad_; }
   void UpdateToVideoAd();
 
+  bool IsOverlayPopupAd() const { return is_overlay_popup_ad_; }
+  void SetIsOverlayPopupAd();
+
   const AdProvenance& GetAdProvenance() const { return ad_provenance_; }
 
   void Trace(Visitor*) const override;
@@ -110,6 +113,7 @@ class CORE_EXPORT DisplayAdElementMonitor final
 
   bool started_ = false;
   bool is_video_ad_ = false;
+  bool is_overlay_popup_ad_ = false;
   bool did_record_video_ad_use_counter_ = false;
 
   bool is_sticky_ad_ = false;

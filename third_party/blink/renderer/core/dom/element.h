@@ -1947,11 +1947,17 @@ class CORE_EXPORT Element : public ContainerNode {
   // Marks this element as an ad-related video stream.
   void UpdateToVideoAd();
 
+  // Marks this element as an overlay popup ad.
+  void SetIsOverlayPopupAd();
+
   // Returns true if the element is considered ad-related.
   bool IsAdRelated() const;
 
   // Returns true if the element is an ad-related video stream.
   bool IsVideoAd() const;
+
+  // Returns true if the element is an overlay popup ad.
+  bool IsOverlayPopupAd() const;
 
   // Returns the `AdProvenance` if the element is ad-related, or `std::nullopt`
   // otherwise.

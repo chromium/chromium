@@ -158,6 +158,10 @@ void DisplayAdElementMonitor::UpdateToVideoAd() {
   }
 }
 
+void DisplayAdElementMonitor::SetIsOverlayPopupAd() {
+  is_overlay_popup_ad_ = true;
+}
+
 void DisplayAdElementMonitor::MaybeRecordVideoAdUseCounter() {
   if (!did_record_video_ad_use_counter_ && is_video_ad_ &&
       overlay_visibility_ == OverlayVisibility::kVisible &&

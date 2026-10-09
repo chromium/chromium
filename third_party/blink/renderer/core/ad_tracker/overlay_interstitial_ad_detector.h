@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class Element;
 class LocalFrame;
 
 // Detects overlay interstitials and record a use counter when an instance is
@@ -56,7 +57,13 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
   void MaybeFireDetection(LocalFrame* outermost_main_frame);
 
  private:
-  void OnPopupDetected(LocalFrame* outermost_main_frame, bool is_ad);
+  // Records the detection of an overlay pop-up. If `is_ad` is true, the
+  // pop-up is also counted as an overlay pop-up ad and `ad_element` (if
+  // non-null) is tagged as such for the ad highlight label. `ad_element` may be
+  // null if the element is no longer alive at detection time.
+  void OnPopupDetected(LocalFrame* outermost_main_frame,
+                       bool is_ad,
+                       Element* ad_element);
 
   bool started_detection_ = false;
   bool content_has_been_stable_ = false;
