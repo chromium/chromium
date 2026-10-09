@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/version_info/channel.h"
 #include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
@@ -47,15 +48,19 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
     ASSERT_TRUE(registry());
   }
 
-  // Builds an extension with dict-format mime_types_handler.
+  // Builds an extension with dict-format mime_types_handler. `extra_entry`
+  // adds keys to the MIME type's entry next to "handler_url".
   scoped_refptr<const Extension> CreateMimeHandlerExtension(
       const std::string& name,
       const std::string& mime_type,
-      const std::string& handler_url) {
-    std::string json = base::StringPrintf(
-        R"("mime_types_handler": {"%s": {"handler_url": "%s"}})",
-        mime_type.c_str(), handler_url.c_str());
-    return ExtensionBuilder(name).AddJSON(json).Build();
+      const std::string& handler_url,
+      base::DictValue extra_entry = base::DictValue()) {
+    extra_entry.Set("handler_url", handler_url);
+    return ExtensionBuilder(name)
+        .SetManifestKey(
+            "mime_types_handler",
+            base::DictValue().Set(mime_type, std::move(extra_entry)))
+        .Build();
   }
 
   // Builds an allowlisted dict-format mime handler whose extension ID is
@@ -394,6 +399,27 @@ TEST_F(MimeHandlerRegistryTest, EnabledByDefaultUntilDisabled) {
   // Re-enable: comes back.
   registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true);
   EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
+}
+
+TEST_F(MimeHandlerRegistryTest, ManifestEnabledFalseStartsUnregistered) {
+  auto ext =
+      CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl,
+                                 base::DictValue().Set("enabled", false));
+  LoadExtension(ext.get());
+
+  EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true);
+  EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+
+  // The PDF handler should stay enabled after the extension is loaded again,
+  // because the stored choice wins over the manifest.
+  UnloadExtension(ext.get());
+  LoadExtension(ext.get());
+  EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
 }
 
 TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {

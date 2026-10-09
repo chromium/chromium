@@ -5,6 +5,7 @@
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
@@ -24,7 +25,8 @@ namespace extensions {
 namespace {
 
 // Per-extension dict mapping `mime_type` -> bool (enabled flag).
-// Missing entries mean "enabled" (the default).
+// A missing entry means the extension made no choice, so the manifest
+// decides.
 constexpr PrefMap kMimeHandlerEnabled = {"mime_handler_enabled",
                                          PrefType::kDictionary,
                                          PrefScope::kExtensionSpecific};
@@ -116,25 +118,29 @@ MimeHandlerRegistry::GetHandlersByMimeType() const {
 bool MimeHandlerRegistry::IsEnabledForMimeType(
     const ExtensionId& extension_id,
     const std::string& mime_type) const {
+  const MimeTypesHandler& handler =
+      GetHandlerOfMimeType(extension_id, mime_type);
+
   const base::DictValue* dict =
       ExtensionPrefs::Get(&*browser_context_)
           ->ReadPrefAsDictionary(extension_id, kMimeHandlerEnabled);
-  return !dict || dict->FindBool(mime_type).value_or(true);
+  if (dict) {
+    std::optional<bool> stored = dict->FindBool(mime_type);
+    if (stored.has_value()) {
+      return stored.value();
+    }
+  }
+  return handler.EnabledByDefault(mime_type);
 }
 
 void MimeHandlerRegistry::SetEnabledForMimeType(const ExtensionId& extension_id,
                                                 const std::string& mime_type,
                                                 bool enabled) {
-  // The `mimeHandler` API is gated on `manifest:mime_types_handler` and
-  // disabled-extension calls are dropped before reaching here, so the calling
-  // extension is loaded and has a `MimeTypesHandler`.
-  const Extension* extension = ExtensionRegistry::Get(&*browser_context_)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
-  CHECK(extension);
-  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
-  CHECK(handler);
-  CHECK(std::ranges::contains(handler->GetSupportedMimeTypes(), mime_type));
+  // Called only to validate the input. The `mimeHandler` API is gated on
+  // `manifest:mime_types_handler` and disabled-extension calls are dropped
+  // before reaching here, so the calling extension is loaded and has a
+  // `MimeTypesHandler`.
+  GetHandlerOfMimeType(extension_id, mime_type);
 
   // TODO(crbug.com/495538206): Define behavior for two cases not yet
   // covered by the spec:
@@ -211,6 +217,19 @@ void MimeHandlerRegistry::UnregisterExtension(const ExtensionId& extension_id) {
   }
   base::EraseIf(handlers_by_type_,
                 [](const auto& pair) { return pair.second.empty(); });
+}
+
+const MimeTypesHandler& MimeHandlerRegistry::GetHandlerOfMimeType(
+    const ExtensionId& extension_id,
+    const std::string& mime_type) const {
+  const Extension* extension = ExtensionRegistry::Get(&*browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  CHECK(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
+  CHECK(handler);
+  CHECK(std::ranges::contains(handler->GetSupportedMimeTypes(), mime_type));
+  return *handler;
 }
 
 void MimeHandlerRegistry::SortByPrecedence(

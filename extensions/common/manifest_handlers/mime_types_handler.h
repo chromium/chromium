@@ -27,6 +27,7 @@ class MimeTypesHandler {
 
     GURL handler_url;
     bool can_embed = false;
+    bool enabled = true;
   };
 
   // Returns list of extensions' ids that are allowed to use MIME type filters.
@@ -46,7 +47,8 @@ class MimeTypesHandler {
   // `handler_url` must be a fully resolved extension resource URL.
   void AddMIMEType(const std::string& mime_type,
                    const GURL& handler_url,
-                   bool can_embed);
+                   bool can_embed,
+                   bool enabled);
 
   // Returns `true` if this handler's `extension_id` is from the allowed list.
   // These extension are historically treated as plugins.
@@ -59,6 +61,11 @@ class MimeTypesHandler {
   // Returns whether `mime_type` supports embedding (iframe/embed/object).
   // CHECKs that plugin (legacy manifest format) handlers never set can_embed.
   bool CanEmbedMimeType(const std::string& mime_type) const;
+
+  // Returns the manifest's `enabled` value for `mime_type`, or true if the
+  // manifest does not set it. Returns false if `mime_type` is not one of this
+  // handler's supported types.
+  bool EnabledByDefault(const std::string& mime_type) const;
 
   // Returns the list of MIME types this handler supports.
   std::vector<std::string> GetSupportedMimeTypes() const;

@@ -49,12 +49,12 @@ interface MimeHandler {
   static Promise<undefined> setMimeHandlerOptions(DOMString mimeType,
                                                   MimeHandlerOptions options);
 
-  // Reads the persisted options for a MIME type. Returns defaults
-  // (enabled=true) if none have been stored.
+  // Reads the options for a MIME type. Returns the manifest entry's values
+  // if none have been stored.
   // |mimeType|: The MIME type whose options to read. It must be a MIME type
   // the extension handles through mime_types_handler.
   // |PromiseValue|: options
-  // |Returns|: Promise resolved with the persisted options for the MIME type.
+  // |Returns|: Promise resolved with the options for the MIME type.
   static Promise<MimeHandlerOptions> getMimeHandlerOptions(DOMString mimeType);
 };
 

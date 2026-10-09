@@ -339,7 +339,7 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackRejectsBuiltInExtension) {
       MimeTypesHandler::GetMIMETypeAllowlist();
   ASSERT_FALSE(allowlist.empty());
 
-  set_extension(
+  SetRegisteredExtension(
       ExtensionBuilder("Built-in MIME handler").SetID(allowlist[0]).Build());
 
   auto function = base::MakeRefCounted<
@@ -351,36 +351,80 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackRejectsBuiltInExtension) {
       error);
 }
 
-TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsDefaultsToEnabled) {
-  SetRegisteredExtension(
-      BuildExtensionWithMimeTypesHandler("PDF handler", kPdfMimeType));
+TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsReportsManifestDefault) {
+  struct {
+    const char* name;
+    base::DictValue entry;
+    bool expected_enabled;
+  } kTestCases[] = {
+      {"Entry without enabled key",
+       base::DictValue().Set("handler_url", kHandlerPage), true},
+      {"Entry with enabled true",
+       base::DictValue().Set("handler_url", kHandlerPage).Set("enabled", true),
+       true},
+      {"Entry with enabled false",
+       base::DictValue().Set("handler_url", kHandlerPage).Set("enabled", false),
+       false},
+  };
 
-  // With no prior setMimeHandlerOptions call, getMimeHandlerOptions
-  // must return enabled=true by default.
-  auto function =
-      base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
-  std::optional<base::Value> result =
-      RunFunctionAndReturnValue(function.get(), R"(["application/pdf"])");
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(*result, base::test::IsJson(R"({"enabled": true})"));
+  for (auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    SetRegisteredExtension(
+        ExtensionBuilder(test_case.name)
+            .SetManifestKey(
+                "mime_types_handler",
+                base::DictValue().Set(kPdfMimeType, std::move(test_case.entry)))
+            .Build());
+
+    auto function =
+        base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
+    std::optional<base::Value> result =
+        RunFunctionAndReturnValue(function.get(), R"(["application/pdf"])");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_THAT(result.value(), base::test::IsJson(base::DictValue().Set(
+                                    "enabled", test_case.expected_enabled)));
+  }
 }
 
 TEST_F(MimeHandlerApiTest, SetThenGetMimeHandlerOptionsRoundTrip) {
-  SetRegisteredExtension(
-      BuildExtensionWithMimeTypesHandler("PDF handler", kPdfMimeType));
+  struct {
+    const char* name;
+    base::DictValue entry;
+    bool enabled_to_set;
+  } kTestCases[] = {
+      {"Disable over manifest default",
+       base::DictValue().Set("handler_url", kHandlerPage), false},
+      {"Disable over manifest enabled true",
+       base::DictValue().Set("handler_url", kHandlerPage).Set("enabled", true),
+       false},
+      {"Enable over manifest enabled false",
+       base::DictValue().Set("handler_url", kHandlerPage).Set("enabled", false),
+       true},
+  };
 
-  // Persist enabled=false via setMimeHandlerOptions.
-  auto set_function =
-      base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
-  RunFunction(set_function.get(), R"(["application/pdf", {"enabled": false}])");
+  for (auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    SetRegisteredExtension(
+        ExtensionBuilder(test_case.name)
+            .SetManifestKey(
+                "mime_types_handler",
+                base::DictValue().Set(kPdfMimeType, std::move(test_case.entry)))
+            .Build());
+    const base::DictValue options =
+        base::DictValue().Set("enabled", test_case.enabled_to_set);
 
-  // Read it back via getMimeHandlerOptions and verify the value survived.
-  auto get_function =
-      base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
-  std::optional<base::Value> result =
-      RunFunctionAndReturnValue(get_function.get(), R"(["application/pdf"])");
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(*result, base::test::IsJson(R"({"enabled": false})"));
+    auto set_function =
+        base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
+    RunFunction(set_function.get(),
+                base::ListValue().Append(kPdfMimeType).Append(options.Clone()));
+
+    auto get_function =
+        base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
+    std::optional<base::Value> result =
+        RunFunctionAndReturnValue(get_function.get(), R"(["application/pdf"])");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_THAT(result.value(), base::test::IsJson(options));
+  }
 }
 
 TEST_F(MimeHandlerApiTest,

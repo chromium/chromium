@@ -107,7 +107,8 @@ bool ParseDictFormat(extensions::Extension* extension,
       continue;
     }
     handler.AddMIMEType(mime_type, handler_gurl,
-                        config->can_embed.value_or(false));
+                        config->can_embed.value_or(false),
+                        config->enabled.value_or(true));
   }
   return true;
 }
@@ -151,10 +152,12 @@ MimeTypesHandler::~MimeTypesHandler() = default;
 
 void MimeTypesHandler::AddMIMEType(const std::string& mime_type,
                                    const GURL& handler_url,
-                                   bool can_embed) {
+                                   bool can_embed,
+                                   bool enabled) {
   auto& config = per_type_configs_[mime_type];
   config.handler_url = handler_url;
   config.can_embed = can_embed;
+  config.enabled = enabled;
 }
 
 std::vector<std::string> MimeTypesHandler::GetSupportedMimeTypes() const {
@@ -178,6 +181,11 @@ GURL MimeTypesHandler::GetHandlerUrl(const std::string& mime_type) const {
 bool MimeTypesHandler::CanEmbedMimeType(const std::string& mime_type) const {
   auto it = per_type_configs_.find(mime_type);
   return it != per_type_configs_.end() && it->second.can_embed;
+}
+
+bool MimeTypesHandler::EnabledByDefault(const std::string& mime_type) const {
+  auto it = per_type_configs_.find(mime_type);
+  return it != per_type_configs_.end() && it->second.enabled;
 }
 
 bool MimeTypesHandler::HasPlugin() const {
@@ -281,7 +289,8 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
   auto info = std::make_unique<MimeTypesHandlerInfo>();
   info->handler_.set_extension_id(extension->id());
   for (const std::string& mime_type : mime_types) {
-    info->handler_.AddMIMEType(mime_type, handler_gurl, /*can_embed=*/false);
+    info->handler_.AddMIMEType(mime_type, handler_gurl, /*can_embed=*/false,
+                               /*enabled=*/true);
   }
 
   extension->SetManifestData(std::move(info));

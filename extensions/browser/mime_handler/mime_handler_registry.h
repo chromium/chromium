@@ -17,6 +17,8 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
+class MimeTypesHandler;
+
 namespace content {
 class BrowserContext;
 }
@@ -44,7 +46,8 @@ class Extension;
 // and are profile-unaware. Per-(extension, mime_type) enable flags are
 // profile-scoped, stored in `ExtensionPrefs`, and applied uniformly by
 // both `GetHandlersForMimeType()` and `GetHandlersByMimeType()` — a
-// disabled handler is never surfaced. Callers layer profile-specific
+// disabled handler is never surfaced. A manifest entry supplies the enable
+// flag when none is stored. Callers layer profile-specific
 // eligibility filtering on top of what the registry returns.
 class MimeHandlerRegistry : public KeyedService,
                             public ExtensionRegistryObserver {
@@ -82,7 +85,9 @@ class MimeHandlerRegistry : public KeyedService,
   const HandlersByMimeType& GetHandlersByMimeType() const;
 
   // Returns true if `extension_id` has MIME handling enabled for
-  // `mime_type`. Defaults to true when no preference is stored.
+  // `mime_type`. Defaults to the value declared in the manifest when no
+  // preference is stored. Requires `extension_id` to be an enabled extension
+  // that handles `mime_type`.
   bool IsEnabledForMimeType(const ExtensionId& extension_id,
                             const std::string& mime_type) const;
 
@@ -107,6 +112,12 @@ class MimeHandlerRegistry : public KeyedService,
 
   // Removes all mappings for `extension_id`.
   void UnregisterExtension(const ExtensionId& extension_id);
+
+  // Returns the MIME handler of `extension_id`, which must be an enabled
+  // extension that handles `mime_type`.
+  const MimeTypesHandler& GetHandlerOfMimeType(
+      const ExtensionId& extension_id,
+      const std::string& mime_type) const;
 
   // Sorts `handlers` in descending precedence order. See
   // `RegisterExtension` for the precedence rules.
