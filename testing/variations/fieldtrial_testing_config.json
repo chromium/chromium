@@ -14949,44 +14949,6 @@
             ]
         }
     ],
-    "ReduceAcceptLanguage": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReduceAcceptLanguage"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReduceAcceptLanguageHTTP": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReduceAcceptLanguageHTTP"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceMojoURLLoaderFactoryCloning": [
         {
             "platforms": [
