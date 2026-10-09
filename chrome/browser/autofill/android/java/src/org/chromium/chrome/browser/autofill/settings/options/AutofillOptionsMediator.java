@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -88,6 +89,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     private Context mContext;
     private Activity mActivity;
     private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
+    private boolean mIsRestartConfirmationShown;
 
     AutofillOptionsMediator(
             Profile profile,
@@ -125,6 +127,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     // ModalDialogProperties.Controller:
     @Override
     public void onDismiss(PropertyModel restartConfirmationModel, int dismissalCause) {
+        mIsRestartConfirmationShown = false;
         updateToggleStateFromPref(); // Radio buttons always change. Reset them to match the prefs.
     }
 
@@ -326,6 +329,9 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
 
     void updateToggleStateFromPref() {
         assert isInitialized();
+        if (mIsRestartConfirmationShown) {
+            return;
+        }
         mModel.set(
                 THIRD_PARTY_AUTOFILL_ENABLED,
                 prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL));
@@ -372,6 +378,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     }
 
     private void onConfirmWithRestart() {
+        mIsRestartConfirmationShown = false;
         prefs().setBoolean(
                         Pref.AUTOFILL_USING_PLATFORM_AUTOFILL,
                         mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
@@ -379,6 +386,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
                 prefs(), mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_USE_THIRD_PARTY_FILLING, mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        ProfileManagerUtils.flushPersistentDataForAllProfiles();
         mRestartRunnable.run();
     }
 
@@ -390,6 +398,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
             updateToggleStateFromPref();
             return;
         }
+        mIsRestartConfirmationShown = true;
         dialogManager.showDialog(restartConfirmationModel, ModalDialogType.APP);
     }
 

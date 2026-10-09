@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -51,6 +52,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -81,6 +83,8 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.profiles.ProfileManagerUtilsJni;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -125,6 +129,7 @@ public class AutofillOptionsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UserPrefsJni mMockUserPrefsJni;
+    @Mock private ProfileManagerUtils.Natives mProfileManagerUtilsJniMock;
     @Mock private PrefService mPrefs;
     @Mock private Profile mProfile;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -151,6 +156,7 @@ public class AutofillOptionsTest {
         EntityDataManagerFactory.setInstanceForTesting(mMockEntityDataManager);
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         EntityDataManagerJni.setInstanceForTesting(mMockEntityDataManagerJni);
+        ProfileManagerUtilsJni.setInstanceForTesting(mProfileManagerUtilsJniMock);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
@@ -343,11 +349,13 @@ public class AutofillOptionsTest {
 
         verifyAndDismissDialogManager(ButtonType.POSITIVE);
 
-        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(true));
+        InOrder inOrder = inOrder(mPrefs, mProfileManagerUtilsJniMock, mRestartRunnable);
+        inOrder.verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(true));
+        inOrder.verify(mProfileManagerUtilsJniMock).flushPersistentDataForAllProfiles();
+        inOrder.verify(mRestartRunnable).run();
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(USE_3P);
         histogramWatcher.assertExpected();
-        verify(mRestartRunnable).run();
     }
 
     @Test
@@ -368,6 +376,7 @@ public class AutofillOptionsTest {
 
         verify(mPrefs, times(0))
                 .setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), anyBoolean());
+        verify(mProfileManagerUtilsJniMock, times(0)).flushPersistentDataForAllProfiles();
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(DEFAULT);
         histogramWatcher.assertExpected();
@@ -389,6 +398,7 @@ public class AutofillOptionsTest {
 
         verify(mPrefs, times(0))
                 .setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), anyBoolean());
+        verify(mProfileManagerUtilsJniMock, times(0)).flushPersistentDataForAllProfiles();
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(DEFAULT);
         verify(mRestartRunnable, times(0)).run();
@@ -411,6 +421,40 @@ public class AutofillOptionsTest {
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(USE_3P);
+    }
+
+    @Test
+    public void toggledOptionPreservedOnResumeWhileRestartDialogShown() {
+        mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
+        AutofillOptionsCoordinator autofillOptions =
+                new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable);
+        PropertyModel model = autofillOptions.initializeNow();
+        LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(mFragment);
+        autofillOptions.observeLifecycle(lifecycleRegistry);
+        assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+
+        getRadioButtonComponent().getDefaultButton().performClick();
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        verifyOptionReflectedInView(DEFAULT);
+
+        // Resuming the fragment while the confirmation dialog is open must not overwrite the
+        // pending toggle state from the uncommitted pref.
+        lifecycleRegistry.handleLifecycleEvent(Event.ON_RESUME);
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        verifyOptionReflectedInView(DEFAULT);
+
+        verifyAndDismissDialogManager(ButtonType.POSITIVE);
+
+        InOrder inOrder = inOrder(mPrefs, mProfileManagerUtilsJniMock, mRestartRunnable);
+        inOrder.verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(false));
+        inOrder.verify(mPrefs)
+                .setString(
+                        eq(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL), eq(""));
+        inOrder.verify(mProfileManagerUtilsJniMock).flushPersistentDataForAllProfiles();
+        inOrder.verify(mRestartRunnable).run();
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
     }
 
     @Test
@@ -540,11 +584,14 @@ public class AutofillOptionsTest {
         getRadioButtonComponent().getOptInButton().performClick();
         verifyAndDismissDialogManager(ButtonType.POSITIVE);
 
-        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(true));
-        verify(mPrefs)
+        InOrder inOrder = inOrder(mPrefs, mProfileManagerUtilsJniMock, mRestartRunnable);
+        inOrder.verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(true));
+        inOrder.verify(mPrefs)
                 .setString(
                         eq(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL),
                         eq(EXAMPLE_SERVICE_PACKAGE.getPackageName()));
+        inOrder.verify(mProfileManagerUtilsJniMock).flushPersistentDataForAllProfiles();
+        inOrder.verify(mRestartRunnable).run();
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
     }
 
@@ -561,10 +608,13 @@ public class AutofillOptionsTest {
         getRadioButtonComponent().getDefaultButton().performClick();
         verifyAndDismissDialogManager(ButtonType.POSITIVE);
 
-        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(false));
-        verify(mPrefs)
+        InOrder inOrder = inOrder(mPrefs, mProfileManagerUtilsJniMock, mRestartRunnable);
+        inOrder.verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(false));
+        inOrder.verify(mPrefs)
                 .setString(
                         eq(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL), eq(""));
+        inOrder.verify(mProfileManagerUtilsJniMock).flushPersistentDataForAllProfiles();
+        inOrder.verify(mRestartRunnable).run();
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
     }
 
