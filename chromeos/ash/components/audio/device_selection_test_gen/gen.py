@@ -16,7 +16,9 @@ os.chdir(here)
 
 
 def importfile(file):
-    spec = importlib.util.spec_from_file_location(file.removesuffix('.py').replace('/', '.'), file)
+    spec = importlib.util.spec_from_file_location(
+        file.removesuffix('.py').replace('/', '.'), file
+    )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -46,14 +48,15 @@ class AudioDeviceSelectionGeneratedTest : public AudioDeviceSelectionTestBase {
 ''')
 
     tests = []
-    for file in sorted(glob.iglob('tests/**/*.py', recursive=True), key=lambda s: s.split('/')):
+    for file in sorted(
+        glob.iglob('tests/**/*.py', recursive=True), key=lambda s: s.split('/')
+    ):
         tests.append((file, importfile(file).run))
 
     for name, test in tests:
         sim = ChromiumUnitTestSimulator(priority_list.Handler(), name=name)
         test(sim)
         sim.generate_testcase(file=test_file)
-
 
     test_file.write('''
 }  // namespace

@@ -4,6 +4,7 @@
 
 from dsp import Simulator, T
 
+
 def run(s: Simulator):
     A, B, C = s.abc(T.Internal, T.HDMI, T.USB)
 

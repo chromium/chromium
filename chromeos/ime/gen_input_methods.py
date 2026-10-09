@@ -51,7 +51,7 @@ namespace input_method {
 
 const char* const kLoginXkbLayoutIds[] = {
 """
-ENGINE_FORMAT = ('  "%s",\n')
+ENGINE_FORMAT = '  "%s",\n'
 OUTPUT_FOOTER = """
 };
 
@@ -60,6 +60,7 @@ OUTPUT_FOOTER = """
 
 #endif  // CHROMEOS_IME_INPUT_METHODS_H_
 """
+
 
 def CreateEngineHeader(login_xkb_layout_ids):
   """Create the header file from a list of login XKB layout IDs.

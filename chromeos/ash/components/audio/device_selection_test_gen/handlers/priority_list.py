@@ -5,6 +5,7 @@
 
 from dsp import BaseHandler, Device, State
 
+
 class Handler(BaseHandler):
     def __init__(self) -> None:
         self.list = []
@@ -26,7 +27,7 @@ class Handler(BaseHandler):
                 s_index = i
 
         if s_index is None:
-            self.list.insert(e_index+1, s)
+            self.list.insert(e_index + 1, s)
             return state.switch_to(s)
 
         if s_index == e_index:

@@ -6,7 +6,7 @@ from dsp import Simulator, T
 
 
 def run(s: Simulator):
-    A, B, C, I = s.abc(T.HDMI, T.HDMI, T.Headphone, T.Internal, charset='ABCI')
+    A, B, C, I = s.abc(T.HDMI, T.HDMI, T.Headphone, T.Internal, charset='ABCI')  # noqa: E741
     s.plug(I)
 
     # The user plugs a external monitor A

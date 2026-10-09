@@ -18,7 +18,7 @@ _CHROME_SOURCE = os.path.realpath(
 
 sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
-import action_helpers
+import action_helpers  # noqa: E402
 
 # LINT.IfChange
 

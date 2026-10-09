@@ -25,12 +25,12 @@ def main():
 
   # Parse the first input file.
   tree = xml.etree.ElementTree.parse(in_paths[0])
-  assert(tree.getroot().tag == 'busconfig')
+  assert tree.getroot().tag == 'busconfig'
 
   # Append the remaining input files to the first file.
   for path in in_paths[1:]:
     current_tree = xml.etree.ElementTree.parse(path)
-    assert(current_tree.getroot().tag == 'busconfig')
+    assert current_tree.getroot().tag == 'busconfig'
     for child in current_tree.getroot():
       tree.getroot().append(child)
 
@@ -38,6 +38,7 @@ def main():
   with open(out_path, "wb") as f:
     f.write(_BUSCONFIG_FILE_HEADER)
     tree.write(f)
+
 
 if __name__ == '__main__':
   main()

@@ -4,8 +4,9 @@
 
 from dsp import Simulator, T
 
+
 def run(s: Simulator):
-    I, A, B = s.abc(T.Internal, T.USB, T.USB, charset='IAB')
+    I, A, B = s.abc(T.Internal, T.USB, T.USB, charset='IAB')  # noqa: E741
     s.plug(I)
 
     s.plug(A)

@@ -13,7 +13,7 @@ _CHROME_SOURCE = os.path.realpath(
 )
 sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
-import action_helpers
+import action_helpers  # noqa: E402
 
 # Set of unicode characters that do not render with fonts available on ChromeOS
 # TODO(b:267370102) add font(s) such that there are no more invalid characters

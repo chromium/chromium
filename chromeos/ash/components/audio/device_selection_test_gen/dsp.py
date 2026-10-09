@@ -80,7 +80,10 @@ class State:
 
     def with_mutations(self, mutations: dict[Device, DeviceState]) -> State:
         return State(
-            {dev: mutations.get(dev, state) for (dev, state) in self.devices.items()}
+            {
+                dev: mutations.get(dev, state)
+                for (dev, state) in self.devices.items()
+            }
         )
 
     def plug(self, device: Device) -> State:
@@ -101,7 +104,7 @@ class State:
         )
 
     def active_devices(self):
-        for (dev, state) in self.devices.items():
+        for dev, state in self.devices.items():
             if state.active:
                 yield dev
 
@@ -115,19 +118,27 @@ class State:
     def connected_devices(self):
         return tuple(
             dev
-            for (dev, state) in sorted(self.devices.items(), key=lambda d: d[0].name)
+            for (dev, state) in sorted(
+                self.devices.items(), key=lambda d: d[0].name
+            )
             if state.connected
         )
 
     def connected_stationary_devices(self):
-        return tuple(dev for dev in self.connected_devices() if dev.type.stationary)
+        return tuple(
+            dev for dev in self.connected_devices() if dev.type.stationary
+        )
 
     def connected_portable_devices(self):
-        return tuple(dev for dev in self.connected_devices() if not dev.type.stationary)
+        return tuple(
+            dev for dev in self.connected_devices() if not dev.type.stationary
+        )
 
     def max_builtin_priority_device(self, of=None):
         if of is None:
-            of = [dev for (dev, state) in self.devices.items() if state.connected]
+            of = [
+                dev for (dev, state) in self.devices.items() if state.connected
+            ]
         return max(
             (dev.type.builtin_priority, self.devices[dev].connected_at, dev)
             for dev in of
@@ -235,7 +246,9 @@ class Simulator:
         before_active = (
             ', '.join(dev.name for dev in before.active_devices()) or '(none)'
         )
-        after_active = ', '.join(dev.name for dev in after.active_devices()) or '(none)'
+        after_active = (
+            ', '.join(dev.name for dev in after.active_devices()) or '(none)'
+        )
         if before_active != after_active:
             print(f'active device: {before_active} => {after_active}')
         else:
@@ -252,7 +265,9 @@ class Simulator:
                     if state.connected
                 ),
                 ' '.join(
-                    dev.name for (dev, state) in ordered_devices if not state.connected
+                    dev.name
+                    for (dev, state) in ordered_devices
+                    if not state.connected
                 ),
             )
         )
@@ -279,7 +294,9 @@ class Simulator:
         if device.type != T.Headphone:
             return
         if after.get_active() != device:
-            print(f'violation: G3: Headphone {device.name} plugged but not activated')
+            print(
+                f'violation: G3: Headphone {device.name} plugged but not activated'
+            )
 
     def check_g4(self, after: State):
         # check G4
@@ -327,28 +344,38 @@ class ChromiumUnitTestSimulator(Simulator):
 
     def plug(self, device):
         super().plug(device)
-        self.actions.append((self.Action.PLUG, device, self.state, tuple(self.h.list)))
+        self.actions.append(
+            (self.Action.PLUG, device, self.state, tuple(self.h.list))
+        )
 
     def unplug(self, device):
         super().unplug(device)
-        self.actions.append((self.Action.UNPLUG, device, self.state, tuple(self.h.list)))
+        self.actions.append(
+            (self.Action.UNPLUG, device, self.state, tuple(self.h.list))
+        )
 
     def select(self, device):
         if self.state.get_active() == device:
             # skip no-op select
             return
         super().select(device)
-        self.actions.append((self.Action.SELECT, device, self.state, tuple(self.h.list)))
+        self.actions.append(
+            (self.Action.SELECT, device, self.state, tuple(self.h.list))
+        )
 
     def generate_testcase(self, file):
         name = ''.join(map(str.capitalize, re.split('/|_', self.name[6:-3])))
-        self.generate_testcase_for_direction(name, 'input', self.input_node_info, file)
-        self.generate_testcase_for_direction(name, 'output', self.output_node_info, file)
+        self.generate_testcase_for_direction(
+            name, 'input', self.input_node_info, file
+        )
+        self.generate_testcase_for_direction(
+            name, 'output', self.output_node_info, file
+        )
 
     def generate_testcase_for_direction(self, name, direction, node_info, file):
         print = functools.partial(builtins.print, file=file)
 
-        device_type_counts = collections.Counter()
+        device_type_counts = collections.Counter()  # noqa: F841
         nodes = {}
         setup = []
         for i, device in enumerate(self.devices, 1):
@@ -356,9 +383,14 @@ class ChromiumUnitTestSimulator(Simulator):
                 return  # unsupported test
             test_type, var_prefix = node_info[device.type]
             var = nodes[device] = f'{var_prefix}{i}'
-            setup.append(f'  AudioNode {var} = New{direction.capitalize()}Node("{test_type}");')
+            setup.append(
+                f'  AudioNode {var} = New{direction.capitalize()}Node("{test_type}");'
+            )
 
-        print('TEST_F(AudioDeviceSelectionGeneratedTest, %s%s) {' % (name, direction.capitalize()))
+        print(
+            'TEST_F(AudioDeviceSelectionGeneratedTest, %s%s) {'
+            % (name, direction.capitalize())
+        )
         print('\n'.join(setup))
         for action, device, state, priorities in self.actions:
             selected = state.get_active()
@@ -370,7 +402,9 @@ class ChromiumUnitTestSimulator(Simulator):
             print()
             print('  %s(%s);' % (action_fn, nodes[device]))
 
-            ordered_devices = [(dev, state.devices[dev]) for dev in self.devices]
+            ordered_devices = [
+                (dev, state.devices[dev]) for dev in self.devices
+            ]
             print(
                 '  // Devices: [{}] {}'.format(
                     ' '.join(
@@ -379,11 +413,20 @@ class ChromiumUnitTestSimulator(Simulator):
                         if state.connected
                     ),
                     ' '.join(
-                        nodes[dev] for (dev, state) in ordered_devices if not state.connected
+                        nodes[dev]
+                        for (dev, state) in ordered_devices
+                        if not state.connected
                     ),
                 ).rstrip()
             )
-            print('  // List: {}'.format(' < '.join(nodes[dev] for dev in priorities)))
-            print('  EXPECT_EQ(Active%sNodeId(), %s.id);' % (direction.capitalize(), nodes[selected]))
+            print(
+                '  // List: {}'.format(
+                    ' < '.join(nodes[dev] for dev in priorities)
+                )
+            )
+            print(
+                '  EXPECT_EQ(Active%sNodeId(), %s.id);'
+                % (direction.capitalize(), nodes[selected])
+            )
         print('}')
         print()

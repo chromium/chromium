@@ -27,7 +27,10 @@ class Handler(BaseHandler):
             return after.switch_to(self.cache[after_state])
 
         # follow builtin priority
-        if device.type.builtin_priority >= after.get_active().type.builtin_priority:
+        if (
+            device.type.builtin_priority
+            >= after.get_active().type.builtin_priority
+        ):
             return self.cache_state(after.switch_to(device))
         return self.cache_state(after)
 

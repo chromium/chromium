@@ -43,11 +43,15 @@ class Handler(BaseHandler):
             portables = after.connected_portable_devices()
             if not portables:
                 if after.connected_stationary_devices() in self.cache:
-                    return after.switch_to(self.cache[after.connected_stationary_devices()])
+                    return after.switch_to(
+                        self.cache[after.connected_stationary_devices()]
+                    )
             return after.switch_to(after.max_builtin_priority_device())
 
         if after.connected_stationary_devices() in self.cache:
-            return after.switch_to(self.cache[after.connected_stationary_devices()])
+            return after.switch_to(
+                self.cache[after.connected_stationary_devices()]
+            )
 
         # auto-select random device with highest priority
         return after.switch_to(after.max_builtin_priority_device())

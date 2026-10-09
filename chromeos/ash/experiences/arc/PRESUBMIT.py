@@ -4,8 +4,10 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
+
 def CheckCommon(input_api, output_api):
   results = []
   results += input_api.canned_checks.CheckChangeLintsClean(
-      input_api, output_api)
+    input_api, output_api
+  )
   return results
