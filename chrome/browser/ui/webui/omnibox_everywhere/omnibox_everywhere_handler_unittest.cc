@@ -350,8 +350,8 @@ TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {
           [&](const GURL& url, WindowOpenDisposition disposition,
               ui::PageTransition transition,
               base::OnceCallback<void(content::NavigationHandle&)> callback) {
-            EXPECT_TRUE(ui::PageTransitionCoreTypeIs(transition,
-                                                     ui::PAGE_TRANSITION_LINK));
+            EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+                transition, ui::PAGE_TRANSITION_GENERATED));
           });
 
   handler_->OpenUrl(test_url, WindowOpenDisposition::CURRENT_TAB,

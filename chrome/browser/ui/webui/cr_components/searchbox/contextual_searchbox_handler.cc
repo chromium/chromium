@@ -653,13 +653,16 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
               [](ContextualSearchboxHandler* handler,
                  content::WebContents* web_contents)
                   -> BrowserWindowInterface* {
-                if (handler->omnibox_controller() &&
-                    handler->omnibox_controller()->client() &&
-                    handler->omnibox_controller()
-                            ->client()
-                            ->GetPageClassification(/*is_prefetch=*/false) ==
-                        metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE) {
-                  return nullptr;
+                if (handler->client()) {
+                  const auto page_classification =
+                      handler->client()->GetPageClassification(
+                          /*is_prefetch=*/false);
+                  if (page_classification ==
+                          metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE ||
+                      page_classification ==
+                          metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE) {
+                    return nullptr;
+                  }
                 }
                 return webui::GetBrowserWindowInterface(web_contents);
               },
