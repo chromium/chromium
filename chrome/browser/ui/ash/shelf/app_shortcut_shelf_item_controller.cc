@@ -411,7 +411,9 @@ AppShortcutShelfItemController::GetAppMenuItemWindow(int command_id) {
     browser =
         ash::BrowserController::GetInstance()->GetBrowserForTab(web_contents);
     if (browser && browser->GetActiveWebContents() != web_contents) {
-      return base::unexpected(std::u16string());
+      return base::unexpected(
+          ChromeShelfController::instance()->GetAppMenuInactiveTabTooltip(
+              *browser));
     }
   }
   aura::Window* window = browser ? browser->GetNativeWindow() : nullptr;

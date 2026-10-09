@@ -14,6 +14,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
+class MenuItemView;
 class View;
 }  // namespace views
 
@@ -33,6 +34,13 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView {
   ShelfBubble& operator=(const ShelfBubble&) = delete;
 
   ~ShelfBubble() override;
+
+  // Returns the bubble arrow position for a bubble anchored to `anchor` inside
+  // a shelf application menu, placing the bubble horizontally beside the menu
+  // toward the center of the display (`LEFT_CENTER` when the menu is on the
+  // left half of the screen, or `RIGHT_CENTER` when on the right half).
+  static views::BubbleBorder::Arrow GetArrowForMenuItem(
+      views::MenuItemView* anchor);
 
   // Returns true if we should close when we get a press down event within our
   // bounds.

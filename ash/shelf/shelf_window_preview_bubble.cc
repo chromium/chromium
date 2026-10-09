@@ -11,13 +11,11 @@
 #include "ash/shelf/shelf.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/window_preview_view.h"
-#include "base/i18n/rtl.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
@@ -34,26 +32,6 @@
 namespace ash {
 
 namespace {
-
-// Returns the bubble arrow position for `anchor` inside a shelf application
-// menu, placing the preview bubble horizontally beside the menu toward the
-// center of the display (`LEFT_CENTER` when the menu is on the left half of
-// the screen, or `RIGHT_CENTER` when on the right half).
-views::BubbleBorder::Arrow GetArrowForAnchor(views::MenuItemView* anchor) {
-  CHECK(anchor);
-  const gfx::Rect anchor_bounds = anchor->GetBoundsInScreen();
-  const display::Display display =
-      display::Screen::Get()->GetDisplayNearestWindow(
-          anchor->GetWidget()->GetNativeWindow());
-  views::BubbleBorder::Arrow arrow =
-      anchor_bounds.CenterPoint().x() > display.work_area().CenterPoint().x()
-          ? views::BubbleBorder::RIGHT_CENTER
-          : views::BubbleBorder::LEFT_CENTER;
-  if (base::i18n::IsRTL()) {
-    arrow = views::BubbleBorder::horizontal_mirror(arrow);
-  }
-  return arrow;
-}
 
 // Returns the bubble arrow position for a preview bubble anchored to the shelf
 // tooltip, placing the preview bubble above the tooltip for a horizontal shelf
@@ -112,7 +90,7 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 
 ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(views::MenuItemView* anchor,
                                                    aura::Window* window)
-    : ShelfWindowPreviewBubble(anchor, window, GetArrowForAnchor(anchor)) {}
+    : ShelfWindowPreviewBubble(anchor, window, GetArrowForMenuItem(anchor)) {}
 
 ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(ShelfBubble* anchor,
                                                    aura::Window* window)
@@ -211,7 +189,7 @@ void ShelfWindowPreviewBubble::UpdateAnchorAndWindow(
   window_ = window;
   window_observation_.Observe(window_);
 
-  SetArrow(GetArrowForAnchor(anchor));
+  SetArrow(GetArrowForMenuItem(anchor));
   SetAnchorView(anchor);
 
   RemovePreviewView();

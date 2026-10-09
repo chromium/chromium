@@ -7,15 +7,20 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/shelf_bubble.h"
+#include "ash/shelf/shelf_tooltip_bubble.h"
 #include "ash/shelf/shelf_window_preview_bubble.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_animations.h"
 
 namespace ash {
 
@@ -41,7 +46,7 @@ ShelfMenuModelAdapter::ShelfMenuModelAdapter(
 }
 
 ShelfMenuModelAdapter::~ShelfMenuModelAdapter() {
-  ClosePreviewBubble(/*animate=*/false);
+  CloseHoverBubble(/*animate=*/false);
 }
 
 views::MenuItemView* ShelfMenuModelAdapter::AppendMenuItem(
@@ -60,7 +65,7 @@ views::MenuItemView* ShelfMenuModelAdapter::AppendMenuItem(
 }
 
 void ShelfMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
-  ClosePreviewBubble(/*animate=*/false);
+  CloseHoverBubble(/*animate=*/false);
   selection_subscriptions_.clear();
   menu_owner_observation_.Reset();
   menu_owner_ = nullptr;
@@ -77,85 +82,112 @@ void ShelfMenuModelAdapter::OnMenuItemSelectedChanged(
     views::MenuItemView* item) {
   CHECK(item);
 
-  if (item->IsSelected()) {
-    preview_timer_.Stop();
-
-    aura::Window* window =
-        item_delegate_
-            ? item_delegate_->GetAppMenuItemWindow(item->GetCommand())
-                  .value_or(nullptr)
-            : nullptr;
-    if (window) {
-      preview_anchor_view_ = item;
-      if (ShelfWindowPreviewBubble* bubble = preview_bubble()) {
-        // When switching between items with an active preview bubble, update
-        // the existing bubble in place to avoid fade-out-in animation.
-        bubble->UpdateAnchorAndWindow(item, window);
-      } else {
-        preview_timer_.Start(
-            FROM_HERE, kShowPreviewDelay,
-            base::BindOnce(&ShelfMenuModelAdapter::ShowPreviewBubble,
-                           base::Unretained(this)));
-      }
-    } else {
-      ClosePreviewBubble(/*animate=*/true);
-    }
-  } else {
-    if (preview_anchor_view_ == item) {
-      preview_anchor_view_ = nullptr;
-      if (preview_bubble_) {
+  if (!item->IsSelected()) {
+    if (hover_anchor_view_ == item) {
+      hover_anchor_view_ = nullptr;
+      if (preview_bubble_ || tooltip_bubble_) {
         // Delay closing slightly so that if another menu item is selected
-        // immediately after, the existing preview bubble can be reused in
-        // place.
-        preview_timer_.Start(
+        // immediately after, the existing bubble can be reused or replaced
+        // without a gap.
+        hover_timer_.Start(
             FROM_HERE, kClosePreviewDelay,
-            base::BindOnce(&ShelfMenuModelAdapter::ClosePreviewBubble,
+            base::BindOnce(&ShelfMenuModelAdapter::CloseHoverBubble,
                            base::Unretained(this), /*animate=*/true));
       } else {
-        preview_timer_.Stop();
+        hover_timer_.Stop();
       }
     }
+    return;
+  }
+
+  hover_timer_.Stop();
+
+  base::expected<aura::Window*, std::u16string> result =
+      item_delegate_ ? item_delegate_->GetAppMenuItemWindow(item->GetCommand())
+                     : base::unexpected(std::u16string());
+  if (result.has_value() && preview_bubble_) {
+    // When switching between items with an active preview bubble, update the
+    // existing bubble in place to avoid fade-out-in animation.
+    hover_anchor_view_ = item;
+    preview_bubble_->UpdateAnchorAndWindow(item, result.value());
+    return;
+  }
+
+  const bool was_showing = preview_bubble_ || tooltip_bubble_;
+  CloseHoverBubble(/*animate=*/true);
+  if (!result.has_value() && result.error().empty()) {
+    return;
+  }
+
+  hover_anchor_view_ = item;
+  if (was_showing) {
+    // When switching from another item with an active bubble, replace it
+    // immediately.
+    ShowHoverBubble();
+  } else {
+    hover_timer_.Start(FROM_HERE, kShowPreviewDelay,
+                       base::BindOnce(&ShelfMenuModelAdapter::ShowHoverBubble,
+                                      base::Unretained(this)));
   }
 }
 
-void ShelfMenuModelAdapter::ShowPreviewBubble() {
+void ShelfMenuModelAdapter::ShowHoverBubble() {
   CHECK(!preview_bubble_);
-  CHECK(preview_anchor_view_);
-  views::MenuItemView* anchor_view = preview_anchor_view_;
-  preview_anchor_view_ = nullptr;
+  CHECK(!tooltip_bubble_);
+  CHECK(hover_anchor_view_);
+  views::MenuItemView* anchor_view = hover_anchor_view_;
+  hover_anchor_view_ = nullptr;
   if (!IsShowingMenu() || !item_delegate_) {
     return;
   }
-  aura::Window* window =
-      item_delegate_->GetAppMenuItemWindow(anchor_view->GetCommand())
-          .value_or(nullptr);
-  if (!window) {
+  base::expected<aura::Window*, std::u16string> result =
+      item_delegate_->GetAppMenuItemWindow(anchor_view->GetCommand());
+  if (!result.has_value() && result.error().empty()) {
     return;
   }
-  preview_anchor_view_ = anchor_view;
-  preview_bubble_ = new ShelfWindowPreviewBubble(anchor_view, window);
-  preview_bubble_->RegisterWindowClosingCallback(base::BindOnce(
-      &ShelfMenuModelAdapter::OnPreviewBubbleClosing, base::Unretained(this)));
+
+  hover_anchor_view_ = anchor_view;
+  ShelfBubble* bubble = nullptr;
+  if (result.has_value()) {
+    preview_bubble_ = new ShelfWindowPreviewBubble(anchor_view, result.value());
+    bubble = preview_bubble_;
+  } else {
+    // Anchor the tooltip beside the menu, on the same side as the preview
+    // bubble, so the two line up as the user moves between items.
+    tooltip_bubble_ = new ShelfTooltipBubble(
+        anchor_view, ShelfAlignment::kBottom, result.error(),
+        ShelfBubble::GetArrowForMenuItem(anchor_view));
+    bubble = tooltip_bubble_;
+    // Show the tooltip without animation, as it is shown and replaced while
+    // the user moves between menu items.
+    ::wm::SetWindowVisibilityAnimationTransition(
+        bubble->GetWidget()->GetNativeWindow(), ::wm::ANIMATE_NONE);
+    bubble->GetWidget()->Show();
+  }
+  bubble->RegisterWindowClosingCallback(base::BindOnce(
+      &ShelfMenuModelAdapter::OnHoverBubbleClosing, base::Unretained(this)));
 }
 
-void ShelfMenuModelAdapter::ClosePreviewBubble(bool animate) {
-  preview_timer_.Stop();
+void ShelfMenuModelAdapter::CloseHoverBubble(bool animate) {
+  hover_timer_.Stop();
+  hover_anchor_view_ = nullptr;
   if (preview_bubble_) {
-    ShelfWindowPreviewBubble* bubble = preview_bubble_;
-    preview_bubble_ = nullptr;
     if (animate) {
-      bubble->FadeOutAndClose();
+      preview_bubble_.ExtractAsDangling()->FadeOutAndClose();
     } else {
-      bubble->GetWidget()->CloseNow();
+      preview_bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
     }
   }
-  preview_anchor_view_ = nullptr;
+  if (tooltip_bubble_) {
+    tooltip_bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
+  }
 }
 
-void ShelfMenuModelAdapter::OnPreviewBubbleClosing() {
+void ShelfMenuModelAdapter::OnHoverBubbleClosing() {
   preview_bubble_ = nullptr;
-  preview_anchor_view_ = nullptr;
-  preview_timer_.Stop();
+  tooltip_bubble_ = nullptr;
+  hover_anchor_view_ = nullptr;
+  hover_timer_.Stop();
 }
 
 int ShelfMenuModelAdapter::GetCommandIdForHistograms(int command_id) {

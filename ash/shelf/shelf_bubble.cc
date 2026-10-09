@@ -8,15 +8,19 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -72,6 +76,24 @@ ShelfBubble::ShelfBubble(
 }
 
 ShelfBubble::~ShelfBubble() = default;
+
+// static
+views::BubbleBorder::Arrow ShelfBubble::GetArrowForMenuItem(
+    views::MenuItemView* anchor) {
+  CHECK(anchor);
+  const gfx::Rect anchor_bounds = anchor->GetBoundsInScreen();
+  const display::Display display =
+      display::Screen::Get()->GetDisplayNearestWindow(
+          anchor->GetWidget()->GetNativeWindow());
+  views::BubbleBorder::Arrow arrow =
+      anchor_bounds.CenterPoint().x() > display.work_area().CenterPoint().x()
+          ? views::BubbleBorder::RIGHT_CENTER
+          : views::BubbleBorder::LEFT_CENTER;
+  if (base::i18n::IsRTL()) {
+    arrow = views::BubbleBorder::horizontal_mirror(arrow);
+  }
+  return arrow;
+}
 
 void ShelfBubble::CreateBubble() {
   // Actually create the bubble.

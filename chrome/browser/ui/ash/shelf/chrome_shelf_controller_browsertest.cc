@@ -107,6 +107,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -127,6 +128,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -171,6 +173,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -3273,8 +3276,12 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   ASSERT_EQ(3U, item_delegate
                     ->GetAppMenuItems(ui::EF_SHIFT_DOWN, base::NullCallback())
                     .size());
+  // Inactive tabs have a tooltip instead, which names their window by the title
+  // the user gave it.
+  WindowMetadataController::From(browser1)->SetWindowUserTitle("Work");
   EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
-              base::test::ErrorIs(std::u16string()));
+              base::test::ErrorIs(l10n_util::GetStringFUTF16(
+                  IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP, u"Work")));
   EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
               base::test::ValueIs(browser1->GetWindow()->GetNativeWindow()));
   EXPECT_THAT(item_delegate->GetAppMenuItemWindow(2),
@@ -3434,8 +3441,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuDeletionExecution) {
 }
 
 // Checks that only the app menu item for the active tab maps to the window of
-// the browser hosting the tab, and that a tab destroyed while the menu is open
-// maps to no window.
+// the browser hosting the tab, that the item for an inactive tab has a tooltip
+// instead, which names the window by the title of its active tab, and that a
+// tab destroyed while the menu is open has neither.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuItemWindow) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://mail.google.com/mail/?usp=installed_webapp"));
@@ -3462,7 +3470,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuItemWindow) {
   aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ASSERT_TRUE(browser_window);
   EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
-              base::test::ErrorIs(std::u16string()));
+              base::test::ErrorIs(l10n_util::GetStringFUTF16(
+                  IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP, u"Test2")));
   EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
               base::test::ValueIs(browser_window));
   EXPECT_THAT(item_delegate->GetAppMenuItemWindow(-1),

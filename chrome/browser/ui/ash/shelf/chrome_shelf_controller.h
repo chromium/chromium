@@ -201,6 +201,11 @@ class ChromeShelfController
   // Returns "New Tab" if |web_contents| is null or has not loaded.
   std::u16string GetAppMenuTitle(content::WebContents* web_contents) const;
 
+  // Get the tooltip for the application menu entry for an inactive tab of
+  // |browser|, which names the window of |browser|.
+  std::u16string GetAppMenuInactiveTabTooltip(
+      const ash::BrowserDelegate& browser) const;
+
   // Returns the ash::ShelfItemDelegate of BrowserShortcut.
   BrowserShortcutShelfItemController*
   GetBrowserShortcutShelfItemControllerForTesting();

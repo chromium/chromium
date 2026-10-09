@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_SHELF_MENU_MODEL_ADAPTER_H_
 #define ASH_SHELF_SHELF_MENU_MODEL_ADAPTER_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/app_menu/app_menu_model_adapter.h"
@@ -25,6 +26,7 @@ class View;
 
 namespace ash {
 
+class ShelfBubble;
 class ShelfItemDelegate;
 class ShelfWindowPreviewBubble;
 
@@ -33,13 +35,13 @@ class ShelfWindowPreviewBubble;
 class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
                                          public views::ViewObserver {
  public:
-  // Delay before showing the window preview bubble when hovering an
-  // application menu item.
+  // Delay before showing the window preview bubble or the tooltip bubble when
+  // hovering an application menu item.
   static constexpr base::TimeDelta kShowPreviewDelay = base::Milliseconds(500);
 
-  // Delay before closing the window preview bubble when an application menu
-  // item is unselected. Allows smoothly updating the bubble in place if
-  // another item is selected immediately afterwards.
+  // Delay before closing the window preview bubble or the tooltip bubble when
+  // an application menu item is unselected. Allows smoothly updating the bubble
+  // in place if another item is selected immediately afterwards.
   static constexpr base::TimeDelta kClosePreviewDelay = base::Milliseconds(150);
 
   ShelfMenuModelAdapter(const std::string& app_id,
@@ -73,12 +75,18 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   bool IsShowingMenuForView(const views::View& view) const;
 
   ShelfWindowPreviewBubble* preview_bubble() { return preview_bubble_.get(); }
+  ShelfBubble* tooltip_bubble() { return tooltip_bubble_.get(); }
 
  private:
   void OnMenuItemSelectedChanged(views::MenuItemView* item);
-  void ShowPreviewBubble();
-  void ClosePreviewBubble(bool animate);
-  void OnPreviewBubbleClosing();
+
+  // Shows the window preview bubble or the tooltip bubble for
+  // `hover_anchor_view_`, depending on what the item delegate returns for it.
+  void ShowHoverBubble();
+
+  // Closes the window preview bubble or the tooltip bubble, if any.
+  void CloseHoverBubble(bool animate);
+  void OnHoverBubbleClosing();
 
   // True if this adapter was created for the shelf application menu items.
   const bool for_application_menu_items_;
@@ -89,18 +97,21 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   // Subscriptions for MenuItemView selection changes.
   std::vector<base::CallbackListSubscription> selection_subscriptions_;
 
-  // Timer to delay showing or closing the window preview bubble on hover.
-  base::OneShotTimer preview_timer_;
+  // Timer to delay showing or closing the window preview bubble or the tooltip
+  // bubble on hover.
+  base::OneShotTimer hover_timer_;
 
   // The view showing the context menu. Not owned.
   raw_ptr<views::View> menu_owner_ = nullptr;
 
-  // The menu item view that is currently anchored to the preview bubble or has
-  // a pending preview timer.
-  raw_ptr<views::MenuItemView> preview_anchor_view_ = nullptr;
+  // The menu item view that is currently anchored to the preview bubble or the
+  // tooltip bubble, or has a pending hover timer.
+  raw_ptr<views::MenuItemView> hover_anchor_view_ = nullptr;
 
-  // The current active preview bubble, if any.
+  // The current active preview bubble, or tooltip bubble for an item without a
+  // window to preview, if any. At most one of them is set at a time.
   raw_ptr<ShelfWindowPreviewBubble> preview_bubble_ = nullptr;
+  raw_ptr<ShelfBubble> tooltip_bubble_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       menu_owner_observation_{this};

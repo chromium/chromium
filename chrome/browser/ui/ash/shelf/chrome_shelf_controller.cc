@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -75,6 +77,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -710,6 +713,18 @@ std::u16string ChromeShelfController::GetAppMenuTitle(
     }
   }
   return l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
+}
+
+std::u16string ChromeShelfController::GetAppMenuInactiveTabTooltip(
+    const ash::BrowserDelegate& browser) const {
+  // Use the same window title as the application menu entry for the window.
+  const std::optional<std::string> window_title =
+      browser.GetUserDefinedWindowTitle();
+  return l10n_util::GetStringFUTF16(
+      IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP,
+      window_title.has_value()
+          ? base::UTF8ToUTF16(*window_title)
+          : GetAppMenuTitle(browser.GetActiveWebContents()));
 }
 
 BrowserShortcutShelfItemController*
