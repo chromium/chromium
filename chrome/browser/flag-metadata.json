@@ -896,6 +896,11 @@
     "expiry_milestone": 163
   },
   {
+    "name": "assistant-aim-threads",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "assistant-container",
     "owners": [ "ewannpv@chromium.org", "bling-meridian@google.com" ],
     "expiry_milestone": 155

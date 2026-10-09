@@ -1217,3 +1217,9 @@ BASE_FEATURE(kLightAppBar, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsLightAppBarEnabled() {
   return base::FeatureList::IsEnabled(kLightAppBar);
 }
+
+BASE_FEATURE(kAssistantAimThreads, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAssistantAimThreadsEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantAimThreads);
+}

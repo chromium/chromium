@@ -9,8 +9,10 @@
 #import <string>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -45,9 +47,11 @@ std::string DescribeButton(UIButton* button) {
 class AssistantAIMHeaderViewTest : public PlatformTest {
  protected:
   AssistantAIMHeaderViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(kAssistantAimThreads);
     header_view_ = [[AssistantAIMHeaderView alloc] init];
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   AssistantAIMHeaderView* header_view_;
 };
 
@@ -63,9 +67,6 @@ TEST_F(AssistantAIMHeaderViewTest, ButtonsHaveAccessibilityLabels) {
        l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK)},
       {kAssistantAIMCloseButtonAccessibilityIdentifier,
        l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)},
-      {kAssistantAIMContextMenuButtonAccessibilityIdentifier,
-       l10n_util::GetNSString(
-           IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP)},
       {kAssistantAIMHistoryButtonAccessibilityIdentifier,
        l10n_util::GetNSString(
            IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)},
@@ -122,7 +123,6 @@ TEST_F(AssistantAIMHeaderViewTest, ActionButtonsFillPillHeight) {
       {AssistantAIMState::kHistory, "History",
        @[
          kAssistantAIMNewThreadButtonAccessibilityIdentifier,
-         kAssistantAIMContextMenuButtonAccessibilityIdentifier,
        ]},
   };
 
@@ -239,9 +239,9 @@ TEST_F(AssistantAIMHeaderViewTest,
   EXPECT_LE(CGRectGetHeight(title_label.frame), kHeaderHeight);
 }
 
-// Tests that all five header icon buttons enable `UILargeContentViewer` with a
-// scaled symbol image and localized title, and that the header view registers a
-// `UILargeContentViewerInteraction`.
+// Tests that all four default header icon buttons enable `UILargeContentViewer`
+// with a scaled symbol image and localized title, and that the header view
+// registers a `UILargeContentViewerInteraction`.
 TEST_F(AssistantAIMHeaderViewTest, ButtonsShowLargeContentViewer) {
   EXPECT_TRUE(HasLargeContentViewerInteraction(header_view_));
 
@@ -254,9 +254,6 @@ TEST_F(AssistantAIMHeaderViewTest, ButtonsShowLargeContentViewer) {
        l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK)},
       {kAssistantAIMCloseButtonAccessibilityIdentifier,
        l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)},
-      {kAssistantAIMContextMenuButtonAccessibilityIdentifier,
-       l10n_util::GetNSString(
-           IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP)},
       {kAssistantAIMHistoryButtonAccessibilityIdentifier,
        l10n_util::GetNSString(
            IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)},

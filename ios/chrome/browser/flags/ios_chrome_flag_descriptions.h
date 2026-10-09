@@ -138,6 +138,10 @@ inline constexpr char kAssistantAimMinimizedStateDescription[] =
     "When enabled, the Assistant AIM (Co-browse) interface initially appears "
     "in a minimized state instead of the default medium state.";
 
+inline constexpr char kAssistantAimThreadsName[] = "AssistantAimThreads";
+inline constexpr char kAssistantAimThreadsDescription[] =
+    "Enables the AssistantAimThreads feature.";
+
 inline constexpr char kAssistantContainerName[] = "Assistant Container";
 inline constexpr char kAssistantContainerDescription[] =
     "Enables the Assistant Container feature. The debug parameter enables "

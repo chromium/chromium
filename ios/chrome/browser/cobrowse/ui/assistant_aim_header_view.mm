@@ -224,8 +224,13 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 // them allows the title to extend over the header actions when they are
 // collapsed in the minimized state.
 - (void)setUpTrailingStackView {
-  _trailingStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _headerActionsView, _closeButton ]];
+  _trailingStackView = [[UIStackView alloc] init];
+
+  if (_headerActionsView) {
+    [_trailingStackView addArrangedSubview:_headerActionsView];
+  }
+
+  [_trailingStackView addArrangedSubview:_closeButton];
   _trailingStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _trailingStackView.axis = UILayoutConstraintAxisHorizontal;
   _trailingStackView.alignment = UIStackViewAlignmentCenter;
@@ -334,6 +339,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
 // Creates the new thread button in header.
 - (UIButton*)createStartThreadButton {
+  CHECK(IsAssistantAimThreadsEnabled());
   UIButton* button = [self
       createHeaderActionButtonWithImage:SymbolTemplateWithPointSize(
                                             SymbolSquareAndPencil,
@@ -353,6 +359,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
 // Creates the history button in header.
 - (UIButton*)createHistoryButton {
+  CHECK(IsAssistantAimThreadsEnabled());
   UIButton* button = [self
       createHeaderActionButtonWithImage:SymbolTemplateWithPointSize(
                                             SymbolLineThreeSpark,
@@ -376,7 +383,6 @@ void ApplyHeaderElementShadow(UIView* targetView) {
       createHeaderActionButtonWithImage:SymbolTemplateWithPointSize(
                                             SymbolMenu,
                                             kHeaderActionSymbolPointSize)];
-  button.hidden = !experimental_flags::IsOmniboxDebuggingEnabled();
   button.accessibilityIdentifier =
       kAssistantAIMContextMenuButtonAccessibilityIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(
@@ -447,10 +453,15 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
 // Builds the stack view of the header actions.
 - (UIStackView*)createHeaderActionsStackView {
-  UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    [self createStartThreadButton], [self createHistoryButton],
-    [self createContextMenuButton]
-  ]];
+  UIStackView* stackView = [[UIStackView alloc]
+      initWithArrangedSubviews:
+          IsAssistantAimThreadsEnabled()
+              ? @[ [self createStartThreadButton], [self createHistoryButton] ]
+              : @[]];
+
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    [stackView addArrangedSubview:[self createContextMenuButton]];
+  }
 
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -464,6 +475,11 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
 // Sets up the view containing the header actions.
 - (void)setUpHeaderActionsView {
+  if (!IsAssistantAimThreadsEnabled() &&
+      !experimental_flags::IsOmniboxDebuggingEnabled()) {
+    return;
+  }
+
   UIStackView* stackView = [self createHeaderActionsStackView];
 
   _headerActionsView = [[UIView alloc] init];

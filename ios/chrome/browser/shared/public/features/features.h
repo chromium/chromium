@@ -998,4 +998,10 @@ BASE_DECLARE_FEATURE(kLightAppBar);
 // Returns true if the LightAppBar feature is enabled.
 bool IsLightAppBarEnabled();
 
+// Enables the AssistantAimThreads feature.
+BASE_DECLARE_FEATURE(kAssistantAimThreads);
+
+// Returns true if the AssistantAimThreads feature is enabled.
+bool IsAssistantAimThreadsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

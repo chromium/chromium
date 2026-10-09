@@ -2952,6 +2952,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"light-app-bar", flag_descriptions::kLightAppBarName,
      flag_descriptions::kLightAppBarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLightAppBar)},
+    {"assistant-aim-threads", flag_descriptions::kAssistantAimThreadsName,
+     flag_descriptions::kAssistantAimThreadsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAssistantAimThreads)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
