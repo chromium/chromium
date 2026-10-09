@@ -1419,7 +1419,10 @@ class MetaBuildWrapper:
     self.WriteFile(gn_runtime_deps_path, '\n'.join(runtime_deps) + '\n')
     cmd = self.GNCmd('gen', build_dir)
     cmd.append('--runtime-deps-list-file=%s' % gn_runtime_deps_path)
-    self.Run(cmd)
+    ret, _, _ = self.Run(cmd)
+    if ret != 0:
+      self.Print('GN gen failed: %d' % ret, file=sys.stderr)
+      return ret
 
     return self.GenerateIsolates(vals, isolate_targets, isolate_map, build_dir)
 

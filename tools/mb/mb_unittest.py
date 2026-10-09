@@ -939,6 +939,23 @@ class UnitTest(unittest.TestCase):
       ret=1,
     )
 
+  def test_isolate_everything_stops_on_runtime_deps_gn_failure(self):
+    mbw = self.fake_mbw(
+      files={
+        '/fake_src/out/Default/toolchain.ninja': '',
+        '/fake_src/out/Default/args.gn': 'is_debug=false\n',
+      }
+    )
+    mbw.cmds.extend(
+      [
+        (0, '//foo:foo_unittests\n', ''),  # gn ls
+        (7, 'Runtime dependency generation failed\n', ''),  # gn gen
+      ]
+    )
+    self.check(['isolate-everything', '//out/Default'], mbw=mbw, ret=7)
+    self.assertEqual([command[1] for command in mbw.calls], ['ls', 'gen'])
+    self.assertIn('GN gen failed: 7', mbw.err)
+
   def test_isolate(self):
     files = {
       '/fake_src/out/Default/toolchain.ninja': '',
