@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
@@ -382,8 +381,13 @@ void RemoteModelExecutionSessionImpl::HandleDisconnection(
   pending_requests_.clear();
   access_token_.clear();
   connection_state_ = ConnectionState::kDisconnected;
+  base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
   if (error) {
     DispatchError(*error);
+    if (!weak_ptr || connection_state_ != ConnectionState::kDisconnected) {
+      return;
+    }
   }
   NotifyObservers();
 }
@@ -407,8 +411,7 @@ void RemoteModelExecutionSessionImpl::OnIdleTimeout() {
 void RemoteModelExecutionSessionImpl::DispatchResponse(
     OptimizationGuideModelStreamingResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(callback_, std::move(result)));
+  callback_.Run(std::move(result));
 }
 
 void RemoteModelExecutionSessionImpl::DispatchError(

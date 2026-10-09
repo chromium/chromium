@@ -754,6 +754,64 @@ TEST_F(RemoteModelExecutionSessionImplTest,
 }
 
 TEST_F(RemoteModelExecutionSessionImplTest,
+       DestroySessionInCallbackOnErrorDoesNotCrash) {
+  using ConnectionState = RemoteModelExecutionSession::ConnectionState;
+
+  auto fake_client = std::make_unique<FakeStreamingWebSocketClient>();
+  fake_client_ = fake_client.get();
+  session_ = std::make_unique<RemoteModelExecutionSessionImpl>(
+      ModelBasedCapabilityKey::kScamDetection, StreamingModelExecutionOptions{},
+      base::BindRepeating(
+          [](std::unique_ptr<RemoteModelExecutionSessionImpl>& session,
+             raw_ptr<FakeStreamingWebSocketClient>& fake_client,
+             OptimizationGuideModelStreamingResult result) {
+            if (!result.response.has_value()) {
+              fake_client = nullptr;
+              session.reset();
+            }
+          },
+          std::ref(session_), std::ref(fake_client_)),
+      identity_test_env_.identity_manager(), std::move(fake_client),
+      /*logger=*/nullptr);
+  fake_client_->set_delegate(session_.get());
+
+  TestObserver observer;
+  session_->AddObserver(&observer);
+
+  session_->Send(BuildTestMessage("query"));
+  fake_client_->SimulateConnected();
+  fake_client_->SimulateDropChannel(/*was_clean=*/false);
+
+  EXPECT_EQ(session_, nullptr);
+  EXPECT_THAT(observer.states,
+              testing::ElementsAre(ConnectionState::kConnecting,
+                                   ConnectionState::kConnected));
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       ErrorDispatchedBeforeDisconnectedNotification) {
+  using ConnectionState = RemoteModelExecutionSession::ConnectionState;
+
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+  bool error_received_before_disconnect = false;
+  TestObserver observer(base::BindRepeating(
+      [](base::test::TestFuture<OptimizationGuideModelStreamingResult>& future,
+         bool* error_received_before_disconnect, ConnectionState state) {
+        if (state == ConnectionState::kDisconnected) {
+          *error_received_before_disconnect = future.IsReady();
+        }
+      },
+      std::ref(response_future_), &error_received_before_disconnect));
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("query"));
+  fake_client_->SimulateConnected();
+  fake_client_->SimulateDropChannel(/*was_clean=*/false);
+
+  EXPECT_TRUE(error_received_before_disconnect);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
        CreateWithFeatureDisabledReturnsNull) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
