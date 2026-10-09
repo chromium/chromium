@@ -6053,14 +6053,14 @@ inline constexpr char kClankStartupTabOptimizationsDescription[] =
     "WebContents creation paths.";
 
 inline constexpr char kCompositorViewRemeasureFixName[] =
-    "compositor-view-remeasure-fix";
+    "Compositor View Remeasure Fix";
 inline constexpr char kCompositorViewRemeasureFixDescription[] =
     "When this is enabled, the CompositorView will use different calculations "
     "in its onMeasure pass, with the goal of fixing certain measure "
     "calculations.";
 
 inline constexpr char kCompositorViewShrinkWhenKeyboardHiddenName[] =
-    "compositor-view-shrink-when-keyboard-hidden";
+    "Compositor View Shrink When Keyboard Hidden";
 inline constexpr char kCompositorViewShrinkWhenKeyboardHiddenDescription[] =
     "When enabled, the CompositorView only keeps its largest measured height "
     "while the soft keyboard is showing, and shrinks to the requested height "

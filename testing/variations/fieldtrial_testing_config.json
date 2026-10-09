@@ -8070,12 +8070,17 @@
                         "adaptive-toolbar-auto-pin": "false",
                         "always_use_filled_glic_icon": "true",
                         "dont_show_fusebox": "true",
+                        "fullscreen_load_delay_ms": "1500",
                         "glic-min-required-ram-mb": "3600",
+                        "minimum_show_duration_ms": "1500",
                         "show_glic_setting_toggle": "true"
                     },
                     "enable_features": [
                         "AndroidBottomBar",
                         "AndroidPageInfoAsAppMenuItem",
+                        "BottomControlsJankImprovement",
+                        "BrowserControlsLockoutDuration",
+                        "CompositorViewShrinkWhenKeyboardHidden",
                         "ContextualCueing",
                         "Glic",
                         "GlicActor",
