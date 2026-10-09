@@ -887,13 +887,9 @@ void CacheStorageCache::BatchOperation(
   std::optional<std::string> message;
 
   if (IsClosingOrClosed()) {
-    scheduler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            CacheStorageVerboseError::New(
-                MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
-                std::move(message))));
+    std::move(callback).Run(CacheStorageVerboseError::New(
+        MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
+        std::move(message)));
     return;
   }
 
@@ -916,12 +912,8 @@ void CacheStorageCache::BatchOperation(
     message.emplace(
         base::StringPrintf("duplicate requests (%s)", url_list_string.c_str()));
 
-    scheduler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       CacheStorageVerboseError::New(
-                           CacheStorageError::kErrorDuplicateOperation,
-                           std::move(message))));
+    std::move(callback).Run(CacheStorageVerboseError::New(
+        CacheStorageError::kErrorDuplicateOperation, std::move(message)));
     return;
   }
 
@@ -946,15 +938,10 @@ void CacheStorageCache::BatchOperation(
     }
   }
   if (!safe_space_required.IsValid() || !safe_side_data_size.IsValid()) {
-    scheduler_task_runner_->PostTask(FROM_HERE,
-                                     std::move(bad_message_callback));
-    scheduler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            CacheStorageVerboseError::New(
-                MakeErrorStorage(ErrorStorageType::kBatchInvalidSpace),
-                std::move(message))));
+    std::move(bad_message_callback).Run();
+    std::move(callback).Run(CacheStorageVerboseError::New(
+        MakeErrorStorage(ErrorStorageType::kBatchInvalidSpace),
+        std::move(message)));
     return;
   }
   uint64_t space_required = safe_space_required.ValueOrDie();
@@ -991,13 +978,9 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
               CacheStorageTracedValue(operations));
 
   if (IsClosingOrClosed()) {
-    scheduler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            CacheStorageVerboseError::New(
-                MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
-                std::move(message))));
+    std::move(callback).Run(CacheStorageVerboseError::New(
+        MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
+        std::move(message)));
     return;
   }
 
@@ -1006,25 +989,17 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
   safe_space_required_with_side_data = safe_space_required + side_data_size;
   if (!safe_space_required.IsValid() ||
       !safe_space_required_with_side_data.IsValid()) {
-    scheduler_task_runner_->PostTask(FROM_HERE,
-                                     std::move(bad_message_callback));
-    scheduler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            CacheStorageVerboseError::New(
-                MakeErrorStorage(
-                    ErrorStorageType::kBatchDidGetUsageAndQuotaInvalidSpace),
-                std::move(message))));
+    std::move(bad_message_callback).Run();
+    std::move(callback).Run(CacheStorageVerboseError::New(
+        MakeErrorStorage(
+            ErrorStorageType::kBatchDidGetUsageAndQuotaInvalidSpace),
+        std::move(message)));
     return;
   }
   if (!space_remaining.has_value() ||
       safe_space_required.ValueOrDie() > space_remaining.value()) {
-    scheduler_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  CacheStorageVerboseError::New(
-                                      CacheStorageError::kErrorQuotaExceeded,
-                                      std::move(message))));
+    std::move(callback).Run(CacheStorageVerboseError::New(
+        CacheStorageError::kErrorQuotaExceeded, std::move(message)));
     return;
   }
   bool skip_side_data = safe_space_required_with_side_data.ValueOrDie() >

@@ -565,11 +565,8 @@ class CacheStorageDispatcherHost::CacheImpl
 
     cache->BatchOperation(
         std::move(batch_operations), trace_id, std::move(cb),
-        base::BindOnce(
-            [](mojo::ReportBadMessageCallback bad_message_callback) {
-              std::move(bad_message_callback).Run("CSDH_UNEXPECTED_OPERATION");
-            },
-            host_->cache_receivers_.GetBadMessageCallback()));
+        base::BindOnce(host_->cache_receivers_.GetBadMessageCallback(),
+                       "CSDH_UNEXPECTED_OPERATION"));
   }
 
   // Owns this.
