@@ -127,6 +127,9 @@ class BottomSheetCoordinator
     /** The viewport bottom inset in pixels from the previous container layout pass. */
     private @Px int mPreviousViewportBottomInset;
 
+    /** The last seen viewport bottom inset in pixels. */
+    private @Px int mLastSeenViewportBottomInset;
+
     /** The animator used to move the sheet to a fixed state when released by the user. */
     private @Nullable ValueAnimator mSettleAnimator;
 
@@ -362,6 +365,16 @@ class BottomSheetCoordinator
     }
 
     private void onInsetChanged() {
+        @Px int e2eBottomInset = getEdgeToEdgeBottomInset();
+        updateViewport(e2eBottomInset);
+        @Px int viewportBottomInset = getViewportBottomInset(e2eBottomInset);
+        if (viewportBottomInset != mLastSeenViewportBottomInset) {
+            mLastSeenViewportBottomInset = viewportBottomInset;
+            invalidateContentDesiredHeight();
+            if (isFullHeightWrapContent() && isSheetOpen()) {
+                ensureContentIsWrapped(/* animate= */ true);
+            }
+        }
         updateContentContainerHeight();
     }
 
@@ -378,11 +391,18 @@ class BottomSheetCoordinator
     private @Px int getViewportBottomInset(@Px int e2eBottomInset) {
         @Px int viewportBottomInset = e2eBottomInset;
 
-        if (isSheetOpen()) {
+        if (!mVisibleViewportRect.isEmpty()) {
             int visibleViewport = mVisibleViewportRect.height();
             viewportBottomInset = Math.max(viewportBottomInset, mContainerHeight - visibleViewport);
         }
         return viewportBottomInset;
+    }
+
+    private @Px int getContentBottomPadding() {
+        return mMediator.calculateContentBottomPadding(
+                isLargeFormFactorUiEnabled(),
+                isFullHeightResizeContent(),
+                getViewportBottomInset(getEdgeToEdgeBottomInset()));
     }
 
     private void onContainerLayoutChange(
@@ -437,7 +457,11 @@ class BottomSheetCoordinator
         boolean insetOrHeightChanged =
                 previousHeight != mContainerHeight
                         || mPreviousViewportBottomInset != viewportBottomInset;
+        if (insetOrHeightChanged) {
+            invalidateContentDesiredHeight();
+        }
         mPreviousViewportBottomInset = viewportBottomInset;
+        mLastSeenViewportBottomInset = viewportBottomInset;
         return insetOrHeightChanged;
     }
 
@@ -1282,13 +1306,14 @@ class BottomSheetCoordinator
         }
         BottomSheetContent content = getCurrentSheetContent();
         View contentView = assumeNonNull(content).getContentView();
+        @Px int handlebarHeight = getHandlebarHeight();
+        @Px
+        int maxContentHeight =
+                Math.max(0, getMaxSheetHeight() - handlebarHeight - getContentBottomPadding());
         contentView.measure(
                 MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
-        mContentDesiredHeight = contentView.getMeasuredHeight();
-        if (content.showHandlebar()) {
-            mContentDesiredHeight += getHandlebarHeight();
-        }
+                MeasureSpec.makeMeasureSpec(maxContentHeight, MeasureSpec.AT_MOST));
+        mContentDesiredHeight = contentView.getMeasuredHeight() + handlebarHeight;
     }
 
     private int getHandlebarHeight() {
@@ -1399,9 +1424,9 @@ class BottomSheetCoordinator
         mMediator.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
         configureSheetAppearanceForContent(content);
-        configureWrapContentLayout(content);
-
+        invalidateContentDesiredHeight();
         updateContentContainerHeight();
+        configureWrapContentLayout(content);
         // Update the color before notify the observers, as some might read the sheet bg color.
         updateBackgroundColor();
         mMediator.notifySheetContentChanged(content);
@@ -1430,7 +1455,6 @@ class BottomSheetCoordinator
         // Listen for layout/size changes.
         content.getContentView().addOnLayoutChangeListener(this);
 
-        invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
 
         // HALF state is forbidden when wrapping the content.
@@ -1646,9 +1670,15 @@ class BottomSheetCoordinator
         @SheetState int currentState = getSheetState();
         if (currentState == SheetState.HIDDEN || currentState == SheetState.PEEK) return;
 
-        // The SCROLLING state is used when animating the sheet height or when the user is swiping
-        // the sheet. If it is the latter, we should not change the sheet height.
-        if (!isRunningSettleAnimation() && currentState == SheetState.SCROLLING) return;
+        if (currentState == SheetState.SCROLLING) {
+            if (!isRunningSettleAnimation()) return;
+            @SheetState int target = getTargetOrCurrentState();
+            if (target != SheetState.NONE) {
+                cancelAnimation();
+                setSheetState(target, animate);
+            }
+            return;
+        }
         setSheetState(currentState, animate);
     }
 

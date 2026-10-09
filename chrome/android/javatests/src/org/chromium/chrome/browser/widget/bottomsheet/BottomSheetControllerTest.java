@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ScrollView;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -274,6 +276,74 @@ public class BottomSheetControllerTest {
                                 bottomSheetContent.getHeight(),
                                 Matchers.equalTo(
                                         Math.max(0, heightWithoutBottomInset - bottomInsets))));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"BottomSheetController"})
+    public void testShowWithBottomInset_WrapContentWithHandlebarAndScrollView() {
+        mEdgeToEdgeController.bottomInset = 50;
+        ScrollView scrollView =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            int tallChildHeight =
+                                    mActivity.getWindow().getDecorView().getHeight() * 2;
+                            ScrollView view = new ScrollView(mActivity);
+                            View tallChild = new View(mActivity);
+                            tallChild.setMinimumHeight(tallChildHeight);
+                            view.addView(
+                                    tallChild,
+                                    new LayoutParams(LayoutParams.MATCH_PARENT, tallChildHeight));
+                            return view;
+                        });
+        TestBottomSheetContent wrapContent =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TestBottomSheetContent content =
+                                    new TestBottomSheetContent(
+                                            mActivity,
+                                            BottomSheetContent.ContentPriority.HIGH,
+                                            false,
+                                            scrollView) {
+                                        @Override
+                                        public boolean showHandlebar() {
+                                            return true;
+                                        }
+                                    };
+                            content.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+                            content.setHalfHeightRatio(HeightMode.DISABLED);
+                            content.setPeekHeight(HeightMode.DISABLED);
+                            return content;
+                        });
+
+        requestContentInSheet(wrapContent, true);
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+
+        int bottomInsets = ViewUtils.dpToPx(mActivity, mEdgeToEdgeController.bottomInset);
+        View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
+        View bottomSheetContent = bottomSheet.findViewById(R.id.bottom_sheet_content);
+        View handlebar = bottomSheet.findViewById(R.id.handlebar);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Padding for the sheet should match the bottom insets.",
+                            bottomSheetContent.getPaddingBottom(),
+                            Matchers.equalTo(bottomInsets));
+                    int expectedContentHeight =
+                            mSheetController.getMaxSheetHeight()
+                                    - handlebar.getHeight()
+                                    - bottomInsets;
+                    Criteria.checkThat(
+                            "Wrap-content view measured height should account for handlebar and"
+                                    + " bottom inset.",
+                            scrollView.getMeasuredHeight(),
+                            Matchers.equalTo(expectedContentHeight));
+                    Criteria.checkThat(
+                            "Wrap-content view laid-out height should match measured height.",
+                            scrollView.getHeight(),
+                            Matchers.equalTo(expectedContentHeight));
+                });
     }
 
     @Test
