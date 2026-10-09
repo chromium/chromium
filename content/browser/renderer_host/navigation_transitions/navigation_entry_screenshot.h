@@ -94,6 +94,13 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     virtual gfx::Size Size() const = 0;
     virtual scoped_refptr<viz::RasterContextProvider> GetContextProvider() = 0;
 
+    // Records or clears the sync token of an in-flight readback of Get()
+    // issued on GetContextProvider(). While set, the shared image is not
+    // released or destroyed before this token is released, whether DoRelease()
+    // runs before or after.
+    void SetReadSyncToken(const gpu::SyncToken& sync_token);
+    void ClearReadSyncToken();
+
    protected:
     SharedImageProvider();
     // Implementors of this interface should perform clean up operations upon
@@ -104,7 +111,17 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     // It is to be used as the callback returned by PrepareTransferableResource.
     virtual void DoRelease(const gpu::SyncToken& sync_token, bool is_lost) = 0;
 
+    // Returns a token released once both `release_sync_token` and
+    // `read_sync_token_` are released. Set `verify` when the token is sent to
+    // another process.
+    gpu::SyncToken CombineWithReadSyncToken(
+        const gpu::SyncToken& release_sync_token,
+        viz::RasterContextProvider* context_provider,
+        bool verify);
+
     bool pending_transferable_resource_ = false;
+
+    gpu::SyncToken read_sync_token_;
 
    private:
     friend class base::RefCounted<SharedImageProvider>;
@@ -194,6 +211,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     // buffer is destroyed.
     scoped_refptr<viz::RasterContextProvider> cached_context_provider_;
     scoped_refptr<gpu::ClientSharedImage> cached_shared_image_;
+
+    // Last sync token received in DoRelease().
+    gpu::SyncToken release_sync_token_;
   };
 
   using ScreenshotCallback = base::RepeatingCallback<
