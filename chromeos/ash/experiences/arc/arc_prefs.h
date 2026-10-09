@@ -35,6 +35,11 @@ inline constexpr char kArcAppRequestedInSession[] =
 // A preference to keep list of Android apps and their state.
 inline constexpr char kArcApps[] = "arc.apps";
 
+// Package names of Android apps to launch automatically after sign-in, once
+// installed. Currently only the first entry is used. Backs the
+// AutoLaunchAndroidApps policy.
+inline constexpr char kArcAutoLaunchApps[] = "arc.auto_launch_apps";
+
 // A preference to store backup and restore state for Android apps.
 inline constexpr char kArcBackupRestoreEnabled[] = "arc.backup_restore.enabled";
 

@@ -393,6 +393,25 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::ListValue filtered_list,
                   base::Value(std::move(pinned_apps_list)));
 }
 
+AutoLaunchAndroidAppsPolicyHandler::AutoLaunchAndroidAppsPolicyHandler()
+    : ListPolicyHandler(key::kAutoLaunchAndroidApps,
+                        base::Value::Type::STRING) {}
+
+AutoLaunchAndroidAppsPolicyHandler::~AutoLaunchAndroidAppsPolicyHandler() =
+    default;
+
+bool AutoLaunchAndroidAppsPolicyHandler::CheckListEntry(
+    const base::Value& value) {
+  return web_app::IsArcAppPolicyId(value.GetString());
+}
+
+void AutoLaunchAndroidAppsPolicyHandler::ApplyList(
+    base::ListValue filtered_list,
+    PrefValueMap* prefs) {
+  prefs->SetValue(arc::prefs::kArcAutoLaunchApps,
+                  base::Value(std::move(filtered_list)));
+}
+
 DefaultHandlersForFileExtensionsPolicyHandler::
     DefaultHandlersForFileExtensionsPolicyHandler(
         const policy::Schema& chrome_schema)

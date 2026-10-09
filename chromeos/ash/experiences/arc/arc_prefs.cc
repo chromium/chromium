@@ -64,6 +64,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   registry->RegisterBooleanPref(kAlwaysOnVpnLockdown, false);
   registry->RegisterStringPref(kAlwaysOnVpnPackage, std::string());
+  registry->RegisterListPref(kArcAutoLaunchApps);
   registry->RegisterBooleanPref(kArcDataRemoveRequested, false);
   registry->RegisterBooleanPref(kArcEnabled, false);
   registry->RegisterBooleanPref(kArcHasAccessToRemovableMedia, false);

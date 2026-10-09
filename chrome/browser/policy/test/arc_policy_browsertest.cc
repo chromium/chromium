@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -253,5 +254,30 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(ArcServicePolicyValue::kDisabled,
                     ArcServicePolicyValue::kUnderUserControl,
                     ArcServicePolicyValue::kEnabled));
+
+// Test AutoLaunchAndroidApps policy.
+IN_PROC_BROWSER_TEST_F(ArcPolicyTest, AutoLaunchAndroidApps) {
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetList(arc::prefs::kArcAutoLaunchApps).empty());
+  EXPECT_FALSE(prefs->IsManagedPreference(arc::prefs::kArcAutoLaunchApps));
+
+  const auto apps = base::ListValue()
+                        .Append("com.example.app")
+                        .Append("com.example.telemetry");
+
+  PolicyMap policies;
+  policies.Set(key::kAutoLaunchAndroidApps, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(apps.Clone()), nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_EQ(apps, prefs->GetList(arc::prefs::kArcAutoLaunchApps));
+  EXPECT_TRUE(prefs->IsManagedPreference(arc::prefs::kArcAutoLaunchApps));
+
+  // Clearing the policy restores the default, unmanaged value.
+  UpdateProviderPolicy(PolicyMap());
+  EXPECT_TRUE(prefs->GetList(arc::prefs::kArcAutoLaunchApps).empty());
+  EXPECT_FALSE(prefs->IsManagedPreference(arc::prefs::kArcAutoLaunchApps));
+}
 
 }  // namespace policy

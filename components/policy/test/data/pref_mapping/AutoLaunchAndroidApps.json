@@ -1,5 +1,59 @@
 [
   {
-    "reason_for_missing_test": "TODO(b/485567410): Policy handler and preference mapping will be added in a follow-up CL."
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "arc.auto_launch_apps": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "AutoLaunchAndroidApps": []
+        },
+        "prefs": {
+          "arc.auto_launch_apps": {
+            "value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "AutoLaunchAndroidApps": [
+            "com.example.app",
+            "com.example.telemetry"
+          ]
+        },
+        "prefs": {
+          "arc.auto_launch_apps": {
+            "value": [
+              "com.example.app",
+              "com.example.telemetry"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "AutoLaunchAndroidApps": [
+            "com.example.app",
+            "invalid_package_no_dot",
+            ""
+          ]
+        },
+        "prefs": {
+          "arc.auto_launch_apps": {
+            "value": [
+              "com.example.app"
+            ]
+          }
+        }
+      }
+    ]
   }
 ]

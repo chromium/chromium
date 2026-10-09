@@ -109,6 +109,22 @@ class PinnedLauncherAppsPolicyHandler : public ListPolicyHandler {
   void ApplyList(base::ListValue filtered_list, PrefValueMap* prefs) override;
 };
 
+// Maps the AutoLaunchAndroidApps policy to the corresponding pref.
+class AutoLaunchAndroidAppsPolicyHandler : public ListPolicyHandler {
+ public:
+  AutoLaunchAndroidAppsPolicyHandler();
+  AutoLaunchAndroidAppsPolicyHandler(
+      const AutoLaunchAndroidAppsPolicyHandler&) = delete;
+  AutoLaunchAndroidAppsPolicyHandler& operator=(
+      const AutoLaunchAndroidAppsPolicyHandler&) = delete;
+  ~AutoLaunchAndroidAppsPolicyHandler() override;
+
+ protected:
+  // ListPolicyHandler methods:
+  bool CheckListEntry(const base::Value& value) override;
+  void ApplyList(base::ListValue filtered_list, PrefValueMap* prefs) override;
+};
+
 // Maps the DefaultHandlersForFileExtensions policy to the corresponding pref.
 class DefaultHandlersForFileExtensionsPolicyHandler
     : public SchemaValidatingPolicyHandler {

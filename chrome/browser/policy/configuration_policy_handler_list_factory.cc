@@ -3292,6 +3292,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(base::WrapUnique(
       NetworkConfigurationPolicyHandler::CreateForUserPolicy()));
   handlers->AddHandler(std::make_unique<PinnedLauncherAppsPolicyHandler>());
+  handlers->AddHandler(std::make_unique<AutoLaunchAndroidAppsPolicyHandler>());
 
   handlers->AddHandler(
       std::make_unique<DefaultHandlersForFileExtensionsPolicyHandler>(
