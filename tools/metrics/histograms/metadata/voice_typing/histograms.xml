@@ -50,6 +50,17 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="VoiceTyping.StreamAbandonedBeforeListening" units="ms"
+    expires_after="2027-06-01">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <summary>
+    Time from the user triggering a Voice Typing stream until that stream ended
+    without ever reaching the transcribing state, e.g. because the user stopped
+    it, started typing or moved focus, the tab was closed, or the stream failed.
+  </summary>
+</histogram>
+
 <histogram name="VoiceTyping.StreamExitReason" enum="DictationStreamExitStatus"
     expires_after="2027-06-01">
   <owner>amyasinghal@google.com</owner>

@@ -430,12 +430,18 @@ void SessionController::MoveToState(SessionState new_state) {
   const SessionState old_state = state_;
   state_ = new_state;
 
-  if (old_state == kStreamInitializing && new_state == kTranscribing) {
-    const base::TimeDelta latency =
+  if (old_state == kStreamInitializing) {
+    const base::TimeDelta elapsed =
         base::TimeTicks::Now() - stream_trigger_time_;
-    VT_LOG(GetBrowserContext())
-        << "Stream start latency: " << latency.InMilliseconds() << "ms";
-    RecordDictationStreamStartLatency(latency);
+    if (new_state == kTranscribing) {
+      VT_LOG(GetBrowserContext())
+          << "Stream start latency: " << elapsed.InMilliseconds() << "ms";
+      RecordDictationStreamStartLatency(elapsed);
+    } else {
+      VT_LOG(GetBrowserContext()) << "Stream abandoned before listening after "
+                                  << elapsed.InMilliseconds() << "ms";
+      RecordDictationStreamAbandonedBeforeListening(elapsed);
+    }
   }
 
   session_state_changed_callback_list_.Notify(new_state);

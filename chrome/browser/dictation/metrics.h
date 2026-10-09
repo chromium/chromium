@@ -25,6 +25,8 @@ inline constexpr std::string_view kStreamExitReasonHistogramName =
     "VoiceTyping.StreamExitReason";
 inline constexpr std::string_view kStreamStartLatencyHistogramName =
     "VoiceTyping.StreamStartLatency";
+inline constexpr std::string_view kStreamAbandonedBeforeListeningHistogramName =
+    "VoiceTyping.StreamAbandonedBeforeListening";
 
 // Exit status of the Dictation First Run Experience (FRE) dialog.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -135,6 +137,10 @@ void RecordDictationStreamExitStatus(DictationStreamExitStatus status);
 // Records the time from the user triggering a Dictation stream until the
 // stream starts transcribing.
 void RecordDictationStreamStartLatency(base::TimeDelta latency);
+
+// Records the time from the user triggering a Dictation stream until the
+// stream ended without ever starting to transcribe.
+void RecordDictationStreamAbandonedBeforeListening(base::TimeDelta elapsed);
 
 }  // namespace dictation
 

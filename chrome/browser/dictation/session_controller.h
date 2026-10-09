@@ -125,7 +125,8 @@ class SessionController : public SessionUiDelegate,
   std::optional<TargetDetails> last_used_target_details_;
 
   // When the user action that started the current stream happened. Used to
-  // record VoiceTyping.StreamStartLatency.
+  // record VoiceTyping.StreamStartLatency and
+  // VoiceTyping.StreamAbandonedBeforeListening.
   base::TimeTicks stream_trigger_time_;
 
   // Timer for delayed session shutdown when `kSessionEndsOnStreamEnd` is

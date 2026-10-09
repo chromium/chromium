@@ -192,13 +192,15 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
-                       NoStreamStartLatencyIfEndedBeforeTranscribing) {
+                       RecordStreamAbandonedBeforeListening) {
   base::HistogramTester histogram_tester;
 
   SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
                                blink::DOMNodeIdType(123));
   session_controller()->UiRequestEndActiveStream();
 
+  histogram_tester.ExpectTotalCount(
+      kStreamAbandonedBeforeListeningHistogramName, 1);
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
 }
 

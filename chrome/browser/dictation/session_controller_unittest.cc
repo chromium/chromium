@@ -1088,10 +1088,10 @@ TEST_F(DictationSessionControllerTest, StreamStartLatencyUsesTriggerTime) {
                                           base::Milliseconds(300), 1);
 }
 
-// Test that no latency is recorded for a stream that ends before it starts
-// transcribing.
+// Test that a stream that ends before it starts transcribing records the time
+// until it was abandoned, and no start latency.
 TEST_F(DictationSessionControllerTest,
-       StreamStartLatencyNotRecordedIfEndedBeforeTranscribing) {
+       RecordsStreamAbandonedBeforeListeningIfEndedBeforeTranscribing) {
   base::HistogramTester histogram_tester;
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
@@ -1106,10 +1106,42 @@ TEST_F(DictationSessionControllerTest,
   controller_->EndDictationStream(DictationStreamEndTrigger::kTest);
   ASSERT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
+  histogram_tester.ExpectUniqueTimeSample(
+      kStreamAbandonedBeforeListeningHistogramName, base::Seconds(2), 1);
+
   // A late transcribing update from the now-finalizing provider must not
-  // record latency.
+  // record anything further.
   SimulateStreamTranscribing(*stream_provider_ptr);
 
+  histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      kStreamAbandonedBeforeListeningHistogramName, 1);
+}
+
+// Test that a stream that fails before it starts transcribing is recorded as
+// abandoned.
+TEST_F(DictationSessionControllerTest,
+       RecordsStreamAbandonedBeforeListeningOnFailure) {
+  base::HistogramTester histogram_tester;
+  auto mock_stream_provider =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider)));
+
+  controller_->StartDictationStream(EmptyTarget(),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  EXPECT_CALL(*stream_provider_ptr, GetState())
+      .WillRepeatedly(Return(StreamProvider::StreamState::kFailed));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider_ptr, StreamProvider::StreamState::kInitializing);
+  ASSERT_EQ(controller_->GetState(), SessionState::kInactive);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      kStreamAbandonedBeforeListeningHistogramName, base::Milliseconds(500), 1);
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
 }
 
@@ -1149,6 +1181,9 @@ TEST_F(DictationSessionControllerTest, StreamStartLatencyRecordedPerStream) {
                                          base::Milliseconds(400), 1);
   histogram_tester.ExpectTimeBucketCount(kStreamStartLatencyHistogramName,
                                          base::Milliseconds(50), 1);
+  // Ending the first stream after it started transcribing is not an abandon.
+  histogram_tester.ExpectTotalCount(
+      kStreamAbandonedBeforeListeningHistogramName, 0);
 }
 
 }  // namespace
