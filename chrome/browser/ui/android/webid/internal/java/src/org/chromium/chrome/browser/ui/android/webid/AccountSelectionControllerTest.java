@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -40,13 +41,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -60,6 +65,10 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -83,6 +92,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
+    private @Mock BottomSheetContent mOtherBottomSheetContent;
+    private @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     public ArgumentMatcher<ImageFetcher.Params> imageFetcherParamsHaveUrl(GURL url) {
         return params -> params != null && params.url.equals(url.getSpec());
@@ -1112,6 +1124,187 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mTab.isUserInteractable()).thenReturn(true);
         mMediator.setCanShowUi(true);
         verify(mMockBottomSheetController, times(2)).requestShowContent(mBottomSheetContent, true);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenIgnoresOtherSheetContent() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        when(mMockBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mOtherBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        assertFalse(mMediator.wasDismissed());
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenIgnoresNullSheetContent() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(null);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        assertFalse(mMediator.wasDismissed());
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenDismissReasonsWhenDeferContentSwapEnabled() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.BACK_PRESS);
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenReasonNoneDoesNotDismissWhenDeferContentSwapEnabled() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.NONE);
+        assertFalse(mMediator.wasDismissed());
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+        verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenWhenAlreadyDismissedIsIgnored() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate, times(1)).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+
+        // A second HIDDEN invocation should be ignored because the mediator was already dismissed.
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        verify(mMockDelegate, times(1)).onDismissed(anyInt());
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenIgnoresOtherSheetContentWhenDeferContentSwapDisabled() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        observer.onSheetContentChanged(mOtherBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        assertFalse(mMediator.wasDismissed());
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+
+        // Without deferred content swap, the controller clears the current content before
+        // notifying observers of HIDDEN.
+        observer.onSheetContentChanged(mBottomSheetContent);
+        observer.onSheetContentChanged(null);
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(null);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.SWIPE);
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSheetStateHiddenReasonNoneWhenDeferContentSwapDisabled() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        observer.onSheetContentChanged(mBottomSheetContent);
+        observer.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.NONE);
+        assertFalse(mMediator.wasDismissed());
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+        verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
     }
 
     private void pressBack() {

@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
@@ -243,7 +244,13 @@ class AccountSelectionMediator {
 
                     @Override
                     public void onSheetStateChanged(@SheetState int state, int reason) {
-                        if (mLastSheetSeen != mBottomSheetContent) return;
+                        // TODO(crbug.com/571856570): Remove mLastSheetSeen with the feature flag.
+                        if (BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden.isEnabled()
+                                ? mBottomSheetController.getCurrentSheetContent()
+                                        != mBottomSheetContent
+                                : mLastSheetSeen != mBottomSheetContent) {
+                            return;
+                        }
                         if (mWasDismissed) return;
 
                         if (state == SheetState.HIDDEN) {
