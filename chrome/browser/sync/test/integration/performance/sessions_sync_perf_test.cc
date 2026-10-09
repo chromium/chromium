@@ -15,6 +15,7 @@
 #include "testing/perf/perf_result_reporter.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 using content::OpenURLParams;
 using sessions_helper::GetLocalSession;
@@ -55,7 +56,11 @@ class SessionsSyncPerfTest : public SyncTest {
   }
 
   GURL GetInitialURL() const override {
-    return chrome::ChromeUINewTabURLAsGURL();
+    // Return a lightweight unsynced WebUI URL so the initial tab is not synced
+    // (unlike the default about:blank). Avoid chrome://newtab/ because loading
+    // the full New Tab Page WebUI and its subframes significantly slows down
+    // test setup and teardown.
+    return GURL(chrome::kChromeUIVersionURL);
   }
 
   // Opens |num_tabs| new tabs on |profile|.
