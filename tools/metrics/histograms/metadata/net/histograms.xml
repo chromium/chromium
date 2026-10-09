@@ -1282,6 +1282,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.Android.BindToNetworkDuration" units="microseconds"
+    expires_after="2027-04-01">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the time spent in the android_setsocknetwork() NDK call inside
+    net::android::BindToNetwork(). Recorded once for every call to
+    BindToNetwork() that invokes android_setsocknetwork(), regardless of whether
+    it succeeds or fails. Only recorded on Android, for which a high-resolution
+    clock is always available.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.Android.NetworkChangeNotifier.RegisterDefaultNetworkCallbackResult"
     enum="NetworkCallbackRegisterResult" expires_after="2027-08-18">

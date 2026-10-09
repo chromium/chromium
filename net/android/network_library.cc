@@ -16,10 +16,13 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
@@ -302,10 +305,14 @@ int BindToNetwork(SocketDescriptor socket, handles::NetworkHandle network) {
   if (!marshmallow_set_network_for_socket) {
     return ERR_NOT_IMPLEMENTED;
   }
+  const base::ElapsedTimer timer;
   rv = marshmallow_set_network_for_socket(network, socket);
   if (rv) {
     rv = errno;
   }
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Net.Android.BindToNetworkDuration", timer.Elapsed(),
+      base::Microseconds(1), base::Seconds(1), 50);
   // If |network| has since disconnected, |rv| will be ENONET.  Surface this as
   // ERR_NETWORK_CHANGED, rather than MapSystemError(ENONET) which gives back
   // the less descriptive ERR_FAILED.

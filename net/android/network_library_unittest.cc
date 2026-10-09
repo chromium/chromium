@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/android/android_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/ip_endpoint.h"
@@ -108,6 +109,11 @@ TEST(NetworkLibraryTest, BindToNetwork) {
                      socket_udp_ipv4.SocketDescriptorForTesting(),
                      socket_udp_ipv6.SocketDescriptorForTesting()};
 
+  static constexpr char kHistogramName[] = "Net.Android.BindToNetworkDuration";
+  const bool is_marshmallow_or_later =
+      base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_MARSHMALLOW;
+
   for (SocketDescriptor socket : sockets) {
     if (base::android::android_info::sdk_int() >=
         base::android::android_info::SDK_VERSION_LOLLIPOP) {
@@ -116,23 +122,31 @@ TEST(NetworkLibraryTest, BindToNetwork) {
       handles::NetworkHandle existing_network_handle =
           NetworkChangeNotifier::GetDefaultNetwork();
       if (existing_network_handle != handles::kInvalidNetworkHandle) {
+        const base::HistogramTester histogram_tester;
         EXPECT_EQ(OK, BindToNetwork(socket, existing_network_handle));
+        if (is_marshmallow_or_later) {
+          histogram_tester.ExpectTotalCount(kHistogramName, 1);
+        }
       }
       // Test invalid binding.
-      EXPECT_EQ(ERR_INVALID_ARGUMENT,
-                BindToNetwork(socket, handles::kInvalidNetworkHandle));
+      {
+        const base::HistogramTester histogram_tester;
+        EXPECT_EQ(ERR_INVALID_ARGUMENT,
+                  BindToNetwork(socket, handles::kInvalidNetworkHandle));
+        histogram_tester.ExpectTotalCount(kHistogramName, 0);
+      }
     }
 
     // Attempt to bind to a not existing handles::NetworkHandle.
     constexpr handles::NetworkHandle wrong_network_handle = 65536;
+    const base::HistogramTester histogram_tester;
     int rv = BindToNetwork(socket, wrong_network_handle);
     if (base::android::android_info::sdk_int() <
         base::android::android_info::SDK_VERSION_LOLLIPOP) {
       EXPECT_EQ(ERR_NOT_IMPLEMENTED, rv);
     } else if (base::android::android_info::sdk_int() >=
                    base::android::android_info::SDK_VERSION_LOLLIPOP &&
-               base::android::android_info::sdk_int() <
-                   base::android::android_info::SDK_VERSION_MARSHMALLOW) {
+               !is_marshmallow_or_later) {
       // On Lollipop, we assume if the user has a handles::NetworkHandle that
       // they must have gotten it from a legitimate source, so if binding to the
       // network fails it's assumed to be because the network went away so
@@ -140,11 +154,11 @@ TEST(NetworkLibraryTest, BindToNetwork) {
       // anyhow. ConnectivityService.MAX_NET_ID is 65535, so 65536 won't be
       // used.
       EXPECT_EQ(ERR_NETWORK_CHANGED, rv);
-    } else if (base::android::android_info::sdk_int() >=
-               base::android::android_info::SDK_VERSION_MARSHMALLOW) {
+    } else if (is_marshmallow_or_later) {
       // On Marshmallow and newer releases, the handles::NetworkHandle is munged
       // by Network.getNetworkHandle() and 65536 isn't munged so it's rejected.
       EXPECT_EQ(ERR_INVALID_ARGUMENT, rv);
+      histogram_tester.ExpectTotalCount(kHistogramName, 1);
     }
   }
 }
