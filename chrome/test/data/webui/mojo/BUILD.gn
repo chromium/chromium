@@ -42,3 +42,37 @@ build_webui_tests("build") {
 
   ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [
+    "mojo_file_system_access_browsertest.cc",
+    "mojo_js_interface_broker_browsertest.cc",
+    "mojo_web_ui_controller_browsertest.cc",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:bad_message",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views:file_system_access_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test/data/webui:resources",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//mojo/public/js:resources",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/shell_dialogs",
+    "//ui/webui",
+    "//url",
+  ]
+}

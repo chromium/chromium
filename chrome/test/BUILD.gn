@@ -1681,7 +1681,7 @@ if (!is_android) {
       "//chrome/test/base:testing_browser_process_impl",
       "//chrome/test/components_tests:browser_tests",
       "//chrome/test/data/webui:resources",
-      "//chrome/test/data/webui/mojo:mojo_bindings",
+      "//chrome/test/data/webui/mojo:browser_tests",
       "//chrome/test/gpu:browser_tests",
       "//chrome/test/interaction:browser_tests",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
@@ -1946,9 +1946,6 @@ if (!is_android) {
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
-      "data/webui/mojo/mojo_file_system_access_browsertest.cc",
-      "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
-      "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
     ]
     fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [
