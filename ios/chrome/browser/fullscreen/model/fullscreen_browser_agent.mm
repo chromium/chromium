@@ -8,10 +8,11 @@
 #import <utility>
 
 #import "base/auto_reset.h"
-#import "base/check.h"
+#import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_constants.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_progress_animator.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
@@ -569,7 +570,7 @@ void FullscreenBrowserAgent::AddObscuredInsetRange(UIRectEdge edge,
                                                    CGFloat min,
                                                    CGFloat max) {
   CHECK(updating_obscured_insets_);
-  CHECK_LE(min, max);
+  CHECK_LE(min, max, base::NotFatalUntil::M161);
   if (edge == UIRectEdgeTop) {
     min_insets_.top += min;
     max_insets_.top += max;
