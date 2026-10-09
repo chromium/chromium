@@ -2438,7 +2438,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
             };
 
         inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
-        await microtasksFinished();
+        await element.updateComplete;
         assertEquals('hello world', inputElement.value);
         // The distraction keeps screen readers from narrating the input's new
         // value. It has no role, so it does not become their focus.
@@ -2459,7 +2459,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('hello world', notifications[0]!.inputValue);
 
         inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
-        await microtasksFinished();
+        await element.updateComplete;
         assertEquals('hello there', inputElement.value);
         assertEquals(distraction, inputElement.ariaActiveDescendantElement);
         assertEquals(
@@ -2519,7 +2519,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         };
 
         inputElement.dispatchEvent(createKeyboardEvent('Tab'));
-        await microtasksFinished();
+        await element.updateComplete;
         assertEquals(
             SelectionLineState.kFocusedButtonAim, element.selection.state);
         assertEquals(
