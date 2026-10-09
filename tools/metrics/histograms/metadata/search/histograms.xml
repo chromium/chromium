@@ -1196,6 +1196,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Logged when the list of search engines is generated for display.
   </summary>
   <token key="Surface">
+    <variant name="DsePicker" summary="DSE picker, once per data refresh"/>
     <variant name="FullList" summary="search settings, once per page load"/>
   </token>
 </histogram>

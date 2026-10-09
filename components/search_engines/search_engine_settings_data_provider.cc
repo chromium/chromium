@@ -32,6 +32,29 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace search_engines {
+namespace {
+enum class SearchEngineListSurface {
+  kDsePicker,
+  kFullList,
+};
+
+void RecordSearchEngineCountInSettingsHistogram(SearchEngineListSurface surface,
+                                                size_t count) {
+  static int kMax = 50;
+  switch (surface) {
+    case SearchEngineListSurface::kDsePicker:
+      base::UmaHistogramExactLinear(
+          search_engines::kSearchEngineCountInSettingsDsePickerHistogram, count,
+          kMax);
+      break;
+    case SearchEngineListSurface::kFullList:
+      base::UmaHistogramExactLinear(
+          search_engines::kSearchEngineCountInSettingsFullListHistogram, count,
+          kMax);
+      break;
+  }
+}
+}  // namespace
 
 CategorizedTemplateUrls::CategorizedTemplateUrls() = default;
 CategorizedTemplateUrls::CategorizedTemplateUrls(
@@ -205,6 +228,9 @@ SearchEngineSettingsDataProvider::GetDefaultSearchEnginePickerData() const {
       ::internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
           prepopulate_data_resolver_->GetPrepopulatedEngines()));
 
+  RecordSearchEngineCountInSettingsHistogram(
+      SearchEngineListSurface::kDsePicker, data.primary.size());
+
   return data;
 }
 
@@ -265,13 +291,11 @@ void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
   }
   has_recorded_metrics_ = true;
 
-  int count_prepopulated = std::ranges::count_if(
-      displayed_engines,
-      [](const TemplateURL* engine) { return engine->prepopulate_id() != 0; });
-
-  base::UmaHistogramExactLinear(
-      search_engines::kSearchEngineCountInSettingsFullListHistogram,
-      count_prepopulated, 50);
+  RecordSearchEngineCountInSettingsHistogram(
+      SearchEngineListSurface::kFullList,
+      std::ranges::count_if(displayed_engines, [](const TemplateURL* engine) {
+        return engine->prepopulate_id() != 0;
+      }));
 
   if (regional_capabilities_service_->IsSearchEngineSplitRegion()) {
     RecordSearchEngineSplitSettingsPageLoadMetrics(

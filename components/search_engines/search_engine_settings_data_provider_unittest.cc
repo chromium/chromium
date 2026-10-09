@@ -16,6 +16,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -711,6 +712,12 @@ TEST_F(SearchEngineSettingsDataProviderTest,
                                 HasShortName("Active Prepop Engine"),
                                 HasShortName("Inactive Prepop Engine"),
                                 HasShortName("Conflict Prepop")));
+
+  // Verify the metric is recorded with the correct count (3 engines).
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineCountInSettingsDsePickerHistogram,
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SearchEngineSettingsDataProviderTest,
