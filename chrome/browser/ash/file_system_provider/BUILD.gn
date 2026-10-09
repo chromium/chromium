@@ -9,8 +9,6 @@ static_library("file_system_provider") {
     "abort_callback.h",
     "cloud_file_info.cc",
     "cloud_file_info.h",
-    "cloud_file_system.cc",
-    "cloud_file_system.h",
     "extension_provider.cc",
     "extension_provider.h",
     "icon_set.cc",
@@ -141,7 +139,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "cloud_file_system_unittest.cc",
     "fake_registry.cc",
     "fake_registry.h",
     "logging_observer.cc",
@@ -183,26 +180,5 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_system_provider/fileapi:unit_tests",
     "//chrome/browser/ash/file_system_provider/operations:unit_tests",
     "//chrome/test/base:testing_browser_process",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "cloud_file_system_browsertest.cc" ]
-
-  deps = [
-    ":file_system_provider",
-    ":test_support",
-    "//ash/constants",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/file_manager:test_support",
-    "//chrome/common",
-    "//chrome/test:test_support",
-    "//chromeos/constants",
-    "//content/test:test_support",
   ]
 }

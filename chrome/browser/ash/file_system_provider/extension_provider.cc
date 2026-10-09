@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
@@ -95,25 +93,8 @@ ExtensionProvider::CreateProvidedFileSystem(
     const ProvidedFileSystemInfo& file_system_info,
     CacheManager* cache_manager) {
   CHECK(profile, base::NotFatalUntil::M160);
-  if (!chromeos::features::IsFileSystemProviderCloudFileSystemEnabled()) {
-    return std::make_unique<ThrottledFileSystem>(
-        std::make_unique<ProvidedFileSystem>(profile, file_system_info));
-  }
-  // Cache type is only set when the
-  // `FileSystemProviderCloudFileSystemEnabled` and
-  // `FileSystemProviderContentCache` feature flags are enabled and the
-  // provider is ODFS.
-  if (file_system_info.cache_type() != CacheType::NONE) {
-    // CloudFileSystem with cache.
-    return std::make_unique<ThrottledFileSystem>(
-        std::make_unique<CloudFileSystem>(
-            std::make_unique<ProvidedFileSystem>(profile, file_system_info),
-            cache_manager));
-  }
-  // CloudFileSystem without cache.
   return std::make_unique<ThrottledFileSystem>(
-      std::make_unique<CloudFileSystem>(
-          std::make_unique<ProvidedFileSystem>(profile, file_system_info)));
+      std::make_unique<ProvidedFileSystem>(profile, file_system_info));
 }
 
 const Capabilities& ExtensionProvider::GetCapabilities() const {

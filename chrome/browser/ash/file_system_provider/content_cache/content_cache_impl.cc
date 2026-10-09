@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_file_context.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
