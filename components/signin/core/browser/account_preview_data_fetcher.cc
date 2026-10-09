@@ -23,6 +23,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "net/base/request_priority.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -372,11 +373,25 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
           }
         })");
 
+  // `SimpleURLLoader` defaults to `net::IDLE`, which can starve behind
+  // background traffic. Use `net::MEDIUM` across all fetches (still below
+  // `net::HIGHEST` used for critical page loads) so sign-in/FRE surfaces
+  // waiting on preview data—as well as startup/periodic refreshes—receive
+  // timely responses without delaying promos or causing the displayed preferred
+  // account to change shortly after startup.
+  const bool use_medium_priority =
+      base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewDataFetchOptimizations) &&
+      switches::kAccountPreviewDataMediumPriority.Get();
+
   // 1. Stats Request
   auto stats_request = std::make_unique<network::ResourceRequest>();
   stats_request->url = GetStatsUrlForChannel(channel_);
   stats_request->method = "GET";
   stats_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (use_medium_priority) {
+    stats_request->priority = net::MEDIUM;
+  }
   stats_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                    base::StrCat({"Bearer ", access_token}));
 
@@ -394,6 +409,9 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
     previews_request->url = GetPreviewsUrlForChannel(channel_);
     previews_request->method = "GET";
     previews_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    if (use_medium_priority) {
+      previews_request->priority = net::MEDIUM;
+    }
     previews_request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({"Bearer ", access_token}));

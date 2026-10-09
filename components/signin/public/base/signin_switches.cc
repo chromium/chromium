@@ -312,6 +312,12 @@ BASE_FEATURE_PARAM(bool,
                    kAccountPreviewDataReducedTypes,
                    &kEnableAccountPreviewDataFetchOptimizations,
                    true);
+// Controls whether account preview data network requests use MEDIUM priority
+// instead of the default IDLE priority.
+BASE_FEATURE_PARAM(bool,
+                   kAccountPreviewDataMediumPriority,
+                   &kEnableAccountPreviewDataFetchOptimizations,
+                   true);
 
 // Controls whether fetching entity preview data is enabled (via a specific api
 // method). This flag has no effect if `kEnableAccountPreviewData` is not
