@@ -14,7 +14,6 @@ extend-exclude = [
   "test/chromeos/utilities/vm_setup_state.py",
   "tools/build/appid.py",
   "tools/build/mac/archive_symbols.py",
-  "tools/build/make_zip.py",
   "tools/build/win/makecab_test.py",
   "tools/history-viz.py",
   "tools/inconsistent-eol.py",

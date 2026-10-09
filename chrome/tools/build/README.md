@@ -5,3 +5,7 @@ src-internal/testing/buildbot/archive for official builders.
 For more information on how these files are used, refer to the proto file within
 the archive module:
 https://chromium.googlesource.com/chromium/tools/build.git/+/HEAD/recipes/recipe_modules/archive/properties.proto
+
+To create the Linux archive (chrome-linux.zip) locally from a build output
+directory, run `chrome/tools/build/linux/make_zip out/Release` from src. It
+uses src/infra/archive_config/linux-archive-rel.json.
