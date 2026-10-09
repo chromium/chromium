@@ -453,14 +453,6 @@ void DevToolsSession::FlushProtocolNotifications() {
   if (IsDetached()) {
     return;
   }
-  // Only a handful of commands can be interrupting, and these generally
-  // do not generate protocol notifications. However, flushing notifications
-  // while interrupting may cause some undesired consequences, in particular
-  // in case of CSS agent that performs non-trivial work upon flushing, so
-  // defer it until handling a top-level command.
-  if (agent_->IsInterruptingExecution()) {
-    return;
-  }
   for (wtf_size_t i = 0; i < agents_.size(); i++) {
     agents_[i]->FlushPendingProtocolNotifications();
   }

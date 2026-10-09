@@ -1,5 +1,0 @@
-Tests that interrupting V8 in ScriptRegexp context does not crash when InspectorCSSAgent flushes protocol notifications.
-Debugger.setBreakpointsActive completed
-CSS.styleSheetAdded
-Runtime.evaluate completed
-
