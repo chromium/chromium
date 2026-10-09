@@ -158,6 +158,8 @@ suite('OpenTabsDelegateTest', () => {
     loadTimeData.resetForTesting({
       openTabs: 'Open Tabs',
       closeTab: 'Close tab',
+      oneTab: '1 tab',
+      tabCount: '$1 tabs',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     const {instance, remote} =
@@ -707,4 +709,61 @@ suite('OpenTabsDelegateTest', () => {
         assertTrue(dot.filled);
         assertEquals(TabGroupDotSize.SMALL, dot.size);
       });
+
+  test('uses tab count label when tab group has no title', async () => {
+    const singleTabGroupId = {high: 5n, low: 6n};
+    const multiTabGroupId = {high: 7n, low: 8n};
+
+    const singleGroupTab = createTab({
+      tabId: 30,
+      groupId: singleTabGroupId,
+      title: 'Single Grouped Tab',
+      url: 'https://www.single.com',
+      lastActiveTimeTicks: {internalValue: 500n},
+      lastActiveElapsedText: '1m ago',
+    });
+
+    const multiGroupTab1 = createTab({
+      tabId: 31,
+      groupId: multiTabGroupId,
+      title: 'Multi Grouped Tab 1',
+      url: 'https://www.multi1.com',
+      lastActiveTimeTicks: {internalValue: 400n},
+      lastActiveElapsedText: '2m ago',
+    });
+
+    const multiGroupTab2 = createTab({
+      tabId: 32,
+      groupId: multiTabGroupId,
+      title: 'Multi Grouped Tab 2',
+      url: 'https://www.multi2.com',
+      lastActiveTimeTicks: {internalValue: 300n},
+      lastActiveElapsedText: '3m ago',
+    });
+
+    const profileData: ProfileData = {
+      ...createProfileData([singleGroupTab, multiGroupTab1, multiGroupTab2]),
+      tabGroups: [
+        {
+          id: singleTabGroupId,
+          color: Color.kBlue,
+          title: '',
+        },
+        {
+          id: multiTabGroupId,
+          color: Color.kRed,
+          title: '',
+        },
+      ],
+    };
+    mockPageHandler.setResultFor(
+        'getProfileData', Promise.resolve({profileData}));
+
+    const items = await delegate.getItems();
+    assertEquals(3, items.length);
+
+    assertEquals('1 tab', items[0]!.description?.[1]!.text);
+    assertEquals('2 tabs', items[1]!.description?.[1]!.text);
+    assertEquals('2 tabs', items[2]!.description?.[1]!.text);
+  });
 });
