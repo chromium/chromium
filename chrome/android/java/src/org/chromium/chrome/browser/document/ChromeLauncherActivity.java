@@ -274,4 +274,16 @@ public class ChromeLauncherActivity extends Activity {
         RecordHistogram.recordBooleanHistogram("WebApk.LaunchFromViewIntent", true);
         return true;
     }
+
+    @Override
+    public void startActivity(Intent intent, @Nullable Bundle options) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_TASK_TRAMPOLINES)
+                && IntentUtils.intentTargetsSelf(intent)
+                && (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
+            assert !isTaskRoot()
+                    : ("If we are the root of the task a new task has already been started and we "
+                            + "should not start a second new task (b/555883506).");
+        }
+        super.startActivity(intent, options);
+    }
 }

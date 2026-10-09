@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -351,6 +352,10 @@ public class ChromeTabUtils {
                     }
                     if (tab.isNativePage()) return true;
                     if (tab.getWebContents() == null) return true;
+                    if (tab.getContext() instanceof CustomTabActivity
+                            && !((CustomTabActivity) tab.getContext()).canDeliverTouchInput()) {
+                        return false;
+                    }
                     NavigationController controller =
                             tab.getWebContents().getNavigationController();
                     // HTTP 204/205 No Content/Download pages will not get committed and won't have
@@ -714,8 +719,8 @@ public class ChromeTabUtils {
 
     /**
      * @deprecated Transitory method, use {@link #closeAllTabs(Instrumentation,
-     *     MonotonicObservableSupplier <TabModelSelector>)} instead. TODO(crbug.com/40191386): Remove this
-     *     after the usages are migrated.
+     *     MonotonicObservableSupplier <TabModelSelector>)} instead.
+     * TODO(crbug.com/40191386): Remove this after the usages are migrated.
      */
     public static void closeAllTabs(
             Instrumentation instrumentation, final ChromeTabbedActivity activity) {

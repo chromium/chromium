@@ -380,26 +380,30 @@ public class LaunchIntentDispatcher {
             newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK);
         }
 
-        // Handle activity started in a new task.
-        // See https://developer.android.com/guide/components/activities/tasks-and-back-stack
-        if ((newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0
-                || (newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_DOCUMENT) != 0) {
-            // If a CCT intent triggers First Run, then NEW_TASK will be automatically applied. As
-            // part of that, it will inherit the EXCLUDE_FROM_RECENTS bit from
-            // ChromeLauncherActivity, so explicitly remove it to ensure the CCT does not get lost
-            // in recents.
-            newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_TASK_TRAMPOLINES)) {
+            // Handle activity started in a new task.
+            // See
+            // https://developer.android.com/guide/components/activities/tasks-and-back-stack
+            if ((newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0
+                    || (newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_DOCUMENT) != 0) {
+                // If a CCT intent triggers First Run, then NEW_TASK will be automatically
+                // applied. As part of that, it will inherit the EXCLUDE_FROM_RECENTS bit from
+                // ChromeLauncherActivity, so explicitly remove it to ensure the CCT does not
+                // get lost in recents.
+                newIntent.setFlags(
+                        newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 
-            // Adjacent launch flag, if present, already would have made the launcher activity start
-            // on the adajcent screen in multi-window mode. Clear it on the new Intent for the flag
-            // to take effect only once.
-            newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+                // Adjacent launch flag, if present, already would have made the launcher
+                // activity start on the adajcent screen in multi-window mode. Clear it on the
+                // new Intent for the flag to take effect only once.
+                newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
-            // Android will try to find and reuse an existing CCT activity in the background. Use
-            // this flag to always start a new one instead.
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            // Force a new document to ensure the proper task/stack creation.
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                // Android will try to find and reuse an existing CCT activity in the
+                // background. Use this flag to always start a new one instead.
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                // Force a new document to ensure the proper task/stack creation.
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            }
         }
 
         return newIntent;
@@ -476,6 +480,24 @@ public class LaunchIntentDispatcher {
 
         Intent intent = new Intent(mIntent);
         maybePutCallingAppPackage(intent);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_TASK_TRAMPOLINES)) {
+            // Avoid unnecessarily creating a second new task as we inherit these flags from the
+            // sender.
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+
+            // If a CCT intent triggers First Run, then NEW_TASK will be automatically applied. As
+            // part of that, it will inherit the EXCLUDE_FROM_RECENTS bit from
+            // ChromeLauncherActivity, so explicitly remove it to ensure the CCT does not get lost
+            // in recents.
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+
+            // Adjacent launch flag, if present, already would have made the launcher activity start
+            // on the adajcent screen in multi-window mode. Clear it on the new Intent for the flag
+            // to take effect only once.
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        }
 
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
@@ -580,16 +602,19 @@ public class LaunchIntentDispatcher {
                         .getName();
         newIntent.setClassName(
                 mActivity.getApplicationContext().getPackageName(), targetActivityClassName);
-        newIntent.setFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
+
+        // If we're already in a new task, don't create a second new task (b/555883506).
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_TASK_TRAMPOLINES)
+                || !mActivity.isTaskRoot()) {
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
 
         // If the source of an intent containing FLAG_ACTIVITY_MULTIPLE_TASK is Chrome, retain the
         // flag to support multi-instance launch.
         if (IntentUtils.isTrustedIntentFromSelf(mIntent)
                 && (mIntent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0) {
-            newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
 
         Uri uri = newIntent.getData();

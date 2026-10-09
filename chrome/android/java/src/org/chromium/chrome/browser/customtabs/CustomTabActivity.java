@@ -512,12 +512,19 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean canDeliverTouchInput() {
         // We should block touches while the enter animation is still running. An enter animation
         // that makes the Activity "appear" transparent for a long time may lead users to touch
         // elements on the webpage that's loaded within a currently invisible CCT.
         if (sBlockTouchesDuringEnterAnimation && !mIsEnterAnimationCompleted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (!canDeliverTouchInput()) {
             return true;
         }
         // The overlay/tapjacking guard lives in BaseCustomTabActivity so the whole family
