@@ -148,7 +148,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
-     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPostSendToast,"
@@ -160,7 +159,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "IPH_SendTabToSelfOmnibox,"
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
-     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPostSendToast,"
@@ -176,7 +174,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "IPH_SendTabToSelfOmnibox,"
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
-     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPostSendToast,"

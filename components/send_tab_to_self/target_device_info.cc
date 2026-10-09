@@ -5,10 +5,8 @@
 #include "components/send_tab_to_self/target_device_info.h"
 
 #include <algorithm>
+#include <utility>
 
-#include "base/feature_list.h"
-#include "base/trace_event/trace_event.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,8 +42,7 @@ std::u16string TargetDeviceInfo::GetLastActiveTimeForDisplay() const {
   const base::TimeDelta delta =
       std::max(base::TimeDelta(), base::Time::Now() - last_updated_timestamp);
 
-  if (base::FeatureList::IsEnabled(kSendTabToSelfImprovedLastActiveLabels) &&
-      has_high_precision_timestamp) {
+  if (has_high_precision_timestamp) {
     if (delta < base::Minutes(1)) {
       return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_NOW);
     }

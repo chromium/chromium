@@ -2861,7 +2861,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
-     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfEnhancedDesktopUI,"
@@ -2876,7 +2875,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfEnhancedDesktopUIv2,"
-     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfEnhancedDesktopUI,"
@@ -2895,7 +2893,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfEnhancedDesktopUIv2,"
-     "SendTabToSelfImprovedLastActiveLabels,"
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfEnhancedDesktopUI,"
