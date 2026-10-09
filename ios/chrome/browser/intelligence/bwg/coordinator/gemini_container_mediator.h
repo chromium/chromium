@@ -87,6 +87,16 @@ class GeminiContainerMediatorEventHandler;
                                 (UIViewController*)baseViewController;
 
 // TODO(crbug.com/535579970): Move to private after migration is complete.
+// Creates and returns the GeminiConfiguration for the active web state, using
+// `pageContext` as its initial page context (e.g. an already generated full
+// page context). Falls back to the partial page context when nil.
+- (GeminiConfiguration*)
+    createGeminiConfigurationForActiveWebState:(GeminiStartupState*)startupState
+                            baseViewController:
+                                (UIViewController*)baseViewController
+                                   pageContext:(GeminiPageContext*)pageContext;
+
+// TODO(crbug.com/535579970): Move to private after migration is complete.
 // Applies user preferences (e.g. page content sharing setting) to page context.
 - (void)applyUserPrefsToPageContext:(GeminiPageContext*)geminiPageContext;
 

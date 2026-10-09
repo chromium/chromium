@@ -184,6 +184,16 @@ class GeminiContainerMediatorTabHelperObserver
     createGeminiConfigurationForActiveWebState:(GeminiStartupState*)startupState
                             baseViewController:
                                 (UIViewController*)baseViewController {
+  return [self createGeminiConfigurationForActiveWebState:startupState
+                                       baseViewController:baseViewController
+                                              pageContext:nil];
+}
+
+- (GeminiConfiguration*)
+    createGeminiConfigurationForActiveWebState:(GeminiStartupState*)startupState
+                            baseViewController:
+                                (UIViewController*)baseViewController
+                                   pageContext:(GeminiPageContext*)pageContext {
   if (startupState) {
     _startupState = startupState;
   }
@@ -194,7 +204,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   GeminiPageContext* initialPageContext =
-      geminiTabHelper->GetPartialPageContext();
+      pageContext ? pageContext : geminiTabHelper->GetPartialPageContext();
   [self applyUserPrefsToPageContext:initialPageContext];
 
   GeminiConfiguration* config =

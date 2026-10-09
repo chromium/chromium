@@ -27,7 +27,15 @@ namespace ios::provider {
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* startup_configuration) {}
 
-void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {}
+static GeminiConfiguration* g_last_start_gemini_overlay_configuration = nil;
+
+void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {
+  g_last_start_gemini_overlay_configuration = gemini_configuration;
+}
+
+GeminiConfiguration* GetLastStartGeminiOverlayConfiguration() {
+  return g_last_start_gemini_overlay_configuration;
+}
 
 const std::u16string GetPageContextShouldDetachScript() {
   return uR"JS(
@@ -75,6 +83,7 @@ void ResetGemini() {
   g_mock_refill_date = nil;
   g_force_refresh_quota_info_called = false;
   g_update_active_page_context_call_count = 0;
+  g_last_start_gemini_overlay_configuration = nil;
 }
 
 void UpdatePageAttachmentState(
