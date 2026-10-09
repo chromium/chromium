@@ -256,7 +256,13 @@ UIButton* GetLegacyButtonForAction(AlertAction* action) {
       NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
                                   kButtonInsetBottom, kButtonInsetTrailing);
 
-  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+  NSDictionary* attributes = @{
+    NSFontAttributeName : font,
+    NSParagraphStyleAttributeName : paragraphStyle,
+  };
   NSAttributedString* title =
       [[NSAttributedString alloc] initWithString:action.title
                                       attributes:attributes];
@@ -294,7 +300,13 @@ UIButton* GetButtonForAction(AlertAction* action) {
     buttonConfiguration.baseForegroundColor =
         ColorForActionStyle(action.style, action.enabled);
 
-    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableParagraphStyle* paragraphStyle =
+        [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary* attributes = @{
+      NSFontAttributeName : font,
+      NSParagraphStyleAttributeName : paragraphStyle,
+    };
     NSAttributedString* title =
         [[NSAttributedString alloc] initWithString:action.title
                                         attributes:attributes];
