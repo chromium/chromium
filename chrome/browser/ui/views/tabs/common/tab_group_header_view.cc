@@ -275,6 +275,16 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
   return size;
 }
 
+gfx::Rect TabGroupHeaderView::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = View::GetAnchorBoundsInScreen();
+  if (orientation_ == TabStripOrientation::kHorizontal && parent()) {
+    gfx::Rect parent_bounds = parent()->GetAnchorBoundsInScreen();
+    bounds.set_y(parent_bounds.y());
+    bounds.set_height(parent_bounds.height());
+  }
+  return bounds;
+}
+
 bool TabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
        event.key_code() == ui::VKEY_RETURN) &&
@@ -520,7 +530,10 @@ views::BubbleAnchor TabGroupHeaderView::GetAnchor() {
 }
 
 views::BubbleBorder::Arrow TabGroupHeaderView::GetAnchorPosition() const {
-  return views::BubbleBorder::LEFT_TOP;
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    return views::BubbleBorder::Arrow::TOP_LEFT;
+  }
+  return views::BubbleBorder::Arrow::LEFT_TOP;
 }
 
 tab_groups::TabGroupId TabGroupHeaderView::group() const {

@@ -647,3 +647,68 @@ TEST_F(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
   EXPECT_EQ(preferred_size, gfx::Size(TabGroupStyle::GetEmptyChipSize(),
                                       TabGroupStyle::GetEmptyChipSize()));
 }
+
+TEST_F(TabGroupHeaderViewTest, AnchorBounds_HorizontalWithParent) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  // Simulate TabGroupView as parent container with the full tabstrip height.
+  auto* container = widget->SetContentsView(std::make_unique<views::View>());
+  container->SetBounds(10, 50, 300, 34);
+
+  // Add the horizontal group header as a child, sized as a chip.
+  auto* header = container->AddChildView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  header->SetBounds(0, 7, 80, 20);
+
+  gfx::Rect anchor_bounds = header->GetAnchorBoundsInScreen();
+  gfx::Rect header_screen_bounds = header->GetBoundsInScreen();
+  gfx::Rect container_screen_bounds = container->GetBoundsInScreen();
+
+  EXPECT_EQ(anchor_bounds.x(), header_screen_bounds.x());
+  EXPECT_EQ(anchor_bounds.width(), header_screen_bounds.width());
+  EXPECT_EQ(anchor_bounds.y(), container_screen_bounds.y());
+  EXPECT_EQ(anchor_bounds.height(), container_screen_bounds.height());
+  EXPECT_EQ(anchor_bounds.bottom(), container_screen_bounds.bottom());
+}
+
+TEST_F(TabGroupHeaderViewTest, AnchorBounds_VerticalWithParent) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  auto* container = widget->SetContentsView(std::make_unique<views::View>());
+  container->SetBounds(10, 50, 200, 150);
+
+  auto* header = container->AddChildView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data));
+  header->SetBounds(8, 4, 180, 26);
+
+  gfx::Rect anchor_bounds = header->GetAnchorBoundsInScreen();
+  EXPECT_EQ(anchor_bounds, header->GetBoundsInScreen());
+}
+
+TEST_F(TabGroupHeaderViewTest, AnchorPosition_Orientation) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto horizontal_header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data);
+  EXPECT_EQ(horizontal_header->GetAnchorPosition(),
+            views::BubbleBorder::Arrow::TOP_LEFT);
+
+  auto vertical_header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
+  EXPECT_EQ(vertical_header->GetAnchorPosition(),
+            views::BubbleBorder::Arrow::LEFT_TOP);
+}
