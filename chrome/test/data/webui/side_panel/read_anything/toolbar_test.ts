@@ -83,12 +83,6 @@ suite('Toolbar', () => {
   suite('rate button', () => {
     let rateButton: CrButtonElement;
 
-    async function changeRate(rate: number) {
-      toolbar.$.rateMenu.dispatchEvent(
-          new CustomEvent(ToolbarEvent.RATE, {detail: {data: rate}}));
-      await microtasksFinished();
-    }
-
     setup(() => {
       const rate = shadowRoot.querySelector<CrButtonElement>('#rate');
       assertTrue(!!rate);
@@ -106,12 +100,14 @@ suite('Toolbar', () => {
       assertStringContains(rateButton.textContent, '1x');
     });
 
-    test('rate change updates rate button', async () => {
-      await changeRate(2);
+    test('speechRate prop updates rate button', async () => {
+      toolbar.speechRate = 2;
+      await microtasksFinished();
       assertStringContains(rateButton.ariaLabel!, '2x');
       assertStringContains(rateButton.textContent, '2x');
 
-      await changeRate(0.5);
+      toolbar.speechRate = 0.5;
+      await microtasksFinished();
       assertStringContains(rateButton.ariaLabel!, '0.5');
       assertStringContains(rateButton.textContent, '0.5');
     });
@@ -358,17 +354,6 @@ suite('Toolbar', () => {
             await audioBrowserProxy.whenCalled('onAiPlaybackStateChanged'));
       });
     });
-  });
-
-  test('restoreSettingsFromPrefs event updates toolbar', async () => {
-    audioBrowserProxy.speechRate = 1.5;
-
-    visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
-    await microtasksFinished();
-
-    const rateButton = shadowRoot.querySelector('#rate');
-    assertTrue(!!rateButton);
-    assertEquals('1.5', rateButton.textContent.trim());
   });
 
   suite('settings menu', () => {

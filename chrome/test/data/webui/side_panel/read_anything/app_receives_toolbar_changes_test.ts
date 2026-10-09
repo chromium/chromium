@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, ContentController, LanguageToastElement, LineFocusController, SpeechController, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LineFocusMovement, LineFocusStyle, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusMovement, LineFocusStyle, ReadAloudSettingsChange, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
@@ -86,6 +86,10 @@ suite('AppReceivesToolbarChanges', () => {
 
   function emitColorTheme(colorEnumValue: number): void {
     emitEvent(app, ToolbarEvent.THEME, {detail: {data: colorEnumValue}});
+  }
+
+  function emitRate(rate: number): void {
+    emitEvent(app, ToolbarEvent.RATE, {detail: {data: rate}});
   }
 
   function emitPlayPause(): Promise<void> {
@@ -572,19 +576,13 @@ suite('AppReceivesToolbarChanges', () => {
     app.$.container.appendChild(node);
     await emitPlayPause();
 
-    const speechRate1 = 2;
-    audioBrowserProxy.speechRate = speechRate1;
-    emitEvent(app, ToolbarEvent.RATE);
+    emitRate(2);
     assertEquals(2, speech.getCallCount('speak'));
 
-    const speechRate2 = 0.5;
-    audioBrowserProxy.speechRate = speechRate2;
-    emitEvent(app, ToolbarEvent.RATE);
+    emitRate(0.5);
     assertEquals(3, speech.getCallCount('speak'));
 
-    const speechRate3 = 4;
-    audioBrowserProxy.speechRate = speechRate3;
-    emitEvent(app, ToolbarEvent.RATE);
+    emitRate(4);
     assertEquals(4, speech.getCallCount('speak'));
 
     const speechRates =
@@ -763,6 +761,7 @@ suite('AppReceivesToolbarChanges', () => {
     visualBrowserProxy.lineSpacing = 2;
     visualBrowserProxy.fontName = 'Serif';
     visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
+    audioBrowserProxy.speechRate = 1.5;
 
     visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
     await microtasksFinished();
@@ -772,6 +771,7 @@ suite('AppReceivesToolbarChanges', () => {
     assertEquals(2, toolbar.lineSpacing);
     assertEquals('Serif', toolbar.font);
     assertEquals(visualBrowserProxy.darkTheme, toolbar.theme);
+    assertEquals(1.5, toolbar.speechRate);
   });
 
   suite('on links toggle', () => {
@@ -966,18 +966,24 @@ suite('AppReceivesToolbarChanges', () => {
           await metrics.whenCalled('recordTextSettingsChange'));
       assertEquals('Andika', app.$.toolbar.font);
     });
-  });
 
-  test('on speech rate change updates toolbar settingsPrefs', async () => {
-    audioBrowserProxy.speechRate = 1.5;
-    emitEvent(app, ToolbarEvent.RATE);
-    await microtasksFinished();
-    assertEquals(1.5, app.$.toolbar.settingsPrefs.speechRate);
+    test('speech rate', async () => {
+      emitRate(1.5);
+      await microtasksFinished();
 
-    audioBrowserProxy.speechRate = 0.8;
-    emitEvent(app, ToolbarEvent.RATE);
-    await microtasksFinished();
-    assertEquals(0.8, app.$.toolbar.settingsPrefs.speechRate);
+      assertEquals(
+          1.5, await audioBrowserProxy.whenCalled('onSpeechRateChange'));
+      assertEquals(
+          ReadAloudSettingsChange.VOICE_SPEED_CHANGE,
+          await metrics.whenCalled('recordSpeechSettingsChange'));
+      // Voice speed is logged by its index in the rate menu.
+      assertEquals(4, await metrics.whenCalled('recordVoiceSpeed'));
+      assertEquals(1.5, app.$.toolbar.speechRate);
+
+      emitRate(0.8);
+      await microtasksFinished();
+      assertEquals(0.8, app.$.toolbar.speechRate);
+    });
   });
 
   test('on highlight change updates toolbar settingsPrefs', async () => {

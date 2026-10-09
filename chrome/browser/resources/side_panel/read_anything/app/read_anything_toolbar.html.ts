@@ -104,9 +104,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </presentation-menu>
   <font-size-menu id="fontSizeMenu"></font-size-menu>
-  <rate-menu id="rateMenu" .settingsPrefs="${this.settingsPrefs}"
-      @rate-change="${this.onRateChange_}">
-  </rate-menu>
+  <rate-menu id="rateMenu" .speechRate="${this.speechRate}"></rate-menu>
   <highlight-menu id="highlightMenu" class="settings-submenu"
       .nonModal="${true}" .settingsPrefs="${this.settingsPrefs}"
       @close-all-menus="${this.onCloseAllMenus_}">

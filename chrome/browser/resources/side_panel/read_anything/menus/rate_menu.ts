@@ -8,13 +8,6 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../content/read_anything_types.js';
-import {DEFAULT_SETTINGS} from '../content/read_anything_types.js';
-import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
-import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
-import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
-
 import type {MenuStateItem} from './menu_util.js';
 import {getIndexOfSetting} from './menu_util.js';
 import {getHtml} from './rate_menu.html.js';
@@ -55,15 +48,12 @@ export class RateMenuElement extends RateMenuElementBase {
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      speechRate: {type: Number},
       options_: {type: Array},
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
-
-  private audioBrowserProxy_: AudioBrowserProxy =
-      AudioBrowserProxyImpl.getInstance();
+  accessor speechRate: number = 1;
 
   protected accessor options_: Array<MenuStateItem<number>> =
       RATE_OPTIONS.map(rate => {
@@ -73,22 +63,13 @@ export class RateMenuElement extends RateMenuElementBase {
           data: rate,
         };
       });
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
   }
 
   protected restoredRateIndex_(): number {
-    return getIndexOfSetting(this.options_, this.settingsPrefs['speechRate']);
-  }
-
-  protected onRateChange_(event: CustomEvent<{data: number}>) {
-    this.audioBrowserProxy_.onSpeechRateChange(event.detail.data);
-    this.logger_.logSpeechSettingsChange(
-        ReadAloudSettingsChange.VOICE_SPEED_CHANGE);
-    // Log which rate is chosen by index rather than the rate value itself.
-    this.logger_.logVoiceSpeed(this.$.menu.currentSelectedIndex);
+    return getIndexOfSetting(this.options_, this.speechRate);
   }
 }
 

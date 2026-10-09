@@ -391,7 +391,7 @@ suite('Speech', () => {
     test('rate change cancels and restarts speech', () => {
       speech.reset();
 
-      emitEvent(app, ToolbarEvent.RATE);
+      emitEvent(app, ToolbarEvent.RATE, {detail: {data: 2}});
 
       assertEquals(2, speech.getCallCount('cancel'));
       assertEquals(1, speech.getCallCount('speak'));

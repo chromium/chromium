@@ -27,7 +27,7 @@ export function getHtml(this: AppElement) {
         .settingsPrefs="${this.settingsPrefs_}" .theme="${this.theme_}"
         .lineSpacing="${this.lineSpacing_}"
         .letterSpacing="${this.letterSpacing_}" .font="${this.font_}"
-        .enabledLangs="${this.enabledLangs_}"
+        .speechRate="${this.speechRate_}" .enabledLangs="${this.enabledLangs_}"
         .availableVoices="${this.availableVoices_}"
         .previewVoicePlaying="${this.previewVoicePlaying_}"
         .localeToDisplayName="${this.localeToDisplayName_}"

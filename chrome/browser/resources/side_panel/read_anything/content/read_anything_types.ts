@@ -196,13 +196,11 @@ export enum SettingsOption {
 // The user settings stored in preferences and restored on re-opening Reading
 // mode. Used to set the initial values for the toolbar buttons and menus.
 export interface SettingsPrefs {
-  speechRate: number;
   highlightGranularity: number;
   linksEnabled: boolean;
   imagesEnabled: boolean;
 }
 export const DEFAULT_SETTINGS: SettingsPrefs = {
-  speechRate: 0,
   highlightGranularity: 0,
   linksEnabled: false,
   imagesEnabled: false,
