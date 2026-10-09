@@ -5130,6 +5130,36 @@ chromium-metrics-reviews@google.com.
   <summary>Outcome of the MiniMap screen.</summary>
 </histogram>
 
+<histogram name="IOS.MostVisited.AIM.ImpressionIndex" units="index"
+    expires_after="2027-01-09">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records the index where the AIM tile is displayed within the Most Visited
+    Tiles on the New Tab Page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MostVisited.AIM.MovedToIndex" units="index"
+    expires_after="2027-01-09">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records the destination index when the user moves (via drag-and-drop or
+    accessibility custom action) the AIM tile within the Most Visited Tiles.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MostVisited.AIM.TapIndex" units="index"
+    expires_after="2027-01-09">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records the index of the AIM tile when tapped by the user within the Most
+    Visited Tiles.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MostVisited.PinnedSiteForm.{FormType}"
     enum="IOSMostVisitedPinSiteFormUserAction" expires_after="2027-02-07">
   <owner>ginnyhuang@chromium.org</owner>

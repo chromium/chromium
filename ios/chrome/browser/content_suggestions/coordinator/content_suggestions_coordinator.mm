@@ -715,6 +715,12 @@ using segmentation_platform::TipIdentifier;
   [self.delegate contentSuggestionsWasUpdated];
 }
 
+- (void)didTapAIMModule {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kAimAsModule);
+  [self.NTPActionsDelegate standaloneAIMModuleOpened];
+}
+
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
   CHECK(_tipsMediator);
 

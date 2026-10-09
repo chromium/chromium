@@ -36,6 +36,9 @@ enum class TipIdentifier;
 // Indicates that the user has tapped the Default Browser promo.
 - (void)didTapDefaultBrowserPromo;
 
+// Indicates that the user has tapped the AIM module.
+- (void)didTapAIMModule;
+
 // Notifies the audience that the content suggestions size has been updated.
 - (void)contentSuggestionsWasUpdated;
 

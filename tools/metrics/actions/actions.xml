@@ -38151,6 +38151,23 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Suggestions.AIM.UndoUnpin">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <description>
+    iOS: User tapped Undo on the snackbar to revert unpinning the AIM tile in
+    Most Visited Tiles.
+  </description>
+</action>
+
+<action name="Suggestions.AIM.Unpinned">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <description>
+    iOS: User unpinned the AIM tile in Most Visited Tiles.
+  </description>
+</action>
+
 <action name="Suggestions.AllDismissed.Shown">
   <owner>peconn@chromium.org</owner>
   <description>

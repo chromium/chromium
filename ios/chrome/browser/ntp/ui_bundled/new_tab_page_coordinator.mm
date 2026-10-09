@@ -1648,6 +1648,21 @@ using ntp_tiles::AimButtonRefactorArm;
   RecordHomeAction(IOSHomeActionType::kMostVisitedTile, [self isStartSurface]);
 }
 
+- (void)aimInMostVisitedOpened {
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    RecordHomeAction(IOSHomeActionType::kAimInMostVisited,
+                     [self isStartSurface]);
+    [self.NTPMetricsRecorder recordAIMButtonTapped];
+  }
+}
+
+- (void)standaloneAIMModuleOpened {
+  RecordHomeAction(IOSHomeActionType::kStandaloneAIMModule,
+                   [self isStartSurface]);
+  [self.NTPMetricsRecorder recordAIMButtonTapped];
+}
+
 - (void)shortcutTileOpened {
   RecordMagicStackClick(ContentSuggestionsModuleType::kShortcuts,
                         [self isStartSurface]);

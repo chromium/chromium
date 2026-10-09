@@ -287,6 +287,7 @@ constexpr CGFloat kStackViewSpacing = 12.0;
 
 - (void)aimModuleTapped {
   CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
+  [self.audience didTapAIMModule];
   const GURL aimURL = GURL(ntp_tiles::kAiModeTileUrl);
   const UrlLoadParams params = UrlLoadParams::InCurrentTab(aimURL);
   self.urlLoadingBrowserAgent->Load(params);
