@@ -51,6 +51,7 @@ IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, NoParentWindow) {
   dialog->Show();
   aura::Window* window = dialog->get_dialog_window_for_test();
   ASSERT_TRUE(window);
+  EXPECT_EQ((gfx::Size{1024, 752}), window->bounds().size());
 }
 
 }  // namespace ash

@@ -28,7 +28,7 @@ using ::content::WebUIMessageHandler;
 
 constexpr gfx::Insets kMinMargins{64};
 constexpr gfx::Size kMinSize{128, 128};
-constexpr gfx::Size kMaxSize{512, 512};
+constexpr gfx::Size kMaxSize{1024, 768};
 
 base::LazyInstance<base::circular_deque<WebContents*>>::DestructorAtExit
     g_web_contents_stack = LAZY_INSTANCE_INITIALIZER;
