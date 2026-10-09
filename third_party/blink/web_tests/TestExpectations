@@ -4917,11 +4917,9 @@ crbug.com/706350 external/wpt/html/browsers/windows/clear-window-name.https.html
 
 # The wpt/html tests that are failing in some way
 crbug.com/1317076 external/wpt/html/syntax/speculative-charset/speculative-script.tentative.html [ Failure ]
-crbug.com/1287036 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html [ Skip Timeout ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Pass Timeout ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-navigation.https.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure Pass ]
-crbug.com/1287036 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html [ Skip Timeout ]
 crbug.com/1265587 external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Failure ]
 crbug.com/1270351 external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
 crbug.com/1159661 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
@@ -8706,7 +8704,6 @@ crbug.com/539889938 [ Linux ] external/wpt/speculation-rules/prerender/local-sto
 crbug.com/539889938 [ Linux ] external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure Pass ]
 crbug.com/539889938 crbug.com/542694493 external/wpt/html/interaction/focus/processing-model/focus-fixup-rule-one-no-dialogs.html [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?* [ Failure Pass ]
-crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?* [ Failure Pass ]
 
 # Gardener 2026-07-31
 crbug.com/541138839 [ Mac ] wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.https.html [ Failure Pass ]
