@@ -20,6 +20,7 @@ static_library("files") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",

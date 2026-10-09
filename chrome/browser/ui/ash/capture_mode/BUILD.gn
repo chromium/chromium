@@ -12,6 +12,8 @@ static_library("capture_mode") {
     "search_results_view.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

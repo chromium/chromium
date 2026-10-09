@@ -10,6 +10,8 @@ static_library("sanitize") {
     "chrome_sanitize_ui_delegate.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/webui/sanitize_ui",
     "//ash/webui/sanitize_ui/mojom",

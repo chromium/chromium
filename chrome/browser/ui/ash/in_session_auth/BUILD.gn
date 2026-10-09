@@ -25,6 +25,7 @@ static_library("in_session_auth") {
     "//ash",
     "//ash/constants",
     "//ash/in_session_auth",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/navigator",

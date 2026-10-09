@@ -12,7 +12,10 @@ static_library("wallpaper") {
     "wallpaper_controller_client_impl.h",
   ]
 
-  public_deps = [ "//ash/public/mojom" ]
+  public_deps = [
+    "//ash/public/mojom",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//ash/constants",

@@ -15,6 +15,7 @@ static_library("echo_private") {
     "//base",
     "//base:i18n",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/extensions",
     "//chrome/common",

@@ -20,6 +20,8 @@ static_library("desks") {
     "desks_templates_app_launch_handler.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",
