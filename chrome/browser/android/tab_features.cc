@@ -146,6 +146,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/payments/core/features.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/search/ntp_features.h"
@@ -712,6 +713,14 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   if (!profile->IsOffTheRecord()) {
     HistoryClustersTabHelper::CreateForWebContents(
         web_contents, HistoryTabHelper::FromWebContents(web_contents));
+  }
+
+  if (!blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents)) {
+    if (auto* pm_registry =
+            performance_manager::PerformanceManagerRegistry::GetInstance()) {
+      pm_registry->SetPageType(web_contents,
+                               performance_manager::PageType::kTab);
+    }
   }
 
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);

@@ -255,6 +255,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
@@ -1330,6 +1331,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         HistoryTabHelper::FromWebContents(tab.GetContents()));
   }
 
+  if (!blocked_content::PopupBlockerTabHelper::FromWebContents(
+          tab.GetContents())) {
+    if (auto* pm_registry =
+            performance_manager::PerformanceManagerRegistry::GetInstance()) {
+      pm_registry->SetPageType(tab.GetContents(),
+                               performance_manager::PageType::kTab);
+    }
+  }
+
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(
       tab.GetContents());
 
@@ -1958,6 +1968,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (!profile->IsOffTheRecord()) {
     HistoryClustersTabHelper::CreateForWebContents(
         new_contents, HistoryTabHelper::FromWebContents(new_contents));
+  }
+
+  if (!blocked_content::PopupBlockerTabHelper::FromWebContents(new_contents)) {
+    if (auto* pm_registry =
+            performance_manager::PerformanceManagerRegistry::GetInstance()) {
+      pm_registry->SetPageType(new_contents,
+                               performance_manager::PageType::kTab);
+    }
   }
 
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(new_contents);

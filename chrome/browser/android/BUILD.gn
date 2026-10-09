@@ -253,6 +253,7 @@ source_set("tabs_impl") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/payments/core",
+    "//components/performance_manager",
     "//components/permissions",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",

@@ -41,6 +41,7 @@ source_set("initializer") {
     "//chrome/browser/android:web_contents_theme_client",
     "//chrome/browser/ui:tab_helpers",
     "//chrome/browser/ui/android:context_menu_helper",
+    "//components/performance_manager",
     "//components/permissions",
 
     # Link-time only: pulls the ThinWebView implementation into the binary.

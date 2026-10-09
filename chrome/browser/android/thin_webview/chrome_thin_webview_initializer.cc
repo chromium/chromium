@@ -7,6 +7,7 @@
 #include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_request_manager.h"
 
 namespace thin_webview::android {
@@ -26,6 +27,13 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
     bool enable_permission_requests,
     bool enable_browser_autofill) {
   TabHelpers::AttachTabHelpers(web_contents, enable_browser_autofill);
+  if (!permissions::PermissionRequestManager::FromWebContents(web_contents)) {
+    if (auto* pm_registry =
+            performance_manager::PerformanceManagerRegistry::GetInstance()) {
+      pm_registry->SetPageType(web_contents,
+                               performance_manager::PageType::kTab);
+    }
+  }
   permissions::PermissionRequestManager::CreateForWebContents(web_contents);
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_web_contents_supports_permission_requests(

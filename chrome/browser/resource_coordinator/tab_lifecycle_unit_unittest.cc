@@ -38,6 +38,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -137,6 +138,8 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
     tester->SetLastActiveTimeTicks(NowTicks());
     tester->SetLastActiveTime(Now());
     ResourceCoordinatorTabHelper::CreateForWebContents(web_contents_);
+    performance_manager::PerformanceManagerRegistry::GetInstance()->SetPageType(
+        web_contents_, performance_manager::PageType::kTab);
     // Commit an URL to allow discarding.
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
         GURL("https://www.example.com"), web_contents_);
@@ -180,6 +183,8 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
         CreateTestWebContents();
     content::WebContents* web_contents = test_web_contents.get();
     ResourceCoordinatorTabHelper::CreateForWebContents(web_contents);
+    performance_manager::PerformanceManagerRegistry::GetInstance()->SetPageType(
+        web_contents, performance_manager::PageType::kTab);
     tab_strip_model_->AppendWebContents(std::move(test_web_contents), false);
     web_contents->WasHidden();
     return web_contents;
