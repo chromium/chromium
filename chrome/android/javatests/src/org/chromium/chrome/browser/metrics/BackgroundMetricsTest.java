@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.metrics;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -55,9 +53,7 @@ public final class BackgroundMetricsTest {
     }
 
     public void pressHome() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        device.pressHome();
-        ChromeApplicationTestUtils.waitUntilChromeInBackground();
+        ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
     }
 
     private void loadNative() {
