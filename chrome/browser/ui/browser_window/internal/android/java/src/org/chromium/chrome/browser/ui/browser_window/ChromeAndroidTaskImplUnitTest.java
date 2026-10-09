@@ -2169,6 +2169,54 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void getRestoredBoundsInDp_afterSetBoundsSettles_reflectsLaterResize() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var mockWindowManager = activityWindowAndroidMocks.mMockWindowManager;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
+        var promise = new Promise<Pair<Integer, Rect>>();
+        when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
+        var requestedBounds = new Rect(100, 100, 600, 500);
+        var resizedBounds = new Rect(50, 60, 450, 520);
+
+        // Act: request bounds and settle.
+        chromeAndroidTask.setBoundsInDp(requestedBounds);
+        assertEquals(requestedBounds, chromeAndroidTask.getRestoredBoundsInDp());
+        promise.fulfill(Pair.create(0, requestedBounds));
+        shadowOf(getMainLooper()).idle();
+        assertEquals(State.IDLE, chromeAndroidTask.getState());
+
+        // Act: simulate a user resize without a request.
+        ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, resizedBounds);
+        var mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, resizedBounds);
+        chromeAndroidTask
+                .getDecorViewLayoutChangeListenerForTesting()
+                .onLayoutChange(
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        /* oldLeft= */ 0,
+                        /* oldTop= */ 0,
+                        /* oldRight= */ 0,
+                        /* oldBottom= */ 0);
+
+        // Assert.
+        assertNull(
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .getFutureRestoredBoundsInDp());
+        assertEquals(resizedBounds, chromeAndroidTask.getRestoredBoundsInDp());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void setBoundsInDp_clampsBoundsThatAreTooLarge() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);

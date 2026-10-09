@@ -154,6 +154,26 @@ public class PendingActionManagerUnitTest {
     }
 
     @Test
+    public void testFutureRestoredBounds_afterSetBoundsSettles_returnsNull() {
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
+
+        mManager.getAndClearTargetPendingActions(PendingAction.SET_BOUNDS);
+
+        assertNull(mManager.getFutureRestoredBoundsInDp());
+    }
+
+    @Test
+    public void testFutureRestoredBounds_afterSetBoundsOverridden_retainedUntilSettled() {
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
+        mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
+        assertEquals(TEST_SET_BOUNDS_INPUT_1, mManager.getFutureRestoredBoundsInDp());
+
+        mManager.getAndClearTargetPendingActions(PendingAction.MAXIMIZE);
+
+        assertNull(mManager.getFutureRestoredBoundsInDp());
+    }
+
+    @Test
     public void testRequestSetBounds_withEmptyBounds_noPriorPendingActions_ignoresSetBounds() {
         // Act.
         mManager.requestSetBounds(new Rect(), /* isMaximizedBounds= */ false);

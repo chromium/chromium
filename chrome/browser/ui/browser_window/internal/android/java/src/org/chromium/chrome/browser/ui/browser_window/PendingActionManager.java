@@ -80,7 +80,10 @@ final class PendingActionManager {
     /** Tracks the size a window should have when the pending SET_BOUNDS request is done. */
     private @Nullable Rect mPendingBoundsInDp;
 
-    /** Tracks the bounds a window should be restored to based on a SET_BOUNDS request. */
+    /**
+     * Tracks the bounds a window should be restored to based on a SET_BOUNDS request. Cleared once
+     * all pending actions have settled.
+     */
     private @Nullable Rect mFutureRestoredBoundsInDp;
 
     /**
@@ -360,6 +363,12 @@ final class PendingActionManager {
                     || action == PendingAction.RESTORE) {
                 mFutureBoundsInDp = mPendingBoundsInDp;
             }
+        }
+
+        // Once all requests have settled, the restored bounds tracked by the OS-backed window
+        // state are authoritative.
+        if (mPendingActions[0] == PendingAction.NONE && mPendingActions[1] == PendingAction.NONE) {
+            mFutureRestoredBoundsInDp = null;
         }
     }
 
