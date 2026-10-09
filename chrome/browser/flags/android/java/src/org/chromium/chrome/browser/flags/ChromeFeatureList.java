@@ -1019,7 +1019,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidTabstripStartupCaptureBugFix =
             newCachedFlag(ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX, true, true);
     public static final CachedFlag sAndroidToolbarCaptureOnDesktop =
-            newCachedFlag(ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP, true);
+            newCachedFlag(ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP, false);
     public static final CachedFlag sAndroidVerticalTabs =
             newCachedFlag(
                     ANDROID_VERTICAL_TABS,
