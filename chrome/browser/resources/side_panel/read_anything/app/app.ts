@@ -86,6 +86,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       theme_: {type: Number},
       lineSpacing_: {type: Number},
       letterSpacing_: {type: Number},
+      font_: {type: String},
       settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
@@ -173,6 +174,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor theme_: number = 0;
   protected accessor lineSpacing_: number = 0;
   protected accessor letterSpacing_: number = 0;
+  protected accessor font_: string = '';
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
@@ -235,7 +237,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     this.settingsPrefs_ = {
       speechRate: this.audioBrowserProxy_.getSpeechRate(),
-      font: this.visualBrowserProxy_.getFontName(),
       highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
       linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
       imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
@@ -703,6 +704,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.theme_ = this.visualBrowserProxy_.getColorTheme();
     this.lineSpacing_ = this.visualBrowserProxy_.getLineSpacing();
     this.letterSpacing_ = this.visualBrowserProxy_.getLetterSpacing();
+    this.font_ = this.visualBrowserProxy_.getFontName();
   }
 
   protected onSpeechRateChange_() {
@@ -718,7 +720,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   private restoreSettingsFromPrefs_() {
     this.settingsPrefs_ = {
       speechRate: this.audioBrowserProxy_.getSpeechRate(),
-      font: this.visualBrowserProxy_.getFontName(),
       highlightGranularity: this.audioBrowserProxy_.getHighlightGranularity(),
       linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
       imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
@@ -751,11 +752,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.onTextLocationsChange_();
   }
 
-  protected onFontChange_() {
-    this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
-      font: this.visualBrowserProxy_.getFontName(),
-    };
+  protected onFontChange_(event: CustomEvent<{data: string}>) {
+    this.visualBrowserProxy_.onFontChange(event.detail.data);
+    this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
+    this.syncSettings_();
     this.styleUpdater_.setFont();
     this.onTextLocationsChange_();
   }

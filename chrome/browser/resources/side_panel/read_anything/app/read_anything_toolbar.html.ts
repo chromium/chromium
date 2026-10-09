@@ -123,9 +123,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </letter-spacing-menu>
   <font-menu id="fontMenu" class="settings-submenu" .nonModal="${true}"
-      .areFontsLoaded="${this.areFontsLoaded_}"
-      .settingsPrefs="${this.settingsPrefs}"
-      .pageLanguage="${this.pageLanguage}" @font-change="${this.onFontChange_}"
+      .areFontsLoaded="${this.areFontsLoaded_}" .font="${this.font}"
+      .pageLanguage="${this.pageLanguage}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </font-menu>
   <line-focus-menu id="lineFocusMenu" class="settings-submenu"
@@ -150,7 +149,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </audio-menu>
   <text-menu id="textMenu" class="settings-submenu" non-modal
-      .settingsPrefs="${this.settingsPrefs}" .lineSpacing="${this.lineSpacing}"
+      .font="${this.font}" .lineSpacing="${this.lineSpacing}"
       .letterSpacing="${this.letterSpacing}"
       .areFontsLoaded="${this.areFontsLoaded_}"
       .pageLanguage="${this.pageLanguage}"

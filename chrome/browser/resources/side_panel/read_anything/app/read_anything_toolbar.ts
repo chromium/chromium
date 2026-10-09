@@ -121,6 +121,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       theme: {type: Number},
       lineSpacing: {type: Number},
       letterSpacing: {type: Number},
+      font: {type: String},
       areFontsLoaded_: {type: Boolean},
       textStyleOptions_: {type: Array},
       hideSpinner_: {type: Boolean},
@@ -162,6 +163,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor theme: number = 0;
   accessor lineSpacing: number = 0;
   accessor letterSpacing: number = 0;
+  accessor font: string = '';
   accessor selectedVoice: SpeechSynthesisVoice|null = null;
   accessor pageLanguage: string = '';
   accessor isImmersiveMode: boolean = false;
@@ -255,6 +257,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (changedProperties.has('font')) {
+      this.style.fontFamily =
+          this.visualBrowserProxy_.getValidatedFontName(this.font);
+    }
+
     if (changedProperties.has('isSpeechActive') ||
         changedProperties.has('isAudioCurrentlyPlaying')) {
       this.onSpeechPlayingStateChanged_();
@@ -330,7 +337,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   restoreSettingsFromPrefs() {
-    this.setFont_(this.visualBrowserProxy_.getFontName());
     this.speechRate_ = getCurrentSpeechRate();
   }
 
@@ -384,14 +390,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onMoreOptionsClick_(event: MouseEvent) {
     const target = event.target as HTMLElement;
     this.$.settingsMenu.open(target);
-  }
-
-  private setFont_(font: string) {
-    this.style.fontFamily = this.visualBrowserProxy_.getValidatedFontName(font);
-  }
-
-  protected onFontChange_(event: CustomEvent<{data: string}>) {
-    this.setFont_(event.detail.data);
   }
 
   protected onRateChange_(event: CustomEvent<{data: number}>) {

@@ -66,8 +66,7 @@ suite('AppReceivesToolbarChanges', () => {
   }
 
   function emitFont(fontName: string): void {
-    visualBrowserProxy.fontName = fontName;
-    emitEvent(app, ToolbarEvent.FONT);
+    emitEvent(app, ToolbarEvent.FONT, {detail: {data: fontName}});
   }
 
   function emitFontSize(size: number): void {
@@ -762,6 +761,7 @@ suite('AppReceivesToolbarChanges', () => {
   test('restoreSettingsFromPrefs updates toolbar settings', async () => {
     visualBrowserProxy.letterSpacing = 1;
     visualBrowserProxy.lineSpacing = 2;
+    visualBrowserProxy.fontName = 'Serif';
     visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
 
     visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
@@ -770,6 +770,7 @@ suite('AppReceivesToolbarChanges', () => {
     const toolbar = app.$.toolbar;
     assertEquals(1, toolbar.letterSpacing);
     assertEquals(2, toolbar.lineSpacing);
+    assertEquals('Serif', toolbar.font);
     assertEquals(visualBrowserProxy.darkTheme, toolbar.theme);
   });
 
@@ -952,6 +953,18 @@ suite('AppReceivesToolbarChanges', () => {
           ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
           await metrics.whenCalled('recordTextSettingsChange'));
       assertEquals(2, app.$.toolbar.letterSpacing);
+    });
+
+    test('font', async () => {
+      emitFont('Andika');
+      await microtasksFinished();
+
+      assertEquals(
+          'Andika', await visualBrowserProxy.whenCalled('onFontChange'));
+      assertEquals(
+          ReadAnythingSettingsChange.FONT_CHANGE,
+          await metrics.whenCalled('recordTextSettingsChange'));
+      assertEquals('Andika', app.$.toolbar.font);
     });
   });
 

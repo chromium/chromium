@@ -5,31 +5,24 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {TextMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame} from './common.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('TextMenuElement', () => {
   let textMenu: TextMenuElement;
-  let metrics: TestMetricsBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
-
-  suiteSetup(() => {
-    assertTestSettingsAreNotDefaultSettings();
-  });
 
   setup(() => {
     const result = setupTestEnvironment();
     visualBrowserProxy = result.visualBrowserProxy;
     visualBrowserProxy.supportedFonts = ['Poppins', 'Sans-serif', 'Serif'];
-    visualBrowserProxy.fontName = 'Poppins';
-    metrics = result.metrics;
 
     textMenu = document.createElement('text-menu');
+    textMenu.font = 'Poppins';
     textMenu.areFontsLoaded = true;
     document.body.appendChild(textMenu);
   });
@@ -42,11 +35,7 @@ suite('TextMenuElement', () => {
       'updating font preference property renders checkmark on the selected font item',
       async () => {
         const newFont = 'Serif';
-        visualBrowserProxy.fontName = newFont;
-        textMenu.settingsPrefs = {
-          ...textMenu.settingsPrefs,
-          font: newFont,
-        };
+        textMenu.font = newFont;
         await microtasksFinished();
 
         const selectedItems =
@@ -55,26 +44,17 @@ suite('TextMenuElement', () => {
         assertEquals(newFont, selectedItems[0]!.data, 'selected font data');
       });
 
-  test(
-      'on font change invokes reading mode callback and logs metrics',
-      async () => {
-        let closeAllMenusCount = 0;
-        document.addEventListener(
-            ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+  test('on font change does not close menus', async () => {
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-        const newFont = 'Serif';
-        textMenu.$.menu.dispatchEvent(
-            new CustomEvent(ToolbarEvent.FONT, {detail: {data: newFont}}));
-        await microtasksFinished();
+    textMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.FONT, {detail: {data: 'Serif'}}));
+    await microtasksFinished();
 
-        assertEquals(1, visualBrowserProxy.getCallCount('onFontChange'));
-        assertEquals(newFont, visualBrowserProxy.getArgs('onFontChange')[0]);
-        assertEquals(
-            ReadAnythingSettingsChange.FONT_CHANGE,
-            await metrics.whenCalled('recordTextSettingsChange'));
-        assertEquals(1, metrics.getCallCount('recordTextSettingsChange'));
-        assertEquals(0, closeAllMenusCount);
-      });
+    assertEquals(0, closeAllMenusCount);
+  });
 
   test(
       'updating line spacing preference property renders checkmark on the selected spacing item',

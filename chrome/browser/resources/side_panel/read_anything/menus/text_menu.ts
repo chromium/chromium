@@ -12,10 +12,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
 import type {MenuGroup, MenuStateItem, ToolbarMenu} from './menu_util.js';
@@ -41,7 +39,7 @@ export class TextMenuElement extends TextMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      font: {type: String},
       lineSpacing: {type: Number},
       letterSpacing: {type: Number},
       nonModal: {type: Boolean},
@@ -51,7 +49,7 @@ export class TextMenuElement extends TextMenuElementBase implements
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor font: string = '';
   accessor lineSpacing: number = 0;
   accessor letterSpacing: number = 0;
   accessor nonModal: boolean = false;
@@ -130,7 +128,6 @@ export class TextMenuElement extends TextMenuElementBase implements
       eventName: ToolbarEvent.LETTER_SPACING,
     },
   ];
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -140,8 +137,7 @@ export class TextMenuElement extends TextMenuElementBase implements
       this.computeFontOptions_();
     }
 
-    if (changedProperties.has('settingsPrefs') ||
-        changedProperties.has('lineSpacing') ||
+    if (changedProperties.has('font') || changedProperties.has('lineSpacing') ||
         changedProperties.has('letterSpacing') ||
         changedProperties.has('pageLanguage') ||
         changedProperties.has('areFontsLoaded')) {
@@ -160,16 +156,9 @@ export class TextMenuElement extends TextMenuElementBase implements
     this.$.menu.close();
   }
 
-  protected onFontChange_(event: CustomEvent<{data: string}>) {
-    const newFont = event.detail.data;
-    this.visualBrowserProxy_.onFontChange(newFont);
-    this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
-  }
-
   private updateOptionsForFont_() {
-    const currentFont = this.visualBrowserProxy_.getFontName();
     this.fontOptions_.forEach(option => {
-      option.selected = option.data === currentFont;
+      option.selected = option.data === this.font;
     });
   }
 

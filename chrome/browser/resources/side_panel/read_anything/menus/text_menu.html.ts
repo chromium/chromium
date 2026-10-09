@@ -10,7 +10,7 @@ export function getHtml(this: TextMenuElement) {
   return html`<!--_html_template_start_-->
 <grouped-action-menu id="menu" label="$i18n{textSettingsTitle}"
     .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
-    .closeOnClick="${false}" @font-change="${this.onFontChange_}">
+    .closeOnClick="${false}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;
 }
