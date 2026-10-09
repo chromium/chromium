@@ -278,9 +278,6 @@ public final class ProductionSupportedFlagList {
                 "Allows autofill to ignore suppressing predicitons on fields with"
                         + " autocomplete=unrecognized."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_IFRAME_OWNERSHIP,
-                "Make Autofill's iframe ownership consistent with form control ownership."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_STATE_COUNTRY_MISCLASSIFICATION,
                 "When enabled, the rationalization engine will fix misclassifications where"
                         + " a field is detected as a COUNTRY when it should be a STATE or vice"
