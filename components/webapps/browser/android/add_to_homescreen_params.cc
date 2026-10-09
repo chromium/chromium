@@ -51,8 +51,8 @@ bool AddToHomescreenParams::IsWebApk(AppType type) {
 
 // static
 AddToHomescreenParams::AppType AddToHomescreenParams::GetWebAppInstallType(
-    bool has_manifest) {
-  if (!has_manifest) {
+    bool crafted) {
+  if (!crafted) {
     return AppType::WEBAPK_DIY;
   }
   if (WebappsUtils::IsAutoMintedTwaEnabled()) {

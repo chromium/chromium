@@ -556,6 +556,35 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Failure limit per prompt is exceeded"/>
 </enum>
 
+<!-- LINT.IfChange(WebappAddToHomescreenAnyPageDecision) -->
+
+<enum name="WebappAddToHomescreenAnyPageDecision">
+  <int value="0" label="Crafted WebAPK (promotable manifest)"/>
+  <int value="1" label="DIY WebAPK: no manifest"/>
+  <int value="2" label="DIY WebAPK: manifest 404 / unparsable"/>
+  <int value="3" label="DIY WebAPK: manifest not promotable"/>
+  <int value="4"
+      label="Shortcut: ineligible (incognito, insecure origin, empty
+             manifest, non-http(s), manifest URLs not WebAPK compatible)"/>
+  <int value="5"
+      label="Shortcut: reset (navigation, manifest URL change, renderer gone)"/>
+  <int value="6" label="Shortcut: data fetch timed out"/>
+  <int value="7" label="Shortcut: no icon (flag off)"/>
+  <int value="8" label="Shortcut: not installable at root scope (flag off)"/>
+  <int value="9" label="Shortcut: other error (flag on)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/webapps/browser/android/add_to_homescreen_data_fetcher.h:WebappAddToHomescreenAnyPageDecision) -->
+
+<!-- LINT.IfChange(WebappAddToHomescreenAnyPagePrimaryIconSource) -->
+
+<enum name="WebappAddToHomescreenAnyPagePrimaryIconSource">
+  <int value="0" label="Downloaded (manifest icon or favicon)"/>
+  <int value="1" label="Generated monogram"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/webapps/browser/android/add_to_homescreen_data_fetcher.h:WebappAddToHomescreenAnyPagePrimaryIconSource) -->
+
 <!-- LINT.IfChange(WebAppApplyManifestMigrationResult) -->
 
 <enum name="WebAppApplyManifestMigrationResult">

@@ -5,6 +5,7 @@
 #include "components/webapps/browser/features.h"
 
 #include "base/feature_list.h"
+#include "build/android_buildflags.h"
 
 namespace webapps {
 namespace features {
@@ -22,7 +23,21 @@ BASE_FEATURE(kAndroidAutoMintedTWA, base::FEATURE_DISABLED_BY_DEFAULT);
 // directly trigger the install dialog, but it no longer does so.
 BASE_FEATURE(kAlwaysShowInstallDisambiguationDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, Android will install any eligible page as a DIY WebAPK
+// instead of downgrading to a shortcut.
+BASE_FEATURE(kAndroidInstallAnyPageAsDiyAppStopgap,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// If enabled, InstallableIconFetcher attempts to fetch <origin>/favicon.ico as
+// a fallback when all candidate icons are rejected.
+BASE_FEATURE(kInstallableRootFaviconFallback, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Do not remove this feature flag, since it serves as a kill-switch for the ML
 // promotion model. Kill switches are required for all ML model-backed features.

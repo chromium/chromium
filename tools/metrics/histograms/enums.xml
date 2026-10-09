@@ -18113,6 +18113,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>
   <int value="965218542" label="ReadAnythingWithScreen2x:disabled"/>
   <int value="965533018" label="MlUrlScoreCaching:disabled"/>
+  <int value="965939016" label="AndroidInstallAnyPageAsDiyAppStopgap:enabled"/>
   <int value="966103686" label="SecurePaymentConfirmationFallback:disabled"/>
   <int value="966134219" label="CrostiniEnableDlc:disabled"/>
   <int value="966352185" label="PrivacyAdvisor:disabled"/>
@@ -19132,6 +19133,8 @@ from previous Chrome versions.
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>
   <int value="1270975112"
       label="GlanceablesTimeManagementClassroomStudentView:enabled"/>
+  <int value="1271256929"
+      label="AndroidInstallAnyPageAsDiyAppStopgap:disabled"/>
   <int value="1271871811" label="LegacyTLSEnforced:enabled"/>
   <int value="1272040421" label="ContextualPageActionReaderMode:disabled"/>
   <int value="1272699563" label="enable-hosted-mode"/>

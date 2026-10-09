@@ -12,12 +12,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_page_data.h"
 #include "content/public/test/test_renderer_host.h"
@@ -185,6 +187,29 @@ class InstallableIconFetcherTest : public content::RenderViewHostTestHarness {
     fetcher.OnFaviconCandidateDownloaded(icon_url, bitmap);
   }
 
+  // Asserts the terminal state of a fetch that found no downloadable icon.
+  // Android Desktop generates a monogram (through the ThreadPool, hence the
+  // TestFuture) and reports it as a successful fetch keyed by the page URL;
+  // every other platform ends with NO_ACCEPTABLE_ICON.
+  void ExpectEndedWithoutDownloadedIcon(
+      base::test::TestFuture<InstallableStatusCode>& future,
+      const InstallablePageData& page_data,
+      const GURL& page_url) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+    EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+    EXPECT_TRUE(page_data.primary_icon_fetched());
+    EXPECT_EQ(page_data.primary_icon_url(), page_url);
+    ASSERT_TRUE(page_data.primary_icon());
+    EXPECT_FALSE(page_data.primary_icon()->drawsNothing());
+#else
+    EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ACCEPTABLE_ICON);
+    EXPECT_TRUE(page_data.primary_icon_fetched());
+    EXPECT_EQ(page_data.icon_error(),
+              InstallableStatusCode::NO_ACCEPTABLE_ICON);
+    EXPECT_FALSE(page_data.primary_icon());
+#endif
+  }
+
  protected:
   content::WebContentsTester* web_contents_tester() {
     return content::WebContentsTester::For(web_contents());
@@ -268,6 +293,12 @@ TEST_F(InstallableIconFetcherTest,
 
 TEST_F(InstallableIconFetcherTest,
        FaviconFallbackCandidateDownloadFailureEndsWithError) {
+  // This test covers the pre-fallback error path; keep the <origin>/favicon.ico
+  // probe out of it (RootFaviconFallback* cover the probe).
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);
 
@@ -297,14 +328,19 @@ TEST_F(InstallableIconFetcherTest,
                                                           404, {}, {}));
 
   // With fallback abandoned, the second candidate should not be downloaded and
-  // the fetch should end with NO_ACCEPTABLE_ICON immediately.
+  // the fetch should end immediately without a downloaded icon.
   EXPECT_FALSE(
       web_contents_tester()->HasPendingDownloadImage(kSecondCandidateUrl));
-  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ACCEPTABLE_ICON);
-  EXPECT_FALSE(page_data.primary_icon());
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
 }
 
 TEST_F(InstallableIconFetcherTest, FaviconFallbackHandlesAllCandidatesFailing) {
+  // This test covers the pre-fallback error path; keep the <origin>/favicon.ico
+  // probe out of it (RootFaviconFallback* cover the probe).
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);
 
@@ -329,21 +365,17 @@ TEST_F(InstallableIconFetcherTest, FaviconFallbackHandlesAllCandidatesFailing) {
   EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(kFailingCandidateUrl,
                                                           200, {}, {}));
 
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  // On Desktop Android, MaybeEndWithError generates a monogram homescreen icon.
-  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
-  EXPECT_TRUE(page_data.primary_icon_fetched());
-  EXPECT_TRUE(page_data.primary_icon());
-#else
-  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ACCEPTABLE_ICON);
-  EXPECT_TRUE(page_data.primary_icon_fetched());
-  EXPECT_EQ(page_data.icon_error(), InstallableStatusCode::NO_ACCEPTABLE_ICON);
-  EXPECT_FALSE(page_data.primary_icon());
-#endif
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
 }
 
 TEST_F(InstallableIconFetcherTest,
        FaviconFallbackWhenLargeIconServiceReturnsSmallIcon) {
+  // This test covers the pre-fallback error path; keep the <origin>/favicon.ico
+  // probe out of it (RootFaviconFallback* cover the probe).
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);
 
@@ -662,6 +694,12 @@ TEST_F(InstallableIconFetcherTest,
 
 TEST_F(InstallableIconFetcherTest,
        FaviconFallbackFirstCandidateFailureDoesNotFallback) {
+  // This test covers the pre-fallback error path; keep the <origin>/favicon.ico
+  // probe out of it (RootFaviconFallback* cover the probe).
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);
 
@@ -695,8 +733,7 @@ TEST_F(InstallableIconFetcherTest,
       web_contents_tester()->TestDidDownloadImage(kCandidate192, 404, {}, {}));
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate512));
 
-  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ACCEPTABLE_ICON);
-  EXPECT_FALSE(page_data.primary_icon());
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
 }
 
 TEST_F(InstallableIconFetcherTest,
@@ -741,6 +778,12 @@ TEST_F(InstallableIconFetcherTest,
 
 TEST_F(InstallableIconFetcherTest,
        FaviconFallbackErrorsWhenNoCandidateIsBigEnough) {
+  // This test covers the pre-fallback error path; keep the <origin>/favicon.ico
+  // probe out of it (RootFaviconFallback* cover the probe).
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);
 
@@ -767,12 +810,293 @@ TEST_F(InstallableIconFetcherTest,
                                  /*fetch_favicon=*/true, future.GetCallback());
 
   // Since neither is big enough, no download should be attempted and the fetch
-  // should end with NO_ACCEPTABLE_ICON immediately.
+  // should end immediately without a downloaded icon.
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate96));
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kCandidate48));
 
-  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ACCEPTABLE_ICON);
-  EXPECT_FALSE(page_data.primary_icon());
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
 }
+
+TEST_F(InstallableIconFetcherTest, RootFaviconFallbackDownloadsIcon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  SkBitmap bitmap = CreateTestBitmap(256, 256);
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kFaviconUrl, 200, {bitmap}, {gfx::Size(256, 256)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data.primary_icon_fetched());
+  EXPECT_EQ(page_data.primary_icon_url(), kFaviconUrl);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_FALSE(page_data.primary_icon()->drawsNothing());
+}
+
+TEST_F(InstallableIconFetcherTest, RootFaviconFallbackTooSmall) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  SkBitmap bitmap = CreateTestBitmap(32, 32);
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kFaviconUrl, 200, {bitmap}, {gfx::Size(32, 32)}));
+
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+  // probed_root_favicon_: the failure re-entry must not probe a second time.
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+}
+
+TEST_F(InstallableIconFetcherTest, RootFaviconFallback404) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  EXPECT_TRUE(
+      web_contents_tester()->TestDidDownloadImage(kFaviconUrl, 404, {}, {}));
+
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+}
+
+TEST_F(InstallableIconFetcherTest,
+       RootFaviconFallbackRunsAfterLinkedCandidateFails) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kCandidateUrl("https://www.example.com/icon-192.png");
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kCandidateUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(192, 192)},
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kCandidateUrl));
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+
+  // Linked candidate download returns empty bitmap.
+  EXPECT_TRUE(
+      web_contents_tester()->TestDidDownloadImage(kCandidateUrl, 200, {}, {}));
+
+  // Probe is issued next.
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  SkBitmap bitmap = CreateTestBitmap(256, 256);
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kFaviconUrl, 200, {bitmap}, {gfx::Size(256, 256)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data.primary_icon_fetched());
+  EXPECT_EQ(page_data.primary_icon_url(), kFaviconUrl);
+}
+
+TEST_F(InstallableIconFetcherTest,
+       RootFaviconFallbackNotRepeatedWhenLinkedCandidateIsRootFavicon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  // Site explicitly links <link rel="icon" href="/favicon.ico" sizes="any">.
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kFaviconUrl, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(0, 0)},
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  EXPECT_TRUE(
+      web_contents_tester()->TestDidDownloadImage(kFaviconUrl, 404, {}, {}));
+
+  // Because the failed candidate was already <origin>/favicon.ico,
+  // MaybeEndWithError must not probe <origin>/favicon.ico a second time.
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+}
+
+// The probe runs for http pages too, with the page's own scheme.
+TEST_F(InstallableIconFetcherTest, RootFaviconFallbackRunsForHttp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kHttpUrl("http://www.example.com/page");
+  web_contents_tester()->NavigateAndCommit(kHttpUrl);
+
+  const GURL kFaviconUrl("http://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  EXPECT_TRUE(
+      web_contents_tester()->TestDidDownloadImage(kFaviconUrl, 404, {}, {}));
+
+  ExpectEndedWithoutDownloadedIcon(future, page_data, kHttpUrl);
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+}
+
+TEST_F(InstallableIconFetcherTest, RootFaviconFallbackSkippedForNonHttp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFileUrl("file:///tmp/page.html");
+  web_contents_tester()->NavigateAndCommit(kFileUrl);
+
+  const GURL kFaviconUrl("file:///favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  ExpectEndedWithoutDownloadedIcon(future, page_data, kFileUrl);
+}
+
+TEST_F(InstallableIconFetcherTest,
+       RootFaviconFallbackSkippedWhenFetchFaviconFalse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/false, future.GetCallback());
+
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+}
+
+TEST_F(InstallableIconFetcherTest, RootFaviconFallbackSkippedWhenFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  ExpectEndedWithoutDownloadedIcon(future, page_data, GURL(kPageUrl));
+}
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+TEST_F(InstallableIconFetcherTest, RootFaviconFallbackPrecedesGeneratedIcon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kInstallableRootFaviconFallback);
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kFaviconUrl("https://www.example.com/favicon.ico");
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  // Probe is pending before any generated icon is reported.
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kFaviconUrl));
+  EXPECT_FALSE(page_data.primary_icon_fetched());
+
+  // Fail the probe.
+  EXPECT_TRUE(
+      web_contents_tester()->TestDidDownloadImage(kFaviconUrl, 404, {}, {}));
+
+  // On probe failure, the generated icon with the page URL still arrives.
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data.primary_icon_fetched());
+  EXPECT_EQ(page_data.primary_icon_url(), GURL(kPageUrl));
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_FALSE(page_data.primary_icon()->drawsNothing());
+}
+#endif
 
 }  // namespace webapps

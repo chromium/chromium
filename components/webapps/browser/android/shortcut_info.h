@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/webapp_icon.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
@@ -143,6 +144,7 @@ struct ShortcutInfo {
 
   // Update the display mode based on whether the web app is webapk_compatible.
   void UpdateDisplayMode(bool webapk_compatible);
+  void UpdateDisplayMode(AddToHomescreenParams::AppType app_type);
 
   // Returns a vector of icons including |best_primary_icon_url|,
   // |splash_image_url| and |best_shortcut_icon_urls| if they are not empty

@@ -37,7 +37,9 @@ class AddToHomescreenDataFetcher {
         AddToHomescreenParams::AppType app_type) = 0;
 
     // Called when all the data needed to prompt the user to add to home screen
-    // is available.
+    // is available. `installable_status` is `NO_ERROR_DETECTED` for crafted
+    // WebAPKs, or the first classification/fallback `InstallableStatusCode` for
+    // `WEBAPK_DIY` and `SHORTCUT`.
     virtual void OnDataAvailable(
         const ShortcutInfo& info,
         const SkBitmap& primary_icon,
@@ -58,6 +60,39 @@ class AddToHomescreenDataFetcher {
   AddToHomescreenDataFetcher(const AddToHomescreenDataFetcher&) = delete;
   AddToHomescreenDataFetcher& operator=(const AddToHomescreenDataFetcher&) =
       delete;
+
+  // Whether features::kAndroidInstallAnyPageAsDiyAppStopgap is enabled.
+  static bool IsStopgapEnabled();
+
+  // Decision values for the Webapp.AddToHomescreen.AnyPage.Decision histogram.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(WebappAddToHomescreenAnyPageDecision)
+  enum class AnyPageDecision {
+    kCrafted = 0,
+    kDiyNoManifest = 1,
+    kDiyManifestError = 2,
+    kDiyNotPromotable = 3,
+    kShortcutIneligible = 4,
+    kShortcutReset = 5,
+    kShortcutTimeout = 6,
+    kShortcutNoIcon = 7,
+    kShortcutNotRootScope = 8,
+    kShortcutUnknownError = 9,
+    kMaxValue = kShortcutUnknownError,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebappAddToHomescreenAnyPageDecision)
+
+  // Values for the Webapp.AddToHomescreen.AnyPage.PrimaryIconSource histogram.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(WebappAddToHomescreenAnyPagePrimaryIconSource)
+  enum class AnyPagePrimaryIconSource {
+    kDownloaded = 0,
+    kGenerated = 1,
+    kMaxValue = kGenerated,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebappAddToHomescreenAnyPagePrimaryIconSource)
 
   ~AddToHomescreenDataFetcher();
 
@@ -86,8 +121,8 @@ class AddToHomescreenDataFetcher {
   void OnDidPerformInstallableCheck(const InstallableData& data);
 
   // Called when installable check failed on any step and continue with the add
-  // shortcut flow.
-  void PrepareToAddShortcut();
+  // shortcut flow. Records `decision` if `web_contents_` is still alive.
+  void PrepareToAddShortcut(AnyPageDecision decision);
 
   // Creates an icon to display to the user to confirm the add to home screen
   // from the given |base_icon|. If |use_for_launcher| is true, the created icon
@@ -101,6 +136,9 @@ class AddToHomescreenDataFetcher {
 
   raw_ptr<InstallableManager, DanglingUntriaged> installable_manager_;
   raw_ptr<Observer> observer_;
+
+  AddToHomescreenParams::AppType app_type_ =
+      AddToHomescreenParams::AppType::SHORTCUT;
 
   InstallableStatusCode installable_status_code_ =
       InstallableStatusCode::NO_ERROR_DETECTED;

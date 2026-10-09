@@ -13967,6 +13967,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClankStartupTabOptimizationsName,
      flag_descriptions::kClankStartupTabOptimizationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kClankStartupTabOptimizations)},
+    {"android-install-any-page-as-diy-app-stopgap",
+     flag_descriptions::kAndroidInstallAnyPageAsDiyAppStopgapName,
+     flag_descriptions::kAndroidInstallAnyPageAsDiyAppStopgapDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         webapps::features::kAndroidInstallAnyPageAsDiyAppStopgap)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"browsing-history-filter-by-actor",

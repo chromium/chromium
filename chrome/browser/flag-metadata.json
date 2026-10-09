@@ -454,6 +454,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-install-any-page-as-diy-app-stopgap",
+    "owners": [
+      "dmurph@chromium.org",
+      "pwa-team@chromium.org"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "android-keyboard-shortcut-hints",
     "owners": ["mklw@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 170

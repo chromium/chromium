@@ -16,6 +16,8 @@ import org.chromium.build.annotations.NullMarked;
 public class WebappsFeatureMap extends FeatureMap {
     public static final String ALWAYS_SHOW_INSTALL_DISAMBIGUATION_DIALOG =
             "AlwaysShowInstallDisambiguationDialog";
+    public static final String ANDROID_INSTALL_ANY_PAGE_AS_DIY_APP_STOPGAP =
+            "AndroidInstallAnyPageAsDiyAppStopgap";
 
     private static final WebappsFeatureMap sInstance = new WebappsFeatureMap();
 

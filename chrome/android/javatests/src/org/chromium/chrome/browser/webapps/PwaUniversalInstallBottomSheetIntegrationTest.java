@@ -695,6 +695,35 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         watcher.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    @Feature({"PwaUniversalInstall"})
+    @EnableFeatures({WebappsFeatureMap.ANDROID_INSTALL_ANY_PAGE_AS_DIY_APP_STOPGAP})
+    // Test that a no-manifest page below the origin root (today: shortcut) shows the installable
+    // dialog as a DIY web app with the stopgap flag enabled.
+    public void testNoManifestLeafPageShowsInstallableDiyDialog_flagEnabled() throws Exception {
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = false;
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK_DIY)
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_HOMEBREW)
+                        .build();
+
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        mActivityTestRule.loadUrl(
+                testServer.getURL("/chrome/test/data/banners/no_manifest_test_page.html"));
+
+        showPwaUniversalInstallBottomSheet(
+                /* showBeforeAppTypeKnown= */ false, /* webAppAlreadyInstalled= */ false);
+        assertDialogShowing(true);
+        assertDialogShowsInstallable();
+
+        watcher.assertExpected();
+    }
+
     private void assertDialogShowing(boolean expectShowing) {
         String dialogTitle = "Install and create shortcut";
         if (expectShowing) {

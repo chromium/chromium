@@ -53,14 +53,20 @@ struct AddToHomescreenParams {
   static bool IsWebApk(AppType type);
 
   // Returns the AppType that should be used to install a web app that was
-  // determined to be installable. The argument `has_manifest` specifies whether
-  // the web app has PWA manifest.
-  static AppType GetWebAppInstallType(bool has_manifest);
+  // determined to be installable. The argument `crafted` specifies whether
+  // the web app has a promotable manifest.
+  static AppType GetWebAppInstallType(bool crafted);
 
   AppType app_type;
   SkBitmap primary_icon;
   std::unique_ptr<ShortcutInfo> shortcut_info;
   WebappInstallSource install_source;
+  // The first InstallableStatusCode reported by InstallableManager::GetData()
+  // (e.g. NO_ERROR_DETECTED for crafted WebAPKs, a classification code such as
+  // NO_MANIFEST or MANIFEST_DISPLAY_NOT_SUPPORTED for WEBAPK_DIY when the
+  // install-any-page stopgap is enabled, or an eligibility/reset/timeout code
+  // for SHORTCUT). Only consumed downstream by ShortcutHelper when recording
+  // the Webapp.AddToHomeScreen UKM ShortcutReason on the SHORTCUT install path.
   InstallableStatusCode installable_status;
   std::string native_app_package_name;
   base::android::ScopedJavaGlobalRef<jobject> native_app_data;
