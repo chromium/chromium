@@ -166,9 +166,7 @@ class DelayedBlob : public storage::FakeBlob {
 class CallbackScheduler : public CacheStorageScheduler {
  public:
   explicit CallbackScheduler(base::OnceClosure callback)
-      : CacheStorageScheduler(
-            CacheStorageSchedulerClient::kCache,
-            base::SingleThreadTaskRunner::GetCurrentDefault()),
+      : CacheStorageScheduler(CacheStorageSchedulerClient::kCache),
         callback_(std::move(callback)) {}
 
  protected:
@@ -409,8 +407,7 @@ class CacheStorageManagerTest : public testing::Test {
 
     cache_manager_ = CacheStorageManager::Create(
         temp_dir_path, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
-        blob_storage_context_, nullptr);
+        quota_manager_proxy_, blob_storage_context_, nullptr);
   }
 
   void RecreateStorageManager() {

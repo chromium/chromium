@@ -9,7 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 
@@ -24,8 +23,7 @@ class CacheStorageOperation {
                         CacheStorageSchedulerClient client_type,
                         CacheStorageSchedulerMode mode,
                         CacheStorageSchedulerOp op_type,
-                        CacheStorageSchedulerPriority priority,
-                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+                        CacheStorageSchedulerPriority priority);
 
   CacheStorageOperation(const CacheStorageOperation&) = delete;
   CacheStorageOperation& operator=(const CacheStorageOperation&) = delete;
@@ -59,7 +57,6 @@ class CacheStorageOperation {
   const CacheStorageSchedulerMode mode_;
   const CacheStorageSchedulerOp op_type_;
   const CacheStorageSchedulerPriority priority_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<CacheStorageOperation> weak_ptr_factory_{this};
 };
 

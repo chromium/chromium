@@ -53,13 +53,6 @@ CacheStorageContextImpl::~CacheStorageContextImpl() {
   }
 }
 
-// static
-scoped_refptr<base::SequencedTaskRunner>
-CacheStorageContextImpl::CreateSchedulerTaskRunner() {
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      base::TaskPriority::USER_BLOCKING);
-}
-
 void CacheStorageContextImpl::Init(
     mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
     const base::FilePath& user_data_directory,
@@ -85,8 +78,7 @@ void CacheStorageContextImpl::Init(
 
   CHECK(!cache_manager_, base::NotFatalUntil::M158);
   cache_manager_ = CacheStorageManager::Create(
-      user_data_directory, std::move(cache_task_runner),
-      base::SequencedTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
+      user_data_directory, std::move(cache_task_runner), quota_manager_proxy_,
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)),
       dispatcher_host_->AsWeakPtr());

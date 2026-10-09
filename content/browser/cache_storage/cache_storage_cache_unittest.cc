@@ -645,7 +645,6 @@ class TestCacheStorageCache : public CacheStorageCache {
                           cache_name,
                           path,
                           cache_storage,
-                          base::SingleThreadTaskRunner::GetCurrentDefault(),
                           quota_manager_proxy,
                           std::move(blob_storage_context),
                           0 /* cache_size */,
@@ -720,7 +719,6 @@ class MockCacheStorage : public CacheStorage {
       const base::FilePath& origin_path,
       bool memory_only,
       base::SequencedTaskRunner* cache_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       CacheStorageManager* cache_storage_manager,
@@ -729,7 +727,6 @@ class MockCacheStorage : public CacheStorage {
       : CacheStorage(origin_path,
                      memory_only,
                      cache_task_runner,
-                     std::move(scheduler_task_runner),
                      std::move(quota_manager_proxy),
                      std::move(blob_storage_context),
                      cache_storage_manager,
@@ -795,9 +792,9 @@ class CacheStorageCacheTest : public testing::Test {
     mock_cache_storage_ = std::make_unique<MockCacheStorage>(
         temp_dir_path_, MemoryOnly(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
-        blob_storage_context_, /* cache_storage_manager = */ nullptr,
-        bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
+        quota_manager_proxy_, blob_storage_context_,
+        /* cache_storage_manager = */ nullptr, bucket_locator,
+        storage::mojom::CacheStorageOwner::kCacheAPI);
 
     InitCache(mock_cache_storage_.get(), bucket_locator);
   }
@@ -1230,8 +1227,7 @@ class CacheStorageCacheTest : public testing::Test {
 
   base::OnceClosure BlockScheduler() {
     auto scheduler = std::make_unique<CacheStorageScheduler>(
-        CacheStorageSchedulerClient::kCache,
-        base::SequencedTaskRunner::GetCurrentDefault());
+        CacheStorageSchedulerClient::kCache);
     auto* scheduler_ptr = scheduler.get();
     cache_->SetSchedulerForTesting(std::move(scheduler));
     auto id = scheduler_ptr->CreateId();

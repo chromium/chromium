@@ -693,14 +693,13 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
     storage::mojom::CacheStorageOwner owner,
     const std::u16string& cache_name,
     CacheStorage* cache_storage,
-    scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
-  CacheStorageCache* cache = new CacheStorageCache(
-      bucket_locator, owner, cache_name, base::FilePath(), cache_storage,
-      std::move(scheduler_task_runner), std::move(quota_manager_proxy),
-      std::move(blob_storage_context), /*cache_size=*/0,
-      /*cache_padding=*/0);
+  CacheStorageCache* cache =
+      new CacheStorageCache(bucket_locator, owner, cache_name, base::FilePath(),
+                            cache_storage, std::move(quota_manager_proxy),
+                            std::move(blob_storage_context), /*cache_size=*/0,
+                            /*cache_padding=*/0);
   cache->SetObserver(cache_storage);
   cache->InitBackend();
   return base::WrapUnique(cache);
@@ -713,15 +712,14 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreatePersistentCache(
     const std::u16string& cache_name,
     CacheStorage* cache_storage,
     const base::FilePath& path,
-    scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     int64_t cache_size,
     int64_t cache_padding) {
   CacheStorageCache* cache = new CacheStorageCache(
       bucket_locator, owner, cache_name, path, cache_storage,
-      std::move(scheduler_task_runner), std::move(quota_manager_proxy),
-      std::move(blob_storage_context), cache_size, cache_padding);
+      std::move(quota_manager_proxy), std::move(blob_storage_context),
+      cache_size, cache_padding);
   cache->SetObserver(cache_storage);
   cache->InitBackend();
   return base::WrapUnique(cache);
@@ -869,7 +867,7 @@ void CacheStorageCache::WriteSideData(CacheStorageCacheHandle cache_handle,
   // GetBucketSpaceRemaining is called before entering a scheduled operation
   // since it can call Size, another scheduled operation.
   quota_manager_proxy_->GetBucketSpaceRemaining(
-      bucket_locator_, scheduler_task_runner_,
+      bucket_locator_, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining,
           weak_ptr_factory_.GetWeakPtr(), std::move(cache_handle),
@@ -948,7 +946,7 @@ void CacheStorageCache::BatchOperation(
   uint64_t side_data_size = safe_side_data_size.ValueOrDie();
   if (space_required || side_data_size) {
     quota_manager_proxy_->GetBucketSpaceRemaining(
-        bucket_locator_, scheduler_task_runner_,
+        bucket_locator_, base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&CacheStorageCache::BatchDidGetBucketSpaceRemaining,
                        weak_ptr_factory_.GetWeakPtr(), std::move(operations),
                        trace_id, std::move(callback),
@@ -1100,8 +1098,8 @@ void CacheStorageCache::Close(base::OnceClosure callback) {
 void CacheStorageCache::Size(SizeCallback callback) {
   if (IsClosingOrClosed()) {
     // TODO(jkarlin): Delete caches that can't be initialized.
-    scheduler_task_runner_->PostTask(FROM_HERE,
-                                     base::BindOnce(std::move(callback), 0));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), 0));
     return;
   }
 
@@ -1116,8 +1114,8 @@ void CacheStorageCache::Size(SizeCallback callback) {
 
 void CacheStorageCache::GetSizeThenClose(SizeCallback callback) {
   if (IsClosingOrClosed()) {
-    scheduler_task_runner_->PostTask(FROM_HERE,
-                                     base::BindOnce(std::move(callback), 0));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), 0));
     return;
   }
 
@@ -1170,7 +1168,6 @@ CacheStorageCache::CacheStorageCache(
     const std::u16string& cache_name,
     const base::FilePath& path,
     CacheStorage* cache_storage,
-    scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     int64_t cache_size,
@@ -1180,10 +1177,9 @@ CacheStorageCache::CacheStorageCache(
       cache_name_(cache_name),
       path_(path),
       cache_storage_(cache_storage),
-      scheduler_task_runner_(std::move(scheduler_task_runner)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
-      scheduler_(new CacheStorageScheduler(CacheStorageSchedulerClient::kCache,
-                                           scheduler_task_runner_)),
+      scheduler_(std::make_unique<CacheStorageScheduler>(
+          CacheStorageSchedulerClient::kCache)),
       cache_size_(cache_size),
       cache_padding_(cache_padding),
       max_query_size_bytes_(kMaxQueryCacheResultBytes),
@@ -1318,7 +1314,7 @@ void CacheStorageCache::QueryCacheOpenNextEntry(
     return;
   }
 
-  scheduler_task_runner_->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(split_callback.second), std::move(result)));
 }
@@ -1900,7 +1896,7 @@ void CacheStorageCache::Put(blink::mojom::FetchAPIRequestPtr request,
                             int64_t trace_id,
                             ErrorCallback callback) {
   if (IsClosingOrClosed()) {
-    scheduler_task_runner_->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
@@ -2397,7 +2393,8 @@ void CacheStorageCache::UpdateCacheSizeGotSize(
 
   quota_manager_proxy_->NotifyBucketModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), bucket_locator_,
-      size_delta, base::Time::Now(), scheduler_task_runner_,
+      size_delta, base::Time::Now(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&CacheStorageCache::UpdateCacheSizeNotifiedStorageModified,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

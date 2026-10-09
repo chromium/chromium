@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -49,9 +50,7 @@ class CacheStorageSchedulerTest : public testing::Test {
         task3_(&scheduler_) {}
 
   BrowserTaskEnvironment task_environment_;
-  CacheStorageScheduler scheduler_{
-      CacheStorageSchedulerClient::kStorage,
-      base::SingleThreadTaskRunner::GetCurrentDefault()};
+  CacheStorageScheduler scheduler_{CacheStorageSchedulerClient::kStorage};
   TestTask task1_;
   TestTask task2_;
   TestTask task3_;
@@ -426,14 +425,12 @@ TEST_F(CacheStorageSchedulerTest, ScheduleByPriorityTwoNormalOneHigh) {
 // Regression test for crbug.com/370069678 --- not crashing under ASAN indicates
 // success.
 TEST_F(CacheStorageSchedulerTest, TaskDeletesScheduler) {
-  auto* scheduler = new CacheStorageScheduler(
-      CacheStorageSchedulerClient::kStorage,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+  auto* scheduler =
+      new CacheStorageScheduler(CacheStorageSchedulerClient::kStorage);
   scheduler->ScheduleOperation(
       1, CacheStorageSchedulerMode::kExclusive, CacheStorageSchedulerOp::kTest,
       CacheStorageSchedulerPriority::kNormal,
-      base::BindOnce([](CacheStorageScheduler* scheduler) { delete scheduler; },
-                     scheduler));
+      base::DoNothingWithBoundArgs(base::Owned(scheduler)));
 }
 
 }  // namespace cache_storage_scheduler_unittest

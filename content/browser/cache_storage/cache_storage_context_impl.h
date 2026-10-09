@@ -30,7 +30,6 @@
 
 namespace base {
 class FilePath;
-class SequencedTaskRunner;
 }
 
 namespace storage {
@@ -55,8 +54,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
   explicit CacheStorageContextImpl(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
   ~CacheStorageContextImpl() override;
-
-  static scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner();
 
   void Init(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
             const base::FilePath& user_data_directory,

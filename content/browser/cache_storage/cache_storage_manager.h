@@ -52,7 +52,6 @@ class CONTENT_EXPORT CacheStorageManager
   static scoped_refptr<CacheStorageManager> Create(
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host);
@@ -128,7 +127,6 @@ class CONTENT_EXPORT CacheStorageManager
   CacheStorageManager(
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host);
@@ -172,14 +170,6 @@ class CONTENT_EXPORT CacheStorageManager
     return cache_task_runner_;
   }
 
-  scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner() const {
-    return scheduler_task_runner_;
-  }
-
-  void ListStorageKeysOnTaskRunner(
-      storage::mojom::QuotaClient::GetDefaultStorageKeysCallback callback,
-      std::vector<storage::BucketLocator> buckets);
-
   bool IsMemoryBacked() const { return profile_path_.empty(); }
 
 #if DCHECK_IS_ON()
@@ -193,7 +183,6 @@ class CONTENT_EXPORT CacheStorageManager
   // be in-memory only, in which case this is empty.
   const base::FilePath profile_path_;
   const scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
-  const scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 

@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -108,7 +107,6 @@ class CONTENT_EXPORT CacheStorageCache {
       storage::mojom::CacheStorageOwner owner,
       const std::u16string& cache_name,
       CacheStorage* cache_storage,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
   static std::unique_ptr<CacheStorageCache> CreatePersistentCache(
@@ -117,7 +115,6 @@ class CONTENT_EXPORT CacheStorageCache {
       const std::u16string& cache_name,
       CacheStorage* cache_storage,
       const base::FilePath& path,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
@@ -302,7 +299,6 @@ class CONTENT_EXPORT CacheStorageCache {
       const std::u16string& cache_name,
       const base::FilePath& path,
       CacheStorage* cache_storage,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
@@ -616,7 +612,6 @@ class CONTENT_EXPORT CacheStorageCache {
   // as long this cache object is also referenced.
   CacheStorageHandle cache_storage_handle_;
 
-  const scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   BackendState backend_state_ = BACKEND_UNINITIALIZED;
   std::unique_ptr<CacheStorageScheduler> scheduler_;

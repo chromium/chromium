@@ -79,7 +79,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   CacheStorage(const base::FilePath& origin_path,
                bool memory_only,
                base::SequencedTaskRunner* cache_task_runner,
-               scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
                scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
                scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
                CacheStorageManager* cache_storage_manager,

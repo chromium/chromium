@@ -15,16 +15,14 @@ CacheStorageOperation::CacheStorageOperation(
     CacheStorageSchedulerClient client_type,
     CacheStorageSchedulerMode mode,
     CacheStorageSchedulerOp op_type,
-    CacheStorageSchedulerPriority priority,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    CacheStorageSchedulerPriority priority)
     : closure_(std::move(closure)),
       creation_ticks_(base::TimeTicks::Now()),
       id_(id),
       client_type_(client_type),
       mode_(mode),
       op_type_(op_type),
-      priority_(priority),
-      task_runner_(std::move(task_runner)) {}
+      priority_(priority) {}
 
 CacheStorageOperation::~CacheStorageOperation() {
   RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA::kOperationDuration,

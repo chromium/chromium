@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/common/content_export.h"
 
@@ -32,11 +31,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCacheStorageParallelOps);
 // the next operation.
 class CONTENT_EXPORT CacheStorageScheduler {
  public:
-  // TODO(estade): remove `task_runner` which is invariably the same one that
-  // `CacheStorageScheduler` is constructed and operated on (i.e. the "current
-  // default").
-  CacheStorageScheduler(CacheStorageSchedulerClient client_type,
-                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit CacheStorageScheduler(CacheStorageSchedulerClient client_type);
 
   CacheStorageScheduler(const CacheStorageScheduler&) = delete;
   CacheStorageScheduler& operator=(const CacheStorageScheduler&) = delete;
@@ -102,8 +97,6 @@ class CONTENT_EXPORT CacheStorageScheduler {
     if (scheduler)
       CompleteOperationAndRunNext(id);
   }
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Managed as a heap using std::push_heap and std::pop_heap.  We do not
   // use std::priority_queue since it does not support moving the contained

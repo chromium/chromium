@@ -134,14 +134,12 @@ class CacheStorage::CacheLoader {
       base::OnceCallback<void(std::unique_ptr<CacheStorageIndex>)>;
 
   CacheLoader(base::SequencedTaskRunner* cache_task_runner,
-              scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
               scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
               scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
               CacheStorage* cache_storage,
               const storage::BucketLocator& bucket_locator,
               storage::mojom::CacheStorageOwner owner)
       : cache_task_runner_(cache_task_runner),
-        scheduler_task_runner_(std::move(scheduler_task_runner)),
         quota_manager_proxy_(std::move(quota_manager_proxy)),
         blob_storage_context_(std::move(blob_storage_context)),
         cache_storage_(cache_storage),
@@ -186,7 +184,6 @@ class CacheStorage::CacheLoader {
 
  protected:
   const scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
-  const scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
 
   // Owned by CacheStorage which owns this. This is guaranteed to outlive
   // CacheLoader, but we store a reference to keep it alive for callbacks.
@@ -208,14 +205,12 @@ class CacheStorage::CacheLoader {
 class CacheStorage::MemoryLoader : public CacheStorage::CacheLoader {
  public:
   MemoryLoader(base::SequencedTaskRunner* cache_task_runner,
-               scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
                scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
                scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
                CacheStorage* cache_storage,
                const storage::BucketLocator& bucket_locator,
                storage::mojom::CacheStorageOwner owner)
       : CacheLoader(cache_task_runner,
-                    std::move(scheduler_task_runner),
                     std::move(quota_manager_proxy),
                     std::move(blob_storage_context),
                     cache_storage,
@@ -228,7 +223,7 @@ class CacheStorage::MemoryLoader : public CacheStorage::CacheLoader {
       int64_t cache_padding) override {
     return CacheStorageCache::CreateMemoryCache(
         bucket_locator_, owner_, cache_name, cache_storage_,
-        scheduler_task_runner_, quota_manager_proxy_, blob_storage_context_);
+        quota_manager_proxy_, blob_storage_context_);
   }
 
   void PrepareNewCacheDestination(const std::u16string& cache_name,
@@ -277,14 +272,12 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
   SimpleCacheLoader(
       const base::FilePath& directory_path,
       base::SequencedTaskRunner* cache_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       CacheStorage* cache_storage,
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner)
       : CacheLoader(cache_task_runner,
-                    std::move(scheduler_task_runner),
                     std::move(quota_manager_proxy),
                     std::move(blob_storage_context),
                     cache_storage,
@@ -305,8 +298,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     base::FilePath cache_path = directory_path_.AppendASCII(cache_dir);
     return CacheStorageCache::CreatePersistentCache(
         bucket_locator_, owner_, cache_name, cache_storage_, cache_path,
-        scheduler_task_runner_, quota_manager_proxy_, blob_storage_context_,
-        cache_size, cache_padding);
+        quota_manager_proxy_, blob_storage_context_, cache_size, cache_padding);
   }
 
   void PrepareNewCacheDestination(const std::u16string& cache_name,
@@ -665,7 +657,6 @@ CacheStorage::CacheStorage(
     const base::FilePath& path,
     bool memory_only,
     base::SequencedTaskRunner* cache_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     CacheStorageManager* cache_storage_manager,
@@ -673,9 +664,8 @@ CacheStorage::CacheStorage(
     storage::mojom::CacheStorageOwner owner)
     : bucket_locator_(bucket_locator),
       memory_only_(memory_only),
-      scheduler_(
-          new CacheStorageScheduler(CacheStorageSchedulerClient::kStorage,
-                                    scheduler_task_runner)),
+      scheduler_(std::make_unique<CacheStorageScheduler>(
+          CacheStorageSchedulerClient::kStorage)),
       directory_path_(path),
       cache_task_runner_(cache_task_runner),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -684,15 +674,13 @@ CacheStorage::CacheStorage(
       cache_storage_manager_(cache_storage_manager) {
   if (memory_only) {
     cache_loader_ = base::WrapUnique<CacheLoader>(
-        new MemoryLoader(cache_task_runner_.get(),
-                         std::move(scheduler_task_runner), quota_manager_proxy_,
+        new MemoryLoader(cache_task_runner_.get(), quota_manager_proxy_,
                          blob_storage_context_, this, bucket_locator_, owner));
     return;
   }
 
   cache_loader_ = base::WrapUnique<CacheLoader>(new SimpleCacheLoader(
-      directory_path_, cache_task_runner_.get(),
-      std::move(scheduler_task_runner), quota_manager_proxy_,
+      directory_path_, cache_task_runner_.get(), quota_manager_proxy_,
       blob_storage_context_, this, bucket_locator_, owner));
 
 #if BUILDFLAG(IS_ANDROID)

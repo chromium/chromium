@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
@@ -56,9 +55,8 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 BASE_FEATURE(kCacheStorageParallelOps, base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageScheduler::CacheStorageScheduler(
-    CacheStorageSchedulerClient client_type,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)), client_type_(client_type) {
+    CacheStorageSchedulerClient client_type)
+    : client_type_(client_type) {
   std::make_heap(pending_operations_.begin(), pending_operations_.end(),
                  &OpPointerLessThan);
 }
@@ -84,8 +82,7 @@ void CacheStorageScheduler::ScheduleOperation(
                                  pending_operations_.size());
 
   pending_operations_.push_back(std::make_unique<CacheStorageOperation>(
-      std::move(closure), id, client_type_, mode, op_type, priority,
-      task_runner_));
+      std::move(closure), id, client_type_, mode, op_type, priority));
   std::push_heap(pending_operations_.begin(), pending_operations_.end(),
                  &OpPointerLessThan);
   MaybeRunOperation();
