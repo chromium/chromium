@@ -17,7 +17,6 @@ static_library("floating_workspace") {
   public_deps = [
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//content/public/common",
     "//ui/web_dialogs",

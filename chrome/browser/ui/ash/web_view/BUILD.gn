@@ -12,8 +12,6 @@ static_library("web_view") {
     "ash_web_view_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/public/cpp",
     "//base",

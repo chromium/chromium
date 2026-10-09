@@ -38,7 +38,6 @@ static_library("cloud_upload") {
   public_deps = [
     ":mojo_bindings",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",

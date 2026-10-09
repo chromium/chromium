@@ -194,7 +194,6 @@ static_library("login") {
     "//ash/webui/common/backend",
     "//ash/webui/common/mojom:webui_syslog_emitter",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/base",

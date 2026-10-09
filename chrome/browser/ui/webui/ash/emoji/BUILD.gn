@@ -38,7 +38,6 @@ static_library("emoji") {
   public_deps = [
     ":mojo_bindings",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui:webui_load_timer",

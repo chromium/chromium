@@ -21,7 +21,6 @@ static_library("new_window") {
     "//ash/constants",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/apps",

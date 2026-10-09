@@ -14,8 +14,6 @@ static_library("edu_coexistence") {
     "edu_coexistence_state_tracker.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/constants",
     "//chrome/browser/ash/account_manager",

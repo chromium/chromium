@@ -12,8 +12,6 @@ static_library("shell_delegate") {
     "tab_scrubber.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",

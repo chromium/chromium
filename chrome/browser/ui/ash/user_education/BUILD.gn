@@ -10,10 +10,7 @@ static_library("user_education") {
     "chrome_user_education_delegate.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//ui/base/interaction",
-  ]
+  public_deps = [ "//ui/base/interaction" ]
 
   deps = [
     "//ash",

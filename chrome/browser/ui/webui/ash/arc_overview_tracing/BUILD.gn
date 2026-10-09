@@ -10,10 +10,7 @@ static_library("arc_overview_tracing") {
     "arc_overview_tracing_ui.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//content/public/browser",
-  ]
+  public_deps = [ "//content/public/browser" ]
 
   deps = [
     "//ash/constants",

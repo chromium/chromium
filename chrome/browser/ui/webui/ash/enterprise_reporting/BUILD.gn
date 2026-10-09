@@ -25,7 +25,6 @@ static_library("enterprise_reporting") {
     ":mojo_bindings",
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/dbus/missive:history_tracker",
     "//components/reporting/proto:health_proto",
     "//components/reporting/proto:status_proto",

@@ -18,7 +18,6 @@ static_library("cellular_setup") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//ui/web_dialogs",
   ]
