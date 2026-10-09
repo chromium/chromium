@@ -401,16 +401,12 @@ std::map<std::string, PasswordsGrouper::GroupId>
 PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
   int group_id_int = 1;
   std::map<std::string, GroupId> map_facet_to_group_id;
-  std::set<std::string> facet_uri_in_groups;
 
   for (const GroupedFacets& grouped_facets : groups) {
     GroupId unique_group_id(group_id_int);
     for (const affiliations::Facet& facet : grouped_facets.facets) {
       std::string facet_uri_str = facet.uri.potentially_invalid_spec();
       map_facet_to_group_id[facet_uri_str] = unique_group_id;
-
-      // Keep track of facet URI (sign-on realm) that are already in a group.
-      facet_uri_in_groups.insert(facet_uri_str);
     }
 
     // Store branding information for the affiliated group.
