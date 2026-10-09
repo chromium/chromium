@@ -16,6 +16,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -222,6 +223,26 @@ TEST(ToolRegistryTest, PerformSearchToolDefinition) {
               RequiresParam(PerformSearchToolRequest::kQueryParam));
 }
 
+TEST(ToolRegistryTest, AttemptOtpFillingToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      AttemptOtpFillingToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kAttemptOtpFilling);
+  EXPECT_EQ(definition->name, AttemptOtpFillingToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(AttemptOtpFillingToolRequest::kTriggerFieldDomNodeIdsParam,
+                     "array"));
+  EXPECT_THAT(*definition,
+              RequiresParam(
+                  AttemptOtpFillingToolRequest::kTriggerFieldDomNodeIdsParam));
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(AttemptOtpFillingToolRequest::kForSigninParam, "boolean"));
+  EXPECT_THAT(*definition,
+              RequiresParam(AttemptOtpFillingToolRequest::kForSigninParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -366,6 +387,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsPerformSearchTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kPerformSearch,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsAttemptOtpFillingTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kAttemptOtpFilling,
                                     &ToolDefinition::id));
 }
 

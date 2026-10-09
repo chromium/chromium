@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_REQUEST_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -21,6 +22,12 @@ class ToolRequestVisitorFunctor;
 class AttemptOtpFillingToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptOtpFilling";
+  static constexpr std::string_view kModelFacingName = "attempt_otp_filling";
+  // JSON argument key for the DOM node IDs of the OTP input fields.
+  static constexpr std::string_view kTriggerFieldDomNodeIdsParam =
+      "trigger_field_dom_node_ids";
+  // JSON argument key for whether the OTP is needed for a sign-in.
+  static constexpr std::string_view kForSigninParam = "for_signin";
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -44,6 +51,9 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
   AttemptOtpFillingToolRequest& operator=(const AttemptOtpFillingToolRequest&);
 
   ~AttemptOtpFillingToolRequest() override;
+
+  // Returns the `ToolId::kAttemptOtpFilling` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,
