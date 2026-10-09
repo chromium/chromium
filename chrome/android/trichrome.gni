@@ -208,7 +208,7 @@ template("write_ssargs") {
   _lines = [
     "# Written by build target \"${target_name}.\"",
     "Chrome -f ${invoker.chrome_basename}$_extra_args",
-    "WebView -f ${invoker.webview_basename}$_extra_args",
+    "WebView -f ${invoker.webview_basename}$_extra_args --no-native",
   ]
 
   write_file(invoker.ssargs_path, _lines)
