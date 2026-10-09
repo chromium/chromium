@@ -47,7 +47,9 @@ enum class ToolId {
   kPerformSearch = 13,
   // Exits fullscreen mode for the active tab.
   kExitFullscreen = 14,
-  kMaxValue = kExitFullscreen,
+  // Opens a known URL or browser page.
+  kOpenKnownPage = 15,
+  kMaxValue = kOpenKnownPage,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

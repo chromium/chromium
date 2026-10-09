@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_OPEN_KNOWN_PAGE_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_OPEN_KNOWN_PAGE_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -33,9 +34,17 @@ class ToolRequestVisitorFunctor;
 class OpenKnownPageToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "OpenKnownPage";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "open_known_page";
+  // JSON argument key for the search query parameter.
+  static constexpr std::string_view kQueryParam = "query";
 
   explicit OpenKnownPageToolRequest(std::string query);
   ~OpenKnownPageToolRequest() override;
+
+  // Returns the `ToolId::kOpenKnownPage` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   OpenKnownPageToolRequest(const OpenKnownPageToolRequest&);
   OpenKnownPageToolRequest& operator=(const OpenKnownPageToolRequest&);

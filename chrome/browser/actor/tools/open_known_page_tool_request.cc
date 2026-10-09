@@ -5,12 +5,16 @@
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/actor/tools/open_known_page_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -21,6 +25,16 @@
 namespace actor {
 
 namespace {
+
+// Default description for the `open_known_page` tool.
+constexpr std::string_view kOpenKnownPageToolDescription =
+    "Opens a known page matching the query by searching open tabs, "
+    "browsing history, and bookmarks.";
+
+// Description for the `query` parameter of the `open_known_page` tool.
+constexpr std::string_view kQueryParamDescription =
+    "The search query to match against open tabs, browsing history, and "
+    "bookmarks.";
 
 // Resolves the profile's most recently active browser window at tool creation
 // time, matching SwitchTabToolRequest and LoadAndExtractContentToolRequest.
@@ -41,14 +55,22 @@ OpenKnownPageToolRequest::OpenKnownPageToolRequest(std::string query)
 
 OpenKnownPageToolRequest::~OpenKnownPageToolRequest() = default;
 
+// static
+std::optional<ToolDefinition> OpenKnownPageToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kOpenKnownPage, kModelFacingName,
+                               kOpenKnownPageToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kQueryParam, kQueryParamDescription))
+      .Build();
+}
+
 OpenKnownPageToolRequest::OpenKnownPageToolRequest(
     const OpenKnownPageToolRequest&) = default;
 OpenKnownPageToolRequest& OpenKnownPageToolRequest::operator=(
     const OpenKnownPageToolRequest&) = default;
 
 ToolRequest::CreateToolResult OpenKnownPageToolRequest::CreateTool(
-    TaskId task_id,
-    ToolDelegate& tool_delegate) const {
+    TaskId task_id, ToolDelegate& tool_delegate) const {
   std::string trimmed_query =
       std::string(base::TrimWhitespaceASCII(query_, base::TRIM_ALL));
   if (trimmed_query.empty()) {
@@ -67,8 +89,6 @@ void OpenKnownPageToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string_view OpenKnownPageToolRequest::Name() const {
-  return kName;
-}
+std::string_view OpenKnownPageToolRequest::Name() const { return kName; }
 
 }  // namespace actor
