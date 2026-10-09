@@ -80,17 +80,15 @@ void LaunchWebApp(const std::string& package_name,
       }));
   // Use hash mark(#) to send params to webui so we don't need to reload the
   // whole eche window.
-  std::u16string url =
-      notification_id.has_value()
-          ? base::StrCat({u"chrome://eche-app/#notification_id=",
-                          base::NumberToString16(notification_id.value()),
-                          u"&package_name="})
-          : u"chrome://eche-app/#package_name=";
-  base::StrAppend(&url,
-                  {base::UTF8ToUTF16(package_name), u"&visible_app_name=",
-                   visible_name, u"&timestamp=",
-                   base::NumberToString16(
-                       base::Time::Now().InMillisecondsSinceUnixEpoch())});
+  std::u16string url = base::StrCat(
+      {u"chrome://eche-app/#package_name=", base::UTF8ToUTF16(package_name),
+       u"&visible_app_name=", visible_name, u"&timestamp=",
+       base::NumberToString16(
+           base::Time::Now().InMillisecondsSinceUnixEpoch())});
+  if (notification_id.has_value()) {
+    base::StrAppend(&url, {u"&notification_id=",
+                           base::NumberToString16(notification_id.value())});
+  }
   if (user_id.has_value()) {
     base::StrAppend(&url,
                     {u"&user_id=", base::NumberToString16(user_id.value())});
