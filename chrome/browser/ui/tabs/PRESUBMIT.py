@@ -92,6 +92,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContentsDestroyed() after TabFeatures is destroyed, so the
   # the WebContents must own it.
   'SafetyTipWebContentsObserver::CreateForWebContents',
+  # AsyncCheckTracker lives in //components/safe_browsing/content/browser (shared
+  # with android_webview) and is also created on demand for non-tab WebContents
+  # by ChromeContentBrowserClient::GetAsyncCheckTracker, so WebContents must
+  # own it.
+  'safe_browsing::AsyncCheckTracker::CreateForWebContents',
   # SiteEngagementService::Helper lives in //components/site_engagement/content
   # and is also attached to non-tab WebContents in WebUIContentsWrapper, so
   # WebContents must own it.

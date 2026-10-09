@@ -1490,10 +1490,8 @@ source_set("tab_helpers_impl") {
   }
 
   if (safe_browsing_mode > 0) {
-    deps += [
-      "//components/safe_browsing/content/browser:client_side_detection",
-      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-    ]
+    deps +=
+        [ "//components/safe_browsing/content/browser:client_side_detection" ]
   }
 }
 
