@@ -30,7 +30,7 @@ import "third_party/metrics_proto/translate_event.proto";
 import "third_party/metrics_proto/user_action_event.proto";
 import "third_party/metrics_proto/user_demographics.proto";
 
-// Next tag: 31
+// Next tag: 32
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {

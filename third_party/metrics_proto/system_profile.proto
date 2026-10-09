@@ -1260,6 +1260,7 @@ message SystemProfileProto {
     AMOUNT_EXTRACTION_HEURISTIC_REGEXES = 66;
     FINGERPRINTING_PROTECTION_FILTER_RULES = 67;
     TRANSLATE_KIT = 68;
+    DYNAMIC_RENDERER_PATCH_WINDOWS = 69;
   }
 
   // Information about what Chrome components are registered and at which
