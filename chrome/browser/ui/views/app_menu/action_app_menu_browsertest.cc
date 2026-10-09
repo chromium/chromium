@@ -316,3 +316,49 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   menu_button->CloseMenu();
   EXPECT_FALSE(menu_button->IsMenuShowing());
 }
+
+class ActionAppMenuWithSearchQueryBrowserTest
+    : public ActionAppMenuBrowserTest {
+ public:
+  ActionAppMenuWithSearchQueryBrowserTest() {
+    search_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kChroMenuSearch, {{"query", "extensions"}});
+  }
+  ~ActionAppMenuWithSearchQueryBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList search_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchQueryBrowserTest,
+                       ShowActionAppMenuWithExtensionsSearchTwice) {
+  BrowserAppMenuButton* menu_button = GetMenuButton();
+  ASSERT_TRUE(menu_button);
+
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+  EXPECT_FALSE(menu_button->action_app_menu());
+
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_button->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  EXPECT_EQ(search_bar->GetText(), u"extensions");
+
+  menu_button->CloseMenu();
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_button->IsMenuShowing());
+  action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  search_bar = action_menu->search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  EXPECT_EQ(search_bar->GetText(), u"extensions");
+
+  menu_button->CloseMenu();
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+}

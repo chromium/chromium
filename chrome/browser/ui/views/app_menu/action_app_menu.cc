@@ -323,12 +323,18 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
-  menu_manager_->OnMenuClosed();
 
+  // `search_controller_` owns `search_results_root_`, which contains
+  // `IndirectActionItem`s holding `raw_ptr`s to `ActionItem`s owned by
+  // `menu_manager_`. Reset `search_controller_` and execute any pending action
+  // before `menu_manager_->OnMenuClosed()` tears down the `ActionItem` tree,
+  // preventing dangling raw_ptrs and use-after-free.
   if (action_to_execute) {
     action_to_execute->InvokeAction(std::move(action_context));
   }
   search_controller_.reset();
+
+  menu_manager_->OnMenuClosed();
 }
 
 void ActionAppMenu::WillShowMenu(views::MenuItemView* menu) {
