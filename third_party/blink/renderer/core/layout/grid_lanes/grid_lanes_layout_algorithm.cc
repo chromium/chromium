@@ -885,7 +885,17 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
   const bool is_columns = grid_axis_direction == kForColumns;
   const LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
 
-  GridLanesItemIterator item_iterator(grid_lanes, GetBreakToken(), is_columns);
+  // Densely packed items are stored as children of the item below their
+  // opening. They normally precede that parent in stacking order, so use
+  // postorder. Fill-reverse column storage is recursively reversed before this
+  // point, so preorder preserves its reversed block order. Row fill-reverse
+  // affects the inline axis and does not reverse fragmentation order.
+  GridLanesItemIterator item_iterator(
+      grid_lanes, GetBreakToken(),
+      is_columns && Style().IsReverseGridLanesFillDirection()
+          ? GridLanesItemIterator::kPreorder
+          : GridLanesItemIterator::kPostorder,
+      is_columns);
   Vector<bool> has_inflow_child_break_inside_lane(grid_lanes.size(), false);
 
   // TODO(almaher): Properly handle break rules for columns and rows.
@@ -914,7 +924,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
   for (auto entry = item_iterator.NextItem();
        GridLanesItemData* grid_lanes_item = entry.grid_lanes_item;
        entry = item_iterator.NextItem()) {
-    const wtf_size_t grid_lanes_item_idx = entry.grid_lanes_item_idx;
     const wtf_size_t grid_lane_idx = entry.grid_lane_idx;
 
     CHECK_LT(grid_lane_idx, grid_lanes.size());
@@ -930,20 +939,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     const GridSpan& lane_span = item.Span(grid_axis_direction);
 
     const bool is_first_item_in_lane = grid_lane_idx != previous_grid_lane_idx;
-
-    // The iterator skips non-start spanner wrappers, so the last item it
-    // returns may appear before the physical end of `item_data`.
-    //
-    // TODO(almaher): Account for `items_densely_packed_above` when fragmented
-    // dense packed items are returned by the iterator.
-    bool is_last_item_in_lane = true;
-    for (wtf_size_t item_idx = grid_lanes_item_idx + 1;
-         item_idx < lane_data->item_data.size(); ++item_idx) {
-      if (lane_data->item_data[item_idx]->is_item_start) {
-        is_last_item_in_lane = false;
-        break;
-      }
-    }
 
     // A child break in a parallel flow doesn't affect whether we should
     // break here or not. But if the break happened in the same flow, we'll now
@@ -962,6 +957,10 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         // A lane this item spans has content that resumes in a later
         // fragmentainer, so this item has to wait for it. Everything after this
         // item in the lanes it spans has to wait, too.
+        //
+        // TODO(almaher): Persist a break-before for the deferred item so the
+        // next fragment resumes at it instead of rediscovering earlier items
+        // in its start lane.
         MarkBreakInsideInSpannedLanes(lane_span,
                                       has_inflow_child_break_inside_lane);
         continue;
@@ -1103,7 +1102,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     // also need to check if the next item to be processed is in the same lane,
     // as well, to tell it if is the last item in the lane in the current
     // fragmentainer.
-    if (is_last_item_in_lane ||
+    if (entry.is_last_item_in_lane ||
         (!is_columns && !item_iterator.HasNextItemInLane(grid_lane_idx))) {
       if (!has_inflow_child_break_inside_lane[grid_lane_idx]) {
         lane_data->has_unfinished_items = false;
