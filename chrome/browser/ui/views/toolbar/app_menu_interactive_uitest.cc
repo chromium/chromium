@@ -36,8 +36,7 @@
 
 // TODO(crbug.com/498258602): Drag and drop tests are flaky on MacOS and
 // ChromeOS.
-// TODO(crbug.com/388531778): DND tests fail on Windows.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -63,6 +62,17 @@ class AppMenuDragAndDropInteractiveTest
           views::test::InteractiveViewsTestApi::AsView<views::View>(el);
       return view->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 5);
     });
+  }
+
+  // On Linux, dropping a bookmark closes the app menu, so re-open the
+  // bookmarks submenu. On other platforms the menu stays open.
+  auto EnsureBookmarksMenuOpenAfterDrop() {
+#if BUILDFLAG(IS_LINUX)
+    return Steps(PressButton(kToolbarAppMenuButtonElementId),
+                 SelectMenuItem(AppMenuModel::kBookmarksMenuItem));
+#else
+    return Steps();
+#endif
   }
 
   static views::MenuItemView* FindMenuItemWithTitle(views::View* root,
@@ -142,8 +152,7 @@ IN_PROC_BROWSER_TEST_P(AppMenuDragAndDropInteractiveTest,
       DragMouseTo(kANodeMenuId, CenterPoint(), /*release=*/false)
           .SetMustRemainVisible(false),
       MoveMouseTo(kANodeMenuId, TopCenter()), ReleaseMouse(),
-      PressButton(kToolbarAppMenuButtonElementId),
-      SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+      EnsureBookmarksMenuOpenAfterDrop(),
       NameMenuItemWithTitle(kBNodeMenuId, u"b"),
       NameMenuItemWithTitle(kANodeMenuId, u"a"),
       CheckMenuItemBefore(kANodeMenuId, u"b"));
@@ -173,8 +182,7 @@ IN_PROC_BROWSER_TEST_P(AppMenuDragAndDropInteractiveTest,
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       MoveMouseTo(kANodeMenuId),
       DragMouseTo(kBNodeMenuId, CenterPoint()).SetMustRemainVisible(false),
-      PressButton(kToolbarAppMenuButtonElementId),
-      SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+      EnsureBookmarksMenuOpenAfterDrop(),
       NameMenuItemWithTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       SelectMenuItem(kBNodeMenuId), NameMenuItemWithTitle("a_in_b", u"a"),
@@ -207,8 +215,7 @@ IN_PROC_BROWSER_TEST_P(AppMenuDragAndDropInteractiveTest,
       DragMouseTo(kANodeMenuId, CenterPoint(), /*release=*/false)
           .SetMustRemainVisible(false),
       MoveMouseTo(kANodeMenuId, TopCenter()), ReleaseMouse(),
-      PressButton(kToolbarAppMenuButtonElementId),
-      SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+      EnsureBookmarksMenuOpenAfterDrop(),
       NameMenuItemWithTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       NameMenuItemWithTitle(kANodeMenuId, u"a"),
@@ -222,7 +229,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 }  // namespace
 
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 using AppMenuInteractiveTest = InteractiveBrowserTest;
 
