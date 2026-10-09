@@ -11,12 +11,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import android.os.SystemClock;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.MeasureSpec;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -232,6 +235,50 @@ public class IncognitoNewTabPageUnitTest {
                         + " link should show a context menu.",
                 trackingProtectionDescription.onGenericMotionEvent(event));
         event.recycle();
+    }
+
+    @Test
+    public void testScrollViewFocusabilityAndTapRequestsFocus() {
+        FrameLayout container = new FrameLayout(mActivity);
+        View otherView = new View(mActivity);
+        otherView.setFocusableInTouchMode(true);
+        container.addView(otherView);
+        container.addView(mIncognitoNtp.getView());
+        mActivity.setContentView(container);
+
+        ScrollView scrollView = mIncognitoNtp.mIncognitoNewTabPageView.getScrollView();
+        assertTrue(scrollView.isFocusable());
+        assertTrue(scrollView.isFocusableInTouchMode());
+
+        otherView.requestFocus();
+        assertTrue(otherView.isFocused());
+        assertFalse(scrollView.isFocused());
+
+        long downTime = SystemClock.uptimeMillis();
+        MotionEvent downEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ downTime,
+                        /* eventTime= */ downTime,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 100f,
+                        /* y= */ 100f,
+                        /* metaState= */ 0);
+        MotionEvent upEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ downTime,
+                        /* eventTime= */ downTime + 10,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 100f,
+                        /* y= */ 100f,
+                        /* metaState= */ 0);
+        scrollView.dispatchTouchEvent(downEvent);
+        scrollView.dispatchTouchEvent(upEvent);
+
+        assertTrue(scrollView.isFocused());
+        assertTrue(mIncognitoNtp.getView().hasFocus());
+        assertFalse(otherView.isFocused());
+        downEvent.recycle();
+        upEvent.recycle();
     }
 
     private static MotionEvent createSecondaryMouseClickEvent(float x, float y) {
