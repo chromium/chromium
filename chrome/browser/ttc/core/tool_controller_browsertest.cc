@@ -867,6 +867,54 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElementMissingNodeId) {
             actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+// Ensures that a click targeting a DOM node that is valid in the current
+// document, but carrying the document ID of a previously navigated-away-from
+// document, is rejected.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       ClickElementStaleDocumentIdAfterNavigation) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL(
+          "example.com", "/actor/page_with_clickable_element.html")));
+  std::string old_document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  // Navigate to a new document containing the same clickable element.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "foo.com", "/actor/page_with_clickable_element.html")));
+  ASSERT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
+
+  std::string new_document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+  ASSERT_NE(old_document_id, new_document_id);
+
+  // The node ID is valid in the new document.
+  std::optional<int> button_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "click_element";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", old_document_id)
+                                            .Set("dom_node_id", *button_id));
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_FALSE(future.Take().Ok());
+  EXPECT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetText) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -941,6 +989,58 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetTextMissingText) {
             actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+// Ensures that setting text on a DOM node that is valid in the current
+// document, but carrying the document ID of a previously navigated-away-from
+// document, is rejected.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       SetTextStaleDocumentIdAfterNavigation) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/actor/input.html")));
+  std::string old_document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  // Navigate to a new document containing the same input element.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("foo.com", "/actor/input.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.getElementById('input').value = "
+                              "'old value';"));
+
+  std::string new_document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+  ASSERT_NE(old_document_id, new_document_id);
+
+  // The node ID is valid in the new document.
+  std::optional<int> input_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "input#input");
+  ASSERT_TRUE(input_id);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "set_text";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", old_document_id)
+                                            .Set("dom_node_id", *input_id));
+  tool_request.arguments.Set("text", "new value");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_FALSE(future.Take().Ok());
+  EXPECT_EQ("old value",
+            content::EvalJs(web_contents(),
+                            "document.getElementById('input').value"));
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOption) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -1013,6 +1113,58 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingValue) {
   ASSERT_FALSE(response.Ok());
   EXPECT_EQ(response.error().code,
             actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+// Ensures that selecting an option on a DOM node that is valid in the current
+// document, but carrying the document ID of a previously navigated-away-from
+// document, is rejected.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       SelectOptionStaleDocumentIdAfterNavigation) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "example.com", "/actor/select_tool.html")));
+  std::string old_document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  // Navigate to a new document containing the same select element.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "foo.com", "/actor/select_tool.html")));
+  ASSERT_EQ("alpha", content::EvalJs(web_contents(),
+                                     "document.getElementById('plainSelect')"
+                                     ".value"));
+
+  std::string new_document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+  ASSERT_NE(old_document_id, new_document_id);
+
+  // The node ID is valid in the new document.
+  std::optional<int> select_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "select#plainSelect");
+  ASSERT_TRUE(select_id);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "select_option";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", old_document_id)
+                                            .Set("dom_node_id", *select_id));
+  tool_request.arguments.Set("value", "last");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_FALSE(future.Take().Ok());
+  EXPECT_EQ("alpha", content::EvalJs(web_contents(),
+                                     "document.getElementById('plainSelect')"
+                                     ".value"));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
