@@ -147,6 +147,14 @@ void AtMemorySearchWithQuery(NSString* query) {
 
 @implementation AtMemoryTestCase
 
+// TODO(crbug.com/570993873): Fix and re-enable this test when compiled with iOS
+// 27.1 SDK.
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+#define MAYBE_testInlineNoticeAcknowledge DISABLED_testInlineNoticeAcknowledge
+#else
+#define MAYBE_testInlineNoticeAcknowledge testInlineNoticeAcknowledge
+#endif
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -167,7 +175,7 @@ void AtMemorySearchWithQuery(NSString* query) {
               .name,
           kMockPersonalContextVehicleMakeResultType}}}});
 
-  if ([self isRunningTest:@selector(testInlineNoticeAcknowledge)]) {
+  if ([self isRunningTest:@selector(MAYBE_testInlineNoticeAcknowledge)]) {
     config.features_enabled.push_back(
         personal_context::features::debug::
             kAutofillAmbientAutofillSkipEligibilityChecks);
@@ -223,7 +231,14 @@ void AtMemorySearchWithQuery(NSString* query) {
 
 // Tests that typing in the search bar updates the search prompt cell and
 // displays the AI disclosure footer.
-- (void)testTypingState {
+// TODO(crbug.com/570993873): Fix and re-enable this test when compiled with iOS
+// 27.1 SDK.
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+#define MAYBE_testTypingState DISABLED_testTypingState
+#else
+#define MAYBE_testTypingState testTypingState
+#endif
+- (void)MAYBE_testTypingState {
   [[EarlGrey selectElementWithMatcher:[AtMemoryTestUtil searchBar]]
       performAction:grey_typeText(kCarSearchQuery)];
 
@@ -241,7 +256,14 @@ void AtMemorySearchWithQuery(NSString* query) {
 }
 
 // Tests granular filling of a specific field from the entity details view.
-- (void)testGranularFill {
+// TODO(crbug.com/570993873): Fix and re-enable this test when compiled with iOS
+// 27.1 SDK.
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+#define MAYBE_testGranularFill DISABLED_testGranularFill
+#else
+#define MAYBE_testGranularFill testGranularFill
+#endif
+- (void)MAYBE_testGranularFill {
   [AutofillAppInterface saveVehicleEntity];
   AtMemorySearchWithQuery(kCarSearchQuery);
 
@@ -266,7 +288,14 @@ void AtMemorySearchWithQuery(NSString* query) {
 
 // Tests that previously filled items appear in the zero state and can be
 // selected to re-fill.
-- (void)testRecentFills {
+// TODO(crbug.com/570993873): Fix and re-enable this test when compiled with iOS
+// 27.1 SDK.
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+#define MAYBE_testRecentFills DISABLED_testRecentFills
+#else
+#define MAYBE_testRecentFills testRecentFills
+#endif
+- (void)MAYBE_testRecentFills {
   [AutofillAppInterface saveVehicleEntity];
   AtMemorySearchWithQuery(kCarSearchQuery);
 
@@ -296,7 +325,7 @@ void AtMemorySearchWithQuery(NSString* query) {
 }
 
 // Tests that the inline privacy notice is displayed and can be dismissed.
-- (void)testInlineNoticeAcknowledge {
+- (void)MAYBE_testInlineNoticeAcknowledge {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil inlineNoticeTitle]];
   [[EarlGrey selectElementWithMatcher:[AtMemoryTestUtil inlineNoticeOKButton]]
