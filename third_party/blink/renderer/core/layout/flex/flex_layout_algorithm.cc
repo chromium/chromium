@@ -1406,8 +1406,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
-  // // Reading flow is set on the first layout pass, which will cover all
-  // items.
+  // Reading flow is set on the first layout pass, which will cover all items.
   if (!IsBreakInside(GetBreakToken())) {
     SetReadingFlowNodes(flex_lines);
   }
