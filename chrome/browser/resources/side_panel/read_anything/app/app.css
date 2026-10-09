@@ -20,7 +20,7 @@
   --immersive-menu-font-weight: 400;
 }
 
-#lineFocus {
+:host > #appFlexParent > #lineFocus {
   position: absolute;
   top: var(--line-focus-y);
   left: var(--line-focus-left);
@@ -35,17 +35,17 @@
   z-index: 9997;
 }
 
-#lineFocus.line-mode {
+:host > #appFlexParent > #lineFocus.line-mode {
   --line-focus-left: var(--sp-card-block-padding);
   --line-focus-right: var(--sp-card-block-padding);
 }
 
-#lineFocus.window-mode {
+:host > #appFlexParent > #lineFocus.window-mode {
   --line-focus-left: 0;
   --line-focus-right: 0;
 }
 
-.immersive.full-page #lineFocus.line-mode {
+:host > #appFlexParent.immersive.full-page > #lineFocus.line-mode {
   --line-focus-left: var(--sp-card-block-padding);
   --line-focus-right: var(--immersive-scrollbar-width);
 }
@@ -238,7 +238,7 @@
     color: HighlightText;
   }
 
-  #lineFocus.line-mode {
+  :host > #appFlexParent > #lineFocus.line-mode {
     background-color: Highlight;
   }
 
@@ -253,7 +253,7 @@
    * without this rule, the line focus scrim will not work and therefore might
    * not support the user's color and contrast needs, this is an acceptable
    * use of forced-color-adjust: none */
-  #lineFocus.window-mode {
+  :host > #appFlexParent > #lineFocus.window-mode {
     forced-color-adjust: none;
   }
 
@@ -366,7 +366,7 @@ img.possibly-transparent-img {
   clip-path: inset(0);
 }
 
-.settings-overlay {
+:host > #appFlexParent > .settings-overlay {
   width: 100vw;
   height: 100vh;
   position: fixed;

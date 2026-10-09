@@ -2397,24 +2397,49 @@ suite('ContentController', () => {
           assertStringContains(root.textContent || '', 'Normal text');
         });
 
-    test('strips style, meta, and template elements', async () => {
+    test('strips disallowed elements and attributes', async () => {
+      if (!customElements.get('read-anything-toolbar')) {
+        customElements.define(
+            'read-anything-toolbar', class extends HTMLElement {});
+      }
       contentBrowserProxy.htmlContent =
+          '<div class=" immersive " style="position:fixed" ' +
+          'popover="manual" data-link="https://example.com">Safe text' +
           '<style>body { display: none; }</style>' +
+          '<svg><style>* { background: red; }</style></svg>' +
+          '<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">' +
+          '<dialog open>Dialog</dialog>' +
           '<meta http-equiv="refresh" content="0;url=https://example.com">' +
           '<template><p>Hidden</p></template>' +
-          '<p>Safe text <a href="javascript:void(0)">Link</a></p>';
+          '<read-anything-toolbar><span>Inside toolbar</span></read-anything-toolbar>' +
+          '<mjx-container><span>Math content</span></mjx-container>' +
+          '<a href="javascript:void(0)">Link</a>' +
+          '</div>';
 
-      const root = contentController.updateContent() as DocumentFragment;
+      const content = contentController.updateContent() as DocumentFragment;
       await microtasksFinished();
 
-      assertTrue(!!root);
-      assertEquals(null, root.querySelector('style'));
-      assertEquals(null, root.querySelector('meta'));
-      assertEquals(null, root.querySelector('template'));
-      const link = root.querySelector('a');
+      assertTrue(!!content);
+      assertEquals(null, content.querySelector('style'));
+      assertEquals(null, content.querySelector('link'));
+      assertEquals(null, content.querySelector('dialog'));
+      assertEquals(null, content.querySelector('meta'));
+      assertEquals(null, content.querySelector('template'));
+      assertEquals(null, content.querySelector('read-anything-toolbar'));
+      assertTrue(!!content.querySelector('mjx-container'));
+
+      const div = content.querySelector('div > div');
+      assertTrue(!!div);
+      assertFalse(div.hasAttribute('class'));
+      assertFalse(div.hasAttribute('style'));
+      assertFalse(div.hasAttribute('popover'));
+      assertFalse(div.hasAttribute('data-link'));
+      const link = content.querySelector('a');
       assertTrue(!!link);
       assertEquals('', link.getAttribute('href'));
-      assertStringContains(root.textContent || '', 'Safe text');
+      assertStringContains(content.textContent || '', 'Safe text');
+      assertStringContains(content.textContent || '', 'Inside toolbar');
+      assertStringContains(content.textContent || '', 'Math content');
     });
   });
 
