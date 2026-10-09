@@ -8,13 +8,16 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/readaloud/audio_generation/overview_generation_broker.h"
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
@@ -31,6 +34,39 @@
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace readaloud {
+namespace {
+
+std::vector<std::string_view> ExtractDistilledPageTexts(
+    const dom_distiller::DistilledArticleProto* article_proto) {
+  std::vector<std::string_view> page_texts;
+  if (!article_proto) {
+    return page_texts;
+  }
+  page_texts.reserve(article_proto->pages_size());
+  for (const auto& page : article_proto->pages()) {
+    page_texts.push_back(page.text_content());
+  }
+  return page_texts;
+}
+
+// Returns sanitized `value` suitable for UI display. Neutralizes BIDI control
+// characters via SanitizeUserSuppliedString and truncates at UTF-8 codepoint
+// boundaries to kMaxOverviewMetadataLength.
+std::string SanitizeMetadata(std::string_view value) {
+  if (value.empty()) {
+    return std::string();
+  }
+  std::u16string u16_value = base::UTF8ToUTF16(value);
+  base::i18n::SanitizeUserSuppliedString(&u16_value);
+  std::string sanitized = base::UTF16ToUTF8(u16_value);
+  if (sanitized.size() > kMaxOverviewMetadataLength) {
+    sanitized =
+        base::TruncateUTF8ToByteSize(sanitized, kMaxOverviewMetadataLength);
+  }
+  return sanitized;
+}
+
+}  // namespace
 
 ReadAloudService::ReadAloudService(
     Profile* profile,
@@ -40,7 +76,9 @@ ReadAloudService::ReadAloudService(
       controller_binder_(std::move(controller_binder)),
       audio_broker_(
           std::make_unique<ReadAloudAudioBroker>(std::move(factory_binder))),
-      speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()) {}
+      speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()),
+      overview_generation_broker_(
+          std::make_unique<OverviewGenerationBroker>()) {}
 
 ReadAloudService::~ReadAloudService() = default;
 
@@ -68,7 +106,10 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
   CHECK(media_session_);
   media_session_->NotifyPlaybackStarted();
 
-  if (utility_player_.is_bound()) {
+  // In overview mode, the utility Play() is deferred until
+  // OnOverviewGenerated() has loaded the script, so the utility play-on-ready
+  // watchdog does not race the browser-owned overview generation wait.
+  if (utility_player_.is_bound() && !IsWaitingForOverviewContent()) {
     utility_player_->Play();
   }
 }
@@ -106,8 +147,12 @@ void ReadAloudService::ResetPlayback() {
 
   // Cancel any ongoing page distillation request and reset timing metrics.
   viewer_handle_.reset();
+  if (overview_generation_broker_) {
+    overview_generation_broker_->InvalidatePendingRequests();
+  }
+  overview_script_loaded_ = false;
   distillation_start_time_ = base::TimeTicks();
-  current_title_.clear();
+  article_title_.clear();
   current_publisher_.clear();
   current_duration_ = base::Seconds(0);
 
@@ -210,7 +255,6 @@ bool ReadAloudService::IsPlaybackPaused() const {
   return !media_session_ || media_session_->is_paused();
 }
 
-
 void ReadAloudService::Shutdown() {
   ResetPlayback();
   weak_factory_.InvalidateWeakPtrs();
@@ -268,9 +312,9 @@ void ReadAloudService::OnArticleReady(
   // Processed before checking utility_player_.is_bound() so service state
   // retains the distilled title independently of utility transport binding.
   if (article_proto && !article_proto->title().empty()) {
-    current_title_ = article_proto->title();
+    article_title_ = article_proto->title();
     if (delegate_) {
-      delegate_->OnMetadataAvailable(current_title_, current_publisher_);
+      delegate_->OnMetadataAvailable(article_title_, current_publisher_);
     }
   }
 
@@ -278,9 +322,12 @@ void ReadAloudService::OnArticleReady(
     return;
   }
 
+  std::vector<std::string_view> page_texts =
+      ExtractDistilledPageTexts(article_proto);
+
   if (playback_mode_ == PlaybackMode::kOverview) {
-    // TODO(b/548552257): Connect to the Page Summary API to summarize the
-    // distilled article before sending to utility_player_.
+    RequestOverviewGeneration(page_texts);
+    return;
   }
 
   // Rule of Two Enforcement: Distilled webpage text originates from untrusted
@@ -290,17 +337,93 @@ void ReadAloudService::OnArticleReady(
   // TextSegment structs and forward them to the sandboxed Utility process for
   // chunking and synthesis.
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  segments.reserve(article_proto->pages_size());
-  for (int i = 0; i < article_proto->pages_size(); ++i) {
-    const dom_distiller::DistilledPageProto& page = article_proto->pages(i);
+  segments.reserve(page_texts.size());
+  for (size_t i = 0; i < page_texts.size(); ++i) {
     auto segment = read_aloud::mojom::TextSegment::New();
     segment->segment_index = static_cast<uint32_t>(i);
-    if (page.has_text_content()) {
-      segment->text = base::UTF8ToUTF16(page.text_content());
-    }
+    segment->text = base::UTF8ToUTF16(page_texts[i]);
+    segment->speaker = read_aloud::mojom::Speaker::kSpeaker1;
     segments.push_back(std::move(segment));
   }
   utility_player_->SetTextContent(std::move(segments));
+}
+
+void ReadAloudService::RequestOverviewGeneration(
+    const std::vector<std::string_view>& page_texts) {
+  if (delegate_) {
+    delegate_->OnHighlightingSupported(false);
+  }
+
+  OptimizationGuideKeyedService* opt_guide_service =
+      profile_ ? OptimizationGuideKeyedServiceFactory::GetForProfile(profile_)
+               : nullptr;
+
+  std::string page_content = base::JoinString(page_texts, "\n\n");
+  GURL page_url =
+      web_contents() ? web_contents()->GetLastCommittedURL() : GURL();
+
+  // AI Overviews are supported in English language only.
+  // Hardcoding the language code maximizes prompt/prefix cache hit rates.
+  overview_generation_broker_->GenerateOverview(
+      opt_guide_service, article_title_, page_content, page_url,
+      kAiOverviewLanguageCode,
+      base::BindOnce(&ReadAloudService::OnOverviewGenerated,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ReadAloudService::OnOverviewGenerated(mojo_base::BigBuffer response_bytes,
+                                           bool success) {
+  if (!utility_player_.is_bound() ||
+      playback_mode_ != PlaybackMode::kOverview) {
+    return;
+  }
+
+  if (!success || response_bytes.size() == 0) {
+    // TODO(b/564908361): Record UMA metric for overview generation failure.
+    HandlePlaybackError("Overview generation failed");
+    return;
+  }
+
+  // TODO(cl/8542391): Prevent unintended play signal if user requested
+  // pause during generation.
+
+  // Signal Play() so that content starts playing as soon
+  // as the overview text content is set.
+  utility_player_->Play();
+  utility_player_->SetOverviewContent(
+      std::move(response_bytes),
+      base::BindOnce(&ReadAloudService::OnOverviewContentSet,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ReadAloudService::OnOverviewContentSet(bool success,
+                                            const std::string& title) {
+  if (!utility_player_.is_bound() ||
+      playback_mode_ != PlaybackMode::kOverview) {
+    return;
+  }
+
+  if (!success) {
+    // TODO(b/564908361): Record UMA metric for overview content parsing
+    // failure.
+    HandlePlaybackError("Overview content parsing failed");
+    return;
+  }
+
+  // Set the generated overview title.
+  const std::string sanitized_title = SanitizeMetadata(title);
+  if (delegate_) {
+    delegate_->OnMetadataAvailable(
+        sanitized_title.empty() ? article_title_ : sanitized_title,
+        current_publisher_);
+  }
+
+  // TODO(b/564908361): Record UMA metric for overview generation success.
+  overview_script_loaded_ = true;
+}
+
+bool ReadAloudService::IsWaitingForOverviewContent() const {
+  return playback_mode_ == PlaybackMode::kOverview && !overview_script_loaded_;
 }
 
 void ReadAloudService::OnArticleUpdated(
@@ -333,13 +456,13 @@ void ReadAloudService::ProvideInitialMetadata() {
   if (!web_contents()) {
     return;
   }
-  current_title_ = base::UTF16ToUTF8(web_contents()->GetTitle());
+  article_title_ = base::UTF16ToUTF8(web_contents()->GetTitle());
   current_publisher_ = base::UTF16ToUTF8(
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           web_contents()->GetLastCommittedURL()));
 
   if (delegate_) {
-    delegate_->OnMetadataAvailable(current_title_, current_publisher_);
+    delegate_->OnMetadataAvailable(article_title_, current_publisher_);
   }
 }
 
@@ -506,7 +629,7 @@ void ReadAloudService::OnTextChunked(
 
 void ReadAloudService::RequestSpeechSynthesis(
     const std::u16string& text_chunk,
-    read_aloud::mojom::Speaker /*speaker*/,  // TODO(b/559821661)
+    read_aloud::mojom::Speaker speaker,
     uint64_t /*sequence_id*/,
     read_aloud::mojom::ReadAloudPlaybackControllerClient::
         RequestSpeechSynthesisCallback callback) {
@@ -521,8 +644,15 @@ void ReadAloudService::RequestSpeechSynthesis(
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   }
 
-  speech_synthesis_broker_->SynthesizeSpeech(opt_guide_service, text_chunk,
-                                             std::move(callback));
+  std::string_view voice_id_override;
+  if (playback_mode_ == PlaybackMode::kOverview) {
+    voice_id_override = (speaker == read_aloud::mojom::Speaker::kSpeaker2)
+                            ? SpeechSynthesisBroker::kOverviewVoiceSpeaker2
+                            : SpeechSynthesisBroker::kOverviewVoiceSpeaker1;
+  }
+
+  speech_synthesis_broker_->SynthesizeSpeech(
+      opt_guide_service, text_chunk, voice_id_override, std::move(callback));
 }
 
 }  // namespace readaloud

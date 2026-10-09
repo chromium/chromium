@@ -18,6 +18,7 @@
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
@@ -30,6 +31,7 @@ class Profile;
 
 namespace readaloud {
 
+class OverviewGenerationBroker;
 class ReadAloudPlaybackSession;
 class ReadAloudServiceTest;
 class SpeechSynthesisBroker;
@@ -254,6 +256,17 @@ class ReadAloudService
       media::mojom::ReadWriteAudioDataPipePtr data_pipe);
   void OnUtilityDisconnect();
   void ResetUtilityConnection();
+  // Requests overview script generation from the distilled page texts.
+  void RequestOverviewGeneration(
+      const std::vector<std::string_view>& page_texts);
+  // Called when the request for overview script
+  // generation has completed.
+  void OnOverviewGenerated(mojo_base::BigBuffer response_bytes, bool success);
+  // Called when the utility process has finished
+  // parsing the overview generation response.
+  void OnOverviewContentSet(bool success, const std::string& title);
+  // Returns true if in overview mode and overview content hasn't been set yet.
+  bool IsWaitingForOverviewContent() const;
   void HandlePlaybackError(std::string_view error_message);
   void NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState state);
   // Releases the media session, distillation and utility resources without
@@ -266,7 +279,7 @@ class ReadAloudService
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;
   base::TimeTicks distillation_start_time_;
-  std::string current_title_;
+  std::string article_title_;
   std::string current_publisher_;
   base::TimeDelta current_duration_;
 
@@ -281,7 +294,12 @@ class ReadAloudService
 
   std::unique_ptr<ReadAloudPlaybackSession> media_session_;
   std::unique_ptr<SpeechSynthesisBroker> speech_synthesis_broker_;
+  std::unique_ptr<OverviewGenerationBroker> overview_generation_broker_;
   PlaybackMode playback_mode_ = PlaybackMode::kClassic;
+
+  // True if the overview script has been generated and set
+  // for the utility process.
+  bool overview_script_loaded_ = false;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };

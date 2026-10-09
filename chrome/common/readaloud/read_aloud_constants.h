@@ -6,6 +6,7 @@
 #define CHROME_COMMON_READALOUD_READ_ALOUD_CONSTANTS_H_
 
 #include <cstddef>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "media/base/channel_layout.h"
@@ -48,6 +49,9 @@ inline constexpr size_t kMaxOverviewMetadataLength = 1024;
 // Allowed range for speech speed rate scaling.
 inline constexpr float kMinPlaybackRate = 0.25f;
 inline constexpr float kMaxPlaybackRate = 4.0f;
+
+// AI Overview generation supports English webpages only for now.
+inline constexpr std::string_view kAiOverviewLanguageCode = "en";
 
 }  // namespace readaloud
 
