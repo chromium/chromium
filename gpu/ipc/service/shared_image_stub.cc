@@ -176,11 +176,6 @@ void SharedImageStub::ExecuteDeferredRequest(
   }
 }
 
-void SharedImageStub::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
-  CHECK(factory_);
-  factory_->SetGpuExtraInfo(gpu_extra_info);
-}
-
 void SharedImageStub::OnCreateSharedImagePool(
     mojom::CreateSharedImagePoolParamsPtr params) {
   TRACE_EVENT1("gpu", "SharedImageStub::OnCreateSharedImagePool", "pool_id",

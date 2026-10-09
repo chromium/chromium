@@ -943,8 +943,8 @@ void GpuServiceImpl::EstablishGpuChannel(
 
   auto channel_token = base::UnguessableToken::Create();
   gpu::GpuChannel* gpu_channel = gpu_channel_manager_->EstablishChannel(
-      channel_token, client_id, client_tracing_id, client_type, gpu_extra_info_,
-      gpu_info_, gpu_feature_info_);
+      channel_token, client_id, client_tracing_id, client_type, gpu_info_,
+      gpu_feature_info_);
 
   if (!gpu_channel) {
     std::move(callback).Run(/*success=*/false, gpu::GPUInfo(),
@@ -1310,8 +1310,7 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
   auto format = MultiPlaneFormat::kNV12;
   auto buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
-  if (!gpu::SharedImageFactory::IsNativeBufferSupported(format, buffer_usage,
-                                                        gpu_extra_info_)) {
+  if (!gpu::SharedImageFactory::IsNativeBufferSupported(format, buffer_usage)) {
     return false;
   }
 

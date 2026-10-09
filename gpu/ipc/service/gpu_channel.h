@@ -33,7 +33,6 @@
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "services/viz/privileged/mojom/gl/gpu_client_type.mojom.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gpu_preference.h"
@@ -67,7 +66,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       int32_t client_id,
       uint64_t client_tracing_id,
       viz::mojom::GpuClientType client_type,
-      const gfx::GpuExtraInfo& gpu_extra_info,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info);
 
@@ -229,14 +227,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              int32_t client_id,
              uint64_t client_tracing_id,
              viz::mojom::GpuClientType client_type,
-             const gfx::GpuExtraInfo& gpu_extra_info,
              const gpu::GPUInfo& gpu_info,
              const gpu::GpuFeatureInfo& gpu_feature_info);
 
   void OnDestroyCommandBuffer(int32_t route_id);
 
   // Message handlers for control messages.
-  bool CreateSharedImageStub(const gfx::GpuExtraInfo& gpu_extra_info);
+  bool CreateSharedImageStub();
 
   // Immediately destroy this GpuChannel. Must only be called if the channel is
   // already disconnected.

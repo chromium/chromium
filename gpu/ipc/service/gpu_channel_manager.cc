@@ -518,7 +518,6 @@ GpuChannel* GpuChannelManager::EstablishChannel(
     int client_id,
     uint64_t client_tracing_id,
     viz::mojom::GpuClientType client_type,
-    const gfx::GpuExtraInfo& gpu_extra_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -538,7 +537,7 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
       task_runner_, io_task_runner_, client_id, client_tracing_id, client_type,
-      gpu_extra_info, gpu_info, gpu_feature_info);
+      gpu_info, gpu_feature_info);
 
   if (!gpu_channel)
     return nullptr;

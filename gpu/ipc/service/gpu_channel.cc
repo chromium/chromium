@@ -106,7 +106,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       gpu::GpuChannel* gpu_channel,
       const base::UnguessableToken& channel_token,
       Scheduler* scheduler,
-      const gfx::GpuExtraInfo& gpu_extra_info,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   GpuChannelMessageFilter(const GpuChannelMessageFilter&) = delete;
@@ -235,7 +234,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  const gfx::GpuExtraInfo gpu_extra_info_;
   base::ThreadChecker io_thread_checker_;
 
   bool allow_process_kill_for_testing_ = false;
@@ -252,15 +250,13 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
     gpu::GpuChannel* gpu_channel,
     const base::UnguessableToken& channel_token,
     Scheduler* scheduler,
-    const gfx::GpuExtraInfo& gpu_extra_info,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : gpu_channel_(gpu_channel),
       channel_token_(channel_token),
       scheduler_(scheduler),
       main_task_runner_(std::move(main_task_runner)),
-      io_task_runner_(std::move(io_task_runner)),
-      gpu_extra_info_(gpu_extra_info) {
+      io_task_runner_(std::move(io_task_runner)) {
   // GpuChannel and CommandBufferStub implementations assume that it is not
   // possible to simultaneously execute tasks on these two task runners.
   DCHECK_EQ(main_task_runner_, gpu_channel->task_runner());
@@ -431,8 +427,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     gfx::BufferUsage buffer_usage,
     CreateGpuMemoryBufferCallback callback) {
   gfx::GpuMemoryBufferHandle handle;
-  if (SharedImageFactory::IsNativeBufferSupported(format, buffer_usage,
-                                                  gpu_extra_info_)) {
+  if (SharedImageFactory::IsNativeBufferSupported(format, buffer_usage)) {
 #if BUILDFLAG(IS_ANDROID)
     // Creation of native buffer handles is not supported on Android (the
     // only way that a non-null GpuMemoryBufferHandle can be created on
@@ -712,7 +707,6 @@ GpuChannel::GpuChannel(
     int32_t client_id,
     uint64_t client_tracing_id,
     viz::mojom::GpuClientType client_type,
-    const gfx::GpuExtraInfo& gpu_extra_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info)
     : gpu_channel_manager_(gpu_channel_manager),
@@ -730,7 +724,6 @@ GpuChannel::GpuChannel(
           this,
           channel_token,
           scheduler,
-          gpu_extra_info,
           std::move(task_runner),
           std::move(io_task_runner))) {
   DCHECK(gpu_channel_manager_);
@@ -767,16 +760,14 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     int32_t client_id,
     uint64_t client_tracing_id,
     viz::mojom::GpuClientType client_type,
-    const gfx::GpuExtraInfo& gpu_extra_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info) {
   auto gpu_channel = base::WrapUnique(new GpuChannel(
       gpu_channel_manager, channel_token, scheduler, sync_point_manager,
       std::move(share_group), std::move(task_runner), std::move(io_task_runner),
-      client_id, client_tracing_id, client_type, gpu_extra_info, gpu_info,
-      gpu_feature_info));
+      client_id, client_tracing_id, client_type, gpu_info, gpu_feature_info));
 
-  if (!gpu_channel->CreateSharedImageStub(gpu_extra_info)) {
+  if (!gpu_channel->CreateSharedImageStub()) {
     LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";
     return nullptr;
   }
@@ -933,8 +924,7 @@ mojom::GpuChannel& GpuChannel::GetGpuChannelForTesting() {
   return *filter_;
 }
 
-bool GpuChannel::CreateSharedImageStub(
-    const gfx::GpuExtraInfo& gpu_extra_info) {
+bool GpuChannel::CreateSharedImageStub() {
   // SharedImageInterfaceProxy/Stub is a singleton per channel, using a reserved
   // route.
   const int32_t shared_image_route_id =
@@ -943,7 +933,6 @@ bool GpuChannel::CreateSharedImageStub(
   if (!shared_image_stub_) {
     return false;
   }
-  shared_image_stub_->SetGpuExtraInfo(gpu_extra_info);
   filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
   shared_image_capabilities_ =
       shared_image_stub_->factory()->MakeCapabilities();

@@ -49,10 +49,6 @@ namespace base::trace_event {
 class TracedValue;
 }  // namespace base::trace_event
 
-namespace gfx {
-struct GpuExtraInfo;
-}
-
 namespace gl {
 class GLShareGroup;
 }
@@ -118,7 +114,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
                                int client_id,
                                uint64_t client_tracing_id,
                                viz::mojom::GpuClientType client_type,
-                               const gfx::GpuExtraInfo& gpu_extra_info,
                                const gpu::GPUInfo& gpu_info,
                                const gpu::GpuFeatureInfo& gpu_feature_info);
 

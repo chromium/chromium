@@ -16,7 +16,6 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "ui/gfx/gpu_extra_info.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -75,8 +74,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
 #endif  // BUILDFLAG(IS_FUCHSIA)
-
-  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
 
   bool MakeContextCurrent(bool needs_gl = false);
 

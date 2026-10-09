@@ -30,7 +30,6 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -161,7 +160,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                   base::OnceCallback<void(bool)> callback);
 #endif
 
-  void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_info);
   bool GetGpuMemoryBufferHandleInfo(const Mailbox& mailbox,
                                     gfx::GpuMemoryBufferHandle& handle,
                                     gfx::BufferUsage& buffer_usage);
@@ -182,8 +180,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   const scoped_refptr<SharedImageCopyManager>& copy_manager();
 
   static bool IsNativeBufferSupported(viz::SharedImageFormat format,
-                                      gfx::BufferUsage usage,
-                                      const gfx::GpuExtraInfo& gpu_extra_info);
+                                      gfx::BufferUsage usage);
 
   base::WeakPtr<SharedImageFactory> GetWeakPtr();
   scoped_refptr<SharedImageFactoryRef> GetFactoryRef();
@@ -252,7 +249,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // images.
   std::vector<std::unique_ptr<SharedImageBackingFactory>> factories_;
 
-  gfx::GpuExtraInfo gpu_extra_info_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds workarounds_;
 
