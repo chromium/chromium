@@ -8884,3 +8884,6 @@ crbug.com/569679632 [ Win ] bindings/pass-as-span.html [ Pass Failure ]
 
 # Temporarily disable test to land crrev.com/c/8495913
 crbug.com/551802307 http/tests/devtools/sources/debugger-ui/sourcemap-src-not-loaded.js [ Failure Pass ]
+
+# Gardener 2026-10-09
+crbug.com/569736364 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
