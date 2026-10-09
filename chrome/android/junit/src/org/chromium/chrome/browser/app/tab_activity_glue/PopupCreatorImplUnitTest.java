@@ -55,19 +55,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -95,12 +93,38 @@ import java.util.List;
 /** Unit test for {@link PopupCreatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PopupCreatorImplUnitTest {
+    // Subclass to supply native-initialized collaborators without running
+    // CustomTabActivity#onCreate.
+    private static class TestCustomTabActivity extends CustomTabActivity {
+        private BrowserServicesIntentDataProvider mIntentDataProvider;
+        private ActivityWindowAndroid mWindowAndroid;
+        private BrowserControlsManager mBrowserControlsManager;
+        private WindowManager mWindowManager;
+
+        @Override
+        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mIntentDataProvider;
+        }
+
+        @Override
+        public ActivityWindowAndroid getWindowAndroid() {
+            return mWindowAndroid;
+        }
+
+        @Override
+        public BrowserControlsManager getBrowserControlsManager() {
+            return mBrowserControlsManager;
+        }
+
+        @Override
+        public WindowManager getWindowManager() {
+            return mWindowManager != null ? mWindowManager : super.getWindowManager();
+        }
+    }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Activity mActivity;
     @Mock Tab mTab;
     @Mock ActivityWindowAndroid mWindow;
     @Mock DisplayAndroid mDisplay;
@@ -113,7 +137,6 @@ public class PopupCreatorImplUnitTest {
     @Mock InsetObserver mInsetObserver;
     @Mock WindowInsetsCompat mWindowInsetsCompat;
     @Mock WebContents mWebContents;
-    @Mock ChromeActivity mChromeActivity;
     @Mock BrowserControlsManager mBrowserControlsManager;
     @Mock WindowManager mWindowManager;
     @Mock WindowMetrics mWindowMetrics;
@@ -135,11 +158,12 @@ public class PopupCreatorImplUnitTest {
     private static final int CUSTOM_TABS_POPUP_TITLE_BAR_MIN_HEIGHT = 62;
     private static final int CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT = 75;
 
-    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private TestCustomTabActivity mActivity;
     private PopupCreatorImpl mPopupCreator;
 
     @Before
     public void setup() {
+        mActivity = Robolectric.buildActivity(TestCustomTabActivity.class).get();
         mPopupCreator = new PopupCreatorImpl();
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
 
@@ -291,10 +315,8 @@ public class PopupCreatorImplUnitTest {
 
     @Test
     public void testIntentParams_twaOpener_doesNotForwardTwaExtras() {
-        BaseCustomTabActivity twaActivity = mock(BaseCustomTabActivity.class);
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
-        doReturn(twaActivity).when(mTab).getContext();
-        doReturn(provider).when(twaActivity).getIntentDataProvider();
+        mActivity.mIntentDataProvider = provider;
 
         when(provider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
         when(provider.getClientPackageName()).thenReturn("org.chromium.test.twa");
@@ -355,10 +377,8 @@ public class PopupCreatorImplUnitTest {
 
     @Test
     public void testIntentParams_twaOpener_invalidSessionId() {
-        BaseCustomTabActivity twaActivity = mock(BaseCustomTabActivity.class);
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
-        doReturn(twaActivity).when(mTab).getContext();
-        doReturn(provider).when(twaActivity).getIntentDataProvider();
+        mActivity.mIntentDataProvider = provider;
 
         when(provider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
         when(provider.getClientPackageName()).thenReturn("org.chromium.test.twa");
@@ -382,10 +402,8 @@ public class PopupCreatorImplUnitTest {
 
     @Test
     public void testIntentParams_standardCctOpener() {
-        BaseCustomTabActivity cctActivity = mock(BaseCustomTabActivity.class);
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
-        doReturn(cctActivity).when(mTab).getContext();
-        doReturn(provider).when(cctActivity).getIntentDataProvider();
+        mActivity.mIntentDataProvider = provider;
 
         when(provider.getActivityType()).thenReturn(ActivityType.CUSTOM_TAB);
         when(provider.getClientPackageName()).thenReturn("org.chromium.test.cct");
@@ -894,7 +912,7 @@ public class PopupCreatorImplUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void testAdjustWindowBounds_nullFeatures_bailsOut() {
-        PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, null);
+        PopupCreatorImpl.adjustWindowBoundsToRequested(mActivity, null);
         verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
@@ -906,7 +924,7 @@ public class PopupCreatorImplUnitTest {
         // Request features matching the current viewport size (200x300)
         WindowFeatures windowFeatures = new WindowFeatures(null, null, 200, 300);
 
-        PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, windowFeatures);
+        PopupCreatorImpl.adjustWindowBoundsToRequested(mActivity, windowFeatures);
         verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
@@ -918,7 +936,7 @@ public class PopupCreatorImplUnitTest {
         // Request features larger than the current viewport
         WindowFeatures windowFeatures = new WindowFeatures(null, null, 400, 500);
 
-        PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, windowFeatures);
+        PopupCreatorImpl.adjustWindowBoundsToRequested(mActivity, windowFeatures);
 
         ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
         verify(mMoveTaskDelegate).moveTaskTo(any(), anyInt(), captor.capture());
@@ -934,23 +952,21 @@ public class PopupCreatorImplUnitTest {
 
     private void setupMocksForAdjustWindowBounds(
             int viewportWidthDp, int viewportHeightDp, Rect windowBoundsPx) {
-        mActivityTabProvider.setForTesting(mTab);
-        doReturn(mActivityTabProvider).when(mChromeActivity).getActivityTabProvider();
+        mActivity.getActivityTabProvider().setForTesting(mTab);
         doReturn(mWebContents).when(mTab).getWebContents();
 
         doReturn(viewportWidthDp).when(mWebContents).getWidth();
         doReturn(viewportHeightDp).when(mWebContents).getHeight();
 
-        doReturn(mWindowManager).when(mChromeActivity).getWindowManager();
+        mActivity.mWindowManager = mWindowManager;
         doReturn(mWindowMetrics).when(mWindowManager).getCurrentWindowMetrics();
         doReturn(windowBoundsPx).when(mWindowMetrics).getBounds();
 
-        doReturn(mWindow).when(mChromeActivity).getWindowAndroid();
+        mActivity.mWindowAndroid = mWindow;
         doReturn(mDisplay).when(mWindow).getDisplay();
         doReturn(1.0f).when(mDisplay).getDipScale();
-        doReturn(mBrowserControlsManager).when(mChromeActivity).getBrowserControlsManager();
+        mActivity.mBrowserControlsManager = mBrowserControlsManager;
 
-        doReturn(123).when(mChromeActivity).getTaskId();
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
     }
 }

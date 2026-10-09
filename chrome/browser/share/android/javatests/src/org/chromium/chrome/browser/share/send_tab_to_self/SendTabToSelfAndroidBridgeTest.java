@@ -31,6 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -85,8 +86,36 @@ import java.util.function.Supplier;
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowToast.class})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SendTabToSelfAndroidBridgeTest {
+    // Subclass to supply native-initialized collaborators without running
+    // ChromeTabbedActivity#onCreate.
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        private TabModelSelector mTabModelSelector;
+        private LayoutManagerChrome mLayoutManager;
+        private SnackbarManager mSnackbarManager;
+        private boolean mIsInOverviewMode;
+
+        @Override
+        public TabModelSelector getTabModelSelector() {
+            return mTabModelSelector;
+        }
+
+        @Override
+        public LayoutManagerChrome getLayoutManager() {
+            return mLayoutManager;
+        }
+
+        @Override
+        public SnackbarManager getSnackbarManager() {
+            return mSnackbarManager;
+        }
+
+        @Override
+        public boolean isInOverviewMode() {
+            return mIsInOverviewMode;
+        }
+    }
+
     private static final String URL = "https://www.google.com";
     private static final String TITLE = "Google";
     private static final String TARGET_DEVICE_SYNC_CACHE_GUID = "device_guid";
@@ -99,9 +128,9 @@ public class SendTabToSelfAndroidBridgeTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ManagedMessageDispatcher mMessageDispatcher;
-    @Mock private ChromeTabbedActivity mTabbedActivity;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
+    private TestChromeTabbedActivity mTabbedActivity;
     private WebContents mWebContents;
 
     @Before
@@ -116,7 +145,7 @@ public class SendTabToSelfAndroidBridgeTest {
         mWindowAndroid = mock(WindowAndroid.class);
         mSnackbarManager = mock(SnackbarManager.class);
         mMessageDispatcher = mock(ManagedMessageDispatcher.class);
-        mTabbedActivity = mock(ChromeTabbedActivity.class);
+        mTabbedActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mWindowAndroid.getContext())
@@ -406,16 +435,11 @@ public class SendTabToSelfAndroidBridgeTest {
 
         // Set up an activity to be returned from ApplicationStatus.getLastTrackedFocusedActivity()
         // (which is what the bridge uses as a fallback if the WebContents is null).
-        ChromeTabbedActivity activity = mock(ChromeTabbedActivity.class);
-        when(activity.getSnackbarManager()).thenReturn(mSnackbarManager);
-        when(activity.getString(
-                        eq(R.string.send_tab_to_self_post_send_success_toast_android),
-                        any(Object[].class)))
-                .thenReturn("Sent to Chrome on your Pixel 10 • test@gmail.com");
+        mTabbedActivity.mSnackbarManager = mSnackbarManager;
 
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STARTED);
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.RESUMED);
 
         SendTabToSelfAndroidBridge.sendTabToDevice(
                 mProfile,
@@ -444,7 +468,7 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Sent to Chrome on your Pixel 10 • test@gmail.com",
                 snackbarCaptor.getValue().getTextForTesting().toString());
 
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
     }
 
     @Test
@@ -636,11 +660,11 @@ public class SendTabToSelfAndroidBridgeTest {
         // Verify the ON_PRIMARY_ACTION callback behavior.
         Supplier<Integer> onPrimaryAction = model.get(MessageBannerProperties.ON_PRIMARY_ACTION);
 
-        // Set up a mock ChromeTabbedActivity and LayoutManager to verify that the action attempts
+        // Set up a ChromeTabbedActivity and LayoutManager to verify that the action attempts
         // to open the tab switcher.
         LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        // Register the mock activity with ApplicationStatus so getLastTrackedFocusedActivity()
+        mTabbedActivity.mLayoutManager = layoutManager;
+        // Register the activity with ApplicationStatus so getLastTrackedFocusedActivity()
         // returns it.
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
 
@@ -672,12 +696,12 @@ public class SendTabToSelfAndroidBridgeTest {
         PropertyModel model = messageCaptor.getValue();
         Supplier<Integer> onPrimaryAction = model.get(MessageBannerProperties.ON_PRIMARY_ACTION);
 
-        // Set up a mock ChromeTabbedActivity and LayoutManager to verify that the action suppresses
+        // Set up a ChromeTabbedActivity and LayoutManager to verify that the action suppresses
         // opening the tab switcher when GTS is disabled on desktop.
         LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(null);
-        // Register the mock activity with ApplicationStatus so getLastTrackedFocusedActivity()
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = null;
+        // Register the activity with ApplicationStatus so getLastTrackedFocusedActivity()
         // returns it.
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
         try {
@@ -711,8 +735,8 @@ public class SendTabToSelfAndroidBridgeTest {
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
 
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 
@@ -772,8 +796,8 @@ public class SendTabToSelfAndroidBridgeTest {
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
 
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 
@@ -850,8 +874,8 @@ public class SendTabToSelfAndroidBridgeTest {
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
 
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 
@@ -919,7 +943,7 @@ public class SendTabToSelfAndroidBridgeTest {
 
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 
@@ -947,7 +971,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
     public void testShowMessageBanner_InOverviewMode_DoesNotShow() {
-        when(mTabbedActivity.isInOverviewMode()).thenReturn(true);
+        mTabbedActivity.mIsInOverviewMode = true;
 
         // Trigger the banner display logic.
         SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
@@ -1091,8 +1115,8 @@ public class SendTabToSelfAndroidBridgeTest {
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
 
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 
@@ -1188,8 +1212,8 @@ public class SendTabToSelfAndroidBridgeTest {
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
 
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 
@@ -1273,8 +1297,8 @@ public class SendTabToSelfAndroidBridgeTest {
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
         TabModel normalTabModel = mock(TabModel.class);
 
-        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
-        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        mTabbedActivity.mLayoutManager = layoutManager;
+        mTabbedActivity.mTabModelSelector = tabModelSelector;
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
         when(normalTabModel.getProfile()).thenReturn(mProfile);
 

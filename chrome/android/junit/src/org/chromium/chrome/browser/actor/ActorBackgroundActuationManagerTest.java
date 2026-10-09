@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -69,8 +69,18 @@ import java.util.List;
 
 /** Unit tests for {@link ActorBackgroundActuationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorBackgroundActuationManagerTest {
+    // Subclass to supply a mock ActivityWindowAndroid without running
+    // ChromeTabbedActivity#onCreate.
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        private ActivityWindowAndroid mWindowAndroid;
+
+        @Override
+        public ActivityWindowAndroid getWindowAndroid() {
+            return mWindowAndroid;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String MESSAGE_ID_SUCCESS = "message_id_success";
@@ -95,15 +105,16 @@ public class ActorBackgroundActuationManagerTest {
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private Tab mPlaceholderTab;
     @Mock private TabWindowManager mTabWindowManager;
-    @Mock private ChromeTabbedActivity mActivity;
     @Mock private TabModelOrchestrator mTabModelOrchestrator;
     @Mock private TabPersistentStore mTabPersistentStore;
 
+    private TestChromeTabbedActivity mActivity;
     private ActorBackgroundActuationManager mManager;
 
     @Before
     public void setUp() {
         MultiWindowTestUtils.ensureInitialized();
+        mActivity = Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         when(mProfileResolverNatives.tokenizeProfile(any())).thenReturn("mock_token");
 
@@ -141,10 +152,7 @@ public class ActorBackgroundActuationManagerTest {
     }
 
     private void setupWarmActivityMocks() {
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
-        when(mActivity.getWindowAndroid()).thenReturn(mWindowAndroid);
-        doCallRealMethod().when(mActivity).setTabModelOrchestratorForTesting(any());
+        mActivity.mWindowAndroid = mWindowAndroid;
         mActivity.setTabModelOrchestratorForTesting(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabPersistentStore()).thenReturn(mTabPersistentStore);
 
@@ -783,8 +791,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testDestroy_ActivityFinishingOrDestroyed_SkipsRestoration() {
-        when(mActivity.isFinishing()).thenReturn(true);
-        when(mActivity.isDestroyed()).thenReturn(false);
+        mActivity.finish();
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
@@ -805,9 +812,10 @@ public class ActorBackgroundActuationManagerTest {
     public void testDestroy_MixedWarmAndColdActivities() {
         setupWarmActivityMocks();
 
-        AsyncInitializationActivity coldActivity = mock(AsyncInitializationActivity.class);
+        AsyncInitializationActivity coldActivity =
+                Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
         TabModelSelector coldSelector = mock(TabModelSelector.class);
-        when(coldActivity.isFinishing()).thenReturn(true);
+        coldActivity.finish();
         when(mTabWindowManager.getIdForWindow(coldActivity)).thenReturn(84);
         when(mTabWindowManager.getTabModelSelectorById(84)).thenReturn(coldSelector);
 
@@ -845,7 +853,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testDestroy_NonAsyncInitializationActivity_SkipsRestoration() {
-        Activity nonTabbedActivity = mock(Activity.class);
+        Activity nonTabbedActivity = Robolectric.buildActivity(Activity.class).get();
         ApplicationStatus.onStateChangeForTesting(nonTabbedActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(nonTabbedActivity, ActivityState.STOPPED);
 
