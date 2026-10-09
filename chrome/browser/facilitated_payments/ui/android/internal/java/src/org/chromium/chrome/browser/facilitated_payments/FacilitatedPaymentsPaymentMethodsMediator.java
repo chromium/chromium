@@ -122,7 +122,7 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
     static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
     static final int STRIKE_THRESHOLD_FOR_HARD_DECLINE = 2;
     static final String DEFAULT_PIX_ACCOUNT_LINKING_VIDEO_URL =
-            "https://support.google.com/wallet/answer/14616353?hl=en";
+            "https://www.youtube.com/watch?v=zXMuvna_X4c";
 
     // This histogram name should be in sync with the one in
     // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogPixFopSelected.
