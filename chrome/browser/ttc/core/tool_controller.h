@@ -28,10 +28,8 @@ class ToolRequest;
 namespace ttc {
 
 class SessionControllerImpl;
-class SessionJournal;
 
-// Executes the session's tool calls in an actor task. The task is started on
-// construction and stopped on destruction.
+// Executes the session's tool calls in an actor task.
 class ToolController {
  public:
   explicit ToolController(SessionControllerImpl& session_controller);
@@ -44,15 +42,8 @@ class ToolController {
   // registration with the model backend.
   std::vector<ToolDefinition> GetToolDefinitions();
 
-  // Returns the session's journal, which records events under the current
-  // actor task.
-  SessionJournal& journal() { return *journal_; }
-
  private:
   Profile* GetProfile();
-
-  // Creates the actor task used to invoke tools, if one isn't already active.
-  void EnsureTaskCreated(actor::ActorKeyedService* actor_service);
 
   void OpenUrl(const base::DictValue& arguments, ToolResponseCallback callback);
   void PerformSearch(const base::DictValue& arguments,
@@ -98,8 +89,8 @@ class ToolController {
           create_action,
       ToolResponseCallback callback);
 
-  // Runs `action` in the actor task, creating the task if needed, and replies
-  // to `callback` with the result.
+  // Runs `action` in the session's actor task and replies to `callback` with
+  // the result.
   void PerformAction(std::unique_ptr<actor::ToolRequest> action,
                      ToolResponseCallback callback);
 
@@ -110,14 +101,6 @@ class ToolController {
 
   // Owns this object.
   const raw_ref<SessionControllerImpl> session_controller_;
-
-  // The task can be stopped outside of this class, e.g. when the user closes a
-  // tab it acted on (see EnsureTaskCreated()), in which case it's replaced by a
-  // new one.
-  actor::TaskId task_id_;
-  // Journals the session's events under `task_id_`, following it if the task is
-  // replaced. Created in the constructor, so never null.
-  std::unique_ptr<SessionJournal> journal_;
 
   base::WeakPtrFactory<ToolController> weak_factory_{this};
 };

@@ -57,6 +57,8 @@ source_set("core") {
 
 source_set("impl") {
   sources = [
+    "actor_task_holder.cc",
+    "actor_task_holder.h",
     "entrypoint_controller.cc",
     "page_context.cc",
     "page_context_util.cc",

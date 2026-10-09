@@ -12,11 +12,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
+#include "chrome/browser/ttc/core/actor_task_holder.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
+#include "components/actor/core/task_id.h"
 
 namespace content {
 class WebContents;
@@ -62,6 +65,8 @@ class SessionControllerImpl : public SessionController,
   // context is read from.
   content::WebContents* GetVoiceFocusedWebContents();
 
+  actor::TaskId GetActorTaskId() const;
+
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
@@ -83,6 +88,8 @@ class SessionControllerImpl : public SessionController,
       voice_focused_contents_tracker_observation_{this};
 
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
+  ActorTaskHolder actor_task_holder_;
+  SessionJournal journal_;
   ToolController tool_controller_;
 
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;

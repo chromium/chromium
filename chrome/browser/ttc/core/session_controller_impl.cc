@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/session_journal.h"
@@ -68,6 +69,10 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
       session_view_(MakeSessionView(*this)),
       voice_focused_contents_tracker_(
           VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
+      actor_task_holder_(*this),
+      journal_(CHECK_DEREF(actor::ActorKeyedService::Get(service.profile()))
+                   .GetJournal(),
+               actor_task_holder_.task_id()),
       tool_controller_(*this) {
   GetJournal().Log("TtcSessionStart", {});
 
@@ -90,7 +95,7 @@ SessionControllerImpl::~SessionControllerImpl() {
 }
 
 SessionJournal& SessionControllerImpl::GetJournal() {
-  return tool_controller_.journal();
+  return journal_;
 }
 
 SessionLifecycle SessionControllerImpl::GetSessionLifecycle() const {
@@ -119,6 +124,10 @@ Profile* SessionControllerImpl::GetProfile() {
 void SessionControllerImpl::ProcessToolCall(
     const ToolRequest& tool_request,
     ToolResponseCallback tool_response_callback) {
+  // TODO(b/552544497): Ideally the task would stop only if the Ttc session
+  // ends but there are currently a few ways for tasks to be stopped
+  // externally.
+  actor_task_holder_.EnsureTaskCreated();
   tool_controller_.ProcessToolCall(tool_request,
                                    std::move(tool_response_callback));
 }
@@ -192,6 +201,10 @@ void SessionControllerImpl::OnVoiceFocusedContentsChanged(
 
 content::WebContents* SessionControllerImpl::GetVoiceFocusedWebContents() {
   return voice_focused_contents_tracker_->GetActiveWebContents();
+}
+
+actor::TaskId SessionControllerImpl::GetActorTaskId() const {
+  return actor_task_holder_.task_id();
 }
 
 void SessionControllerImpl::OnPageContextFetched(

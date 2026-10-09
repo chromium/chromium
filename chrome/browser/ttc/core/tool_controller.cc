@@ -17,9 +17,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
@@ -34,8 +32,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal.h"
-#include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
-#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -98,45 +94,15 @@ base::expected<actor::PageTarget, std::string> ParseNodeIdArgument(
 }  // namespace
 
 ToolController::ToolController(SessionControllerImpl& session_controller)
-    : session_controller_(session_controller) {
-  // Start the task up front so that the whole session is journaled under it.
-  // TtcKeyedServiceFactory doesn't create TTC without the actor service.
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(GetProfile());
-  CHECK(actor_service);
-  EnsureTaskCreated(actor_service);
-}
+    : session_controller_(session_controller) {}
 
-ToolController::~ToolController() {
-  if (!task_id_.is_null()) {
-    auto* actor_service = actor::ActorKeyedService::Get(GetProfile());
-    CHECK(actor_service);
-
-    // Cancel a task that never acted so that it isn't surfaced to the user.
-    // TODO(b/544821996): Revisit once TTC has its own task client and delegate.
-    actor::ActorTask::StoppedReason stop_reason =
-        actor::ActorTask::StoppedReason::kTaskComplete;
-    if (const actor::ActorTask* task = actor_service->GetTask(task_id_);
-        task && task->GetState() == actor::ActorTask::State::kCreated) {
-      stop_reason = actor::ActorTask::StoppedReason::kStoppedByUser;
-    }
-    actor_service->StopTask(task_id_, stop_reason);
-  }
-}
+ToolController::~ToolController() = default;
 
 void ToolController::ProcessToolCall(const ToolRequest& tool_request,
                                      ToolResponseCallback callback) {
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(GetProfile());
-  CHECK(actor_service);
-
-  // Done before journaling the call so that, if the task has to be replaced,
-  // the call is journaled under the task it runs in.
-  EnsureTaskCreated(actor_service);
-
   callback = base::BindOnce(
       &OnToolCallFinished,
-      journal_->BeginAsyncEvent(
+      session_controller_->GetJournal().BeginAsyncEvent(
           "TtcToolCall",
           actor::JournalDetailsBuilder()
               .Add("name", tool_request.name)
@@ -540,38 +506,6 @@ Profile* ToolController::GetProfile() {
   return session_controller_->GetProfile();
 }
 
-void ToolController::EnsureTaskCreated(
-    actor::ActorKeyedService* actor_service) {
-  // TODO(b/552544497): Ideally the task could only be stopped by `this`, but
-  // there are currently a few ways for tasks to be stopped outside of this
-  // class.
-  if (!task_id_.is_null() && actor_service->GetTask(task_id_)) {
-    return;
-  }
-
-  // The session this object belongs to is owned by the TtcKeyedService, so it
-  // is guaranteed to exist.
-  TtcKeyedService* ttc_service = TtcKeyedService::Get(GetProfile());
-  CHECK(ttc_service);
-
-  // TODO(b/544821996): Provide an ActorTaskDelegate.
-  task_id_ = actor_service->CreateTaskWithOptions(
-      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
-      actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, &ttc_service->actor_ui_state_manager(),
-      /*initial_invocation_source=*/std::nullopt,
-      actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
-
-  // The session keeps a single journal so that its async events stay
-  // continuous if the task is replaced.
-  if (journal_) {
-    journal_->SetTaskId(task_id_);
-  } else {
-    journal_ =
-        std::make_unique<SessionJournal>(actor_service->GetJournal(), task_id_);
-  }
-}
-
 void ToolController::OpenUrl(const base::DictValue& arguments,
                              ToolResponseCallback callback) {
   const std::string* url = arguments.FindString("url");
@@ -913,7 +847,8 @@ void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
   actions.push_back(std::move(action));
 
   actor_service->PerformActions(
-      task_id_, std::move(actions), actor::ActorTaskMetadata(),
+      session_controller_->GetActorTaskId(), std::move(actions),
+      actor::ActorTaskMetadata(),
       base::BindOnce(&ToolController::OnActionsFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
