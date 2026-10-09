@@ -71,9 +71,7 @@ void AwRenderProcessKeepAlive::AddAwContents() {
         "Android.WebView.RendererKeepAlive.TimeToReuse",
         base::TimeTicks::Now() - keep_alive_start_time_);
     if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
-        features::kWebViewPrefetchFromRenderer.Get() &&
-        base::FeatureList::IsEnabled(
-            features::kWebViewPrefetchOnRendererReuse)) {
+        features::kWebViewPrefetchFromRenderer.Get()) {
       AwRenderProcess* aw_render_process =
           AwRenderProcess::GetInstanceForRenderProcessHost(
               render_process_host_);
