@@ -181,7 +181,16 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-  if (!is_android) {
+  if (is_android) {
+    sources += [ "voice_focused_contents_tracker_android_unittest.cc" ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//components/tabs:public",
+    ]
+  } else {
     sources += [ "session_view_impl_unittest.cc" ]
     deps += [ "//chrome/browser/ui/toasts/api:toasts" ]
   }
