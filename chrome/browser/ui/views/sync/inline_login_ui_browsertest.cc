@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
       signin_metrics::AccessPoint::kMachineLogon;
   signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
-  static const std::string email = "foo@gmail.com";
+  const std::string email = "foo@gmail.com";
   auto signin_url =
       signin::GetEmbeddedReauthURLWithEmail(access_point, reason, email);
 

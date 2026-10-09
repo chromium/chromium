@@ -2136,10 +2136,7 @@ if (!is_android) {
     }
 
     if (is_win) {
-      sources += [
-        "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
-        "../test/delayload/delayload_hook_browsertest.cc",
-      ]
+      sources += [ "../test/delayload/delayload_hook_browsertest.cc" ]
 
       data_deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher" ]
       data += [ "$root_out_dir/chrome_200_percent.pak" ]
@@ -2171,14 +2168,6 @@ if (!is_android) {
     }
 
     if (!is_chromeos) {
-      if (is_win) {
-        sources += [
-          # Tooltip accessibility event tests rely on Aura APIs
-          # (EventGenerator, TooltipControllerTestHelper).
-          "../browser/ui/views/tooltip/tooltip_dump_accessibility_events_browsertest.cc",
-        ]
-      }
-
       deps += [
         "//chrome/browser/default_browser:browser_tests",
         "//chrome/browser/download/bubble:browser_tests",

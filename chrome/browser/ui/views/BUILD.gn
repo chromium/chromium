@@ -1828,12 +1828,23 @@ source_set("browser_tests") {
 
   if (is_win) {
     sources += [
+      "sync/inline_login_ui_browsertest.cc",
       "tab_search_bubble_ui_browsertest.cc",
+
+      # Tooltip accessibility event tests rely on Aura APIs
+      # (EventGenerator, TooltipControllerTestHelper).
+      "tooltip/tooltip_dump_accessibility_events_browsertest.cc",
       "uninstall_view_browsertest.cc",
     ]
     deps += [
       ":uninstall_browser_prompt",
       "//chrome/browser/ui:uninstall_browser_prompt",
+      "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
+      "//chrome/browser/ui/webui/signin:inline_login",
+      "//chrome/browser/ui/webui/signin:login_ui_service",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
+      "//chrome/credential_provider/common:common_constants",
+      "//chrome/test/base:testing_browser_process",
     ]
   }
 
