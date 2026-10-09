@@ -613,11 +613,11 @@ void NearbyConnectionBrokerImpl::OnConnectionAccepted(
     return;
   }
 
-  CHECK(
-      connection_status_ == ConnectionStatus::kAcceptingConnection ||
-          connection_status_ ==
-              ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice,
-      base::NotFatalUntil::M160);
+  // TODO(crbug.com/571548786): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(connection_status_ == ConnectionStatus::kAcceptingConnection ||
+         connection_status_ ==
+             ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
   if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
     NotifyConnectionStateChanged(
         mojom::NearbyConnectionStep::kAcceptingConnectionFinished,
