@@ -25,6 +25,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -127,6 +128,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
@@ -226,6 +228,7 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
+#include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -1496,6 +1499,22 @@ void ChromeAutofillClient::ShowEmailVerificationErrorToast() {
 #if !BUILDFLAG(IS_ANDROID)
   GetEmailVerificationController()->ShowErrorToast();
 #endif
+}
+
+void ChromeAutofillClient::ShowGmailOtpOptInBubble(
+    const std::u16string& account_email,
+    base::OnceCallback<void(GmailOtpOptInResult)> callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* tab = GetTabInterface();
+  if (auto* controller =
+          tab ? GmailOtpOptInBubbleController::From(*tab) : nullptr) {
+    controller->SetUpAndShowBubble(account_email, std::move(callback));
+    return;
+  }
+#endif
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), GmailOtpOptInResult::kDiscarded));
 }
 
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(

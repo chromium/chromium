@@ -511,6 +511,12 @@ void AutofillClient::ShowEmailVerificationErrorToast() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowGmailOtpOptInBubble(
+    const std::u16string& account_email,
+    base::OnceCallback<void(GmailOtpOptInResult)> callback) {
+  NOTIMPLEMENTED();
+}
+
 OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
   return nullptr;
 }

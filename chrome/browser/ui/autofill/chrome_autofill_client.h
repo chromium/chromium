@@ -336,6 +336,9 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void HideEmailVerificationPopup() final;
   void ShowEmailVerificationLoadingToast() final;
   void ShowEmailVerificationErrorToast() final;
+  void ShowGmailOtpOptInBubble(
+      const std::u16string& account_email,
+      base::OnceCallback<void(GmailOtpOptInResult)> callback) final;
 
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -49,6 +50,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/metrics/cross_tab_copy_paste_tracker.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -1352,6 +1354,14 @@ TEST_F(ChromeAutofillClientTest, OpenGmailForOtps) {
   EXPECT_EQ(delegate.last_params()->url, GURL("https://mail.google.com"));
   EXPECT_EQ(delegate.last_params()->disposition,
             WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
+TEST_F(ChromeAutofillClientTest,
+       ShowGmailOtpOptInBubble_WithoutTabInterface_RunsCallbackWithDiscarded) {
+  base::test::TestFuture<GmailOtpOptInResult> future;
+  client()->ShowGmailOtpOptInBubble(u"user@gmail.com", future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
 }
 }  // namespace
 }  // namespace autofill

@@ -151,6 +151,7 @@ class FieldClassificationModelHandler;
 enum class FillingProduct;
 class FormDataImporter;
 class FormFieldData;
+enum class GmailOtpOptInResult;
 class LogManager;
 class OtpFieldDetector;
 class OtpMetricsTracker;
@@ -971,6 +972,13 @@ class AutofillClient {
   // Displays an error toast notifying the user that email verification failed.
   // Called when token verification fails or returns an error.
   virtual void ShowEmailVerificationErrorToast();
+
+  // Shows the bubble asking the user to opt in to fetching one-time
+  // verification codes from Gmail for `account_email`, invoking `callback` with
+  // the user's decision.
+  virtual void ShowGmailOtpOptInBubble(
+      const std::u16string& account_email,
+      base::OnceCallback<void(GmailOtpOptInResult)> callback);
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
