@@ -10,6 +10,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_timeouts.h"
 #include "gin/v8_initializer.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -40,6 +41,9 @@ void RenderViewTestAdapter::SetUp() {
 }
 
 Env::Env() {
+  // The standalone LibFuzzer main bypasses the unit-test launcher, so enable
+  // test-only code paths before RenderViewTest creates other threads.
+  base::test::AllowCheckIsTestForTesting();
   base::CommandLine::Init(0, nullptr);
   base::FeatureList::InitInstance(std::string(), std::string());
   base::i18n::InitializeICU();
