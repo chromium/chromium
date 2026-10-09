@@ -7942,11 +7942,6 @@ inline constexpr char kHelpAppHomePageAppArticlesDescription[] =
     "If enabled, the home page of the Help App will show a section containing"
     "articles about apps.";
 
-inline constexpr char kHelpAppOnboardingRevampName[] =
-    "Help App onboarding revamp";
-inline constexpr char kHelpAppOnboardingRevampDescription[] =
-    "Enables a new onboarding flow in the Help App";
-
 inline constexpr char kHelpAppOpensInsteadOfReleaseNotesNotificationName[] =
     "Help App opens instead of release notes notification";
 inline constexpr char

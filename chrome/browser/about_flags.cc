@@ -8437,10 +8437,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHelpAppHomePageAppArticlesName,
      flag_descriptions::kHelpAppHomePageAppArticlesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHelpAppHomePageAppArticles)},
-    {"help-app-onboarding-revamp",
-     flag_descriptions::kHelpAppOnboardingRevampName,
-     flag_descriptions::kHelpAppOnboardingRevampDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kHelpAppOnboardingRevamp)},
     {"help-app-opens-instead-of-release-notes-notification",
      flag_descriptions::kHelpAppOpensInsteadOfReleaseNotesNotificationName,
      flag_descriptions::
