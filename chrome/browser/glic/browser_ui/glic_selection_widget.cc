@@ -76,6 +76,9 @@ std::u16string GetCtaLabel() {
 }
 
 const gfx::VectorIcon& GetSmallChipIcon() {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
+    return GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
+  }
   return features::IsRoundedIconsEnabled() ? kTextAnalysisIcon
                                            : kTextAnalysisOldIcon;
 }
