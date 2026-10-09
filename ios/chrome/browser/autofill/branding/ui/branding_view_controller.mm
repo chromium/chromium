@@ -70,6 +70,8 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
       forControlEvents:UIControlEventTouchUpInside];
   _brandingIcon = button;
 
+  [self setUpInitialHiddenBrandingWidth];
+
   // Adds keyboard popup listener to show animation when keyboard is fully
   // settled.
   [[NSNotificationCenter defaultCenter]
@@ -103,10 +105,7 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   }
 
   // Add or remove the branding icon to keyboard accessories accordingly.
-  if (!_widthConstraintWhenHidingBranding) {
-    _widthConstraintWhenHidingBranding =
-        [self.view.widthAnchor constraintEqualToConstant:0];
-  }
+  [self setUpInitialHiddenBrandingWidth];
   BOOL shouldShow = self.visible && self.keyboardAccessoryVisible;
   if (shouldShow && _brandingIcon.superview == nil) {
     [self.view addSubview:_brandingIcon];
@@ -206,6 +205,16 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
               }
             }];
       }];
+}
+
+// Initializes and activates `_widthConstraintWhenHidingBranding` to collapse
+// the branding view to zero width initially if it is `nil`.
+- (void)setUpInitialHiddenBrandingWidth {
+  if (!_widthConstraintWhenHidingBranding) {
+    _widthConstraintWhenHidingBranding =
+        [self.view.widthAnchor constraintEqualToConstant:0];
+    _widthConstraintWhenHidingBranding.active = YES;
+  }
 }
 
 @end

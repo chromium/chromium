@@ -324,8 +324,10 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
   } else {
     AddSameConstraints(stackView, self);
   }
-  [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor].active =
-      YES;
+  NSLayoutConstraint* heightConstraint =
+      [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor];
+  heightConstraint.priority = UILayoutPriorityDefaultHigh;
+  heightConstraint.active = YES;
 
   // Rotate the UIScrollView and its UIStackView subview 180 degrees so that the
   // first suggestion actually shows up first.
