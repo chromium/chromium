@@ -172,6 +172,10 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_FINGERPRINTING_PROTECTION_FILTER_RULES},
       {"lbimbicckdokpoicboneldipejkhjgdg",
        SystemProfileProto_ComponentId_TRANSLATE_KIT},
+      {"ceofaddefefcbblgcgnibnonglccbfja",
+       SystemProfileProto_ComponentId_MODEL_MANIFEST},
+      {"kpfeefaldebcckpkaeelpiecbjfpbmle",
+       SystemProfileProto_ComponentId_GEOLOCATION_PERMISSION_PREDICTIONS_MODEL},
   });
 
   const auto result = kComponentMap.find(app_id);
