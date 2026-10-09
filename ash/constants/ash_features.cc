@@ -941,10 +941,6 @@ BASE_FEATURE(kHeliumArcvmKioskDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the home page of the Help App will show a section containing
-// articles about apps.
-BASE_FEATURE(kHelpAppHomePageAppArticles, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
 BASE_FEATURE(kHiddenNetworkWarning, base::FEATURE_DISABLED_BY_DEFAULT);

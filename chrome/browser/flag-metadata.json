@@ -6076,11 +6076,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "help-app-home-page-app-articles",
-    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "hid-get-feature-report-fix",
     "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 152

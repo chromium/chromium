@@ -152,9 +152,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean("HelpAppAppsGamesBannerV2", true);
     source->AddBoolean("HelpAppAppDetailPage", true);
     source->AddBoolean("HelpAppAppsList", true);
-    source->AddBoolean("HelpAppHomePageAppArticles",
-                       base::FeatureList::IsEnabled(
-                           ash::features::kHelpAppHomePageAppArticles));
+    source->AddBoolean("HelpAppHomePageAppArticles", true);
     source->AddBoolean("HelpAppAutoTriggerInstallDialog",
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
