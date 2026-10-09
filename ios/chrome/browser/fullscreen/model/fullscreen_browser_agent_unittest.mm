@@ -62,6 +62,11 @@ class RangeTestFullscreenBrowserAgentObserver
                                           CGFloat max)
       : edge_(edge), min_(min), max_(max) {}
 
+  void SetRange(CGFloat min, CGFloat max) {
+    min_ = min;
+    max_ = max;
+  }
+
   void WillUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override {
     agent->AddObscuredInsetRange(edge_, min_, max_);
   }
@@ -177,6 +182,25 @@ TEST_F(FullscreenBrowserAgentTest, InvalidateInsetRange) {
   EXPECT_EQ(65.0, agent->max_insets().top);
   EXPECT_EQ(20.0, agent->min_insets().bottom);
   EXPECT_EQ(80.0, agent->max_insets().bottom);
+
+  // Calling `InvalidateInsetRange()` again when ranges are unchanged queries
+  // observers via `WillUpdateObscuredInsetRange`, but does not notify
+  // `DidUpdateObscuredInsetRange`.
+  base_observer.will_update_obscured_inset_range_called_ = false;
+  base_observer.did_update_obscured_inset_range_called_ = false;
+  agent->InvalidateInsetRange();
+  EXPECT_TRUE(base_observer.will_update_obscured_inset_range_called_);
+  EXPECT_FALSE(base_observer.did_update_obscured_inset_range_called_);
+
+  // Changing the reported range notifies `DidUpdateObscuredInsetRange`.
+  observer3.SetRange(25.0, 85.0);
+  base_observer.will_update_obscured_inset_range_called_ = false;
+  base_observer.did_update_obscured_inset_range_called_ = false;
+  agent->InvalidateInsetRange();
+  EXPECT_TRUE(base_observer.will_update_obscured_inset_range_called_);
+  EXPECT_TRUE(base_observer.did_update_obscured_inset_range_called_);
+  EXPECT_EQ(25.0, agent->min_insets().bottom);
+  EXPECT_EQ(85.0, agent->max_insets().bottom);
 
   agent->RemoveObserver(&base_observer);
   agent->RemoveObserver(&observer1);

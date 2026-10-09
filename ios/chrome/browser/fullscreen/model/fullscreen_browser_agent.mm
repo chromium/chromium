@@ -536,6 +536,8 @@ void FullscreenBrowserAgent::ExitForceFullscreen(PassKey pass_key) {
 
 void FullscreenBrowserAgent::InvalidateInsetRange() {
   invalidating_inset_range_ = true;
+  UIEdgeInsets old_min_insets = min_insets_;
+  UIEdgeInsets old_max_insets = max_insets_;
   min_insets_ = UIEdgeInsetsZero;
   max_insets_ = UIEdgeInsetsZero;
 
@@ -552,8 +554,11 @@ void FullscreenBrowserAgent::InvalidateInsetRange() {
 
   updating_obscured_insets_ = false;
 
-  for (auto& observer : observers_) {
-    observer.DidUpdateObscuredInsetRange(this);
+  if (!UIEdgeInsetsEqualToEdgeInsets(old_min_insets, min_insets_) ||
+      !UIEdgeInsetsEqualToEdgeInsets(old_max_insets, max_insets_)) {
+    for (auto& observer : observers_) {
+      observer.DidUpdateObscuredInsetRange(this);
+    }
   }
 
   NotifyObserversOfUpdatedState();
