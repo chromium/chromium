@@ -352,6 +352,7 @@ public class ChromeTabbedActivityUnitTest {
         assertFalse(
                 mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.CLEAR_BROWSING_DATA));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
@@ -364,6 +365,7 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(
                 mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.CLEAR_BROWSING_DATA));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
@@ -382,6 +384,7 @@ public class ChromeTabbedActivityUnitTest {
         assertFalse(
                 mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
         assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.CLEAR_BROWSING_DATA));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
@@ -394,6 +397,7 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(
                 mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.CLEAR_BROWSING_DATA));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
@@ -410,6 +414,7 @@ public class ChromeTabbedActivityUnitTest {
         assertFalse(
                 mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
         assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertFalse(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.CLEAR_BROWSING_DATA));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
@@ -422,6 +427,7 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(
                 mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.BOTTOM_TAB_GROUP_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.QUICK_DELETE));
+        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.CLEAR_BROWSING_DATA));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));

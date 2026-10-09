@@ -497,6 +497,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 TabClosureParams.closeTabs(tabsToClose)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.CLEAR_BROWSING_DATA)
                         .build();
 
         getTabRemover().closeTabs(params, /* allowDialog= */ false);

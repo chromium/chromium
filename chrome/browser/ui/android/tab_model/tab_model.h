@@ -232,6 +232,8 @@ class TabModel : public TabListInterface {
     GRID_TAB_SWITCHER,
     // Tab closing is from bottom tab group strip.
     BOTTOM_TAB_GROUP_STRIP,
+    // Tab closing is from Clear Browsing Data.
+    CLEAR_BROWSING_DATA,
     // Must be last.
     SIZE
   };

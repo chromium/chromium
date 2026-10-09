@@ -1063,9 +1063,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             return true;
         }
 
-        // Allowlist closing sources GRID_TAB_SWITCHER, BOTTOM_TAB_GROUP_STRIP, and QUICK_DELETE
-        // when the Grid Tab Switcher is enabled.
-        if (closingSource == TabClosingSource.QUICK_DELETE) {
+        // Allowlist closing sources GRID_TAB_SWITCHER, BOTTOM_TAB_GROUP_STRIP. For
+        // CLEAR_BROWSING_DATA, and QUICK_DELETE only when the Grid Tab Switcher is enabled.
+        if (closingSource == TabClosingSource.QUICK_DELETE
+                || closingSource == TabClosingSource.CLEAR_BROWSING_DATA) {
             return TabSwitcherUtils.isGridTabSwitcherDisabled();
         }
         return closingSource != TabClosingSource.GRID_TAB_SWITCHER
