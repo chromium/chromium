@@ -130,6 +130,7 @@ typedef int PROPERTYID;
 
 namespace blink {
 class StorageKey;
+class WebTouchEvent;
 struct TransferableMessage;
 
 namespace mojom {
@@ -481,6 +482,16 @@ void SimulateGestureEvent(RenderWidgetHost* render_widget_host,
 void SimulateGestureEvent(WebContents* web_contents,
                           const blink::WebGestureEvent& gesture_event,
                           const ui::LatencyInfo& latency);
+
+// Routes a gesture event asynchronously through the WebContents' input event
+// router. Events targeting the viewport bypass hit testing.
+void SimulateRoutedGestureEvent(WebContents* web_contents,
+                                const blink::WebGestureEvent& gesture_event);
+
+// Routes a touch event asynchronously through the WebContents' input event
+// router.
+void SimulateRoutedTouchEvent(WebContents* web_contents,
+                              const blink::WebTouchEvent& touch_event);
 
 // Taps the screen at |point|, using gesture Tap or TapDown.
 //

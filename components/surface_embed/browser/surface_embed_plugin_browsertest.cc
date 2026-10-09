@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -35,6 +37,8 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -549,6 +553,203 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                kScaleChildWebContents;
   }));
   EXPECT_EQ(connector, child_contents->GetSurfaceEmbedConnector());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       TouchscreenPinchZoomsOptedInChild) {
+  auto child_contents = SetupHarnessAndChild();
+  SurfaceEmbedHandle* embedded_handle =
+      SurfaceEmbedHandle::CreateForWebContents(child_contents.get());
+  ASSERT_NE(nullptr, embedded_handle);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("createEmbed($1, 'pinch-zoom-embed', true);",
+                         embedded_handle->id().ToString())));
+  ASSERT_TRUE(WaitForHostAttachment(kSingleEmbedCount));
+  VerifyRedPixelInBounds(gfx::Rect(10, 10, 100, 100));
+  content::WaitForHitTestData(child_contents.get());
+
+  constexpr float kScaleDelta = 2.0f;
+  constexpr float kScaleTolerance = 0.1f;
+  const double initial_parent_scale =
+      content::EvalJs(web_contents(), "window.visualViewport.scale")
+          .ExtractDouble();
+  const double initial_child_scale =
+      content::EvalJs(child_contents.get(), "window.visualViewport.scale")
+          .ExtractDouble();
+
+  const gfx::Point anchor(60, 60);
+  constexpr uint32_t kTouchEventId = 1;
+  blink::WebTouchEvent touch_start(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_start.touches_length = 1;
+  touch_start.touches[0].id = 1;
+  touch_start.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_start.touches[0].SetPositionInWidget(gfx::PointF(anchor));
+  touch_start.unique_touch_event_id = kTouchEventId;
+  content::InputEventAckWaiter touch_start_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kTouchStart);
+  content::SimulateRoutedTouchEvent(web_contents(), touch_start);
+  touch_start_waiter.Wait();
+
+  blink::WebGestureEvent tap_down(
+      blink::WebInputEvent::Type::kGestureTapDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  tap_down.unique_touch_event_id = kTouchEventId;
+  tap_down.SetPositionInWidget(gfx::PointF(anchor));
+  tap_down.SetPositionInScreen(gfx::PointF(anchor));
+  content::InputEventAckWaiter tap_down_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kGestureTapDown);
+  content::SimulateRoutedGestureEvent(web_contents(), tap_down);
+  tap_down_waiter.Wait();
+
+  blink::WebTouchEvent second_touch_start(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  second_touch_start.touches_length = 2;
+  second_touch_start.touches[0].id = 1;
+  second_touch_start.touches[0].state =
+      blink::WebTouchPoint::State::kStateStationary;
+  second_touch_start.touches[0].SetPositionInWidget(gfx::PointF(anchor));
+  second_touch_start.touches[1].id = 2;
+  second_touch_start.touches[1].state =
+      blink::WebTouchPoint::State::kStatePressed;
+  second_touch_start.touches[1].SetPositionInWidget(
+      gfx::PointF(anchor.x() + 10, anchor.y()));
+  second_touch_start.unique_touch_event_id = kTouchEventId + 1;
+  content::InputEventAckWaiter second_touch_start_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kTouchStart);
+  content::SimulateRoutedTouchEvent(web_contents(), second_touch_start);
+  second_touch_start_waiter.Wait();
+
+  blink::WebGestureEvent scroll_begin(
+      blink::WebInputEvent::Type::kGestureScrollBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  scroll_begin.unique_touch_event_id = second_touch_start.unique_touch_event_id;
+  scroll_begin.SetPositionInWidget(gfx::PointF(anchor));
+  scroll_begin.SetPositionInScreen(gfx::PointF(anchor));
+  scroll_begin.data.scroll_begin.delta_hint_units =
+      ui::ScrollGranularity::kScrollByPrecisePixel;
+  content::InputEventAckWaiter scroll_begin_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kGestureScrollBegin);
+  content::SimulateRoutedGestureEvent(web_contents(), scroll_begin);
+  scroll_begin_waiter.Wait();
+
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  pinch_begin.unique_touch_event_id = second_touch_start.unique_touch_event_id;
+  pinch_begin.SetPositionInWidget(gfx::PointF(anchor));
+  pinch_begin.SetPositionInScreen(gfx::PointF(anchor));
+  content::InputEventAckWaiter pinch_begin_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kGesturePinchBegin);
+  content::SimulateRoutedGestureEvent(web_contents(), pinch_begin);
+  pinch_begin_waiter.Wait();
+
+  blink::WebGestureEvent pinch_update(pinch_begin);
+  pinch_update.SetType(blink::WebInputEvent::Type::kGesturePinchUpdate);
+  pinch_update.data.pinch_update.scale = kScaleDelta;
+  content::InputEventAckWaiter pinch_update_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kGesturePinchUpdate);
+  content::SimulateRoutedGestureEvent(web_contents(), pinch_update);
+  pinch_update_waiter.Wait();
+
+  blink::WebGestureEvent pinch_end(pinch_begin);
+  pinch_end.SetType(blink::WebInputEvent::Type::kGesturePinchEnd);
+  content::InputEventAckWaiter pinch_end_waiter(
+      child_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kGesturePinchEnd);
+  content::SimulateRoutedGestureEvent(web_contents(), pinch_end);
+  pinch_end_waiter.Wait();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(child_contents.get(), "window.visualViewport.scale")
+               .ExtractDouble() > initial_child_scale * 1.5;
+  }));
+  EXPECT_NEAR(
+      initial_child_scale * kScaleDelta,
+      content::EvalJs(child_contents.get(), "window.visualViewport.scale")
+          .ExtractDouble(),
+      kScaleTolerance);
+  EXPECT_NEAR(initial_parent_scale,
+              content::EvalJs(web_contents(), "window.visualViewport.scale")
+                  .ExtractDouble(),
+              kScaleTolerance);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       TouchpadPinchZoomsOptedInChild) {
+  auto child_contents = SetupHarnessAndChild();
+  SurfaceEmbedHandle* embedded_handle =
+      SurfaceEmbedHandle::CreateForWebContents(child_contents.get());
+  ASSERT_NE(nullptr, embedded_handle);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("createEmbed($1, 'pinch-zoom-embed', true);",
+                         embedded_handle->id().ToString())));
+  ASSERT_TRUE(WaitForHostAttachment(kSingleEmbedCount));
+  VerifyRedPixelInBounds(gfx::Rect(10, 10, 100, 100));
+  content::WaitForHitTestData(child_contents.get());
+
+  constexpr float kScaleDelta = 2.0f;
+  constexpr float kScaleTolerance = 0.1f;
+  const double initial_parent_scale =
+      content::EvalJs(web_contents(), "window.visualViewport.scale")
+          .ExtractDouble();
+  const double initial_child_scale =
+      content::EvalJs(child_contents.get(), "window.visualViewport.scale")
+          .ExtractDouble();
+
+  const gfx::PointF anchor(60, 60);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+  pinch_begin.SetPositionInWidget(anchor);
+  pinch_begin.SetPositionInScreen(anchor);
+  pinch_begin.SetNeedsWheelEvent(true);
+  content::SimulateRoutedGestureEvent(web_contents(), pinch_begin);
+
+  blink::WebGestureEvent pinch_update(pinch_begin);
+  pinch_update.SetType(blink::WebInputEvent::Type::kGesturePinchUpdate);
+  pinch_update.data.pinch_update.scale = kScaleDelta;
+  content::SimulateRoutedGestureEvent(web_contents(), pinch_update);
+
+  blink::WebGestureEvent pinch_end(pinch_begin);
+  pinch_end.SetType(blink::WebInputEvent::Type::kGesturePinchEnd);
+  content::SimulateRoutedGestureEvent(web_contents(), pinch_end);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(child_contents.get(), "window.visualViewport.scale")
+               .ExtractDouble() > initial_child_scale * 1.5;
+  }));
+  EXPECT_NEAR(
+      initial_child_scale * kScaleDelta,
+      content::EvalJs(child_contents.get(), "window.visualViewport.scale")
+          .ExtractDouble(),
+      kScaleTolerance);
+  EXPECT_NEAR(initial_parent_scale,
+              content::EvalJs(web_contents(), "window.visualViewport.scale")
+                  .ExtractDouble(),
+              kScaleTolerance);
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,

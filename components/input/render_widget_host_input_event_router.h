@@ -512,6 +512,14 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
   };
   TouchscreenPinchState touchscreen_pinch_state_;
 
+  // An OOPIF delegates touchscreen pinch to the page-scale owner of its
+  // WebContents. Keep that target latched for the duration of the pinch.
+  base::WeakPtr<RenderWidgetHostViewInput>
+      embedded_touchscreen_pinch_zoom_target_;
+  base::WeakPtr<RenderWidgetHostViewInput> embedded_touchscreen_pinch_source_;
+  bool embedded_touchscreen_pinch_in_progress_ = false;
+  bool embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ = false;
+
   // Logs debug data for https://crbug.com/346629231.
   struct TouchscreenGestureEventDebugData {
     blink::mojom::EventType type;

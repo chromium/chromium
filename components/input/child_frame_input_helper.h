@@ -76,9 +76,9 @@ class COMPONENT_EXPORT(INPUT) ChildFrameInputHelper {
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result);
 
-  // Pass acked touchpad pinch or double tap gesture events to the root view
-  // for processing.
-  void ProcessTouchpadZoomEventAckInRoot(
+  // Pass acked touchpad pinch or double tap gesture events to the view that
+  // owns page scale for processing.
+  void ProcessTouchpadZoomEventAckInPinchTarget(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
@@ -110,6 +110,8 @@ class COMPONENT_EXPORT(INPUT) ChildFrameInputHelper {
 
   // |delegate_| can be NULL.
   raw_ptr<Delegate> delegate_;
+
+  base::WeakPtr<RenderWidgetHostViewInput> touchpad_pinch_zoom_target_;
 };
 
 }  // namespace input

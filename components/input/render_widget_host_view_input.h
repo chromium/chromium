@@ -209,6 +209,11 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   virtual void GestureEventAck(const blink::WebGestureEvent& event,
                                blink::mojom::InputEventResultSource ack_source,
                                blink::mojom::InputEventResultState ack_result);
+  // Processes an ACK for a synthetic wheel generated from a touchpad zoom
+  // event without re-entering child-frame ACK forwarding.
+  void ProcessTouchpadZoomEventAck(
+      const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultState ack_result);
   virtual void WheelEventAck(const blink::WebMouseWheelEvent& event,
                              blink::mojom::InputEventResultState ack_result);
 

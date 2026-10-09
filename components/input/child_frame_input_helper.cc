@@ -192,20 +192,20 @@ void ChildFrameInputHelper::TransformPointToRootSurface(gfx::PointF* point) {
 
 blink::mojom::InputEventResultState ChildFrameInputHelper::FilterInputEvent(
     const blink::WebInputEvent& input_event) {
-  // A child renderer should never receive a GesturePinch event. Pinch events
-  // can still be targeted to a child, but they must be processed without
-  // sending the pinch event to the child (e.g. touchpad pinch synthesizes
-  // wheel events to send to the child renderer).
+  // Pinch events normally scale the page containing a child frame rather than
+  // being sent to that child. A separately embedded WebContents may opt into
+  // handling pinch directly.
   if (blink::WebInputEvent::IsPinchGestureEventType(input_event.GetType())) {
     const blink::WebGestureEvent& gesture_event =
         static_cast<const blink::WebGestureEvent&>(input_event);
-    // Touchscreen pinch events may be targeted to a child in order to have the
-    // child's TouchActionFilter filter them, but we may encounter
-    // https://crbug.com/771330 which would let the pinch events through.
-    if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
-      return blink::mojom::InputEventResultState::kConsumed;
+    if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchscreen ||
+        gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
+      if (view_->GetPinchZoomTarget() != view_) {
+        return blink::mojom::InputEventResultState::kConsumed;
+      }
+    } else {
+      DUMP_WILL_BE_NOTREACHED();
     }
-    DUMP_WILL_BE_NOTREACHED();
   }
 
   if (input_event.GetType() == blink::WebInputEvent::Type::kGestureFlingStart) {
@@ -269,7 +269,7 @@ void ChildFrameInputHelper::GestureEventAckHelper(
   StopFlingingIfNecessary(event, ack_result);
 
   if (event.IsTouchpadZoomEvent()) {
-    ProcessTouchpadZoomEventAckInRoot(event, ack_source, ack_result);
+    ProcessTouchpadZoomEventAckInPinchTarget(event, ack_source, ack_result);
   }
 
   // GestureScrollBegin is a blocking event; It is forwarded for bubbling if
@@ -311,29 +311,45 @@ void ChildFrameInputHelper::GestureEventAckHelper(
 void ChildFrameInputHelper::ForwardTouchpadZoomEventIfNecessary(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result) {
-  // ACKs of synthetic wheel events for touchpad pinch or double tap are
-  // processed in the root RWHV.
+  // Touchpad zoom ACKs from child frames are processed directly by
+  // ProcessTouchpadZoomEventAckInPinchTarget().
   NOTREACHED();
 }
 
-void ChildFrameInputHelper::ProcessTouchpadZoomEventAckInRoot(
+void ChildFrameInputHelper::ProcessTouchpadZoomEventAckInPinchTarget(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   DCHECK(event.IsTouchpadZoomEvent());
-  if (!delegate_) {
-    return;
+  if (event.GetType() == blink::WebInputEvent::Type::kGesturePinchBegin) {
+    RenderWidgetHostViewInput* pinch_zoom_target = view_->GetPinchZoomTarget();
+    touchpad_pinch_zoom_target_ =
+        pinch_zoom_target ? pinch_zoom_target->GetInputWeakPtr() : nullptr;
   }
-  auto* root_view = delegate_->GetRootViewInput();
-  if (!root_view) {
+
+  RenderWidgetHostViewInput* pinch_zoom_target =
+      event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap
+          ? view_->GetPinchZoomTarget()
+          : touchpad_pinch_zoom_target_.get();
+  if (!pinch_zoom_target) {
     return;
   }
 
-  blink::WebGestureEvent root_event(event);
-  const gfx::PointF root_point =
-      TransformPointToRootCoordSpaceF(event.PositionInWidget());
-  root_event.SetPositionInWidget(root_point);
-  root_view->GestureEventAck(root_event, ack_source, ack_result);
+  gfx::PointF point_in_target = event.PositionInWidget();
+  TransformPointToCoordSpaceForView(event.PositionInWidget(), pinch_zoom_target,
+                                    &point_in_target);
+
+  blink::WebGestureEvent target_event(event);
+  target_event.SetPositionInWidget(point_in_target);
+  if (delegate_ && pinch_zoom_target == delegate_->GetRootViewInput()) {
+    pinch_zoom_target->GestureEventAck(target_event, ack_source, ack_result);
+  } else {
+    pinch_zoom_target->ProcessTouchpadZoomEventAck(target_event, ack_result);
+  }
+
+  if (event.GetType() == blink::WebInputEvent::Type::kGesturePinchEnd) {
+    touchpad_pinch_zoom_target_.reset();
+  }
 }
 
 bool ChildFrameInputHelper::BubbleScrollEvent(

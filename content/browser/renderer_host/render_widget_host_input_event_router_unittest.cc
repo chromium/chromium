@@ -82,9 +82,29 @@ class MockFrameConnector : public CrossProcessFrameConnector {
     return root_view_;
   }
 
+  input::RenderWidgetHostViewInput* GetPinchZoomTarget() override {
+    if (!is_surface_embed_) {
+      return parent_view_ ? parent_view_->GetPinchZoomTarget() : nullptr;
+    }
+    if (should_handle_pinch_zoom_) {
+      return view_;
+    }
+    return parent_view_ ? parent_view_->GetPinchZoomTarget() : root_view_;
+  }
+
+  void set_should_handle_pinch_zoom(bool should_handle) {
+    should_handle_pinch_zoom_ = should_handle;
+  }
+
+  void set_is_surface_embed(bool is_surface_embed) {
+    is_surface_embed_ = is_surface_embed;
+  }
+
  private:
   raw_ptr<RenderWidgetHostViewBase> parent_view_ = nullptr;
   raw_ptr<RenderWidgetHostViewBase> root_view_ = nullptr;
+  bool should_handle_pinch_zoom_ = false;
+  bool is_surface_embed_ = true;
 };
 
 class StubHitTestQuery : public viz::HitTestQuery {
@@ -420,6 +440,16 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   input::RenderWidgetHostViewInput* touchscreen_gesture_target() {
     return rwhier()->touchscreen_gesture_target_.get();
   }
+  void SetTouchscreenGestureTarget(input::RenderWidgetHostViewInput* target) {
+    rwhier()->SetTouchscreenGestureTarget(target, /*moved_recently=*/false,
+                                          /*moved_recently_for_iov2=*/false);
+  }
+  void DispatchTouchscreenGestureEvent(input::RenderWidgetHostViewInput* target,
+                                       const blink::WebGestureEvent& event) {
+    rwhier()->DispatchTouchscreenGestureEvent(
+        view_root_.get(), target, event, ui::LatencyInfo(),
+        event.PositionInWidget(), /*is_emulated=*/true);
+  }
   input::RenderWidgetHostViewInput* bubbling_gesture_scroll_origin() {
     return rwhier()->bubbling_gesture_scroll_origin_;
   }
@@ -525,6 +555,243 @@ TEST_F(RenderWidgetHostInputEventRouterTest, EmulatedTouchUsesTargetRootView) {
   rwhier()->ForwardEmulatedTouchEvent(touch_event, child.view.get());
 
   EXPECT_EQ(view_root_.get(), last_emulated_event_root_view());
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchscreenPinchCanTargetEmbeddedView) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  pinch_begin.SetPositionInWidget(gfx::PointF(10, 10));
+
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            child.view->FilterInputEvent(pinch_begin));
+
+  child.frame_connector->set_should_handle_pinch_zoom(true);
+  child.view->GetViewRenderInputRouter()
+      ->input_router()
+      ->ForceSetTouchActionAuto();
+  SetTouchscreenGestureTarget(child.view.get());
+
+  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
+            child.view->FilterInputEvent(pinch_begin));
+  DispatchTouchscreenGestureEvent(child.view.get(), pinch_begin);
+
+  EXPECT_EQ(blink::WebInputEvent::Type::kGesturePinchBegin,
+            child.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            view_root_->last_gesture_seen());
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchpadPinchCanTargetEmbeddedView) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+
+  EXPECT_EQ(view_root_.get(), child.view->GetPinchZoomTarget());
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            child.view->FilterInputEvent(pinch_begin));
+
+  child.frame_connector->set_should_handle_pinch_zoom(true);
+
+  EXPECT_EQ(child.view.get(), child.view->GetPinchZoomTarget());
+  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
+            child.view->FilterInputEvent(pinch_begin));
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchscreenPinchDefaultsToRootView) {
+  ChildViewState middle = MakeChildView(view_root_.get());
+  ChildViewState inner = MakeChildView(middle.view.get());
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  pinch_begin.SetPositionInWidget(gfx::PointF(10, 10));
+
+  inner.view->GetViewRenderInputRouter()
+      ->input_router()
+      ->ForceSetTouchActionAuto();
+  SetTouchscreenGestureTarget(inner.view.get());
+  DispatchTouchscreenGestureEvent(inner.view.get(), pinch_begin);
+
+  EXPECT_EQ(blink::WebInputEvent::Type::kGesturePinchBegin,
+            view_root_->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            middle.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            inner.view->last_gesture_seen());
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest, TouchpadPinchDefaultsToRootView) {
+  ChildViewState middle = MakeChildView(view_root_.get());
+  ChildViewState inner = MakeChildView(middle.view.get());
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+
+  EXPECT_EQ(view_root_.get(), inner.view->GetPinchZoomTarget());
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            middle.view->FilterInputEvent(pinch_begin));
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            inner.view->FilterInputEvent(pinch_begin));
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchscreenPinchInOopifTargetsEmbeddedView) {
+  ChildViewState embedded = MakeChildView(view_root_.get());
+  embedded.frame_connector->set_should_handle_pinch_zoom(true);
+  ChildViewState oopif = MakeChildView(embedded.view.get());
+  oopif.frame_connector->set_is_surface_embed(false);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  pinch_begin.SetPositionInWidget(gfx::PointF(10, 10));
+
+  oopif.view->GetViewRenderInputRouter()
+      ->input_router()
+      ->ForceSetTouchActionAuto();
+  SetTouchscreenGestureTarget(oopif.view.get());
+  DispatchTouchscreenGestureEvent(oopif.view.get(), pinch_begin);
+
+  EXPECT_EQ(blink::WebInputEvent::Type::kGesturePinchBegin,
+            embedded.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            oopif.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            view_root_->last_gesture_seen());
+
+  blink::WebGestureEvent scroll_begin =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
+          0.f, 10.f, blink::WebGestureDevice::kTouchscreen);
+  EXPECT_TRUE(rwhier()->BubbleScrollEvent(embedded.view.get(), oopif.view.get(),
+                                          scroll_begin));
+  EXPECT_EQ(oopif.view.get(), bubbling_gesture_scroll_origin());
+  EXPECT_EQ(embedded.view.get(), bubbling_gesture_scroll_target());
+
+  blink::WebGestureEvent pinch_end(pinch_begin);
+  pinch_end.SetType(blink::WebInputEvent::Type::kGesturePinchEnd);
+  DispatchTouchscreenGestureEvent(oopif.view.get(), pinch_end);
+
+  blink::WebGestureEvent scroll_end(scroll_begin);
+  scroll_end.SetType(blink::WebInputEvent::Type::kGestureScrollEnd);
+  EXPECT_TRUE(rwhier()->BubbleScrollEvent(embedded.view.get(), oopif.view.get(),
+                                          scroll_end));
+  EXPECT_EQ(nullptr, bubbling_gesture_scroll_origin());
+  EXPECT_EQ(nullptr, bubbling_gesture_scroll_target());
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchpadPinchInOopifTargetsEmbeddedView) {
+  ChildViewState embedded = MakeChildView(view_root_.get());
+  embedded.frame_connector->set_should_handle_pinch_zoom(true);
+  ChildViewState oopif = MakeChildView(embedded.view.get());
+  oopif.frame_connector->set_is_surface_embed(false);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            oopif.view->FilterInputEvent(pinch_begin));
+  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
+            embedded.view->FilterInputEvent(pinch_begin));
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchscreenPinchTargetsNearestOptedInEmbeddedView) {
+  ChildViewState outer = MakeChildView(view_root_.get());
+  outer.frame_connector->set_should_handle_pinch_zoom(true);
+  ChildViewState middle = MakeChildView(outer.view.get());
+  middle.frame_connector->set_should_handle_pinch_zoom(true);
+  ChildViewState inner = MakeChildView(middle.view.get());
+  ChildViewState oopif = MakeChildView(inner.view.get());
+  oopif.frame_connector->set_is_surface_embed(false);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  pinch_begin.SetPositionInWidget(gfx::PointF(10, 10));
+
+  oopif.view->GetViewRenderInputRouter()
+      ->input_router()
+      ->ForceSetTouchActionAuto();
+  SetTouchscreenGestureTarget(oopif.view.get());
+  DispatchTouchscreenGestureEvent(oopif.view.get(), pinch_begin);
+
+  EXPECT_EQ(blink::WebInputEvent::Type::kGesturePinchBegin,
+            middle.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            outer.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            inner.view->last_gesture_seen());
+  EXPECT_NE(blink::WebInputEvent::Type::kGesturePinchBegin,
+            view_root_->last_gesture_seen());
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchpadPinchTargetsNearestOptedInEmbeddedView) {
+  ChildViewState outer = MakeChildView(view_root_.get());
+  outer.frame_connector->set_should_handle_pinch_zoom(true);
+  ChildViewState middle = MakeChildView(outer.view.get());
+  middle.frame_connector->set_should_handle_pinch_zoom(true);
+  ChildViewState inner = MakeChildView(middle.view.get());
+  ChildViewState oopif = MakeChildView(inner.view.get());
+  oopif.frame_connector->set_is_surface_embed(false);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+
+  EXPECT_EQ(middle.view.get(), oopif.view->GetPinchZoomTarget());
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            oopif.view->FilterInputEvent(pinch_begin));
+  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
+            middle.view->FilterInputEvent(pinch_begin));
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchscreenPinchIsFilteredWithoutFrameConnector) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  child.view->SetFrameConnector(nullptr);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            child.view->FilterInputEvent(pinch_begin));
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchpadPinchIsFilteredWithoutFrameConnector) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  child.view->SetFrameConnector(nullptr);
+  blink::WebGestureEvent pinch_begin(
+      blink::WebInputEvent::Type::kGesturePinchBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchpad);
+
+  EXPECT_EQ(nullptr, child.view->GetPinchZoomTarget());
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            child.view->FilterInputEvent(pinch_begin));
 }
 
 // Make sure that when a touch scroll crosses out of the area for a

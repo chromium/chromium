@@ -441,6 +441,15 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
     ClearTouchscreenGestureTarget();
   }
 
+  if (view == embedded_touchscreen_pinch_source_.get()) {
+    embedded_touchscreen_pinch_source_.reset();
+  }
+  if (view == embedded_touchscreen_pinch_zoom_target_.get()) {
+    embedded_touchscreen_pinch_zoom_target_.reset();
+    embedded_touchscreen_pinch_in_progress_ = false;
+    embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ = false;
+  }
+
   // With |bubbling_view_is_being_destroyed| set, this does not dispatch a
   // GestureScrollEnd to |view|.
   if (view == bubbling_gesture_scroll_target_) {
@@ -1268,7 +1277,34 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
 
   ui::LatencyInfo latency_info;
 
+  if (resending_view == embedded_touchscreen_pinch_zoom_target_.get()) {
+    return false;
+  }
+
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
+    if (embedded_touchscreen_pinch_in_progress_ &&
+        embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ &&
+        target_view == embedded_touchscreen_pinch_zoom_target_.get()) {
+      if (bubbling_gesture_scroll_target_) {
+        if (bubbling_gesture_scroll_origin_ !=
+                embedded_touchscreen_pinch_source_.get() ||
+            bubbling_gesture_scroll_target_ != resending_view) {
+          return false;
+        }
+        SendGestureScrollEnd(resending_view,
+                             GestureEventInTarget(event, resending_view));
+      } else {
+        if (resending_view != embedded_touchscreen_pinch_source_.get()) {
+          return false;
+        }
+        bubbling_gesture_scroll_origin_ = resending_view;
+      }
+      bubbling_gesture_scroll_target_ = target_view;
+      bubbling_gesture_scroll_source_device_ = event.SourceDevice();
+      embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ = false;
+      return true;
+    }
+
     forced_last_fling_start_target_to_stop_flinging_for_test_ = false;
     // If target_view has unrelated gesture events in progress, do
     // not proceed. This could cause confusion between independent
@@ -1651,9 +1687,38 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
       "RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent",
       "type", blink::WebInputEvent::GetName(gesture_event.GetType()), "target",
       static_cast<const void*>(target));
+
   if (gesture_event.GetType() ==
-      blink::WebInputEvent::Type::kGesturePinchBegin) {
-    if (root_view == touchscreen_gesture_target_.get()) {
+      blink::WebInputEvent::Type::kGestureScrollBegin) {
+    if (!embedded_touchscreen_pinch_in_progress_) {
+      embedded_touchscreen_pinch_zoom_target_.reset();
+      embedded_touchscreen_pinch_source_.reset();
+    }
+  } else if (gesture_event.GetType() ==
+             blink::WebInputEvent::Type::kGesturePinchBegin) {
+    RenderWidgetHostViewInput* pinch_zoom_target =
+        touchscreen_gesture_target_
+            ? touchscreen_gesture_target_->GetPinchZoomTarget()
+            : nullptr;
+    if (pinch_zoom_target && pinch_zoom_target != root_view &&
+        IsPinchCurrentlyAllowedInTarget(touchscreen_gesture_target_.get())) {
+      embedded_touchscreen_pinch_zoom_target_ =
+          pinch_zoom_target->GetInputWeakPtr();
+      embedded_touchscreen_pinch_source_ =
+          touchscreen_gesture_target_->GetInputWeakPtr();
+      embedded_touchscreen_pinch_in_progress_ = true;
+
+      if (pinch_zoom_target != touchscreen_gesture_target_.get()) {
+        auto* rir = pinch_zoom_target->GetViewRenderInputRouter();
+        rir->input_router()->ForceSetTouchActionAuto();
+        if (!rir->is_in_touchscreen_gesture_scroll()) {
+          SendGestureScrollBegin(
+              pinch_zoom_target,
+              GestureEventInTarget(gesture_event, pinch_zoom_target));
+          embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ = true;
+        }
+      }
+    } else if (root_view == touchscreen_gesture_target_.get()) {
       // If the root view is the current gesture target, there is no need to
       // wrap the pinch events ourselves.
       touchscreen_pinch_state_.DidStartPinchInRoot();
@@ -1672,13 +1737,42 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
       if (touchscreen_pinch_state_.NeedsWrappingScrollSequence()) {
         // If the root view is not the gesture target, and a scroll gesture has
         // not already started in the root from scroll bubbling, then we need
-        // to warp the diverted pinch events in a GestureScrollBegin/End.
+        // to wrap the diverted pinch events in a GestureScrollBegin/End.
         DCHECK(!rir->is_in_touchscreen_gesture_scroll());
         SendGestureScrollBegin(root_view, gesture_event);
       }
 
       touchscreen_pinch_state_.DidStartPinchInChild();
     }
+  }
+
+  if (embedded_touchscreen_pinch_in_progress_) {
+    RenderWidgetHostViewInput* pinch_zoom_target =
+        embedded_touchscreen_pinch_zoom_target_.get();
+    if (!pinch_zoom_target) {
+      embedded_touchscreen_pinch_in_progress_ = false;
+      embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ = false;
+      root_view->GestureEventAck(
+          gesture_event, blink::mojom::InputEventResultSource::kBrowser,
+          blink::mojom::InputEventResultState::kNoConsumerExists);
+      return;
+    }
+
+    ScopedInputDispatchPin pin(pinch_zoom_target);
+    pinch_zoom_target->ProcessGestureEvent(
+        GestureEventInTarget(gesture_event, pinch_zoom_target), latency);
+
+    if (gesture_event.GetType() ==
+        blink::WebInputEvent::Type::kGesturePinchEnd) {
+      if (embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_) {
+        SendGestureScrollEnd(
+            pinch_zoom_target,
+            GestureEventInTarget(gesture_event, pinch_zoom_target));
+      }
+      embedded_touchscreen_pinch_in_progress_ = false;
+      embedded_touchscreen_pinch_needs_wrapping_scroll_sequence_ = false;
+    }
+    return;
   }
 
   if (touchscreen_pinch_state_.IsInPinch()) {

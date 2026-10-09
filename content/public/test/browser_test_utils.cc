@@ -137,6 +137,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
@@ -1388,6 +1389,27 @@ void SimulateGestureEvent(WebContents* web_contents,
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       web_contents->GetRenderWidgetHostView());
   view->ProcessGestureEvent(gesture_event, latency);
+}
+
+void SimulateRoutedGestureEvent(WebContents* web_contents,
+                                const blink::WebGestureEvent& gesture_event) {
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents);
+  auto* root_view = static_cast<RenderWidgetHostViewBase*>(
+      web_contents->GetRenderWidgetHostView());
+  CHECK(root_view);
+  web_contents_impl->GetInputEventRouter()->RouteGestureEvent(
+      root_view, &gesture_event, ui::LatencyInfo());
+}
+
+void SimulateRoutedTouchEvent(WebContents* web_contents,
+                              const blink::WebTouchEvent& touch_event) {
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents);
+  auto* root_view = static_cast<RenderWidgetHostViewBase*>(
+      web_contents->GetRenderWidgetHostView());
+  CHECK(root_view);
+  blink::WebTouchEvent routed_event(touch_event);
+  web_contents_impl->GetInputEventRouter()->RouteTouchEvent(
+      root_view, &routed_event, ui::LatencyInfo());
 }
 
 void SimulateTouchGestureAt(WebContents* web_contents,
