@@ -28,7 +28,6 @@ static_library("internet") {
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/chromeos/extensions/vpn_provider",

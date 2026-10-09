@@ -23,7 +23,6 @@ static_library("sensor_info") {
     ":mojo_bindings",
     "//ash",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",

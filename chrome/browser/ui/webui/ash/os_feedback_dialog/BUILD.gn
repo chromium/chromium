@@ -10,8 +10,6 @@ static_library("os_feedback_dialog") {
     "os_feedback_dialog.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash/webui/os_feedback_ui:url_constants",
     "//base",

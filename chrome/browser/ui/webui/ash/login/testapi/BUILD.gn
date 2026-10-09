@@ -10,10 +10,7 @@ static_library("testapi") {
     "oobe_test_api_handler.h",
   ]
 
-  public_deps = [
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ "//base" ]
 
   deps = [
     "//ash",

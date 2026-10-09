@@ -23,7 +23,6 @@ static_library("privacy") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chrome/browser/ui/webui/settings",

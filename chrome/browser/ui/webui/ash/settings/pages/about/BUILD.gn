@@ -13,7 +13,6 @@ static_library("about") {
   public_deps = [
     "//base",
     "//build:branding_buildflags",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chrome/browser/ui/webui/settings",
     "//components/prefs",

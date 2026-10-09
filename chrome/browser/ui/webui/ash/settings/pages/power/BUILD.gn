@@ -23,7 +23,6 @@ static_library("power") {
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
