@@ -27,14 +27,12 @@ VideoCaptureJpegDecoder::STATUS ScopedVideoCaptureJpegDecoder::GetStatus()
 }
 
 void ScopedVideoCaptureJpegDecoder::DecodeCapturedData(
-    const uint8_t* data,
-    size_t in_buffer_size,
+    base::span<const uint8_t> data,
     const media::VideoCaptureFormat& frame_format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     media::VideoCaptureDevice::Client::Buffer out_buffer) {
-  decoder_->DecodeCapturedData(data, in_buffer_size, frame_format,
-                               reference_time, timestamp,
+  decoder_->DecodeCapturedData(data, frame_format, reference_time, timestamp,
                                std::move(out_buffer));
 }
 

@@ -14,6 +14,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
@@ -174,10 +175,9 @@ class WaylandKeyboardDeviceConfigurationDelegate
             std::move(shared_keymap_region));
     DCHECK(shared_keymap.IsValid());
 
-    UNSAFE_TODO(
-        std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size()));
-    UNSAFE_TODO(static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()]) =
-        '\0';
+    auto keymap_span = shared_keymap.GetMemoryAsSpan<char>();
+    keymap_span.copy_prefix_from(keymap);
+    keymap_span[keymap.size()] = '\0';
 
     zcr_keyboard_device_configuration_v1_send_layout_install(
         resource_, layout_name.c_str(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,

@@ -6,13 +6,15 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 #include <sys/mman.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/at_exit.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -21,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -312,9 +315,8 @@ class JpegClient : public JpegEncodeAccelerator::Client {
 
   // Calculate mean absolute difference of hardware and software encode results
   // for verifying the similarity.
-  double GetMeanAbsoluteDifference(uint8_t* hw_yuv_result,
-                                   uint8_t* sw_yuv_result,
-                                   size_t yuv_size);
+  double GetMeanAbsoluteDifference(base::span<const uint8_t> hw_yuv_result,
+                                   base::span<const uint8_t> sw_yuv_result);
 
   // Generate software encode result and populate it into |sw_out_shm_|.
   bool GetSoftwareEncodeResult(int width,
@@ -474,13 +476,15 @@ bool JpegClient::GetSoftwareEncodeResult(int width,
   int y_stride = width;
   int u_stride = width / 2;
   int v_stride = u_stride;
-  const uint8_t* yuv_src = static_cast<uint8_t*>(in_shm_->mapping.memory());
+  const size_t u_offset = base::checked_cast<size_t>(y_stride * height);
+  const size_t v_offset =
+      u_offset + base::checked_cast<size_t>(u_stride * height / 2);
+  const auto yuv_src = base::span<const uint8_t>(in_shm_->mapping);
   const int kBytesPerPixel = 4;
   std::vector<uint8_t> rgba_buffer(width * height * kBytesPerPixel);
-  libyuv::I420ToABGR(
-      yuv_src, y_stride, UNSAFE_TODO(yuv_src + y_stride * height), u_stride,
-      UNSAFE_TODO(yuv_src + y_stride * height + u_stride * height / 2),
-      v_stride, rgba_buffer.data(), width * kBytesPerPixel, width, height);
+  libyuv::I420ToABGR(yuv_src.data(), y_stride, yuv_src.subspan(u_offset).data(),
+                     u_stride, yuv_src.subspan(v_offset).data(), v_stride,
+                     rgba_buffer.data(), width * kBytesPerPixel, width, height);
 
   SkImageInfo info = SkImageInfo::Make(width, height, kRGBA_8888_SkColorType,
                                        kOpaque_SkAlphaType);
@@ -491,8 +495,7 @@ bool JpegClient::GetSoftwareEncodeResult(int width,
     return false;
   }
 
-  UNSAFE_TODO(
-      memcpy(sw_out_mapping_.memory(), encoded->data(), encoded->size()));
+  base::span(sw_out_mapping_).copy_prefix_from(*encoded);
   *sw_encoded_size = encoded->size();
   *sw_encode_time = base::TimeTicks::Now() - sw_encode_start;
   return true;
@@ -503,39 +506,34 @@ bool JpegClient::CompareHardwareAndSoftwareResults(int width,
                                                    size_t hw_encoded_size,
                                                    size_t sw_encoded_size) {
   size_t yuv_size = width * height * 3 / 2;
-  uint8_t* hw_yuv_result = new uint8_t[yuv_size];
+  auto hw_yuv_result = base::HeapArray<uint8_t>::Uninit(yuv_size);
   int y_stride = width;
   int u_stride = width / 2;
   int v_stride = u_stride;
+  const size_t u_offset = base::checked_cast<size_t>(y_stride * height);
+  const size_t v_offset =
+      u_offset + base::checked_cast<size_t>(u_stride * height / 2);
 
-  const uint8_t* out_mem = static_cast<const uint8_t*>(
-      hw_out_frame_ ? hw_out_frame_->data(0) : hw_out_mapping_.memory());
-  if (libyuv::ConvertToI420(out_mem, hw_encoded_size, hw_yuv_result, y_stride,
-                            UNSAFE_TODO(hw_yuv_result + y_stride * height),
-                            u_stride,
-                            UNSAFE_TODO(hw_yuv_result + y_stride * height +
-                                        u_stride * height / 2),
+  const uint8_t* out_mem =
+      hw_out_frame_ ? hw_out_frame_->data(0) : hw_out_mapping_.data();
+  if (libyuv::ConvertToI420(out_mem, hw_encoded_size, hw_yuv_result.data(),
+                            y_stride, hw_yuv_result.subspan(u_offset).data(),
+                            u_stride, hw_yuv_result.subspan(v_offset).data(),
                             v_stride, 0, 0, width, height, width, height,
                             libyuv::kRotate0, libyuv::FOURCC_MJPG)) {
     LOG(ERROR) << "Convert HW encoded result to YUV failed";
   }
 
-  uint8_t* sw_yuv_result = new uint8_t[yuv_size];
+  auto sw_yuv_result = base::HeapArray<uint8_t>::Uninit(yuv_size);
   if (libyuv::ConvertToI420(
-          static_cast<const uint8_t*>(sw_out_mapping_.memory()),
-          sw_encoded_size, sw_yuv_result, y_stride,
-          UNSAFE_TODO(sw_yuv_result + y_stride * height), u_stride,
-          UNSAFE_TODO(sw_yuv_result + y_stride * height +
-                      u_stride * height / 2),
-          v_stride, 0, 0, width, height, width, height, libyuv::kRotate0,
-          libyuv::FOURCC_MJPG)) {
+          sw_out_mapping_.data(), sw_encoded_size, sw_yuv_result.data(),
+          y_stride, sw_yuv_result.subspan(u_offset).data(), u_stride,
+          sw_yuv_result.subspan(v_offset).data(), v_stride, 0, 0, width, height,
+          width, height, libyuv::kRotate0, libyuv::FOURCC_MJPG)) {
     LOG(ERROR) << "Convert SW encoded result to YUV failed";
   }
 
-  double difference =
-      GetMeanAbsoluteDifference(hw_yuv_result, sw_yuv_result, yuv_size);
-  delete[] hw_yuv_result;
-  delete[] sw_yuv_result;
+  double difference = GetMeanAbsoluteDifference(hw_yuv_result, sw_yuv_result);
 
   if (difference > kMeanDiffThreshold) {
     LOG(ERROR) << "HW and SW encode results are not similar enough. diff = "
@@ -546,14 +544,15 @@ bool JpegClient::CompareHardwareAndSoftwareResults(int width,
   }
 }
 
-double JpegClient::GetMeanAbsoluteDifference(uint8_t* hw_yuv_result,
-                                             uint8_t* sw_yuv_result,
-                                             size_t yuv_size) {
+double JpegClient::GetMeanAbsoluteDifference(
+    base::span<const uint8_t> hw_yuv_result,
+    base::span<const uint8_t> sw_yuv_result) {
+  CHECK_EQ(hw_yuv_result.size(), sw_yuv_result.size());
   double total_difference = 0;
-  for (size_t i = 0; i < yuv_size; i++)
-    total_difference +=
-        std::abs(UNSAFE_TODO(hw_yuv_result[i]) - UNSAFE_TODO(sw_yuv_result[i]));
-  return total_difference / yuv_size;
+  for (size_t i = 0; i < hw_yuv_result.size(); i++) {
+    total_difference += std::abs(hw_yuv_result[i] - sw_yuv_result[i]);
+  }
+  return total_difference / hw_yuv_result.size();
 }
 
 void JpegClient::NotifyError(int32_t buffer_id,
@@ -596,8 +595,7 @@ void JpegClient::PrepareMemory(int32_t bitstream_buffer_id) {
         base::ReadOnlySharedMemoryRegion::Create(input_size));
     LOG_ASSERT(in_shm_->IsValid());
   }
-  UNSAFE_TODO(memcpy(in_shm_->mapping.memory(), test_image->image_data.data(),
-                     input_size));
+  base::span(in_shm_->mapping).copy_prefix_from(test_image->image_data);
 
   if (!hw_out_shm_.IsValid() || !hw_out_mapping_.IsValid() ||
       test_image->output_size > hw_out_mapping_.size()) {
@@ -607,7 +605,8 @@ void JpegClient::PrepareMemory(int32_t bitstream_buffer_id) {
     hw_out_mapping_ = hw_out_shm_.Map();
     LOG_ASSERT(hw_out_mapping_.IsValid());
   }
-  UNSAFE_TODO(memset(hw_out_mapping_.memory(), 0, test_image->output_size));
+  std::ranges::fill(base::span(hw_out_mapping_).first(test_image->output_size),
+                    0);
 
   if (!sw_out_shm_.IsValid() || !sw_out_mapping_.IsValid() ||
       test_image->output_size > sw_out_mapping_.size()) {
@@ -617,7 +616,8 @@ void JpegClient::PrepareMemory(int32_t bitstream_buffer_id) {
     sw_out_mapping_ = sw_out_shm_.Map();
     LOG_ASSERT(sw_out_mapping_.IsValid());
   }
-  UNSAFE_TODO(memset(sw_out_mapping_.memory(), 0, test_image->output_size));
+  std::ranges::fill(base::span(sw_out_mapping_).first(test_image->output_size),
+                    0);
 
   hw_out_frame_ = nullptr;
 }
@@ -640,20 +640,16 @@ void JpegClient::SaveToFile(TestImage* test_image,
   LOG(INFO) << "Writing HW encode results to "
             << out_filename_hw.MaybeAsASCII();
 
-  ASSERT_TRUE(base::WriteFile(
-      out_filename_hw,
-      UNSAFE_TODO(base::span(
-          hw_out_frame_ ? hw_out_frame_->data(0)
-                        : static_cast<uint8_t*>(hw_out_mapping_.memory()),
-          hw_size))));
+  const auto hw_data = hw_out_frame_
+                           ? hw_out_frame_->data_span(0)
+                           : base::span<const uint8_t>(hw_out_mapping_);
+  ASSERT_TRUE(base::WriteFile(out_filename_hw, hw_data.first(hw_size)));
 
   base::FilePath out_filename_sw = out_filename_hw.InsertBeforeExtension("_sw");
   LOG(INFO) << "Writing SW encode results to "
             << out_filename_sw.MaybeAsASCII();
-  ASSERT_TRUE(base::WriteFile(
-      out_filename_sw,
-      UNSAFE_TODO(base::span(static_cast<uint8_t*>(sw_out_mapping_.memory()),
-                             sw_size))));
+  ASSERT_TRUE(base::WriteFile(out_filename_sw,
+                              base::span(sw_out_mapping_).first(sw_size)));
 }
 
 void JpegClient::StartEncode(int32_t bitstream_buffer_id) {

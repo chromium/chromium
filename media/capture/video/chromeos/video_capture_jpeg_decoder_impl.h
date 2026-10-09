@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -55,8 +56,7 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   void Initialize() override;
   STATUS GetStatus() const override;
   void DecodeCapturedData(
-      const uint8_t* data,
-      size_t in_buffer_size,
+      base::span<const uint8_t> data,
       const media::VideoCaptureFormat& frame_format,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,

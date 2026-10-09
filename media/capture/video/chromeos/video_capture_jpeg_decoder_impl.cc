@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -56,8 +56,7 @@ VideoCaptureJpegDecoder::STATUS VideoCaptureJpegDecoderImpl::GetStatus() const {
 }
 
 void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
-    const uint8_t* data,
-    size_t in_buffer_size,
+    base::span<const uint8_t> data,
     const media::VideoCaptureFormat& frame_format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
@@ -81,9 +80,9 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
 
   // Enlarge input buffer if necessary.
   if (!in_shared_region_.IsValid() || !in_shared_mapping_.IsValid() ||
-      in_buffer_size > in_shared_mapping_.size()) {
+      data.size() > in_shared_mapping_.size()) {
     // Reserve 2x space to avoid frequent reallocations for initial frames.
-    const size_t reserved_size = 2 * in_buffer_size;
+    const size_t reserved_size = 2 * data.size();
     in_shared_region_ = base::UnsafeSharedMemoryRegion::Create(reserved_size);
     if (!in_shared_region_.IsValid()) {
       base::AutoLock lock(lock_);
@@ -101,12 +100,12 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
       return;
     }
   }
-  UNSAFE_TODO(memcpy(in_shared_mapping_.memory(), data, in_buffer_size));
+  base::span(in_shared_mapping_).copy_prefix_from(data);
 
   // No need to lock for |task_id_| since IsDecoding_Locked() is false.
   task_id_ = next_task_id_;
   media::BitstreamBuffer in_buffer(task_id_, in_shared_region_.Duplicate(),
-                                   in_buffer_size);
+                                   data.size());
   // Mask against 30 bits, to avoid (undefined) wraparound on signed integer.
   next_task_id_ = (next_task_id_ + 1) & 0x3FFFFFFF;
 

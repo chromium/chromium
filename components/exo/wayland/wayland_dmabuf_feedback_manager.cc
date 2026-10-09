@@ -13,7 +13,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/buffer.h"
@@ -372,13 +372,13 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
   shared_memory_region_ = std::make_unique<base::ReadOnlySharedMemoryRegion>(
       std::move(mapped_region.region));
 
-  WaylandDmabufFeedbackFormat* format_table =
-      static_cast<WaylandDmabufFeedbackFormat*>(mapped_region.mapping.memory());
+  auto format_table =
+      mapped_region.mapping.GetMemoryAsSpan<WaylandDmabufFeedbackFormat>();
 
   for (const auto& [format, modifier_entries] : drm_formats_and_modifiers_) {
     for (const auto& [table_index, modifier] : modifier_entries) {
-      UNSAFE_TODO(format_table[table_index]).format = format;
-      UNSAFE_TODO(format_table[table_index]).modifier = modifier;
+      format_table[table_index].format = format;
+      format_table[table_index].modifier = modifier;
     }
   }
 

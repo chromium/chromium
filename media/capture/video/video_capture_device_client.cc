@@ -444,8 +444,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
                !flip) {
       if (on_started_using_gpu_cb_)
         std::move(on_started_using_gpu_cb_).Run();
-      external_jpeg_decoder_->DecodeCapturedData(data.data(), data.size(),
-                                                 format, reference_time,
+      external_jpeg_decoder_->DecodeCapturedData(data, format, reference_time,
                                                  timestamp, std::move(buffer));
       return;
     }

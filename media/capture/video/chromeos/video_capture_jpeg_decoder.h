@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_VIDEO_CAPTURE_JPEG_DECODER_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_VIDEO_CAPTURE_JPEG_DECODER_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
@@ -35,10 +36,10 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoder {
   // Returns initialization status.
   virtual STATUS GetStatus() const = 0;
 
-  // Decodes a JPEG picture.
+  // Decodes a JPEG picture. The memory referenced by `data` only needs to
+  // remain valid until this method returns.
   virtual void DecodeCapturedData(
-      const uint8_t* data,
-      size_t in_buffer_size,
+      base::span<const uint8_t> data,
       const VideoCaptureFormat& frame_format,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,

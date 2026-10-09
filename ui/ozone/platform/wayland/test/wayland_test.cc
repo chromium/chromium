@@ -5,8 +5,9 @@
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 #include <memory>
+#include <string_view>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -211,7 +212,8 @@ void WaylandTestBase::MaybeSetUpXkb() {
         xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
     ASSERT_TRUE(keymap_string.get());
 
-    size_t keymap_size = strlen(keymap_string.get()) + 1;
+    const std::string_view keymap(keymap_string.get());
+    size_t keymap_size = keymap.size() + 1;
     base::UnsafeSharedMemoryRegion shared_keymap_region =
         base::UnsafeSharedMemoryRegion::Create(keymap_size);
     base::WritableSharedMemoryMapping shared_keymap =
@@ -221,8 +223,9 @@ void WaylandTestBase::MaybeSetUpXkb() {
             std::move(shared_keymap_region));
     ASSERT_TRUE(shared_keymap.IsValid());
 
-    UNSAFE_TODO(
-        memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size));
+    auto keymap_span = shared_keymap.GetMemoryAsSpan<char>();
+    keymap_span.copy_prefix_from(keymap);
+    keymap_span[keymap.size()] = '\0';
 
     auto* const keyboard = server->seat()->keyboard()->resource();
     ASSERT_TRUE(keyboard);
