@@ -69,12 +69,11 @@ export class TabGroupDotElement extends CrLitElement {
   }
 
   protected getViewBox_(): string {
-    return this.size === TabGroupDotSize.LARGE ? '-10 -10 20 20' :
-                                                 '-5 -5 10 10';
+    return this.size === TabGroupDotSize.LARGE ? '-6 -6 12 12' : '-5 -5 10 10';
   }
 
   protected getOuterRadius_(): number {
-    return this.size === TabGroupDotSize.LARGE ? 8 : 4;
+    return this.size === TabGroupDotSize.LARGE ? 6 : 4;
   }
 
   protected getRadius_(): number {
@@ -89,7 +88,7 @@ export class TabGroupDotElement extends CrLitElement {
     if (this.filled) {
       return 0;
     }
-    return this.getOuterRadius_() * 0.25;
+    return 2;
   }
 }
 

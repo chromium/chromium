@@ -45,19 +45,19 @@ suite('TabGroupDotTest', () => {
     dot.filled = false;
     await microtasksFinished();
 
-    assertEquals('3.5', circle.getAttribute('r'));
-    assertEquals('1', circle.getAttribute('stroke-width'));
+    assertEquals('3', circle.getAttribute('r'));
+    assertEquals('2', circle.getAttribute('stroke-width'));
 
     dot.size = TabGroupDotSize.LARGE;
     await microtasksFinished();
 
-    assertEquals('7', circle.getAttribute('r'));
+    assertEquals('5', circle.getAttribute('r'));
     assertEquals('2', circle.getAttribute('stroke-width'));
 
     dot.filled = true;
     await microtasksFinished();
 
-    assertEquals('8', circle.getAttribute('r'));
+    assertEquals('6', circle.getAttribute('r'));
     assertEquals('0', circle.getAttribute('stroke-width'));
   });
 
@@ -70,10 +70,10 @@ suite('TabGroupDotTest', () => {
     dot.size = TabGroupDotSize.LARGE;
     await microtasksFinished();
 
-    assertEquals('-10 -10 20 20', svg.getAttribute('viewBox'));
+    assertEquals('-6 -6 12 12', svg.getAttribute('viewBox'));
     assertEquals('16px', getComputedStyle(svg).width);
     assertEquals('16px', getComputedStyle(svg).height);
-    assertEquals('8', circle.getAttribute('r'));
+    assertEquals('6', circle.getAttribute('r'));
 
     dot.size = TabGroupDotSize.SMALL;
     await microtasksFinished();
