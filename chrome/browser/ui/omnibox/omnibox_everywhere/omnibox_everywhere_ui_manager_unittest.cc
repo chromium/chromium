@@ -452,7 +452,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, SmallLoomniboxBounds) {
                                   true);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxEverywhere, {{"smallLoomnibox", "true"}});
+      omnibox::kOmniboxEverywhere,
+      {{"DynamicSizing", "false"}, {"smallLoomnibox", "true"}});
 
   EXPECT_EQ(
       omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth(),
