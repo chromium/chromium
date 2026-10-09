@@ -6,6 +6,9 @@
 
 #include <hb.h>
 
+#include <cmath>
+#include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -49,6 +52,88 @@ class ShapeResultRunTest : public testing::Test {
     return run;
   }
 };
+
+TEST_F(ShapeResultRunTest, CompactHitTestingUsesFixedPointPositions) {
+  constexpr unsigned kNumGlyphs = 32768;
+  for (int advance_raw : {655360, 629146, 6124123, 4402067}) {
+    SCOPED_TRACE(advance_raw);
+    ShapeResultRun* run = CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs);
+    const TextRunLayoutUnit advance =
+        TextRunLayoutUnit::FromRawValue(advance_raw);
+    for (HarfBuzzRunGlyphData& glyph : run->glyph_data_.MutableGlyphs()) {
+      glyph.advance = advance;
+    }
+    const auto Position = [advance_raw](unsigned index) {
+      return InlineLayoutUnit::FromRawValue(int64_t{advance_raw} * index)
+          .ToFloat();
+    };
+    run->width_ = Position(kNumGlyphs);
+    ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
+
+    for (unsigned boundary_index : {0u, 3u, 5u, 269u, 30000u, kNumGlyphs - 1}) {
+      SCOPED_TRACE(boundary_index);
+      const float boundary = Position(boundary_index);
+      for (float target_x :
+           {std::nextafter(boundary, 0.0f), boundary,
+            std::nextafter(boundary, std::numeric_limits<float>::infinity())}) {
+        SCOPED_TRACE(target_x);
+        const unsigned glyph_index =
+            target_x < boundary ? boundary_index - 1 : boundary_index;
+        for (bool break_glyphs : {false, true}) {
+          GlyphIndexResult result;
+          run->CharacterIndexForXPosition(
+              target_x, BreakGlyphsOption(break_glyphs), &result);
+          EXPECT_EQ(glyph_index, result.left_character_index);
+          EXPECT_EQ(glyph_index + 1, result.right_character_index);
+          EXPECT_EQ(Position(glyph_index), result.origin_x);
+          EXPECT_EQ(advance.ToFloat(), result.advance);
+        }
+      }
+    }
+    EXPECT_TRUE(run->glyph_data_.IsCompact());
+  }
+}
+
+TEST_F(ShapeResultRunTest, CompactHitTestingAfterMaterialization) {
+  constexpr unsigned kNumGlyphs = 32768;
+  constexpr int kAdvanceRaw = 629146;
+  ShapeResultRun* run = CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs);
+  const TextRunLayoutUnit advance =
+      TextRunLayoutUnit::FromRawValue(kAdvanceRaw);
+  for (HarfBuzzRunGlyphData& glyph : run->glyph_data_.MutableGlyphs()) {
+    glyph.advance = advance;
+  }
+  run->width_ =
+      InlineLayoutUnit::FromRawValue(int64_t{kAdvanceRaw} * kNumGlyphs)
+          .ToFloat();
+  const float target_x =
+      InlineLayoutUnit::FromRawValue(int64_t{kAdvanceRaw} * 30000).ToFloat();
+  GlyphIndexResult full_result;
+  run->CharacterIndexForXPosition(target_x, BreakGlyphsOption(false),
+                                  &full_result);
+  EXPECT_EQ(30009u, full_result.left_character_index);
+
+  ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
+  GlyphIndexResult compact_result;
+  run->CharacterIndexForXPosition(target_x, BreakGlyphsOption(false),
+                                  &compact_result);
+  EXPECT_EQ(30000u, compact_result.left_character_index);
+  EXPECT_EQ(target_x, compact_result.origin_x);
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+
+  run->glyph_data_.MutableGlyphs();
+  GlyphIndexResult materialized_result;
+  run->CharacterIndexForXPosition(target_x, BreakGlyphsOption(false),
+                                  &materialized_result);
+  EXPECT_EQ(full_result.left_character_index,
+            materialized_result.left_character_index);
+  EXPECT_EQ(full_result.right_character_index,
+            materialized_result.right_character_index);
+  EXPECT_EQ(full_result.origin_x, materialized_result.origin_x);
+  EXPECT_EQ(full_result.advance, materialized_result.advance);
+  EXPECT_FALSE(run->glyph_data_.IsCompact());
+}
+
 TEST_F(ShapeResultRunTest, GlyphDataCopyConstructor) {
   ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
   auto* graphemes = MakeGarbageCollected<GCedHeapVector<wtf_size_t>>(2);
@@ -439,6 +524,53 @@ TEST_F(ShapeResultRunTest, CompactReadShortcutsDoNotMaterialize) {
 #endif
   EXPECT_TRUE(compact_run->glyph_data_.IsCompact());
   EXPECT_TRUE(compact_zero_advance_run->glyph_data_.IsCompact());
+}
+
+TEST_F(ShapeResultRunTest, CompactCharacterIndexCorrectsFloatRounding) {
+  constexpr unsigned kNumGlyphs = 8;
+  struct TestCase {
+    int advance_raw;
+    unsigned boundary_index;
+    bool target_precedes_boundary;
+    unsigned estimated_index;
+    unsigned expected_index;
+  };
+  // Exercise float under- and overestimates around exact boundaries.
+  constexpr TestCase kTestCases[] = {
+      {6124123, 3, false, 2, 3},
+      {4402067, 5, true, 5, 4},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.advance_raw);
+    ShapeResultRun* run = CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs);
+    const TextRunLayoutUnit advance =
+        TextRunLayoutUnit::FromRawValue(test_case.advance_raw);
+    for (unsigned i = 0; i < kNumGlyphs; ++i) {
+      run->glyph_data_.MutableGlyphAt(i).SetAdvance(advance);
+    }
+    run->width_ =
+        InlineLayoutUnit::FromRawValue(int64_t{advance.RawValue()} * kNumGlyphs)
+            .ToFloat();
+    ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
+
+    const float boundary =
+        InlineLayoutUnit::FromRawValue(int64_t{advance.RawValue()} *
+                                       test_case.boundary_index)
+            .ToFloat();
+    const float target_x = test_case.target_precedes_boundary
+                               ? std::nextafter(boundary, 0.0f)
+                               : boundary;
+    ASSERT_EQ(test_case.estimated_index,
+              static_cast<unsigned>(target_x / advance.ToFloat()));
+
+    GlyphIndexResult result;
+    run->CharacterIndexForXPosition(target_x, BreakGlyphsOption(false),
+                                    &result);
+    EXPECT_EQ(test_case.expected_index, result.left_character_index);
+    EXPECT_EQ(test_case.expected_index + 1, result.right_character_index);
+    EXPECT_TRUE(run->glyph_data_.IsCompact());
+  }
 }
 
 TEST_F(ShapeResultRunTest, CompactCopyMaterializesIndependently) {
