@@ -30,7 +30,7 @@ bool AreCredentialsEligibleForFilling(
   // Check that this is only called when `form_info` is available.
   CHECK(form_info);
 
-  const bool is_single_username = form_info && form_info->username_element_id &&
+  const bool is_single_username = form_info->username_element_id &&
                                   !form_info->password_element_id;
 
   const auto has_empty_username = [](const Credential& c) {
