@@ -26,6 +26,7 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
     bool enable_permission_requests,
     bool enable_browser_autofill) {
   TabHelpers::AttachTabHelpers(web_contents, enable_browser_autofill);
+  permissions::PermissionRequestManager::CreateForWebContents(web_contents);
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_web_contents_supports_permission_requests(
           enable_permission_requests);

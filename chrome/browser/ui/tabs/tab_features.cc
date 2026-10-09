@@ -257,6 +257,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1101,6 +1102,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<site_protection::SiteProtectionMetricsObserver>(
           tab.GetContents());
 
+  permissions::PermissionRequestManager::CreateForWebContents(
+      tab.GetContents());
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
       tab.GetContents(), HostContentSettingsMapFactory::GetForProfile(profile),
@@ -1709,6 +1713,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   site_protection_metrics_observer_ =
       std::make_unique<site_protection::SiteProtectionMetricsObserver>(
           new_contents);
+
+  permissions::PermissionRequestManager::CreateForWebContents(new_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(

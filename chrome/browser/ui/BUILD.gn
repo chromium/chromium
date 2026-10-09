@@ -1448,7 +1448,6 @@ source_set("tab_helpers_impl") {
     "//components/page_info/core",
     "//components/password_manager/core/browser",
     "//components/performance_manager",
-    "//components/permissions",
     "//components/permissions:permissions_common",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/common:features",

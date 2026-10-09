@@ -147,6 +147,7 @@
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/payments/core/features.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/security_interstitials/core/features.h"
@@ -421,6 +422,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   site_protection_metrics_observer_ =
       std::make_unique<site_protection::SiteProtectionMetricsObserver>(
           web_contents);
+
+  permissions::PermissionRequestManager::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(

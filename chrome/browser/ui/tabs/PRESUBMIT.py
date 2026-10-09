@@ -85,6 +85,13 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # PaymentHandlerWebFlowViewController::PopulateSheet, DocumentPipHost, and
   # GlicSidePanelUi, so the WebContents must own it.
   'permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents',
+  # PermissionRequestManager lives in //components/permissions and is also
+  # attached to non-tab WebContents in ChromeThinWebViewInitializer,
+  # DocumentPipHost, PaymentHandlerWebFlowViewController,
+  # ContextualTasksSidePanelCoordinator, OmniboxPopupWebuiBaseContent,
+  # OmniboxEverywhereUiManager, VrUiHostImpl, and ExternalAppDialog, so
+  # WebContents must own it.
+  'permissions::PermissionRequestManager::CreateForWebContents',
   # PrefsTabHelper is also attached to non-tab WebContents in DevToolsWindow,
   # ChromeExtensionHostDelegate::OnExtensionHostCreated,
   # GlicNoWebviewContentsManager, GlicWebUIContentsManager,
