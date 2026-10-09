@@ -9,6 +9,7 @@
 #import <objc/runtime.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include <limits>
 #include <string>
@@ -705,6 +706,27 @@ TEST_F(RenderWidgetHostViewMacTest, Basic) {
 TEST_F(RenderWidgetHostViewMacTest, AcceptsFirstResponder) {
   // The RWHVCocoa should normally accept first responder status.
   EXPECT_TRUE(rwhv_cocoa_.acceptsFirstResponder);
+}
+
+TEST_F(RenderWidgetHostViewMacTest,
+       AcceptsFirstMouseForClickPostedToInactiveApp) {
+  ASSERT_FALSE(NSApp.active);
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+      /*source=*/nullptr, kCGEventLeftMouseDown, CGPointZero,
+      kCGMouseButtonLeft));
+
+  CGEventSetIntegerValueField(cg_event.get(), kCGEventSourceUnixProcessID, 0);
+  EXPECT_FALSE([rwhv_cocoa_
+      acceptsFirstMouse:[NSEvent eventWithCGEvent:cg_event.get()]]);
+
+  CGEventSetIntegerValueField(cg_event.get(), kCGEventSourceUnixProcessID,
+                              getpid());
+  EXPECT_FALSE([rwhv_cocoa_
+      acceptsFirstMouse:[NSEvent eventWithCGEvent:cg_event.get()]]);
+
+  CGEventSetIntegerValueField(cg_event.get(), kCGEventSourceUnixProcessID, 1);
+  EXPECT_TRUE([rwhv_cocoa_
+      acceptsFirstMouse:[NSEvent eventWithCGEvent:cg_event.get()]]);
 }
 
 // A mouse exited event arriving at a hidden view (synthesized by

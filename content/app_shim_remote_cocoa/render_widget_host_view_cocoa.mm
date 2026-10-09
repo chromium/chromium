@@ -6,6 +6,7 @@
 
 #include <AppKit/AppKit.h>
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <limits>
@@ -855,6 +856,18 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent*)theEvent {
+  // A click that another process posts straight to this process does not
+  // activate the app, unlike one the window server routes here, so treating it
+  // as an activation click would only drop it.
+  CGEventRef cgEvent = theEvent.CGEvent;
+  if (!NSApp.active && cgEvent) {
+    int64_t sourcePid =
+        CGEventGetIntegerValueField(cgEvent, kCGEventSourceUnixProcessID);
+    if (sourcePid != 0 && sourcePid != getpid()) {
+      return YES;
+    }
+  }
+
   // Enable "click-through" if mouse clicks are accepted in inactive windows.
   return
       [self acceptsMouseEventsOption] > AcceptMouseEvents::kWhenInActiveWindow;
