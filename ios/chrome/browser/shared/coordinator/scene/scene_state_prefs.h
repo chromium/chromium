@@ -11,7 +11,6 @@
 
 #import "base/time/time.h"
 
-@class UISceneSession;
 class ProfileManagerIOS;
 
 // Provides access to SceneState scoped preferences.
@@ -21,7 +20,6 @@ class ProfileManagerIOS;
 - (instancetype)initWithProfileManager:(ProfileManagerIOS*)profileManager
                            profileName:(std::string_view)profileName
                      sessionIdentifier:(std::string_view)sessionIdentifier
-                          sceneSession:(UISceneSession*)sceneSession
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

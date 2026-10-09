@@ -4,79 +4,20 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 
-#import <optional>
 #import <string>
 
-#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/json/values_util.h"
 #import "base/scoped_observation.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/values.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 
-// The way the SceneState scoped preferences are saved have evolved over
-// time with the addition of the support for multi-window and then multi-
-// profile.
-//
-// Historically, before introduction of multi-window or multi-profile,
-// those preferences were not scoped to a SceneState and were saved into
-// NSUserDefaults.
-//
-// When multi-window was introduced, the preferences should now be scoped
-// to SceneState, and thus were moved to the UISceneSession -userInfo. It
-// was not used on iPhone though because the swipe gesture to terminate
-// the app was sometimes interpreted by the OS as a request to close the
-// window instead, resulting in the destruction of the storage.
-//
-// To support multi-profile, and restoring data from the last closed window,
-// the data were eventually moved to ProfileAttributesIOS as session scoped
-// preferences.
-//
-// The data is migrated when the object is created (if needed). There were
-// only two keys ever stored as key for SceneState scoped preferences. The
-// migration is thus hard-coded here.
-
 namespace {
-
-// Constants.
-const std::string_view kIncognitoActive = "IncognitoActive";
-const std::string_view kEnterBackground =
-    "StartSurfaceSceneEnterIntoBackgroundTime";
-
-// Helper used to migrate preference of type `T`.
-template <typename T>
-struct MigrationHelper {};
-
-// Partial specialisation of `MigrationHelper` for `bool` preference.
-template <>
-struct MigrationHelper<bool> {
-  static std::optional<bool> From(NSObject* value) {
-    if (NSNumber* number = base::apple::ObjCCast<NSNumber>(value)) {
-      return [number boolValue];
-    }
-    return std::nullopt;
-  }
-};
-
-// Partial specialisation of `MigrationHelper` for `base::Time` preference.
-template <>
-struct MigrationHelper<base::Time> {
-  static std::optional<base::Time> From(NSObject* value) {
-    if (NSDate* date = base::apple::ObjCCast<NSDate>(value)) {
-      return base::Time::FromNSDate(date);
-    }
-    return std::nullopt;
-  }
-};
 
 // Helper used to read/write preference of type `T`.
 template <typename T>
@@ -146,39 +87,7 @@ class SceneStatePrefsHelper {
     SetPref(pref_name, value);
   }
 
-  // Migrate data if necessary.
-  void MigrateDataFrom(UISceneSession* session, NSUserDefaults* defaults) {
-    using Time = base::Time;
-    MigratePrefFrom<bool>(session, defaults, kIncognitoActive);
-    MigratePrefFrom<Time>(session, defaults, kEnterBackground);
-
-    // Inconditionally clear UISession -userInfo (easier to do after the
-    // migration instead of updating it for each migrated key).
-    session.userInfo = @{};
-  }
-
  private:
-  // Migrate `pref` if necessary.
-  template <typename T>
-  void MigratePrefFrom(UISceneSession* session,
-                       NSUserDefaults* defaults,
-                       std::string_view pref_name) {
-    NSObject* object = nil;
-    NSString* key = base::SysUTF8ToNSString(pref_name);
-    if (session) {
-      object = [session.userInfo objectForKey:key];
-    }
-    if (!object) {
-      object = [defaults objectForKey:key];
-    }
-
-    if (std::optional<T> value = MigrationHelper<T>::From(object)) {
-      SetPref(pref_name, *value);
-    }
-
-    [defaults removeObjectForKey:key];
-  }
-
   // Stores `value` under `pref`.
   template <typename T>
   void SetPref(std::string_view pref_name, T value) {
@@ -269,8 +178,7 @@ class SceneStatePrefsProfileManagerObserver : public ProfileManagerObserverIOS {
 
 - (instancetype)initWithProfileManager:(ProfileManagerIOS*)profileManager
                            profileName:(std::string_view)profileName
-                     sessionIdentifier:(std::string_view)sessionIdentifier
-                          sceneSession:(UISceneSession*)sceneSession {
+                     sessionIdentifier:(std::string_view)sessionIdentifier {
   if ((self = [super init])) {
     _helper = std::make_unique<SceneStatePrefsHelper>(
         profileManager->GetProfileAttributesStorage(), profileName,
@@ -281,11 +189,6 @@ class SceneStatePrefsProfileManagerObserver : public ProfileManagerObserverIOS {
         profileManager, profileName, base::BindOnce(^{
           [weakSelf profileUnloaded];
         }));
-
-    // TODO(crbug.com/519105565): Remove migration support a few releases
-    // after the feature is launched.
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    _helper->MigrateDataFrom(sceneSession, defaults);
   }
   return self;
 }

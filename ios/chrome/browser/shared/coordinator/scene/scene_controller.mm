@@ -905,8 +905,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     _sceneState.prefs = [[SceneStatePrefs alloc]
         initWithProfileManager:manager
                    profileName:profileState.profile->GetProfileName()
-             sessionIdentifier:_sceneState.sceneSessionID
-                  sceneSession:_sceneState.scene.session];
+             sessionIdentifier:_sceneState.sceneSessionID];
     [_sceneState.incognitoState preferencesDidLoad];
   }
 

@@ -74,8 +74,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     scene_state_.prefs = [[SceneStatePrefs alloc]
         initWithProfileManager:&profile_manager_
                    profileName:profile_->GetProfileName()
-             sessionIdentifier:scene_state_.sceneSessionID
-                  sceneSession:nil];
+             sessionIdentifier:scene_state_.sceneSessionID];
 
     agent_ = [[StartSurfaceSceneAgent alloc] init];
     agent_.sceneState = scene_state_;

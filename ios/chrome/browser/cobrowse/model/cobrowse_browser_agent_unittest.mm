@@ -75,8 +75,7 @@ class CobrowseBrowserAgentTest : public PlatformTest {
     scene_state_.prefs = [[SceneStatePrefs alloc]
         initWithProfileManager:&profile_manager_
                    profileName:profile_->GetProfileName()
-             sessionIdentifier:scene_state_.sceneSessionID
-                  sceneSession:nil];
+             sessionIdentifier:scene_state_.sceneSessionID];
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
