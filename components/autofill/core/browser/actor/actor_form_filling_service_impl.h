@@ -51,6 +51,11 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   void GetSuggestions(AutofillClient& client,
                       base::span<const FillRequest> fill_requests,
                       GetSuggestionsCallback callback) override;
+  void RetrieveSuggestionForCreditCardOpaqueToken(
+      AutofillClient& client,
+      base::span<const FillRequest> fill_requests,
+      const std::string& credit_card_opaque_token,
+      GetSuggestionsCallback callback) override;
   void FillSuggestions(
       AutofillClient& client,
       base::span<const ActorFormFillingSelection> chosen_suggestions,
@@ -107,6 +112,18 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
       mojom::ActionPersistence action_persistence,
       const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons);
+
+  // Handles the retrieved credit card for an opaque token and populates the
+  // suggestions and fill data.
+  void OnRetrievedSuggestionForCreditCardOpaqueToken(
+      base::WeakPtr<AutofillManager> weak_manager,
+      std::optional<FormGlobalId> form_id,
+      GetSuggestionsCallback callback,
+      std::vector<FieldGlobalId> fields,
+      std::string section_label,
+      FieldGlobalId trigger_field_id,
+      url::Origin origin,
+      std::optional<CreditCard> card);
 
   // Contains, within a single sequence of filling operations (all belonging to
   // a single round of suggestion generation), the errors (if any) that

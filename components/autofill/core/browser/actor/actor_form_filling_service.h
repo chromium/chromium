@@ -70,6 +70,16 @@ class ActorFormFillingService {
                               base::span<const FillRequest> fill_requests,
                               GetSuggestionsCallback callback) = 0;
 
+  // Retrieves an Autofill suggestion for a credit card opaque token.
+  //
+  // The suggestions are returned via the callback. If an error occurs, the
+  // callback will be invoked with an ActorFormFillingError.
+  virtual void RetrieveSuggestionForCreditCardOpaqueToken(
+      AutofillClient& client,
+      base::span<const FillRequest> fill_requests,
+      const std::string& credit_card_opaque_token,
+      GetSuggestionsCallback callback) = 0;
+
   // Attempts to fill the `chosen_suggestions` into their corresponding form
   // sections. The suggestions must have been obtained from a prior call to
   // GetSuggestions().

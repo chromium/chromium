@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -1127,6 +1128,118 @@ TEST_F(ActorFormFillingServiceTest, LogsMultipleSkipReasonsToJournal) {
 
   service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
+}
+
+TEST_F(ActorFormFillingServiceTest,
+       RetrieveSuggestionForCreditCardOpaqueToken) {
+  base::HistogramTester histogram_tester;
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}});
+  CreditCard card = test::GetCreditCard();
+  EXPECT_CALL(credit_card_access_manager(),
+              RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
+      .WillOnce(base::test::RunOnceCallback<1>(card));
+
+  GetSuggestionsFuture future;
+  service().RetrieveSuggestionForCreditCardOpaqueToken(
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      "opaque_token_xyz", future.GetCallback());
+  ASSERT_THAT(future.Get(), HasValue());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  ASSERT_EQ(requests.size(), 1u);
+  EXPECT_EQ(requests[0].requested_data,
+            ActorFormFillingRequest::RequestedData::kCreditCard);
+  ASSERT_EQ(requests[0].suggestions.size(), 1u);
+  EXPECT_EQ(requests[0].suggestions[0].id, ActorSuggestionId(1));
+
+  ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
+                              histogram_tester);
+
+  // Verify that FillForm succeeds without error now that field_ids are stored.
+  service().FillForm(client(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  EXPECT_TRUE(test_api(service()).FillingErrors().empty());
+  EXPECT_THAT(last_filled_values(),
+              Contains(std::pair(form.fields()[0].global_id(),
+                                 GetFillValue(card, CREDIT_CARD_NAME_FULL))));
+}
+
+TEST_F(ActorFormFillingServiceTest,
+       RetrieveSuggestionForCreditCardOpaqueToken_NoSuggestions) {
+  base::HistogramTester histogram_tester;
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}});
+  EXPECT_CALL(credit_card_access_manager(),
+              RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
+      .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
+
+  GetSuggestionsFuture future;
+  service().RetrieveSuggestionForCreditCardOpaqueToken(
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      "opaque_token_xyz", future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kNoSuggestions,
+                              histogram_tester);
+}
+
+TEST_F(ActorFormFillingServiceTest,
+       RetrieveSuggestionForCreditCardOpaqueToken_EmptyFields) {
+  base::HistogramTester histogram_tester;
+  GetSuggestionsFuture future;
+  service().RetrieveSuggestionForCreditCardOpaqueToken(
+      client(), {CreditCardFillRequest({})}, "opaque_token_xyz",
+      future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kNoSuggestions,
+                              histogram_tester);
+}
+
+TEST_F(ActorFormFillingServiceTest,
+       RetrieveSuggestionForCreditCardOpaqueToken_WithAddressRequest) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = ADDRESS_HOME_LINE1}}});
+  GetSuggestionsFuture future;
+  service().RetrieveSuggestionForCreditCardOpaqueToken(
+      client(), {AddressFillRequest({form.fields()[0].global_id()})},
+      "opaque_token_xyz", future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kOther));
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kOther, histogram_tester);
+}
+
+TEST_F(ActorFormFillingServiceTest,
+       RetrieveSuggestionForCreditCardOpaqueToken_AddressFormDoesNotFill) {
+  FormData form = SeeForm({.fields = {{.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+  CreditCard card = test::GetCreditCard();
+  EXPECT_CALL(credit_card_access_manager(),
+              RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
+      .WillOnce(base::test::RunOnceCallback<1>(card));
+
+  GetSuggestionsFuture future;
+  service().RetrieveSuggestionForCreditCardOpaqueToken(
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      "opaque_token_xyz", future.GetCallback());
+  ASSERT_THAT(future.Get(), HasValue());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  service().FillForm(client(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  EXPECT_TRUE(test_api(service()).FillingErrors().empty());
+  EXPECT_TRUE(last_filled_values().empty());
+}
+
+TEST_F(ActorFormFillingServiceTest, FillSuggestionsWithoutFillingObserver) {
+  base::test::TestFuture<base::expected<std::string, ActorFormFillingError>>
+      future;
+  service().FillSuggestions(client(),
+                            {ActorFormFillingSelection(ActorSuggestionId(1))},
+                            future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kOther));
 }
 
 }  // namespace

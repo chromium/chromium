@@ -77,6 +77,11 @@ class TestCreditCardAccessManager : public CreditCardAccessManager {
 
   [[nodiscard]] bool RunCreditCardFetchedCallback(const CreditCard& card);
 
+  MOCK_METHOD(void,
+              RetrieveCreditCardForOpaqueToken,
+              (const std::string&, OnCreditCardRetrievedForOpaqueTokenCallback),
+              (override));
+
  private:
   OnCreditCardFetchedCallback callback_;
 };
