@@ -99,6 +99,10 @@ def CleanObjectFiles(object_files):
     object_files: List of object files that needs cleaning.
   """
     cleaning_list = [
+        # Host tool helper for cl.exe make dependencies on Windows; not part of
+        # the FFmpeg library built by GN.
+        'ffbuild/mscl.o',
+
         'libavcodec/file_open.o',  # Includes libavutil/file_open.c
         'libavformat/file_open.o',  # Includes libavutil/file_open.c
 
@@ -582,6 +586,8 @@ def ParseOptions():
   """
     parser = optparse.OptionParser(usage='usage: %prog [options] DIR')
 
+    orig_cwd = os.getcwd()
+
     # The test wrapper doesn't appreciate the status messages.
     ffmpeg_home = ffmpeg_src = ''
     try:
@@ -621,6 +627,19 @@ def ParseOptions():
                       help='Write git commands for renames to a file.')
 
     options, args = parser.parse_args()
+
+    if (options.output_git_commands
+            and not os.path.isabs(options.output_git_commands)):
+        options.output_git_commands = os.path.abspath(
+            os.path.join(orig_cwd, options.output_git_commands))
+
+    if options.source_dir and not os.path.isabs(options.source_dir):
+        options.source_dir = os.path.abspath(
+            os.path.join(orig_cwd, options.source_dir))
+
+    if options.build_dir and not os.path.isabs(options.build_dir):
+        options.build_dir = os.path.abspath(
+            os.path.join(orig_cwd, options.build_dir))
 
     if not options.source_dir:
         parser.error('No FFmpeg source directory specified')
@@ -706,6 +725,9 @@ IGNORED_INCLUDE_FILES = [
     os.path.join('libavcodec', 'pcm_tables.h'),
     os.path.join('libavcodec', 'sinewin_tables.h'),
     os.path.join('libavcodec', 'sinewin_fixed_tables.h'),
+
+    # Removed upstream when dropping legacy pre-UCRT MSVC support.
+    os.path.join('compat', 'msvcrt', 'strtod.h'),
 ]
 
 # These files must never be included, and to enforce it, they must also not

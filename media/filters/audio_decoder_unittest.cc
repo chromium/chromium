@@ -688,7 +688,7 @@ constexpr TestParams kXheAacTestParams[] = {
      }},
      0,
      29400,
-     CHANNEL_LAYOUT_UNSUPPORTED,
+     CHANNEL_LAYOUT_MONO,
      AudioCodecProfile::kXHE_AAC},
 #endif
     {AudioCodec::kAAC,
