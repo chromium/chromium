@@ -82,16 +82,6 @@ function createAndAppendRealbox(properties: Partial<NtpSearchboxElement> = {}):
   return realbox;
 }
 
-// With `reportMetrics` set, the searchbox reports timing through
-// MetricsReporter, which must be mocked so it doesn't call PageMetricsHost.
-function installMetricsReporterMock() {
-  const proxy = TestMock.fromClass(BrowserProxyImpl);
-  proxy.setResultFor('getCallbackRouter', new PageMetricsCallbackRouter());
-  proxy.setResultFor('getMark', Promise.resolve(null));
-  BrowserProxyImpl.setInstance(proxy);
-  MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
-}
-
 suite('NewTabPageRealboxTabsTest', () => {
   let realbox: NtpSearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
@@ -111,7 +101,6 @@ suite('NewTabPageRealboxTabsTest', () => {
   setup(async () => {
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
-    installMetricsReporterMock();
 
     realbox = createAndAppendRealbox(
         {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
@@ -213,7 +202,15 @@ suite('NewTabPageRealboxNextTest', () => {
         'getInputState', Promise.resolve({state: SAMPLE_INPUT_STATE}));
     SearchboxBrowserProxy.setInstance(testProxy);
 
-    installMetricsReporterMock();
+    // Set up MetricsReporter's browser proxy.
+    const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
+    testMetricsReporterProxy.reset();
+    const metricsReporterCallbackRouter = new PageMetricsCallbackRouter();
+    testMetricsReporterProxy.setResultFor(
+        'getCallbackRouter', metricsReporterCallbackRouter);
+    testMetricsReporterProxy.setResultFor('getMark', Promise.resolve(null));
+    BrowserProxyImpl.setInstance(testMetricsReporterProxy);
+    MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
     metrics = fakeMetricsPrivate();
     window.open = () => null;
     realbox = createAndAppendRealbox({
@@ -1212,8 +1209,6 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 });
 
-// TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
-// <if expr="not is_android">
 suite('NewTabPageRealboxSmartTabSharingTest', () => {
   let realbox: NtpSearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
@@ -1260,4 +1255,3 @@ suite('NewTabPageRealboxSmartTabSharingTest', () => {
     await openComposeboxPromise;
   });
 });
-// </if>

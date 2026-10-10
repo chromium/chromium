@@ -38,8 +38,11 @@ build_webui_tests("build") {
         "searchbox_focus_test.ts",
         "searchbox_lens_button_test.ts",
         "searchbox_ntp_test.ts",
-      ] + modules_test_files + composebox_test_files + ntp_promo_test_files +
-      action_chips_test_files
+      ] + modules_test_files + ntp_promo_test_files + action_chips_test_files
+
+  if (!is_android) {
+    files += composebox_test_files
+  }
 
   ts_tsconfig_base = "tsconfig_base.json"
 
