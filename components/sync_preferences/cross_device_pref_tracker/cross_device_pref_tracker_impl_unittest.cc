@@ -434,6 +434,44 @@ TEST_F(CrossDevicePrefTrackerTest,
   EXPECT_TRUE(entry->contains(kLastObservedChangeTimeKey));
 }
 
+// Verifies that writing a value equal to the registered default value does not
+// create a cross-device entry when no entry exists yet, but updates an
+// existing entry when one was already recorded.
+TEST_F(CrossDevicePrefTrackerTest,
+       IgnoresWriteOfDefaultValueWhenNoExistingEntry) {
+  CreateTracker();
+
+  // Calling `SetInteger` with the default value (0) when no cross-device entry
+  // exists yet should not create an entry.
+  profile_prefs_.SetInteger(kTrackedProfilePref, 0);
+  local_state_prefs_.SetInteger(kTrackedLocalStatePref, 0);
+
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+  EXPECT_EQ(
+      GetCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kLocalCacheGuid),
+      nullptr);
+
+  // If a non-default value is written first (creating an existing cross-device
+  // entry), subsequently writing the default value (0) via `SetInteger` should
+  // update the existing entry to 0 with an observed timestamp.
+  profile_prefs_.SetInteger(kTrackedProfilePref, 50);
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  const base::Time change_time = base::Time::Now();
+  profile_prefs_.SetInteger(kTrackedProfilePref, 0);
+
+  const base::DictValue* entry =
+      GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(entry->FindInt(kValueKey), 0);
+  EXPECT_EQ(base::ValueToTime(entry->Find(kUpdateTimeKey)), change_time);
+  EXPECT_EQ(base::ValueToTime(entry->Find(kLastObservedChangeTimeKey)),
+            change_time);
+}
+
 // Verifies that changes to a pref not registered with the provider are ignored.
 TEST_F(CrossDevicePrefTrackerTest, IgnoresUntrackedPrefChange) {
   CreateTracker();

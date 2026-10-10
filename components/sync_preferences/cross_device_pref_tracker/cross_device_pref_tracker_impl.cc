@@ -398,13 +398,27 @@ void ApplyPrefChangeToCrossDevice(
   std::string cross_device_pref_name =
       GetCrossDevicePrefName(tracked_pref_name);
 
+  const base::Value& current_value =
+      tracked_pref_service->GetValue(tracked_pref_name);
+  const base::DictValue& cross_device_dict =
+      profile_pref_service->GetDict(cross_device_pref_name);
+  const base::DictValue* existing_cross_device_entry =
+      cross_device_dict.FindDict(cache_guid.value());
+
   // If the current value is the default, it should not be propagated. Instead,
   // the corresponding entry in the cross-device dictionary should be cleared to
   // signal that this device no longer has a value set by the user.
-  if (tracked_pref->IsDefaultValue()) {
-    const base::DictValue& cross_device_dict =
-        profile_pref_service->GetDict(cross_device_pref_name);
-
+  if (tracked_pref->IsDefaultValue() ||
+      // Additionally, `PrefService::Set*` with a value equal to the default
+      // value stores an entry in the user pref store
+      // (`IsDefaultValue() == false`) even when the effective value did not
+      // change from default (e.g., startup initialization), so when there is no
+      // existing cross-device entry and
+      // `current_value == *tracked_pref_service->GetDefaultPrefValue(...)`, we
+      // should not record or propagate it.
+      (!existing_cross_device_entry &&
+       current_value ==
+           *tracked_pref_service->GetDefaultPrefValue(tracked_pref_name))) {
     // Only instantiate `ScopedDictPrefUpdate` (which triggers a Sync server
     // notification) if there is actually an entry to remove.
     if (cross_device_dict.contains(cache_guid.value())) {
@@ -418,13 +432,6 @@ void ApplyPrefChangeToCrossDevice(
 
     return;
   }
-
-  const base::Value& current_value =
-      tracked_pref_service->GetValue(tracked_pref_name);
-  const base::DictValue& cross_device_dict =
-      profile_pref_service->GetDict(cross_device_pref_name);
-  const base::DictValue* existing_cross_device_entry =
-      cross_device_dict.FindDict(cache_guid.value());
 
   // Optimization: Minimize writes to the syncable pref to reduce sync traffic,
   // but ensure observed changes always update timestamps for recency.
