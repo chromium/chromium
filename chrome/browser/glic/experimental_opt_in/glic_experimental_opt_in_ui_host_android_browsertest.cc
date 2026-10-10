@@ -12,6 +12,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -275,12 +276,42 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
   content::WebContents* contents = host->GetOrCreateSuitableWebContents();
   ASSERT_TRUE(contents);
 
-  // A brand new foreground tab is used, rather than whatever the user was
-  // looking at.
+  // When the active tab is not a New Tab Page (the initial test tab starts at
+  // about:blank), a brand new foreground NTP tab is opened rather than showing
+  // over whatever the user was looking at.
   EXPECT_EQ(tab_count_before + 1, tab_list->GetTabCount());
   EXPECT_NE(original_tab->GetContents(), contents);
   ASSERT_TRUE(tab_list->GetActiveTab());
   EXPECT_EQ(tab_list->GetActiveTab()->GetContents(), contents);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       ReusesActiveTabWhenAlreadyNtp) {
+  TabListInterface* tab_list = GetTabListInterface();
+
+  for (const char* ntp_url :
+       {chrome::kChromeUINewTabURL, chrome::kChromeUINativeNewTabURL}) {
+    SCOPED_TRACE(ntp_url);
+    tabs::TabInterface* ntp_tab = tab_list->OpenTab(
+        GURL(ntp_url), tab_list->GetTabCount(), /*foreground=*/true);
+    ASSERT_TRUE(ntp_tab);
+    ASSERT_EQ(ntp_tab, tab_list->GetActiveTab());
+    const int tab_count_before = tab_list->GetTabCount();
+
+    testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+    auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+    ASSERT_TRUE(host);
+
+    content::WebContents* contents = host->GetOrCreateSuitableWebContents();
+    ASSERT_TRUE(contents);
+
+    // When the active tab is already an NTP (e.g. opened by the external
+    // trigger intent foreground fallback), it is reused instead of opening a
+    // duplicate NTP tab.
+    EXPECT_EQ(tab_count_before, tab_list->GetTabCount());
+    EXPECT_EQ(ntp_tab->GetContents(), contents);
+    EXPECT_EQ(ntp_tab, tab_list->GetActiveTab());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
