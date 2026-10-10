@@ -153,7 +153,7 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // is at least one user session created, and session state is ACTIVE.
   void MaybeNotifyFirstSessionReady();
 
-  const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
+  const raw_ptr<SessionControllerImpl> controller_;
   const raw_ptr<TestPrefServiceProvider> prefs_provider_;
 
   int fake_session_id_ = 0;
