@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -16,8 +18,11 @@
 
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -42,6 +47,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"

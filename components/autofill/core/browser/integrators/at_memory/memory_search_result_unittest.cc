@@ -5,10 +5,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
 #include <string>
-#include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

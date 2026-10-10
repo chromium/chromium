@@ -10,17 +10,17 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_eligibility_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "url/gurl.h"
+
+class PrefService;
 
 namespace personal_context {
 class PersonalContextEligibilityService;

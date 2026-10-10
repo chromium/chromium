@@ -5,8 +5,9 @@
 #include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
 
 #include <memory>
-#include <vector>
+#include <utility>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -21,9 +22,6 @@
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
-#include "content/public/browser/storage_partition.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
 AtMemoryQueryServiceFactory* AtMemoryQueryServiceFactory::GetInstance() {

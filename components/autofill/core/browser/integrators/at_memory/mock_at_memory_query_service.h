@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MOCK_AT_MEMORY_QUERY_SERVICE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MOCK_AT_MEMORY_QUERY_SERVICE_H_
 
-#include <vector>
-
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "testing/gmock/include/gmock/gmock.h"

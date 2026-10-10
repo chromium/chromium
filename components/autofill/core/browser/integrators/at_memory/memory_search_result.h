@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
 
+#include <cstdint>
 #include <iosfwd>
-#include <memory>
 #include <optional>
 #include <string>
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/personal_context/proto/features/at_memory.equal.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
