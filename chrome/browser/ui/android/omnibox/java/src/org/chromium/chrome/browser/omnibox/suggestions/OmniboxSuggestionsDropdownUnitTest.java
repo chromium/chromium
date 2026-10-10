@@ -398,7 +398,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     public void testRecycledViewPool_NotClearedAndReused() {
         ModelList listItems = new ModelList();
         var listener = new SuggestionLayoutScrollListener(mContext);
@@ -407,10 +406,10 @@ public class OmniboxSuggestionsDropdownUnitTest {
         // Setting model list initializes the real adapter and view pool.
         dropdown.setModelList(listItems);
 
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
         PreWarmingRecycledViewPool pool =
                 (PreWarmingRecycledViewPool) dropdown.getRecycledViewPool();
-
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Verify pool is initially pre-warmed.
         assertEquals(

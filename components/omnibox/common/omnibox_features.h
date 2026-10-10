@@ -185,7 +185,6 @@ BASE_DECLARE_FEATURE(kTruncateSearchUrlQ);
 inline constexpr base::FeatureParam<int> kTruncateSearchUrlQLength{
     &kTruncateSearchUrlQ, "truncate_search_url_q_length", 2048};
 
-BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);
 BASE_DECLARE_FEATURE(kOmniboxFuseboxAsyncInflation);
 BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 

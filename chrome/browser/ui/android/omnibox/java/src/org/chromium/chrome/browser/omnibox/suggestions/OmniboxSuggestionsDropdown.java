@@ -69,7 +69,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final RecyclerViewSelectionController mSelectionController;
     private final Handler mHandler;
     private final OmniboxViewHolderFactory mViewHolderFactory;
-    private @Nullable PreWarmingRecycledViewPool mRecycledViewPool;
+    private final PreWarmingRecycledViewPool mRecycledViewPool;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable GestureObserver mGestureObserver;
@@ -309,12 +309,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         try (TimingMetric metric = OmniboxMetrics.recordSuggestionsDropdownInflationThreadTime();
                 TimingMetric metric2 = OmniboxMetrics.recordSuggestionsDropdownInflationWallTime();
                 TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsDropdown.Constructor")) {
-            boolean runsOnExpectedThread =
-                    OmniboxFeatures.sAsyncViewInflation.isEnabled()
-                            ? !ThreadUtils.runningOnUiThread()
-                            : ThreadUtils.runningOnUiThread();
             OmniboxMetrics.recordSuggestionsDropdownInflationThreadMatchesExpectedThread(
-                    runsOnExpectedThread);
+                    !ThreadUtils.runningOnUiThread());
             mHandler = new Handler(Looper.getMainLooper());
 
             setFocusable(/* focusable= */ true);
@@ -342,9 +338,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             setVerticalScrollBarEnabled(/* verticalScrollBarEnabled= */ false);
 
             mViewHolderFactory = new OmniboxViewHolderFactory();
-            if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-                mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
-            }
+            mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
         }
     }
 
@@ -381,9 +375,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         // Set the recycled view pool AFTER the adapter is set. Otherwise,
         // RecyclerView.setAdapter() will clear the pre-warmed pool.
-        if (mRecycledViewPool != null) {
-            setRecycledViewPool(mRecycledViewPool);
-        }
+        setRecycledViewPool(mRecycledViewPool);
     }
 
     @Override
@@ -398,9 +390,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Clean up resources and remove observers installed by this class. */
     public void destroy() {
-        if (mRecycledViewPool != null) {
-            mRecycledViewPool.destroy();
-        }
+        mRecycledViewPool.destroy();
         mGestureObserver = null;
     }
 

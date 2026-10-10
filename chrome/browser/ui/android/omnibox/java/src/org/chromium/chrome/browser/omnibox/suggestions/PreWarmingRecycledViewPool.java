@@ -20,7 +20,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.util.ArrayList;
@@ -76,7 +75,6 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private final OmniboxViewHolderFactory mViewHolderFactory;
     private final @Nullable Handler mHandler;
     private final FrameLayout mPlaceholderParent;
-    private final Thread mThread = Thread.currentThread();
     private boolean mStopCreatingViews;
     private final List<ViewHolder> mPrewarmedViews = new ArrayList<>(22);
     private long mCumulativePrewarmWallTimeMs;
@@ -106,49 +104,30 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         setMaxRecycledViews(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1);
         setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
 
-        if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            startCreatingViews();
-        }
+        startCreatingViews();
     }
 
     private static @Nullable Handler createHandlerForPrewarming() {
-        boolean shouldStagger =
-                !OmniboxFeatures.sAsyncViewInflation.isEnabled()
-                        || ThreadUtils.runningOnUiThread();
-
-        // Even if async view inflation is enabled, if we are forcing inflation on the main thread,
-        // we want to stagger the view creation so it doesn't cause jank.
-        return shouldStagger ? new Handler(Looper.getMainLooper()) : null;
+        // If we are forcing inflation on the main thread, stagger the view creation so it doesn't
+        // cause jank.
+        return ThreadUtils.runningOnUiThread() ? new Handler(Looper.getMainLooper()) : null;
     }
-
 
     public void destroy() {
         stopCreatingViews();
         clear();
     }
 
-    public void onNativeInitialized() {
-        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            startCreatingViews();
-        }
-    }
-
     /**
-     * Starts creating views. If mHandler is not null (async view inflation disabled), this will
-     * immediately post a separate delayed task for every view we intend to create with a delay
-     * equal to STEP_MILLIS. If mHandler is null (async view inflation enabled), this will
-     * immediately create all views.
+     * Starts creating views. If mHandler is not null, this will immediately post a separate delayed
+     * task for every view we intend to create with a delay equal to STEP_MILLIS. If mHandler is
+     * null, this will immediately create all views.
      */
-    public void startCreatingViews() {
-        assert mThread == Thread.currentThread()
-                : "startCreatingViews must be called on the same thread the pool was created on";
+    private void startCreatingViews() {
         try (TraceEvent t = TraceEvent.scoped("PreWarmingRecycledViewPool.startCreatingViews")) {
             if (mStopCreatingViews || !OmniboxCapabilities.shouldPreWarmRecyclerViewPool()) return;
-            boolean runsOnExpectedThread =
-                    OmniboxFeatures.sAsyncViewInflation.isEnabled()
-                            ? !ThreadUtils.runningOnUiThread()
-                            : ThreadUtils.runningOnUiThread();
-            OmniboxMetrics.recordPreWarmingThreadMatchesExpectedThread(runsOnExpectedThread);
+            OmniboxMetrics.recordPreWarmingThreadMatchesExpectedThread(
+                    !ThreadUtils.runningOnUiThread());
             for (var viewTypeAndCount : mViewsToCreate) {
                 mExpectedViewCount += viewTypeAndCount.count;
                 for (int index = 0; index < viewTypeAndCount.count; ++index) {
