@@ -17,6 +17,13 @@
       body {
         background: var(--color-side-panel-content-background);
         overflow: auto;
+<if expr="is_android">
+        /* Scale text with the OS font size setting on Android. Unlike page
+         * zoom, text-size-adjust only scales computed font sizes (and
+         * line-height / glyph-metric units like ch, not px or em), so layout
+         * dimensions stay the same. */
+        text-size-adjust: calc(100% * env(preferred-text-scale));
+</if>
       }
     </style>
   </head>

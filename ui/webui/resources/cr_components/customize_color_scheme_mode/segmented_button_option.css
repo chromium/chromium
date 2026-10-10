@@ -15,6 +15,8 @@
       var(--cr-fallback-color-on-surface-subtle));
   container-type: inline-size;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
   height: 100%;
   overflow: hidden;
   padding: 4px 8px;
@@ -89,8 +91,6 @@ cr-ripple {
 }
 
 #content {
-  font-size: 12px;
-  font-weight: 500;
   line-height: 16px;
   max-height: 100%;
   overflow: hidden;
@@ -99,10 +99,12 @@ cr-ripple {
 }
 
 /* Drop the icons when there is not enough room to show them alongside the
- * label (e.g. in narrow side panels). Below a 64px content box, the 16px icon
- * and its 8px margin would leave less than 40px for the label, which is
- * roughly the width of the longest English label ("Device") at 12px. */
-@container (max-width: 64px) {
+ * label (either in a narrow side panel or when text-size-adjust boosts the
+ * font size). The 16px icon and its 8px margin take a fixed 24px, while the
+ * longest English label ("Device") is ~5.3ch wide; unlike em, ch resolves
+ * against the computed font metrics and therefore scales with
+ * text-size-adjust. */
+@container (max-width: calc(24px + 6ch)) {
   :host([checked]) #checkmark,
   #prefixIcon {
     display: none;
