@@ -572,6 +572,62 @@ TEST_F(ServiceWorkerInstalledScriptsManagerTest, GetScriptDataEncoding) {
   }
 }
 
+TEST_F(ServiceWorkerInstalledScriptsManagerTest, GetScriptDataFlush) {
+  const KURL kScriptUrl1("https://example.com/short.js");
+  const KURL kScriptUrl2("https://example.com/incomplete_utf8.js");
+
+  BrowserSideSender sender;
+  CreateInstalledScriptsManager(
+      sender.CreateAndBind({kScriptUrl1, kScriptUrl2}));
+
+  // 1-byte body is smaller than the 3-byte BOM buffer in TextResourceDecoder.
+  {
+    std::unique_ptr<InstalledScriptsManager::ScriptData> script_data;
+    const uint8_t kShortBody[] = {'a'};
+    base::WaitableEvent* waiter =
+        GetScriptDataOnWorkerThread(kScriptUrl1, &script_data);
+    sender.TransferInstalledScript(kScriptUrl1, "utf-8",
+                                   HashMap<String, String>(),
+                                   std::size(kShortBody), 0);
+    sender.PushBodyRawBytes(kShortBody);
+    sender.FinishTransferBody();
+    sender.FinishTransferMetaData();
+    waiter->Wait();
+    ASSERT_TRUE(script_data);
+    String installed_source = script_data->TakeSourceText();
+    EXPECT_EQ("a", installed_source);
+
+    auto* loader = MakeGarbageCollected<WorkerClassicScriptLoader>();
+    loader->DidReceiveData(base::as_chars(base::span(kShortBody)));
+    loader->DidFinishLoading(0);
+    EXPECT_EQ(installed_source, loader->SourceText());
+  }
+
+  // Incomplete 3-byte UTF-8 sequence (0xE3, 0x81) at EOF flushes to U+FFFD.
+  {
+    std::unique_ptr<InstalledScriptsManager::ScriptData> script_data;
+    const uint8_t kIncompleteUtf8[] = {'a', 'b', 'c', 0xE3, 0x81};
+    base::WaitableEvent* waiter =
+        GetScriptDataOnWorkerThread(kScriptUrl2, &script_data);
+    sender.TransferInstalledScript(kScriptUrl2, "utf-8",
+                                   HashMap<String, String>(),
+                                   std::size(kIncompleteUtf8), 0);
+    sender.PushBodyRawBytes(kIncompleteUtf8);
+    sender.FinishTransferBody();
+    sender.FinishTransferMetaData();
+    waiter->Wait();
+    ASSERT_TRUE(script_data);
+    const UChar kExpected[] = {'a', 'b', 'c', 0xFFFD};
+    String installed_source = script_data->TakeSourceText();
+    EXPECT_EQ(String(base::span(kExpected)), installed_source);
+
+    auto* loader = MakeGarbageCollected<WorkerClassicScriptLoader>();
+    loader->DidReceiveData(base::as_chars(base::span(kIncompleteUtf8)));
+    loader->DidFinishLoading(0);
+    EXPECT_EQ(installed_source, loader->SourceText());
+  }
+}
+
 TEST_F(ServiceWorkerInstalledScriptsManagerTest,
        CachedMetadataHandlerEncoding) {
   const KURL kScriptUrl("https://example.com/sw.js");
