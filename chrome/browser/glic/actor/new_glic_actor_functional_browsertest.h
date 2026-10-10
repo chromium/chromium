@@ -40,8 +40,8 @@ class GlicActorFunctionalBrowserTestMixin : public T {
       : T(std::forward<Args>(args)...) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{::actor::kActorBindCreatedTabToTask, {}},
-                              {::features::kGlicActorPolicyControlExemption,
-                               {}}},
+                              {features::kGlicActor, {}},
+                              {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
   }
   ~GlicActorFunctionalBrowserTestMixin() override = default;

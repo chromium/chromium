@@ -900,8 +900,8 @@ class GlicInstanceCoordinatorActorTaskTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:
   GlicInstanceCoordinatorActorTaskTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kGlicActorPolicyControlExemption);
+    feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption}, {});
   }
 
  private:
@@ -1330,8 +1330,8 @@ class GlicInstanceCoordinatorActuationBrowserTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:
   GlicInstanceCoordinatorActuationBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kGlicActorPolicyControlExemption);
+    feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption}, {});
   }
 
  private:

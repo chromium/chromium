@@ -349,6 +349,7 @@ class GlicApiTest : public GlicApiBrowserTest,
            {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
          {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
          {features::kGlicOpenContactInfoSettingsPageApi, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}},
          {blink::features::kAIPageContentTrackedElementsIframe, {}}},
         /*disabled_features=*/
@@ -590,6 +591,7 @@ class GlicApiTestWithExperimentalTriggeringScreenshot : public GlicApiTest {
   GlicApiTestWithExperimentalTriggeringScreenshot() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicExperimentalTriggeringScreenshot, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {});
   }
@@ -3205,6 +3207,7 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
           {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
         {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
         {features::kGlicOpenContactInfoSettingsPageApi, {}},
+        {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}},
         {blink::features::kAIPageContentTrackedElementsIframe, {}},
     };

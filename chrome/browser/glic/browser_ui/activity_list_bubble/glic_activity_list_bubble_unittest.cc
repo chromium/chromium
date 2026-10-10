@@ -55,6 +55,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}}};
     feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
                                                 {});

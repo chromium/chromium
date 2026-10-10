@@ -198,6 +198,7 @@ class PasswordBubbleInteractiveUiTestBase : public ManagePasswordsTest {
   void InitializeFeatures(
       std::vector<base::test::FeatureRefAndParams> enabled_features = {},
       std::vector<base::test::FeatureRef> disabled_features = {}) {
+    enabled_features.push_back({features::kGlicActor, {}});
     enabled_features.push_back(
         {features::kGlicActorPolicyControlExemption, {}});
     disabled_features.push_back(features::kNonBlockingOsClipboardReads);

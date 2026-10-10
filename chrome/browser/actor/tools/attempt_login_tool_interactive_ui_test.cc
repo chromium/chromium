@@ -143,8 +143,8 @@ class AttemptLoginToolInteractiveUiTestBase
     : public InteractiveBrowserTestMixin<ActorToolsTest> {
  public:
   AttemptLoginToolInteractiveUiTestBase() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicActorPolicyControlExemption);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption}, {});
   }
 
  private:

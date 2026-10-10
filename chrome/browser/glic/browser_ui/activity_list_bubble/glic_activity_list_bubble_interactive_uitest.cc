@@ -46,10 +46,11 @@ class ActorTaskListBubbleInteractiveUiTest
   ActorTaskListBubbleInteractiveUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kGlicRollout, {}},
+            {features::kGlicActor, {}},
             {features::kGlicActorPolicyControlExemption, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
+            {features::kGlicRollout, {}},
         },
         {});
   }

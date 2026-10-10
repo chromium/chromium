@@ -766,7 +766,8 @@ class ActorToolAgnosticBrowserTestWithCustomDelay
   ActorToolAgnosticBrowserTestWithCustomDelay() {
     // Ensure tool doesn't finish before the tab is closed.
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActorPolicyControlExemption, {}},
+        {{features::kGlicActor, {}},
+         {features::kGlicActorPolicyControlExemption, {}},
          {kActorPageStability, {{kActorPageStabilityMinWait.name, "10000ms"}}}},
         {});
   }

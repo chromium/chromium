@@ -52,6 +52,7 @@ class ActorUiStateManagerTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlicActorUi, {}},
+                              {features::kGlicActor, {}},
                               {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
     profile_ = TestingProfile::Builder()

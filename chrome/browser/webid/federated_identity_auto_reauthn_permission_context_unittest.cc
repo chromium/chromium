@@ -42,7 +42,8 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
         &password_manager_settings_service_);
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActorPolicyControlExemption, {}}},
+        /*enabled_features=*/{{features::kGlicActor, {}},
+                              {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
   }
 

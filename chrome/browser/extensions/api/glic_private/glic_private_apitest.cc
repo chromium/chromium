@@ -56,6 +56,7 @@ class GlicPrivateApiTest : public GlicPrivateApiTestBase {
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
          {extensions_features::kApiGlicAccessFromPromotionPage, {}},
          {features::kGlicAnchorEntryPointForOnboardedUsers, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}
 #if BUILDFLAG(IS_CHROMEOS)
          ,
@@ -369,6 +370,7 @@ class GlicPrivateApiUniversalCartOnlyTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {extensions_features::kApiGlicAccessFromPromotionPage,
          features::kGlicShowForSignedOut});
@@ -432,6 +434,7 @@ class GlicPrivateApiPromotionPageOnlyTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromPromotionPage, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {extensions_features::kApiGlicAccessFromGoogleWebpage,
          features::kGlicShowForSignedOut});
@@ -465,6 +468,7 @@ class GlicPrivateApiBothAccessDisabledTest
   GlicPrivateApiBothAccessDisabledTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{extensions_features::kApiGlicPrivate, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {extensions_features::kApiGlicAccessFromGoogleWebpage,
          extensions_features::kApiGlicAccessFromPromotionPage,

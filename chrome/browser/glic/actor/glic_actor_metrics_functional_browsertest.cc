@@ -150,8 +150,9 @@ class GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption
     : public GlicActorMetricsFunctionalBrowserTest {
  public:
   GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kGlicActorPolicyControlExemption);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActor},
+        /*disabled_features=*/{::features::kGlicActorPolicyControlExemption});
   }
   ~GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption() override =
       default;

@@ -31,6 +31,7 @@ class GlicSidePanelCoordinatorDesktopAndroidBrowserTest : public GlicBrowserTest
  public:
   GlicSidePanelCoordinatorDesktopAndroidBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});

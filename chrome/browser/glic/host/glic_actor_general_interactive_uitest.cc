@@ -661,8 +661,9 @@ class GlicActorGeneralUiTestWithoutPolicyExemption
     : public GlicActorGeneralUiTest {
  public:
   GlicActorGeneralUiTestWithoutPolicyExemption() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kGlicActorPolicyControlExemption);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActor},
+        /*disabled_features=*/{features::kGlicActorPolicyControlExemption});
   }
   ~GlicActorGeneralUiTestWithoutPolicyExemption() override = default;
 
@@ -875,6 +876,7 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
   GlicActorCallbackOrderGeneralUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
+            {features::kGlicActor, {}},
             {features::kGlicActorPolicyControlExemption, {}},
             {actor::kActorClickDelay,
              {{actor::kActorClickDelayParam.name, "60000ms"}}},

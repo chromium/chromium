@@ -58,6 +58,7 @@ class LegacyGlicActivityManagerTest : public testing::Test,
   LegacyGlicActivityManagerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}}};
     feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
                                                 {});

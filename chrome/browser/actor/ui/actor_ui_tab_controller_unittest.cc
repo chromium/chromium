@@ -85,6 +85,7 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"},
                                 {features::kGlicActorUiOverlayName, "true"}}},
+                              {features::kGlicActor, {}},
                               {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
   }

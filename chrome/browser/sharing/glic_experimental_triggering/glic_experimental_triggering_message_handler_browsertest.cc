@@ -134,6 +134,7 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicExperimentalTriggering, {}},
          {features::kGlicExperimentalTriggeringScreenshot, {}},
+         {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}},
          {features::kGlicExperimentalTriggeringOptInTabFocus,
           {{"glic-experimental-triggering-tab-focus-hosts",

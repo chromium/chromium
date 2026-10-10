@@ -63,7 +63,8 @@ base::expected<ActionsResult, std::string> AsyncActionWaiter::Wait() {
 GlicActorFunctionalBrowserTestBase::GlicActorFunctionalBrowserTestBase() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{::actor::kActorBindCreatedTabToTask, {}},
-                            {::features::kGlicActorPolicyControlExemption, {}}},
+                            {features::kGlicActor, {}},
+                            {features::kGlicActorPolicyControlExemption, {}}},
       /*disabled_features=*/{});
 }
 

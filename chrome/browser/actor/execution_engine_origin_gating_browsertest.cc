@@ -183,6 +183,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
       const std::vector<base::test::FeatureRef>& additional_disabled_features) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic, {}},
+        {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}},
         {kGlicCrossOriginNavigationGating,
          {
@@ -899,6 +900,7 @@ class ExecutionEngineOriginGatingUserPromptingBrowserTest
         /*enabled_features=*/
         {
             {features::kGlic, {}},
+            {features::kGlicActor, {}},
             {features::kGlicActorPolicyControlExemption, {}},
             {kGlicCrossOriginNavigationGating,
              {{
@@ -2467,6 +2469,7 @@ class ExecutionEngineBlocklistDisabledBrowserTest
         /*enabled_features=*/
         {
             {features::kGlic, {}},
+            {features::kGlicActor, {}},
             {features::kGlicActorPolicyControlExemption, {}},
             {kGlicCrossOriginNavigationGating,
              {
@@ -2543,6 +2546,7 @@ class ExecutionEngineOriginGatingDarkLaunchBrowserTest
         /*enabled_features=*/
         {
             {features::kGlic, {}},
+            {features::kGlicActor, {}},
             {features::kGlicActorPolicyControlExemption, {}},
             {kGlicCrossOriginNavigationGating,
              {
@@ -2645,6 +2649,7 @@ class ExecutionEngineOriginGatingSlowResponseBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
+            {features::kGlicActor, {}},
             {features::kGlicActorPolicyControlExemption, {}},
             {kActorPageStability, {{kActorPageStabilityTimeout.name, "300ms"}}},
             {kActorObservationDelay,

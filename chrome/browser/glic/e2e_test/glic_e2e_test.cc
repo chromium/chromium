@@ -125,8 +125,8 @@ void GlicE2ETest::SetUp() {
 
   running_actor_tests_ = command_line_of_test->HasSwitch(kEnableActorTests);
   if (running_actor_tests_) {
-    exempt_actor_policy_control_feature_list_.InitAndEnableFeature(
-        features::kGlicActorPolicyControlExemption);
+    exempt_actor_policy_control_feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption}, {});
   }
   enable_low_bandwidth_tests_ =
       command_line_of_test->HasSwitch(kEnableLowBandwidthTestsSwitch);

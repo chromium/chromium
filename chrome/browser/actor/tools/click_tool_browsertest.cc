@@ -126,7 +126,8 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
   ActorClickToolBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActorPolicyControlExemption, {}},
+        {{::features::kGlicActor, {}},
+         {features::kGlicActorPolicyControlExemption, {}},
          {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}},
          {features::kGlicActorRejectInteractionDisallowedTargets, {}}},
         /*disabled_features=*/{});
@@ -150,7 +151,8 @@ class ActorClickToolInteractionDisallowedTargetFeatureDisabledTest
   ActorClickToolInteractionDisallowedTargetFeatureDisabledTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActorPolicyControlExemption, {}},
+        {{::features::kGlicActor, {}},
+         {features::kGlicActorPolicyControlExemption, {}},
          {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}}},
         /*disabled_features=*/
         {features::kGlicActorRejectInteractionDisallowedTargets});

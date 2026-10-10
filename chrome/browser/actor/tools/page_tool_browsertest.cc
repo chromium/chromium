@@ -122,7 +122,8 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
   ActorPageToolTimeoutBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActorPolicyControlExemption, {}},
+        {{features::kGlicActor, {}},
+         {features::kGlicActorPolicyControlExemption, {}},
          {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2s"}}},
          {features::kGlicActorIncrementalTyping,
           {{"glic-actor-long-text-paste-threshold", "1000000000"},
@@ -185,6 +186,7 @@ class ActorPageToolLongClickDelayBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
     std::vector<base::test::FeatureRef> disabled_features;
 
+    enabled_features_and_params.push_back({features::kGlicActor, {}});
     enabled_features_and_params.push_back(
         {features::kGlicActorPolicyControlExemption, {}});
     // Delay holding the mouse down before mouse up.
@@ -279,7 +281,8 @@ class ActorPageToolLongMouseMoveDelayBrowserTest
  public:
   ActorPageToolLongMouseMoveDelayBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActorPolicyControlExemption, {}},
+        /*enabled_features=*/{{features::kGlicActor, {}},
+                              {features::kGlicActorPolicyControlExemption, {}},
                               {features::kGlicActorMoveBeforeClick,
                                // Delay after mouse move to target and before
                                // mouse down.

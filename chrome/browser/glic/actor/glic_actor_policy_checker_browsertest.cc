@@ -98,7 +98,7 @@ class GlicActorPolicyCheckerBrowserTestBase : public GlicBrowserTest {
   GlicActorPolicyCheckerBrowserTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicUserStatusCheck, {}}},
+        {{features::kGlicActor, {}}, {features::kGlicUserStatusCheck, {}}},
         /* disabled_features = */ {features::kGlicActorPolicyControlExemption});
   }
   ~GlicActorPolicyCheckerBrowserTestBase() override = default;

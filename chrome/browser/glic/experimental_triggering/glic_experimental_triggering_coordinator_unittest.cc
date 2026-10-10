@@ -170,6 +170,7 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
             policy::EnterpriseManagementAuthority::NONE);
 
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor, {}},
         {features::kGlicExperimentalTriggering, {}},
         {features::kGlicExperimentalTriggeringScriptTools, {}}};
     std::vector<base::test::FeatureRef> disabled_features;

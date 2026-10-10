@@ -2489,8 +2489,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 class GlicInvokeActuationBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeActuationBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kGlicActorPolicyControlExemption);
+    feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption}, {});
   }
 
  private:
