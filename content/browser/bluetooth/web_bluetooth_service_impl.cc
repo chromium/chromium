@@ -2695,6 +2695,8 @@ void WebBluetoothServiceImpl::ClearAdvertisementClients() {
 
   allowed_scan_filters_.clear();
   accept_all_advertisements_ = false;
+
+  MaybeStopDiscovery();
 }
 
 void WebBluetoothServiceImpl::CleanupDeviceState(

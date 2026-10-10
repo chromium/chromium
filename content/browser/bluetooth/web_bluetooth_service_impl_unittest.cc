@@ -1406,6 +1406,34 @@ TEST_F(WebBluetoothServiceImplTest,
   EXPECT_FALSE(service_ptr_->AreScanFiltersAllowed(filters));
 }
 
+TEST_F(WebBluetoothServiceImplTest, DiscoverySessionStoppedWhenTabHidden) {
+  blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
+  FakeWebBluetoothAdvertisementClient client;
+  blink::mojom::WebBluetoothResult result =
+      RequestScanningStartAndSimulatePromptEvent(
+          *filter, &client, BluetoothScanningPrompt::Event::kAllow);
+  EXPECT_EQ(result, blink::mojom::WebBluetoothResult::SUCCESS);
+  ASSERT_TRUE(HasScanningDiscoverySession());
+
+  contents()->SetVisibilityAndNotifyObservers(Visibility::HIDDEN);
+
+  EXPECT_FALSE(HasScanningDiscoverySession());
+}
+
+TEST_F(WebBluetoothServiceImplTest, DiscoverySessionStoppedWhenFocusIsLost) {
+  blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
+  FakeWebBluetoothAdvertisementClient client;
+  blink::mojom::WebBluetoothResult result =
+      RequestScanningStartAndSimulatePromptEvent(
+          *filter, &client, BluetoothScanningPrompt::Event::kAllow);
+  EXPECT_EQ(result, blink::mojom::WebBluetoothResult::SUCCESS);
+  ASSERT_TRUE(HasScanningDiscoverySession());
+
+  main_test_rfh()->GetRenderWidgetHost()->LostFocus();
+
+  EXPECT_FALSE(HasScanningDiscoverySession());
+}
+
 TEST_F(WebBluetoothServiceImplTest,
        BluetoothScanningPermissionRevokedWhenTabOccluded) {
   blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
