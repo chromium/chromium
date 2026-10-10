@@ -133,12 +133,16 @@ std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
     std::vector<PageTarget> trigger_fields,
+    std::string_view credit_card_opaque_token = "",
     bool enqueued_click = true) {
-  return MakeAttemptFormFillingRequest(
-      tab,
-      {CreateFormFillingRequest(RequestedData::kUnknown,
-                                std::move(trigger_fields))},
-      enqueued_click);
+  const RequestedData requested_data = credit_card_opaque_token.empty()
+                                           ? RequestedData::kUnknown
+                                           : RequestedData::kCreditCard;
+  return std::make_unique<AttemptFormFillingToolRequest>(
+      tab.GetHandle(),
+      std::vector<FormFillingRequest>{
+          CreateFormFillingRequest(requested_data, std::move(trigger_fields))},
+      std::string(credit_card_opaque_token), enqueued_click);
 }
 
 // Gets the dom node or returns nullopt when the node id or document token
@@ -946,6 +950,135 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TestSkippingSelection) {
   ExpectOkResult(result);
 }
 
+// Test that when credit_card_opaque_token is present in the request,
+// AttemptFormFillingTool skips showing UI, retrieves a suggestion
+// asynchronously, and directly fills the suggestion.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
+                       FillWithCreditCardOpaqueToken) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_creditcard_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> card_number =
+      GetDomNodeOnPage(*main_frame(), "#CREDIT_CARD_NUMBER");
+  ASSERT_TRUE(card_number);
+
+  // GetSuggestions from ActorFormFillingService should NOT be called.
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions).Times(0);
+
+  autofill::ActorFormFillingRequest request;
+  request.requested_data = autofill::ActorFormFillingRequestedData::kCreditCard;
+  autofill::ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(1);
+  suggestion.title = "Mock Card";
+  suggestion.details = "•••• 1111";
+  request.suggestions.push_back(std::move(suggestion));
+  std::vector<autofill::ActorFormFillingRequest> requests;
+  requests.push_back(std::move(request));
+
+  EXPECT_CALL(
+      mock_form_filling_service(),
+      RetrieveSuggestionForCreditCardOpaqueToken(_, _, "opaque_token_xyz", _))
+      .WillOnce(RunOnceCallback<3>(std::move(requests)));
+
+  // RequestToShowAutofillSuggestions should NOT be called.
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
+      .Times(0);
+
+  // Instead, FillForm and FillSuggestions should be directly called with the
+  // dummy credit card suggestion.
+  EXPECT_CALL(
+      mock_form_filling_service(),
+      FillForm(Ref(autofill_client()), 0,
+               MakeActorFormFillingSelection(autofill::ActorSuggestionId(1))));
+
+  EXPECT_CALL(mock_form_filling_service(),
+              FillSuggestions(_,
+                              ElementsAre(MakeActorFormFillingSelection(
+                                  autofill::ActorSuggestionId(1))),
+                              _))
+      .WillOnce(RunOnceCallback<2>(""));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {PageTarget(*card_number)},
+      /*credit_card_opaque_token=*/"opaque_token_xyz");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+}
+
+// Test that when credit_card_opaque_token is present in the request but no
+// suggestions are retrieved, AttemptFormFillingTool handles it gracefully by
+// returning kFormFillingNoSuggestionsAvailable.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
+                       FillWithCreditCardOpaqueToken_NoSuggestions) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_creditcard_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> card_number =
+      GetDomNodeOnPage(*main_frame(), "#CREDIT_CARD_NUMBER");
+  ASSERT_TRUE(card_number);
+
+  // GetSuggestions from ActorFormFillingService should NOT be called.
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions).Times(0);
+
+  EXPECT_CALL(
+      mock_form_filling_service(),
+      RetrieveSuggestionForCreditCardOpaqueToken(_, _, "no_suggestions", _))
+      .WillOnce(RunOnceCallback<3>(
+          base::unexpected(autofill::ActorFormFillingError::kNoSuggestions)));
+
+  // RequestToShowAutofillSuggestions should NOT be called.
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
+      .Times(0);
+
+  // FillForm and FillSuggestions should NOT be called.
+  EXPECT_CALL(mock_form_filling_service(), FillForm).Times(0);
+  EXPECT_CALL(mock_form_filling_service(), FillSuggestions).Times(0);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {PageTarget(*card_number)},
+      /*credit_card_opaque_token=*/"no_suggestions");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(
+      result, mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable);
+}
+
+// Test that when credit_card_opaque_token is present in the request along with
+// an address request, AttemptFormFillingTool rejects it with kArgumentsInvalid.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
+                       FillWithCreditCardOpaqueTokenAndAddressRejected) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_creditcard_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> card_number =
+      GetDomNodeOnPage(*main_frame(), "#CREDIT_CARD_NUMBER");
+  ASSERT_TRUE(card_number);
+
+  std::vector<FormFillingRequest> requests;
+  requests.push_back(CreateFormFillingRequest(RequestedData::kAddress,
+                                              {PageTarget(*card_number)}));
+  requests.push_back(CreateFormFillingRequest(RequestedData::kCreditCard,
+                                              {PageTarget(*card_number)}));
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<AttemptFormFillingToolRequest>(
+          active_tab()->GetHandle(), std::move(requests),
+          /*credit_card_opaque_token=*/"opaque_token_xyz",
+          /*enqueued_click=*/true);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
+  const auto& action_results = result.Get();
+  ASSERT_EQ(action_results.size(), 1u);
+  EXPECT_EQ(action_results[0].result->message,
+            "Credit card opaque token cannot be combined with address "
+            "requests.");
+}
+
 // Test that when the service chooses to split one tool request into multiple
 // (e.g. an address form request into contact information and an address), it
 // correctly records metrics and interacts with the dialog.
@@ -1135,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolPreClickTest,
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)},
-      /*enqueued_click=*/false);
+      /*credit_card_opaque_token=*/"", /*enqueued_click=*/false);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectOkResult(result);
@@ -1144,6 +1277,46 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolPreClickTest,
   EXPECT_EQ(enqueued_fill->Name(), AttemptFormFillingToolRequest::kName);
   EXPECT_TRUE(static_cast<AttemptFormFillingToolRequest*>(enqueued_fill.get())
                   ->enqueued_click());
+
+  ASSERT_TRUE(enqueued_click);
+  EXPECT_EQ(enqueued_click->Name(), ClickToolRequest::kName);
+}
+
+// Test that AttemptFormFillingTool enqueues an AttemptFormFillingToolRequest
+// that preserves the credit_card_opaque_token.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolPreClickTest,
+                       EnqueuesClickBeforeFill_WithCreditCardOpaqueToken) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_creditcard_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> card_number =
+      GetDomNodeOnPage(*main_frame(), "#CREDIT_CARD_NUMBER");
+  ASSERT_TRUE(card_number);
+
+  std::unique_ptr<ToolRequest> enqueued_fill;
+  std::unique_ptr<ToolRequest> enqueued_click;
+
+  EXPECT_CALL(mock_execution_engine(), EnqueueFollowupAction(_))
+      .Times(2)
+      .WillOnce(MoveArg<0>(&enqueued_fill))
+      .WillOnce(MoveArg<0>(&enqueued_click));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {PageTarget(*card_number)},
+      /*credit_card_opaque_token=*/"opaque_token_xyz",
+      /*enqueued_click=*/false);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectOkResult(result);
+
+  ASSERT_TRUE(enqueued_fill);
+  ASSERT_EQ(enqueued_fill->Name(), AttemptFormFillingToolRequest::kName);
+  auto* form_filling_request =
+      static_cast<AttemptFormFillingToolRequest*>(enqueued_fill.get());
+  EXPECT_TRUE(form_filling_request->enqueued_click());
+  EXPECT_EQ(form_filling_request->credit_card_opaque_token(),
+            "opaque_token_xyz");
 
   ASSERT_TRUE(enqueued_click);
   EXPECT_EQ(enqueued_click->Name(), ClickToolRequest::kName);
@@ -1182,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolNoPreClickTest,
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)},
-      /*enqueued_click=*/false);
+      /*credit_card_opaque_token=*/"", /*enqueued_click=*/false);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(

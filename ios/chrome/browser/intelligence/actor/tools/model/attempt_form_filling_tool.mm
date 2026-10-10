@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/actor/actor_form_filling_service.h"
@@ -145,15 +146,18 @@ std::unique_ptr<AttemptFormFillingTool> AttemptFormFillingTool::Create(
     requests.push_back(request.value());
   }
   return std::unique_ptr<AttemptFormFillingTool>(new AttemptFormFillingTool(
-      web_state, std::move(requests), tool_delegate));
+      web_state, std::move(requests), action.credit_card_opaque_token(),
+      tool_delegate));
 }
 
 AttemptFormFillingTool::AttemptFormFillingTool(
     base::WeakPtr<web::WebState> web_state,
     std::vector<FormFillingRequest> requests,
+    std::string credit_card_opaque_token,
     ToolDelegate* tool_delegate)
     : web_state_(web_state),
       tool_requests_(std::move(requests)),
+      credit_card_opaque_token_(std::move(credit_card_opaque_token)),
       tool_delegate_(tool_delegate) {}
 
 AttemptFormFillingTool::~AttemptFormFillingTool() = default;
@@ -168,6 +172,21 @@ void AttemptFormFillingTool::Validate(ToolExecutionCallback callback) {
     if (tool_request.trigger_fields.empty()) {
       std::move(callback).Run(
           ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+      return;
+    }
+  }
+  if (!credit_card_opaque_token_.empty()) {
+    const bool has_non_credit_card =
+        std::ranges::any_of(tool_requests_, [](const FormFillingRequest& req) {
+          return req.requested_data !=
+                 autofill::ActorFormFillingRequestedData::kCreditCard;
+        });
+    if (has_non_credit_card) {
+      std::move(callback).Run(ToolExecutionResult(
+          actor::mojom::ActionResultCode::kArgumentsInvalid,
+          /*requires_page_stabilization=*/false,
+          "Credit card opaque token cannot be combined with "
+          "address requests."));
       return;
     }
   }
@@ -392,10 +411,6 @@ void AttemptFormFillingTool::OnAllAutofillRendererIdsRetrieved() {
       CHECK_NE(field.renderer_id, autofill::FieldRendererId());
     }
   }
-
-  // Passing the requests to the service.
-  // TODO(crbug.com/472287741): Explore pre-click form. See
-  // `features::kGlicActorAutofillPreClick`.
   ActorTaskFormFillingHandler* form_filling_handler =
       tool_delegate_->GetActorTaskFormFillingHandler();
   CHECK(form_filling_handler);
@@ -403,9 +418,54 @@ void AttemptFormFillingTool::OnAllAutofillRendererIdsRetrieved() {
       form_filling_handler->GetActorFormFillingService();
   CHECK(form_filling_service);
 
+  if (!credit_card_opaque_token_.empty()) {
+    form_filling_service->RetrieveSuggestionForCreditCardOpaqueToken(
+        GetAutofillClient(), service_requests_, credit_card_opaque_token_,
+        base::BindOnce(&AttemptFormFillingTool::OnSuggestionsRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Passing the requests to the service.
+  // TODO(crbug.com/472287741): Explore pre-click form. See
+  // `features::kGlicActorAutofillPreClick`.
   form_filling_service->GetSuggestions(
       GetAutofillClient(), std::move(service_requests_),
       base::BindOnce(&AttemptFormFillingTool::OnSuggestionsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AttemptFormFillingTool::DirectlyFillSuggestions(
+    const std::vector<autofill::ActorFormFillingRequest>& requests) {
+  if (!web_state_) {
+    FailWithResult(ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  ActorTaskFormFillingHandler* form_filling_handler =
+      tool_delegate_->GetActorTaskFormFillingHandler();
+  CHECK(form_filling_handler);
+  autofill::ActorFormFillingService* service =
+      form_filling_handler->GetActorFormFillingService();
+  CHECK(service);
+  autofill::AutofillClientIOS& client = GetAutofillClient();
+
+  selected_suggestions_.clear();
+  for (size_t i = 0; i < requests.size(); ++i) {
+    // `GetSuggestions` and `RetrieveSuggestionForCreditCardOpaqueToken` abort
+    // with `kNoSuggestions` if any form section has no suggestions. Therefore,
+    // every request is guaranteed to have suggestions.
+    CHECK_GT(requests[i].suggestions.size(), 0u);
+    autofill::ActorSuggestionId suggestion_id = requests[i].suggestions[0].id;
+    service->FillForm(client, static_cast<int>(i),
+                      autofill::ActorFormFillingSelection(suggestion_id));
+    selected_suggestions_.push_back(
+        autofill::ActorFormFillingSelection(suggestion_id));
+  }
+
+  service->FillSuggestions(
+      client, std::move(selected_suggestions_),
+      base::BindOnce(&AttemptFormFillingTool::OnFormFillingComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -427,6 +487,11 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
   if (suggestions_result_values.empty()) {
     FailWithResult(ToolExecutionResult(
         mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable));
+    return;
+  }
+
+  if (!credit_card_opaque_token_.empty()) {
+    DirectlyFillSuggestions(suggestions_result_values);
     return;
   }
 

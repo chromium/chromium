@@ -64,7 +64,7 @@ ToolRequest::CreateToolResult AttemptFormFillingToolRequest::CreateTool(
 
   return {std::make_unique<AttemptFormFillingTool>(
               task_id, tool_delegate, *actor_surface, std::move(requests_),
-              enqueued_click_),
+              credit_card_opaque_token_, enqueued_click_),
           MakeOkResult()};
 }
 

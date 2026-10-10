@@ -70,10 +70,15 @@ class AttemptFormFillingTool : public WebActorTool {
  private:
   AttemptFormFillingTool(base::WeakPtr<web::WebState> web_state,
                          std::vector<FormFillingRequest> requests,
+                         std::string credit_card_opaque_token,
                          ToolDelegate* tool_delegate);
 
   // Returns the AutofillClientIOS associated with the target WebState.
   autofill::AutofillClientIOS& GetAutofillClient() const;
+
+  // Directly fills the suggestions into the form without prompting the user.
+  void DirectlyFillSuggestions(
+      const std::vector<autofill::ActorFormFillingRequest>& requests);
 
   // Callback invoked when the target frame resolution for a request completes.
   void OnTargetFrameResolved(
@@ -125,6 +130,9 @@ class AttemptFormFillingTool : public WebActorTool {
   // The list of requests containing requested data type and raw ActionTarget
   // trigger fields.
   std::vector<FormFillingRequest> tool_requests_;
+
+  // An optional opaque token to retrieve and fill a credit card suggestion.
+  std::string credit_card_opaque_token_;
 
   // Delegate handling UI interactions.
   raw_ptr<ToolDelegate> tool_delegate_ = nullptr;
