@@ -844,7 +844,9 @@ char16_t MenuItemView::GetMnemonic() {
         // from a 'dotted i'. Similar issues may exist for az and lt locales.
         return base::i18n::ToLower(char_array)[0];
       }
-      index++;
+      // "&&" shows a literal "&" and isn't a mnemonic marker. Skip both
+      // characters, so the second "&" isn't read as a marker for the next one.
+      index += 2;
     }
   } while (index != std::u16string::npos);
   return 0;
@@ -2118,7 +2120,7 @@ void MenuItemActionViewInterface::ActionItemChangedImpl(
   BaseActionViewInterface::ActionItemChangedImpl(action_item);
   auto* menu_item_view = views::AsViewClass<MenuItemView>(action_view());
   CHECK(menu_item_view);
-  menu_item_view->SetTitle(std::u16string(action_item->GetText()));
+  menu_item_view->SetTitle(std::u16string(action_item->GetTextWithMnemonic()));
   if (!action_item->GetImage().IsEmpty()) {
     menu_item_view->SetIcon(action_item->GetImage());
   }

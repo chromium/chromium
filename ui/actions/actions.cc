@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/text_utils.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(actions::ActionPinnableState)
 namespace actions {
@@ -303,11 +304,16 @@ std::u16string_view ActionItem::GetText() const {
 }
 
 void ActionItem::SetText(std::u16string_view text) {
-  if (text_ == text) {
+  if (raw_text_ == text) {
     return;
   }
-  text_ = std::u16string(text);
+  raw_text_ = std::u16string(text);
+  text_ = gfx::RemoveAccelerator(raw_text_);
   ActionItemChanged();
+}
+
+std::u16string_view ActionItem::GetTextWithMnemonic() const {
+  return raw_text_;
 }
 
 std::u16string_view ActionItem::GetTooltipText() const {
@@ -428,6 +434,7 @@ ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_READONLY_PROPERTY_METADATA(int, InvokeCount)
 ADD_READONLY_PROPERTY_METADATA(std::optional<base::TimeTicks>, LastInvokeTime)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, TextWithMnemonic)
 END_METADATA
 
 StatefulImageActionItem::~StatefulImageActionItem() = default;

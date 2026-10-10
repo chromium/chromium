@@ -29,6 +29,8 @@ component("actions") {
 
   public_deps = [ ":actions_headers" ]
 
+  deps = [ "//ui/gfx" ]
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

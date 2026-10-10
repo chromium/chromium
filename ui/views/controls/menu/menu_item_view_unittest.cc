@@ -5,6 +5,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,6 +27,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -250,6 +253,23 @@ TEST_F(MenuItemViewUnitTest, IgnoresMnemonicsWhenMenuHasNone) {
   EXPECT_FALSE(root_menu.ShouldShowMnemonics());
   EXPECT_FALSE(item->ShouldShowMnemonics());
   EXPECT_EQ(0, GetMnemonicPrefixFlags(item));
+}
+
+// "&&" shows a literal "&", so it isn't a mnemonic marker. A single "&" after
+// it still is.
+TEST_F(MenuItemViewUnitTest, EscapedAmpersandIsNotMnemonic) {
+  views::TestMenuItemView root_menu;
+  views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"AT&&T");
+  views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"Q&&&A");
+
+  root_menu.set_has_mnemonics(true);
+
+  EXPECT_EQ(0, item1->GetMnemonic());
+  if (MenuConfig::instance().use_mnemonics) {
+    EXPECT_EQ('a', item2->GetMnemonic());
+  } else {
+    EXPECT_EQ(0, item2->GetMnemonic());
+  }
 }
 
 TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
@@ -1502,4 +1522,68 @@ TEST_F(MenuItemViewA11yTest, ActionViewInterfaceTest) {
   EXPECT_FALSE(item->GetEnabled());
   EXPECT_FALSE(item->GetVisible());
 }
+
+// An item bound to an ActionItem shows the action's text with its mnemonic
+// marker, so the mnemonic works. The accessible name doesn't contain the
+// marker.
+TEST_F(MenuItemViewUnitTest, TitleIsActionItemTextWithMnemonic) {
+  views::TestMenuItemView root_menu;
+  MenuItemView* item = root_menu.AppendMenuItem(1);
+  root_menu.set_has_mnemonics(true);
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder().SetText(u"Settin&gs").Build();
+  ActionViewController action_view_controller;
+  action_view_controller.CreateActionViewRelationship(
+      item, action_item->GetAsWeakPtr());
+
+  EXPECT_EQ(item->title(), u"Settin&gs");
+  if (MenuConfig::instance().use_mnemonics) {
+    EXPECT_EQ('g', item->GetMnemonic());
+  } else {
+    EXPECT_EQ(0, item->GetMnemonic());
+  }
+  EXPECT_EQ(MenuItemView::GetAccessibleNameForMenuItem(
+                item->title(), std::u16string(), std::nullopt),
+            u"Settings");
+}
+
+// "&&" in an ActionItem's text shows a literal "&" and isn't used as a
+// mnemonic.
+TEST_F(MenuItemViewUnitTest, ActionItemTextWithAmpersandHasNoMnemonic) {
+  views::TestMenuItemView root_menu;
+  MenuItemView* item = root_menu.AppendMenuItem(1);
+  root_menu.set_has_mnemonics(true);
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder().SetText(u"AT&&T").Build();
+  ActionViewController action_view_controller;
+  action_view_controller.CreateActionViewRelationship(
+      item, action_item->GetAsWeakPtr());
+
+  EXPECT_EQ(item->title(), u"AT&&T");
+  EXPECT_EQ(0, item->GetMnemonic());
+  EXPECT_EQ(MenuItemView::GetAccessibleNameForMenuItem(
+                item->title(), std::u16string(), std::nullopt),
+            u"AT&T");
+}
+
+// The title keeps the mnemonic marker when the ActionItem changes.
+TEST_F(MenuItemViewUnitTest, TitleKeepsMnemonicWhenActionItemChanges) {
+  views::TestMenuItemView root_menu;
+  MenuItemView* item = root_menu.AppendMenuItem(1);
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder().SetText(u"Settin&gs").Build();
+  ActionViewController action_view_controller;
+  action_view_controller.CreateActionViewRelationship(
+      item, action_item->GetAsWeakPtr());
+
+  action_item->SetEnabled(false);
+
+  EXPECT_FALSE(item->GetEnabled());
+  EXPECT_EQ(item->title(), u"Settin&gs");
+
+  action_item->SetText(u"&Options");
+
+  EXPECT_EQ(item->title(), u"&Options");
+}
+
 }  // namespace views

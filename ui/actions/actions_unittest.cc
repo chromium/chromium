@@ -475,6 +475,42 @@ TEST_F(ActionItemTest, TestActionItemPinnableKey) {
                 actions::ActionPinnableState::kPinnable));
 }
 
+// GetTextWithMnemonic() returns the text as set, for menus. GetText() returns
+// it without the mnemonic marker.
+TEST_F(ActionItemTest, GetTextRemovesMnemonic) {
+  auto action_item = ActionItem::Builder().SetText(u"Settin&gs").Build();
+  EXPECT_EQ(action_item->GetText(), u"Settings");
+  EXPECT_EQ(action_item->GetTextWithMnemonic(), u"Settin&gs");
+
+  // "&&" is a literal "&".
+  action_item->SetText(u"&Q&&A");
+  EXPECT_EQ(action_item->GetText(), u"Q&A");
+  EXPECT_EQ(action_item->GetTextWithMnemonic(), u"&Q&&A");
+
+  action_item->SetText(u"Options");
+  EXPECT_EQ(action_item->GetText(), u"Options");
+  EXPECT_EQ(action_item->GetTextWithMnemonic(), u"Options");
+}
+
+// Observers are notified when the text changes, even if only its mnemonic
+// marker does, but not when the same text is set again.
+TEST_F(ActionItemTest, TextChangesNotifyObservers) {
+  auto action_item = ActionItem::Builder().SetText(u"Settings").Build();
+  int changed_count = 0;
+  auto changed_subscription = action_item->AddActionChangedCallback(
+      base::BindRepeating([](int* count) { ++(*count); }, &changed_count));
+
+  action_item->SetText(u"Settings");
+  EXPECT_EQ(changed_count, 0);
+
+  // Only the marker is new. GetText() is unchanged.
+  action_item->SetText(u"Settin&gs");
+  EXPECT_EQ(changed_count, 1);
+
+  action_item->SetText(u"Settin&gs");
+  EXPECT_EQ(changed_count, 1);
+}
+
 TEST_F(ActionItemTest, TestActionProperties) {
   constexpr int kGroupId = 5;
   // clang-format off
