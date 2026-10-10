@@ -57,7 +57,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
-#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
 #include "chrome/browser/ui/webui/omnibox/logging/logs.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
@@ -602,10 +601,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<new_tab_footer::mojom::NewTabFooterHandlerFactory>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
   }
-
-  registry.ForWebUI<NewTabPageThirdPartyUI>()
-      .Add<most_visited::mojom::MostVisitedPageHandlerFactory>()
-      .Add<new_tab_page_third_party::mojom::PageHandlerFactory>();
 
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {

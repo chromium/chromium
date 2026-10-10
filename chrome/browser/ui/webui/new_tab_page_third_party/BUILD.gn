@@ -16,57 +16,60 @@ mojom("mojo_bindings") {
   ]
 }
 
-# The New Tab Page Third Party WebUI (other than its mojom bindings) is
-# desktop-only: it transitively requires desktop-only deps (themes, webui/ntp,
-# webui/util). Guard the non-mojom targets with !is_android so they are not
-# pulled into the desktop_android (is_desktop_android) build graph.
-if (!is_android) {
-  # Thin public target providing headers without heavy deps.
-  source_set("new_tab_page_third_party") {
-    public = [
-      "new_tab_page_third_party_handler.h",
-      "new_tab_page_third_party_ui.h",
-    ]
-    public_deps = [
-      ":mojo_bindings",
-      "//chrome/browser:browser_public_dependencies",
-      "//chrome/browser/themes",
-      "//chrome/common",
-      "//ui/webui",
-    ]
-  }
+# Thin public target providing headers without heavy deps.
+source_set("new_tab_page_third_party") {
+  public = [
+    "new_tab_page_third_party_handler.h",
+    "new_tab_page_third_party_ui.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/themes",
+    "//chrome/common",
+    "//ui/webui",
+  ]
+}
 
-  # Full implementation target.
-  source_set("impl") {
-    sources = [
-      "new_tab_page_third_party_handler.cc",
-      "new_tab_page_third_party_ui.cc",
-    ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps = [
-      ":mojo_bindings",
-      ":new_tab_page_third_party",
-      "//base",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/resources/new_tab_page_third_party:resources",
-      "//chrome/browser/themes",
-      "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/ui/search",
-      "//chrome/browser/ui/webui:favicon_source",
-      "//chrome/browser/ui/webui:theme_source",
-      "//chrome/browser/ui/webui/cr_components/most_visited",
+# Full implementation target.
+source_set("impl") {
+  sources = [
+    "new_tab_page_third_party_handler.cc",
+    "new_tab_page_third_party_ui.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":mojo_bindings",
+    ":new_tab_page_third_party",
+    "//base",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/new_tab_page_third_party:resources",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/search",
+    "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:theme_source",
+    "//chrome/browser/ui/webui/cr_components/most_visited",
+    "//chrome/browser/ui/webui/page_not_available_for_guest",
+    "//chrome/common",
+    "//components/favicon_base",
+    "//components/prefs",
+    "//components/search",
+    "//content/public/browser",
+    "//ui/color",
+    "//ui/gfx:color_utils",
+    "//ui/native_theme",
+    "//ui/webui",
+  ]
+
+  # Custom theme background images (BrowserThemePack) and the legacy NTP
+  # resource cache are desktop-only. On Android the page is themed purely
+  # through the ColorProvider, exactly like the first-party WebUI NTP.
+  if (!is_android) {
+    deps += [
       "//chrome/browser/ui/webui/ntp:ntp_resource_cache",
-      "//chrome/browser/ui/webui/page_not_available_for_guest",
       "//chrome/browser/ui/webui/util",
-      "//chrome/common",
-      "//components/favicon_base",
-      "//components/prefs",
-      "//components/search",
-      "//content/public/browser",
-      "//ui/color",
-      "//ui/gfx:color_utils",
-      "//ui/native_theme",
-      "//ui/webui",
     ]
   }
-}  # if (!is_android)
+}

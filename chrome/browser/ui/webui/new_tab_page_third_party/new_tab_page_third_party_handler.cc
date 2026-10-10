@@ -5,13 +5,12 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_handler.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
-#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
@@ -19,6 +18,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
+#endif
 
 NewTabPageThirdPartyHandler::NewTabPageThirdPartyHandler(
     mojo::PendingReceiver<new_tab_page_third_party::mojom::PageHandler>
@@ -32,6 +37,10 @@ NewTabPageThirdPartyHandler::NewTabPageThirdPartyHandler(
       receiver_{this, std::move(pending_page_handler)} {
   // Listen for theme installation.
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
+#if BUILDFLAG(IS_ANDROID)
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  Observe(web_contents);
+#endif
 }
 
 NewTabPageThirdPartyHandler::~NewTabPageThirdPartyHandler() {
@@ -51,12 +60,15 @@ void NewTabPageThirdPartyHandler::OnNativeThemeUpdated(
   NotifyAboutTheme();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void NewTabPageThirdPartyHandler::OnColorProviderChanged() {
+  NotifyAboutTheme();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
   auto theme = new_tab_page_third_party::mojom::Theme::New();
   auto most_visited = most_visited::mojom::MostVisitedTheme::New();
-  const ui::ThemeProvider* theme_provider =
-      webui::GetThemeProviderDeprecated(web_contents_);
-  DCHECK(theme_provider);
   const ui::ColorProvider& color_provider = web_contents_->GetColorProvider();
   most_visited->background_color =
       color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground);
@@ -64,6 +76,13 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
       color_utils::IsDark(most_visited->background_color);
   theme->text_color = color_provider.GetColor(kColorNewTabPageText);
   most_visited->is_dark = !color_utils::IsDark(theme->text_color);
+#if BUILDFLAG(IS_ANDROID)
+  theme->color_background = color_utils::SkColorToRgbaString(
+      color_provider.GetColor(kColorNewTabPageBackground));
+#else
+  const ui::ThemeProvider* theme_provider =
+      webui::GetThemeProviderDeprecated(web_contents_);
+  DCHECK(theme_provider);
   theme->color_background = color_utils::SkColorToRgbaString(GetThemeColor(
       webui::GetNativeThemeDeprecated(web_contents_),
       web_contents_->GetColorProvider(), kColorNewTabPageBackground));
@@ -75,6 +94,7 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
         theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
     theme->id = profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
   theme->most_visited = std::move(most_visited);
   page_->SetTheme(std::move(theme));
 }

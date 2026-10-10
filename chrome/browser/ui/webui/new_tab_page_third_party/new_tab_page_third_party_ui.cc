@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -16,10 +17,8 @@
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_handler.h"
-#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -39,6 +38,11 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/webui/webui_util.h"
 #include "url/url_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
+#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
+#endif
 
 using content::BrowserContext;
 using content::WebContents;
@@ -86,6 +90,24 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
 
   source->AddLocalizedStrings(kStrings);
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/572046023): Add support for custom background images.
+  // The ThemeProvider lookup methods are not available for Android, as they
+  // extract go through the BrowserWidget, which is Desktop-exclusive.
+  const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
+  const SkColor background_color =
+      color_provider.GetColor(kColorNewTabPageBackground);
+  const SkColor text_color = color_provider.GetColor(kColorNewTabPageText);
+  source->AddString("backgroundPosition", "");
+  source->AddString("backgroundTiling", "");
+  source->AddString("colorBackground",
+                    color_utils::SkColorToRgbaString(background_color));
+  // TODO(crbug.com/40120448): don't get theme id from profile.
+  source->AddString("themeId",
+                    profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
+  source->AddString("hascustombackground", "");
+  source->AddString("isdark", !color_utils::IsDark(text_color) ? "dark" : "");
+#else
   const ui::ThemeProvider* theme_provider =
       webui::GetThemeProviderDeprecated(web_contents);
   // TODO(crbug.com/40823895): Always mock theme provider in tests so that
@@ -120,6 +142,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
     source->AddString("hascustombackground", "");
     source->AddString("isdark", "");
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   source->AddInteger(
       "preconnectStartTimeThreshold",

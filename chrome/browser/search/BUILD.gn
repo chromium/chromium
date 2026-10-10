@@ -59,7 +59,9 @@ source_set("search") {
       "//base",
       "//chrome/browser/ntp_tiles",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/themes",
       "//chrome/browser/ui/webui/new_tab_page",
+      "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/common",
       "//components/history/core/browser",
       "//components/keyed_service/core",
@@ -95,15 +97,6 @@ source_set("search") {
       deps += [
         "//extensions/browser",
         "//extensions/common",
-      ]
-    }
-
-    # TODO(b/562623656, b/559771711): Support ThemeService and Fallback 3P
-    # WebUI NTP for Desktop Android.
-    if (!is_android) {
-      public_deps += [
-        "//chrome/browser/themes",
-        "//chrome/browser/ui/webui/new_tab_page_third_party",
       ]
     }
 

@@ -75,6 +75,7 @@
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
@@ -118,7 +119,6 @@
 #include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals_ui.h"
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
-#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
@@ -337,6 +337,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<RegionalCapabilitiesInternalsUIConfig>());
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   map.AddWebUIConfig(std::make_unique<NewTabPageUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NewTabPageThirdPartyUIConfig>());
   map.AddWebUIConfig(std::make_unique<CustomizeChromeUIConfig>());
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
@@ -393,7 +394,6 @@ void RegisterChromeWebUIConfigs() {
           multistep_filter_internals::MultistepFilterInternalsUIConfig>());
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   map.AddWebUIConfig(std::make_unique<NewTabFooterUIConfig>());
-  map.AddWebUIConfig(std::make_unique<NewTabPageThirdPartyUIConfig>());
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   map.AddWebUIConfig(std::make_unique<NewTabUIConfig>());
   map.AddWebUIConfig(std::make_unique<OmniboxEverywhereUIConfig>());
