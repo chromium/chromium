@@ -120,12 +120,13 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(PrivilegedWebContentsHolder);
 std::unique_ptr<PrivilegedWebContents> PrivilegedWebContents::Create(
     PrivilegedComponent component,
     content::BrowserContext* browser_context,
-    std::unique_ptr<PwcPolicyDelegate> policy_delegate) {
+    std::unique_ptr<PwcPolicyDelegate> policy_delegate,
+    const PwcCreateOptions& options) {
   CHECK(browser_context);
   CHECK(policy_delegate);
   // Not std::make_unique: the constructor is private.
   return base::WrapUnique(new PrivilegedWebContents(
-      component, browser_context, std::move(policy_delegate)));
+      component, browser_context, std::move(policy_delegate), options));
 }
 
 // static
@@ -185,12 +186,14 @@ PrivilegedWebContents::GetPermissionStatus(
 PrivilegedWebContents::PrivilegedWebContents(
     PrivilegedComponent component,
     content::BrowserContext* browser_context,
-    std::unique_ptr<PwcPolicyDelegate> policy_delegate)
+    std::unique_ptr<PwcPolicyDelegate> policy_delegate,
+    const PwcCreateOptions& options)
     : policy_(component, std::move(policy_delegate)),
       bridge_(std::make_unique<PwcApiBinder>()) {
   // No StoragePartitionConfig override: the WebContents lives in the
   // profile's default partition so the component shares the live cookie jar.
   content::WebContents::CreateParams params(browser_context);
+  params.initially_hidden = options.initially_hidden;
   content::WebContents::PrivilegedParams privileged_params;
   privileged_params.feature_id = policy_.content_feature_id();
   privileged_params.disallow_service_worker_control =

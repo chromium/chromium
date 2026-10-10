@@ -434,6 +434,56 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       GuestRespectsInitiallyHidden) {
+  GlicNoWebviewContentsManager hidden_manager(
+      GetProfile(), &service()->enabling(), /*initially_hidden=*/true);
+  ASSERT_TRUE(hidden_manager.guest_contents());
+  EXPECT_EQ(hidden_manager.guest_contents()->GetVisibility(),
+            content::Visibility::HIDDEN);
+
+  GlicNoWebviewContentsManager visible_manager(
+      GetProfile(), &service()->enabling(), /*initially_hidden=*/false);
+  ASSERT_TRUE(visible_manager.guest_contents());
+  EXPECT_EQ(visible_manager.guest_contents()->GetVisibility(),
+            content::Visibility::VISIBLE);
+}
+
+// A guest navigation while attached but hidden must not force the guest
+// visible when it was created hidden.
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       GuestNavigationWhileHiddenKeepsGuestHidden) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  // Wait for a non-empty panel size (populated asynchronously after layout on
+  // Android) so `ApplySizeToGuest()` doesn't early-return before reaching the
+  // visibility update.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !instance->host().instance().GetPanelSize().IsEmpty(); }));
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
+                                       /*initially_hidden=*/true);
+  ASSERT_TRUE(content::WaitForLoadStop(manager.guest_contents()));
+  manager.AttachToHost(&instance->host());
+  ASSERT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kAttachedHidden);
+
+  manager.OnGuestNavigated(manager.guest_contents()->GetLastCommittedURL(),
+                           /*is_api_allowed=*/true,
+                           mojom::GuestPageType::kRegular,
+                           /*is_initial_commit=*/true);
+  EXPECT_EQ(manager.guest_contents()->GetVisibility(),
+            content::Visibility::HIDDEN);
+
+  // Showing Glic makes the guest and the newly created overlay visible.
+  manager.SetVisibility(content::Visibility::VISIBLE);
+  ASSERT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_EQ(manager.guest_contents()->GetVisibility(),
+            content::Visibility::VISIBLE);
+  ASSERT_TRUE(manager.overlay_contents());
+  EXPECT_EQ(manager.overlay_contents()->GetVisibility(),
+            content::Visibility::VISIBLE);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                        GuestErrorShowsGuestAndReloadsOnShow) {
   GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
                                        /*initially_hidden=*/false);

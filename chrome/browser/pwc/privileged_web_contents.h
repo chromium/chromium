@@ -49,6 +49,15 @@ namespace pwc {
 
 class PwcApiBinder;
 
+// Optional settings for the WebContents owned by a PrivilegedWebContents.
+// Only settings that cannot weaken PWC's structural guarantees (storage
+// partition, privileged params, no opener, etc.) belong here.
+struct PwcCreateOptions {
+  // If true, the WebContents is created hidden (see
+  // content::WebContents::CreateParams::initially_hidden).
+  bool initially_hidden = false;
+};
+
 // Owns a WebContents that hosts remote content for a blessed component with
 // elevated browser capabilities.
 //
@@ -71,7 +80,8 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   static std::unique_ptr<PrivilegedWebContents> Create(
       PrivilegedComponent component,
       content::BrowserContext* browser_context,
-      std::unique_ptr<PwcPolicyDelegate> policy_delegate);
+      std::unique_ptr<PwcPolicyDelegate> policy_delegate,
+      const PwcCreateOptions& options = {});
 
   // Returns the owning PrivilegedWebContents if `web_contents` is owned by
   // one, otherwise nullptr.
@@ -238,7 +248,8 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
  private:
   PrivilegedWebContents(PrivilegedComponent component,
                         content::BrowserContext* browser_context,
-                        std::unique_ptr<PwcPolicyDelegate> policy_delegate);
+                        std::unique_ptr<PwcPolicyDelegate> policy_delegate,
+                        const PwcCreateOptions& options);
 
   bool IsPrimaryMainFrame(content::RenderFrameHost* render_frame_host) const;
   bool IsPrimaryMainFrame(int render_process_id, int render_frame_id) const;

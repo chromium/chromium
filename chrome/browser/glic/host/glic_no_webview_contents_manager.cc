@@ -331,6 +331,8 @@ GlicNoWebviewContentsManager::OverlayContentsManager::EnsureWebContents() {
   if (web_contents_) {
     return web_contents_.get();
   }
+  // The overlay is only created when Glic is visible (kShowingOverlay), so it
+  // is never created hidden regardless of `initially_hidden`.
   web_contents_ = content::WebContents::Create(
       MakeOverlayCreateParams(profile_, /*initially_hidden=*/false));
   CHECK(web_contents_);
@@ -621,7 +623,8 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
       privileged_guest_contents_(pwc::PrivilegedWebContents::Create(
           pwc::PrivilegedComponent::kGlic,
           profile,
-          std::make_unique<GlicPwcPolicyDelegate>(profile))),
+          std::make_unique<GlicPwcPolicyDelegate>(profile),
+          {.initially_hidden = initially_hidden})),
       zoom_controller_(
           privileged_guest_contents_->web_contents(),
           profile ? profile->GetPrefs() : nullptr,
@@ -791,7 +794,11 @@ void GlicNoWebviewContentsManager::ApplySizeToGuest() {
     return;
   }
   guest_contents()->GetRenderWidgetHostView()->SetSize(target_size);
-  guest_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  // While the overlay is shown, the guest is not attached to a view, so mark it
+  // visible to let it load and render at full priority.
+  if (is_visible_) {
+    guest_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  }
 }
 
 void GlicNoWebviewContentsManager::ShowGuestDirectly(GuestState state) {

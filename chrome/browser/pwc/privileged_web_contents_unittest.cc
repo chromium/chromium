@@ -92,6 +92,19 @@ TEST_F(PrivilegedWebContentsTest, FromWebContentsIsNullForOrdinaryContents) {
   EXPECT_EQ(PrivilegedWebContents::FromWebContents(nullptr), nullptr);
 }
 
+TEST_F(PrivilegedWebContentsTest, CreatesVisibleByDefault) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  EXPECT_EQ(pwc->web_contents()->GetVisibility(), content::Visibility::VISIBLE);
+}
+
+TEST_F(PrivilegedWebContentsTest, CreatesHiddenWhenInitiallyHidden) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate(),
+      {.initially_hidden = true});
+  EXPECT_EQ(pwc->web_contents()->GetVisibility(), content::Visibility::HIDDEN);
+}
+
 TEST_F(PrivilegedWebContentsTest, DisablesPrerendering) {
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
