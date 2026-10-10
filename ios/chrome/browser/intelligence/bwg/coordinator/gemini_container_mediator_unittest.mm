@@ -18,6 +18,12 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -40,6 +46,7 @@
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -66,7 +73,9 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
-@interface GeminiContainerMediator (Testing) <ActorTaskLifecycleObserver>
+@interface GeminiContainerMediator (Testing) <ActorTaskLifecycleObserver,
+                                              IdentityManagerObserving,
+                                              IncognitoStateObserver>
 - (void)cancelPageContextGeneration;
 - (void)setActuationActive:(BOOL)actuationActive;
 - (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
@@ -266,6 +275,7 @@ class FakeGeminiContainerMediatorEventHandler
     last_mode_changed_ = mode;
   }
   void OnGeminiUIDidAppear() override { ui_did_appear_called_ = true; }
+  void ForceDismissFloaty() override { force_dismiss_floaty_called_ = true; }
 
   std::optional<ios::provider::GeminiViewState> last_view_state_changed_;
   std::optional<ios::provider::GeminiClientMode>
@@ -278,6 +288,7 @@ class FakeGeminiContainerMediatorEventHandler
   bool stop_button_pressed_called_ = false;
   std::optional<ios::provider::GeminiViewMode> last_mode_changed_;
   bool ui_did_appear_called_ = false;
+  bool force_dismiss_floaty_called_ = false;
 };
 
 // A test spy for `GeminiSharedTabsDelegate`.
@@ -352,6 +363,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
 
   void TearDown() override {
     [mediator_ disconnect];
+    scene_state_ = nil;
     PlatformTest::TearDown();
   }
 
@@ -1627,6 +1639,126 @@ TEST_F(GeminiContainerMediatorTest, TestWillEnterTabGridMinimizesContainer) {
       animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
   scene_state_.tabGridState.tabGridVisible = YES;
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+}
+
+// Tests that entering Incognito mode dismisses the Gemini flow via
+// `geminiHandler` when the bottom sheet migration is enabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestForceDismissOnWillEnterIncognitoBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  [mediator_ connect];
+
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that entering Incognito mode calls `ForceDismissFloaty` on the event
+// handler when the bottom sheet migration is disabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestForceDismissOnWillEnterIncognitoLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kIOSGeminiBottomSheetMigration});
+
+  [mediator_ onFloatyInvoked];
+
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  EXPECT_TRUE(delegate_.force_dismiss_floaty_called_);
+}
+
+// Tests that entering Incognito mode does not trigger dismissal after the
+// floaty is dismissed and observers are detached.
+TEST_F(GeminiContainerMediatorTest,
+       TestNoForceDismissOnWillEnterIncognitoWhenDetached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kIOSGeminiBottomSheetMigration});
+
+  [mediator_ onFloatyInvoked];
+  [mediator_ onFloatyDismiss];
+
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  EXPECT_FALSE(delegate_.force_dismiss_floaty_called_);
+}
+
+// Tests that a primary account change dismisses the Gemini flow via
+// `geminiHandler` when the bottom sheet migration is enabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestForceDismissOnPrimaryAccountChangedBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  [mediator_ connect];
+
+  signin::PrimaryAccountChangeEvent::State previous_state;
+  CoreAccountInfo account_info;
+  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia_id"));
+  account_info.gaia = GaiaId("gaia_id");
+  account_info.email = "test@test.com";
+  signin::PrimaryAccountChangeEvent::State current_state(
+      account_info, signin::ConsentLevel::kSignin);
+  signin::PrimaryAccountChangeEvent event(
+      previous_state, current_state, signin_metrics::AccessPoint::kSettings);
+
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  [mediator_ primaryAccountDidChange:event];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that a primary account change calls `ForceDismissFloaty` on the event
+// handler when the bottom sheet migration is disabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestForceDismissOnPrimaryAccountChangedLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kIOSGeminiBottomSheetMigration});
+
+  [mediator_ onFloatyInvoked];
+
+  signin::PrimaryAccountChangeEvent::State previous_state;
+  CoreAccountInfo account_info;
+  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia_id"));
+  account_info.gaia = GaiaId("gaia_id");
+  account_info.email = "test@test.com";
+  signin::PrimaryAccountChangeEvent::State current_state(
+      account_info, signin::ConsentLevel::kSignin);
+  signin::PrimaryAccountChangeEvent event(
+      previous_state, current_state, signin_metrics::AccessPoint::kSettings);
+
+  [mediator_ primaryAccountDidChange:event];
+  EXPECT_TRUE(delegate_.force_dismiss_floaty_called_);
+}
+
+// Tests that `IdentityManager` shutdown dismisses the Gemini flow via
+// `geminiHandler` when the bottom sheet migration is enabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestForceDismissOnIdentityManagerShutdownBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  [mediator_ connect];
+
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  [mediator_ identityManagerDidShutdown:IdentityManagerFactory::GetForProfile(
+                                            profile_.get())];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that `IdentityManager` shutdown calls `ForceDismissFloaty` on the event
+// handler when the bottom sheet migration is disabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestForceDismissOnIdentityManagerShutdownLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kIOSGeminiBottomSheetMigration});
+
+  [mediator_ onFloatyInvoked];
+
+  [mediator_ identityManagerDidShutdown:IdentityManagerFactory::GetForProfile(
+                                            profile_.get())];
+  EXPECT_TRUE(delegate_.force_dismiss_floaty_called_);
 }
 
 // Test that `updateWithStartupState:` updates the provider with the image

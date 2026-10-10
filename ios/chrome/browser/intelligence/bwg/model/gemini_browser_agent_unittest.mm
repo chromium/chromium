@@ -831,9 +831,12 @@ TEST_F(GeminiBrowserAgentTest, TestDismissGeminiFromOtherWindows) {
   browser_list->RemoveBrowser(second_browser.get());
 }
 
-// Tests that the floaty is dismissed when the primary account changes.
-TEST_F(GeminiBrowserAgentTest, TestDismissedOnPrimaryAccountChanged) {
-  SetIsFloatyInvoked(true);
+// Tests that the conversation ID pref is cleared when the primary account
+// changes.
+TEST_F(GeminiBrowserAgentTest,
+       TestConversationIdClearedOnPrimaryAccountChanged) {
+  profile_->GetPrefs()->SetString(prefs::kGeminiConversationId, "test_id");
+  EXPECT_FALSE(IsConversationIdPrefCleared());
 
   signin::PrimaryAccountChangeEvent::State previous_state;
   CoreAccountInfo account_info;
@@ -848,49 +851,19 @@ TEST_F(GeminiBrowserAgentTest, TestDismissedOnPrimaryAccountChanged) {
 
   gemini_browser_agent_->OnPrimaryAccountChanged(event);
 
-  EXPECT_FALSE(IsFloatyInvoked());
   EXPECT_TRUE(IsConversationIdPrefCleared());
 }
 
-// Tests that the floaty is dismissed even if it is temporarily hidden.
+// Tests that the floaty is dismissed even if it is temporarily hidden when
+// `ForceDismissFloaty` is called.
 TEST_F(GeminiBrowserAgentTest, TestForceDismissedWhenTemporarilyHidden) {
   SetIsFloatyInvoked(true);
   SetIsFloatyTemporarilyHidden(true);
 
-  signin::PrimaryAccountChangeEvent::State previous_state;
-  CoreAccountInfo account_info;
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia_id"));
-  account_info.gaia = GaiaId("gaia_id");
-  account_info.email = "test@test.com";
-  signin::PrimaryAccountChangeEvent::State current_state(
-      account_info, signin::ConsentLevel::kSignin);
-
-  signin::PrimaryAccountChangeEvent event(
-      previous_state, current_state, signin_metrics::AccessPoint::kSettings);
-
-  gemini_browser_agent_->OnPrimaryAccountChanged(event);
+  gemini_browser_agent_->ForceDismissFloaty();
 
   EXPECT_FALSE(IsFloatyInvoked());
   EXPECT_FALSE(IsFloatyTemporarilyHidden());
-  EXPECT_TRUE(IsConversationIdPrefCleared());
-}
-
-// Tests that calling `OnWillEnterIncognito` when bottom sheet migration is
-// enabled does not crash when the floaty is not invoked (crbug.com/541166486).
-TEST_F(GeminiBrowserAgentTest,
-       TestOnWillEnterIncognitoWithBottomSheetMigration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
-
-  // Create GeminiBrowserAgent after setting the flags.
-  std::unique_ptr<TestBrowser> scoped_browser =
-      std::make_unique<TestBrowser>(profile_);
-  GeminiBrowserAgent::CreateForBrowser(scoped_browser.get());
-  GeminiBrowserAgent* agent =
-      GeminiBrowserAgent::FromBrowser(scoped_browser.get());
-
-  agent->OnWillEnterIncognito();
 }
 
 // Tests that when the floaty is expanded/focused while temporarily hidden,

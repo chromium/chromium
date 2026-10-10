@@ -193,12 +193,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void OnGeminiLiveUserDidPressStopButton() override;
   void OnModeChanged(ios::provider::GeminiViewMode mode) override;
   void OnGeminiUIDidAppear() override;
+  void ForceDismissFloaty() override;
 
   // Called when the scene activation level changes.
   void OnSceneActivationLevelChanged(SceneActivationLevel level);
-
-  // Called when the scene is about to enter Incognito mode.
-  void OnWillEnterIncognito();
 
   // Called when trait collection is updated.
   void UpdateForTraitCollection(UITraitCollection* traitCollection);
@@ -314,10 +312,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // floaty opacity to 1.0 effectively re-showing the floaty. Useful to re-show
   // the floaty if a user is currently in fullscreen mode.
   void ForceShowFloatyIfInvoked();
-
-  // Forces the floaty to be dismissed and cleaned up, ignoring if it is
-  // temporarily hidden.
-  void ForceDismissFloaty();
 
   // Switches the view mode to Floaty (i.e., chat) mode with the specified
   // `target_state` if the current page is eligible, or dismisses the floaty if

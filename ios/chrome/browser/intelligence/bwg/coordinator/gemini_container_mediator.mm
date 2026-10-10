@@ -13,6 +13,9 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -41,6 +44,7 @@
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_consumer.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -50,6 +54,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
@@ -63,6 +68,8 @@ using ios::provider::GeminiViewState;
 
 @interface GeminiContainerMediator () <ActorTaskLifecycleObserver,
                                        GeminiContainerUIStateManagerDelegate,
+                                       IdentityManagerObserving,
+                                       IncognitoStateObserver,
                                        TabGridStateObserving>
 
 // Called when the active `WebState` changes.
@@ -144,6 +151,11 @@ class GeminiContainerMediatorTabHelperObserver
   std::optional<actor::ActorTaskId> _actuationTaskId;
   // Authentication service used to retrieve the primary identity.
   raw_ptr<AuthenticationService> _authService;
+  // Incognito state for the browser's scene.
+  __weak IncognitoState* _incognitoState;
+  // Observer bridge for `IdentityManager` events.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
   // Delegate for shared tabs in a Gemini session.
   raw_ptr<GeminiSharedTabsDelegate> _sharedTabsDelegate;
   // Track if we have triggered feature engagement for Gemini Live IPH or New
@@ -177,6 +189,7 @@ class GeminiContainerMediatorTabHelperObserver
       _webStateList = browser->GetWebStateList();
       _profile = browser->GetProfile();
       _tabGridState = browser->GetSceneState().tabGridState;
+      _incognitoState = browser->GetSceneState().incognitoState;
     }
     _actorService = actorService;
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
@@ -328,6 +341,7 @@ class GeminiContainerMediatorTabHelperObserver
   _webStateList = nullptr;
   _profile = nullptr;
   _authService = nullptr;
+  _incognitoState = nil;
   [_gatewayManager disconnect];
   _gatewayManager = nil;
   [_stateManager reset];
@@ -372,6 +386,27 @@ class GeminiContainerMediatorTabHelperObserver
     // Assumes it's minimized.
     [_containerHandler animateAssistantContainerToDetent:kMedium];
   }
+}
+
+#pragma mark - IdentityManagerObserving
+
+- (void)primaryAccountDidChange:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    [self forceDismiss];
+  }
+}
+
+- (void)identityManagerDidShutdown:(signin::IdentityManager*)identityManager {
+  _identityManagerObserverBridge.reset();
+  [self forceDismiss];
+}
+
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  [self forceDismiss];
 }
 
 #pragma mark - ActorTaskLifecycleObserver
@@ -755,6 +790,17 @@ class GeminiContainerMediatorTabHelperObserver
   [self.consumer setWorklogDisplayMode:*mode];
 }
 
+// Forces the Gemini UI to be dismissed.
+- (void)forceDismiss {
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
+    return;
+  }
+  if (_eventHandler) {
+    _eventHandler->ForceDismissFloaty();
+  }
+}
+
 // Sets up the initial UI state for the container.
 - (void)setupInitialUIState {
   GeminiConfiguration* config =
@@ -923,6 +969,14 @@ class GeminiContainerMediatorTabHelperObserver
   if (GeminiTabHelper* activeTabHelper = [self activeTabHelper]) {
     activeTabHelper->AddObserver(_tabHelperObserver.get());
   }
+  [_incognitoState addObserver:self];
+  signin::IdentityManager* identityManager =
+      _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
+  if (identityManager && !_identityManagerObserverBridge) {
+    _identityManagerObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
+  }
 }
 
 - (void)detachObservers {
@@ -935,6 +989,8 @@ class GeminiContainerMediatorTabHelperObserver
   }
   _tabHelperObserver.reset();
   _webStateListObserver.reset();
+  [_incognitoState removeObserver:self];
+  _identityManagerObserverBridge.reset();
 }
 
 #pragma mark - Gemini Live

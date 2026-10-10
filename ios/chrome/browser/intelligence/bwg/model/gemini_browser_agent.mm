@@ -72,7 +72,6 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state_observer_bridge.h"
@@ -284,8 +283,7 @@ void RecordStartupTime(GeminiStartupState* startup_state,
 
 }  // namespace
 
-@interface GeminiSceneStateObserver
-    : NSObject <SceneStateObserver, IncognitoStateObserver>
+@interface GeminiSceneStateObserver : NSObject <SceneStateObserver>
 
 - (instancetype)initWithBrowserAgent:(GeminiBrowserAgent*)browserAgent
                           sceneState:(SceneState*)sceneState;
@@ -306,14 +304,12 @@ void RecordStartupTime(GeminiStartupState* startup_state,
     _browserAgent = browserAgent;
     _sceneState = sceneState;
     [_sceneState addObserver:self];
-    [_sceneState.incognitoState addObserver:self];
   }
   return self;
 }
 
 - (void)disconnect {
   [_sceneState removeObserver:self];
-  [_sceneState.incognitoState removeObserver:self];
   _browserAgent = nullptr;
 }
 
@@ -323,14 +319,6 @@ void RecordStartupTime(GeminiStartupState* startup_state,
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (_browserAgent) {
     _browserAgent->OnSceneActivationLevelChanged(level);
-  }
-}
-
-#pragma mark - IncognitoStateObserver
-
-- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
-  if (_browserAgent) {
-    _browserAgent->OnWillEnterIncognito();
   }
 }
 
@@ -676,8 +664,6 @@ void GeminiBrowserAgent::OnPrimaryAccountChanged(
 
   if (event_type != signin::PrimaryAccountChangeEvent::Type::kNone) {
     browser_->GetProfile()->GetPrefs()->ClearPref(prefs::kGeminiConversationId);
-
-    ForceDismissFloaty();
   }
 }
 
@@ -686,7 +672,6 @@ void GeminiBrowserAgent::OnIdentityManagerShutdown(
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
     identity_manager_ = nullptr;
-    ForceDismissFloaty();
   }
 }
 
@@ -758,10 +743,6 @@ void GeminiBrowserAgent::OnSceneActivationLevelChanged(
     }
   }
   UpdateGeminiLiveIconVisibility(/*animated=*/false);
-}
-
-void GeminiBrowserAgent::OnWillEnterIncognito() {
-  ForceDismissFloaty();
 }
 
 void GeminiBrowserAgent::FullscreenProgressUpdatedForAnimation() {
