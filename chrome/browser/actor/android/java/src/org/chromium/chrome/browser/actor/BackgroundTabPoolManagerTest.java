@@ -218,7 +218,7 @@ public class BackgroundTabPoolManagerTest {
         BackgroundTabPoolManager.release(pool);
         assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
 
-        pool.removeTab(PLACEHOLDER_ID);
+        pool.removeTabById(TAB_ID_1);
         assertTrue(pool.isEmpty());
         ShadowLooper.idleMainLooper();
         assertNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
@@ -293,7 +293,7 @@ public class BackgroundTabPoolManagerTest {
         BackgroundTabPoolManager.release(pool);
 
         // Removing the tab posts onEmptyCallback asynchronously to UI Looper
-        pool.removeTab(PLACEHOLDER_ID);
+        pool.removeTabById(TAB_ID_1);
         assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
 
         // Re-acquire before the posted task drains
