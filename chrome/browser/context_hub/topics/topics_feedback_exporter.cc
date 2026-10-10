@@ -20,7 +20,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -35,8 +34,6 @@ namespace context_hub {
 namespace {
 
 namespace mojom = ::browser::context_hub::mojom;
-
-constexpr std::string_view kGoogleEmailSuffix = "@google.com";
 
 // A history visit that survives minimization, linked to its Topic.
 struct ExportedVisit {
@@ -142,6 +139,8 @@ std::string_view DefectToString(mojom::TopicDefectCategory defect) {
       return "sensitive_topic";
     case mojom::TopicDefectCategory::kOther:
       return "other";
+    case mojom::TopicDefectCategory::kOutdated:
+      return "outdated";
   }
   NOTREACHED();
 }
@@ -268,16 +267,6 @@ int ClampTopicsFeedbackWindowDays(int window_days) {
                     kMaxTopicsFeedbackWindowDays);
 }
 
-std::string GetTopicsFeedbackLdap(std::string_view email) {
-  if (email.size() <= kGoogleEmailSuffix.size() ||
-      !base::EndsWith(email, kGoogleEmailSuffix,
-                      base::CompareCase::INSENSITIVE_ASCII)) {
-    return std::string();
-  }
-  email.remove_suffix(kGoogleEmailSuffix.size());
-  return base::ToLowerASCII(email);
-}
-
 std::string FormatTopicsFeedbackTime(base::Time time) {
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
@@ -293,8 +282,7 @@ std::string FormatTopicsFeedbackTime(base::Time time) {
 }
 
 mojom::TopicsFeedbackExportPreviewPtr BuildTopicsFeedbackExportPreview(
-    const TopicsFeedbackExportData& data,
-    std::string ldap) {
+    const TopicsFeedbackExportData& data) {
   const std::vector<ExportedVisit> visits = MinimizeAndLinkVisits(data);
 
   // Domains and their URLs, keyed by host and URL spec. Visits are newest
@@ -332,8 +320,8 @@ mojom::TopicsFeedbackExportPreviewPtr BuildTopicsFeedbackExportPreview(
   std::ranges::stable_sort(domains, std::ranges::greater(),
                            &mojom::TopicsFeedbackExportDomain::visit_count);
 
-  return mojom::TopicsFeedbackExportPreview::New(
-      std::move(ldap), ComputeStats(data, visits), std::move(domains));
+  return mojom::TopicsFeedbackExportPreview::New(ComputeStats(data, visits),
+                                                 std::move(domains));
 }
 
 std::string BuildTopicsFeedbackBundle(
@@ -344,9 +332,6 @@ std::string BuildTopicsFeedbackBundle(
 
   const std::set<std::string, std::less<>> excluded_domains(
       options.excluded_domains.begin(), options.excluded_domains.end());
-  const std::set<std::string, std::less<>> title_stripped_domains(
-      options.title_stripped_domains.begin(),
-      options.title_stripped_domains.end());
   // Minimize the URLs so they compare equal to the exported ones even if the
   // caller passed them unminimized.
   std::set<std::string, std::less<>> excluded_urls;
@@ -383,15 +368,12 @@ std::string BuildTopicsFeedbackBundle(
     }
     base::DictValue visit_dict;
     visit_dict.Set("t", FormatTopicsFeedbackTime(visit.visit_time));
-    const std::string_view host = visit.url.host();
-    const bool redacted = excluded_domains.contains(host) ||
+    // A visit is either exported with its URL and title, or redacted.
+    const bool redacted = excluded_domains.contains(visit.url.host()) ||
                           excluded_urls.contains(visit.url.spec());
     if (!redacted) {
-      const bool strip_title =
-          options.strip_all_titles || title_stripped_domains.contains(host);
       visit_dict.Set("url", visit.url.spec());
-      visit_dict.Set("title", strip_title ? std::string()
-                                          : base::UTF16ToUTF8(*visit.title));
+      visit_dict.Set("title", base::UTF16ToUTF8(*visit.title));
     }
     visit_dict.Set("topic_id", std::move(topic_id));
     visit_dict.Set("device", DeviceToString(visit.is_foreign));
@@ -409,7 +391,6 @@ std::string BuildTopicsFeedbackBundle(
       base::DictValue()
           .Set("schema_version", kTopicsFeedbackSchemaVersion)
           .Set("exported_at", FormatTopicsFeedbackTime(context.exported_at))
-          .Set("rater", options.rater)
           .Set("chrome", base::DictValue()
                              .Set("version", context.chrome_version)
                              .Set("channel", context.chrome_channel))
@@ -423,10 +404,7 @@ std::string BuildTopicsFeedbackBundle(
                    .Set("excluded_domains_count",
                         base::checked_cast<int>(excluded_domains.size()))
                    .Set("excluded_urls_count",
-                        base::checked_cast<int>(excluded_urls.size()))
-                   .Set("titles_stripped", options.strip_all_titles)
-                   .Set("title_stripped_domains_count",
-                        base::checked_cast<int>(title_stripped_domains.size())))
+                        base::checked_cast<int>(excluded_urls.size())))
           .Set("stats", StatsToDict(*ComputeStats(data, visits)))
           .Set("topics", std::move(topics))
           .Set("visits", std::move(visits_list))

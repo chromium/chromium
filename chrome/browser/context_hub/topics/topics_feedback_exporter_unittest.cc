@@ -106,16 +106,6 @@ TEST_F(TopicsFeedbackExporterTest, ClampWindowDays) {
   EXPECT_EQ(14, ClampTopicsFeedbackWindowDays(30));
 }
 
-TEST_F(TopicsFeedbackExporterTest, GetLdap) {
-  EXPECT_EQ("alice", GetTopicsFeedbackLdap("alice@google.com"));
-  EXPECT_EQ("alice", GetTopicsFeedbackLdap("Alice@Google.COM"));
-  EXPECT_EQ("", GetTopicsFeedbackLdap("alice@gmail.com"));
-  EXPECT_EQ("", GetTopicsFeedbackLdap("alice@notgoogle.com"));
-  EXPECT_EQ("", GetTopicsFeedbackLdap("alice@corp.google.com"));
-  EXPECT_EQ("", GetTopicsFeedbackLdap("@google.com"));
-  EXPECT_EQ("", GetTopicsFeedbackLdap(""));
-}
-
 TEST_F(TopicsFeedbackExporterTest, FormatTime) {
   EXPECT_EQ("2026-09-22T10:01:02.123456Z", FormatTopicsFeedbackTime(kTime1));
   EXPECT_EQ("2026-09-22T10:05:00.000000Z", FormatTopicsFeedbackTime(kTime2));
@@ -137,9 +127,8 @@ TEST_F(TopicsFeedbackExporterTest, Preview_GroupsMinimizedVisitsByDomain) {
   data.unresolvable_topics = 3;
 
   mojom::TopicsFeedbackExportPreviewPtr preview =
-      BuildTopicsFeedbackExportPreview(data, "alice");
+      BuildTopicsFeedbackExportPreview(data);
 
-  EXPECT_EQ("alice", preview->ldap);
   EXPECT_EQ(1u, preview->stats->topics);
   EXPECT_EQ(4u, preview->stats->visits);
   // Only the kTime1 example.com/a visit is linked to the topic.
@@ -166,8 +155,7 @@ TEST_F(TopicsFeedbackExporterTest, Preview_GroupsMinimizedVisitsByDomain) {
 
 TEST_F(TopicsFeedbackExporterTest, Preview_Empty) {
   mojom::TopicsFeedbackExportPreviewPtr preview =
-      BuildTopicsFeedbackExportPreview(TopicsFeedbackExportData(), "");
-  EXPECT_EQ("", preview->ldap);
+      BuildTopicsFeedbackExportPreview(TopicsFeedbackExportData());
   EXPECT_EQ(0u, preview->stats->topics);
   EXPECT_EQ(0u, preview->stats->visits);
   EXPECT_EQ(0u, preview->stats->unclustered_visits);
@@ -202,7 +190,7 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_LinksVisitsByTimeAndMinimizedUrl) {
   EXPECT_EQ("topic-1", *visits[3].GetDict().FindString("topic_id"));
 
   mojom::TopicsFeedbackExportPreviewPtr preview =
-      BuildTopicsFeedbackExportPreview(data, "");
+      BuildTopicsFeedbackExportPreview(data);
   EXPECT_EQ(2u, preview->stats->unclustered_visits);
 }
 
@@ -340,37 +328,18 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_ExcludedUrlsAreRedactedStubs) {
   ])"));
 }
 
-TEST_F(TopicsFeedbackExporterTest, Bundle_StripsTitlesPerDomain) {
+TEST_F(TopicsFeedbackExporterTest, Bundle_KeepsTitlesOfUnredactedVisits) {
   TopicsFeedbackExportData data;
   data.visits = {
       Visit("https://a.com/", u"A", kTime2),
       Visit("https://b.com/", u"B", kTime1),
   };
-  auto options = DefaultOptions();
-  options->title_stripped_domains = {"a.com"};
 
-  base::ListValue visits = BuildVisits(data, *options);
+  base::ListValue visits = BuildVisits(data, *DefaultOptions());
 
   ASSERT_EQ(2u, visits.size());
-  EXPECT_EQ("", *visits[0].GetDict().FindString("title"));
-  EXPECT_EQ("https://a.com/", *visits[0].GetDict().FindString("url"));
+  EXPECT_EQ("A", *visits[0].GetDict().FindString("title"));
   EXPECT_EQ("B", *visits[1].GetDict().FindString("title"));
-}
-
-TEST_F(TopicsFeedbackExporterTest, Bundle_StripsAllTitles) {
-  TopicsFeedbackExportData data;
-  data.visits = {
-      Visit("https://a.com/", u"A", kTime2),
-      Visit("https://b.com/", u"B", kTime1),
-  };
-  auto options = DefaultOptions();
-  options->strip_all_titles = true;
-
-  base::ListValue visits = BuildVisits(data, *options);
-
-  ASSERT_EQ(2u, visits.size());
-  EXPECT_EQ("", *visits[0].GetDict().FindString("title"));
-  EXPECT_EQ("", *visits[1].GetDict().FindString("title"));
 }
 
 TEST_F(TopicsFeedbackExporterTest, Bundle_FeedbackDuplicateOf) {
@@ -436,7 +405,8 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
                                 std::vector{kTime1, kTime0}, kTime3);
   feedback->rating = mojom::TopicRating::kDisliked;
   feedback->defects = {mojom::TopicDefectCategory::kTooBroad,
-                       mojom::TopicDefectCategory::kOther};
+                       mojom::TopicDefectCategory::kOther,
+                       mojom::TopicDefectCategory::kOutdated};
   feedback->comment = "Needs narrower scoping.";
   feedback->query_feedbacks.push_back(
       mojom::TopicQueryFeedback::New(0, "Query title", true));
@@ -457,12 +427,10 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
   options->window_days = 5;
   options->excluded_domains = {"docs.google.com"};
   options->missing_topics = "A topic about my garden.";
-  options->rater = "alice";
 
   EXPECT_THAT(BuildTopicsFeedbackBundle(data, context, *options), IsJson(R"({
     "schema_version": 1,
     "exported_at": "2026-09-24T21:00:00.000000Z",
-    "rater": "alice",
     "chrome": {"version": "155.0.8043.0", "channel": "canary"},
     "feature_params": {"Topics": {"fishfood_feedback": "true"}},
     "finch": {"trial": "TopicsStudy", "group": "Enabled"},
@@ -470,9 +438,7 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
     "window_start": "2026-09-19T21:00:00.000000Z",
     "redaction": {
       "excluded_domains_count": 1,
-      "excluded_urls_count": 0,
-      "titles_stripped": false,
-      "title_stripped_domains_count": 0
+      "excluded_urls_count": 0
     },
     "stats": {
       "topics": 1,
@@ -533,7 +499,7 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
           "time_rated": "2026-09-23T09:00:00.000000Z"
         },
         "rating": "disliked",
-        "defects": ["too_broad", "other"],
+        "defects": ["too_broad", "other", "outdated"],
         "comment": "Needs narrower scoping.",
         "query_feedbacks": [
           {"index": 0, "query_text": "Query title", "liked": true}

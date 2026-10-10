@@ -39,7 +39,8 @@ mojom::TopicFeedbackPtr MakeFullFeedback() {
       std::vector<base::Time>{now - base::Hours(2), now - base::Hours(1)}, now);
   feedback->rating = mojom::TopicRating::kDisliked;
   feedback->defects = {mojom::TopicDefectCategory::kTooBroad,
-                       mojom::TopicDefectCategory::kOther};
+                       mojom::TopicDefectCategory::kOther,
+                       mojom::TopicDefectCategory::kOutdated};
   feedback->comment = "Feedback comment.";
   feedback->query_feedbacks.push_back(
       mojom::TopicQueryFeedback::New(0, "Query one", true));

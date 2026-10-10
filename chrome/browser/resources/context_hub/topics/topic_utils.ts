@@ -126,9 +126,12 @@ export const TOPIC_DEFECT_CATEGORIES: readonly TopicDefectCategoryOption[] = [
   {
     category: TopicDefectCategory.kDuplicateOfAnotherTopic,
     label: 'Overlaps another topic',
-    // Reworded from the enum's "Duplicate of another topic", since topics are
-    // rarely exact duplicates, but rather parts of the same larger goal.
     description: 'Overlaps with another topic, and should be combined with it',
+  },
+  {
+    category: TopicDefectCategory.kOutdated,
+    label: 'Outdated',
+    description: 'Outdated, no longer relevant',
   },
   {
     category: TopicDefectCategory.kSensitiveTopic,

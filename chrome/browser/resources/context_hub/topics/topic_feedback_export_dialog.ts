@@ -403,12 +403,7 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
                         .flatMap(domain => domain.urls)
                         .map(url => url.url)
                         .filter(url => this.excludedUrls_.has(url)),
-      // A page is either exported with its URL and title, or redacted.
-      stripAllTitles: false,
-      titleStrippedDomains: [],
       missingTopics: this.missingTopics_.trim(),
-      // The bundle doesn't identify the rater.
-      rater: '',
     };
   }
 

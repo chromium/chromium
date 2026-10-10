@@ -35,10 +35,6 @@ inline constexpr int kMaxTopicsFeedbackWindowDays = 14;
 // [kMinTopicsFeedbackWindowDays, kMaxTopicsFeedbackWindowDays].
 int ClampTopicsFeedbackWindowDays(int window_days);
 
-// Returns the LDAP of `email` (lowercased) if it is an @google.com address,
-// or an empty string otherwise.
-std::string GetTopicsFeedbackLdap(std::string_view email);
-
 // Formats `time` as a UTC ISO-8601 timestamp with microsecond precision, e.g.
 // "2026-09-22T10:01:02.123456Z". All timestamps in the bundle use this format.
 std::string FormatTopicsFeedbackTime(base::Time time);
@@ -97,11 +93,10 @@ struct TopicsFeedbackExportContext {
   std::map<std::string, std::string> feature_params;
 };
 
-// Returns the preview shown to the rater before export: `ldap`, the summary
-// stats, and the minimized visits in the window grouped by host.
+// Returns the preview shown to the rater before export: the summary stats, and
+// the minimized visits in the window grouped by host.
 browser::context_hub::mojom::TopicsFeedbackExportPreviewPtr
-BuildTopicsFeedbackExportPreview(const TopicsFeedbackExportData& data,
-                                 std::string ldap);
+BuildTopicsFeedbackExportPreview(const TopicsFeedbackExportData& data);
 
 // Returns the schema_version 1 JSON bundle. Visits with non-http(s) URLs are
 // dropped and the remaining URLs are minimized with

@@ -2954,8 +2954,6 @@ TEST_F(ContextHubPageHandlerTopicsExportTest, GetTopicsFeedbackExportPreview) {
   EXPECT_EQ(history::QueryOptions::KEEP_ALL_DUPLICATES,
             query_options_.duplicate_policy);
   ASSERT_TRUE(preview);
-  // The profile has no @google.com primary account.
-  EXPECT_EQ("", preview->ldap);
   EXPECT_EQ(1u, preview->stats->topics);
   EXPECT_EQ(2u, preview->stats->visits);
   EXPECT_EQ(1u, preview->stats->unclustered_visits);
@@ -2992,7 +2990,6 @@ TEST_F(ContextHubPageHandlerTopicsExportTest, GenerateTopicsFeedbackBundle) {
   options->window_days = 30;
   options->excluded_domains = {"docs.google.com"};
   options->missing_topics = "Gardening";
-  options->rater = "alice";
   base::test::TestFuture<const std::string&> future;
   handler_->GenerateTopicsFeedbackBundle(std::move(options),
                                          future.GetCallback());
@@ -3005,7 +3002,7 @@ TEST_F(ContextHubPageHandlerTopicsExportTest, GenerateTopicsFeedbackBundle) {
   EXPECT_EQ(14, bundle->FindInt("window_days"));
   EXPECT_EQ(FormatTopicsFeedbackTime(window_start),
             *bundle->FindString("window_start"));
-  EXPECT_EQ("alice", *bundle->FindString("rater"));
+  EXPECT_FALSE(bundle->contains("rater"));
   EXPECT_THAT(*bundle->FindStringByDottedPath("chrome.version"),
               Not(IsEmpty()));
   EXPECT_EQ("true", *bundle->FindStringByDottedPath(

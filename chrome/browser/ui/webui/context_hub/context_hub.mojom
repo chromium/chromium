@@ -290,12 +290,14 @@ enum TopicDefectCategory {
   kTooNarrowOrFragmented = 7,
   // "Incidental browsing (not intended)"
   kIncidentalBrowsing = 8,
-  // "Duplicate of another topic"
+  // "Overlaps with another topic, and should be combined with it"
   kDuplicateOfAnotherTopic = 9,
   // "Sensitive topic shouldn't be shown"
   kSensitiveTopic = 10,
   // "Other"; `TopicFeedback.comment` is required when selected.
   kOther = 11,
+  // "Outdated, no longer relevant"
+  kOutdated = 12,
 };
 
 // What a Topic looked like when it was rated. Stored alongside the rating so
@@ -392,15 +394,14 @@ struct TopicsFeedbackExportDomain {
 // What the Topics fishfood feedback export would contain, shown to the rater
 // before generating the bundle.
 struct TopicsFeedbackExportPreview {
-  // Prefilled rater LDAP, from the primary account if it is an @google.com
-  // account; empty otherwise.
-  string ldap;
   TopicsFeedbackExportStats stats;
   // Hosts visited in the window, most visited first.
   array<TopicsFeedbackExportDomain> domains;
 };
 
-// The rater's choices for generating the Topics fishfood feedback bundle.
+// The rater's choices for generating the Topics fishfood feedback bundle. A
+// visit is either exported with its URL and title, or as a redacted stub. The
+// bundle doesn't identify the rater.
 struct TopicsFeedbackExportOptions {
   // Number of days of history to export. Clamped to [1, 14].
   int32 window_days;
@@ -410,14 +411,8 @@ struct TopicsFeedbackExportOptions {
   array<string> excluded_domains;
   // Minimized URLs whose visits are exported as redacted stubs.
   array<url.mojom.Url> excluded_urls;
-  // Whether to drop the page title of every exported visit.
-  bool strip_all_titles;
-  // Hosts whose visits are exported without a page title.
-  array<string> title_stripped_domains;
   // Free-text description of Topics the rater expected but did not see.
   string missing_topics;
-  // Rater LDAP written to the bundle.
-  string rater;
 };
 
 // Interface for the browser process to push updates to the WebUI page.

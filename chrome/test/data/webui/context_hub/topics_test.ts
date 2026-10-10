@@ -695,7 +695,6 @@ suite('TopicFeedbackExportDialog', () => {
 
   function createPreview(): TopicsFeedbackExportPreview {
     return {
-      ldap: 'rater',
       stats:
           {topics: 4, visits: 5, unclusteredVisits: 1, unresolvableTopics: 0},
       domains: [
@@ -820,9 +819,6 @@ suite('TopicFeedbackExportDialog', () => {
     await openDialog();
     let options = dialog.getExportOptionsForTesting();
     assertDeepEquals(['docs.google.com'], options.excludedDomains);
-    // Titles are never stripped on their own.
-    assertDeepEquals([], options.titleStrippedDomains);
-    assertFalse(options.stripAllTitles);
     assertFalse(!!query('#stripAllTitles'));
     const domains = queryAll('.domain');
     assertFalse(domains[0]!.hasAttribute('excluded'));
@@ -842,8 +838,6 @@ suite('TopicFeedbackExportDialog', () => {
     assertDeepEquals(['www.example.com'], options.excludedDomains);
     assertTrue(domains[0]!.hasAttribute('excluded'));
     assertFalse(domains[1]!.hasAttribute('excluded'));
-    assertDeepEquals([], options.titleStrippedDomains);
-    assertFalse(options.stripAllTitles);
   });
 
   test('expanding a domain excludes single URLs', async () => {
@@ -923,7 +917,6 @@ suite('TopicFeedbackExportDialog', () => {
     await click('#download');
 
     const options = await handler.whenCalled('generateTopicsFeedbackBundle');
-    assertEquals('', options.rater);
     assertEquals('My trip planning', options.missingTopics);
     assertEquals(5, options.windowDays);
     assertEquals(1, downloads.length);

@@ -97,7 +97,6 @@ source_set("context_hub_page_handler") {
     "//chrome/browser/history",
     "//chrome/browser/page_image_service",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -106,8 +105,6 @@ source_set("context_hub_page_handler") {
     "//components/page_image_service",
     "//components/page_image_service/mojom:mojo_bindings",
     "//components/sessions",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
   ]
 
   if (!is_android) {
