@@ -238,8 +238,7 @@ std::u16string AttributeInstance::GetInfo(
                        if (compatible_format_string &&
                            compatible_format_string->type ==
                                FormatString_Type_ICU_DATE) {
-                         return date.GetIcuDate(compatible_format_string->value,
-                                                app_locale);
+                         return date.GetIcuDate(app_locale);
                        }
                        return date.GetDate(compatible_format_string
                                                ? compatible_format_string->value

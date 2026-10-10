@@ -99,16 +99,12 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
             DenseSet<AttributeType>(kAirports)};
   }
   if (type == AttributeType(kFlightReservationDepartureDate)) {
-    static constexpr char16_t date_format[] = u"MMM d";
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(type);
     if (!attribute) {
       return {u"", {type}};
     }
-    AutofillFormatString format_string(
-        data_util::LocalizePattern(date_format, app_locale)
-            .value_or(date_format),
-        FormatString_Type_ICU_DATE);
+    AutofillFormatString format_string(u"", FormatString_Type_ICU_DATE);
     std::u16string value =
         attribute->GetInfo(type.field_type(), app_locale, format_string);
     return {obfuscate_sensitive_types

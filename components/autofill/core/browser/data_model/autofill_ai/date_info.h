@@ -37,12 +37,13 @@ class DateInfo {
   // For the grammar of format strings, see `data_util::IsValidDateFormat()`.
   std::u16string GetDate(std::u16string_view format) const;
 
-  // Returns the date formatted according to `format` and `locale` using ICU.
+  // Returns the date formatted according to `locale` using ICU with
+  // base::i18n::datetime_options::MD::Medium() formatting.
+  // If `locale` cannot be parsed, falls back to
+  // `base::i18n::GetDefaultIcuLocale()`.
   // Returns an empty string if the date is partially set (e.g. day is not set)
-  // or in case of an error. For the grammar of format strings, see
-  // https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns.
-  std::u16string GetIcuDate(std::u16string_view format,
-                            std::string_view locale) const;
+  // or invalid.
+  std::u16string GetIcuDate(std::string_view locale) const;
 
   // Returns the date in a `personal_context::proto::Date` representation.
   personal_context::proto::Date GetDateProto() const;

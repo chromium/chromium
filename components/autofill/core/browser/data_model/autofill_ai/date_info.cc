@@ -7,15 +7,17 @@
 #include <string>
 #include <string_view>
 
-#include "base/i18n/unicodestring.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/timezone.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
 
@@ -47,32 +49,27 @@ std::u16string DateInfo::GetDate(std::u16string_view format) const {
   return data_util::FormatDate(date_, format);
 }
 
-std::u16string DateInfo::GetIcuDate(std::u16string_view format,
-                                    std::string_view locale) const {
+std::u16string DateInfo::GetIcuDate(std::string_view locale) const {
   if (date_.day == 0 || date_.month == 0 || date_.year == 0) {
     return {};
   }
 
-  UErrorCode status = U_ZERO_ERROR;
-  icu::Locale icu_locale(std::string(locale).c_str());
-  if (icu_locale.isBogus()) {
-    return {};
-  }
-  icu::SimpleDateFormat formatter(icu::UnicodeString::readOnlyAlias(format),
-                                  icu_locale, status);
-  if (U_FAILURE(status)) {
-    return {};
-  }
-  formatter.setTimeZone(*icu::TimeZone::getGMT());
-  icu::UnicodeString date_string;
   base::Time::Exploded exploded = {
       .year = date_.year, .month = date_.month, .day_of_month = date_.day};
   base::Time time;
   if (!base::Time::FromUTCExploded(base::Time::Exploded{exploded}, &time)) {
     return {};
   }
-  formatter.format(time.InMillisecondsFSinceUnixEpoch(), date_string);
-  return base::i18n::UnicodeStringToString16(date_string);
+  base::i18n::LanguageTag locale_tag =
+      base::i18n::GetLanguageTagFromString(locale).value_or(
+          base::i18n::GetDefaultIcuLocale());
+  const base::i18n::IcuBridge::DateTimeFormatter& formatter =
+      base::i18n::IcuBridge::GetInstance().date_time_formatter(locale_tag);
+  base::i18n::DateTimeFormatterOptions options =
+      base::i18n::datetime_options::MD::Medium()
+          .with_time_zone(base::i18n::TimeZone::GMT())
+          .Get();
+  return formatter.Format(time, options);
 }
 
 personal_context::proto::Date DateInfo::GetDateProto() const {

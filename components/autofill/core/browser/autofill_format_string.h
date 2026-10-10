@@ -20,7 +20,8 @@ enum FormatString_Type : int;
 // Currently, the following kinds of format stings are supported:
 // - Affix format strings: data_util::IsValidAffixFormat().
 // - Date format strings: data_util::IsValidDateFormat().
-// - Date format strings: ICU format.
+// - Date format strings: ICU format (currently, all format strings produce the
+//   same result).
 // - Flight number format strings (data_util::IsValidFlightNumberFormat().
 struct AutofillFormatString final {
   AutofillFormatString();

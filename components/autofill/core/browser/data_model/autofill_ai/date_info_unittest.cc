@@ -66,10 +66,10 @@ TEST(DateInfo, GetIcuDate_IncrementalSet) {
   EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"");
 
   info.SetDate(u"12/2022", u"MM/YYYY");
-  EXPECT_EQ(info.GetIcuDate(u"YYYY-MM-DD", "en_US"), u"");
+  EXPECT_EQ(info.GetIcuDate("en_US"), u"");
 
   info.SetDate(u"16", u"DD");
-  EXPECT_EQ(info.GetIcuDate(u"YYYY-MM-dd", "en_US"), u"2022-12-16");
+  EXPECT_EQ(info.GetIcuDate("en_US"), u"Dec 16");
 }
 
 // Tests that GetIcuDate() returns the localized date.
@@ -78,9 +78,9 @@ TEST(DateInfo, GetIcuDate_LocalizedOutput) {
   info.SetDate(u"16/12/2022", u"DD/MM/YYYY");
   EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"2022-12-16");
 
-  EXPECT_EQ(info.GetIcuDate(u"MMM dd", "en_US"), u"Dec 16");
-  EXPECT_EQ(info.GetIcuDate(u"MMM dd", "pl_PL"), u"gru 16");
-  EXPECT_EQ(info.GetIcuDate(u"MMM dd", "de_DE"), u"Dez. 16");
+  EXPECT_EQ(info.GetIcuDate("en_US"), u"Dec 16");
+  EXPECT_EQ(info.GetIcuDate("pl_PL"), u"16 gru");
+  EXPECT_EQ(info.GetIcuDate("de_DE"), u"16. Dez.");
 }
 
 // Tests that GetDateProto() populates a proto with  year, month, and day.
@@ -246,12 +246,9 @@ TEST(DateInfo, GetIcuDate_LocalizedPattern_AllPlatformLocales) {
         base::FindOrNull(expected_dates, locale);
     ASSERT_NE(expected_date, nullptr);
 
-    const std::optional<std::u16string> pattern =
-        data_util::LocalizePattern(u"MMM d", locale);
-    ASSERT_TRUE(pattern);
     DateInfo info;
     info.SetDate(kDateInIso, u"YYYY-MM-DD");
-    const std::u16string actual_date = info.GetIcuDate(*pattern, locale);
+    const std::u16string actual_date = info.GetIcuDate(locale);
 
     EXPECT_EQ(actual_date, *expected_date);
   }
