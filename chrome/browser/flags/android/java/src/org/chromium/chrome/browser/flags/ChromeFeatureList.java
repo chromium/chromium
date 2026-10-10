@@ -825,6 +825,7 @@ public abstract class ChromeFeatureList {
             "ShowWarningsForSuspiciousNotifications";
     public static final String SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID =
             "SidePanelTopHairlineRefactorAndroid";
+    public static final String SIDE_UI_ALLOW_PAUSE = "SideUiAllowPause";
     public static final String SITE_ISOLATION_ENABLE_MEMORY_THRESHOLD_ANDROID =
             "SiteIsolationEnableMemoryThresholdAndroid";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
@@ -1839,6 +1840,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSidePanelTopHairlineRefactorAndroid =
             newMutableFlagWithSafeDefault(SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sSideUiAllowPause =
+            newMutableFlagWithSafeDefault(SIDE_UI_ALLOW_PAUSE, false);
     public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =
             newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, true);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =

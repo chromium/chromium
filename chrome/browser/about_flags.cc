@@ -13122,6 +13122,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelTopHairlineRefactorAndroidDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSidePanelTopHairlineRefactorAndroid)},
+    {"side-ui-allow-pause", flag_descriptions::kSideUiAllowPauseName,
+     flag_descriptions::kSideUiAllowPauseDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSideUiAllowPause)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
