@@ -20,7 +20,6 @@
   --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-size-in-searchbox: 20px;
   --cr-searchbox-icon-top-position: 0;
-  --cr-searchbox-min-width: var(--ntp-search-box-width);
   --cr-searchbox-results-search-icon-size: 20px;
   --ntp-theme-text-shadow: none;
   --ntp-one-google-bar-height: 56px;
@@ -70,24 +69,26 @@
  */
 :host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
 :host([realbox-can-show-secondary-side]) {
-  --ntp-search-box-width: 746px;
+  #rhsContent {
+    --ntp-search-box-width: 746px;
+  }
 }
 
-@media (min-width: 560px) {
-  :host {
+@container rhsWrapper (min-width: 560px) {
+  #rhsContent {
     --ntp-search-box-width: 449px;
   }
 }
 
-@media (min-width: 672px) {
-  :host {
+@container rhsWrapper (min-width: 672px) {
+  #rhsContent {
     --ntp-search-box-width: 561px;
   }
 }
 
 /*A module width of 768px with 18px gaps on each side. */
-@media (min-width: 804px) {
-  :host {
+@container rhsWrapper (min-width: 804px) {
+  #rhsContent {
     --ntp-module-layout-width: 768px;
     --ntp-module-width: 768px;
   }
@@ -550,6 +551,14 @@ ntp-lens-upload-dialog {
   position: fixed;
 }
 
+/* The query container for the @container rules above. This can't be
+ * #rhsContent itself: a size container ignores its content when sizing,
+ * which would break the min-width: fit-content on #rhsContent. */
+#rhsWrapper {
+  container: rhsWrapper / inline-size;
+  flex-grow: 1;
+}
+
 #rhsContent {
   align-items: center;
   display: flex;
@@ -559,5 +568,4 @@ ntp-lens-upload-dialog {
   padding-top: var(--ntp-one-google-bar-height);
   position: relative;
   z-index: 1;
-  flex-grow: 1;
 }

@@ -5,240 +5,241 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
   ${this.enableThreadsRail_ ?
     html`<cr-left-hand-side id="forcedLhs"></cr-left-hand-side>` :
     ''}
-  <div id="rhsContent">
-    ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
-      <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
-    ` : ''}
-    ${this.lazyRender_ && this.oneGoogleBarEnabled_ ?
-      (
-        this.ntpRealboxNextEnabled_ ?
-          html`
-          <div id="oneGoogleBarStackingContext">
+  <div id="rhsWrapper">
+    <div id="rhsContent">
+      ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
+        <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
+      ` : ''}
+      ${this.lazyRender_ && this.oneGoogleBarEnabled_ ?
+        (
+          this.ntpRealboxNextEnabled_ ?
+            html`
+            <div id="oneGoogleBarStackingContext">
+              <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+                  ?fixed="${this.scrolledToTop_}"></div>
+              <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+                  ?hidden="${!this.oneGoogleBarLoaded_}">
+              </ntp-iframe>
+            </div>
+            ` :
+            html`
             <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
                 ?fixed="${this.scrolledToTop_}"></div>
             <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
                 ?hidden="${!this.oneGoogleBarLoaded_}">
             </ntp-iframe>
+            `
+        ) : ''}
+      <!-- TODO(crbug.com/40743294): Instead of ?hidden="\${!this.logoEnabled_}" it would
+          be nicer to use Lit's conditional rendering. However, that breaks
+          StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
+          the msan builder. See crbug.com/40743659. -->
+      <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
+          .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
+      </ntp-logo>
+      ${this.ntpRealboxNextEnabled_ ? html`
+        <div id="scrim"
+            @click="${this.onScrimClick_}"
+            ?hidden="${!this.showScrim_}"></div>
+      ` : ''}
+      <div id="searchboxContainer"
+          @focusin="${this.onSearchboxContainerFocusin_}"
+          @focusout="${this.onSearchboxContainerFocusout_}">
+        <ntp-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
+            placeholder-text="$i18n{searchBoxPlaceholder}"
+            ?color-source-is-baseline="${this.colorSourceIsBaseline}"
+            @open-composebox="${this.onOpenComposebox_}"
+            @open-lens-search="${this.onOpenLensSearch_}"
+            @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
+            @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+            ?had-secondary-side="${this.realboxHadSecondarySide}"
+            @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
+            ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
+            ?compose-button-enabled="${this.composeButtonEnabled}"
+            ?composebox-enabled="${this.composeboxEnabled}"
+            .hasVoiceSearchError="${this.hasVoiceSearchError}"
+            searchbox-layout-mode="${this.ntpRealboxNextEnabled_ ? 'Compact' : ''}"
+            .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
+            ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+            ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
+            context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
+            .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+            .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
+            ?multi-line-enabled="${this.multiLineEnabled_}"
+            ?inert="${!this.realboxShown_}">
+        </ntp-searchbox>
+        <div id="dialogAnchor"></div>
+        ${this.showComposebox_ ? html`
+          <div id="composeboxDialog">
+            <ntp-composebox id="composebox"
+                  searchbox-layout-mode="Compact"
+                  searchbox-next-enabled
+                  ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
+                  .state="${this.composeboxState_}"
+                  .usePecApi="${this.usePecApi_}"
+                  .showVoiceSearch="${true}"
+                  .smartTabSharingVisible="${this.smartTabSharingVisible_}"
+                  .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
+                  @context-menu-opened="${this.onComposeboxContextMenuOpened_}"
+                  @close-composebox="${this.onCloseComposebox_}"
+                  @voice-search-action="${this.onComposeVoiceSearchAction_}"
+                  .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
+                  .clearAllInputsWhenSubmittingQuery="${true}"
+                  .closeOnEscape="${false}"
+                  .energyEffectEnabled="${this.energyEffectEnabled_}"
+                  .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+                  >
+              </ntp-composebox>
           </div>
-          ` :
-          html`
-          <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
-              ?fixed="${this.scrolledToTop_}"></div>
-          <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
-              ?hidden="${!this.oneGoogleBarLoaded_}">
-          </ntp-iframe>
-          `
-      ) : ''}
-    <!-- TODO(crbug.com/40743294): Instead of ?hidden="\${!this.logoEnabled_}" it would
-        be nicer to use Lit's conditional rendering. However, that breaks
-        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
-        the msan builder. See crbug.com/40743659. -->
-    <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
-        .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
-    </ntp-logo>
-    ${this.ntpRealboxNextEnabled_ ? html`
-      <div id="scrim"
-          @click="${this.onScrimClick_}"
-          ?hidden="${!this.showScrim_}"></div>
-    ` : ''}
-    <div id="searchboxContainer"
-        @focusin="${this.onSearchboxContainerFocusin_}"
-        @focusout="${this.onSearchboxContainerFocusout_}">
-      <ntp-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
-          placeholder-text="$i18n{searchBoxPlaceholder}"
-          ?color-source-is-baseline="${this.colorSourceIsBaseline}"
-          @open-composebox="${this.onOpenComposebox_}"
-          @open-lens-search="${this.onOpenLensSearch_}"
-          @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
-          @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-          ?had-secondary-side="${this.realboxHadSecondarySide}"
-          @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
-          ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
-          ?compose-button-enabled="${this.composeButtonEnabled}"
-          ?composebox-enabled="${this.composeboxEnabled}"
-          .hasVoiceSearchError="${this.hasVoiceSearchError}"
-          searchbox-layout-mode="${this.ntpRealboxNextEnabled_ ? 'Compact' : ''}"
-          .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
-          ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-          ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
-          context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
-          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
-          .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
-          ?multi-line-enabled="${this.multiLineEnabled_}"
-          ?inert="${!this.realboxShown_}">
-      </ntp-searchbox>
-      <div id="dialogAnchor"></div>
-      ${this.showComposebox_ ? html`
-        <div id="composeboxDialog">
-          <ntp-composebox id="composebox"
-                searchbox-layout-mode="Compact"
-                searchbox-next-enabled
-                ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
-                .state="${this.composeboxState_}"
-                .usePecApi="${this.usePecApi_}"
-                .showVoiceSearch="${true}"
-                .smartTabSharingVisible="${this.smartTabSharingVisible_}"
-                .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
-                @context-menu-opened="${this.onComposeboxContextMenuOpened_}"
-                @close-composebox="${this.onCloseComposebox_}"
-                @voice-search-action="${this.onComposeVoiceSearchAction_}"
-                .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
-                .clearAllInputsWhenSubmittingQuery="${true}"
-                .closeOnEscape="${false}"
-                .energyEffectEnabled="${this.energyEffectEnabled_}"
-                .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
-                >
-            </ntp-composebox>
-        </div>
+        ` : ''}
+        ${this.showLensUploadDialog_ ? html`
+          <ntp-lens-upload-dialog id="lensUploadDialog"
+              @close-lens-search="${this.onCloseLensSearch_}">
+          </ntp-lens-upload-dialog>
+        ` : ''}
+      </div>
+      ${this.lazyRender_ && this.ntpNextFeaturesEnabled_
+      && this.isActionChipsVisible_ && this.composeboxEnabled ? html`
+        <ntp-action-chips
+            ?show-background="${this.showActionChipsBackground_()}"
+            @action-chip-click="${this.onActionChipClick_}"
+            @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}"
+            @action-chips-disabled="${this.onActionChipsDisabled_}">
+        </ntp-action-chips>
       ` : ''}
-      ${this.showLensUploadDialog_ ? html`
-        <ntp-lens-upload-dialog id="lensUploadDialog"
-            @close-lens-search="${this.onCloseLensSearch_}">
-        </ntp-lens-upload-dialog>
-      ` : ''}
-    </div>
-    ${this.lazyRender_ && this.ntpNextFeaturesEnabled_
-    && this.isActionChipsVisible_ && this.composeboxEnabled ? html`
-      <ntp-action-chips
-          ?show-background="${this.showActionChipsBackground_()}"
-          @action-chip-click="${this.onActionChipClick_}"
-          @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}"
-          @action-chips-disabled="${this.onActionChipsDisabled_}">
-      </ntp-action-chips>
-    ` : ''}
-    ${this.lazyRender_ ? html`
-      <cr-toast id="webstoreToast" duration="10000" hidden>
-        <div>$i18n{webstoreThemesToastMessage}</div>
-        <cr-button @click="${this.onWebstoreToastButtonClick_}">
-          $i18n{webstoreThemesToastButtonText}
-        </cr-button>
-      </cr-toast>
-    ` : ''}
-    ${this.lazyRender_ ? html`
-      ${this.shortcutsEnabled_ ? html`
-        <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
-            single-row reflow-on-overflow
-            ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}"
-            max-tiles-in-collapsed-state="${this.maxTilesInCollapsedState_}"
-            max-shortcuts-in-expanded-state="${this.maxShortcutsInExpandedState_}"
-            max-most-visited-tiles-in-expanded-state="${this.maxMostVisitedTilesInExpandedState_}"
-            max-enterprise-shortcuts="${this.maxEnterpriseShortcuts_}"
-            ?shortcuts-reorder-enabled="${this.shortcutsReorderEnabled_}"
-            @most-visited-auto-removed="${this.onMostVisitedAutoRemoved_}">
-        </cr-most-visited>
-      ` : ''}
-      ${this.modulesEnabled_ ? html`
-        ${html`
-          <ntp-modules id="modules"
-              ?modules-shown-to-user="${this.modulesShownToUser}"
-              @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
-              @customize-module="${this.onCustomizeModule_}"
-              @modules-loaded="${this.onModulesLoaded_}"
-              @modules-auto-removed="${this.onModulesAutoRemoved_}"
-              ?hidden="${!this.modulesLoaded_}">
-          </ntp-modules>
-        `}
-      ` : ''}
-      ${this.shortcutsEnabled_ || this.modulesEnabled_ ||
-        this.ntpNextFeaturesEnabled_ ? html`
-        <cr-toast id="undoToast" duration="10000">
-          <div id="undoToastMessage">${this.undoToastMessage_ || ''}</div>
-          <cr-button id="undoButton"
-              aria-label="$i18n{undoDescription}"
-              @click="${this.onUndoButtonClick_}">
-            $i18n{undo}
+      ${this.lazyRender_ ? html`
+        <cr-toast id="webstoreToast" duration="10000" hidden>
+          <div>$i18n{webstoreThemesToastMessage}</div>
+          <cr-button @click="${this.onWebstoreToastButtonClick_}">
+            $i18n{webstoreThemesToastButtonText}
           </cr-button>
         </cr-toast>
       ` : ''}
-      ${ this.showBrowserPromo_ && this.browserPromoType_ === 'simple' ? html`
-          <individual-promos></individual-promos>
-      ` : '' }
-    ${!this.isFooterVisible_ ? html`
-        <a id="backgroundImageAttribution"
-            href="${this.backgroundImageAttributionUrl_}"
-            ?hidden="${!this.backgroundImageAttribution1_}">
-          <div id="backgroundImageAttribution1Container">
-            <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
-            <div id="backgroundImageAttribution1">
-              ${this.backgroundImageAttribution1_}
+      ${this.lazyRender_ ? html`
+        ${this.shortcutsEnabled_ ? html`
+          <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
+              single-row reflow-on-overflow
+              ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}"
+              max-tiles-in-collapsed-state="${this.maxTilesInCollapsedState_}"
+              max-shortcuts-in-expanded-state="${this.maxShortcutsInExpandedState_}"
+              max-most-visited-tiles-in-expanded-state="${this.maxMostVisitedTilesInExpandedState_}"
+              max-enterprise-shortcuts="${this.maxEnterpriseShortcuts_}"
+              ?shortcuts-reorder-enabled="${this.shortcutsReorderEnabled_}"
+              @most-visited-auto-removed="${this.onMostVisitedAutoRemoved_}">
+          </cr-most-visited>
+        ` : ''}
+        ${this.modulesEnabled_ ? html`
+          ${html`
+            <ntp-modules id="modules"
+                ?modules-shown-to-user="${this.modulesShownToUser}"
+                @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
+                @customize-module="${this.onCustomizeModule_}"
+                @modules-loaded="${this.onModulesLoaded_}"
+                @modules-auto-removed="${this.onModulesAutoRemoved_}"
+                ?hidden="${!this.modulesLoaded_}">
+            </ntp-modules>
+          `}
+        ` : ''}
+        ${this.shortcutsEnabled_ || this.modulesEnabled_ ||
+          this.ntpNextFeaturesEnabled_ ? html`
+          <cr-toast id="undoToast" duration="10000">
+            <div id="undoToastMessage">${this.undoToastMessage_ || ''}</div>
+            <cr-button id="undoButton"
+                aria-label="$i18n{undoDescription}"
+                @click="${this.onUndoButtonClick_}">
+              $i18n{undo}
+            </cr-button>
+          </cr-toast>
+        ` : ''}
+        ${ this.showBrowserPromo_ && this.browserPromoType_ === 'simple' ? html`
+            <individual-promos></individual-promos>
+        ` : '' }
+      ${!this.isFooterVisible_ ? html`
+          <a id="backgroundImageAttribution"
+              href="${this.backgroundImageAttributionUrl_}"
+              ?hidden="${!this.backgroundImageAttribution1_}">
+            <div id="backgroundImageAttribution1Container">
+              <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
+              <div id="backgroundImageAttribution1">
+                ${this.backgroundImageAttribution1_}
+              </div>
             </div>
+            <div id="backgroundImageAttribution2"
+                ?hidden="${!this.backgroundImageAttribution2_}">
+              ${this.backgroundImageAttribution2_}
+            </div>
+          </a>
+          ${this.showCustomizeButton_ ? html`
+            <ntp-customize-buttons id="customizeButtons"
+                ?modules-shown-to-user="${this.modulesShownToUser}"
+                ?show-background-image="${this.showBackgroundImage_}"
+                ?show-customize="${this.showCustomize_}"
+                ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
+                ?show-wallpaper-search="${this.showWallpaperSearch_}"
+                ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
+                ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
+                @customize-click="${this.onCustomizeClick_}"
+                @wallpaper-search-click="${this.onWallpaperSearchClick_}" show-shadow>
+            </ntp-customize-buttons>
+          ` : ''}
+        ` : ''}
+        ${this.showThemeAttribution_() ? html`
+          <div id="themeAttribution">
+            <div>$i18n{themeCreatedBy}</div>
+            <img src="${this.theme_!.backgroundImage!.attributionUrl!}">
           </div>
-          <div id="backgroundImageAttribution2"
-              ?hidden="${!this.backgroundImageAttribution2_}">
-            ${this.backgroundImageAttribution2_}
-          </div>
-        </a>
-        ${this.showCustomizeButton_ ? html`
-          <ntp-customize-buttons id="customizeButtons"
-              ?modules-shown-to-user="${this.modulesShownToUser}"
-              ?show-background-image="${this.showBackgroundImage_}"
-              ?show-customize="${this.showCustomize_}"
-              ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
-              ?show-wallpaper-search="${this.showWallpaperSearch_}"
-              ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
-              ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
-              @customize-click="${this.onCustomizeClick_}"
-              @wallpaper-search-click="${this.onWallpaperSearchClick_}" show-shadow>
-          </ntp-customize-buttons>
         ` : ''}
       ` : ''}
-      ${this.showThemeAttribution_() ? html`
-        <div id="themeAttribution">
-          <div>$i18n{themeCreatedBy}</div>
-          <img src="${this.theme_!.backgroundImage!.attributionUrl!}">
-        </div>
+      <div id="contentBottomSpacer"></div>
+      ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
+          this.showVoiceSearchOverlay_ ? html`
+        <dialog id="voiceSearchDialog" tabindex="-1" autofocus
+            @close="${this.onVoiceSearchOverlayClose}"
+            @click="${this.onVoiceSearchDialogClick_}">
+          <div id="voiceSearchCardContainer">
+            ${this.showVoiceSearchGlow_() ? html`
+              <search-animated-glow id="voiceSearchGlow"
+                  .coloredTicTacVoiceAnimationEnabled="${true}"
+                  .isListening="${this.voiceSearchListening_}"
+                  .requiresVoice="${true}"
+                  .transcript="${this.voiceSearchTranscript_}"
+                  .receivedSpeech="${this.voiceSearchReceivedSpeech_}">
+              </search-animated-glow>
+            ` : ''}
+            <!-- Pass metricSource synchronously to avoid microtask race in unit tests. -->
+            <cr-composebox-voice-search id="voiceSearch"
+                in-voice-search-mode
+                .audioWaveEnabled="${
+                  this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
+                @voice-permission-changed="${this.onVoicePermissionChanged_}"
+                @voice-search-cancel="${this.onVoiceSearchCancel_}"
+                @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
+                @voice-search-error="${this.onVoiceSearchError}"
+                @voice-search-restart="${this.onVoiceSearchRestart_}"
+                @transcript-update="${this.onVoiceSearchTranscriptUpdate_}"
+                @speech-received="${this.onVoiceSearchSpeechReceived_}"
+                @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
+                .hasErrorTimer="${true}"
+                .pageCallbackRouter="${this.searchboxCallbackRouter_}"
+                .autosubmitEnabled="${
+                  this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
+                .dynamicTimeoutEnabled="${false}"
+                .queryLengthLimit="${this.voiceQueryLengthLimit_}"
+                .idleTimeout="${this.voiceAutoSubmitIdleTimeoutMs_}"
+                .manualSubmitIdleTimeout="${this.voiceManualSubmitIdleTimeoutMs_}"
+                .liveTranscriptEnabled="${
+                  this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_}"
+                .helperTextEnabled="${
+                  this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
+                .submitStopButtonsEnabled="${true}"
+                .metricSource="${'NTP_REALBOX'}">
+            </cr-composebox-voice-search>
+          </div>
+        </dialog>
       ` : ''}
-    ` : ''}
-    <div id="contentBottomSpacer"></div>
-    ${this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ &&
-        this.showVoiceSearchOverlay_ ? html`
-      <dialog id="voiceSearchDialog" tabindex="-1" autofocus
-          @close="${this.onVoiceSearchOverlayClose}"
-          @click="${this.onVoiceSearchDialogClick_}">
-        <div id="voiceSearchCardContainer">
-          ${this.showVoiceSearchGlow_() ? html`
-            <search-animated-glow id="voiceSearchGlow"
-                .coloredTicTacVoiceAnimationEnabled="${true}"
-                .isListening="${this.voiceSearchListening_}"
-                .requiresVoice="${true}"
-                .transcript="${this.voiceSearchTranscript_}"
-                .receivedSpeech="${this.voiceSearchReceivedSpeech_}">
-            </search-animated-glow>
-          ` : ''}
-          <!-- Pass metricSource synchronously to avoid microtask race in unit tests. -->
-          <cr-composebox-voice-search id="voiceSearch"
-              in-voice-search-mode
-              .audioWaveEnabled="${
-                this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
-              @voice-permission-changed="${this.onVoicePermissionChanged_}"
-              @voice-search-cancel="${this.onVoiceSearchCancel_}"
-              @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
-              @voice-search-error="${this.onVoiceSearchError}"
-              @voice-search-restart="${this.onVoiceSearchRestart_}"
-              @transcript-update="${this.onVoiceSearchTranscriptUpdate_}"
-              @speech-received="${this.onVoiceSearchSpeechReceived_}"
-              @recording-stopped="${this.onVoiceSearchRecordingStopped_}"
-              .hasErrorTimer="${true}"
-              .pageCallbackRouter="${this.searchboxCallbackRouter_}"
-              .autosubmitEnabled="${
-                this.voiceSearchCoherenceRealboxAutoEndpointEnabled_}"
-              .dynamicTimeoutEnabled="${false}"
-              .queryLengthLimit="${this.voiceQueryLengthLimit_}"
-              .idleTimeout="${this.voiceAutoSubmitIdleTimeoutMs_}"
-              .manualSubmitIdleTimeout="${this.voiceManualSubmitIdleTimeoutMs_}"
-              .liveTranscriptEnabled="${
-                this.voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_}"
-              .helperTextEnabled="${
-                this.voiceSearchCoherenceRealboxHelperTextEnabled_}"
-              .submitStopButtonsEnabled="${true}"
-              .metricSource="${'NTP_REALBOX'}">
-          </cr-composebox-voice-search>
-        </div>
-      </dialog>
-    ` : ''}
+    </div>
   </div>
 </div>
-
 ${this.showVoiceSearchOverlay_ &&
     !this.voiceSearchCoherenceAnySearchboxExperimentEnabled_ ? html`
   <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose}">

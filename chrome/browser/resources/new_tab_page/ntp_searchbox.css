@@ -11,8 +11,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  /* Embedders should define --cr-searchbox-min-width. */
-  --cr-searchbox-width: var(--cr-searchbox-min-width);
+  /* --ntp-search-box-width is defined by ntp-app (app.css) and varies with
+   * its container queries, so it's read here directly. */
+  --cr-searchbox-width: var(--ntp-search-box-width);
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
   --cr-searchbox-icon-width: 26px;
   --cr-searchbox-inner-icon-margin: 8px;
@@ -36,7 +37,7 @@
 }
 
 :host-context([searchbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
-  --cr-searchbox-width: var(--cr-searchbox-min-width);
+  --cr-searchbox-width: var(--ntp-search-box-width);
 }
 
 /**
