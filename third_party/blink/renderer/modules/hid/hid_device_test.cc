@@ -70,7 +70,7 @@ device::mojom::blink::HidReportItemPtr MakeReportItem() {
 
 }  // namespace
 
-TEST(HIDDeviceTest, singleUsageItem) {
+TEST(HIDDeviceTest, SingleUsageItem) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
   HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
@@ -101,7 +101,7 @@ TEST(HIDDeviceTest, singleUsageItem) {
   EXPECT_EQ(1, item->physicalMaximum());
 }
 
-TEST(HIDDeviceTest, multiUsageItem) {
+TEST(HIDDeviceTest, MultiUsageItem) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
 
   // Configure the item to use 8 non-consecutive usages.
@@ -127,7 +127,7 @@ TEST(HIDDeviceTest, multiUsageItem) {
   EXPECT_EQ(8U, item->reportCount());
 }
 
-TEST(HIDDeviceTest, usageRangeItem) {
+TEST(HIDDeviceTest, UsageRangeItem) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
 
   // Configure the item to use a usage range. The item defines eight fields,
@@ -150,7 +150,7 @@ TEST(HIDDeviceTest, usageRangeItem) {
   EXPECT_EQ(8U, item->reportCount());
 }
 
-TEST(HIDDeviceTest, unitDefinition) {
+TEST(HIDDeviceTest, UnitDefinition) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
 
   // Add a unit definition and check that the unit properties are correctly
@@ -167,6 +167,26 @@ TEST(HIDDeviceTest, unitDefinition) {
   EXPECT_EQ(0, item->unitFactorTemperatureExponent());
   EXPECT_EQ(0, item->unitFactorCurrentExponent());
   EXPECT_EQ(0, item->unitFactorLuminousIntensityExponent());
+}
+
+TEST(HIDDeviceTest, NegativeEightUnitExponent) {
+  device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
+
+  // 0x08 is the two's complement encoding of -8 for a 4-bit signed
+  // exponent nibble.
+  mojo_item->unit_exponent = 0x08;
+  // SI linear unit system with all six factor nibbles set to 0x08.
+  mojo_item->unit = 0x08888881;
+  HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
+
+  EXPECT_EQ(-8, item->unitExponent());
+  EXPECT_EQ(V8HIDUnitSystem::Enum::kSiLinear, item->unitSystem());
+  EXPECT_EQ(-8, item->unitFactorLengthExponent());
+  EXPECT_EQ(-8, item->unitFactorMassExponent());
+  EXPECT_EQ(-8, item->unitFactorTimeExponent());
+  EXPECT_EQ(-8, item->unitFactorTemperatureExponent());
+  EXPECT_EQ(-8, item->unitFactorCurrentExponent());
+  EXPECT_EQ(-8, item->unitFactorLuminousIntensityExponent());
 }
 
 class HIDTestHelper {
