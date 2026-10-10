@@ -11,9 +11,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {TopicDefectCategory, TopicRating} from '../context_hub.mojom-webui.js';
-import type {Topic, TopicCollection, TopicCollectionItem, TopicContinuationQuery, TopicFeedback, TopicSnapshot, TopicVisit} from '../context_hub.mojom-webui.js';
+import type {DuplicateTopicSnapshot, Topic, TopicCollection, TopicCollectionItem, TopicContinuationQuery, TopicFeedback, TopicSnapshot, TopicVisit} from '../context_hub.mojom-webui.js';
 
-export type {TopicContinuationQuery, TopicFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
+export type {TopicContinuationQuery, TopicFeedback, TopicQueryFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
 
 // A page in a `Collection`, as rendered on its carousel card.
 export interface CollectionItem {
@@ -252,6 +252,13 @@ export function hasTopicFeedbackCommentText(feedback: TopicFeedback): boolean {
   return parseTopicFeedbackComment(feedback.comment).text.trim().length > 0;
 }
 
+// Whether `a` and `b` have the same rating, defects and comment, i.e. the parts
+// of the feedback `<topic-feedback-controls>` edits.
+export function hasSameRating(a: TopicFeedback, b: TopicFeedback): boolean {
+  return a.rating === b.rating && a.comment === b.comment &&
+      a.defects.length === b.defects.length &&
+      a.defects.every((defect, i) => defect === b.defects[i]);
+}
 // Whether `feedback` can be saved: a thumbs down needs at least one defect,
 // and the Other defect needs a comment.
 export function isTopicFeedbackValid(feedback: TopicFeedback): boolean {
@@ -273,6 +280,86 @@ export function isTopicFeedbackEmpty(feedback: TopicFeedback): boolean {
       feedback.defects.length === 0 && !hasTopicFeedbackComment(feedback) &&
       feedback.queryFeedbacks.length === 0 &&
       feedback.rejectedVisits.length === 0 && !feedback.duplicateOf;
+}
+
+// Matches the cap `PageHandler::OpenGlicPanel()` applies browser-side.
+export const MAX_SUGGESTED_PROMPTS = 3;
+
+// A continuation query as shown to the user, with its index in
+// `TopicItem.continuationQueries`.
+export interface TopicQuery {
+  index: number;
+  text: string;
+}
+
+// The first continuation queries of `topic` that have any text, as sent to the
+// Glic side panel and rated by fishfood raters.
+export function getTopicQueries(topic: TopicItem): TopicQuery[] {
+  return topic.continuationQueries
+      .map((query, index) => ({
+             index,
+             text: query.title.trim() || query.prompt.trim(),
+           }))
+      .filter(query => !!query.text)
+      .slice(0, MAX_SUGGESTED_PROMPTS);
+}
+
+// A fishfood rater's feedback on one of a topic's collections (carousels):
+// whether it's useful, and which of its pages don't belong in it.
+// TODO(b/568422896): Replace with a mojom struct stored in TopicFeedback once
+// it has fields for collections. Until then this is only kept in the page.
+export interface CollectionFeedback {
+  // The collection's title when rated.
+  title: string;
+  // Null if not rated.
+  liked: boolean|null;
+  // URLs of the pages the rater flagged as not belonging.
+  rejectedItemUrls: string[];
+}
+
+// Whether `feedback` holds nothing worth keeping.
+export function isCollectionFeedbackEmpty(feedback: CollectionFeedback):
+    boolean {
+  return feedback.liked === null && feedback.rejectedItemUrls.length === 0;
+}
+
+// Captures what `topic` looks like now, to store as the topic another one
+// duplicates.
+export function createDuplicateTopicSnapshot(topic: TopicItem):
+    DuplicateTopicSnapshot {
+  return {
+    id: topic.id,
+    title: topic.title,
+    visitTimes: topic.visits.map(visit => visit.visitTime),
+  };
+}
+
+// Whether `visitTime` is among the visits a rater flagged as not belonging.
+export function isVisitRejected(
+    rejectedVisits: readonly Time[], visitTime: Time): boolean {
+  return rejectedVisits.some(
+      time => time.internalValue === visitTime.internalValue);
+}
+
+// Returns `rejectedVisits` with `visitTimes` added, or removed if `rejected` is
+// false.
+export function setVisitsRejected(
+    rejectedVisits: readonly Time[], visitTimes: readonly Time[],
+    rejected: boolean): Time[] {
+  const others =
+      rejectedVisits.filter(time => !isVisitRejected(visitTimes, time));
+  return rejected ? [...others, ...visitTimes] : others;
+}
+
+// Microseconds between the Windows epoch (1601), which `Time` counts from, and
+// the Unix epoch.
+const WINDOWS_TO_UNIX_EPOCH_US = 11644473600000000n;
+
+// Formats `time` as a short local date and time, e.g. "Oct 7, 2026, 9:41 AM".
+export function formatTopicTime(time: Time): string {
+  const ms = Number((time.internalValue - WINDOWS_TO_UNIX_EPOCH_US) / 1000n);
+  return new Date(ms).toLocaleString(
+      undefined, {dateStyle: 'medium', timeStyle: 'short'});
 }
 
 // Adapts a Topic from the browser process to what the topics UI renders. The

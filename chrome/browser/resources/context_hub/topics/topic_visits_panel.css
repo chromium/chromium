@@ -1,0 +1,137 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#banner {
+  align-items: flex-start;
+  background-color: var(--color-sys-tonal-container,
+      var(--cr-fallback-color-tonal-container));
+  border-radius: 12px;
+  color: var(--color-sys-on-tonal-container,
+      var(--cr-fallback-color-on-tonal-container));
+  display: flex;
+  font-size: 13px;
+  gap: 12px;
+  line-height: 20px;
+  padding: 12px 16px;
+}
+
+#banner cr-icon {
+  flex-shrink: 0;
+  height: 20px;
+  width: 20px;
+}
+
+#instructions {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 16px 0 8px;
+}
+
+/* The rows share one rounded container, separated by thin gaps, like the
+ * sites dialog. */
+#visitList {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.visit {
+  align-items: center;
+  background-color: var(--cr-fallback-color-surface2);
+  display: flex;
+  gap: 12px;
+  min-height: 52px;
+  padding: 6px 8px 6px 16px;
+}
+
+.favicon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
+}
+
+.visit-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.visit-title {
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visit-details {
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: 12px;
+  gap: 6px;
+  line-height: 16px;
+}
+
+.visit-url {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visit-time {
+  flex-shrink: 0;
+}
+
+.reject {
+  --cr-icon-button-icon-size: 18px;
+  margin: 0;
+}
+
+/* A rejected visit gets a red tint, a red label and a filled red ✕, and its
+ * text is dimmed and struck through. */
+.visit[rejected] {
+  background-color: color-mix(in srgb,
+      var(--color-textfield-filled-error, var(--cr-fallback-color-error)) 12%,
+      var(--cr-fallback-color-surface2));
+}
+
+.visit[rejected] .visit-text {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.rejected-label {
+  color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.visit[rejected] .reject {
+  --cr-icon-button-fill-color: var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
+}

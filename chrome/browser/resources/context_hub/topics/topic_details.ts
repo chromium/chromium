@@ -6,9 +6,11 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '/strings.m.js';
+import './topic_feedback_controls.js';
 import './topic_hero.js';
 import './topic_sites_dialog.js';
 import './topic_summary_panel.js';
+import './topic_visits_panel.js';
 
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
@@ -16,21 +18,21 @@ import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+import {browserProxyFactory, TopicDefectCategory} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_details.css.js';
 import {getHtml} from './topic_details.html.js';
+import type {TopicFeedbackChangeEvent} from './topic_feedback_controls.js';
 import type {TopicSitesDialogElement} from './topic_sites_dialog.js';
-import {getOpenableUrls, getTopicSites, isCrIcon, isTopicsEnabled, toTopicItem} from './topic_utils.js';
-import type {TopicItem, TopicVisit} from './topic_utils.js';
+import type {QueryFeedbacksChangeEvent} from './topic_summary_panel.js';
+import {createDuplicateTopicSnapshot, createEmptyTopicFeedback, createTopicSnapshot, getOpenableUrls, getTopicQueries, getTopicSites, isCrIcon, isTopicFeedbackEmpty, isTopicsEnabled, isTopicsFishfoodFeedbackEnabled, toTopicItem} from './topic_utils.js';
+import type {TopicFeedback, TopicItem, TopicVisit} from './topic_utils.js';
+import type {RejectedVisitsChangeEvent} from './topic_visits_panel.js';
 
 const MAX_URLS_TO_OPEN = 10;
 
 // How many favicons the sites button shows next to its label.
 const MAX_SITES_BUTTON_FAVICONS = 3;
-
-// Matches the cap `PageHandler::OpenGlicPanel()` applies browser-side.
-const MAX_SUGGESTED_PROMPTS = 3;
 
 export type TopicDetailsLoadState = 'loading'|'loaded'|'not-found';
 
@@ -40,6 +42,24 @@ export type TopicDetailsLoadState = 'loading'|'loaded'|'not-found';
 // are added.
 export const TOPIC_DETAILS_TABS: readonly string[] = ['Summary'];
 
+// The fishfood-only tab listing the topic's visits, after TOPIC_DETAILS_TABS.
+export const TOPIC_VISITS_TAB = 'Topic Visits (Fishfood)';
+
+// A topic the rated one can be marked a duplicate of.
+export interface DuplicateOption {
+  id: string;
+  title: string;
+}
+
+// The tabs to show. A copy, since `cr-tabs` takes a mutable array.
+function getTabNames(feedbackEnabled: boolean): string[] {
+  const tabNames = [...TOPIC_DETAILS_TABS];
+  if (feedbackEnabled) {
+    tabNames.push(TOPIC_VISITS_TAB);
+  }
+  return tabNames;
+}
+
 // Builds the suggested prompts sent when the Glic side panel opens, using the
 // continuation queries the backend generated for `topic`. Returning an empty
 // list is fine: `PageHandler::OpenGlicPanel()` leaves Zero State Suggestions
@@ -47,10 +67,7 @@ export const TOPIC_DETAILS_TABS: readonly string[] = ['Summary'];
 // TODO(crbug.com/567878517): The Glic web client doesn't show these as
 // suggestions yet.
 export function getSuggestedPrompts(topic: TopicItem): string[] {
-  return topic.continuationQueries
-      .map(query => query.title.trim() || query.prompt.trim())
-      .filter(prompt => !!prompt)
-      .slice(0, MAX_SUGGESTED_PROMPTS);
+  return getTopicQueries(topic).map(query => query.text);
 }
 
 // The topic details page (chrome://context-hub/topic_details?id=...). Owns
@@ -77,6 +94,9 @@ export class TopicDetailsElement extends CrLitElement {
       selectedTab_: {type: Number},
       sites_: {type: Array},
       tabNames_: {type: Array},
+      feedbackEnabled_: {type: Boolean},
+      feedback_: {type: Object},
+      otherTopics_: {type: Array},
     };
   }
 
@@ -90,8 +110,13 @@ export class TopicDetailsElement extends CrLitElement {
   // What the sites button counts and the sites dialog lists. Derived from
   // `topic`.
   protected accessor sites_: TopicVisit[] = [];
-  // A copy, since `cr-tabs` takes a mutable array.
-  protected accessor tabNames_: string[] = [...TOPIC_DETAILS_TABS];
+  protected accessor feedbackEnabled_: boolean =
+      isTopicsFishfoodFeedbackEnabled();
+  protected accessor tabNames_: string[] = getTabNames(this.feedbackEnabled_);
+  // The fishfood feedback stored for `topic`, or null if it has none.
+  protected accessor feedback_: TopicFeedback|null = null;
+  // The other topics, which `topic` can be marked a duplicate of.
+  protected accessor otherTopics_: TopicItem[] = [];
 
   // Guards against re-running init (a duplicate fetch, reopening the Glic
   // panel) if the element is re-attached to the DOM, whether or not the first
@@ -130,6 +155,7 @@ export class TopicDetailsElement extends CrLitElement {
     this.updateDocumentTitle_();
     // Only once the topic has loaded, so the panel gets its suggested prompts.
     this.maybeOpenGlicPanel_();
+    this.loadFeedback_();
   }
 
   // Fetches the topic named by the `id` query parameter from the browser.
@@ -176,6 +202,112 @@ export class TopicDetailsElement extends CrLitElement {
     const icon = this.topic?.icon || '';
     const title = this.topic?.title || 'Topic Details';
     document.title = !icon || isCrIcon(icon) ? title : `${icon} ${title}`;
+  }
+
+  // Loads this topic's fishfood feedback, and the other topics it can be
+  // marked a duplicate of. The page works without them, just without ratings.
+  private async loadFeedback_() {
+    // The feedback methods are gated in the browser process too.
+    if (!this.feedbackEnabled_ || !this.topic) {
+      return;
+    }
+    const id = this.topic.id;
+    try {
+      const handler = browserProxyFactory.getInstance().handler;
+      const [{feedbacks}, {topics}] = await Promise.all([
+        handler.getTopicFeedbacks(),
+        handler.getTopics(),
+      ]);
+      // Edits made while loading are kept over the stored feedback.
+      if (!this.feedback_) {
+        this.feedback_ = feedbacks.find(feedback => feedback.id === id) || null;
+      }
+      this.otherTopics_ =
+          topics.filter(topic => topic.id !== id).map(toTopicItem);
+    } catch (e) {
+      console.error('Failed to fetch topic feedback:', e);
+    }
+  }
+
+  // Applies `changes` to this topic's feedback and saves it, deleting it once
+  // nothing is left.
+  private updateFeedback_(changes: Partial<TopicFeedback>) {
+    if (!this.feedbackEnabled_ || !this.topic) {
+      return;
+    }
+    const feedback: TopicFeedback = {
+      ...(this.feedback_ || createEmptyTopicFeedback(this.topic)),
+      ...changes,
+      snapshot: createTopicSnapshot(this.topic),
+    };
+    this.feedback_ = feedback;
+    const handler = browserProxyFactory.getInstance().handler;
+    if (isTopicFeedbackEmpty(feedback)) {
+      handler.deleteTopicFeedback(feedback.id);
+    } else {
+      handler.setTopicFeedback(feedback);
+    }
+  }
+
+  // Only the parts `<topic-feedback-controls>` edits are taken, so a stale
+  // copy of the rest can't overwrite newer edits from the other panels.
+  protected onTopicFeedbackChange_(e: TopicFeedbackChangeEvent) {
+    const {rating, defects, comment} = e.detail.feedback;
+    const changes: Partial<TopicFeedback> = {rating, defects, comment};
+    if (!defects.includes(TopicDefectCategory.kDuplicateOfAnotherTopic)) {
+      changes.duplicateOf = null;
+    }
+    this.updateFeedback_(changes);
+  }
+
+  protected onQueryFeedbacksChange_(e: QueryFeedbacksChangeEvent) {
+    this.updateFeedback_({queryFeedbacks: e.detail.queryFeedbacks});
+  }
+
+  protected onRejectedVisitsChange_(e: RejectedVisitsChangeEvent) {
+    this.updateFeedback_({rejectedVisits: e.detail.rejectedVisits});
+  }
+
+  // The select of the topic to combine this one with only shows once the rater
+  // picked the Duplicate defect.
+  protected isDuplicateSelected_(): boolean {
+    return !!this.feedback_?.defects.includes(
+        TopicDefectCategory.kDuplicateOfAnotherTopic);
+  }
+
+  // TODO(crbug.com/558572977): Use internationalized strings once GRD strings
+  // are added.
+  protected getDuplicateOptions_(): DuplicateOption[] {
+    const options = this.otherTopics_.map(
+        topic => ({id: topic.id, title: topic.title || 'Untitled topic'}));
+    // Keeps a stored choice selectable after that topic expired.
+    const duplicateOf = this.feedback_?.duplicateOf;
+    if (duplicateOf && !options.some(option => option.id === duplicateOf.id)) {
+      options.push({
+        id: duplicateOf.id,
+        title: duplicateOf.title || 'Untitled topic',
+      });
+    }
+    return options;
+  }
+
+  protected getDuplicateOfId_(): string {
+    return this.feedback_?.duplicateOf?.id || '';
+  }
+
+  protected onDuplicateChange_(e: Event) {
+    const id = (e.target as HTMLSelectElement).value;
+    if (id === this.getDuplicateOfId_()) {
+      return;
+    }
+    if (!id) {
+      this.updateFeedback_({duplicateOf: null});
+      return;
+    }
+    const target = this.otherTopics_.find(topic => topic.id === id);
+    if (target) {
+      this.updateFeedback_({duplicateOf: createDuplicateTopicSnapshot(target)});
+    }
   }
 
   protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {

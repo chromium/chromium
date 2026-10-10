@@ -15,10 +15,15 @@ import {browserProxyFactory} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_collection_carousel.css.js';
 import {getHtml} from './topic_collection_carousel.html.js';
-import type {Collection} from './topic_utils.js';
+import {isTopicsFishfoodFeedbackEnabled} from './topic_utils.js';
+import type {Collection, CollectionFeedback, CollectionItem} from './topic_utils.js';
 
 // Size of the favicon drawn in a card's image area.
 const CARD_FAVICON_SIZE = 32;
+
+// Fired with the collection's feedback whenever the rater edits it.
+export type CollectionFeedbackChangeEvent =
+    CustomEvent<{feedback: CollectionFeedback}>;
 
 export interface TopicCollectionCarouselElement {
   $: {
@@ -30,6 +35,12 @@ export interface TopicCollectionCarouselElement {
 // collection. Clicking a card opens its page in a new tab. The back and forward
 // buttons scroll by a page of cards, wrapping around at either end, and only
 // show when the cards overflow.
+//
+// When fishfood feedback is enabled, the collection can be rated with thumbs
+// up/down and each card flagged as not belonging; edits are reported as
+// `collection-feedback-change`.
+// TODO(crbug.com/558572977): Use internationalized strings once GRD strings
+// are added.
 export class TopicCollectionCarouselElement extends CrLitElement {
   static get is() {
     return 'topic-collection-carousel';
@@ -46,6 +57,9 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   static override get properties() {
     return {
       collection: {type: Object},
+      // The rater's fishfood feedback on `collection`, if any.
+      feedback: {type: Object},
+      feedbackEnabled_: {type: Boolean},
       canScrollBack_: {type: Boolean, state: true},
       canScrollForward_: {type: Boolean, state: true},
       imageUrls_: {type: Object, state: true},
@@ -53,6 +67,9 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   }
 
   accessor collection: Collection|null = null;
+  accessor feedback: CollectionFeedback|null = null;
+  protected accessor feedbackEnabled_: boolean =
+      isTopicsFishfoodFeedbackEnabled();
   protected accessor canScrollBack_: boolean = false;
   protected accessor canScrollForward_: boolean = false;
   // Image URLs of the cards' pages, keyed by page URL. Pages without one, or
@@ -90,6 +107,58 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     if (changedProperties.has('collection')) {
       this.updateScrollButtons_();
     }
+  }
+
+  protected isRated_(liked: boolean): boolean {
+    return this.feedback?.liked === liked;
+  }
+
+  protected getRatingAriaLabel_(prefix: string): string {
+    const title = this.collection?.title || '';
+    return title ? `${prefix}: ${title}` : prefix;
+  }
+
+  protected isItemRejected_(item: CollectionItem): boolean {
+    return !!this.feedback?.rejectedItemUrls.includes(item.url);
+  }
+
+  protected getRejectAriaLabel_(item: CollectionItem): string {
+    return `Doesn't belong: ${item.title}`;
+  }
+
+  protected onRatingClick_(e: Event) {
+    const liked = (e.currentTarget as HTMLElement).dataset['liked'] === 'true';
+    // Clicking the selected rating again clears it.
+    this.updateFeedback_({liked: this.isRated_(liked) ? null : liked});
+  }
+
+  protected onRejectClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const item = this.collection?.items[index];
+    if (!item) {
+      return;
+    }
+    const others =
+        (this.feedback?.rejectedItemUrls || []).filter(url => url !== item.url);
+    this.updateFeedback_({
+      rejectedItemUrls: this.isItemRejected_(item) ? others :
+                                                     [...others, item.url],
+    });
+  }
+
+  private updateFeedback_(changes: Partial<CollectionFeedback>) {
+    if (!this.collection) {
+      return;
+    }
+    const feedback: CollectionFeedback = {
+      liked: null,
+      rejectedItemUrls: [],
+      ...this.feedback,
+      ...changes,
+      title: this.collection.title,
+    };
+    this.feedback = feedback;
+    this.fire('collection-feedback-change', {feedback});
   }
 
   protected getImageUrl_(url: string): string {

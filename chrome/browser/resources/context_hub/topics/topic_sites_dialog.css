@@ -46,6 +46,13 @@ cr-dialog {
   padding: 0;
 }
 
+/* A row: the site button, then (in fishfood) its "Doesn't belong" toggle. */
+#siteList li {
+  align-items: center;
+  background-color: var(--cr-fallback-color-surface2);
+  display: flex;
+}
+
 .site {
   align-items: center;
   background-color: var(--cr-fallback-color-surface2);
@@ -54,12 +61,15 @@ cr-dialog {
   color: inherit;
   cursor: pointer;
   display: flex;
+  /* Shrinks to leave room for the "Doesn't belong" toggle, so a long title
+   * is cut off rather than pushing the toggle out of the row. */
+  flex: 1;
   font: inherit;
   gap: 12px;
   min-height: 44px;
+  min-width: 0;
   padding: 8px 16px;
   text-align: start;
-  width: 100%;
 }
 
 .site:hover {
@@ -99,4 +109,43 @@ cr-dialog {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Temporary Fishfood Feedback. */
+.reject {
+  --cr-icon-button-icon-size: 18px;
+  flex-shrink: 0;
+  margin-inline: 0 8px;
+}
+
+/* A rejected site gets a red tint, a red label and a filled red ✕, and its
+ * text is dimmed and struck through. */
+li[rejected] {
+  background-color: color-mix(in srgb,
+      var(--color-textfield-filled-error, var(--cr-fallback-color-error)) 12%,
+      var(--cr-fallback-color-surface2));
+}
+
+li[rejected] .site {
+  background-color: transparent;
+  text-decoration: line-through;
+}
+
+li[rejected] .site > span {
+  opacity: 0.6;
+}
+
+.rejected-label {
+  color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  margin-inline-end: 4px;
+  white-space: nowrap;
+}
+
+li[rejected] .reject {
+  --cr-icon-button-fill-color: var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
 }

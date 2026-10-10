@@ -23,10 +23,21 @@ export function getHtml(this: TopicFeedbackControlsElement) {
       aria-pressed="${this.isDisliked_()}"
       @click="${this.onThumbsDownClick_}">
   </cr-icon-button>
+  ${this.popoverDefects && this.isDisliked_() ? html`
+    <button id="reasonsButton" popovertarget="defectsPanel"
+        ?invalid="${this.isDefectMissing_()}"
+        aria-expanded="${this.defectsPopoverOpen_}">
+      ${this.getReasonsButtonLabel_()}
+      <cr-icon icon="${this.defectsPopoverOpen_ ?
+          'cr:arrow-drop-up' : 'cr:arrow-drop-down'}">
+      </cr-icon>
+    </button>
+  ` : ''}
 </div>
 
 ${this.isDisliked_() ? html`
-  <div id="defectsPanel">
+  <div id="defectsPanel" ?popover="${this.popoverDefects}"
+      @toggle="${this.onDefectsPopoverToggle_}">
     <div id="defectsLabel">What's wrong?</div>
     <div id="defectChips" role="group" aria-labelledby="defectsLabel">
       ${this.defectCategories_.map(item => html`
@@ -51,6 +62,8 @@ ${this.isDisliked_() ? html`
           @change="${this.onCommentChange_}">
       </cr-input>
     `)}
+    <!-- Extra fields from the embedder, e.g. the topic a duplicate is of. -->
+    <slot></slot>
     <cr-textarea id="comment" label="Comment" autogrow rows="2"
         .value="${this.getComment_()}"
         ?required="${this.isCommentRequired_()}"

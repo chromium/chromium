@@ -25,18 +25,49 @@ ${this.loadState_ === 'loaded' && this.topic ? html`
   <div id="header">
     <div class="title-row">
       <h1 id="title">${this.topic.title}</h1>
-      <cr-button id="sitesButton" class="tonal-button"
-          aria-haspopup="dialog" ?hidden="${this.sites_.length === 0}"
-          @click="${this.onSitesButtonClick_}">
-        <span id="siteFavicons" aria-hidden="true">
-          ${this.getButtonFaviconUrls_().map(url => html`
-            <span class="favicon"
-                style="background-image: ${this.getFavicon_(url)}">
-            </span>
-          `)}
-        </span>
-        ${this.getSitesLabel_()}
-      </cr-button>
+      <div id="headerActions">
+        ${this.feedbackEnabled_ ? html`
+          <!-- Temporary Fishfood Feedback. The reasons open in a popover, so
+               they don't push the content down. -->
+          <topic-feedback-controls id="fishfoodRating" popover-defects
+              .topic="${this.topic}" .feedback="${this.feedback_}"
+              @topic-feedback-change="${this.onTopicFeedbackChange_}">
+            ${this.isDuplicateSelected_() ? html`
+              <!-- TODO(crbug.com/558572977): Use internationalized strings
+                   once GRD strings are added. -->
+              <label id="duplicateOfRow">
+                <span id="duplicateOfLabel">
+                  Which topic should this be combined with?
+                </span>
+                <select id="duplicateOf" class="md-select"
+                    @change="${this.onDuplicateChange_}">
+                  <option value="" ?selected="${!this.getDuplicateOfId_()}">
+                    Choose a topic
+                  </option>
+                  ${this.getDuplicateOptions_().map(option => html`
+                    <option value="${option.id}"
+                        ?selected="${option.id === this.getDuplicateOfId_()}">
+                      ${option.title}
+                    </option>
+                  `)}
+                </select>
+              </label>
+            ` : ''}
+          </topic-feedback-controls>
+        ` : ''}
+        <cr-button id="sitesButton" class="tonal-button"
+            aria-haspopup="dialog" ?hidden="${this.sites_.length === 0}"
+            @click="${this.onSitesButtonClick_}">
+          <span id="siteFavicons" aria-hidden="true">
+            ${this.getButtonFaviconUrls_().map(url => html`
+              <span class="favicon"
+                  style="background-image: ${this.getFavicon_(url)}">
+              </span>
+            `)}
+          </span>
+          ${this.getSitesLabel_()}
+        </cr-button>
+      </div>
     </div>
     <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
         .selected="${this.selectedTab_}"
@@ -48,13 +79,23 @@ ${this.loadState_ === 'loaded' && this.topic ? html`
        entry in TOPIC_DETAILS_TABS, in the same order. -->
   <cr-page-selector id="panels" .selected="${this.selectedTab_}">
     <topic-summary-panel role="tabpanel" aria-label="${this.tabNames_[0]}"
-        .topic="${this.topic}"
-        @open-related-tabs="${this.onOpenRelatedTabs_}">
+        .topic="${this.topic}" .feedback="${this.feedback_}"
+        @open-related-tabs="${this.onOpenRelatedTabs_}"
+        @query-feedbacks-change="${this.onQueryFeedbacksChange_}">
     </topic-summary-panel>
+    ${this.feedbackEnabled_ ? html`
+      <!-- Temporary Fishfood Feedback -->
+      <topic-visits-panel role="tabpanel" aria-label="${this.tabNames_[1]}"
+          .topic="${this.topic}" .feedback="${this.feedback_}"
+          @rejected-visits-change="${this.onRejectedVisitsChange_}">
+      </topic-visits-panel>
+    ` : ''}
   </cr-page-selector>
 
   <topic-sites-dialog id="sitesDialog" .topic="${this.topic}"
-      @open-related-tabs="${this.onOpenRelatedTabs_}">
+      .feedback="${this.feedback_}"
+      @open-related-tabs="${this.onOpenRelatedTabs_}"
+      @rejected-visits-change="${this.onRejectedVisitsChange_}">
   </topic-sites-dialog>
 ` : ''}
 </div>

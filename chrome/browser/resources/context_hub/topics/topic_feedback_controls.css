@@ -15,8 +15,10 @@
 }
 
 /* Offsets the icon button padding ((32px - 18px) / 2) so the icons line up
- * with the content above them. */
+ * with the content above them. Anchors the defects popover. */
 #ratingRow {
+  align-items: center;
+  anchor-name: --topic-rating;
   display: flex;
   margin-inline-start: -7px;
 }
@@ -24,6 +26,72 @@
 #ratingRow cr-icon-button {
   --cr-icon-button-icon-size: 18px;
   margin: 0;
+}
+
+/* Popover mode: the defects panel floats under the thumbs instead of taking
+ * space in the embedder's layout. */
+:host([popover-defects]) #ratingRow {
+  margin-inline-start: 0;
+}
+
+#reasonsButton {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 12px;
+  color: var(--cr-secondary-text-color);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 12px;
+  height: 24px;
+  line-height: 16px;
+  margin-inline-start: 4px;
+  padding-block: 0;
+  padding-inline: 10px 4px;
+  white-space: nowrap;
+}
+
+#reasonsButton:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+#reasonsButton:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+}
+
+/* A thumbs down still needs a reason. */
+#reasonsButton[invalid] {
+  border-color: var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
+  color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
+}
+
+#reasonsButton cr-icon {
+  height: 18px;
+  width: 18px;
+}
+
+#defectsPanel[popover] {
+  background-color: var(--cr-fallback-color-surface);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  inset: auto;
+  margin: 4px 0 0;
+  padding: 16px;
+  position-anchor: --topic-rating;
+  position-area: block-end span-inline-start;
+  position-try-fallbacks: flip-inline, flip-block;
+  width: min(480px, calc(100vw - 32px));
+}
+
+/* The display: flex of #defectsPanel would override the UA style hiding
+ * closed popovers. */
+#defectsPanel[popover]:not(:popover-open) {
+  display: none;
 }
 
 #defectsPanel {

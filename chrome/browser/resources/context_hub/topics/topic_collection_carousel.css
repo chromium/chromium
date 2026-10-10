@@ -21,7 +21,6 @@
   align-items: center;
   display: flex;
   gap: 8px;
-  justify-content: space-between;
   margin-block-end: 12px;
 }
 
@@ -39,6 +38,7 @@
   display: flex;
   flex-shrink: 0;
   gap: 4px;
+  margin-inline-start: auto;
 }
 
 #cards {
@@ -58,6 +58,7 @@
   display: flex;
   flex: 0 0 var(--topic-carousel-card-width);
   min-width: 0;
+  position: relative;
   scroll-snap-align: start;
 }
 
@@ -137,4 +138,66 @@
   color: var(--cr-secondary-text-color);
   font-size: 13px;
   line-height: 20px;
+}
+
+/* Temporary Fishfood Feedback. */
+#collectionRating {
+  display: flex;
+  flex-shrink: 0;
+}
+
+#collectionRating cr-icon-button {
+  --cr-icon-button-icon-size: 18px;
+  margin: 0;
+}
+
+/* Sits over the top corner of the card's image, on a chip so it shows on
+ * any image. */
+.reject {
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-size: 28px;
+  background-color: var(--cr-fallback-color-surface);
+  border-radius: 50%;
+  inset-block-start: 6px;
+  inset-inline-end: 6px;
+  margin: 0;
+  position: absolute;
+}
+
+/* A rejected card gets a red outline, a red label and a filled red ✕, and
+ * its content is dimmed and its title struck through. */
+li[rejected] .card {
+  outline: 2px solid var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
+  outline-offset: -2px;
+}
+
+li[rejected] .card-image,
+li[rejected] .card-text {
+  opacity: 0.5;
+}
+
+li[rejected] .card-title {
+  text-decoration: line-through;
+}
+
+li[rejected] .reject {
+  --cr-icon-button-fill-color: var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
+}
+
+.rejected-label {
+  background-color: var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
+  border-radius: 10px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  inset-block-start: 10px;
+  inset-inline-start: 10px;
+  line-height: 20px;
+  padding: 0 8px;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
 }

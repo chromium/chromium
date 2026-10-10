@@ -19,7 +19,7 @@ export function getHtml(this: TopicSitesDialogElement) {
   <div slot="body">
     <ul id="siteList">
       ${this.sites_.map((site, index) => html`
-        <li>
+        <li ?rejected="${this.feedbackEnabled_ && this.isRejected_(site)}">
           <button class="site" data-index="${index}"
               @click="${this.onSiteClick_}">
             <span class="favicon"
@@ -30,6 +30,22 @@ export function getHtml(this: TopicSitesDialogElement) {
               <span class="site-domain">${site.domain}</span>
             ` : ''}
           </button>
+          ${this.feedbackEnabled_ ? html`
+            <!-- Temporary Fishfood Feedback -->
+            ${this.isRejected_(site) ? html`
+              <span class="rejected-label" aria-hidden="true">
+                Doesn't belong
+              </span>
+            ` : ''}
+            <cr-icon-button class="reject" data-index="${index}"
+                iron-icon="${this.isRejected_(site) ?
+                    'cr:cancel-filled' : 'cr:close'}"
+                title="${this.isRejected_(site) ? 'Undo' : 'Doesn\'t belong'}"
+                aria-label="${this.getRejectAriaLabel_(site)}"
+                aria-pressed="${this.isRejected_(site)}"
+                @click="${this.onRejectClick_}">
+            </cr-icon-button>
+          ` : ''}
         </li>
       `)}
     </ul>

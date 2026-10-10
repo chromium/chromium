@@ -16,7 +16,7 @@ import {TopicDefectCategory, TopicRating} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_feedback_controls.css.js';
 import {getHtml} from './topic_feedback_controls.html.js';
-import {createEmptyTopicFeedback, createTopicSnapshot, formatTopicFeedbackComment, hasTopicFeedbackCommentText, isTopicFeedbackValid, normalizeTopicFeedbackComment, parseTopicFeedbackComment, TOPIC_DEFECT_CATEGORIES, TOPIC_SUGGESTION_FIELDS} from './topic_utils.js';
+import {createEmptyTopicFeedback, createTopicSnapshot, formatTopicFeedbackComment, hasSameRating, hasTopicFeedbackCommentText, isTopicFeedbackValid, normalizeTopicFeedbackComment, parseTopicFeedbackComment, TOPIC_DEFECT_CATEGORIES, TOPIC_SUGGESTION_FIELDS} from './topic_utils.js';
 import type {TopicFeedback, TopicItem, TopicSuggestionField} from './topic_utils.js';
 
 // Fired with the feedback to store whenever the rater's edits are valid.
@@ -48,24 +48,52 @@ export class TopicFeedbackControlsElement extends CrLitElement {
       // The stored feedback on `topic`, if any.
       feedback: {type: Object},
       draft_: {type: Object, state: true},
+      popoverDefects: {
+        type: Boolean,
+        attribute: 'popover-defects',
+        reflect: true,
+      },
+      defectsPopoverOpen_: {type: Boolean, state: true},
     };
   }
 
   accessor topic: TopicItem|null = null;
   accessor feedback: TopicFeedback|null = null;
+  // Shows the defects and comment in a popover under the thumbs, opened on a
+  // thumbs down and reopened from a "N reasons" button, rather than inline.
+  // For embedders with little room, e.g. the topic details header.
+  accessor popoverDefects: boolean = false;
   // The feedback being edited. Only reported via `topic-feedback-change`
   // while it's valid, so it can be ahead of `feedback`. Always replaced rather
   // than mutated, so it can share arrays with `feedback`.
   protected accessor draft_: TopicFeedback|null = null;
+  protected accessor defectsPopoverOpen_: boolean = false;
 
   protected readonly defectCategories_ = TOPIC_DEFECT_CATEGORIES;
+
+  // Set when a thumbs down should open the defects popover once rendered.
+  private openDefectsPopover_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('feedback')) {
-      this.draft_ = this.feedback;
+      this.draft_ =
+          this.getDraftForFeedback_(changedProperties.get('feedback') || null);
     }
+  }
+
+  // Takes the new `feedback`, but keeps unsaved edits to the rating, defects
+  // and comment if only other parts of the feedback (e.g. rejected visits,
+  // edited elsewhere on the page) changed.
+  private getDraftForFeedback_(previous: TopicFeedback|null): TopicFeedback
+      |null {
+    if (!this.draft_ || !this.feedback || !previous ||
+        !hasSameRating(previous, this.feedback)) {
+      return this.feedback;
+    }
+    const {rating, defects, comment} = this.draft_;
+    return {...this.feedback, rating, defects, comment};
   }
 
   protected getThumbsUpAriaLabel_(): string {
@@ -129,14 +157,36 @@ export class TopicFeedbackControlsElement extends CrLitElement {
     return this.isDisliked_() && this.draft_?.defects.length === 0;
   }
 
+  protected getReasonsButtonLabel_(): string {
+    const count = this.draft_?.defects.length || 0;
+    if (count === 0) {
+      return 'Add reasons';
+    }
+    return count === 1 ? '1 reason' : `${count} reasons`;
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (this.openDefectsPopover_) {
+      this.openDefectsPopover_ = false;
+      this.shadowRoot.querySelector<HTMLElement>('#defectsPanel')
+          ?.showPopover();
+    }
+  }
+
+  protected onDefectsPopoverToggle_(e: ToggleEvent) {
+    this.defectsPopoverOpen_ = e.newState === 'open';
+  }
+
   protected onThumbsUpClick_() {
     this.setRating_(
         this.isLiked_() ? TopicRating.kUnrated : TopicRating.kLiked);
   }
 
   protected onThumbsDownClick_() {
-    this.setRating_(
-        this.isDisliked_() ? TopicRating.kUnrated : TopicRating.kDisliked);
+    const disliked = !this.isDisliked_();
+    this.openDefectsPopover_ = this.popoverDefects && disliked;
+    this.setRating_(disliked ? TopicRating.kDisliked : TopicRating.kUnrated);
   }
 
   protected onDefectClick_(e: Event) {

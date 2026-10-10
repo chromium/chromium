@@ -11,7 +11,7 @@ import type {Topic, TopicCollection, TopicFeedback, TopicVisit} from 'chrome://c
 import type {TopicCardElement} from 'chrome://context-hub/topics/topic_card.js';
 import type {TopicCollectionCarouselElement} from 'chrome://context-hub/topics/topic_collection_carousel.js';
 import type {TopicDetailsElement} from 'chrome://context-hub/topics/topic_details.js';
-import {getSuggestedPrompts, TOPIC_DETAILS_TABS} from 'chrome://context-hub/topics/topic_details.js';
+import {getSuggestedPrompts, TOPIC_DETAILS_TABS, TOPIC_VISITS_TAB} from 'chrome://context-hub/topics/topic_details.js';
 import type {TopicFeedbackControlsElement} from 'chrome://context-hub/topics/topic_feedback_controls.js';
 import type {TopicSitesDialogElement} from 'chrome://context-hub/topics/topic_sites_dialog.js';
 import {BADGE_BACKGROUND_COLORS, createEmptyTopicFeedback, createTopicSnapshot, DEFAULT_ICON, formatTopicFeedbackComment, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, isTopicFeedbackEmpty, isTopicFeedbackValid, MAX_TOPIC_SITES, normalizeTopicFeedbackComment, parseTopicFeedbackComment, TOPIC_DEFECT_CATEGORIES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
@@ -697,7 +697,8 @@ suite('TopicDetails', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({kTopics: true});
+    loadTimeData.overrideValues(
+        {kTopics: true, kTopicsFishfoodFeedback: false});
     handler = TestMock.fromClass(PageHandlerRemote);
     const {instance} = browserProxyFactory.createForTest(handler);
     browserProxyFactory.setInstance(instance);
@@ -912,12 +913,309 @@ suite('TopicDetails', () => {
     }));
     await createDetails('?id=topic-1');
 
-    const carousels = query('topic-summary-panel')!.shadowRoot!
-                          .querySelectorAll('topic-collection-carousel');
+    const carousels =
+        query('topic-summary-panel')!.shadowRoot!.querySelectorAll(
+            'topic-collection-carousel');
     assertDeepEquals(
         ['Collection 1', 'Collection 2'],
         Array.from(carousels).map(carousel => carousel.collection!.title));
   });
+
+  test('hides fishfood feedback when it is off', async () => {
+    await createDetails('?id=topic-1');
+    assertFalse(!!query('#fishfoodRating'));
+    assertFalse(!!query('topic-visits-panel'));
+    assertFalse(!!queryPanel('#queryRatings'));
+    assertFalse(!!getSitesDialog().shadowRoot.querySelector('.reject'));
+    assertFalse(
+        query('cr-tabs')!.shadowRoot!.textContent.includes(TOPIC_VISITS_TAB));
+    assertEquals(0, handler.getCallCount('getTopicFeedbacks'));
+  });
+});
+
+suite('TopicDetailsFeedback', () => {
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let details: TopicDetailsElement;
+
+  const topic = createTopic({
+    continuationQueries: [
+      {title: 'Query 1', prompt: ''},
+      {title: 'Query 2', prompt: ''},
+      {title: 'Query 3', prompt: ''},
+      {title: 'Query 4', prompt: ''},
+    ],
+  });
+  const otherTopic = createTopic({id: 'topic-2', title: 'Other topic'});
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({kTopics: true, kTopicsFishfoodFeedback: true});
+    handler = TestMock.fromClass(PageHandlerRemote);
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    handler.setResultFor('getTopic', Promise.resolve({topic}));
+    handler.setResultFor(
+        'getTopics', Promise.resolve({topics: [topic, otherTopic]}));
+    handler.setResultFor(
+        'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
+  });
+
+  teardown(() => {
+    window.history.replaceState({}, '', '/');
+  });
+
+  async function createDetails(feedbacks: TopicFeedback[] = []) {
+    handler.setResultFor('getTopicFeedbacks', Promise.resolve({feedbacks}));
+    window.history.replaceState({}, '', '?id=topic-1');
+    details = document.createElement('topic-details');
+    document.body.appendChild(details);
+    await microtasksFinished();
+  }
+
+  function query<T extends HTMLElement = HTMLElement>(selector: string): T|
+      null {
+    return details.shadowRoot.querySelector<T>(selector);
+  }
+
+  function queryIn(element: HTMLElement, selector: string): HTMLElement[] {
+    return Array.from(
+        element.shadowRoot!.querySelectorAll<HTMLElement>(selector));
+  }
+
+  async function click(element: HTMLElement) {
+    element.click();
+    await microtasksFinished();
+  }
+
+  function getLastSavedFeedback(): TopicFeedback {
+    const args = handler.getArgs('setTopicFeedback');
+    return args[args.length - 1];
+  }
+
+  function createStoredFeedback(overrides: Partial<TopicFeedback> = {}):
+      TopicFeedback {
+    return {...createEmptyTopicFeedback(toTopicItem(topic)), ...overrides};
+  }
+
+  test('shows the visits tab with its banner', async () => {
+    await createDetails();
+    assertEquals(1, handler.getCallCount('getTopicFeedbacks'));
+    const tabs = query('cr-tabs')!;
+    assertEquals(
+        TOPIC_DETAILS_TABS.length + 1,
+        tabs.shadowRoot!.querySelectorAll('[role=tab]').length);
+    assertTrue(tabs.shadowRoot!.textContent.includes(TOPIC_VISITS_TAB));
+    assertEquals(
+        TOPIC_DETAILS_TABS.length + 1,
+        query('#panels')!.querySelectorAll('[role=tabpanel]').length);
+
+    const panel = query('topic-visits-panel')!;
+    assertEquals(TOPIC_VISITS_TAB, panel.getAttribute('aria-label'));
+    const banner = queryIn(panel, '#banner')[0]!;
+    assertTrue(banner.textContent.includes('Fishfood Experiment Only'));
+    // Every visit is listed, including ones the sites list leaves out.
+    assertDeepEquals(
+        ['Page 1', 'Settings', 'Page 2'],
+        queryIn(panel, '.visit-title').map(el => el.textContent.trim()));
+  });
+
+  test('header rating keeps the rest of the feedback', async () => {
+    await createDetails([createStoredFeedback({
+      rating: TopicRating.kDisliked,
+      defects: [TopicDefectCategory.kDuplicateOfAnotherTopic],
+      duplicateOf: {id: 'topic-2', title: 'Other topic', visitTimes: []},
+      rejectedVisits: [{internalValue: 2n}],
+    })]);
+    const controls = query('topic-feedback-controls#fishfoodRating')!;
+    assertTrue(!!controls);
+
+    await click(queryIn(controls, '#thumbsUp')[0]!);
+    const feedback = getLastSavedFeedback();
+    assertEquals(TopicRating.kLiked, feedback.rating);
+    assertDeepEquals([], feedback.defects);
+    // The duplicate only applies to the Duplicate defect.
+    assertEquals(null, feedback.duplicateOf);
+    assertEquals(1, feedback.rejectedVisits.length);
+    assertFalse(!!query('#duplicateOf'));
+  });
+
+  test('header thumbs down opens the reasons popover', async () => {
+    await createDetails();
+    const controls = query('topic-feedback-controls#fishfoodRating')!;
+    assertFalse(!!queryIn(controls, '#reasonsButton')[0]);
+
+    await click(queryIn(controls, '#thumbsDown')[0]!);
+    const panel = queryIn(controls, '#defectsPanel')[0]!;
+    assertTrue(panel.matches(':popover-open'));
+    const button = queryIn(controls, '#reasonsButton')[0]!;
+    assertEquals('Add reasons', button.textContent.trim());
+    assertTrue(button.hasAttribute('invalid'));
+    assertEquals('true', button.getAttribute('aria-expanded'));
+
+    await click(queryIn(controls, 'cr-chip')[0]!);
+    assertEquals('1 reason', button.textContent.trim());
+    assertFalse(button.hasAttribute('invalid'));
+
+    panel.hidePopover();
+    await microtasksFinished();
+    assertEquals('false', button.getAttribute('aria-expanded'));
+  });
+
+  test('picking a duplicate saves a snapshot of it', async () => {
+    await createDetails([createStoredFeedback({
+      rating: TopicRating.kDisliked,
+      defects: [TopicDefectCategory.kDuplicateOfAnotherTopic],
+    })]);
+    const select = query<HTMLSelectElement>('#duplicateOf')!;
+    assertDeepEquals(
+        ['', 'topic-2'], Array.from(select.options).map(o => o.value));
+    assertEquals('', select.value);
+
+    select.value = 'topic-2';
+    select.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    let feedback = getLastSavedFeedback();
+    assertEquals('topic-2', feedback.duplicateOf!.id);
+    assertEquals('Other topic', feedback.duplicateOf!.title);
+    assertEquals(3, feedback.duplicateOf!.visitTimes.length);
+    assertEquals('topic-2', select.value);
+
+    select.value = '';
+    select.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    feedback = getLastSavedFeedback();
+    assertEquals(null, feedback.duplicateOf);
+  });
+
+  test('rates queries, storing only rated ones', async () => {
+    await createDetails();
+    const panel = query('topic-summary-panel')!;
+    const queries = queryIn(panel, '.query');
+    // Only the queries sent to Glic are rated.
+    assertEquals(3, queries.length);
+    assertEquals(1, queryIn(panel, '#queryRatingsHint').length);
+
+    await click(queries[1]!.querySelector<HTMLElement>('.query-dislike')!);
+    assertDeepEquals(
+        [{index: 1, queryText: 'Query 2', liked: false}],
+        getLastSavedFeedback().queryFeedbacks);
+
+    await click(queries[0]!.querySelector<HTMLElement>('.query-like')!);
+    assertDeepEquals(
+        [
+          {index: 0, queryText: 'Query 1', liked: true},
+          {index: 1, queryText: 'Query 2', liked: false},
+        ],
+        getLastSavedFeedback().queryFeedbacks);
+    assertEquals(
+        'true',
+        queries[0]!.querySelector('.query-like')!.getAttribute('aria-pressed'));
+
+    // Clicking a rating again clears it, and empty feedback is deleted.
+    await click(queries[0]!.querySelector<HTMLElement>('.query-like')!);
+    await click(queries[1]!.querySelector<HTMLElement>('.query-dislike')!);
+    assertEquals('topic-1', await handler.whenCalled('deleteTopicFeedback'));
+  });
+
+  test('clicking a query does not open Glic', async () => {
+    await createDetails();
+    const panel = query('topic-summary-panel')!;
+    await click(queryIn(panel, '.query-text')[0]!);
+    assertEquals(0, handler.getCallCount('openGlicPanel'));
+    assertEquals(0, handler.getCallCount('setTopicFeedback'));
+  });
+
+  test('marks visits that do not belong', async () => {
+    await createDetails();
+    const panel = query('topic-visits-panel')!;
+    const rejectButtons = queryIn(panel, '.reject');
+    assertEquals(3, rejectButtons.length);
+
+    await click(rejectButtons[1]!);
+    assertDeepEquals(
+        [2],
+        getLastSavedFeedback().rejectedVisits.map(
+            time => Number(time.internalValue)));
+    assertTrue(queryIn(panel, '.visit')[1]!.hasAttribute('rejected'));
+    assertEquals('true', rejectButtons[1]!.getAttribute('aria-pressed'));
+    assertEquals(1, queryIn(panel, '.rejected-label').length);
+
+    await click(rejectButtons[1]!);
+    assertEquals('topic-1', await handler.whenCalled('deleteTopicFeedback'));
+    assertFalse(queryIn(panel, '.visit')[1]!.hasAttribute('rejected'));
+    assertEquals(0, queryIn(panel, '.rejected-label').length);
+  });
+
+  test('sites dialog marks sites that do not belong', async () => {
+    await createDetails();
+    query('#sitesButton')!.click();
+    await microtasksFinished();
+    const dialog = query('#sitesDialog')!;
+    const rejectButtons = queryIn(dialog, '.reject');
+    assertEquals(2, rejectButtons.length);
+
+    await click(rejectButtons[0]!);
+    assertDeepEquals(
+        [3],
+        getLastSavedFeedback().rejectedVisits.map(
+            time => Number(time.internalValue)));
+    assertTrue(queryIn(dialog, '#siteList li')[0]!.hasAttribute('rejected'));
+
+    // The visits tab shows the same rejection.
+    const panel = query('topic-visits-panel')!;
+    assertTrue(queryIn(panel, '.visit')[0]!.hasAttribute('rejected'));
+  });
+
+  test('sites dialog keeps the toggle in view for long titles', async () => {
+    handler.setResultFor('getTopic', Promise.resolve({
+      topic: {
+        ...topic,
+        visits: [createVisit('https://example.com/', 'Long title '.repeat(30))],
+      },
+    }));
+    await createDetails();
+    query('#sitesButton')!.click();
+    await microtasksFinished();
+    const row = queryIn(query('#sitesDialog')!, '#siteList li')[0]!;
+    const reject = row.querySelector('.reject')!;
+    assertTrue(reject.getBoundingClientRect().width > 0);
+    assertTrue(
+        reject.getBoundingClientRect().right <=
+        row.getBoundingClientRect().right);
+  });
+
+  test(
+      'rates collections and flags their pages, in the page only', async () => {
+        handler.setResultFor('getTopic', Promise.resolve({
+          topic: {...topic, collections: [createCollection()]},
+        }));
+        await createDetails();
+        const summary = query('topic-summary-panel')!;
+        const carousel = queryIn(summary, 'topic-collection-carousel')[0] as
+            TopicCollectionCarouselElement;
+        const like = queryIn(carousel, '.collection-like')[0]!;
+
+        await click(like);
+        assertEquals('true', like.getAttribute('aria-pressed'));
+        assertEquals(true, carousel.feedback!.liked);
+
+        const cards = queryIn(carousel, '#cards li');
+        assertEquals(2, queryIn(carousel, '.reject').length);
+        await click(cards[1]!.querySelector<HTMLElement>('.reject')!);
+        assertTrue(cards[1]!.hasAttribute('rejected'));
+        assertTrue(!!cards[1]!.querySelector('.rejected-label'));
+        assertDeepEquals(
+            ['https://www.example.org/item-2'],
+            carousel.feedback!.rejectedItemUrls);
+
+        // Clicking again undoes both.
+        await click(like);
+        await click(cards[1]!.querySelector<HTMLElement>('.reject')!);
+        assertEquals('false', like.getAttribute('aria-pressed'));
+        assertFalse(cards[1]!.hasAttribute('rejected'));
+        // Not stored until the mojom has fields for it.
+        assertEquals(0, handler.getCallCount('setTopicFeedback'));
+      });
 });
 
 suite('TopicCollectionCarousel', () => {
@@ -931,6 +1229,7 @@ suite('TopicCollectionCarousel', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({kTopicsFishfoodFeedback: false});
     handler = TestMock.fromClass(PageHandlerRemote);
     const {instance} = browserProxyFactory.createForTest(handler);
     browserProxyFactory.setInstance(instance);
@@ -1060,11 +1359,11 @@ suite('TopicCollectionCarousel', () => {
   function stubScrolling(cards: HTMLElement) {
     const calls: Array<{method: string, left: number}> = [];
     cards.scrollTo = ((options: ScrollToOptions) => {
-      calls.push({method: 'scrollTo', left: options.left!});
-    }) as typeof cards.scrollTo;
+                       calls.push({method: 'scrollTo', left: options.left!});
+                     }) as typeof cards.scrollTo;
     cards.scrollBy = ((options: ScrollToOptions) => {
-      calls.push({method: 'scrollBy', left: options.left!});
-    }) as typeof cards.scrollBy;
+                       calls.push({method: 'scrollBy', left: options.left!});
+                     }) as typeof cards.scrollBy;
     return calls;
   }
 
