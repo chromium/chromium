@@ -169,7 +169,7 @@
       <message name="IDS_OMNIBOX_NAVATTACH_DRIVE" desc="The text displayed in the omnibox attachments popup. When clicked - opens drive file picker." formatter_data="android_java">
         Drive
       </message>
-      <message name="IDS_FUSEBOX_ADD_TAB" desc="The text displayed in the omnibox attachments popup for the Current tab option." formatter_data="android_java">
+      <message name="IDS_FUSEBOX_ADD_TAB" meaning="Length-limited label for adding the current tab to multimodal search query." desc="The text displayed in the omnibox attachments popup for the Current tab option. [CHAR_LIMIT=18]" formatter_data="android_java">
         Ask about this page
       </message>
       <message name="IDS_FUSEBOX_MAX_ATTACHMENTS" desc="The text displayed in a snackbar when the max number of omnibox attachments is reached" formatter_data="android_java">
