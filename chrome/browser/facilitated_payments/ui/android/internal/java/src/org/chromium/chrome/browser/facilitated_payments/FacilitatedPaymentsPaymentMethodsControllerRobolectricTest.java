@@ -1601,6 +1601,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE})
     public void testPixAccountLinkingPrompt_VideoLinkCallbackOpensDefaultUrlWhenParamUnset() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FacilitatedPaymentsPaymentMethodsMediator
+                                .PIX_ACCOUNT_LINKING_VIDEO_LINK_CLICKED_HISTOGRAM,
+                        true);
         mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
 
         mFacilitatedPaymentsPaymentMethodsModel
@@ -1608,6 +1613,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .get(VIDEO_LINK_CALLBACK)
                 .onClick(null);
 
+        histogramWatcher.assertExpected();
         Intent startedIntent = Shadows.shadowOf((Activity) mContext).getNextStartedActivity();
         assertNotNull(startedIntent);
         assertThat(startedIntent.getAction(), is(Intent.ACTION_VIEW));
@@ -1623,6 +1629,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         "EnablePixAccountLinkingNative:video_url_on_prompt/https%3A%2F%2Fexample.com%2Fpix"
     })
     public void testPixAccountLinkingPrompt_VideoLinkCallbackOpensCustomUrlWhenParamSet() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FacilitatedPaymentsPaymentMethodsMediator
+                                .PIX_ACCOUNT_LINKING_VIDEO_LINK_CLICKED_HISTOGRAM,
+                        true);
         mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
 
         mFacilitatedPaymentsPaymentMethodsModel
@@ -1630,6 +1641,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .get(VIDEO_LINK_CALLBACK)
                 .onClick(null);
 
+        histogramWatcher.assertExpected();
         Intent startedIntent = Shadows.shadowOf((Activity) mContext).getNextStartedActivity();
         assertNotNull(startedIntent);
         assertThat(startedIntent.getAction(), is(Intent.ACTION_VIEW));

@@ -491,6 +491,20 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.AccountLinking.VideoLinkClicked"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The count for the number of times the user clicked the &quot;See how it
+    works&quot; video link on the Pix account linking prompt. Emits true when
+    the link is clicked and never emits false. [Frequency] Logged each time the
+    user clicks the link. [Trigger] User clicks the &quot;See how it works&quot;
+    link on the Pix account linking prompt.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
     expires_after="2027-04-30">
   <owner>siashah@google.com</owner>

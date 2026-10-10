@@ -141,6 +141,10 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
     static final String PAYMENT_LINK_FOP_SELECTOR_TYPES_USER_ACTION_HISTOGRAM =
             "FacilitatedPayments.{PaymentLinkFopSelectorTypes}.FopSelector.UserAction";
 
+    @VisibleForTesting
+    static final String PIX_ACCOUNT_LINKING_VIDEO_LINK_CLICKED_HISTOGRAM =
+            "FacilitatedPayments.Pix.AccountLinking.VideoLinkClicked";
+
     private Context mContext;
     private PropertyModel mModel;
     private Delegate mDelegate;
@@ -408,6 +412,7 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
                                 videoUrl = DEFAULT_PIX_ACCOUNT_LINKING_VIDEO_URL;
                             }
                             openUrl(videoUrl);
+                            recordHistogramOnVideoLinkClicked();
                         });
         // Prevent the bottom sheet from closing during page navigations.
         mModel.set(SURVIVES_NAVIGATION, true);
@@ -785,6 +790,11 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
                 histogramName,
                 PaymentLinkFopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
                 PaymentLinkFopSelectorAction.MAX_VALUE + 1);
+    }
+
+    private void recordHistogramOnVideoLinkClicked() {
+        RecordHistogram.recordBooleanHistogram(
+                PIX_ACCOUNT_LINKING_VIDEO_LINK_CLICKED_HISTOGRAM, true);
     }
 
     private String getEwalletFopSelectorUserActionHistogram(List<Ewallet> ewallets) {
