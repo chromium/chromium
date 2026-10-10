@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
 
@@ -81,6 +83,9 @@ class Controller final : public CreditCardScannerViewDelegate {
 
 // static
 bool CreditCardScannerController::HasCreditCardScanFeature() {
+  if (base::FeatureList::IsEnabled(features::kAutofillCardScanningBugfixes)) {
+    return CreditCardScannerView::CanShow();
+  }
   static const bool kCanShow = CreditCardScannerView::CanShow();
   return kCanShow;
 }
