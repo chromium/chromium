@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/borealis/borealis_service_impl.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace borealis {
@@ -20,24 +21,28 @@ BorealisServiceFactory* BorealisServiceFactory::GetInstance() {
   return factory.get();
 }
 
-// This service does not depend on any other services.
 BorealisServiceFactory::BorealisServiceFactory()
     : ProfileKeyedServiceFactory(
           "BorealisService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .WithSystem(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(guest_os::GuestOsRegistryServiceFactory::GetInstance());
+}
 
 BorealisServiceFactory::~BorealisServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 BorealisServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<BorealisServiceImpl>(
-      Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile->IsRegularProfile()) {
+    return nullptr;
+  }
+  return std::make_unique<BorealisServiceImpl>(profile);
 }
 
 bool BorealisServiceFactory::ServiceIsCreatedWithBrowserContext() const {

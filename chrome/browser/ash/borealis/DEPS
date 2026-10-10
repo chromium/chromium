@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/test/base",
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

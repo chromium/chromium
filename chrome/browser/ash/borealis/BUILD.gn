@@ -102,6 +102,7 @@ static_library("borealis") {
     "//third_party/re2",
     "//ui/base",
     "//ui/display",
+    "//ui/message_center",
     "//url",
   ]
 }
@@ -184,6 +185,7 @@ source_set("unit_tests") {
     "//ui/aura",
     "//ui/display",
     "//ui/display:test_support",
+    "//ui/message_center",
     "//ui/views",
     "//url",
   ]
