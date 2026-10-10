@@ -121,6 +121,13 @@ public final class TabbedStartupCoordinator {
         }
     }
 
+    /* package */ static void onWindowClosed(int windowId) {
+        if (!MultiWindowUtils.isNewStartupWindowPolicyEnabled()) {
+            return;
+        }
+        TabbedStartupWindowPolicyDelegate.getInstance().onWindowClosed(windowId);
+    }
+
     /* package */ static void resetStartupState() {
         TabbedStartupWindowPolicyDelegate.getInstance().resetState();
     }

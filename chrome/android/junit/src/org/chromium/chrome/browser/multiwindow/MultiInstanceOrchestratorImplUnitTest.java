@@ -1361,6 +1361,40 @@ public class MultiInstanceOrchestratorImplUnitTest {
         verify(mTabbedStartupWindowPolicyDelegate, never()).resetState();
     }
 
+    @Test
+    public void testOnActivityStateChange_destroyed_finishingTabbedActivity_callsOnWindowClosed() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        DeviceInfo.setIsDesktopForTesting(true);
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.CREATED);
+        when(mTabbedActivity1.isFinishing()).thenReturn(true);
+        when(mTabbedActivity1.getWindowId()).thenReturn(SOURCE_WINDOW_ID);
+        reset(mTabbedStartupWindowPolicyDelegate);
+
+        // Act: Destroy finishing Activity 1.
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.DESTROYED);
+
+        // Verify: Delegate is notified of window closure.
+        verify(mTabbedStartupWindowPolicyDelegate).onWindowClosed(SOURCE_WINDOW_ID);
+    }
+
+    @Test
+    public void
+            testOnActivityStateChange_destroyed_nonFinishingTabbedActivity_doesNotCallOnWindowClosed() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        DeviceInfo.setIsDesktopForTesting(true);
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.CREATED);
+        when(mTabbedActivity1.isFinishing()).thenReturn(false);
+        reset(mTabbedStartupWindowPolicyDelegate);
+
+        // Act: Destroy non-finishing Activity 1 (e.g. configuration change recreation).
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.DESTROYED);
+
+        // Verify: Delegate is not notified of window closure.
+        verify(mTabbedStartupWindowPolicyDelegate, never()).onWindowClosed(anyInt());
+    }
+
     private void doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
             boolean isIncognito,
             boolean preferNew,

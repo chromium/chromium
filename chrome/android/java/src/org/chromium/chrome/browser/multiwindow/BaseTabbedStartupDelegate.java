@@ -106,14 +106,17 @@ import java.util.Set;
      * #onAllWindowsRestored(long)} once all pending windows have been restored.
      *
      * @param windowId The ID of the window to remove from the pending restoration set.
+     * @return {@code true} if the window was pending restoration and has now been processed; {@code
+     *     false} otherwise.
      */
-    protected void registerRestoration(int windowId) {
+    protected boolean registerRestoration(int windowId) {
         boolean updated = mWindowIdsPendingRestoration.remove(windowId);
         if (updated && mWindowIdsPendingRestoration.isEmpty()) {
             long duration = TimeUtils.elapsedRealtimeMillis() - mRestorationStartTime;
             mRestorationStartTime = 0;
             onAllWindowsRestored(duration);
         }
+        return updated;
     }
 
     /**

@@ -3805,6 +3805,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.StartupRestorationWindowRetained"
+    enum="Boolean" expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether a window automatically restored on startup remains open 30
+    seconds after creation. Emits true 30 seconds after the restored window is
+    created if it has not been closed, or false if the window's activity is
+    destroyed while finishing (e.g. closed by the user via window controls,
+    MultiInstanceManager#closeWindows, or system UI) within 30 seconds. Note
+    that if the browser crashes or the process is killed within 30 seconds of
+    startup without dispatching onDestroy() on a finishing activity, neither
+    true nor false will be recorded for that window.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.WindowZOrder.DisplaysCount" units="count"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

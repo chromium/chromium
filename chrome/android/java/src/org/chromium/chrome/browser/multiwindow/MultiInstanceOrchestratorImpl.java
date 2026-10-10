@@ -693,11 +693,14 @@ import java.util.function.Supplier;
         if (newState == ActivityState.DESTROYED) {
             MultiInstanceManager removed =
                     mActivityMultiInstanceManagerAssignments.remove(activity);
-            if (activity instanceof ChromeTabbedActivity) {
+            if (activity instanceof ChromeTabbedActivity tabbedActivity) {
                 if (removed != null) {
                     mInitializedTabbedActivityCount--;
                     assert mInitializedTabbedActivityCount >= 0
                             : "Initialized tabbed activity count cannot be negative.";
+                }
+                if (tabbedActivity.isFinishing()) {
+                    TabbedStartupCoordinator.onWindowClosed(tabbedActivity.getWindowId());
                 }
                 // Reset the startup policy reservation only if all initialized tabbed
                 // activities have drained and no in-flight activities are currently

@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabbedStartupWindowPolicyDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1074,7 +1076,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testOnWindowCreated_relaunchSource_registersRestoration() {
+    public void testOnWindowCreated_relaunchSource_registersRestorationAndRecordsRetention() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
         mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
@@ -1083,13 +1085,14 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         var durationWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Android.MultiWindow.StartupRestorationDuration")
+                        .expectNoRecords("Android.MultiWindow.StartupRestorationWindowRetained")
                         .build();
         var userActionTester = new UserActionTester();
 
-        // Act.
+        // Act: Register restoration for window 1.
         TabbedStartupCoordinator.onWindowCreated(/* windowId= */ 1, NewWindowAppSource.RELAUNCH);
 
-        // Verify.
+        // Verify: Restoration completes immediately, while retention timer is still pending.
         assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().isEmpty());
         durationWatcher.assertExpected();
         assertTrue(
@@ -1097,6 +1100,66 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                         .getActions()
                         .contains("Android.MultiWindow.StartupRestorationCompleted"));
         userActionTester.tearDown();
+
+        // Act: Advance main looper by 30 seconds.
+        var retentionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.MultiWindow.StartupRestorationWindowRetained", /* value= */ true);
+        ShadowLooper.idleMainLooper(
+                TabbedStartupWindowPolicyDelegate.WINDOW_RETENTION_THRESHOLD_MS,
+                TimeUnit.MILLISECONDS);
+
+        // Verify: Window retention metric emits true after 30 seconds.
+        retentionWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnWindowClosed_withinRetentionThreshold_recordsWindowNotRetained() {
+        // Setup.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+        mDelegate.applyPolicy(mTabbedActivity);
+        TabbedStartupCoordinator.onWindowCreated(/* windowId= */ 1, NewWindowAppSource.RELAUNCH);
+        var closeWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.MultiWindow.StartupRestorationWindowRetained", /* value= */ false);
+
+        // Act: Close the restored window before the 30-second retention timer expires.
+        TabbedStartupCoordinator.onWindowClosed(/* windowId= */ 1);
+
+        // Verify: Emits false immediately and cancels the 30-second timer.
+        closeWatcher.assertExpected();
+
+        var afterTimeoutWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.MultiWindow.StartupRestorationWindowRetained")
+                        .build();
+        ShadowLooper.idleMainLooper(
+                TabbedStartupWindowPolicyDelegate.WINDOW_RETENTION_THRESHOLD_MS,
+                TimeUnit.MILLISECONDS);
+        afterTimeoutWatcher.assertExpected();
+    }
+
+    @Test
+    public void testResetState_cancelsPendingWindowRetentionRunnables() {
+        // Setup.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+        mDelegate.applyPolicy(mTabbedActivity);
+        TabbedStartupCoordinator.onWindowCreated(/* windowId= */ 1, NewWindowAppSource.RELAUNCH);
+
+        // Act: Reset state before 30 seconds elapse.
+        mDelegate.resetState();
+
+        // Verify: Pending retention runnable is cancelled and does not emit after 30 seconds.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.MultiWindow.StartupRestorationWindowRetained")
+                        .build();
+        ShadowLooper.idleMainLooper(
+                TabbedStartupWindowPolicyDelegate.WINDOW_RETENTION_THRESHOLD_MS,
+                TimeUnit.MILLISECONDS);
+        histogramWatcher.assertExpected();
     }
 
     private void setupRecoverableInstances(@SessionStartupPolicy int startupPolicy) {

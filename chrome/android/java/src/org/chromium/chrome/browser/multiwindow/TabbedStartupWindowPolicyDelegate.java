@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -38,6 +39,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +53,7 @@ import java.util.Set;
 /* package */ class TabbedStartupWindowPolicyDelegate extends BaseTabbedStartupDelegate
         implements SyncStateChangedListener {
     /* package */ static final int PREF_UNSET = -1;
+    /* package */ static final long WINDOW_RETENTION_THRESHOLD_MS = 30_000;
 
     /**
      * Launch allocation modes for the primary window during browser startup that determine how
@@ -116,6 +119,8 @@ import java.util.Set;
 
     private static @Nullable TabbedStartupWindowPolicyDelegate sInstance;
 
+    private final Map<Integer, Runnable> mWindowRetentionRunnables = new HashMap<>();
+
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable PrefService mPrefService;
     private @Nullable SyncService mSyncService;
@@ -152,6 +157,24 @@ import java.util.Set;
     }
 
     @Override
+    protected boolean registerRestoration(int windowId) {
+        boolean updated = super.registerRestoration(windowId);
+        if (updated) {
+            Runnable retentionRunnable =
+                    () -> {
+                        mWindowRetentionRunnables.remove(windowId);
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.MultiWindow.StartupRestorationWindowRetained",
+                                /* sample= */ true);
+                    };
+            mWindowRetentionRunnables.put(windowId, retentionRunnable);
+            ThreadUtils.getUiThreadHandler()
+                    .postDelayed(retentionRunnable, WINDOW_RETENTION_THRESHOLD_MS);
+        }
+        return updated;
+    }
+
+    @Override
     protected void onAllWindowsRestored(long durationMillis) {
         RecordHistogram.recordTimesHistogram(
                 "Android.MultiWindow.StartupRestorationDuration", durationMillis);
@@ -161,6 +184,10 @@ import java.util.Set;
     @Override
     protected void resetState() {
         super.resetState();
+        for (Runnable runnable : mWindowRetentionRunnables.values()) {
+            ThreadUtils.getUiThreadHandler().removeCallbacks(runnable);
+        }
+        mWindowRetentionRunnables.clear();
         mStartupPolicyClaimed = false;
         mHasEvaluatedStartupUrls = false;
         mCanRestoreWindows = false;
@@ -390,6 +417,15 @@ import java.util.Set;
         }
         if (windowsRestored) {
             ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), /* flags= */ 0);
+        }
+    }
+
+    /* package */ void onWindowClosed(int windowId) {
+        Runnable retentionRunnable = mWindowRetentionRunnables.remove(windowId);
+        if (retentionRunnable != null) {
+            ThreadUtils.getUiThreadHandler().removeCallbacks(retentionRunnable);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.MultiWindow.StartupRestorationWindowRetained", /* sample= */ false);
         }
     }
 
