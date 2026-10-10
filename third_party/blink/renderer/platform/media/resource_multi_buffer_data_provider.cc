@@ -290,7 +290,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   bool end_of_file = false;
   bool do_fail = false;
   // We get the response type here because aborting the loader may change it.
-  const auto response_type = response.GetType();
+  const bool is_cors_cross_origin =
+      network::cors::IsCorsCrossOriginResponseType(response.GetType());
   bytes_to_discard_ = 0;
 
   // We make a strong assumption that when we reach here we have either
@@ -320,10 +321,13 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       // to return.
       destination_url_data->set_length(content_length);
       bytes_to_discard_ = byte_pos();
-    } else if (response.HttpStatusCode() == kHttpRangeNotSatisfiable) {
+    } else if (response.HttpStatusCode() == kHttpRangeNotSatisfiable &&
+               !is_cors_cross_origin) {
       // Unsatisfiable range
       // Really, we should never request a range that doesn't exist, but
-      // if we do, let's handle it in a sane way.
+      // if we do, let's handle it in a sane way. Opaque responses are
+      // excluded so a service-worker-replayed 416 takes the same failure
+      // path as a 206 with a mismatched Content-Range.
       // Note, we can't just call OnDataProviderEvent() here, because
       // url_data_ hasn't been updated to the final destination yet.
       end_of_file = true;
@@ -345,8 +349,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   }
 
   // This is vital for security!
-  destination_url_data->set_is_cors_cross_origin(
-      network::cors::IsCorsCrossOriginResponseType(response_type));
+  destination_url_data->set_is_cors_cross_origin(is_cors_cross_origin);
 
   // Only used for metrics.
   {
