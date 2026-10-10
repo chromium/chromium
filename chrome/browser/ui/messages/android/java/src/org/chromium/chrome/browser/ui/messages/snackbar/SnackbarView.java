@@ -202,6 +202,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mIsFullscreenSupplier.addSyncObserver(mIsFullscreenObserver);
         KeyboardVisibilityDelegate.getInstance()
                 .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        if (!mSnackbar.shouldAnimateIn()) {
+            return;
+        }
         mContainerView.addOnLayoutChangeListener(
                 new OnLayoutChangeListener() {
                     @Override

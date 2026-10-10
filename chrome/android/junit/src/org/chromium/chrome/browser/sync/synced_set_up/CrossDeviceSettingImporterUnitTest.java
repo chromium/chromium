@@ -295,6 +295,7 @@ public class CrossDeviceSettingImporterUnitTest {
         importer1.showOfferUndoSnackbarAfterDialogs(mProfile, prev, toApply, /* nonNtp= */ false);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar initialSnackbar = mSnackbarCaptor.getValue();
+        assertTrue(initialSnackbar.shouldAnimateIn());
 
         // Simulate activity terminating due to configuration change (theme recreate or rotation):
         // SnackbarManager.onStop() calls onDismissNoAction(), followed by importer1.destroy().
@@ -329,6 +330,7 @@ public class CrossDeviceSettingImporterUnitTest {
                 mActivity.getString(R.string.synced_set_up_snackbar_applied_confirmation),
                 restoredSnackbar.getTextForTesting());
         assertEquals(mActivity.getString(R.string.undo), restoredSnackbar.getActionText());
+        assertFalse(restoredSnackbar.shouldAnimateIn());
 
         // Subsequent tab changes in the same activity should not re-trigger snackbar restoration.
         importer2.onTabChangeOrGainFocus(mTab);
@@ -350,6 +352,7 @@ public class CrossDeviceSettingImporterUnitTest {
         importer3.onTabChangeOrGainFocus(mTab);
         verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
         Snackbar restoredSnackbar2 = mSnackbarCaptor.getValue();
+        assertFalse(restoredSnackbar2.shouldAnimateIn());
 
         // Dismiss without action when NOT changing configurations should clear the pending
         // snackbar.
@@ -429,6 +432,7 @@ public class CrossDeviceSettingImporterUnitTest {
                 mProfile, toApply, /* hadThemeChange= */ true, /* nonNtp= */ false);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar initialSnackbar = mSnackbarCaptor.getValue();
+        assertTrue(initialSnackbar.shouldAnimateIn());
 
         activityController.recreate();
         initialSnackbar.getController().onDismissNoAction(null);
@@ -458,11 +462,13 @@ public class CrossDeviceSettingImporterUnitTest {
                 mActivity.getString(R.string.synced_set_up_snackbar_removed_confirmation),
                 restoredSnackbar.getTextForTesting());
         assertEquals(mActivity.getString(R.string.redo), restoredSnackbar.getActionText());
+        assertFalse(restoredSnackbar.shouldAnimateIn());
 
         // Click Redo: onAction should clear the redo pending snackbar and trigger apply.
         restoredSnackbar.getController().onAction(null);
         verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
         Snackbar undoSnackbarAfterRedo = mSnackbarCaptor.getValue();
+        assertTrue(undoSnackbarAfterRedo.shouldAnimateIn());
 
         activityController.recreate();
         undoSnackbarAfterRedo.getController().onDismissNoAction(null);
@@ -495,6 +501,7 @@ public class CrossDeviceSettingImporterUnitTest {
         assertEquals(
                 mActivity.getString(R.string.synced_set_up_snackbar_ask_to_apply),
                 initialSnackbar.getTextForTesting());
+        assertTrue(initialSnackbar.shouldAnimateIn());
 
         // Simulate Activity recreate (e.g. incoming Android-synced NTP background completing its
         // download while the "Apply settings?" snackbar is showing).
@@ -526,6 +533,7 @@ public class CrossDeviceSettingImporterUnitTest {
                 mActivity.getString(R.string.synced_set_up_snackbar_ask_to_apply),
                 restoredSnackbar.getTextForTesting());
         assertEquals(mActivity.getString(R.string.apply), restoredSnackbar.getActionText());
+        assertFalse(restoredSnackbar.shouldAnimateIn());
 
         // Clicking Apply on the restored snackbar applies settings and shows the Undo snackbar.
         restoredSnackbar.getController().onAction(null);
@@ -533,6 +541,7 @@ public class CrossDeviceSettingImporterUnitTest {
         verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
         assertEquals(
                 mActivity.getString(R.string.undo), mSnackbarCaptor.getValue().getActionText());
+        assertTrue(mSnackbarCaptor.getValue().shouldAnimateIn());
         importer2.destroy();
     }
 

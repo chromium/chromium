@@ -314,6 +314,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private @Nullable ModalDialogManager mModalDialogManagerBeingObserved;
     private @Nullable ModalDialogManagerObserver mModalDialogObserver;
     private @Nullable PendingSnackbar mActivePendingSnackbar;
+    private boolean mIsRestoringPendingSnackbar;
     private boolean mIsCrossOsThemeFetchInFlight;
     // The `nonNtp` scope for the active cross-OS wallpaper download (only meaningful while
     // `mIsCrossOsThemeFetchInFlight` is true; upgraded from true to false if the user switches to
@@ -460,6 +461,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         PendingSnackbar pending = sPendingSnackbar;
         setPendingSnackbar(null);
         SyncedSetupSettings settingsToApply = pending.settingsToApply.rebindContext(mContext);
+        mIsRestoringPendingSnackbar = true;
         if (pending.isRedo) {
             showOfferRedoSnackbarAfterDialogs(
                     profile, settingsToApply, pending.hadThemeChange, pending.nonNtp);
@@ -471,6 +473,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         } else {
             showOfferApplySnackbarAfterDialogs(profile, settingsToApply, pending.nonNtp);
         }
+        mIsRestoringPendingSnackbar = false;
         return true;
     }
 
@@ -881,23 +884,24 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         mActivePendingSnackbar = pendingSnackbar;
         Snackbar snackbar =
                 Snackbar.make(
-                        mContext.getString(messageResId),
-                        new SnackbarManager.SnackbarController() {
-                            @Override
-                            public void onAction(@Nullable Object actionData) {
-                                mActivePendingSnackbar = null;
-                                setPendingSnackbar(null);
-                                onAction.run();
-                            }
+                                mContext.getString(messageResId),
+                                new SnackbarManager.SnackbarController() {
+                                    @Override
+                                    public void onAction(@Nullable Object actionData) {
+                                        mActivePendingSnackbar = null;
+                                        setPendingSnackbar(null);
+                                        onAction.run();
+                                    }
 
-                            @Override
-                            public void onDismissNoAction(@Nullable Object actionData) {
-                                handleSnackbarDismissOrImporterDestroy();
-                            }
-                        },
-                        TYPE_ACTION,
-                        umaIdentifier);
-        snackbar.setAction(mContext.getString(actionResId), Map.of());
+                                    @Override
+                                    public void onDismissNoAction(@Nullable Object actionData) {
+                                        handleSnackbarDismissOrImporterDestroy();
+                                    }
+                                },
+                                TYPE_ACTION,
+                                umaIdentifier)
+                        .setAction(mContext.getString(actionResId), Map.of())
+                        .setAnimateIn(!mIsRestoringPendingSnackbar);
         showSnackbarAfterDialogs(snackbar, nonNtp);
     }
 
