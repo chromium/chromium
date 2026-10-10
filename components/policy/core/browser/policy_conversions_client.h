@@ -190,12 +190,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Returns the ordered precedence string ids.
   std::vector<int> GetPrecedenceOrderIds() const;
 
-  // Returns the policy scope to be used for UI. The |policy_scope| from the
-  // input is the generic scope: device or user policy. But in Lacros case we
-  // need to filter the user policies based on per_profile flag.
-  std::string GetPolicyScope(const std::string& policy_name,
-                             const PolicyScope& policy_scope) const;
-
   std::u16string GetPolicyMessage(
       const std::string& policy_name,
       const PolicyMap::Entry& policy,

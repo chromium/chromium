@@ -35,9 +35,6 @@
 namespace policy {
 
 namespace {
-const char* USER_SCOPE = "user";
-const char* DEVICE_SCOPE = "machine";
-
 // Return true if machine policy information needs to be hidden.
 bool IsMachineInfoHidden(PolicyScope scope, bool show_machine_values) {
   return !show_machine_values && scope == PolicyScope::POLICY_SCOPE_MACHINE;
@@ -312,7 +309,7 @@ base::DictValue PolicyConversionsClient::GetPolicyValue(
   value.Set("value", CopyAndMaybeConvert(*policy.value_unsafe(),
                                          known_policy_schema, policy.scope));
   if (convert_types_enabled_) {
-    value.Set("scope", GetPolicyScope(policy_name, policy.scope));
+    value.Set("scope", policy.scope == POLICY_SCOPE_USER ? "user" : "machine");
     value.Set("level", (policy.level == POLICY_LEVEL_RECOMMENDED)
                            ? "recommended"
                            : "mandatory");
@@ -518,15 +515,6 @@ base::DictValue PolicyConversionsClient::ConvertUpdaterPolicies(
                          PoliciesSet(), updater_policy_schemas);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-std::string PolicyConversionsClient::GetPolicyScope(
-    const std::string& policy_name,
-    const PolicyScope& policy_scope) const {
-  if (policy_scope != POLICY_SCOPE_USER) {
-    return DEVICE_SCOPE;
-  }
-  return USER_SCOPE;
-}
 
 std::u16string PolicyConversionsClient::GetPolicyMessage(
     const std::string& policy_name,

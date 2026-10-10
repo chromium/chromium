@@ -106,11 +106,8 @@ export class PolicyRowElement extends CrLitElement {
     if (!this.policy || this.unset) {
       return '';
     }
-    const scopeMap: Record<string, string> = {
-      'user': 'scopeUser',
-      'allUsers': 'scopeAllUsers',
-    };
-    return loadTimeData.getString(scopeMap[this.policy.scope] || 'scopeDevice');
+    return loadTimeData.getString(
+        this.policy.scope === 'user' ? 'scopeUser' : 'scopeDevice');
   }
 
   protected getLevelText(): string {
