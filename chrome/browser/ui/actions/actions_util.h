@@ -13,6 +13,10 @@ namespace chrome {
 // from a string, suitable for text and tooltips in ActionItems.
 std::u16string GetCleanTitleAndTooltipText(std::u16string string);
 
+// Strips ellipsis (e.g., "..." or "\u2026") from a string but keeps its
+// accelerator (e.g., "&"), suitable for actions::ActionItem::SetText().
+std::u16string GetMnemonicTitleText(std::u16string string);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_ACTIONS_ACTIONS_UTIL_H_

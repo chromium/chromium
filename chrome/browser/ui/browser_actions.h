@@ -34,6 +34,7 @@ class BrowserActions {
   ~BrowserActions();
 
   static std::u16string GetCleanTitleAndTooltipText(std::u16string string);
+  static std::u16string GetMnemonicTitleText(std::u16string string);
 
   actions::ActionItem* root_action_item() const { return root_action_item_; }
 

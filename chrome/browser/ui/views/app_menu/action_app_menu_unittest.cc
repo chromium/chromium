@@ -2458,6 +2458,72 @@ TEST_F(ActionAppMenuTest, MenuItemSecondaryTextProperty) {
   menu.CloseMenu();
 }
 
+// A row shows its action's text with the mnemonic marker, and keeps it when the
+// action changes.
+TEST_F(ActionAppMenuTest, RowKeepsMnemonicTextWhenActionChanges) {
+  actions::ActionItem* print_action = actions::ActionManager::Get().FindAction(
+      kActionPrint, browser_actions_->root_action_item());
+  ASSERT_NE(print_action, nullptr);
+  print_action->SetText(u"&Print");
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  EXPECT_EQ(print_item->title(), u"&Print");
+
+  print_action->SetEnabled(false);
+
+  EXPECT_FALSE(print_item->GetEnabled());
+  EXPECT_EQ(print_item->title(), u"&Print");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+// A row's text override is kept when its action changes.
+TEST_F(ActionAppMenuTest, RowKeepsTextOverrideWhenActionChanges) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot, browser_actions_->root_action_item());
+  ASSERT_NE(app_menu_root, nullptr);
+  app_menu_root->ResetActionList();
+
+  std::unique_ptr<actions::IndirectActionItem> print_indirect =
+      AppMenuActionItem::CreateIndirect(kActionPrint,
+                                        browser_actions_->root_action_item(),
+                                        {.text_override = u"&Print override"});
+  ASSERT_NE(print_indirect, nullptr);
+  actions::ActionItem* print_action = print_indirect->GetActionItem();
+  ASSERT_NE(print_action, nullptr);
+  app_menu_root->AddChild(std::move(print_indirect));
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  EXPECT_EQ(print_item->title(), u"&Print override");
+
+  print_action->SetText(u"Changed");
+  print_action->SetEnabled(false);
+
+  EXPECT_FALSE(print_item->GetEnabled());
+  EXPECT_EQ(print_item->title(), u"&Print override");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
   actions::ActionItem* global_error_action =
       actions::ActionManager::Get().FindAction(

@@ -5,12 +5,17 @@
 #include "chrome/browser/ui/actions/actions_util.h"
 
 #include <string_view>
+#include <utility>
 
 #include "ui/gfx/text_utils.h"
 
 namespace chrome {
 
 std::u16string GetCleanTitleAndTooltipText(std::u16string string) {
+  return gfx::RemoveAccelerator(GetMnemonicTitleText(std::move(string)));
+}
+
+std::u16string GetMnemonicTitleText(std::u16string string) {
   static constexpr std::u16string_view kEllipsisUnicode{u"\u2026"};
   static constexpr std::u16string_view kEllipsisText{u"..."};
 
@@ -22,7 +27,7 @@ std::u16string GetCleanTitleAndTooltipText(std::u16string string) {
   };
   remove_ellipsis(kEllipsisUnicode);
   remove_ellipsis(kEllipsisText);
-  return gfx::RemoveAccelerator(string);
+  return string;
 }
 
 }  // namespace chrome

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -21,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
 namespace chrome {
@@ -174,6 +176,39 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetCleanTitleAndTooltipText) {
   std::u16string output_ellipsis_text =
       BrowserActions::GetCleanTitleAndTooltipText(input_ellipsis_text);
   EXPECT_EQ(output_ellipsis_text, expected);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetMnemonicTitleText) {
+  // The ellipsis is removed, but the mnemonic marker is kept. \u2026 is the
+  // unicode hex value for a horizontal ellipsis.
+  EXPECT_EQ(BrowserActions::GetMnemonicTitleText(u"&Print\u2026"), u"&Print");
+  EXPECT_EQ(BrowserActions::GetMnemonicTitleText(u"Pri&nt..."), u"Pri&nt");
+  // "&&" is a literal "&", and is kept as is.
+  EXPECT_EQ(BrowserActions::GetMnemonicTitleText(u"Q&&A"), u"Q&&A");
+}
+
+// Menu actions keep the mnemonic marker in their text for menus, while
+// GetText() stays clean for other surfaces, such as the toolbar and tooltips.
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
+  auto& action_manager = actions::ActionManager::GetForTesting();
+
+  // Built with ChromeMenuAction().
+  actions::ActionItem* incognito =
+      action_manager.FindAction(kActionNewIncognitoWindow);
+  ASSERT_TRUE(incognito);
+  const std::u16string incognito_title =
+      l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW);
+  EXPECT_EQ(incognito->GetTextWithMnemonic(), incognito_title);
+  EXPECT_EQ(incognito->GetText(),
+            BrowserActions::GetCleanTitleAndTooltipText(incognito_title));
+
+  // Built with ActionItem::Builder() directly.
+  actions::ActionItem* new_tab = action_manager.FindAction(kActionNewTab);
+  ASSERT_TRUE(new_tab);
+  const std::u16string new_tab_title = l10n_util::GetStringUTF16(IDS_NEW_TAB);
+  EXPECT_EQ(new_tab->GetTextWithMnemonic(), new_tab_title);
+  EXPECT_EQ(new_tab->GetText(),
+            BrowserActions::GetCleanTitleAndTooltipText(new_tab_title));
 }
 
 }  // namespace chrome

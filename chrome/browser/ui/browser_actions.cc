@@ -301,7 +301,7 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
   auto builder =
       actions::ActionItem::Builder(callback)
           .SetActionId(action_id)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(title_id)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(tooltip_id)))
@@ -323,7 +323,7 @@ StatefulChromeMenuAction(actions::ActionItem::InvokeActionCallback callback,
   ui::ImageModel image = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon);
   return actions::StatefulImageActionItem::Builder(callback)
       .SetActionId(action_id)
-      .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+      .SetText(BrowserActions::GetMnemonicTitleText(
           l10n_util::GetStringUTF16(title_id)))
       .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
           l10n_util::GetStringUTF16(tooltip_id)))
@@ -412,6 +412,11 @@ BrowserActions::~BrowserActions() {
 std::u16string BrowserActions::GetCleanTitleAndTooltipText(
     std::u16string string) {
   return chrome::GetCleanTitleAndTooltipText(std::move(string));
+}
+
+// static
+std::u16string BrowserActions::GetMnemonicTitleText(std::u16string string) {
+  return chrome::GetMnemonicTitleText(std::move(string));
 }
 
 void BrowserActions::InitializeBrowserActions() {
@@ -888,7 +893,7 @@ void BrowserActions::InitializePageActionIconActions() {
               },
               bwi))
           .SetActionId(kActionFind)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_FIND)))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
           .SetImage(ui::ImageModel::FromVectorIcon(
@@ -1260,7 +1265,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionNewTab)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
@@ -1525,7 +1530,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionBookmarkThisTab)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_THIS_TAB)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_THIS_TAB)))
@@ -2264,7 +2269,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionNewWindow)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_NEW_WINDOW)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_NEW_WINDOW)))
@@ -2291,7 +2296,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(actions::kActionCut)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_CUT)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_CUT)))
@@ -2309,7 +2314,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(actions::kActionCopy)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_COPY)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_COPY)))
@@ -2327,7 +2332,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(actions::kActionPaste)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_PASTE)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_PASTE)))
@@ -2910,7 +2915,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                  actions::ActionInvocationContext context) { chrome::Exit(); },
               bwi))
           .SetActionId(kActionExit)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_EXIT)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_EXIT)))
@@ -2991,7 +2996,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionNameWindow)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_NAME_WINDOW)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_NAME_WINDOW)))
@@ -3305,7 +3310,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionBookmarkAllTabs)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_ALL_TABS)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_ALL_TABS)))
@@ -3810,7 +3815,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionSavePage)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SAVE_PAGE)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_SAVE_PAGE)))
@@ -3899,7 +3904,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionCreateShortcut)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_ADD_TO_OS_LAUNCH_SURFACE)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_ADD_TO_OS_LAUNCH_SURFACE)))
@@ -4049,7 +4054,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionOptions)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SETTINGS)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_SETTINGS)))
@@ -4481,7 +4486,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionAbout)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_ABOUT)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_ABOUT)))
@@ -4621,7 +4626,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionSharingHubScreenshot)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL)))
@@ -4640,7 +4645,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionFeedback)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_FEEDBACK)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_FEEDBACK)))
@@ -4704,7 +4709,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowDownloadsPage)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SHOW_DOWNLOADS)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_SHOW_DOWNLOADS)))
@@ -4741,7 +4746,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionHelpPageViaMenu)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(help_string_id)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(help_string_id)))
@@ -4982,7 +4987,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionChromeWhatsNew)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW)))
@@ -5001,7 +5006,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionPerformance)
-          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          .SetText(BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_SHOW_PERFORMANCE)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_SHOW_PERFORMANCE)))
