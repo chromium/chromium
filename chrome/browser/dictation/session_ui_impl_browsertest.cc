@@ -853,6 +853,26 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+                       OverlayPositionUsesEditContextSelectionBounds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/dictation/edit_context_selection.html");
+  gfx::Rect target_bounds;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#canvas"),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+    LookupTargetElementBounds(kWebContentsElementId, "#canvas", target_bounds),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayLeftInLastPositionWhenTargetLosesFocus) {
   if (!GetParam()) {
     // At least until crbug.com/552154453 is addressed for the multiple stream

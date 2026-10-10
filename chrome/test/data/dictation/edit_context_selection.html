@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: ghostwhite;
+      }
+      #canvas {
+        display: block;
+        width: 200px;
+        height: 100px;
+        border: 1px solid;
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <p>A canvas using an EditContext:</p>
+    <canvas id="canvas" width="200" height="100"></canvas>
+    <p>An iframe duplicating the selected text:</p>
+    <iframe id="iframe" src="about:blank"></iframe>
+    <script>
+      function setSelectionText(text) {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.font = "16px serif";
+        const canvasBounds = canvas.getBoundingClientRect();
+        // Set the selection bounds, but leave the placeholder as the
+        // EditContext's internal text.
+        editContext.updateSelectionBounds(
+            new DOMRect(canvasBounds.x + 10,
+                        canvasBounds.y + 10,
+                        ctx.measureText(text).width,
+                        16));
+        // Actually drawing the text is not needed for testing, this is just for
+        // visually debugging the bounds.
+        ctx.fillText(text, 10, 10 + 16);
+
+        // Simulate some EditContext based applications which store the user's
+        // selection (from what appears in the canvas) in an iframe as its
+        // selected text range. This is left as visible for testing, but a real
+        // application would not display this to the user.
+        const iframe = document.getElementById('iframe');
+        const iframeDoc = iframe.contentDocument;
+        iframeDoc.body.textContent = text;
+        const range = iframeDoc.createRange();
+        range.selectNodeContents(iframeDoc.body);
+        const selection = iframe.contentWindow.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        iframe.focus();
+      }
+
+      // Create an EditContext for the canvas which intentionally does not set
+      // the internal text property (using a placeholder value instead). Only
+      // the selection bounds are provided to the browser.
+      const editContext =
+          new EditContext({text: '_', selectionStart: 1, selectionEnd: 1});
+      const canvas = document.getElementById('canvas');
+      canvas.editContext = editContext;
+      const canvasBounds = canvas.getBoundingClientRect();
+      editContext.updateControlBounds(canvasBounds);
+
+      setSelectionText('My cool selected text');
+    </script>
+  </body>
+</html>
