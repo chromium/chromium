@@ -431,7 +431,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const KURL& script_url,
       KURL* out_response_url,
       String* out_source_code,
-      std::unique_ptr<Vector<uint8_t>>* out_cached_meta_data) override;
+      std::unique_ptr<Vector<uint8_t>>* out_cached_meta_data,
+      TextEncoding* out_response_encoding) override;
 
   ResourceLoadScheduler::ThrottleOptionOverride GetThrottleOptionOverride()
       const override;
@@ -442,7 +443,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       ExceptionState&) override;
   CachedMetadataHandler* CreateWorkerScriptCachedMetadataHandler(
       const KURL& script_url,
-      std::unique_ptr<Vector<uint8_t>> meta_data) override;
+      std::unique_ptr<Vector<uint8_t>> meta_data,
+      TextEncoding encoding) override;
   void ExceptionThrown(ErrorEvent*) override;
 
   // Loads and runs the installed top-level classic worker script.

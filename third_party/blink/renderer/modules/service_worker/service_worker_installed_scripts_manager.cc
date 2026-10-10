@@ -322,7 +322,7 @@ ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
 
   return std::make_unique<InstalledScriptsManager::ScriptData>(
       script_url, decoded_source_text, std::move(meta_data),
-      raw_script_data->TakeHeaders());
+      raw_script_data->TakeHeaders(), decoder->Encoding());
 }
 
 std::unique_ptr<RawScriptData>

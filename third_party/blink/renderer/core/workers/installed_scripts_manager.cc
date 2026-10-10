@@ -15,10 +15,12 @@ InstalledScriptsManager::ScriptData::ScriptData(
     const KURL& script_url,
     String source_text,
     std::unique_ptr<Vector<uint8_t>> meta_data,
-    std::unique_ptr<CrossThreadHTTPHeaderMapData> header_data)
+    std::unique_ptr<CrossThreadHTTPHeaderMapData> header_data,
+    TextEncoding encoding)
     : script_url_(script_url),
       source_text_(std::move(source_text)),
-      meta_data_(std::move(meta_data)) {
+      meta_data_(std::move(meta_data)),
+      encoding_(std::move(encoding)) {
   headers_.Adopt(std::move(header_data));
 }
 

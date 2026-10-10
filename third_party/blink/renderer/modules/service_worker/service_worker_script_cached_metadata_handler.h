@@ -6,10 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_SCRIPT_CACHED_METADATA_HANDLER_H_
 
 #include <stdint.h>
+
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -17,12 +20,14 @@ namespace blink {
 class CachedMetadata;
 class ServiceWorkerGlobalScope;
 
-class ServiceWorkerScriptCachedMetadataHandler : public CachedMetadataHandler {
+class MODULES_EXPORT ServiceWorkerScriptCachedMetadataHandler
+    : public CachedMetadataHandler {
  public:
   ServiceWorkerScriptCachedMetadataHandler(
       ServiceWorkerGlobalScope*,
       const KURL& script_url,
-      std::unique_ptr<Vector<uint8_t>> meta_data);
+      std::unique_ptr<Vector<uint8_t>> meta_data,
+      TextEncoding encoding);
   ~ServiceWorkerScriptCachedMetadataHandler() override;
   void Trace(Visitor*) const override;
   void SetCachedMetadata(CodeCacheHost*,
@@ -42,6 +47,7 @@ class ServiceWorkerScriptCachedMetadataHandler : public CachedMetadataHandler {
   Member<ServiceWorkerGlobalScope> global_scope_;
   KURL script_url_;
   scoped_refptr<CachedMetadata> cached_metadata_;
+  const TextEncoding encoding_;
 };
 
 }  // namespace blink

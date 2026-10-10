@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -15,8 +16,11 @@ ServiceWorkerScriptCachedMetadataHandler::
     ServiceWorkerScriptCachedMetadataHandler(
         ServiceWorkerGlobalScope* global_scope,
         const KURL& script_url,
-        std::unique_ptr<Vector<uint8_t>> meta_data)
-    : global_scope_(global_scope), script_url_(script_url) {
+        std::unique_ptr<Vector<uint8_t>> meta_data,
+        TextEncoding encoding)
+    : global_scope_(global_scope),
+      script_url_(script_url),
+      encoding_(encoding.IsValid() ? std::move(encoding) : Latin1Encoding()) {
   if (meta_data) {
     // Non-null |meta_data| means the "platform" already has the CachedMetadata.
     // In that case, set |cached_metadata_| to this incoming metadata. In
@@ -73,7 +77,10 @@ ServiceWorkerScriptCachedMetadataHandler::GetCachedMetadata(
 }
 
 String ServiceWorkerScriptCachedMetadataHandler::Encoding() const {
-  return g_empty_string;
+  if (!RuntimeEnabledFeatures::ServiceWorkerScriptEncodingEnabled()) {
+    return g_empty_string;
+  }
+  return encoding_.GetName();
 }
 
 void ServiceWorkerScriptCachedMetadataHandler::OnMemoryDump(

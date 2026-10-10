@@ -106,6 +106,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   String SourceText();
   const KURL& Url() const { return url_; }
   const KURL& ResponseURL() const;
+  TextEncoding GetScriptEncoding() const;
   bool Failed() const { return failed_; }
   bool Canceled() const { return canceled_; }
   uint64_t Identifier() const { return identifier_; }
