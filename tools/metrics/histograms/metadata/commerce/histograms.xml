@@ -363,7 +363,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPriceDrop"
-    enum="BooleanContainsPriceDrop" expires_after="2026-02-01">
+    enum="BooleanContainsPriceDrop" expires_after="2027-10-08">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -373,6 +373,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     obtained to power the price drop feature. The data is acquired when the user
     finishes navigating to a page. Recorded when the user {LocationIdentifier}.
     Recorded for {TabUsageStatus}.
+
+    Warning: this histogram was expired from 2026-02-01 to 2026-10-08; data may
+    be missing.
   </summary>
   <token key="LocationIdentifier" variants="LocationIdentifiers"/>
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
@@ -380,7 +383,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.IsProductDetailPage"
-    enum="BooleanIsProductDetailPage" expires_after="2026-10-20">
+    enum="BooleanIsProductDetailPage" expires_after="2027-10-08">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
