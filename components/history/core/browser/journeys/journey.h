@@ -46,6 +46,26 @@ struct JourneyVisit {
   bool is_foreign = false;
 };
 
+// A collection whose items have been resolved to visits in the history
+// database.
+struct JourneyVisitCollection {
+  JourneyVisitCollection();
+  JourneyVisitCollection(std::string title, std::vector<JourneyVisit> visits);
+  ~JourneyVisitCollection();
+  JourneyVisitCollection(const JourneyVisitCollection&);
+  JourneyVisitCollection& operator=(const JourneyVisitCollection&);
+  JourneyVisitCollection(JourneyVisitCollection&&) noexcept;
+  JourneyVisitCollection& operator=(JourneyVisitCollection&&) noexcept;
+
+  bool operator==(const JourneyVisitCollection& other) const = default;
+
+  // Complete section heading, shown as-is.
+  std::string title;
+
+  // Resolved items, in display order.
+  std::vector<JourneyVisit> visits;
+};
+
 // Represents a fully resolved journey with URLs and titles resolved from the
 // history database, suitable for consumption by the UI and downstream features.
 struct Journey {
@@ -57,7 +77,8 @@ struct Journey {
           std::optional<std::string> overview = std::nullopt,
           std::optional<std::string> short_overview = std::nullopt,
           std::vector<JourneyVisit> visits = {},
-          std::vector<JourneyContinuationQuery> continuation_queries = {});
+          std::vector<JourneyContinuationQuery> continuation_queries = {},
+          std::vector<JourneyVisitCollection> collections = {});
   ~Journey();
   Journey(const Journey&);
   Journey& operator=(const Journey&);
@@ -89,6 +110,11 @@ struct Journey {
 
   // Associated continuation query suggestions.
   std::vector<JourneyContinuationQuery> continuation_queries;
+
+  // Resolved collections, in display order. Resolution drops items that don't
+  // match one of `visits` and collections left without items, so every
+  // collection here is non-empty and its visits are a subset of `visits`.
+  std::vector<JourneyVisitCollection> collections;
 };
 
 }  // namespace history::journeys

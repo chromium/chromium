@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 
+#include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 
 namespace history::journeys {
@@ -15,6 +16,8 @@ namespace history::journeys {
 // test-only file so that every test printing these types uses the same printer.
 void PrintTo(const JourneyHistoryEntry& entry, std::ostream* os);
 void PrintTo(const JourneyHistoryEntryCollection& collection, std::ostream* os);
+void PrintTo(const JourneyVisit& visit, std::ostream* os);
+void PrintTo(const JourneyVisitCollection& collection, std::ostream* os);
 
 }  // namespace history::journeys
 

@@ -133,6 +133,7 @@ separate:
 |---|---|---|
 | **Header** | `journey_row.h` | `journey.h` |
 | **Visit entry** | [`JourneyHistoryEntry`][journey-history-entry], a visit timestamp | [`JourneyVisit`][journey-visit], a URL, title, and visit timestamp |
+| **Collection** | [`JourneyHistoryEntryCollection`][journey-history-entry-collection], items as visit timestamps | [`JourneyVisitCollection`][journey-visit-collection], resolved visits |
 | **Coupling** | References `visits` by timestamp | Self-contained, already resolved |
 | **Sync parity** | Mirrors `sync_pb::JourneySpecifics` | In-memory only; never sent over the wire |
 | **Usage** | SQLite persistence and the sync bridge | Callers of `HistoryService::GetJourney` and `GetAllJourneys` |
@@ -192,11 +193,11 @@ tables. They get their own table because a journey may have any number of them.
 A *collection* is a titled group of similar pages from a journey, shown as one
 section of the journey's details page (e.g. "Boats you've visited"). Each item
 is expected to reference one of the journey's visits by timestamp; this isn't
-checked when storing. Collections are optional.
-Display order is stored explicitly in `position` and `item_position` columns;
-reads join items to their collection and don't rely on positions being
-contiguous. A visit repeated within a collection is stored once, at its first
-position.
+checked when storing, and collections are optional (see
+[How resolution works](#how-resolution-works)). Display order is stored
+explicitly in `position` and `item_position` columns; reads join items to their
+collection and don't rely on positions being contiguous. A visit repeated within
+a collection is stored once, at its first position.
 
 Writes go through [`AddOrUpdateJourneys`][add-or-update], which replaces a
 journey's child rows wholesale rather than merging into them, so an update that
@@ -245,10 +246,10 @@ journeys::GetAllJourneysWithResolvedVisits(HistoryDatabase& db)
   │      │      │
   │      │      ↺  next entry
   │      │
-  │      ├─► after the loop: return Journey(journey_id, title,
-  │                                         creation_time, emoji,
-  │                                         overview, short_overview,
-  │                                         visits, continuation_queries)
+  │      ├─► after the loop: resolve collection items against `visits`
+  │      │     (unmatched items and empty collections are dropped)
+  │      │
+  │      ├─► return Journey(...)
   │      │
   │      ▼
   │    UMA Resolution.Result  ←  kResolved, or the error
@@ -275,6 +276,9 @@ std::vector<Journey>   (size ≤ number of stored journeys)
    [`GetAllJourneysWithResolvedVisits`][get-all-resolved] leaves it out of the
    result. Callers therefore never see a journey with a partial visit list, and
    the returned vector may be shorter than the number of stored journeys.
+3. **Collections never drop a journey**: collection items are matched against
+   the journey's resolved visits. Items without a match are dropped, as are
+   collections left without items, but the journey itself is kept.
 
 ## Sync Integration & Lifecycle (`syncer::JOURNEY`)
 
@@ -564,8 +568,10 @@ others.
 [history-service]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/history_service.h?q=HistoryService
 [journey]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journey.h?q=Journey
 [journey-history-entry]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journey_row.h?q=JourneyHistoryEntry
+[journey-history-entry-collection]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journey_row.h?q=JourneyHistoryEntryCollection
 [journey-row]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journey_row.h?q=JourneyRow
 [journey-visit]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journey.h?q=JourneyVisit
+[journey-visit-collection]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journey.h?q=JourneyVisitCollection
 [journeys-db]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_database.h?q=JourneysDatabase
 [merge-full]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_sync_bridge.h?q=MergeFullSyncData
 [metadata-db]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_sync_metadata_database.h?q=JourneysSyncMetadataDatabase

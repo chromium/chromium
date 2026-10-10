@@ -14,6 +14,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
+#include "components/history/core/browser/journeys/journeys_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
 #include "sql/init_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -113,6 +114,99 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
                     visit_time_2, /*is_foreign=*/false)},
       /*continuation_queries=*/{JourneyContinuationQuery("query", "prompt")});
   EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
+}
+
+TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_ResolvesCollections) {
+  URLID url_id1 = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
+  URLID url_id2 = AddTestURL(GURL("http://www.example.com/page2"), u"Page 2");
+  ASSERT_NE(url_id1, 0);
+  ASSERT_NE(url_id2, 0);
+
+  base::Time visit_time_1 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time_2 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  base::Time unknown_visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000));
+  // A local visit that isn't one of the journey's history entries.
+  base::Time other_visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(4000));
+  ASSERT_NE(AddTestVisit(url_id1, visit_time_1), 0);
+  ASSERT_NE(AddTestVisit(url_id2, visit_time_2), 0);
+  ASSERT_NE(AddTestVisit(url_id1, other_visit_time), 0);
+
+  JourneyRow journey = CreateJourneyRow(
+      "test_journey", "Example Journey",
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
+      {visit_time_1, visit_time_2});
+  journey.collections = {
+      // Items are in display order, which differs from visit order. Items
+      // that aren't one of the journey's visits are dropped, even if the
+      // visit exists in the history database.
+      JourneyHistoryEntryCollection("Pages you've visited",
+                                    {JourneyHistoryEntry(visit_time_2),
+                                     JourneyHistoryEntry(unknown_visit_time),
+                                     JourneyHistoryEntry(other_visit_time),
+                                     JourneyHistoryEntry(visit_time_1)}),
+      // A collection without any resolvable items is dropped entirely.
+      JourneyHistoryEntryCollection("Unresolvable",
+                                    {JourneyHistoryEntry(unknown_visit_time)}),
+      // Collections after a dropped one keep their display order.
+      JourneyHistoryEntryCollection("Last page",
+                                    {JourneyHistoryEntry(visit_time_2)})};
+
+  std::optional<Journey> resolved = ResolveJourneyVisits(db_, journey);
+  ASSERT_TRUE(resolved.has_value());
+  JourneyVisit visit_1(GURL("http://www.example.com/page1"), u"Page 1",
+                       visit_time_1, /*is_foreign=*/false);
+  JourneyVisit visit_2(GURL("http://www.example.com/page2"), u"Page 2",
+                       visit_time_2, /*is_foreign=*/false);
+  EXPECT_THAT(resolved->collections,
+              ElementsAre(JourneyVisitCollection("Pages you've visited",
+                                                 {visit_2, visit_1}),
+                          JourneyVisitCollection("Last page", {visit_2})));
+}
+
+// Collections are read from the database and resolved for every journey, and
+// a journey without collections is unaffected by another journey's.
+TEST_F(JourneysBackendUtilTest,
+       GetAllJourneysWithResolvedVisits_ResolvesCollections) {
+  URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
+  ASSERT_NE(url_id, 0);
+  base::Time visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
+
+  JourneyRow with_collection = CreateJourneyRow(
+      "with_collection", "With collection",
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6000)),
+      {visit_time});
+  // The item that isn't one of the journey's visits is dropped, without
+  // dropping the journey.
+  with_collection.collections = {JourneyHistoryEntryCollection(
+      "Collection", {JourneyHistoryEntry(visit_time),
+                     JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
+                         base::Microseconds(3000)))})};
+  JourneyRow without_collection = CreateJourneyRow(
+      "without_collection", "Without collection",
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
+      {visit_time});
+  ASSERT_TRUE(db_.AddOrUpdateJourneys({with_collection, without_collection}));
+
+  base::HistogramTester histogram_tester;
+  std::vector<Journey> resolved = GetAllJourneysWithResolvedVisits(db_);
+  histogram_tester.ExpectUniqueSample(
+      kResolutionResultHistogram, SyncedJourneyResolutionResult::kResolved, 2);
+  ASSERT_EQ(resolved.size(), 2u);
+  EXPECT_EQ(resolved[0].journey_id, "with_collection");
+  EXPECT_THAT(
+      resolved[0].collections,
+      ElementsAre(JourneyVisitCollection(
+          "Collection", {JourneyVisit(GURL("http://www.example.com/page1"),
+                                      u"Page 1", visit_time,
+                                      /*is_foreign=*/false)})));
+  EXPECT_EQ(resolved[1].journey_id, "without_collection");
+  EXPECT_THAT(resolved[1].collections, IsEmpty());
 }
 
 TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_EmptyVisits) {

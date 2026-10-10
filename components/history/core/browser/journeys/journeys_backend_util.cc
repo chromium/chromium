@@ -5,8 +5,10 @@
 #include "components/history/core/browser/journeys/journeys_backend_util.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,6 +19,7 @@
 #include "base/types/optional_util.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 namespace history::journeys {
@@ -42,6 +45,64 @@ size_t GetUnresolvableJourneysCount(HistoryDatabase& db, size_t max_journeys) {
     }
   }
   return unresolvable_count;
+}
+
+// The journey's resolved visits by visit time. `base::Time` can't be a hash map
+// key (it has no Abseil hash), so the key is its microsecond value, which is
+// the precision the database stores.
+using VisitsByTime = absl::flat_hash_map<int64_t, const JourneyVisit*>;
+
+// Returns the visits that the items of `collection` refer to, in display order.
+// Items that don't match one of the journey's visits are skipped.
+std::vector<JourneyVisit> ResolveCollectionItems(
+    const JourneyHistoryEntryCollection& collection,
+    const VisitsByTime& visits_by_time,
+    std::string_view journey_id) {
+  std::vector<JourneyVisit> collection_visits;
+  collection_visits.reserve(collection.items.size());
+  for (const JourneyHistoryEntry& item : collection.items) {
+    auto it = visits_by_time.find(
+        item.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    if (it == visits_by_time.end()) {
+      // TODO(crbug.com/568227865): Consider recording dropped collection items
+      // in a histogram.
+      VLOG(1) << "Skipping collection item for journey_id=" << journey_id
+              << " with visit_time=" << item.visit_time
+              << ": not one of the journey's visits.";
+      continue;
+    }
+    collection_visits.push_back(*it->second);
+  }
+  return collection_visits;
+}
+
+// Resolves the items of `journey.collections` against the journey's already
+// resolved `visits`. Collections are optional, so they never cause the journey
+// to fail resolution: items that don't match one of the journey's visits are
+// dropped, and so are collections left without any items.
+std::vector<JourneyVisitCollection> ResolveCollections(
+    const JourneyRow& journey,
+    const std::vector<JourneyVisit>& visits) {
+  if (journey.collections.empty()) {
+    return {};
+  }
+
+  VisitsByTime visits_by_time;
+  visits_by_time.reserve(visits.size());
+  for (const JourneyVisit& visit : visits) {
+    visits_by_time.emplace(
+        visit.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds(), &visit);
+  }
+
+  std::vector<JourneyVisitCollection> collections;
+  for (const JourneyHistoryEntryCollection& collection : journey.collections) {
+    std::vector<JourneyVisit> collection_visits =
+        ResolveCollectionItems(collection, visits_by_time, journey.journey_id);
+    if (!collection_visits.empty()) {
+      collections.emplace_back(collection.title, std::move(collection_visits));
+    }
+  }
+  return collections;
 }
 
 // Same as `ResolveJourneyVisits()`, but on failure reports which lookup
@@ -73,10 +134,14 @@ ResolveJourneyVisitsWithResult(HistoryDatabase& db, JourneyRow journey) {
         /*is_foreign=*/!visit_row.originator_cache_guid.empty());
   }
 
+  std::vector<JourneyVisitCollection> collections =
+      ResolveCollections(journey, visits);
+
   return Journey(std::move(journey.journey_id), std::move(journey.title),
                  journey.creation_time, std::move(journey.emoji),
                  std::move(journey.overview), std::move(journey.short_overview),
-                 std::move(visits), std::move(journey.continuation_queries));
+                 std::move(visits), std::move(journey.continuation_queries),
+                 std::move(collections));
 }
 
 }  // namespace

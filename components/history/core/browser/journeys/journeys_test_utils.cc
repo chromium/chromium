@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 
 namespace history::journeys {
@@ -23,6 +24,24 @@ void PrintTo(const JourneyHistoryEntryCollection& collection,
       *os << ", ";
     }
     PrintTo(collection.items[i], os);
+  }
+  *os << "})";
+}
+
+void PrintTo(const JourneyVisit& visit, std::ostream* os) {
+  *os << "JourneyVisit(" << visit.url.possibly_invalid_spec() << ", \""
+      << base::UTF16ToUTF8(visit.title) << "\", "
+      << visit.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds() << ", "
+      << (visit.is_foreign ? "foreign" : "local") << ")";
+}
+
+void PrintTo(const JourneyVisitCollection& collection, std::ostream* os) {
+  *os << "JourneyVisitCollection(\"" << collection.title << "\", {";
+  for (size_t i = 0; i < collection.visits.size(); ++i) {
+    if (i > 0) {
+      *os << ", ";
+    }
+    PrintTo(collection.visits[i], os);
   }
   *os << "})";
 }
