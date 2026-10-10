@@ -60,6 +60,20 @@ public class NewTabPageUtils {
     }
 
     /**
+     * Returns the view whose top margin controls the MVT section's vertical spacing. In the
+     * beside-MVT layout, the parent container (composeplate_and_mvt_container) owns the top margin
+     * for the entire row.
+     */
+    public static View getTilesLayoutTopMarginTargetView(View mvTilesContainerLayout) {
+        if (isBesideMvtModuleEnabled()
+                && mvTilesContainerLayout.getParent() instanceof View parentView
+                && parentView.getId() == R.id.composeplate_and_mvt_container) {
+            return parentView;
+        }
+        return mvTilesContainerLayout;
+    }
+
+    /**
      * Updates the margins for the most visited tiles layout.
      *
      * <p>// TODO(crbug.com/481717794): Re-evaluate all vertical gaps on the NTP. The gap between //
@@ -68,9 +82,10 @@ public class NewTabPageUtils {
      */
     public static void updateTilesLayoutTopMargin(
             View view, boolean shouldShowLogo, boolean isLff) {
+        View targetView = getTilesLayoutTopMarginTargetView(view);
         ViewGroup.MarginLayoutParams marginLayoutParams =
-                (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        Resources resources = view.getResources();
+                (ViewGroup.MarginLayoutParams) targetView.getLayoutParams();
+        Resources resources = targetView.getResources();
         int topMargin =
                 resources.getDimensionPixelSize(
                         (shouldShowLogo || isLff)
@@ -78,7 +93,7 @@ public class NewTabPageUtils {
                                 : R.dimen.tile_layout_no_logo_top_margin);
 
         marginLayoutParams.topMargin = topMargin;
-        view.setLayoutParams(marginLayoutParams);
+        targetView.setLayoutParams(marginLayoutParams);
     }
 
     /** Returns the {@link PaddingStyle} for NTP Aurora. */
@@ -132,5 +147,19 @@ public class NewTabPageUtils {
     public static boolean isAiModeButtonRedirectEnabled() {
         @ActionChips int chipType = getMerchandisingChipsType();
         return chipType > ActionChips.DEFAULT && chipType < ActionChips.NUM_ENTRIES;
+    }
+
+    /** Returns the {@link LayoutType} for NTP Aurora V2. */
+    public static @LayoutType int getLayoutTypeForAuroraV2() {
+        if (!isNtpAuroraV2Enabled()) {
+            return LayoutType.DEFAULT;
+        }
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.NTP_AURORA_V2, ChromeFeatureList.NTP_AURORA_V2_LAYOUT_TYPE);
+    }
+
+    /** Returns whether the beside-MVT layout is enabled. */
+    public static boolean isBesideMvtModuleEnabled() {
+        return getLayoutTypeForAuroraV2() == LayoutType.BESIDE_MVT;
     }
 }

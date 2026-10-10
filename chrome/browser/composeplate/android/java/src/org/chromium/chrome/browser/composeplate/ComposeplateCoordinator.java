@@ -47,7 +47,10 @@ public class ComposeplateCoordinator {
     }
 
     private void maybeRevertToLegacyLayout() {
-        if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()) {
+        // Early return for isBesideMvtModuleEnabled to avoid modifying the AI Mode section beside
+        // the MVT.
+        if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()
+                || NewTabPageUtils.isBesideMvtModuleEnabled()) {
             return;
         }
 

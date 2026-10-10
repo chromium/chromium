@@ -35,7 +35,9 @@ public class ComposeplateViewBinder {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (INCOGNITO_CLICK_LISTENER == propertyKey) {
             View incognitoButton = view.findViewById(R.id.incognito_button);
-            incognitoButton.setOnClickListener(model.get(INCOGNITO_CLICK_LISTENER));
+            if (incognitoButton != null) {
+                incognitoButton.setOnClickListener(model.get(INCOGNITO_CLICK_LISTENER));
+            }
         } else if (COMPOSEPLATE_BUTTON_CLICK_LISTENER == propertyKey) {
             View composeplateButton = view.findViewById(R.id.composeplate_button);
             if (composeplateButton != null) {

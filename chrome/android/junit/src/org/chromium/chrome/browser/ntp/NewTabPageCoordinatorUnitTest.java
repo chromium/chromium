@@ -1013,6 +1013,26 @@ public class NewTabPageCoordinatorUnitTest {
         assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
     }
 
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/1"
+    })
+    public void testComposeplateEnabledWhenIncognitoDisabled_BesideMvtEnabled() {
+        mCoordinator.destroy();
+        IncognitoUtils.setEnabledForTesting(/* enabled= */ false);
+        createCoordinator();
+
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+
+        View containerView = mNewTabPageLayout.findViewById(R.id.composeplate_and_mvt_container);
+        assertEquals(View.VISIBLE, containerView.getVisibility());
+
+        View composeplateView = mNewTabPageLayout.findViewById(R.id.composeplate_view);
+        assertEquals(View.VISIBLE, composeplateView.getVisibility());
+    }
+
     /** Verifies that a monochrome resource icon is tinted like the other composeplate icons. */
     @Test
     @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)

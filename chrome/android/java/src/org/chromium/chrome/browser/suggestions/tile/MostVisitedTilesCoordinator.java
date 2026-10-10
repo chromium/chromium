@@ -215,11 +215,13 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 (paddingStyle == PaddingStyle.SMALL)
                         ? R.dimen.mvt_container_top_margin_medium
                         : R.dimen.mvt_container_top_margin_large;
+        View targetView =
+                NewTabPageUtils.getTilesLayoutTopMarginTargetView(mMvTilesContainerLayout);
         ViewGroup.MarginLayoutParams marginLayoutParams =
-                (ViewGroup.MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
+                (ViewGroup.MarginLayoutParams) targetView.getLayoutParams();
         marginLayoutParams.topMargin =
                 mActivity.getResources().getDimensionPixelSize(topMarginDimen);
-        mMvTilesContainerLayout.setLayoutParams(marginLayoutParams);
+        targetView.setLayoutParams(marginLayoutParams);
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */

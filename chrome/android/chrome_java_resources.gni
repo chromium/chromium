@@ -459,6 +459,7 @@ chrome_java_resources = [
   "java/res/layout/chrome_item_picker_activity.xml",
   "java/res/layout/clear_browsing_data_button.xml",
   "java/res/layout/clear_browsing_important_dialog_listview.xml",
+  "java/res/layout/composeplate_and_mvt_container_layout.xml",
   "java/res/layout/compositor_view_holder.xml",
   "java/res/layout/confirm_important_sites_list_row.xml",
   "java/res/layout/context_menu.xml",

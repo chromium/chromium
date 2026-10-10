@@ -173,6 +173,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final int mSearchBoxMaxWidth;
     private final boolean mIsAim3pEntrypointEnabled;
     private final boolean mIsAiModeButtonRedirectEnabled;
+    private final boolean mIsBesideMvtModuleEnabled;
 
     private @Nullable LogoCoordinator mLogoCoordinator;
     private @Nullable NtpSearchBox mNtpSearchBox;
@@ -319,6 +320,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mIsAim3pEntrypointEnabled = OmniboxFeatures.isAim3pEntrypointEnabled();
         mIsAiModeButtonRedirectEnabled = NewTabPageUtils.isAiModeButtonRedirectEnabled();
         mIsIncognitoModeEnabled = IncognitoUtils.isIncognitoModeEnabled(mProfile);
+        mIsBesideMvtModuleEnabled = NewTabPageUtils.isBesideMvtModuleEnabled();
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -588,10 +590,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void initializeComposeplateFlags(Profile profile) {
-        // The composeplate hosts the incognito button, so it's only shown when incognito mode is
-        // enabled.
-        mCanShowComposeplateButton =
-                TriStateUtils.from(mIsIncognitoModeEnabled && canShowAiModeButtonOnNtp());
+        mCanShowComposeplateButton = TriStateUtils.from(canShowAiModeButtonOnNtp());
         mIsComposeplatePolicyEnabled =
                 mCanShowComposeplateButton == TriState.TRUE
                         && ComposeplateUtils.isEnabledByPolicy(profile);
@@ -599,6 +598,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /** Returns whether the AI Mode button can be shown on NTPs. */
     private boolean canShowAiModeButtonOnNtp() {
+        // In the default layout (when not placed beside the MVT), the AI Mode button
+        // shares a row with the Incognito button. Consequently, it is hidden when
+        // Incognito mode is disabled. However, in the layout where the AI Mode section is
+        // positioned beside the MVT, the AI Mode button must remain visible even if Incognito mode
+        // is disabled.
+
+        if (!mIsBesideMvtModuleEnabled && !mIsIncognitoModeEnabled) {
+            return false;
+        }
+
         if (!mIsAim3pEntrypointEnabled) {
             return mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                     && ComposeplateUtils.canShowComposeplateButtonOnNtp(mProfile);
@@ -614,8 +623,14 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mIsComposeplateViewInitialized = true;
 
-        ViewStub composeplateViewStub = mNewTabPageLayout.findViewById(R.id.composeplate_view_stub);
-        ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
+        ViewGroup composeplateView;
+        if (mIsBesideMvtModuleEnabled) {
+            composeplateView = mNewTabPageLayout.findViewById(R.id.composeplate_view);
+        } else {
+            ViewStub composeplateViewStub =
+                    mNewTabPageLayout.findViewById(R.id.composeplate_view_stub);
+            composeplateView = (ViewGroup) composeplateViewStub.inflate();
+        }
         mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mIsLff);
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
@@ -1688,15 +1703,20 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mNtpSearchBox.setLayoutWidth(searchBoxWidth);
         }
 
-        // Composeplate is capped to align perfectly with the Search Box.
-        if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.setLayoutWidth(searchBoxWidth);
-        }
+        int mvtWidth = mIsLff ? (width - getLateralMarginToMatchFeeds() * 2) : searchBoxWidth;
+        if (mIsBesideMvtModuleEnabled) {
+            mModel.set(
+                    NewTabPageLayoutProperties.COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX, mvtWidth);
+        } else {
+            // Composeplate is capped to align perfectly with the Search Box.
+            if (mComposeplateCoordinator != null) {
+                mComposeplateCoordinator.setLayoutWidth(searchBoxWidth);
+            }
 
-        // Most Visited Tiles: Match Feeds width on Tablet, and Search Box on Phone.
-        if (mMostVisitedTilesCoordinator != null) {
-            int mvtWidth = mIsLff ? (width - getLateralMarginToMatchFeeds() * 2) : searchBoxWidth;
-            mMostVisitedTilesCoordinator.updateMvtWidth(width, mvtWidth);
+            // Most Visited Tiles: Match Feeds width on Tablet, and Search Box on Phone.
+            if (mMostVisitedTilesCoordinator != null) {
+                mMostVisitedTilesCoordinator.updateMvtWidth(width, mvtWidth);
+            }
         }
 
         if (mSigninPromoCoordinator != null) {
@@ -1848,7 +1868,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void updateComposeplateBackground() {
-        if (mComposeplateCoordinator == null) return;
+        if (mComposeplateCoordinator == null || mIsBesideMvtModuleEnabled) return;
 
         boolean desiredState = NtpCustomizationUtils.shouldApplyWhiteBackgroundOnComposeplate();
         if (shouldUpdateBackground(desiredState, mIsWhiteBackgroundOnComposeplateApplied)) {

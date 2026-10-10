@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/composeplate_and_mvt_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:baselineAligned="false">
+
+    <!-- Standalone AIM card when beside Most Visited Tiles -->
+    <include
+        android:id="@+id/composeplate_view"
+        android:layout_width="@dimen/composeplate_view_beside_mvt_width"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/composeplate_view_button_margin"
+        layout="@layout/composeplate_view_beside_mvt_layout" />
+
+    <!-- Most Visited Tiles when beside Composeplate -->
+    <include
+        android:id="@+id/mv_tiles_container"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        layout="@layout/mv_tiles_layout" />
+</LinearLayout>

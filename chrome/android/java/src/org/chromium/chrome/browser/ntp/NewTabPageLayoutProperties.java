@@ -40,7 +40,19 @@ class NewTabPageLayoutProperties {
      */
     static final WritableFloatPropertyKey TRANSITION_Y = new WritableFloatPropertyKey();
 
+    /**
+     * The layout width in pixels of the container holding the composeplate and most visited tiles
+     * when the beside-MVT layout is enabled.
+     */
+    static final WritableIntPropertyKey COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX =
+            new WritableIntPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
-        DELEGATE, ON_LAYOUT_CHANGE_LISTENER, SEARCH_BOX_VIEW, TOP_INSET_PX, TRANSITION_Y,
+        DELEGATE,
+        ON_LAYOUT_CHANGE_LISTENER,
+        SEARCH_BOX_VIEW,
+        TOP_INSET_PX,
+        TRANSITION_Y,
+        COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX,
     };
 }

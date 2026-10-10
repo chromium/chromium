@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.DELEGATE;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.SEARCH_BOX_VIEW;
@@ -55,6 +56,9 @@ public class NewTabPageLayoutViewBinder {
                     newTabPageLayout.getPaddingBottom());
         } else if (TRANSITION_Y == key) {
             newTabPageLayout.setTranslationYOfFakeboxAndAbove(model.get(TRANSITION_Y));
+        } else if (COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX == key) {
+            newTabPageLayout.setComposeplateAndMvtContainerWidth(
+                    model.get(COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX));
         }
     }
 }

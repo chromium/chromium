@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.composeplate.ComposeplateView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/composeplate_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:id="@+id/composeplate_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/home_surface_ui_background"
+        android:focusable="true"
+        android:clickable="true"
+        android:padding="@dimen/composeplate_view_button_margin"
+        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
+        tools:ignore="UseCompoundDrawables">
+
+        <!-- 48dp icon container with touch highlight ripple matching MVT tiles. -->
+        <FrameLayout
+            android:layout_width="@dimen/tile_view_icon_size"
+            android:layout_height="@dimen/tile_view_icon_size"
+            android:background="@drawable/tile_view_highlight">
+
+            <ImageView
+                android:id="@+id/composeplate_button_icon"
+                android:layout_width="@dimen/composeplate_view_icon_size"
+                android:layout_height="@dimen/composeplate_view_icon_size"
+                android:layout_gravity="center"
+                android:src="@drawable/search_spark"
+                android:tint="@macro/default_icon_color"
+                android:importantForAccessibility="no" />
+        </FrameLayout>
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/composeplate_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/composeplate_view_button_margin"
+            android:text="@string/ai_mode_entrypoint_label"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            app:leading="@dimen/text_size_small_leading" />
+    </LinearLayout>
+</org.chromium.chrome.browser.composeplate.ComposeplateView>

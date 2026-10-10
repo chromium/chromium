@@ -43,6 +43,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     private @Nullable Delegate mDelegate;
     private @Nullable View mSearchBoxView;
+    private @Nullable View mComposeplateAndMvtContainer;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -91,13 +92,37 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     private void initializeSiteSectionView() {
-        var mvTilesContainerLayout =
-                (ViewGroup) ((ViewStub) findViewById(R.id.mv_tiles_layout_stub)).inflate();
-        mvTilesContainerLayout.setVisibility(View.VISIBLE);
+        boolean isBesideMvt = NewTabPageUtils.isBesideMvtModuleEnabled();
+        int stubId =
+                isBesideMvt ? R.id.composeplate_and_mvt_container_stub : R.id.mv_tiles_layout_stub;
+        var siteSectionView = (ViewGroup) ((ViewStub) findViewById(stubId)).inflate();
+        if (isBesideMvt) {
+            mComposeplateAndMvtContainer = siteSectionView;
+        }
+        siteSectionView.setVisibility(View.VISIBLE);
         // The page contents are initially hidden; otherwise they'll be drawn centered on the
         // page before the tiles are available and then jump upwards to make space once the
         // tiles are available.
         if (getVisibility() != View.VISIBLE) setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Sets the layout width of the container holding the composeplate and most visited tiles when
+     * the beside-MVT layout is enabled.
+     *
+     * @param width The target width in pixels.
+     */
+    void setComposeplateAndMvtContainerWidth(int width) {
+        if (mComposeplateAndMvtContainer == null) {
+            mComposeplateAndMvtContainer = findViewById(R.id.composeplate_and_mvt_container);
+        }
+        if (mComposeplateAndMvtContainer == null) return;
+
+        ViewGroup.LayoutParams layoutParams = mComposeplateAndMvtContainer.getLayoutParams();
+        if (layoutParams == null || layoutParams.width == width) return;
+
+        layoutParams.width = width;
+        mComposeplateAndMvtContainer.setLayoutParams(layoutParams);
     }
 
     /** Sets the delegate instance. */

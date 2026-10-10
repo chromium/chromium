@@ -53,6 +53,17 @@ found in the LICENSE file.
         android:layout_marginRight="@dimen/mvt_container_lateral_margin"
         android:layout="@layout/mv_tiles_layout" />
 
+    <!-- Combined row for Composeplate (AI Mode) and Most Visited Tiles. -->
+    <ViewStub
+        android:id="@+id/composeplate_and_mvt_container_stub"
+        android:inflatedId="@+id/composeplate_and_mvt_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ntp_section_top_margin"
+        android:layout_marginBottom="@dimen/ntp_section_bottom_margin"
+        android:layout_marginHorizontal="@dimen/mvt_container_lateral_margin"
+        android:layout="@layout/composeplate_and_mvt_container_layout" />
+
     <ViewStub
         android:id="@+id/signin_promo_view_container_stub"
         android:layout_width="match_parent"

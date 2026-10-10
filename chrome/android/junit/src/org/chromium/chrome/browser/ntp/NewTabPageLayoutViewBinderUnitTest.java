@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.DELEGATE;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.SEARCH_BOX_VIEW;
@@ -92,6 +93,17 @@ public class NewTabPageLayoutViewBinderUnitTest {
         assertEquals(transitionY, aboveView.getTranslationY(), 0f);
         assertEquals(transitionY, searchBoxView.getTranslationY(), 0f);
         assertEquals(0f, belowView.getTranslationY(), 0f);
+    }
+
+    @Test
+    public void testComposeplateAndMvtContainerWidth() {
+        View containerView = new View(mContext);
+        containerView.setId(R.id.composeplate_and_mvt_container);
+        mView.addView(containerView);
+
+        int widthPx = 500;
+        mModel.set(COMPOSEPLATE_AND_MVT_CONTAINER_WIDTH_PX, widthPx);
+        assertEquals(widthPx, containerView.getLayoutParams().width);
     }
 
     @Test
