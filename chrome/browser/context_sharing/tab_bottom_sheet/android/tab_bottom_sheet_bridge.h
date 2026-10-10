@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_TAB_BOTTOM_SHEET_BRIDGE_H_
 #define CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_TAB_BOTTOM_SHEET_BRIDGE_H_
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -61,6 +63,8 @@ class TabBottomSheetBridge {
   void Close(bool animate);
 
   void SuppressBottomSheetForTesting(bool suppress);
+  static void SetManagerReadyForTesting(std::optional<bool> is_ready);
+  static void NotifyManagerInitializedForTesting(ui::WindowAndroid* window);
 
   // Returns true if the Java TabBottomSheetManager is initialized for the tab's
   // current WindowAndroid.

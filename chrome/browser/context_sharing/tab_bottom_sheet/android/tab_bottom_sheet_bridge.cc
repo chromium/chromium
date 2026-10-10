@@ -29,6 +29,8 @@ ManagerInitializedCallbackList& GetManagerInitializedCallbackList() {
   static base::NoDestructor<ManagerInitializedCallbackList> s_list;
   return *s_list;
 }
+
+std::optional<bool> g_is_manager_ready_for_testing;
 }  // namespace
 
 void JNI_TabBottomSheetNativeInterface_OnClosed(
@@ -96,7 +98,22 @@ void TabBottomSheetBridge::SuppressBottomSheetForTesting(bool suppress) {
       AttachCurrentThread(), java_bridge_, suppress);                // IN-TEST
 }
 
+// static
+void TabBottomSheetBridge::SetManagerReadyForTesting(
+    std::optional<bool> is_ready) {
+  g_is_manager_ready_for_testing = is_ready;
+}
+
+// static
+void TabBottomSheetBridge::NotifyManagerInitializedForTesting(
+    ui::WindowAndroid* window) {
+  GetManagerInitializedCallbackList().Notify(window);
+}
+
 bool TabBottomSheetBridge::IsManagerReady() const {
+  if (g_is_manager_ready_for_testing.has_value()) {
+    return *g_is_manager_ready_for_testing;
+  }
   if (!java_bridge_) {
     return false;
   }
