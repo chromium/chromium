@@ -13477,6 +13477,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.Invoked">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when a Glic instance is opened for the first time while the user has
+    not yet consented to the FRE and the FRE opt-in will be shown.
+  </description>
+</action>
+
 <action name="Glic.Fre.NoThanks">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>

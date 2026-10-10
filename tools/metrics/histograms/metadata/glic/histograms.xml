@@ -1019,6 +1019,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.Invoked.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2027-06-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <summary>
+    Records the initial invocation source used to open a Glic instance when the
+    user has not yet consented to the FRE. Recorded when an instance is opened
+    for the first time and the FRE opt-in will be shown.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.NoThanks.FlowSource" enum="GlicOptInFlowSource"
     expires_after="2027-05-18">
   <owner>sauski@google.com</owner>

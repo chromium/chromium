@@ -400,6 +400,35 @@ TEST_F(GlicInstanceMetricsTest,
       mojom::InvocationSource::kDaisyChainOnFollowLink, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, FreInvoked_RecordedOnceWhenUnconsented) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.Invoked.InvocationSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Invoked"), 1);
+
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.Invoked.InvocationSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Invoked"), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, FreInvoked_NotRecordedWhenConsented) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  histogram_tester_.ExpectTotalCount("Glic.Fre.Invoked.InvocationSource", 0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Invoked"), 0);
+}
+
 TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_LoggedOnFirstClose) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
 

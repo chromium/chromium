@@ -807,6 +807,11 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
     MaybeSetInitialInvocationSource(source);
     base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
                                   *initial_invocation_source_);
+    if (!GlicEnabling::HasConsentedForProfile(profile_)) {
+      base::UmaHistogramEnumeration("Glic.Fre.Invoked.InvocationSource",
+                                    *initial_invocation_source_);
+      base::RecordAction(base::UserMetricsAction("Glic.Fre.Invoked"));
+    }
   }
 
   // 2. Log Events
