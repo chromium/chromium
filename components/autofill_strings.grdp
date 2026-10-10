@@ -967,7 +967,7 @@
     Suggested by Gemini
   </message>
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text indicating that a suggestion is sourced from Gemini." translateable="false">
-    From Gemini and connected apps
+    Suggested by Gemini
   </message>
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES" desc="Header for Autofill AI personal context child menu attributing the information to source applications. $1 is the formatted list of sources with citation badges (e.g. Gmail [1] [2] · Photos [1])." translateable="false">
     From Gemini and connected apps · <ph name="SOURCES">$1<ex>Gmail [1] [2] · Photos [1]</ex></ph>
