@@ -1,0 +1,304 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #scheme=relative
+ * #include=md-select-lit
+ * #css_wrapper_metadata_end */
+
+/* Temporary Fishfood Feedback. */
+
+cr-dialog {
+  --cr-dialog-body-padding-horizontal: 20px;
+  --cr-dialog-button-container-padding-horizontal: 20px;
+  --cr-dialog-title-slot-padding-bottom: 12px;
+  --cr-dialog-title-slot-padding-end: 20px;
+  --cr-dialog-title-slot-padding-start: 20px;
+  --cr-dialog-title-slot-padding-top: 20px;
+  --cr-dialog-width: 680px;
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+#subtitle,
+.secondary {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+#subtitle {
+  margin-block-start: 2px;
+}
+
+.error {
+  color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.caption {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* Only the site list scrolls: when the dialog doesn't fit the window, the site
+ * list is the only part of the body that shrinks. The whole body still scrolls
+ * if the window is too short even for that. */
+[slot=body] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+[slot=body] > * {
+  flex-shrink: 0;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 12px;
+}
+
+section + section {
+  border-top: 1px solid var(--cr-separator-color);
+}
+
+#redactionSection {
+  flex-shrink: 1;
+  min-height: 0;
+}
+
+h2 {
+  color: var(--cr-primary-text-color);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+}
+
+.section-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+/* Red until every topic is rated, then green. */
+#ratingStatus {
+  --rating-status-color: var(--color-textfield-filled-error,
+      var(--cr-fallback-color-error));
+  align-items: flex-start;
+  color: var(--rating-status-color);
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+  line-height: 20px;
+}
+
+#ratingStatus[complete] {
+  --rating-status-color: var(--google-green-700, #188038);
+}
+
+@media (prefers-color-scheme: dark) {
+  #ratingStatus[complete] {
+    --rating-status-color: var(--google-green-300);
+  }
+}
+
+#ratingStatus cr-icon {
+  --iron-icon-height: 18px;
+  --iron-icon-width: 18px;
+  flex-shrink: 0;
+  margin-block-start: 1px;
+}
+
+#ratingProgress {
+  font-weight: 500;
+}
+
+#coverageTopics {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#coverageTopics li {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+  line-height: 20px;
+}
+
+#coverageTopics cr-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+}
+
+#coverageTopics li[done] cr-icon {
+  color: var(--cr-fallback-color-primary);
+}
+
+#coverageTopics a {
+  color: var(--cr-link-color);
+}
+
+/* The domains share one rounded container, separated by thin gaps. It keeps
+ * at least about three rows visible. */
+#domainList {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  min-height: 136px;
+  overflow-y: auto;
+  padding: 0;
+}
+
+#domainList:empty {
+  display: none;
+}
+
+.domain {
+  background-color: var(--cr-fallback-color-surface2);
+  flex-shrink: 0;
+}
+
+.domain-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  padding-inline-end: 8px;
+}
+
+.domain-expand {
+  flex: 1;
+  min-height: 44px;
+  min-width: 0;
+  padding-inline: 16px 4px;
+}
+
+.domain-name {
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.domain-count {
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+  font-size: 12px;
+  margin-inline-start: 8px;
+  white-space: nowrap;
+}
+
+.domain-checkbox {
+  flex-shrink: 0;
+}
+
+/* An excluded domain is dimmed and struck through. */
+.domain[excluded] .domain-name {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.url-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0 16px 12px 40px;
+}
+
+.url-checkbox {
+  --cr-checkbox-label-padding-start: 12px;
+  width: 100%;
+}
+
+.url-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.url-title,
+.url {
+  font-size: 12px;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.url-title {
+  color: var(--cr-primary-text-color);
+}
+
+.url {
+  color: var(--cr-secondary-text-color);
+}
+
+#disclosure {
+  font-size: 12px;
+  line-height: 18px;
+  margin: 0;
+}
+
+.banner {
+  align-items: center;
+  background-color: var(--cr-fallback-color-surface2);
+  border-radius: 12px;
+  display: flex;
+  font-size: 13px;
+  gap: 12px;
+  justify-content: space-between;
+  margin-block-start: 4px;
+  padding: 8px 8px 8px 16px;
+}
+
+/* "Clear my ratings" sits on the left, away from the other buttons. */
+[slot=button-container] {
+  align-items: center;
+}
+
+#clearContainer {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-inline-end: auto;
+}
+
+#clearPrompt {
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+}
+
+#confirmClear {
+  color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
+}

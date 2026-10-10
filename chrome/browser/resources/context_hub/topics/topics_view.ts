@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import './topic_card.js';
+import './topic_feedback_export_dialog.js';
 
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -41,6 +42,7 @@ export class TopicsViewElement extends CrLitElement {
       loadState_: {type: String},
       feedbacks_: {type: Object},
       feedbackEnabled_: {type: Boolean},
+      showExportDialog_: {type: Boolean},
     };
   }
 
@@ -53,6 +55,9 @@ export class TopicsViewElement extends CrLitElement {
   protected accessor feedbacks_: Map<string, TopicFeedback> = new Map();
   protected accessor feedbackEnabled_: boolean =
       isTopicsFishfoodFeedbackEnabled();
+  // The fishfood feedback export dialog is only rendered while open, so that
+  // it fetches a fresh preview each time it opens.
+  protected accessor showExportDialog_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -157,7 +162,15 @@ export class TopicsViewElement extends CrLitElement {
   }
 
   protected onSendFeedbackClick_() {
-    this.fire('send-feedback-click');
+    this.showExportDialog_ = true;
+  }
+
+  protected onExportDialogClose_() {
+    this.showExportDialog_ = false;
+  }
+
+  protected onTopicFeedbacksCleared_() {
+    this.feedbacks_ = new Map();
   }
 
   protected onJumpBackIn_(e: CustomEvent<{topic: TopicItem}>) {

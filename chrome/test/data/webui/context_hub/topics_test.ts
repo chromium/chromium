@@ -7,16 +7,19 @@ import 'chrome://context-hub/topics/topic_details.js';
 import 'chrome://context-hub/topics/topics_view.js';
 
 import {browserProxyFactory, PageHandlerRemote, TopicDefectCategory, TopicRating} from 'chrome://context-hub/context_hub.mojom-webui.js';
-import type {Topic, TopicCollection, TopicFeedback, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import type {Topic, TopicCollection, TopicFeedback, TopicsFeedbackExportPreview, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
 import type {TopicCardElement} from 'chrome://context-hub/topics/topic_card.js';
 import type {TopicCollectionCarouselElement} from 'chrome://context-hub/topics/topic_collection_carousel.js';
 import type {TopicDetailsElement} from 'chrome://context-hub/topics/topic_details.js';
 import {getSuggestedPrompts, TOPIC_DETAILS_TABS, TOPIC_VISITS_TAB} from 'chrome://context-hub/topics/topic_details.js';
 import type {TopicFeedbackControlsElement} from 'chrome://context-hub/topics/topic_feedback_controls.js';
+import {COVERAGE_TOPICS_STORAGE_KEY, getExportFileName, pickCoverageTopicIds, setFileDownloaderForTesting} from 'chrome://context-hub/topics/topic_feedback_export_dialog.js';
+import type {TopicFeedbackExportDialogElement} from 'chrome://context-hub/topics/topic_feedback_export_dialog.js';
 import type {TopicSitesDialogElement} from 'chrome://context-hub/topics/topic_sites_dialog.js';
 import {BADGE_BACKGROUND_COLORS, createEmptyTopicFeedback, createTopicSnapshot, DEFAULT_ICON, formatTopicFeedbackComment, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, isTopicFeedbackEmpty, isTopicFeedbackValid, MAX_TOPIC_SITES, normalizeTopicFeedbackComment, parseTopicFeedbackComment, TOPIC_DEFECT_CATEGORIES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
 import type {BadgeShape, Collection} from 'chrome://context-hub/topics/topic_utils.js';
 import type {TopicsViewElement} from 'chrome://context-hub/topics/topics_view.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrChipElement} from 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -27,7 +30,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // U+1F4C1 FILE FOLDER.
 const EMOJI = '\u{1F4C1}';
@@ -494,14 +497,6 @@ suite('TopicsFeedback', () => {
     assertEquals(TopicRating.kLiked, card.feedback!.rating);
   });
 
-  test('send feedback button fires an event', async () => {
-    await createView();
-    let fired = false;
-    view.addEventListener('send-feedback-click', () => fired = true);
-    view.shadowRoot.querySelector<HTMLElement>('#sendFeedbackButton')!.click();
-    assertTrue(fired);
-  });
-
   test('thumbs up saves a liked rating with a snapshot', async () => {
     await createView();
     await click('#thumbsUp');
@@ -687,6 +682,332 @@ suite('TopicsFeedback', () => {
     assertEquals('', feedback.comment);
     // Feedback the card doesn't edit is kept.
     assertEquals(1, feedback.rejectedVisits.length);
+  });
+});
+
+suite('TopicFeedbackExportDialog', () => {
+  const FORM_URL = 'https://form.example.com/';
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let openWindowProxy: TestOpenWindowProxy;
+  let view: TopicsViewElement;
+  let dialog: TopicFeedbackExportDialogElement;
+  let downloads: Array<{contents: string, fileName: string}>;
+
+  function createPreview(): TopicsFeedbackExportPreview {
+    return {
+      ldap: 'rater',
+      stats:
+          {topics: 4, visits: 5, unclusteredVisits: 1, unresolvableTopics: 0},
+      domains: [
+        {
+          domain: 'www.example.com',
+          visitCount: 3,
+          defaultExcluded: false,
+          urls: [
+            {url: 'https://www.example.com/a', title: 'Page A', visitCount: 2},
+            {url: 'https://www.example.com/b', title: 'Page B', visitCount: 1},
+          ],
+        },
+        {
+          domain: 'docs.google.com',
+          visitCount: 2,
+          defaultExcluded: true,
+          urls:
+              [{url: 'https://docs.google.com/d', title: 'Doc', visitCount: 2}],
+        },
+      ],
+    };
+  }
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      kTopics: true,
+      kTopicsFishfoodFeedback: true,
+      kTopicsFeedbackFormUrl: FORM_URL,
+    });
+    sessionStorage.clear();
+    handler = TestMock.fromClass(PageHandlerRemote);
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    handler.setResultFor('getTopics', Promise.resolve({
+      topics: [1, 2, 3, 4].map(
+          i => createTopic({id: `topic-${i}`, title: `Topic ${i}`})),
+    }));
+    handler.setResultFor(
+        'getTopicsFeedbackExportPreview',
+        Promise.resolve({preview: createPreview()}));
+    handler.setResultFor(
+        'generateTopicsFeedbackBundle',
+        Promise.resolve({jsonBundle: '{"schema_version":1}'}));
+    handler.setResultFor('clearTopicFeedbacks', Promise.resolve());
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    downloads = [];
+    setFileDownloaderForTesting(
+        (contents, fileName) => downloads.push({contents, fileName}));
+  });
+
+  teardown(() => {
+    setFileDownloaderForTesting(null);
+    sessionStorage.clear();
+  });
+
+  async function openDialog(feedbacks: TopicFeedback[] = []) {
+    handler.setResultFor('getTopicFeedbacks', Promise.resolve({feedbacks}));
+    view = document.createElement('topics-view');
+    document.body.appendChild(view);
+    await microtasksFinished();
+    view.shadowRoot.querySelector<HTMLElement>('#sendFeedbackButton')!.click();
+    await microtasksFinished();
+    dialog = view.shadowRoot.querySelector('topic-feedback-export-dialog')!;
+    await microtasksFinished();
+  }
+
+  function query<T extends HTMLElement = HTMLElement>(selector: string): T|
+      null {
+    return dialog.shadowRoot.querySelector<T>(selector);
+  }
+
+  function queryAll<T extends HTMLElement = HTMLElement>(selector: string):
+      T[] {
+    return Array.from(dialog.shadowRoot.querySelectorAll<T>(selector));
+  }
+
+  async function click(selector: string) {
+    query(selector)!.click();
+    await microtasksFinished();
+  }
+
+  // The dialog's close event is dispatched asynchronously.
+  async function closeDialog() {
+    const closed = eventToPromise('export-dialog-close', dialog);
+    query('#close')!.click();
+    await closed;
+    await microtasksFinished();
+  }
+
+  async function select(element: HTMLSelectElement, value: string) {
+    element.value = value;
+    element.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+  }
+
+  test('opens from the topics view and loads the preview', async () => {
+    await openDialog();
+    assertTrue(!!dialog);
+    assertTrue(dialog.$.dialog.open);
+    assertEquals(5, await handler.whenCalled('getTopicsFeedbackExportPreview'));
+    assertEquals(
+        '4 topics · 5 visits · 1 visit not in any topic',
+        query('#stats')!.textContent.trim().replace(/\s+/g, ' '));
+    assertEquals(2, queryAll('.domain').length);
+
+    await closeDialog();
+    assertFalse(
+        !!view.shadowRoot.querySelector('topic-feedback-export-dialog'));
+  });
+
+  test('changing the window refetches the preview', async () => {
+    await openDialog();
+    await select(query<HTMLSelectElement>('#windowSelect')!, '14');
+    assertDeepEquals(
+        [5, 14], handler.getArgs('getTopicsFeedbackExportPreview'));
+    assertEquals(14, dialog.getExportOptionsForTesting().windowDays);
+  });
+
+  test('excludes default domains and applies domain choices', async () => {
+    await openDialog();
+    let options = dialog.getExportOptionsForTesting();
+    assertDeepEquals(['docs.google.com'], options.excludedDomains);
+    // Titles are never stripped on their own.
+    assertDeepEquals([], options.titleStrippedDomains);
+    assertFalse(options.stripAllTitles);
+    assertFalse(!!query('#stripAllTitles'));
+    const domains = queryAll('.domain');
+    assertFalse(domains[0]!.hasAttribute('excluded'));
+    assertTrue(domains[1]!.hasAttribute('excluded'));
+
+    const checkboxes = queryAll<CrCheckboxElement>('.domain-checkbox');
+    assertTrue(checkboxes[0]!.checked);
+    assertFalse(checkboxes[1]!.checked);
+    assertEquals('Share www.example.com', checkboxes[0]!.ariaLabelOverride);
+    assertEquals('', checkboxes[0]!.textContent.trim());
+    assertTrue(queryAll('.domain-count')[1]!.textContent.includes('left out'));
+
+    checkboxes[0]!.click();
+    checkboxes[1]!.click();
+    await microtasksFinished();
+    options = dialog.getExportOptionsForTesting();
+    assertDeepEquals(['www.example.com'], options.excludedDomains);
+    assertTrue(domains[0]!.hasAttribute('excluded'));
+    assertFalse(domains[1]!.hasAttribute('excluded'));
+    assertDeepEquals([], options.titleStrippedDomains);
+    assertFalse(options.stripAllTitles);
+  });
+
+  test('expanding a domain excludes single URLs', async () => {
+    await openDialog();
+    assertEquals(0, queryAll('.url-checkbox').length);
+    await click('.domain-expand');
+    const checkboxes = queryAll<CrCheckboxElement>('.url-checkbox');
+    assertEquals(2, checkboxes.length);
+    assertTrue(checkboxes.every(checkbox => checkbox.checked));
+
+    checkboxes[1]!.click();
+    await microtasksFinished();
+    assertDeepEquals(
+        ['https://www.example.com/b'],
+        dialog.getExportOptionsForTesting().excludedUrls);
+    assertTrue(
+        query('.domain-count')!.textContent.includes('1 page left out'));
+
+    // Excluding the whole domain redacts all of its URLs instead.
+    await click('.domain-checkbox');
+    const options = dialog.getExportOptionsForTesting();
+    assertDeepEquals(
+        ['www.example.com', 'docs.google.com'], options.excludedDomains);
+    assertDeepEquals([], options.excludedUrls);
+    assertTrue(
+        queryAll<CrCheckboxElement>('.url-checkbox')
+            .every(checkbox => checkbox.disabled && !checkbox.checked));
+  });
+
+  // Thumbs-up feedback on the first `count` of the 4 topics.
+  function likeTopics(count: number): TopicFeedback[] {
+    return [1, 2, 3, 4].slice(0, count).map(i => {
+      const topic = createTopic({id: `topic-${i}`, title: `Topic ${i}`});
+      return {
+        ...createEmptyTopicFeedback(toTopicItem(topic)),
+        rating: TopicRating.kLiked,
+      };
+    });
+  }
+
+  test('download needs the acknowledgment', async () => {
+    await openDialog(likeTopics(4));
+    assertFalse(!!query('#ldap'));
+    const download = query<HTMLButtonElement>('#download')!;
+    assertTrue(download.disabled);
+
+    await click('#acknowledge');
+    assertFalse(download.disabled);
+  });
+
+  test('download needs every topic rated', async () => {
+    await openDialog(likeTopics(3));
+    await click('#acknowledge');
+    const download = query<HTMLButtonElement>('#download')!;
+    assertTrue(download.disabled);
+    assertFalse(query('#ratingStatus')!.hasAttribute('complete'));
+    assertTrue(query('#ratingProgress')!.textContent.includes(
+        'You rated 3 of 4 topics. Rate every topic'));
+
+    // The last topic was rated on its details page in another tab.
+    handler.setResultFor(
+        'getTopicFeedbacks', Promise.resolve({feedbacks: likeTopics(4)}));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await microtasksFinished();
+    assertFalse(download.disabled);
+    assertTrue(query('#ratingStatus')!.hasAttribute('complete'));
+    assertEquals(
+        'You rated every topic.',
+        query('#ratingProgress')!.textContent.trim());
+  });
+
+  test('downloads the bundle and links to the form', async () => {
+    await openDialog(likeTopics(4));
+    const missingTopics = query<CrTextareaElement>('#missingTopics')!;
+    missingTopics.value = ' My trip planning ';
+    await click('#acknowledge');
+    await click('#download');
+
+    const options = await handler.whenCalled('generateTopicsFeedbackBundle');
+    assertEquals('', options.rater);
+    assertEquals('My trip planning', options.missingTopics);
+    assertEquals(5, options.windowDays);
+    assertEquals(1, downloads.length);
+    assertEquals('{"schema_version":1}', downloads[0]!.contents);
+    assertTrue(/^topics-feedback-\d{4}-\d{2}-\d{2}\.json$/.test(
+        downloads[0]!.fileName));
+    assertTrue(!!query('#exportDone'));
+
+    await click('#openForm');
+    assertEquals(FORM_URL, await openWindowProxy.whenCalled('openUrl'));
+  });
+
+  test('asks to review up to 3 topics, kept for the session', async () => {
+    sessionStorage.setItem(COVERAGE_TOPICS_STORAGE_KEY, '["topic-2"]');
+    const detailed: TopicFeedback = {
+      ...createEmptyTopicFeedback(
+          toTopicItem(createTopic({id: 'topic-2', title: 'Topic 2'}))),
+      rating: TopicRating.kLiked,
+      queryFeedbacks: [{index: 0, queryText: 'Query title', liked: true}],
+    };
+    await openDialog([detailed]);
+
+    assertTrue(
+        query('#ratingProgress')!.textContent.includes('You rated 1 of'));
+    const items = queryAll('#coverageTopics li');
+    assertEquals(3, items.length);
+    assertTrue(items[0]!.hasAttribute('done'));
+    assertFalse(items[1]!.hasAttribute('done'));
+    const ids =
+        JSON.parse(sessionStorage.getItem(COVERAGE_TOPICS_STORAGE_KEY)!);
+    assertEquals(3, ids.length);
+    assertEquals('topic-2', ids[0]);
+
+    items[1]!.querySelector('a')!.click();
+    const {topicUrl} = await handler.whenCalled('openTopic');
+    assertEquals(`chrome://context-hub/topic_details?id=${ids[1]}`, topicUrl);
+
+    // Reopening the dialog asks about the same topics.
+    await closeDialog();
+    view.shadowRoot.querySelector<HTMLElement>('#sendFeedbackButton')!.click();
+    await microtasksFinished();
+    dialog = view.shadowRoot.querySelector('topic-feedback-export-dialog')!;
+    await microtasksFinished();
+    assertDeepEquals(
+        ids, JSON.parse(sessionStorage.getItem(COVERAGE_TOPICS_STORAGE_KEY)!));
+  });
+
+  test('clear my ratings asks first, then clears', async () => {
+    const stored: TopicFeedback = {
+      ...createEmptyTopicFeedback(
+          toTopicItem(createTopic({id: 'topic-1', title: 'Topic 1'}))),
+      rating: TopicRating.kLiked,
+    };
+    await openDialog([stored]);
+    await click('#clearRatings');
+    assertEquals(0, handler.getCallCount('clearTopicFeedbacks'));
+    await click('#cancelClear');
+    assertTrue(!!query('#clearRatings'));
+
+    await click('#clearRatings');
+    await click('#confirmClear');
+    await handler.whenCalled('clearTopicFeedbacks');
+    await microtasksFinished();
+    const card = view.shadowRoot.querySelector<TopicCardElement>('topic-card')!;
+    assertEquals(null, card.feedback);
+    assertTrue(
+        query('#ratingProgress')!.textContent.includes('You rated 0 of'));
+  });
+
+  test('pickCoverageTopicIds keeps stored ids and tops up', () => {
+    const ids = ['a', 'b', 'c', 'd', 'e'];
+    assertDeepEquals(
+        ['a', 'b', 'c'], pickCoverageTopicIds(ids, [], 3, () => 0));
+    assertDeepEquals(
+        ['d', 'a', 'b'], pickCoverageTopicIds(ids, ['d', 'gone'], 3, () => 0));
+    assertDeepEquals(['b', 'a'], pickCoverageTopicIds(['a', 'b'], ['b']));
+    assertDeepEquals(
+        ['d', 'a', 'b'], pickCoverageTopicIds(ids, ['d', 'd'], 3, () => 0));
+  });
+
+  test('getExportFileName uses the local date', () => {
+    assertEquals(
+        'topics-feedback-2026-03-07.json',
+        getExportFileName(new Date(2026, 2, 7)));
   });
 });
 

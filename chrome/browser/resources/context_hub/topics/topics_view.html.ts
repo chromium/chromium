@@ -53,6 +53,14 @@ export function getHtml(this: TopicsViewElement) {
         ` : ''}
       </section>
     </main>
+    ${this.showExportDialog_ ? html`
+      <!-- Temporary Fishfood Feedback -->
+      <topic-feedback-export-dialog .topics="${this.topics}"
+          .feedbacks="${this.feedbacks_}"
+          @export-dialog-close="${this.onExportDialogClose_}"
+          @topic-feedbacks-cleared="${this.onTopicFeedbacksCleared_}">
+      </topic-feedback-export-dialog>
+    ` : ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }
