@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -33,7 +34,9 @@ import org.robolectric.shadows.ShadowDrawable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -248,5 +251,16 @@ public class TileRendererTest {
                 .isSearchResultsPageFromDefaultSearchProvider(any());
         SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, 1);
         Assert.assertEquals(1, tileView.getTitleView().getMaxLines());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/1"
+    })
+    public void testIconBackgroundHidden_BesideMvtEnabled() {
+        SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
+        View iconBackground = tileView.findViewById(R.id.tile_view_icon_background);
+        Assert.assertEquals(View.GONE, iconBackground.getVisibility());
     }
 }

@@ -1033,6 +1033,25 @@ public class NewTabPageCoordinatorUnitTest {
         assertEquals(View.VISIBLE, composeplateView.getVisibility());
     }
 
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/1"
+    })
+    public void testInitializeComposeplate_BesideMvt_AlignsPaddingWithMvt() {
+        View mvTilesContainer = mNewTabPageLayout.findViewById(R.id.mv_tiles_container);
+        View aiModeButton = mNewTabPageLayout.findViewById(R.id.composeplate_button);
+        TextView buttonText = mNewTabPageLayout.findViewById(R.id.composeplate_button_text);
+
+        int buttonMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
+        assertEquals(buttonMargin + mvTilesContainer.getPaddingTop(), aiModeButton.getPaddingTop());
+        assertEquals(mvTilesContainer.getPaddingBottom(), aiModeButton.getPaddingBottom());
+        assertEquals(2, buttonText.getMaxLines());
+    }
+
     /** Verifies that a monochrome resource icon is tinted like the other composeplate icons. */
     @Test
     @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)

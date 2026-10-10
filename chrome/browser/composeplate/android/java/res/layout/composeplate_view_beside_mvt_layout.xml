@@ -48,8 +48,9 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/composeplate_view_button_margin"
+            android:gravity="top|center_horizontal"
             android:text="@string/ai_mode_entrypoint_label"
-            android:maxLines="1"
+            android:maxLines="2"
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             app:leading="@dimen/text_size_small_leading" />

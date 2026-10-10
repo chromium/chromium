@@ -626,6 +626,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         ViewGroup composeplateView;
         if (mIsBesideMvtModuleEnabled) {
             composeplateView = mNewTabPageLayout.findViewById(R.id.composeplate_view);
+            alignAiModeCardPaddingWithMvt(composeplateView);
         } else {
             ViewStub composeplateViewStub =
                     mNewTabPageLayout.findViewById(R.id.composeplate_view_stub);
@@ -659,6 +660,28 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         updateComposeplateOptionalButtonVisibility();
+    }
+
+    /**
+     * Aligns the vertical paddings of the beside-MVT AI Mode card with those of the MVT container,
+     * so that the AI Mode icon and title line up with the MVT tiles' icons and titles.
+     *
+     * @param composeplateView The inflated beside-MVT AI Mode card.
+     */
+    private void alignAiModeCardPaddingWithMvt(View composeplateView) {
+        // TODO(crbug.com/534357676): Once NTP Aurora V1 is launched, move the logic in this
+        // method to XML.
+        View mvTilesContainer = mNewTabPageLayout.findViewById(R.id.mv_tiles_container);
+        View aiModeButton = composeplateView.findViewById(R.id.composeplate_button);
+        if (mvTilesContainer == null || aiModeButton == null) return;
+
+        // The AI Mode card's XML top padding mirrors the top margin of each MVT tile's icon, so
+        // add the MVT container's top padding on top of it.
+        aiModeButton.setPaddingRelative(
+                aiModeButton.getPaddingStart(),
+                aiModeButton.getPaddingTop() + mvTilesContainer.getPaddingTop(),
+                aiModeButton.getPaddingEnd(),
+                mvTilesContainer.getPaddingBottom());
     }
 
     private void onComposeplateButtonClicked(View view) {
