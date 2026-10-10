@@ -12334,6 +12334,7 @@ from previous Chrome versions.
   <int value="-797152302" label="ScreenlockReauthPromoCard:enabled"/>
   <int value="-796999153" label="DbdRevampDesktop:disabled"/>
   <int value="-796775379" label="FoldableJankFix:disabled"/>
+  <int value="-795602924" label="GlicSsr:disabled"/>
   <int value="-795600188" label="disable-async-dns"/>
   <int value="-794976372"
       label="LocalNetworkAccessChecksSplitPermissions:enabled"/>
@@ -18588,6 +18589,7 @@ from previous Chrome versions.
   <int value="1103990762" label="AndroidSetupList:disabled"/>
   <int value="1104206686" label="UseMultiPlaneFormatForHardwareVideo:enabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
+  <int value="1105039185" label="GlicSsr:enabled"/>
   <int value="1105058168" label="CrosSafetyService:enabled"/>
   <int value="1105182444"
       label="ChromeCleanupScanCompletedNotification:disabled"/>

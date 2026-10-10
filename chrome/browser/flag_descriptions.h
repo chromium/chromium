@@ -1991,6 +1991,10 @@ inline constexpr char kGlicReuseCookiesName[] = "Glic Reuse Cookies";
 inline constexpr char kGlicReuseCookiesDescription[] =
     "Reuses existing cookies if possible when synchronizing cookies in Glic.";
 
+inline constexpr char kGlicSsrName[] = "Glic SSR";
+inline constexpr char kGlicSsrDescription[] =
+    "Enables server-side rendering for Glic.";
+
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledName[] =
     "Enable EnterprisePublishedSkills policy";
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledDescription[] =

@@ -5998,6 +5998,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-ssr",
+    "owners": [
+      "bryantchandler@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-tab-groups",
     "owners": [
       "bryantchandler@chromium.org",
