@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -25,6 +26,7 @@
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,13 +125,33 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
       ->set_omnibox_controller(nullptr);
 }
 
-// TODO(crbug.com/571819888): Re-enable this test.
-TEST_F(OmniboxPopupUITest, DISABLED_PopulateLocalResourceLoaderConfig) {
+// The in-process theme colors depend on kWebUIInProcessResourceLoadingV2,
+// which some bots disable on the command line, so pin it either way.
+class OmniboxPopupUIInProcessColorsTest
+    : public OmniboxPopupUITest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OmniboxPopupUIInProcessColorsTest() {
+    feature_list_.InitWithFeatureState(
+        features::kWebUIInProcessResourceLoadingV2, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxPopupUIInProcessColorsTest,
+                         testing::Bool());
+
+TEST_P(OmniboxPopupUIInProcessColorsTest, PopulateLocalResourceLoaderConfig) {
   ui::ColorProvider color_provider;
   auto* theme_colors_manager =
       ThemeColorsSourceManagerFactory::GetForProfile(profile());
-  ASSERT_NE(theme_colors_manager, nullptr);
-  theme_colors_manager->SetColorProviderForTesting(&color_provider);
+  ASSERT_EQ(theme_colors_manager != nullptr, GetParam());
+  if (theme_colors_manager) {
+    theme_colors_manager->SetColorProviderForTesting(&color_provider);
+  }
 
   content::TestWebUI web_ui;
   web_ui.set_web_contents(web_contents());
@@ -141,6 +163,11 @@ TEST_F(OmniboxPopupUITest, DISABLED_PopulateLocalResourceLoaderConfig) {
 
   auto source_it =
       config.sources.find(url::Origin::Create(GURL("chrome://theme/")));
+  if (!GetParam()) {
+    // Without the feature the stylesheet is fetched over the network.
+    EXPECT_EQ(source_it, config.sources.end());
+    return;
+  }
   ASSERT_NE(source_it, config.sources.end());
   auto resource_it =
       source_it->second->path_to_resource_map.find("colors.css?sets=ui,chrome");
