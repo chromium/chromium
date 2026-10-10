@@ -7,12 +7,14 @@
 
 #include <map>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/safety_check/safety_check_pref_names.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_names.h"
 
 namespace base {
@@ -20,7 +22,6 @@ class Value;
 }  // namespace base
 
 namespace syncer {
-class DeviceInfo;
 class DeviceInfoTracker;
 }  // namespace syncer
 
@@ -67,10 +68,11 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::DeviceInfo* local_device);
 
-// Returns the device GUID corresponding to the "best match" remote device for
-// Synced Set Up, or an empty string ("") if no valid match exists or if
-// required dependencies are null.
-std::string GetBestMatchDeviceGuid(
+// Returns the OS type and form factor corresponding to the "best match" remote
+// device for Synced Set Up, or `{kUnknown, kUnknown}` if no valid match exists
+// or if required dependencies are null.
+std::pair<syncer::DeviceInfo::OsType, syncer::DeviceInfo::FormFactor>
+GetBestMatchDeviceOsTypeAndFormFactor(
     const sync_preferences::CrossDevicePrefTracker* pref_tracker,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::DeviceInfo* local_device);

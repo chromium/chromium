@@ -11,7 +11,6 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//components/keyed_service/core",
     "//components/sync:test_support",
-    "//components/sync_device_info:test_support",
     "//components/themes/cross_device",
     "//skia",
     "//testing/gmock",

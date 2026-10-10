@@ -52,8 +52,7 @@ class CrossDeviceThemeTrackerAndroid
     : public CrossDeviceThemeTracker<sync_pb::ThemeAndroidSpecifics>,
       public CrossDeviceThemeTracker<sync_pb::ThemeAndroidSpecifics>::Observer {
  public:
-  explicit CrossDeviceThemeTrackerAndroid(
-      syncer::DeviceInfoTracker* device_info_tracker);
+  CrossDeviceThemeTrackerAndroid();
   ~CrossDeviceThemeTrackerAndroid() override;
 
   // CrossDeviceThemeTracker::Observer overrides:
@@ -64,14 +63,16 @@ class CrossDeviceThemeTrackerAndroid
   jni_zero::ScopedJavaLocalRef<JList<JNtpBackgroundDataBase>> GetThemes(
       JNIEnv* env,
       const jni_zero::JavaRef<JContext>& jcontext);
-  // Retrieves the theme for the specified `device_guid`. If `device_guid` is
-  // non-empty, only returns a theme from that device (or nullptr if none found,
-  // preventing Frankensteining). If `device_guid` is empty (""), returns the
-  // best candidate theme based on platform scoring.
-  jni_zero::ScopedJavaLocalRef<jobject> GetThemeForDeviceGuid(
+  // Retrieves the theme for the specified `os_type` and `form_factor`. If
+  // `os_type` is not `kUnknown`, only returns a theme from that platform's
+  // DataType (or nullptr if none found, preventing Frankensteining). If
+  // `os_type` is `kUnknown`, returns the best candidate theme based on platform
+  // scoring.
+  jni_zero::ScopedJavaLocalRef<jobject> GetThemeForOsTypeAndFormFactor(
       JNIEnv* env,
       const jni_zero::JavaRef<JContext>& jcontext,
-      const std::string& device_guid);
+      int32_t os_type,
+      int32_t form_factor);
   ServiceStatus GetServiceStatus(JNIEnv* env);
 
   // Returns the owned Java object.
@@ -92,9 +93,8 @@ class CrossDeviceThemeTrackerAndroid
   void RecreateJavaThemes(JNIEnv* env,
                           const jni_zero::JavaRef<JContext>& jcontext);
 
-  // Maps device OS/form factor to Java PlatformType.
-  PlatformType MapToPlatformType(syncer::DeviceInfo::OsType os_type,
-                                 syncer::DeviceInfo::FormFactor form_factor);
+  // Maps theme sync DataType to Java PlatformType.
+  static PlatformType MapToPlatformType(syncer::DataType data_type);
 
   // Strong global reference to the Java counterpart.
   jni_zero::ScopedJavaGlobalRef<JCrossDeviceThemeTracker> java_object_;

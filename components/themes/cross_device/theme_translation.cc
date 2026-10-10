@@ -13,14 +13,7 @@ namespace themes {
 DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> TranslateDesktop(
     const sync_pb::ThemeSpecifics& desktop_specifics) {
   DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> info;
-  // ThemeSpecifics does not contain the source device's actual desktop OS type
-  // (e.g., Mac, Windows, Linux, ChromeOS), and DeviceInfo::OsType does not
-  // have a generic desktop enum value. Set kWindows as a placeholder so that
-  // CrossDeviceThemeTracker::OsTypeToDataType maps it to syncer::THEMES.
-  // CrossDeviceThemeTracker::ResolveDeviceInfo uses this data type to match the
-  // sync entity against DeviceInfoTracker and overwrites info.os_type with the
-  // actual desktop OS once resolved.
-  info.os_type = syncer::DeviceInfo::OsType::kWindows;
+  info.data_type = syncer::THEMES;
 
   bool is_customized = false;
   if (desktop_specifics.use_custom_theme()) {
@@ -54,7 +47,7 @@ DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> TranslateDesktop(
 DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> TranslateIos(
     const sync_pb::ThemeIosSpecifics& ios_specifics) {
   DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> info;
-  info.os_type = syncer::DeviceInfo::OsType::kIOS;
+  info.data_type = syncer::THEMES_IOS;
 
   bool is_customized = false;
   if (ios_specifics.has_user_color_theme()) {
@@ -73,7 +66,7 @@ DeviceThemeInfo<sync_pb::ThemeAndroidSpecifics> TranslateIos(
 DeviceThemeInfo<sync_pb::ThemeSpecifics> TranslateAndroid(
     const sync_pb::ThemeAndroidSpecifics& android_specifics) {
   DeviceThemeInfo<sync_pb::ThemeSpecifics> info;
-  info.os_type = syncer::DeviceInfo::OsType::kAndroid;
+  info.data_type = syncer::THEMES_ANDROID;
 
   if (android_specifics.has_use_custom_theme()) {
     info.theme.set_use_custom_theme(android_specifics.use_custom_theme());
@@ -91,7 +84,7 @@ DeviceThemeInfo<sync_pb::ThemeSpecifics> TranslateAndroid(
 DeviceThemeInfo<sync_pb::ThemeSpecifics> TranslateIos(
     const sync_pb::ThemeIosSpecifics& ios_specifics) {
   DeviceThemeInfo<sync_pb::ThemeSpecifics> info;
-  info.os_type = syncer::DeviceInfo::OsType::kIOS;
+  info.data_type = syncer::THEMES_IOS;
 
   if (ios_specifics.has_user_color_theme()) {
     *info.theme.mutable_user_color_theme() = ios_specifics.user_color_theme();

@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.prefs.CrossDevicePrefTrackerFactory;
+import org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.DeviceOsAndFormFactor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -1733,9 +1734,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (themeTracker == null) {
             return null;
         }
-        @Nullable String bestMatchGuid =
-                SyncedSetUpUtilsBridge.getBestMatchDeviceGuid(tracker, profile);
-        return themeTracker.getThemeForDeviceGuid(mContext, bestMatchGuid);
+        @Nullable DeviceOsAndFormFactor bestMatch =
+                SyncedSetUpUtilsBridge.getBestMatchDeviceOsTypeAndFormFactor(tracker, profile);
+        return themeTracker.getThemeForOsTypeAndFormFactor(
+                mContext,
+                bestMatch == null ? null : bestMatch.osType,
+                bestMatch == null ? null : bestMatch.formFactor);
     }
 
     /**

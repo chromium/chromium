@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -180,24 +182,32 @@ public class CrossDeviceThemeTrackerUnitTest {
     }
 
     @Test
-    public void testGetThemeForDeviceGuid() throws Exception {
+    public void testGetThemeForOsTypeAndFormFactor() throws Exception {
         NtpBackgroundDataColor remoteColor =
                 new NtpBackgroundDataColor(
                         mActivity, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_VIOLET, false);
-        when(mNatives.getThemeForDeviceGuid(eq(1L), any(), eq("test_guid_123")))
+        when(mNatives.getThemeForOsTypeAndFormFactor(
+                        eq(1L), any(), eq(OsType.ANDROID), eq(FormFactor.PHONE)))
                 .thenReturn(remoteColor);
-        when(mNatives.getThemeForDeviceGuid(eq(1L), any(), eq(""))).thenReturn(remoteColor);
+        when(mNatives.getThemeForOsTypeAndFormFactor(
+                        eq(1L), any(), eq(OsType.UNKNOWN), eq(FormFactor.UNKNOWN)))
+                .thenReturn(remoteColor);
 
         Method createMethod = CrossDeviceThemeTracker.class.getDeclaredMethod("create", long.class);
         createMethod.setAccessible(true);
         CrossDeviceThemeTracker tracker = (CrossDeviceThemeTracker) createMethod.invoke(null, 1L);
 
-        assertEquals(remoteColor, tracker.getThemeForDeviceGuid(mActivity, "test_guid_123"));
-        verify(mNatives).getThemeForDeviceGuid(1L, mActivity, "test_guid_123");
+        assertEquals(
+                remoteColor,
+                tracker.getThemeForOsTypeAndFormFactor(
+                        mActivity, OsType.ANDROID, FormFactor.PHONE));
+        verify(mNatives)
+                .getThemeForOsTypeAndFormFactor(1L, mActivity, OsType.ANDROID, FormFactor.PHONE);
 
-        // Passing null should pass empty string ("") to native.
-        assertEquals(remoteColor, tracker.getThemeForDeviceGuid(mActivity, null));
-        verify(mNatives).getThemeForDeviceGuid(1L, mActivity, "");
+        // Passing null should pass OsType.UNKNOWN and FormFactor.UNKNOWN to native.
+        assertEquals(remoteColor, tracker.getThemeForOsTypeAndFormFactor(mActivity, null, null));
+        verify(mNatives)
+                .getThemeForOsTypeAndFormFactor(1L, mActivity, OsType.UNKNOWN, FormFactor.UNKNOWN);
     }
 
     @Test

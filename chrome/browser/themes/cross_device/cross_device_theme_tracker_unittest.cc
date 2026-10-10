@@ -88,10 +88,7 @@ TEST_F(CrossDeviceThemeTrackerDesktopTest, AndroidThemeUpdate) {
   MockObserver observer;
   tracker_->AddObserver(&observer);
 
-  std::string cache_guid = "android_device_1";
-  std::string storage_key = AddDevice(cache_guid, "Android Phone",
-                                      syncer::DeviceInfo::OsType::kAndroid,
-                                      syncer::DeviceInfo::FormFactor::kPhone);
+  std::string storage_key = "android_theme_tag";
 
   // Prepare Android theme specifics
   sync_pb::EntitySpecifics specifics;
@@ -114,9 +111,7 @@ TEST_F(CrossDeviceThemeTrackerDesktopTest, AndroidThemeUpdate) {
   // Verify tracker state
   auto themes = tracker_->GetOtherDevicesThemes();
   ASSERT_EQ(themes.size(), 1u);
-  EXPECT_EQ(themes[0].device_name, "Android Phone");
-  EXPECT_EQ(themes[0].os_type, syncer::DeviceInfo::OsType::kAndroid);
-  EXPECT_EQ(themes[0].form_factor, syncer::DeviceInfo::FormFactor::kPhone);
+  EXPECT_EQ(themes[0].data_type, syncer::THEMES_ANDROID);
 
   // Verify translated theme (ThemeSpecifics)
   const sync_pb::ThemeSpecifics& translated = themes[0].theme;
@@ -133,10 +128,7 @@ TEST_F(CrossDeviceThemeTrackerDesktopTest, IosThemeUpdate) {
   MockObserver observer;
   tracker_->AddObserver(&observer);
 
-  std::string cache_guid = "ios_device_1";
-  std::string storage_key =
-      AddDevice(cache_guid, "iPad", syncer::DeviceInfo::OsType::kIOS,
-                syncer::DeviceInfo::FormFactor::kTablet);
+  std::string storage_key = "current_theme_ios";
 
   // Prepare iOS theme specifics
   sync_pb::EntitySpecifics specifics;
@@ -157,9 +149,7 @@ TEST_F(CrossDeviceThemeTrackerDesktopTest, IosThemeUpdate) {
   // Verify tracker state
   auto themes = tracker_->GetOtherDevicesThemes();
   ASSERT_EQ(themes.size(), 1u);
-  EXPECT_EQ(themes[0].device_name, "iPad");
-  EXPECT_EQ(themes[0].os_type, syncer::DeviceInfo::OsType::kIOS);
-  EXPECT_EQ(themes[0].form_factor, syncer::DeviceInfo::FormFactor::kTablet);
+  EXPECT_EQ(themes[0].data_type, syncer::THEMES_IOS);
 
   // Verify translated theme
   const sync_pb::ThemeSpecifics& translated = themes[0].theme;

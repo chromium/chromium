@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +15,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -28,7 +26,6 @@
 #endif
 #include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_tracker.h"
 #include "components/themes/cross_device/theme_comparer.h"
 
 namespace themes {
@@ -47,9 +44,14 @@ enum class ServiceStatus {
   kSyncDisabled,
 };
 
-inline syncer::DataType OsTypeToDataType(syncer::DeviceInfo::OsType os_type) {
+inline syncer::DataType OsTypeToDataType(
+    syncer::DeviceInfo::OsType os_type,
+    syncer::DeviceInfo::FormFactor form_factor) {
   switch (os_type) {
     case syncer::DeviceInfo::OsType::kAndroid:
+      if (form_factor == syncer::DeviceInfo::FormFactor::kDesktop) {
+        return syncer::THEMES;
+      }
       return syncer::THEMES_ANDROID;
     case syncer::DeviceInfo::OsType::kIOS:
       return syncer::THEMES_IOS;
@@ -63,7 +65,7 @@ inline syncer::DataType OsTypeToDataType(syncer::DeviceInfo::OsType os_type) {
   }
 }
 
-// Holds theme information from a specific platform and device.
+// Holds theme information from a specific platform.
 template <typename LocalSpecifics>
 struct DeviceThemeInfo {
   DeviceThemeInfo() = default;
@@ -72,16 +74,11 @@ struct DeviceThemeInfo {
   ~DeviceThemeInfo() = default;
 
   bool operator==(const DeviceThemeInfo& other) const {
-    return guid == other.guid && device_name == other.device_name &&
-           os_type == other.os_type && form_factor == other.form_factor &&
+    return data_type == other.data_type &&
            ThemeComparer<LocalSpecifics>::Equals(theme, other.theme);
   }
 
-  std::string guid;
-  std::string device_name;
-  syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kUnknown;
-  syncer::DeviceInfo::FormFactor form_factor =
-      syncer::DeviceInfo::FormFactor::kUnknown;
+  syncer::DataType data_type = syncer::UNSPECIFIED;
   LocalSpecifics theme;
 };
 
@@ -89,8 +86,7 @@ struct DeviceThemeInfo {
 // It maintains a cache of themes from other devices and notifies observers when
 // they change. It also manages the sync bridges for the tracked data types.
 template <typename LocalSpecifics>
-class CrossDeviceThemeTracker : public KeyedService,
-                                public syncer::DeviceInfoTracker::Observer {
+class CrossDeviceThemeTracker : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -98,23 +94,12 @@ class CrossDeviceThemeTracker : public KeyedService,
     virtual void OnServiceStatusChanged(ServiceStatus status) = 0;
   };
 
-  explicit CrossDeviceThemeTracker(
-      syncer::DeviceInfoTracker* device_info_tracker)
-      : device_info_tracker_(device_info_tracker) {
-    if (device_info_tracker_) {
-      device_info_tracker_->AddObserver(this);
-    }
-  }
+  CrossDeviceThemeTracker() = default;
 
   CrossDeviceThemeTracker(const CrossDeviceThemeTracker&) = delete;
   CrossDeviceThemeTracker& operator=(const CrossDeviceThemeTracker&) = delete;
 
-  ~CrossDeviceThemeTracker() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (device_info_tracker_) {
-      device_info_tracker_->RemoveObserver(this);
-    }
-  }
+  ~CrossDeviceThemeTracker() override = default;
 
   void AddObserver(Observer* observer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,7 +148,6 @@ class CrossDeviceThemeTracker : public KeyedService,
   void UpdateThemeInfo(const std::string& cache_guid,
                        DeviceThemeInfo<LocalSpecifics> theme_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ResolveDeviceInfo(cache_guid, theme_info);
     auto it = other_themes_.find(cache_guid);
     if (it != other_themes_.end() && it->second == theme_info) {
       return;
@@ -196,7 +180,7 @@ class CrossDeviceThemeTracker : public KeyedService,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool changed = false;
     for (auto it = other_themes_.begin(); it != other_themes_.end();) {
-      if (OsTypeToDataType(it->second.os_type) == type) {
+      if (it->second.data_type == type) {
         it = other_themes_.erase(it);
         changed = true;
       } else {
@@ -211,41 +195,11 @@ class CrossDeviceThemeTracker : public KeyedService,
   // KeyedService:
   void Shutdown() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (device_info_tracker_) {
-      device_info_tracker_->RemoveObserver(this);
-      device_info_tracker_ = nullptr;
-    }
     observers_.Clear();
     bridges_.clear();
   }
 
-  // DeviceInfoTracker::Observer:
-  void OnDeviceInfoChange() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    bool changed = false;
-    for (auto& [cache_guid, theme_info] : other_themes_) {
-      DeviceThemeInfo<LocalSpecifics> updated_info = theme_info;
-      ResolveDeviceInfo(cache_guid, updated_info);
-      if (theme_info.device_name != updated_info.device_name ||
-          theme_info.form_factor != updated_info.form_factor ||
-          theme_info.os_type != updated_info.os_type) {
-        theme_info.device_name = updated_info.device_name;
-        theme_info.form_factor = updated_info.form_factor;
-        theme_info.os_type = updated_info.os_type;
-        changed = true;
-      }
-    }
-    if (changed) {
-      NotifyObservers();
-    }
-  }
-
  protected:
-  syncer::DeviceInfoTracker* device_info_tracker() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return device_info_tracker_;
-  }
-
   void NotifyObservers() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (auto& observer : observers_) {
@@ -295,29 +249,6 @@ class CrossDeviceThemeTracker : public KeyedService,
   std::map<syncer::DataType, ServiceStatus> bridge_statuses_;
 
  private:
-  void ResolveDeviceInfo(const std::string& client_tag_hash_value,
-                         DeviceThemeInfo<LocalSpecifics>& theme_info) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!device_info_tracker_) {
-      return;
-    }
-    syncer::DataType type = OsTypeToDataType(theme_info.os_type);
-    if (type == syncer::UNSPECIFIED) {
-      return;
-    }
-    for (const auto* device : device_info_tracker_->GetAllDeviceInfo()) {
-      auto hash = syncer::ClientTagHash::FromUnhashed(type, device->guid());
-      if (hash.value() == client_tag_hash_value) {
-        theme_info.guid = device->guid();
-        theme_info.device_name = device->client_name();
-        theme_info.form_factor = device->form_factor();
-        theme_info.os_type = device->os_type();
-        return;
-      }
-    }
-  }
-
-  raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
   base::ObserverList<Observer> observers_;
   std::map<std::string, DeviceThemeInfo<LocalSpecifics>> other_themes_;
   std::map<syncer::DataType, std::unique_ptr<syncer::DataTypeSyncBridge>>

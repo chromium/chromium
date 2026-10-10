@@ -27,7 +27,9 @@ namespace {
 // names and values, and the total number of changes observed by the
 // `CrossDevicePrefTracker` for the device.
 struct DeviceData {
-  std::string guid;
+  syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kUnknown;
+  syncer::DeviceInfo::FormFactor form_factor =
+      syncer::DeviceInfo::FormFactor::kUnknown;
   // Map of all cross-device prefs and their values associated with this
   // device.
   std::map<std::string_view, sync_preferences::TimestampedPrefValue> pref_map;
@@ -197,20 +199,21 @@ DeviceData GetBestMatchDeviceData(
     }
   }
 
-  if (debug_logs_enabled) {
-    const syncer::DeviceInfo* best_device_info =
-        device_info_tracker->GetChromeDeviceInfo(best_guid);
+  const syncer::DeviceInfo* best_device_info =
+      device_info_tracker->GetChromeDeviceInfo(best_guid);
 
-    if (best_device_info) {
-      VLOG(1) << "XplatSyncedSetup, " << __func__ << ": selected device "
-              << best_guid << " with form factor "
-              << static_cast<int>(best_device_info->form_factor()) << " and OS "
-              << static_cast<int>(best_device_info->os_type());
-    }
+  if (debug_logs_enabled && best_device_info) {
+    VLOG(1) << "XplatSyncedSetup, " << __func__ << ": selected device "
+            << best_guid << " with form factor "
+            << static_cast<int>(best_device_info->form_factor()) << " and OS "
+            << static_cast<int>(best_device_info->os_type());
   }
 
   DeviceData result = std::move(synced_devices.at(best_guid));
-  result.guid = best_guid;
+  if (best_device_info) {
+    result.os_type = best_device_info->os_type();
+    result.form_factor = best_device_info->form_factor();
+  }
   return result;
 }
 
@@ -260,7 +263,8 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
   return GetCrossDevicePrefValuesForDevice(best_match_device_data);
 }
 
-std::string GetBestMatchDeviceGuid(
+std::pair<syncer::DeviceInfo::OsType, syncer::DeviceInfo::FormFactor>
+GetBestMatchDeviceOsTypeAndFormFactor(
     const sync_preferences::CrossDevicePrefTracker* pref_tracker,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::DeviceInfo* local_device) {
@@ -270,14 +274,15 @@ std::string GetBestMatchDeviceGuid(
   if (!pref_tracker || !device_info_tracker || !local_device) {
     VLOG_IF(1, debug_logs_enabled)
         << "XplatSyncedSetup, " << __func__
-        << ": Returning empty because pref_tracker, "
+        << ": Returning {kUnknown, kUnknown} because pref_tracker, "
         << "device_info_tracker, or local_device is null.";
-    return "";
+    return {syncer::DeviceInfo::OsType::kUnknown,
+            syncer::DeviceInfo::FormFactor::kUnknown};
   }
   DeviceDataMap device_data_map = MapPrefsToDevices(pref_tracker);
   DeviceData best_match_device_data = GetBestMatchDeviceData(
       device_data_map, device_info_tracker, local_device);
-  return best_match_device_data.guid;
+  return {best_match_device_data.os_type, best_match_device_data.form_factor};
 }
 
 }  // namespace sync_preferences::synced_set_up

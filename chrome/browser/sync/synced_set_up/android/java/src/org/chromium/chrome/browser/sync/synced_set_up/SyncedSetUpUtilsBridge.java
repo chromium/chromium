@@ -12,6 +12,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.components.sync_preferences.cross_device_pref_tracker.CrossDevicePrefTracker;
 import org.chromium.components.sync_preferences.synced_set_up.PrefToValueMapBridge;
 
@@ -21,6 +23,17 @@ import java.util.Map;
 @NullMarked
 @JNINamespace("sync_preferences::synced_set_up")
 public class SyncedSetUpUtilsBridge {
+
+    /** Holds the OS type and form factor of a remote device. */
+    public static class DeviceOsAndFormFactor {
+        public final @OsType int osType;
+        public final @FormFactor int formFactor;
+
+        public DeviceOsAndFormFactor(@OsType int osType, @FormFactor int formFactor) {
+            this.osType = osType;
+            this.formFactor = formFactor;
+        }
+    }
 
     private static @Nullable Map<String, Object> sCrossDeviceSettingsForTesting;
 
@@ -51,52 +64,66 @@ public class SyncedSetUpUtilsBridge {
 
     /**
      * For testing: {@code null} indicates that no mock value is set for testing (production logic
-     * should run). An empty string ({@code ""}) should be set to represent the case where no
-     * matching device GUID is found.
+     * should run). {@link OsType#UNKNOWN} in {@code osType} represents the case where no matching
+     * device is found.
      */
-    private static @Nullable String sBestMatchDeviceGuidForTesting;
+    private static @Nullable DeviceOsAndFormFactor sBestMatchDeviceForTesting;
 
     /**
-     * Returns the best match remote device GUID for synced set up, or null if none found.
+     * Returns the best match remote device OS type and form factor for synced set up, or null if
+     * none found.
      *
-     * <p>Native C++ returns an empty string ({@code ""}) when no matching device GUID exists or
-     * when dependencies are unavailable; this method translates that empty string into {@code
+     * <p>Native C++ returns {@link OsType#UNKNOWN} when no matching device exists or when
+     * dependencies are unavailable; this method translates {@link OsType#UNKNOWN} into {@code
      * null}.
      *
      * @param prefTracker The {@link CrossDevicePrefTracker} to use.
      * @param profile The {@link Profile} to use.
-     * @return The best match device GUID, or null if no matching device exists.
+     * @return The best match device {@link DeviceOsAndFormFactor}, or null if no matching device
+     *     exists.
      */
-    public static @Nullable String getBestMatchDeviceGuid(
+    public static @Nullable DeviceOsAndFormFactor getBestMatchDeviceOsTypeAndFormFactor(
             CrossDevicePrefTracker prefTracker, Profile profile) {
-        if (sBestMatchDeviceGuidForTesting != null) {
-            return sBestMatchDeviceGuidForTesting.isEmpty() ? null : sBestMatchDeviceGuidForTesting;
+        if (sBestMatchDeviceForTesting != null) {
+            return sBestMatchDeviceForTesting.osType == OsType.UNKNOWN
+                    ? null
+                    : sBestMatchDeviceForTesting;
         }
 
         long prefTrackerPtr = prefTracker.getNativePtr();
         if (prefTrackerPtr == 0) return null;
 
-        String guid =
+        int[] result =
                 SyncedSetUpUtilsBridgeJni.get()
-                        .getBestMatchDeviceGuid(
+                        .getBestMatchDeviceOsTypeAndFormFactor(
                                 profile.getNativeBrowserContextPointer(), prefTrackerPtr);
-        return (guid == null || guid.isEmpty()) ? null : guid;
+        if (result == null || result.length < 2 || result[0] == OsType.UNKNOWN) {
+            return null;
+        }
+        return new DeviceOsAndFormFactor(result[0], result[1]);
     }
 
     /**
-     * Sets the best match device GUID for testing. Pass {@code null} to reset and use production
-     * logic, or pass an empty string ({@code ""}) to simulate the case where no matching device
-     * GUID exists.
+     * Sets the best match device OS type and form factor for testing. Pass {@code null} for {@code
+     * osType} to reset and use production logic, or pass {@link OsType#UNKNOWN} to simulate the
+     * case where no matching device exists.
      *
-     * @param guid The test device GUID, {@code ""} for no matching device, or {@code null} to reset
-     *     to production code.
+     * @param osType The test device {@link OsType}, {@link OsType#UNKNOWN} for no matching device,
+     *     or {@code null} to reset to production code.
+     * @param formFactor The test device {@link FormFactor}, or {@code null} (treated as {@link
+     *     FormFactor#UNKNOWN}).
      */
-    public static void setBestMatchDeviceGuidForTesting(@Nullable String guid) {
-        @Nullable String oldState = sBestMatchDeviceGuidForTesting;
-        sBestMatchDeviceGuidForTesting = guid;
+    public static void setBestMatchDeviceForTesting(
+            @Nullable @OsType Integer osType, @Nullable @FormFactor Integer formFactor) {
+        @Nullable DeviceOsAndFormFactor oldState = sBestMatchDeviceForTesting;
+        sBestMatchDeviceForTesting =
+                osType == null
+                        ? null
+                        : new DeviceOsAndFormFactor(
+                                osType, formFactor == null ? FormFactor.UNKNOWN : formFactor);
         ResettersForTesting.register(
                 () -> {
-                    sBestMatchDeviceGuidForTesting = oldState;
+                    sBestMatchDeviceForTesting = oldState;
                 });
     }
 
@@ -114,7 +141,7 @@ public class SyncedSetUpUtilsBridge {
         void getCrossDevicePrefsFromRemoteDevice(
                 long profile, long crossDevicePrefTracker, long mapBridge);
 
-        @JniType("std::string")
-        String getBestMatchDeviceGuid(long profile, long crossDevicePrefTracker);
+        @JniType("std::vector<int32_t>")
+        int[] getBestMatchDeviceOsTypeAndFormFactor(long profile, long crossDevicePrefTracker);
     }
 }

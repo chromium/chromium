@@ -19,8 +19,6 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/test_data_type_store_service.h"
-#include "components/sync_device_info/fake_device_info_tracker.h"
-#include "components/sync_device_info/test_device_info_builder.h"
 #include "components/themes/cross_device/cross_device_theme_sync_bridge.h"
 #include "components/themes/cross_device/cross_device_theme_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,26 +30,9 @@ template <typename LocalSpecifics>
 class CrossDeviceThemeTrackerTestBase : public testing::Test {
  protected:
   CrossDeviceThemeTrackerTestBase()
-      : tracker_(std::make_unique<CrossDeviceThemeTracker<LocalSpecifics>>(
-            &fake_device_info_tracker_)) {}
+      : tracker_(std::make_unique<CrossDeviceThemeTracker<LocalSpecifics>>()) {}
 
   ~CrossDeviceThemeTrackerTestBase() override = default;
-
-  std::string AddDevice(const std::string& cache_guid,
-                        const std::string& client_name,
-                        syncer::DeviceInfo::OsType os_type,
-                        syncer::DeviceInfo::FormFactor form_factor) {
-    auto device_info = syncer::TestDeviceInfoBuilder()
-                           .WithGuid(cache_guid)
-                           .WithClientName(client_name)
-                           .WithOsType(os_type)
-                           .WithFormFactor(form_factor)
-                           .Build();
-    fake_device_info_tracker_.Add(std::move(device_info));
-
-    syncer::DataType type = OsTypeToDataType(os_type);
-    return syncer::ClientTagHash::FromUnhashed(type, cache_guid).value();
-  }
 
   std::unique_ptr<syncer::EntityChange> CreateAddChange(
       const std::string& storage_key,
@@ -98,7 +79,6 @@ class CrossDeviceThemeTrackerTestBase : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
   syncer::TestDataTypeStoreService test_store_service_;
   std::unique_ptr<CrossDeviceThemeTracker<LocalSpecifics>> tracker_;
 };

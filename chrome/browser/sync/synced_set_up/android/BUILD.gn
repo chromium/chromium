@@ -16,6 +16,7 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/messages/android:java",
+    "//components/sync_device_info:sync_device_info_java",
     "//components/sync_preferences/cross_device_pref_tracker/android:java",
     "//components/sync_preferences/synced_set_up/android:java",
     "//third_party/jni_zero:gendeps_java",
