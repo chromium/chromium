@@ -10,11 +10,12 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   Profile* profile =
       g_browser_process->profile_manager()->GetPrimaryUserProfile();
   const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   AshSignalsDecorator decorator(connector_, profile);
 
   user_manager::UserManager::Get()->SetUserPolicyStatus(user->GetAccountId(),
@@ -273,7 +274,9 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestSignalTrigger) {
     base::RunLoop run_loop;
     AshSignalsDecorator decorator(
         connector_,
-        ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile());
+        Profile::FromBrowserContext(
+            ash::BrowserContextHelper::Get()->GetSigninBrowserContext())
+            ->GetOriginalProfile());
     base::DictValue signals;
     decorator.Decorate(signals, run_loop.QuitClosure());
 
