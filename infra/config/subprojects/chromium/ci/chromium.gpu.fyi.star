@@ -1767,6 +1767,9 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/linux.rtx_4070_super.wayland.gl_tests_passthrough.filter",
                 ],
             ),
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "TODO(crbug.com/571913992): Re-enable once vulkan_pixel_skia_gold_test passes on Wayland",
+            ),
         },
     ),
     targets_settings = targets.settings(

@@ -1035,6 +1035,7 @@ crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland passthrough ang
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/glsl3/array-complex-indexing.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]

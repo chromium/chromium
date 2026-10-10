@@ -657,6 +657,7 @@ crbug.com/541251909 [ linux amd display-server-wayland ] conformance/extensions/
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_WEBGL_draw_buffers [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 
 ###############################
 # New failures in WebGL rolls #

@@ -4407,6 +4407,15 @@ targets.bundle(
         "webgl_conformance_gles_passthrough_tests",
     ],
     per_test_modifications = {
+        "vulkan_pixel_skia_gold_test": targets.per_test_modification(
+            replacements = targets.replacements(
+                args = {
+                    # Replaces --use-angle=gl with --use-angle=gles since
+                    # Wayland requires running tests with GLES, not GL.
+                    "--extra-browser-args": "--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough",
+                },
+            ),
+        ),
         "webgl2_conformance_gl_passthrough_tests": targets.remove(
             reason = "Wayland requires running tests with GLES, not GL",
         ),
