@@ -593,8 +593,8 @@
       <message name="IDS_IOS_AMBIENT_AUTOFILL_NOTICE_SETTINGS" desc="Secondary button label for Ambient Autofill notice bottom sheet. [iOS only]">
         Settings
       </message>
-      <message name="IDS_IOS_AMBIENT_AUTOFILL_NOTICE_SUBTITLE" desc="Subtitle of the bottom sheet notice for Ambient Autofill. [iOS only]">
-        Powered by Personal Intelligence with Gemini. Manage your choices in settings.
+      <message name="IDS_IOS_AMBIENT_AUTOFILL_NOTICE_SUBTITLE" desc="Subtitle of the bottom sheet notice for Ambient Autofill. [iOS only]" translateable="false">
+        Powered by Gemini with Personal Intelligence. Manage your choices in settings.
       </message>
       <message name="IDS_IOS_AMBIENT_AUTOFILL_NOTICE_TITLE" desc="Title of the bottom sheet notice for Ambient Autofill. [iOS only]">
         Now you can find and fill info from Gmail and more
@@ -742,8 +742,8 @@
       <message name="IDS_IOS_AUTOFILL_AI_CLOSE_FIND_AND_FILL_ACCESSIBILITY_LABEL" desc="Accessibility label for the button that closes find and fill. [iOS only]">
         Close find and fill
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_CONTEXT_MENU_PERSONAL_CONTEXT_DESCRIPTION" desc="Description text displayed at the top of the context menu for Autofill AI suggestions that are from personal context. [iOS only]">
-        Suggested by Gemini. Manage enhanced autofill in settings.
+      <message name="IDS_IOS_AUTOFILL_AI_CONTEXT_MENU_PERSONAL_CONTEXT_DESCRIPTION" desc="Description text displayed at the top of the context menu for Autofill AI suggestions that are from personal context. [iOS only]" translateable="false">
+        From Gemini and connected apps. Manage enhanced autofill in settings.
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE" desc="Title for the Autofill AI suggestions popup. [iOS only]">
         Find and fill
