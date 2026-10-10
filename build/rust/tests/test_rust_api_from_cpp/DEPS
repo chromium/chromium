@@ -1,0 +1,5 @@
+include_rules = [
+  # Tests may use `LIFETIME_BOUND` (to test how Crubit handles it), even
+  # though `//build/rust/DEPS` disallows depending on `//base`.
+  "+base/compiler_specific.h",
+]

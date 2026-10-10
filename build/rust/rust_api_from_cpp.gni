@@ -11,7 +11,17 @@ import("//build_overrides/crubit.gni")
 
 # Crubit features enabled for all `rust_api_from_cpp` targets.
 # See also: https://github.com/google/crubit/blob/main/features/README.md
-_globally_enabled_crubit_features = [ "supported" ]
+_globally_enabled_crubit_features = [
+  "supported",
+
+  # `assume_lifetimes` makes Crubit apply Rust's lifetime elision rules to C++
+  # references (e.g. `this` becomes `&self`).  This will become the default
+  # Crubit behavior "soon", but for now this is an opt-in (to enable
+  # incremental migration of other Crubit clients).  For more details see the
+  # "References and lifetimes" section in
+  # `docs/rust/crubit/rust_api_from_cpp.md`.
+  "assume_lifetimes",
+]
 
 # Template to generate and build Rust bindings for a set of C++ headers using
 # Crubit's `rust_api_from_cpp` (aka `rs_bindings_from_cc`) tool.  For

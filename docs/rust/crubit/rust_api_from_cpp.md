@@ -170,6 +170,33 @@ Notes:
   APIs from `public_headers`.  Other `deps` of the `bindings_target` (e.g.
   ones used only by its `.cc` files) do not need Rust bindings.
 
+## References and lifetimes
+
+Crubit binds C++ references (including `this`) as Rust references (or as
+`CRef` / `CMut`).  By default, the lifetimes of these references come from
+Rust's lifetime elision rules.  These rules can be wrong - for example, when a
+returned reference can point into a parameter other than `this`.  In such
+cases, annotate the C++ API:
+
+* Prefer `LIFETIME_BOUND` (from `base/compiler_specific.h`).  Crubit translates
+  it into Rust lifetimes.  Clang warnings also lightly check it (e.g.
+  `-Wdangling` reports a temporary passed to a `LIFETIME_BOUND` parameter
+  if the result outlives the temporary).  See
+  `build/rust/tests/test_rust_api_from_cpp/lifetime_bound.h`.
+* Use explicit lifetime annotations (e.g. `$a` from
+  `#include "third_party/crubit/support/lifetime_annotations.h"`) only if
+  `LIFETIME_BOUND` can't express the lifetimes.  Nothing checks that these
+  annotations are correct.  C++ targets that use these annotations need to
+  depend on `//build/rust/crubit`.  See
+  `build/rust/tests/test_rust_api_from_cpp/explicit_lifetimes.h`.
+
+See
+[Crubit's "References and lifetimes" docs](https://crubit.rs/cpp/references_and_lifetimes.html)
+for more details and examples.
+
+See also https://crbug.com/572054453 and https://crbug.com/572056816 which track
+enabling additional lifetime-related warnings in Chromium's C++ targets.
+
 ## Troubleshooting
 
 The sections below should help diagnose and fix some issues you may encounter.
