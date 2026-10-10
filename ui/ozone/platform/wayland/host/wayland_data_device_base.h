@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -38,7 +39,7 @@ class WaylandDataDeviceBase {
   }
 
   // Returns MIME types given by the current data offer.
-  const std::vector<std::string>& GetAvailableMimeTypes() const;
+  base::span<const std::string> GetAvailableMimeTypes() const;
 
   // Synchronously reads and returns selection data with |mime_type| format.
   // TODO(crbug.com/40398800): Drop once Clipboard API becomes async.

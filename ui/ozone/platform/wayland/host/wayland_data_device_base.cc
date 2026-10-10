@@ -31,11 +31,10 @@ WaylandDataDeviceBase::WaylandDataDeviceBase(WaylandConnection* connection)
 
 WaylandDataDeviceBase::~WaylandDataDeviceBase() = default;
 
-const std::vector<std::string>& WaylandDataDeviceBase::GetAvailableMimeTypes()
+base::span<const std::string> WaylandDataDeviceBase::GetAvailableMimeTypes()
     const {
   if (!data_offer_) {
-    static std::vector<std::string> dummy;
-    return dummy;
+    return {};
   }
   return data_offer_->mime_types();
 }

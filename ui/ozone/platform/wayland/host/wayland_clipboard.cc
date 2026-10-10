@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -141,7 +142,7 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   }
 
   std::vector<std::string> ReadMimeTypes() final {
-    return GetDevice()->GetAvailableMimeTypes();
+    return base::ToVector(GetDevice()->GetAvailableMimeTypes());
   }
 
   // Once this client sends wl_data_source::offer, it is responsible for holding
