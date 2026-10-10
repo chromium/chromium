@@ -35,12 +35,12 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -856,8 +856,8 @@ void FloatingWorkspaceService::OnAppRegistryCacheAdded(
 void FloatingWorkspaceService::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   VLOG(1) << "Active User session changed for fws";
-  Profile* active_profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* active_profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   // Stop the capture if the switched user is not the profile we logged in with.
   // Set up the observers again if we switched back to the profile we logged in
   // with.
@@ -1052,11 +1052,12 @@ bool FloatingWorkspaceService::IsActiveUserProfile() const {
   if (!active_user) {
     return false;
   }
-  auto* profile_helper = ash::ProfileHelper::Get();
-  if (!profile_helper) {
+  auto* browser_context_helper = BrowserContextHelper::Get();
+  if (!browser_context_helper) {
     return false;
   }
-  const auto* user_profile = profile_helper->GetProfileByUser(active_user);
+  const auto* user_profile = Profile::FromBrowserContext(
+      browser_context_helper->GetBrowserContextByUser(active_user));
   return user_profile == profile_;
 }
 

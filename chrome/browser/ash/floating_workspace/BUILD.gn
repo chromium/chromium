@@ -25,7 +25,6 @@ static_library("floating_workspace") {
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/floating_sso",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
     "//chrome/browser/sync",
