@@ -497,6 +497,40 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   loader->DidReceiveData(data_str);
 }
 
+TEST_F(ResourceMultiBufferDataProviderTest,
+       RedirectToSameUrlReplacesUrlDataInUrlIndex) {
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 100, 1024);
+
+  // Drop the test's reference so `url_index_` holds the sole reference to
+  // `UrlData`.
+  ResourceMultiBufferDataProvider* loader = loader_.ExtractAsDangling();
+  url_data_ = nullptr;
+
+  // Redirect to the same URL with a no-cache response so `url_data_->Valid()`
+  // becomes false. In `DidReceiveResponse()`, `GetByUrl()` creates a new
+  // `UrlData` for the same key and `TryInsert()` replaces the old `UrlData` in
+  // `url_index_`, which must not destroy `url_data_` and `loader` before
+  // `loader` is migrated to the new `UrlData`.
+  WebURLResponse redirect_response(url_);
+  redirect_response.SetHttpHeaderField(WebString::FromUtf8("Cache-Control"),
+                                       WebString::FromUtf8("no-cache"));
+  EXPECT_CALL(*this, RedirectCallback(_))
+      .WillOnce(Invoke(this, &ResourceMultiBufferDataProviderTest::SetUrlData));
+  ASSERT_TRUE(loader->WillFollowRedirect(WebURL(url_), redirect_response));
+
+  WebURLResponse response(url_);
+  response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 0-100/1024"));
+  response.SetExpectedContentLength(101);
+  response.SetHttpHeaderField(WebString::FromUtf8("Accept-Ranges"),
+                              WebString::FromUtf8("bytes"));
+  response.SetHttpStatusCode(kHttpPartialContent);
+  loader->DidReceiveResponse(response);
+  EXPECT_TRUE(url_data_);
+}
+
 TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexStartViaReader) {
   url_index_ = std::make_unique<UrlIndex>(
       &fetch_context_, task_environment_.GetMainThreadTaskRunner());

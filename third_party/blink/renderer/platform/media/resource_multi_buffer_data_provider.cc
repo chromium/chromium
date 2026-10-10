@@ -252,6 +252,12 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     return;  // "this" may be deleted now.
   }
 
+  // Keep a reference to `url_data_` across `GetByUrl()` and `TryInsert()`. If
+  // `UrlIndex` holds the sole reference to `url_data_` and `TryInsert()`
+  // replaces it with a new `UrlData` for the same key, `url_data_` (which owns
+  // `this` via `multibuffer()`) would otherwise be destroyed before ownership
+  // of `this` is transferred below.
+  scoped_refptr<UrlData> old_url_data(url_data_.get());
   scoped_refptr<UrlData> destination_url_data(url_data_.get());
 
   if (!redirects_to_.IsEmpty()) {
@@ -363,9 +369,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   if (destination_url_data != url_data_.get()) {
     // At this point, we've encountered a redirect, or found a better url data
     // instance for the data that we're about to download.
-
-    // First, let's take a ref on the current url data.
-    scoped_refptr<UrlData> old_url_data(url_data_.get());
     destination_url_data->Use();
 
     // Take ownership of ourselves. (From the multibuffer)
