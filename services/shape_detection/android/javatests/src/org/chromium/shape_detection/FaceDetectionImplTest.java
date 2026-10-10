@@ -28,7 +28,9 @@ import org.chromium.shape_detection.mojom.FaceDetectorOptions;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Test suite for FaceDetectionImpl. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -64,32 +66,51 @@ public class FaceDetectionImplTest {
         FaceDetectorOptions options = new FaceDetectorOptions();
         options.fastMode = fastMode;
         options.maxDetectedFaces = 32;
+        // Tasks the impl hands to its response executor; run below on this thread, as the
+        // binding thread would in production.
+        final ArrayBlockingQueue<Runnable> responseTasks = new ArrayBlockingQueue<>(1);
+        final AtomicReference<Thread> executorThread = new AtomicReference<>();
         FaceDetection detector = null;
         if (api == DetectionProviderType.ANDROID) {
-            detector = new FaceDetectionImpl(options);
+            detector =
+                    new FaceDetectionImpl(options) {
+                        @Override
+                        Executor getResponseExecutor() {
+                            executorThread.set(Thread.currentThread());
+                            return responseTasks::add;
+                        }
+                    };
         } else if (api == DetectionProviderType.GMS_CORE) {
             detector = new FaceDetectionImplGmsCore(options);
         } else {
             throw new AssertionError();
         }
 
-        final ArrayBlockingQueue<FaceDetectionResult[]> queue = new ArrayBlockingQueue<>(1);
+        final AtomicReference<FaceDetectionResult[]> result = new AtomicReference<>();
+        final AtomicReference<Thread> callbackThread = new AtomicReference<>();
         detector.detect(
                 mojoBitmap,
-                new FaceDetection.Detect_Response() {
-                    @Override
-                    public void call(FaceDetectionResult[] results) {
-                        queue.add(results);
-                    }
+                results -> {
+                    callbackThread.set(Thread.currentThread());
+                    result.set(results);
                 });
-        FaceDetectionResult[] toReturn = null;
-        try {
-            toReturn = queue.poll(5L, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Assert.fail("Could not get FaceDetectionResult: " + e.toString());
+        if (result.get() == null) {
+            Runnable responseTask = null;
+            try {
+                responseTask = responseTasks.poll(5L, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Assert.fail("Could not get FaceDetectionResult: " + e.toString());
+            }
+            Assert.assertNotNull(responseTask);
+            responseTask.run();
         }
-        Assert.assertNotNull(toReturn);
-        return toReturn;
+        Assert.assertNotNull(result.get());
+        // Mojo responses must be sent from the binding thread (https://crbug.com/568899705).
+        if (api == DetectionProviderType.ANDROID) {
+            Assert.assertEquals(Thread.currentThread(), executorThread.get());
+        }
+        Assert.assertEquals(Thread.currentThread(), callbackThread.get());
+        return result.get();
     }
 
     private void detectSucceedsOnValidImage(DetectionProviderType api) {
