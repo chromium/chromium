@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics_action.h"
@@ -208,17 +210,34 @@ void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
 
   if (is_shown) {
     RecordAction(base::UserMetricsAction("Media.Shown"));
-
-    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-         it.Advance()) {
-      it.GetCurrentValue()->OnPageShown();
-    }
   } else {
     RecordAction(base::UserMetricsAction("Media.Hidden"));
+  }
 
-    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-         it.Advance()) {
-      it.GetCurrentValue()->OnPageHidden();
+  // Create a list of players before making any possibly reentrant calls to
+  // OnPageShown() or OnPageHidden().
+  std::vector<int> player_ids;
+  player_ids.reserve(id_map_.size());
+  for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+       it.Advance()) {
+    player_ids.push_back(it.GetCurrentKey());
+  }
+
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  for (int player_id : player_ids) {
+    Observer* player = id_map_.Lookup(player_id);
+    if (!player) {
+      continue;
+    }
+
+    if (is_shown) {
+      player->OnPageShown();
+    } else {
+      player->OnPageHidden();
+    }
+
+    if (!weak_this) {
+      return;
     }
   }
 
