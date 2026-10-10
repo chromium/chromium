@@ -283,6 +283,7 @@ void ContentsContainerView::SetBorderRoundedCornersFrom(
   contents_scrim_view_->SetRoundedCorners(corner_radii);
 
   if (new_tab_footer_view_) {
+    new_tab_footer_view_->SetBackgroundRadii(content_lower_rounded_corners);
     new_tab_footer_view_->holder()->SetNativeViewCornerRadii(
         content_lower_rounded_corners);
   }

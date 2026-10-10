@@ -9,18 +9,24 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/views/background.h"
 #include "ui/views/view_class_properties.h"
 
 namespace new_tab_footer {
 
 NewTabFooterWebView::NewTabFooterWebView(BrowserWindowInterface* browser)
     : views::WebView(browser->GetProfile()), browser_(browser) {
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  SetBackground(views::CreateLayerBasedSolidBackground(kColorToolbar));
   SetProperty(views::kElementIdentifierKey, kNtpFooterViewElementId);
 }
 
@@ -42,6 +48,14 @@ void NewTabFooterWebView::ShowUI(
   ShowUI();
   base::UmaHistogramMediumTimes("NewTabPage.Footer.ShownTime",
                                 base::TimeTicks::Now() - load_start);
+}
+
+void NewTabFooterWebView::SetBackgroundRadii(
+    const gfx::RoundedCornersF& radii) {
+  ui::Layer* background_layer = layer();
+  CHECK(background_layer);
+  background_layer->SetRoundedCornerRadius(radii);
+  background_layer->SetIsFastRoundedCorner(true);
 }
 
 void NewTabFooterWebView::ShowUI() {

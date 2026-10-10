@@ -42,6 +42,8 @@ class NewTabFooterWebView : public views::WebView,
               GURL url,
               base::WeakPtr<content::WebContents> attached_tab_contents);
 
+  void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
+
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
