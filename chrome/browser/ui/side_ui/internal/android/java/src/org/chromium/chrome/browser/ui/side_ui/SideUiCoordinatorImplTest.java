@@ -75,7 +75,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 
-import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -588,7 +588,7 @@ public class SideUiCoordinatorImplTest {
                 ArgumentCaptor.forClass(SideUiShowability.class);
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertEquals(
-                List.of(
+                Set.of(
                         SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY,
                         SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
                 showabilityCaptor.getValue().mShowableSideUiIds);
@@ -634,10 +634,10 @@ public class SideUiCoordinatorImplTest {
         // showable.
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertEquals(
-                List.of(SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY),
+                Set.of(SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY),
                 showabilityCaptor.getValue().mShowableSideUiIds);
         assertEquals(
-                List.of(SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
+                Set.of(SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
                 showabilityCaptor.getValue().mUnshowableSideUiIds);
 
         // Act: Close the left container.
@@ -677,7 +677,7 @@ public class SideUiCoordinatorImplTest {
         // Assert: The observer is notified that both containers are showable.
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertEquals(
-                List.of(
+                Set.of(
                         SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY,
                         SideUiId.SIDE_UI_FOR_TESTING_LOW_PRIORITY),
                 showabilityCaptor.getValue().mShowableSideUiIds);
@@ -1098,7 +1098,7 @@ public class SideUiCoordinatorImplTest {
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
         assertTrue(showabilityCaptor.getValue().mShowableSideUiIds.isEmpty());
         assertEquals(
-                List.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mUnshowableSideUiIds);
+                Set.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mUnshowableSideUiIds);
 
         clearInvocations(mSideUiObserver);
 
@@ -1109,7 +1109,7 @@ public class SideUiCoordinatorImplTest {
 
         // Verify the observer is notified that the container can be shown again.
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
-        assertEquals(List.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mShowableSideUiIds);
+        assertEquals(Set.of(SideUiId.SIDE_PANEL), showabilityCaptor.getValue().mShowableSideUiIds);
         assertTrue(showabilityCaptor.getValue().mUnshowableSideUiIds.isEmpty());
     }
 

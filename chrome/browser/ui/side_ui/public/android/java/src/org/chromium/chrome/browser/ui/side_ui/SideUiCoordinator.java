@@ -15,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -98,16 +97,16 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      */
     final class SideUiShowability {
         /** IDs of showable {@link SideUiContainer}s. */
-        public final List<@SideUiId Integer> mShowableSideUiIds;
+        public final Set<@SideUiId Integer> mShowableSideUiIds;
 
         /** IDs of unshowable {@link SideUiContainer}s. */
-        public final List<@SideUiId Integer> mUnshowableSideUiIds;
+        public final Set<@SideUiId Integer> mUnshowableSideUiIds;
 
         public SideUiShowability(
-                List<@SideUiId Integer> showableSideUiIds,
-                List<@SideUiId Integer> unshowableSideUiIds) {
-            mShowableSideUiIds = List.copyOf(showableSideUiIds);
-            mUnshowableSideUiIds = List.copyOf(unshowableSideUiIds);
+                Set<@SideUiId Integer> showableSideUiIds,
+                Set<@SideUiId Integer> unshowableSideUiIds) {
+            mShowableSideUiIds = Set.copyOf(showableSideUiIds);
+            mUnshowableSideUiIds = Set.copyOf(unshowableSideUiIds);
         }
 
         @Override

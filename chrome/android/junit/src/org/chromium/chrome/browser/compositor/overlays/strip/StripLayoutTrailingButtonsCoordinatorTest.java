@@ -93,6 +93,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1356,7 +1357,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         observerCaptor
                 .getValue()
                 .onShowableSideUisUpdated(
-                        new SideUiShowability(List.of(), List.of(SideUiId.SIDE_PANEL)));
+                        new SideUiShowability(Set.of(), Set.of(SideUiId.SIDE_PANEL)));
 
         assertFalse(
                 "Glic button should be hidden when side panel is not showable.",

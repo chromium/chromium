@@ -13,6 +13,7 @@ import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.ArrayMap;
+import android.util.ArraySet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /** Implementation of {@link SideUiCoordinator}. */
 @NullMarked
@@ -752,8 +754,8 @@ final class SideUiCoordinatorImpl
     private SideUiShowability determineSideUiShowability(
             @Px int windowWidth, @Px int minWebContentsWidth, boolean isFullscreen) {
         int availableWidth = windowWidth - minWebContentsWidth;
-        List<@SideUiId Integer> showableSideUiIds = new ArrayList<>();
-        List<@SideUiId Integer> unShowableSideUiIds = new ArrayList<>();
+        Set<@SideUiId Integer> showableSideUiIds = new ArraySet<>();
+        Set<@SideUiId Integer> unShowableSideUiIds = new ArraySet<>();
 
         @Nullable Tab currentTab = mTabModelSelector.getCurrentTab();
 
@@ -788,12 +790,6 @@ final class SideUiCoordinatorImpl
             }
         }
 
-        // Report the IDs in descending order of priority (i.e. ascending SideUiId, as in
-        // mSideUiContainers) regardless of the layout order. SideUiShowability#equals is
-        // order-sensitive, so otherwise pausing or resuming a container could notify observers of a
-        // showability change when nothing changed.
-        showableSideUiIds.sort(null);
-        unShowableSideUiIds.sort(null);
         return new SideUiShowability(showableSideUiIds, unShowableSideUiIds);
     }
 
