@@ -185,6 +185,8 @@ source_set("unit_tests") {
     "journeys/journeys_database_unittest.cc",
     "journeys/journeys_sync_bridge_unittest.cc",
     "journeys/journeys_sync_metadata_database_unittest.cc",
+    "journeys/journeys_test_utils.cc",
+    "journeys/journeys_test_utils.h",
     "segment_scorer_unittest.cc",
     "sync/delete_directive_handler_unittest.cc",
     "sync/history_sync_bridge_unittest.cc",

@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <map>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "components/history/core/browser/journeys/journey_row.h"
+#include "components/history/core/browser/journeys/journeys_test_utils.h"
 #include "sql/database.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -22,25 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history::journeys {
-
-// For readable gtest failure messages. Outside the anonymous namespace so that
-// gtest finds them by argument-dependent lookup.
-void PrintTo(const JourneyHistoryEntry& entry, std::ostream* os) {
-  *os << "JourneyHistoryEntry("
-      << entry.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds() << ")";
-}
-
-void PrintTo(const JourneyHistoryEntryCollection& collection,
-             std::ostream* os) {
-  *os << "JourneyHistoryEntryCollection(\"" << collection.title << "\", {";
-  for (size_t i = 0; i < collection.items.size(); ++i) {
-    if (i > 0) {
-      *os << ", ";
-    }
-    PrintTo(collection.items[i], os);
-  }
-  *os << "})";
-}
 
 namespace {
 

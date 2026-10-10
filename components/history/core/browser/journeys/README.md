@@ -481,6 +481,9 @@ end-to-end tests of the public APIs, and the schema-creation test. Avoid
 | `journeys_sync_bridge_unittest.cc` | Bridge behavior against a fake backend |
 | `journeys_sync_metadata_database_unittest.cc` | Sync metadata persistence |
 
+Shared test helpers, such as the gtest `PrintTo` printers for journey types,
+live in `journeys_test_utils.{h,cc}`.
+
 ### Debugging
 
 - **`chrome://sync-internals`** is the primary entry point. The bridge
