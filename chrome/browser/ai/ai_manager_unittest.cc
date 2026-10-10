@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_manager.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
@@ -457,19 +459,6 @@ TEST_F(AIManagerTest, CanCreateDecisionModel) {
                                 kUnavailableUnsupportedLanguage);
   }
   {
-    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
-    auto question = blink::mojom::AIDecisionModelQuestion::New();
-    question->id = "urgent";
-    question->prompt = "Is it urgent?";
-    question->type = blink::mojom::AIDecisionModelQuestionType::kBoolean;
-    options->questions.push_back(std::move(question));
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateDecisionModel(std::move(options),
-                                        future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableModelNotEligible);
-  }
-  {
     mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
         client;
     std::ignore = client.InitWithNewPipeAndPassReceiver();
@@ -492,6 +481,132 @@ TEST_F(AIManagerTest, CanCreateDecisionModel) {
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
               "Unsupported language options");
   }
+}
+
+class TestCreateDecisionModelClient
+    : public blink::mojom::AIManagerCreateDecisionModelClient {
+ public:
+  using Result =
+      base::expected<mojo::PendingRemote<blink::mojom::AIDecisionModel>,
+                     blink::mojom::AIManagerCreateClientError>;
+
+  mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  base::test::TestFuture<Result>& result() { return result_; }
+  const blink::mojom::QuotaErrorInfoPtr& quota_error_info() const {
+    return quota_error_info_;
+  }
+
+  // blink::mojom::AIManagerCreateDecisionModelClient:
+  void OnSessionCreated(mojo::PendingRemote<blink::mojom::AIDecisionModel>
+                            decision_model) override {
+    result_.SetValue(std::move(decision_model));
+  }
+  void OnError(blink::mojom::AIManagerCreateClientError error,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info) override {
+    quota_error_info_ = std::move(quota_error_info);
+    result_.SetValue(base::unexpected(error));
+  }
+
+ private:
+  base::test::TestFuture<Result> result_;
+  blink::mojom::QuotaErrorInfoPtr quota_error_info_;
+  mojo::Receiver<blink::mojom::AIManagerCreateDecisionModelClient> receiver_{
+      this};
+};
+
+blink::mojom::AIDecisionModelCreateOptionsPtr
+MakeBooleanDecisionModelOptions() {
+  auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+  auto question = blink::mojom::AIDecisionModelQuestion::New();
+  question->id = "urgent";
+  question->prompt = "Is it urgent?";
+  question->type = blink::mojom::AIDecisionModelQuestionType::kBoolean;
+  options->questions.push_back(std::move(question));
+  return options;
+}
+
+// Enables the Decisions API, and the CPU backend and manifest broker it needs.
+void EnableLanguageModelDecisionModel(
+    base::test::ScopedFeatureList& feature_list) {
+  feature_list.InitWithFeatures(
+      {blink::features::kAIDecisionModelAPI,
+       on_device_model::features::kOnDeviceModelForceCpuBackend,
+       optimization_guide::kOptimizationGuideManifestBroker},
+      {});
+}
+
+TEST_F(AIManagerTest, CanCreateDecisionModelWithLanguageModelBackend) {
+  base::test::ScopedFeatureList feature_list;
+  EnableLanguageModelDecisionModel(feature_list);
+  // Uses the Prompt API's foundation model, which is downloadable.
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(MakeBooleanDecisionModelOptions(),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
+}
+
+TEST_F(AIManagerTest, CreateDecisionModelWithLanguageModelBackend) {
+  base::test::ScopedFeatureList feature_list;
+  EnableLanguageModelDecisionModel(feature_list);
+
+  TestCreateDecisionModelClient client;
+  GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
+                                            MakeBooleanDecisionModelOptions(),
+                                            /*monitor=*/mojo::NullRemote());
+  auto created = client.result().Take();
+  ASSERT_TRUE(created.has_value());
+  mojo::Remote<blink::mojom::AIDecisionModel> decision_model(
+      std::move(created).value());
+
+  base::test::TestFuture<
+      base::expected<blink::mojom::AIDecisionModelResultPtr,
+                     blink::mojom::AIDecisionModelDecideErrorPtr>>
+      decided;
+  decision_model->Decide("The checkout page crashes.", decided.GetCallback());
+  auto result = decided.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result.value()->decisions.size(), 1u);
+  const auto& decision = result.value()->decisions[0];
+  EXPECT_EQ(decision->question_id, "urgent");
+  // The fake service scores every option 0.5.
+  ASSERT_EQ(decision->probabilities.size(), 2u);
+  EXPECT_FLOAT_EQ(decision->probabilities[0]->probability, 0.5f);
+  EXPECT_FLOAT_EQ(decision->probabilities[1]->probability, 0.5f);
+}
+
+TEST_F(AIManagerTest, CreateDecisionModelForwardsQuotaErrorInfo) {
+  base::test::ScopedFeatureList feature_list;
+  EnableLanguageModelDecisionModel(feature_list);
+  // Every prompt is too large for the model.
+  constexpr uint32_t kPromptSize = 100000;
+  SetSizeInTokens(kPromptSize);
+
+  TestCreateDecisionModelClient client;
+  GetAIManagerRemote()->CreateDecisionModel(client.BindNewPipeAndPassRemote(),
+                                            MakeBooleanDecisionModelOptions(),
+                                            /*monitor=*/mojo::NullRemote());
+  auto created = client.result().Take();
+  ASSERT_FALSE(created.has_value());
+  EXPECT_EQ(created.error(),
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  ASSERT_TRUE(client.quota_error_info());
+  // The prompt plus at least one token of input.
+  EXPECT_EQ(client.quota_error_info()->requested, kPromptSize + 1);
+  EXPECT_LT(client.quota_error_info()->quota, kPromptSize);
 }
 #else
 TEST_F(AIManagerTest, CanCreateDecisionModelUnavailableOnAndroid) {

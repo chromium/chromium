@@ -209,6 +209,21 @@ class AIManager : public base::SupportsUserData::Data,
   CheckDecisionModelOptions(
       blink::mojom::AIDecisionModelCreateOptionsPtr& options,
       bool require_questions);
+
+  // Creates an `AILanguageModelDecisionModel` on the Prompt API's foundation
+  // model, once its assets are ready.
+  void CreateLanguageModelDecisionModel(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      DecisionModelSchemaCompiler::CompiledSchema schema,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor);
+  // Creates the model on `model_client`, or replies with an error if the
+  // foundation model isn't available.
+  void OnDecisionModelLanguageModelReady(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      DecisionModelSchemaCompiler::CompiledSchema schema,
+      base::WeakPtr<optimization_guide::ModelClient> model_client);
 #endif
 
   // Creates an `AILanguageModel`, as a new session. Clones are created

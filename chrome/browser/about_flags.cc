@@ -4806,10 +4806,18 @@ const FeatureEntry::Choice kGemma4Choices[] = {
      "OptimizationGuideManifestBroker,"
      "AIApiFoundationalModel:model_version/v4"}};
 
+// Scores options with the Prompt API's foundation model, selects Gemma 4 the
+// same way as #gemma4-for-built-in-ai, and forces the CPU backend to work
+// around GPU backend scoring issues.
+// TODO(crbug.com/571218294): Drop the CPU backend once Session::Score() on
+// clones works on GPU.
 const FeatureEntry::Choice kDecisionsAPIChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "AIDecisionModelAPI"}};
+     "AIDecisionModelAPI,"
+     "OptimizationGuideManifestBroker,"
+     "AIApiFoundationalModel:model_version/v4,"
+     "OnDeviceModelForceCpuBackend"}};
 
 const FeatureEntry::Choice kSpeculativeDecodingChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},

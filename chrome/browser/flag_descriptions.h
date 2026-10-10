@@ -5236,7 +5236,10 @@ inline constexpr char kDecisionsAPIName[] = "Decisions API";
 inline constexpr char kDecisionsAPIDescription[] =
     "Enables the Built-in AI Decisions API (DecisionModel) for on-device "
     "verification, classification, and decisions regarding unstructured data, "
-    "over a developer-defined schema. See the explainer [1] for details.";
+    "over a developer-defined schema, using Gemma 4 on the CPU as a temporary "
+    "workaround for GPU backend scoring issues. See the explainer [1] for "
+    "details. This also switches the other built-in AI APIs to Gemma 4 on the "
+    "CPU, which may impact performance.";
 inline constexpr const char* kDecisionsAPILinks[1] = {
     "https://github.com/explainers-by-googlers/decisions-api"};
 
