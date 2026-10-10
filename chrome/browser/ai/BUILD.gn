@@ -29,7 +29,11 @@ source_set("ai") {
     "features.h",
   ]
   if (!is_android) {
-    sources += [ "decision_model_schema_compiler.h" ]
+    sources += [
+      "ai_language_model_decision_model.h",
+      "decision_model_prompt_builder.h",
+      "decision_model_schema_compiler.h",
+    ]
   }
 
   configs += [
@@ -69,7 +73,11 @@ source_set("impl") {
     "ai_writer.cc",
   ]
   if (!is_android) {
-    sources += [ "decision_model_schema_compiler.cc" ]
+    sources += [
+      "ai_language_model_decision_model.cc",
+      "decision_model_prompt_builder.cc",
+      "decision_model_schema_compiler.cc",
+    ]
   }
 
   configs += [
@@ -139,11 +147,13 @@ source_set("unit_tests") {
   ]
   if (!is_android) {
     sources += [
+      "ai_language_model_decision_model_unittest.cc",
       "ai_language_model_unittest.cc",
       "ai_proofreader_unittest.cc",
       "ai_rewriter_unittest.cc",
       "ai_semantic_embedder_service_launcher_unittest.cc",
       "ai_writer_unittest.cc",
+      "decision_model_prompt_builder_unittest.cc",
       "decision_model_schema_compiler_unittest.cc",
     ]
   }
