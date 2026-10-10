@@ -11,7 +11,7 @@ found in the LICENSE file.
     <dimen name="side_ui_resize_handle_width">8dp</dimen>
     <!-- Size of the bar drawn at the center of the resize handle. -->
     <dimen name="side_ui_resize_handle_bar_width">3dp</dimen>
-    <dimen name="side_ui_resize_handle_bar_height">24dp</dimen>
+    <dimen name="side_ui_resize_handle_bar_height">36dp</dimen>
     <!-- Half of side_ui_resize_handle_bar_width, so the bar has fully rounded ends. -->
     <dimen name="side_ui_resize_handle_bar_corner_radius">1.5dp</dimen>
 </resources>

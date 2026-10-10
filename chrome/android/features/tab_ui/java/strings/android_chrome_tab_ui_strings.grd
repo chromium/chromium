@@ -722,6 +722,9 @@
       <message name="IDS_ACCESSIBILITY_EXPAND_VERTICAL_TABS" desc="Content description for the button to expand the vertical tabs rail.">
         Expand tabs
       </message>
+      <message name="IDS_ACCESSIBILITY_RESIZE_VERTICAL_TAB_RAIL" desc="Content description for the handle on the inner edge of the vertical tabs rail that the user drags to resize the rail.">
+        Resize vertical tab rail
+      </message>
       <message name="IDS_VERTICAL_TABS_TAB_SEARCH" desc="Tooltip of the tab search button in the vertical tabs rail, also shown as the label next to the button while the rail is temporarily expanded because the mouse is hovering over it.">
         Tab search
       </message>

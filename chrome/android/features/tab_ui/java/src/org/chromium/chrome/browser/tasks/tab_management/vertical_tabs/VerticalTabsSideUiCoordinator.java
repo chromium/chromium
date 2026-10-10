@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -283,6 +284,11 @@ public class VerticalTabsSideUiCoordinator
         return !VerticalTabUtils.isExpandOnHoverEnabled()
                 || mCollapseController.getEffectiveRailCollapseState()
                         == RailCollapseState.EXPANDED;
+    }
+
+    @Override
+    public @StringRes int getResizeHandleContentDescriptionRes() {
+        return R.string.accessibility_resize_vertical_tab_rail;
     }
 
     @Override
