@@ -4,8 +4,11 @@
 
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
 
+#include <vector>
+
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
@@ -34,6 +37,7 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadAdded(
     return E_FAIL;
   }
 
+  base::AutoLock auto_lock(lock_);
   token->value = next_event_registration_token_++;
 
   auto ret = gamepad_added_event_handler_map_.insert(
@@ -54,6 +58,7 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadRemoved(
     return E_FAIL;
   }
 
+  base::AutoLock auto_lock(lock_);
   token->value = next_event_registration_token_++;
 
   auto ret = gamepad_removed_event_handler_map_.insert(
@@ -71,6 +76,7 @@ FakeIGamepadStatics::remove_GamepadAdded(EventRegistrationToken token) {
       WgiTestErrorCode::kGamepadRemoveGamepadAddedFailed) {
     return E_FAIL;
   }
+  base::AutoLock auto_lock(lock_);
   size_t items_removed = base::EraseIf(
       gamepad_added_event_handler_map_,
       [=](const auto& entry) { return entry.first == token.value; });
@@ -85,6 +91,7 @@ FakeIGamepadStatics::remove_GamepadRemoved(EventRegistrationToken token) {
       WgiTestErrorCode::kGamepadRemoveGamepadRemovedFailed) {
     return E_FAIL;
   }
+  base::AutoLock auto_lock(lock_);
   size_t items_removed = base::EraseIf(
       gamepad_removed_event_handler_map_,
       [=](const auto& entry) { return entry.first == token.value; });
@@ -147,6 +154,7 @@ HRESULT FakeIGamepadStatics::FromGameController(
   gameController->QueryInterface(IID_PPV_ARGS(&gamepad));
   Microsoft::WRL::ComPtr<device::FakeIGamepad> fake_gamepad;
   fake_gamepad = static_cast<FakeIGamepad*>(gamepad.Get());
+  base::AutoLock auto_lock(lock_);
   fake_raw_game_controller_map_[fake_gamepad->GetId()].CopyTo(value);
   return S_OK;
 }
@@ -183,14 +191,17 @@ void FakeIGamepadStatics::SimulateGamepadRemoved(
 }
 
 size_t FakeIGamepadStatics::GetGamepadAddedEventHandlerCount() const {
+  base::AutoLock auto_lock(lock_);
   return gamepad_added_event_handler_map_.size();
 }
 
 size_t FakeIGamepadStatics::GetGamepadRemovedEventHandlerCount() const {
+  base::AutoLock auto_lock(lock_);
   return gamepad_removed_event_handler_map_.size();
 }
 
 void FakeIGamepadStatics::Reset() {
+  base::AutoLock auto_lock(lock_);
   gamepad_added_event_handler_map_.clear();
   gamepad_removed_event_handler_map_.clear();
   fake_gamepad_map_.clear();
@@ -200,9 +211,22 @@ void FakeIGamepadStatics::Reset() {
 void FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread(
     const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
         gamepad_to_add) {
-  for (const auto& it : gamepad_added_event_handler_map_) {
+  // Copy the handlers under the lock so that `Invoke()` (which may run
+  // arbitrary code, including code that re-enters this class) is not called
+  // while `lock_` is held.
+  std::vector<Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IEventHandler<
+      ABI::Windows::Gaming::Input::Gamepad*>>>
+      handlers;
+  {
+    base::AutoLock auto_lock(lock_);
+    handlers.reserve(gamepad_added_event_handler_map_.size());
+    for (const auto& it : gamepad_added_event_handler_map_) {
+      handlers.push_back(it.second);
+    }
+  }
+  for (const auto& handler : handlers) {
     // Invokes the callback on a random thread.
-    it.second->Invoke(
+    handler->Invoke(
         static_cast<ABI::Windows::Gaming::Input::IGamepadStatics*>(this),
         gamepad_to_add.Get());
   }
@@ -211,9 +235,22 @@ void FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread(
 void FakeIGamepadStatics::TriggerGamepadRemovedCallbackOnRandomThread(
     const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
         gamepad_to_remove) {
-  for (auto& it : gamepad_removed_event_handler_map_) {
+  // Copy the handlers under the lock so that `Invoke()` (which may run
+  // arbitrary code, including code that re-enters this class) is not called
+  // while `lock_` is held.
+  std::vector<Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IEventHandler<
+      ABI::Windows::Gaming::Input::Gamepad*>>>
+      handlers;
+  {
+    base::AutoLock auto_lock(lock_);
+    handlers.reserve(gamepad_removed_event_handler_map_.size());
+    for (const auto& it : gamepad_removed_event_handler_map_) {
+      handlers.push_back(it.second);
+    }
+  }
+  for (const auto& handler : handlers) {
     // Invokes the callback on a random thread.
-    it.second->Invoke(
+    handler->Invoke(
         static_cast<ABI::Windows::Gaming::Input::IGamepadStatics*>(this),
         gamepad_to_remove.Get());
   }
@@ -224,6 +261,7 @@ void FakeIGamepadStatics::CacheGamepad(
     uint16_t hardware_product_id,
     uint16_t hardware_vendor_id,
     std::string_view display_name) {
+  base::AutoLock auto_lock(lock_);
   uint64_t gamepad_id = next_gamepad_id_++;
 
   fake_gamepad_to_add->SetId(gamepad_id);
@@ -240,6 +278,7 @@ void FakeIGamepadStatics::CacheGamepad(
 
 void FakeIGamepadStatics::RemoveCachedGamepad(
     const Microsoft::WRL::ComPtr<FakeIGamepad>& fake_gamepad_to_remove) {
+  base::AutoLock auto_lock(lock_);
   uint64_t gamepad_id = fake_gamepad_to_remove->GetId();
   fake_gamepad_map_.erase(gamepad_id);
   fake_raw_game_controller_map_.erase(gamepad_id);

@@ -15,6 +15,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
 #include "device/gamepad/test_support/fake_iraw_game_controller.h"
 
@@ -125,16 +127,23 @@ class FakeIGamepadStatics final
   void RemoveCachedGamepad(
       const Microsoft::WRL::ComPtr<FakeIGamepad>& fake_gamepad_to_remove);
 
-  int64_t next_event_registration_token_ = 0;
-  uint64_t next_gamepad_id_ = 0;
+  // `FakeIGamepadStatics` is a singleton that is intentionally exercised from
+  // multiple threads at once (the test's main thread, the `base::ThreadPool`
+  // sequences used to simulate the multi-threaded apartment behavior of the
+  // real WinRT API, and the gamepad polling thread that consumes the simulated
+  // events), so all access to its shared state must be synchronized.
+  mutable base::Lock lock_;
 
-  EventHandlerMap gamepad_added_event_handler_map_;
-  EventHandlerMap gamepad_removed_event_handler_map_;
+  int64_t next_event_registration_token_ GUARDED_BY(lock_) = 0;
+  uint64_t next_gamepad_id_ GUARDED_BY(lock_) = 0;
+
+  EventHandlerMap gamepad_added_event_handler_map_ GUARDED_BY(lock_);
+  EventHandlerMap gamepad_removed_event_handler_map_ GUARDED_BY(lock_);
 
   std::unordered_map<uint64_t, Microsoft::WRL::ComPtr<FakeIGamepad>>
-      fake_gamepad_map_;
+      fake_gamepad_map_ GUARDED_BY(lock_);
   std::unordered_map<uint64_t, Microsoft::WRL::ComPtr<FakeIRawGameController>>
-      fake_raw_game_controller_map_;
+      fake_raw_game_controller_map_ GUARDED_BY(lock_);
 };
 
 }  // namespace device
