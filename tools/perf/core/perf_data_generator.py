@@ -462,7 +462,7 @@ BUILDERS = {
   },
   'android_arm64_high_end-builder-perf': {
     'additional_compile_targets': [
-      'trichrome_google_64_32_minimal_apks',
+      'chrome_minimal_apks',
       'system_webview_apk',
       'system_webview_google_apk',
     ],
@@ -639,14 +639,14 @@ BUILDERS = {
   },
   'android-desktop-arm-builder-perf': {
     'additional_compile_targets': [
-      'trichrome_google_64_32_minimal_apks',
+      'chrome_minimal_apks',
       'system_webview_apk',
       'system_webview_google_apk',
     ],
   },
   'android-desktop-x64-builder-perf': {
     'additional_compile_targets': [
-      'trichrome_google_64_minimal_apks',
+      'chrome_minimal_apks',
       'system_webview_apk',
       'system_webview_google_apk',
     ],

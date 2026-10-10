@@ -45,11 +45,10 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
   # These are only for developer convenience and not on any bots.
   'telemetry_gpu_integration_test_scripts_only',
   # These are defined by an android internal gn_isolate_map.pyl file.
+  'chrome_minimal_apks',
   'resource_sizes_chrome_and_webview_google',
   'resource_sizes_system_webview_google_bundle',
   'system_webview_google_apk',
-  'trichrome_google_64_32_minimal_apks',
-  'trichrome_google_64_minimal_apks',
   # These are used by https://www.chromium.org/developers/cluster-telemetry.
   'ct_telemetry_perf_tests_without_chrome',
 }
