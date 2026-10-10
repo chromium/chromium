@@ -920,8 +920,6 @@ class TabVerticalViewBinder {
         }
 
         if (isHovered) {
-            // TODO(crbug.com/527641177): Maybe show a darker background color for
-            // action button when it's being hovered?
             if (!isSelected && !isMultiSelected) {
                 ViewCompat.setBackgroundTintList(
                         view,

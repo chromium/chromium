@@ -37,8 +37,6 @@ import org.chromium.ui.base.ViewUtils;
  * Root layout for the vertical tab rail container. Encapsulates child view layout styling based on
  * collapse state and forwards raw pointer events to a {@link RailEventListener}.
  */
-// TODO(crbug.com/527641177): Migrate remaining view-only logic (e.g. empty space touch and context
-// click handlers) from VerticalTabListCoordinator to VerticalTabRailLayout.
 @NullMarked
 public class VerticalTabRailLayout extends ConstraintLayout {
     /** Functional interface for delegating key events captured by the vertical tab rail. */
@@ -124,8 +122,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mSearchButton = findViewById(R.id.tab_search_button);
         assert mSearchButton != null;
         TooltipCompat.setTooltipText(
-                mSearchButton,
-                getContext().getString(R.string.accessibility_search_loupe_tooltip_text));
+                mSearchButton, getContext().getString(R.string.vertical_tabs_tab_search));
 
         mSearchIcon = findViewById(R.id.tab_search_icon);
         assert mSearchIcon != null;

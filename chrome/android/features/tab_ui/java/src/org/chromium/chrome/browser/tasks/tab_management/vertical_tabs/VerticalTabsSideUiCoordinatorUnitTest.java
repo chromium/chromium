@@ -517,8 +517,6 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         verify(mMockTabListCoordinator).setInTransition(true);
     }
 
-    // TODO(crbug.com/542280452): The rail should animate when it is pinned from hover, as the
-    // pinned UI will differ from the hover overlay. Update this test once it does.
     @Test
     public void testOnPreSideUiSpecsChange_PinningHoverExpandedRailKeepsRailStill() {
         // Expanded on hover over the web contents.
@@ -532,6 +530,24 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                         specs(mExpandedRailWidth, mExpandedRailWidth),
                         UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true)));
         verify(mMockTabListCoordinator, never()).setInTransition(true);
+    }
+
+    @Test
+    public void testOnPreSideUiSpecsChange_PinningHoverExpandedRailToDifferentWidthAnimates() {
+        // Expanded on hover over the web contents, at the fixed hover width.
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
+                .thenReturn(specs(mCollapsedRailWidth, mExpandedRailWidth));
+
+        // Pinning it at a different width (e.g. a user-resized width) changes the rendered width,
+        // so the rail's contents animate to it.
+        @Px int pinnedWidth = (mCollapsedRailWidth + mExpandedRailWidth) / 2;
+        Transition transition =
+                mCoordinator.onPreSideUiSpecsChange(
+                        specs(pinnedWidth, pinnedWidth),
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
+
+        assertNotNull(transition);
+        verify(mMockTabListCoordinator).setInTransition(true);
     }
 
     @Test

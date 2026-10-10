@@ -995,8 +995,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_TAB_POSITION_VERTICAL" desc="Label for the vertical tab position option.">
         Vertical
       </message>
-      <!-- TODO(crbug.com/542280452): Make translateable once the copy is final. -->
-      <message name="IDS_TAB_POSITION_EXPAND_TABS_ON_HOVER" desc="Title of the switch in the tab position settings page that turns on or off expanding the collapsed vertical tabs side panel when the mouse pointer hovers over it." translateable="false">
+      <message name="IDS_EXPAND_TABS_ON_HOVER" desc="Title of the switch in the tab position settings page, and of the checkable context menu item shown for the vertical tabs side panel, that turns on or off expanding the collapsed vertical tabs side panel when the mouse pointer hovers over it.">
         Auto expand tabs on hover
       </message>
       <!-- Bottom bar settings. -->

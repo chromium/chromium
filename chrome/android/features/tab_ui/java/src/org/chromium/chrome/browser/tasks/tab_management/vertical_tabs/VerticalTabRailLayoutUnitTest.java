@@ -131,9 +131,7 @@ public class VerticalTabRailLayoutUnitTest {
         View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
         assertNotNull(searchButton);
         assertEquals(
-                mRailLayout
-                        .getContext()
-                        .getString(R.string.accessibility_search_loupe_tooltip_text),
+                mRailLayout.getContext().getString(R.string.vertical_tabs_tab_search),
                 searchButton.getTooltipText());
 
         View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);

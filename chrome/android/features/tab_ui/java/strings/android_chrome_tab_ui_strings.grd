@@ -717,12 +717,12 @@
         Tab groups
       </message>
       <message name="IDS_ACCESSIBILITY_COLLAPSE_VERTICAL_TABS" desc="Content description for the button to collapse the vertical tabs rail.">
-        Collapse Tabs
+        Collapse tabs
       </message>
       <message name="IDS_ACCESSIBILITY_EXPAND_VERTICAL_TABS" desc="Content description for the button to expand the vertical tabs rail.">
-        Expand Tabs
+        Expand tabs
       </message>
-      <message name="IDS_VERTICAL_TABS_TAB_SEARCH" desc="Label shown next to the tab search button in the vertical tabs rail while the rail is temporarily expanded because the mouse is hovering over it.">
+      <message name="IDS_VERTICAL_TABS_TAB_SEARCH" desc="Tooltip of the tab search button in the vertical tabs rail, also shown as the label next to the button while the rail is temporarily expanded because the mouse is hovering over it.">
         Tab search
       </message>
       <message name="IDS_TAB_GROUPS_CREATED_AGO_NOW" desc="A subtitle on a row for a tab group. Explains the group was created less than a minute ago.">
@@ -1195,13 +1195,6 @@
       </message>
       <message name="IDS_SHOW_TABS_HORIZONTALLY" desc="Context menu item text to show the horizontal tabs.">
         Show tabs horizontally
-      </message>
-      <!-- TODO(crbug.com/542280452): Make translateable once the copy is final. -->
-      <message name="IDS_TURN_ON_EXPAND_TABS_ON_HOVER" desc="Context menu item text, shown for the vertical tabs side panel, that turns on expanding the collapsed side panel when the mouse pointer hovers over it." translateable="false">
-        Turn on auto expanding tabs
-      </message>
-      <message name="IDS_TURN_OFF_EXPAND_TABS_ON_HOVER" desc="Context menu item text, shown for the vertical tabs side panel, that turns off expanding the collapsed side panel when the mouse pointer hovers over it." translateable="false">
-        Turn off auto expanding tabs
       </message>
       <message name="IDS_NEW_TAB_BELOW_MENU_ITEM" desc="Context menu item text to create a new tab below the selected tab.">
         New tab below

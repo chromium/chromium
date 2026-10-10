@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHov
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.ListMenu.Delegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -26,7 +28,7 @@ import org.chromium.ui.widget.RectProvider;
  * button. The menu lets the user turn expand-on-hover on or off.
  */
 @NullMarked
-class VerticalTabCollapseButtonContextMenuCoordinator {
+public class VerticalTabCollapseButtonContextMenuCoordinator {
     private final Activity mActivity;
     private @Nullable Runnable mOnMenuDismissedCallback;
     private @Nullable AnchoredPopupWindow mMenuWindow;
@@ -93,17 +95,33 @@ class VerticalTabCollapseButtonContextMenuCoordinator {
         };
     }
 
-    private View buildMenuView(boolean isIncognito) {
-        ModelList modelList = new ModelList();
-        modelList.add(
+    /**
+     * Builds the checkable "Auto expand tabs on hover" menu item. A checkmark is shown at the end
+     * of the item while expand-on-hover is on. Selecting the item is expected to flip the setting.
+     *
+     * @param isIncognito Whether the menu is shown in incognito mode.
+     * @return The menu item.
+     */
+    public static ListItem buildExpandOnHoverMenuItem(boolean isIncognito) {
+        boolean isChecked = VerticalTabUtils.isExpandOnHoverEnabled();
+        ListItem item =
                 new ListItemBuilder()
-                        .withTitleRes(
-                                VerticalTabUtils.isExpandOnHoverEnabled()
-                                        ? R.string.turn_off_expand_tabs_on_hover
-                                        : R.string.turn_on_expand_tabs_on_hover)
+                        .withTitleRes(R.string.expand_tabs_on_hover)
+                        .withEndIconRes(
+                                isChecked
+                                        ? R.drawable.material_ic_check_24dp
+                                        : android.R.color.transparent)
                         .withMenuId(R.id.toggle_expand_tabs_on_hover_menu_id)
                         .withIsIncognito(isIncognito)
-                        .build());
+                        .build();
+        item.model.set(ListMenuItemProperties.CHECKABLE, true);
+        item.model.set(ListMenuItemProperties.CHECKED, isChecked);
+        return item;
+    }
+
+    private View buildMenuView(boolean isIncognito) {
+        ModelList modelList = new ModelList();
+        modelList.add(buildExpandOnHoverMenuItem(isIncognito));
         return TabStripContextMenuCoordinator.inflateMenuContentView(
                 mActivity, modelList, contentView -> getListMenuDelegate());
     }

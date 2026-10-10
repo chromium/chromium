@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabCollapseButtonContextMenuCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
@@ -250,18 +251,12 @@ public class TabStripContextMenuCoordinator {
                             .build();
             itemList.add(item);
 
-            // Add "Turn on/off auto expanding tabs" option for the vertical tab strip.
+            // Add the checkable "Auto expand tabs on hover" option for the vertical tab strip.
             if (mTabStripLayout == TabStripLayoutType.VERTICAL
                     && VerticalTabUtils.isExpandOnHoverFeatureEnabled()) {
                 itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(
-                                        VerticalTabUtils.isExpandOnHoverEnabled()
-                                                ? R.string.turn_off_expand_tabs_on_hover
-                                                : R.string.turn_on_expand_tabs_on_hover)
-                                .withMenuId(R.id.toggle_expand_tabs_on_hover_menu_id)
-                                .withIsIncognito(isIncognito)
-                                .build());
+                        VerticalTabCollapseButtonContextMenuCoordinator.buildExpandOnHoverMenuItem(
+                                isIncognito));
             }
         }
 
