@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Hammasini belgilash</translation>
 <translation id="3679163990085797665">Ochilganlarni oʻchirish</translation>
 <translation id="368329460027487650">Hisobdan chiqqansiz. Kirish uchun parametrlar ochiladi.</translation>
+<translation id="3689746421535476813">Tahrirlash uchun saqlangan toʻlov usulini tanlang yoki yangi toʻlov usulini kiriting</translation>
 <translation id="3695446226812920698">Batafsil</translation>
 <translation id="3700134753671613714">O‘z hisobingizga kirib, xatcho‘plaringizni barcha qurilmalarda ko‘rishingiz mumkin.</translation>
 <translation id="3701167022068948696">Tuzatish</translation>
@@ -1719,6 +1720,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6372558618707314581">Istalgan sahifani oching</translation>
 <translation id="6374469231428023295">Qaytadan</translation>
 <translation id="6374514103145916800">Soʻrash</translation>
+<translation id="6381241974485088375">Yangi varaq sahifasini istalgan vaqtda shu yerdan moslang</translation>
 <translation id="6383719166112032471">Joylashuvni ochish…</translation>
 <translation id="6387994324662817823">Parollar faqat shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="6393156038355142111">Ishonchli parol yaratish</translation>
@@ -2425,6 +2427,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8535368836838588657">Parolni ochiqlash</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> orqali kirish</translation>
 <translation id="8542331710562073430">Xatolik yuz berdi. Yana Jonli suhbat qilish uchun Live tugmasini bosing.</translation>
+<translation id="8544172904312384600">Toʻlov usulini tahrirlash yoki yangisini qoʻshish</translation>
 <translation id="8545276357312221485">Birlamchi brauzer sozlamalarini tekshiring</translation>
 <translation id="854938212724803178">1 ta parolingiz oshkor qilingan. Xavfsiz qolish uchun uni tuzating.</translation>
 <translation id="8551311254462607218">Manzil qatorida Google Lens kamera belgisini bosing</translation>
@@ -2463,6 +2466,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8639963783467694461">Avtoto‘ldirish sozlamalari</translation>
 <translation id="8642417828095157370">Yanada mos javoblarni olish uchun varaqlar ulashiladi</translation>
 <translation id="8643403533759285912">Guruhni olib tashlash</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Narxni kuzatish imkonsiz.</translation>
 <translation id="8654802032646794042">Bekor qilish</translation>
 <translation id="8655861111558401309">“Brauzer maʼlumotlarini oʻchirish” bandini tanlang</translation>

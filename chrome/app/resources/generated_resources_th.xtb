@@ -2002,7 +2002,6 @@
 <translation id="252513908494776481">ถามเกี่ยวกับแท็บนี้</translation>
 <translation id="2525746158911982776">อัปเดตไม่สำเร็จเนื่องจากระบบมีพื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
 <translation id="2525842906387880861">คุณจะไม่เห็นคำแนะนำในหน้านี้อีก</translation>
-<translation id="2526346836766369775">แท็บแยกใหม่</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="2526619973349913024">ตรวจหาอัปเดต</translation>
 <translation id="2527167509808613699">การเชื่อมต่อทุกประเภท</translation>
@@ -2273,6 +2272,7 @@
 <translation id="2731971182069536520">ครั้งถัดไปที่คุณรีสตาร์ทอุปกรณ์ ผู้ดูแลระบบจะดำเนินการอัปเดตแบบครั้งเดียวซึ่งจะลบข้อมูลในเครื่อง</translation>
 <translation id="2733248615007838252">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบผลการค้นหาเหล่านี้</translation>
 <translation id="27349076983469322">พื้นหลังสีสว่าง</translation>
+<translation id="2735081931800992557">อ่านและแสดงไฟล์ PDF</translation>
 <translation id="2735712963799620190">กำหนดการ</translation>
 <translation id="2737363922397526254">ยุบ...</translation>
 <translation id="2737719817922589807">บุ๊กมาร์กและรายการ</translation>
@@ -3689,6 +3689,7 @@
 <translation id="3771294271822695279">ไฟล์วิดีโอ</translation>
 <translation id="3771721161825963003">แสดงแท็บในแนวตั้ง</translation>
 <translation id="3771851622616482156">คุณจะออกจากระบบของเว็บไซต์นี้ รวมถึงในแท็บที่เปิดอยู่</translation>
+<translation id="3772951945682043324">ไม่มีแท็บที่เพิ่งปิด</translation>
 <translation id="3774059845329307709">หมายเลขซีเรียล</translation>
 <translation id="3774166835015494435">รูปภาพและการแจ้งเตือนล่าสุด</translation>
 <translation id="3775432569830822555">ใบรับรองเซิร์ฟเวอร์ SSL</translation>
@@ -5877,7 +5878,6 @@
 <translation id="5463348003600590648">ปิดใช้งานการแนะนำ</translation>
 <translation id="5463625433003343978">กำลังค้นหาอุปกรณ์...</translation>
 <translation id="5463856536939868464">เมนูมีบุ๊กมาร์กซ่อนอยู่</translation>
-<translation id="5465214111614807935">หน้าต่างแยกใหม่</translation>
 <translation id="5466374726908360271">ว&amp;างและค้นหา “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">ระบบจะบันทึกกลุ่มแท็บไว้ในแถบบุ๊กมาร์ก เมนูแอป และอัปเดตในอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้หากเปิดการซิงค์ไว้</translation>
 <translation id="5467207440419968613">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
@@ -7031,7 +7031,6 @@
 <translation id="6379228010899751161">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี <ph name="ACCOUNT_EMAIL" /> ได้เสมอ</translation>
 <translation id="6379827283296619736">ไม่ ทำงานในโปรไฟล์นี้ต่อไป</translation>
 <translation id="6380618366311601172">Gemini จะไม่สามารถทำงานที่ต้องลงชื่อเข้าใช้ใน <ph name="DOMAIN" /></translation>
-<translation id="6383321659284013430">หน้าต่างแยกใหม่</translation>
 <translation id="6383382161803538830">โหมดการอ่านไม่พร้อมใช้งานในหน้านี้</translation>
 <translation id="638418309848716977">ลิงก์ที่รองรับ</translation>
 <translation id="6384275966486438344">เปลี่ยนการตั้งค่าการค้นหาของคุณเป็น: <ph name="SEARCH_HOST" /></translation>
@@ -7066,6 +7065,7 @@
 <translation id="6406708970972405507">การตั้งค่า - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">ได้รับอนุญาตให้บันทึกข้อมูลลงในอุปกรณ์</translation>
 <translation id="6408118934673775994">อ่านและเปลี่ยนแปลงข้อมูลของคุณใน <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> และ <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">ไฟล์ภาพ</translation>
 <translation id="6410328738210026208">เปลี่ยนช่องและ Powerwash</translation>
 <translation id="6410390304316730527">Google Safe Browsing ปกป้องคุณจากผู้โจมตีที่อาจหลอกล่อให้ทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์ที่ประสงค์ร้ายหรือเปิดเผยข้อมูลส่วนบุคคล เช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต หากคุณปิดใช้ โปรดระวังขณะเรียกดูเว็บไซต์ที่ไม่คุ้นเคยหรือไม่เป็นที่รู้จัก</translation>
@@ -7659,6 +7659,7 @@
 <translation id="6845231585063669905">ก ถึง ฮ</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ต้องการพิมพ์ <ph name="FILE_NAME" /> โดยใช้ <ph name="PRINTER_NAME" /></translation>
 <translation id="6846843854964504403">รีเซ็ตความปลอดภัย</translation>
+<translation id="6846861364742126526">ใช้ไมโครโฟนเพื่อแชทกับ Gemini ระบบไม่ได้ใช้ข้อมูลของคุณในการปรับปรุงโมเดล Generative AI</translation>
 <translation id="6847125920277401289">เพิ่มพื้นที่ว่างเพื่อดำเนินการต่อ</translation>
 <translation id="6850286078059909152">สีข้อความ</translation>
 <translation id="6850925512806464982">ทุกคนจะสูญเสียสิทธิ์เข้าถึงกลุ่มแท็บนี้ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
@@ -9580,7 +9581,7 @@
 <translation id="8306885873692337975">รับฟีเจอร์และการปรับปรุงด้านความปลอดภัยล่าสุด</translation>
 <translation id="8308024039615003152">ทุ่งหญ้า</translation>
 <translation id="8308179586020895837">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงกล้องของคุณไหม</translation>
-<translation id="830868413617744215">เบต้า</translation>
+<translation id="830868413617744215">Beta</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> แท็บ</translation>
 <translation id="831207808878314375">คำจำกัดความ</translation>
 <translation id="8312841338723044391">สด</translation>

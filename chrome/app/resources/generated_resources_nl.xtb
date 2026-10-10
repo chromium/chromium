@@ -1588,6 +1588,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2215070081105889450">Als je audio wilt delen, moet je in plaats daarvan een tabblad of scherm delen</translation>
 <translation id="2217208085547223783">Vertrouwensstatus</translation>
 <translation id="2218019600945559112">Muis en touchpad</translation>
+<translation id="2218116022473625437">Je kunt tekstmarkering uitzetten, de stem aanpassen en de weergave van de pagina wijzigen in de instellingen.</translation>
 <translation id="2218515861914035131">Plakken als tekst zonder opmaak</translation>
 <translation id="2219007152108311874">Vragen bij elk bezoek</translation>
 <translation id="2220529011494928058">Een probleem melden</translation>
@@ -2002,7 +2003,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="252513908494776481">Stel vragen over dit tabblad</translation>
 <translation id="2525746158911982776">De update is mislukt omdat het systeem niet genoeg opslagruimte heeft.</translation>
 <translation id="2525842906387880861">Je ziet geen suggesties meer op deze pagina</translation>
-<translation id="2526346836766369775">Nieuw geïsoleerd &amp;tabblad</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
 <translation id="2526619973349913024">Controleren op updates</translation>
 <translation id="2527167509808613699">Elk soort verbinding</translation>
@@ -2273,6 +2273,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2731971182069536520">De volgende keer dat je je apparaat opnieuw opstart, voert je beheerder een update uit waarmee je lokale gegevens worden verwijderd.</translation>
 <translation id="2733248615007838252">Met Leuk stuur je feedback dat je deze resultaten leuk vindt.</translation>
 <translation id="27349076983469322">Lichte achtergrond</translation>
+<translation id="2735081931800992557">Pdf-bestanden lezen en tonen</translation>
 <translation id="2735712963799620190">Schema</translation>
 <translation id="2737363922397526254">Samenvouwen...</translation>
 <translation id="2737719817922589807">&amp;Bookmarks en lijsten</translation>
@@ -3689,6 +3690,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3771294271822695279">Videobestanden</translation>
 <translation id="3771721161825963003">Tabbladen verticaal tonen</translation>
 <translation id="3771851622616482156">Je wordt uitgelogd van deze site, waaronder in geopende tabbladen</translation>
+<translation id="3772951945682043324">Geen recent gesloten tabbladen</translation>
 <translation id="3774059845329307709">Serienummer</translation>
 <translation id="3774166835015494435">Recente foto's en meldingen</translation>
 <translation id="3775432569830822555">SSL-servercertificaat</translation>
@@ -3757,6 +3759,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3812525830114410218">Verkeerd certificaat</translation>
 <translation id="3813296892522778813">Ga naar de <ph name="BEGIN_LINK_CHROMIUM" />Hulp van Google Chrome<ph name="END_LINK_CHROMIUM" /> als je niet kunt vinden wat je zoekt</translation>
 <translation id="3813358687923336574">Gebruikte taal om pagina's te vertalen en voor snelle antwoorden</translation>
+<translation id="3815509884387832993">Luister naar deze pagina alsof het een podcast is met AI-weergave via de knop AI-weergave aanzetten in de werkbalk van de leesmodus</translation>
 <translation id="3815668647912194650">Behoud deze groep om later tabbladen toe te voegen of verlaat de groep als je er geen toegang meer toe wilt.</translation>
 <translation id="3816118180265633665">Kleuren van Chrome</translation>
 <translation id="3817524650114746564">Open de proxy-instellingen van je computer</translation>
@@ -4141,6 +4144,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4109135793348361820">Venster verplaatsen naar <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Waarschuwing herstellen</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4112282889480354965">Extensies en vaardigheden</translation>
 <translation id="4113743276555482284">Wachtwoord van bestand</translation>
 <translation id="4114524937989710624">Je ziet voorgestelde bestanden om makkelijk terug te gaan naar je meest recente activiteit in Google Drive.
         <ph name="BREAK" /><ph name="BREAK" />
@@ -5876,7 +5880,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5463348003600590648">Suggesties uitzetten</translation>
 <translation id="5463625433003343978">Apparaten zoeken...</translation>
 <translation id="5463856536939868464">Menu met verborgen bookmarks</translation>
-<translation id="5465214111614807935">Nieuw &amp;geïsoleerd venster</translation>
 <translation id="5466374726908360271">Pl&amp;akken en zoeken naar '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="5466721587278161554">Je tabbladgroepen worden opgeslagen in de bookmarkbalk en het app-menu en worden geüpdatet op al je ingelogde apparaten als synchronisatie aanstaat</translation>
 <translation id="5467207440419968613">Rechten voor <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> geblokkeerd</translation>
@@ -6566,6 +6569,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6006484371116297560">Klassiek</translation>
 <translation id="6007053304250788613">Er kan maar één scherm worden uitgesloten in de spiegelmodus</translation>
 <translation id="6007240208646052708">Gesproken zoekopdracht is niet beschikbaar in jouw taal.</translation>
+<translation id="6007858579659393165">Tabbladen hebben een nieuwe transparante look</translation>
 <translation id="6010651352520077187">Als dit aanstaat, biedt Google Translate aan om sites te vertalen naar je voorkeurstaal. De functie kan ook automatisch sites vertalen.</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011308810877101166">Zoeksuggesties verbeteren</translation>
@@ -7030,7 +7034,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6379228010899751161">Laat verifiëren dat jij het bent om te zorgen dat je de wachtwoorden in je account <ph name="ACCOUNT_EMAIL" /> altijd kunt gebruiken</translation>
 <translation id="6379827283296619736">Nee, doorgaan met werken in dit profiel</translation>
 <translation id="6380618366311601172">Gemini kan geen taken uitvoeren waarvoor je moet inloggen bij <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nieuw &amp;geïsoleerd venster</translation>
 <translation id="6383382161803538830">De leesmodus is niet beschikbaar op deze pagina</translation>
 <translation id="638418309848716977">Ondersteunde links</translation>
 <translation id="6384275966486438344">Je zoekinstellingen wijzigen in: <ph name="SEARCH_HOST" /></translation>
@@ -7065,6 +7068,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6406708970972405507">Instellingen: <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Toestemming om gegevens op je apparaat op te slaan</translation>
 <translation id="6408118934673775994">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="6410328738210026208">Kanaal wijzigen en Powerwash uitvoeren</translation>
 <translation id="6410390304316730527">Safe Browsing beschermt je tegen aanvallers die je proberen te misleiden zodat je iets gevaarlijks doet, zoals schadelijke software installeren of persoonlijke informatie zoals wachtwoorden, telefoonnummers of creditcards openbaar maken. Als je deze functie uitzet, moet je voorzichtig zijn als je op onbekende of onbetrouwbare sites browst.</translation>
@@ -7658,6 +7662,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6845231585063669905">A-Z</translation>
 <translation id="6846178040388691741">'<ph name="EXTENSION_NAME" />' wil <ph name="FILE_NAME" /> afdrukken met <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Beveiligingsreset</translation>
+<translation id="6846861364742126526">Gebruik je microfoon om te praten met Gemini. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="6847125920277401289">Maak ruimte vrij om door te gaan</translation>
 <translation id="6850286078059909152">Tekstkleur</translation>
 <translation id="6850925512806464982">Iedereen raakt meteen de toegang tot deze tabbladgroep kwijt en de groep wordt verwijderd van alle apparaten</translation>
@@ -8774,6 +8779,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7702463352133825032">Casten naar <ph name="DEVICE_NAME" /> stoppen</translation>
 <translation id="7704305437604973648">Taak</translation>
 <translation id="7705085181312584869">Help me met schrijven</translation>
+<translation id="7705230242432916648">Luister naar deze pagina alsof het een podcast is met AI-afspelen</translation>
 <translation id="7705276765467986571">Kan bookmarkmodel niet laden.</translation>
 <translation id="7705334495398865155">Gebruik een willekeurige hardware-ID (BSSID) om te voorkomen dat anderen dit apparaat volgen.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9455,6 +9461,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8212601853154459483">Dit profiel wordt beheerd door <ph name="PROFILE_MANAGER" /> en vereist dat je een afzonderlijk profiel maakt voor het account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Geen profielen gevonden. Scan een QR-code met de camera van je apparaat of voer de activatiecode in die je van je provider hebt gekregen.</translation>
 <translation id="8214489666383623925">Open bestand...</translation>
+<translation id="8214771296778317256">Kies hier de gewenste tabbladstijl</translation>
 <translation id="8215129063232901118">Krijg toegang tot de mogelijkheden van je telefoon vanaf je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Aanwijzer markeren</translation>
 <translation id="8217399928341212914">Automatische downloads van meerdere bestanden blijven blokkeren</translation>
@@ -10203,6 +10210,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8780123805589053431">Afbeeldingsbeschrijvingen ophalen van Google</translation>
 <translation id="8780443667474968681">Gesproken zoekopdracht is uitgezet.</translation>
 <translation id="8781834595282316166">Nieuw tabblad in groep</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, gebruik de pijl-links en pijl-rechts om de snelkoppeling te verplaatsen. Druk op Enter of Escape om af te ronden.</translation>
 <translation id="8781980678064919987">Uitzetten wanneer de klep wordt gesloten</translation>
 <translation id="8783171585655659524">Screenshot bijvoegen</translation>
 <translation id="8785622406424941542">Stylus</translation>
@@ -10701,6 +10709,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9154194610265714752">Bijgewerkt</translation>
 <translation id="915485121129452731">Pentablet</translation>
 <translation id="9155344700756733162">Kleur deselecteren</translation>
+<translation id="9155515662479003830">Je kunt altijd teruggaan naar de klassieke stijl via de instellingen</translation>
 <translation id="9157096865782046368">0,8 seconden</translation>
 <translation id="9157697743260533322">Kan automatische updates niet instellen voor alle gebruikers (lanceringsfout bij pre-flight-procedure: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Klep van printer is open</translation>

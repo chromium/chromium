@@ -2003,7 +2003,6 @@
 <translation id="252513908494776481">આ ટૅબ વિશે પૂછો</translation>
 <translation id="2525746158911982776">સિસ્ટમમાં પર્યાપ્ત સ્ટોરેજ સ્પેસ ન હોવાને કારણે અપડેટ નિષ્ફળ રહી.</translation>
 <translation id="2525842906387880861">તમને આ પેજ પર ફરીથી સૂચનો દેખાશે નહીં</translation>
-<translation id="2526346836766369775">નવું આઇસોલેટેડ &amp;ટૅબ</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="2526619973349913024">અપડેટ માટે તપાસો</translation>
 <translation id="2527167509808613699">કોઈપણ પ્રકારનું કનેક્શન</translation>
@@ -2274,6 +2273,7 @@
 <translation id="2731971182069536520">આગલી વખતે તમે તમારું ડિવાઇસ ફરી શરૂ કરશો, ત્યારે તમારા વ્યવસ્થાપક એક-સમયનો અપડેટ કરશે, જેના કારણે તમારો બધો સ્થાનિક ડેટા ડિલીટ થઈ જશે.</translation>
 <translation id="2733248615007838252">થમ્બ્સ અપ એ પ્રતિસાદ સબમિટ કરે છે કે તમને આ પરિણામો ગમે છે.</translation>
 <translation id="27349076983469322">આછું બૅકગ્રાઉન્ડ</translation>
+<translation id="2735081931800992557">PDF ફાઇલો વાંચો અને ડિસ્પ્લે કરો</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
 <translation id="2737363922397526254">સંકુચિત કરો...</translation>
 <translation id="2737719817922589807">બુકમાર્ક તથા સૂચિઓ</translation>
@@ -3692,6 +3692,7 @@
 <translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
 <translation id="3771721161825963003">ટૅબને ઊભી રીતે બતાવો</translation>
 <translation id="3771851622616482156">ખુલ્લી ટૅબ સહિત, આ સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
+<translation id="3772951945682043324">તાજેતરમાં બંધ કરેલું કોઈ ટૅબ નથી</translation>
 <translation id="3774059845329307709">અનુક્રમ નંબર</translation>
 <translation id="3774166835015494435">તાજેતરના ફોટા અને નોટિફિકેશન</translation>
 <translation id="3775432569830822555">SSL સર્વર પ્રમાણપત્ર</translation>
@@ -5882,7 +5883,6 @@
 <translation id="5463348003600590648">સૂચનો બંધ કરો</translation>
 <translation id="5463625433003343978">ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
 <translation id="5463856536939868464">મેનૂમાં છુપાયેલા બુકમાર્ક છે</translation>
-<translation id="5465214111614807935">નવી &amp;આઇસોલેટેડ વિન્ડો</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” પેસ્ટ કરો અને શોધો</translation>
 <translation id="5466721587278161554">તમારા ટૅબના ગ્રૂપ બુકમાર્ક બાર, ઍપ મેનૂમાં સાચવવામાં આવે છે તેમજ જો સિંક કરવાનું સેટિંગ ચાલુ કરેલું હોય, તો તેમને તમારા સાઇન ઇન કરેલા બધા ડિવાઇસ પર અપડેટ કરવામાં આવે છે</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> બ્લૉક કરવામાં આવી</translation>
@@ -7041,7 +7041,6 @@ USB ડિવાઇસ</translation>
 <translation id="6379228010899751161">તમે તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં હંમેશાં પાસવર્ડનો ઉપયોગ કરી શકો તેની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6379827283296619736">ના, આ પ્રોફાઇલમાં કાર્ય કરવાનું ચાલુ રાખો</translation>
 <translation id="6380618366311601172">Gemini <ph name="DOMAIN" /> પર સાઇન ઇન કરવાની જરૂર હોય તેવા કાર્યો પૂર્ણ કરી શકશે નહીં.</translation>
-<translation id="6383321659284013430">નવી &amp;આઇસોલેટેડ વિન્ડો</translation>
 <translation id="6383382161803538830">આ પેજ પર વાંચન મોડ ઉપલબ્ધ નથી</translation>
 <translation id="638418309848716977">સપોર્ટ કરવામાં આવતી લિંક</translation>
 <translation id="6384275966486438344">આના પર તમારા શોધ સેટિંગ બદલો: <ph name="SEARCH_HOST" /></translation>
@@ -7076,6 +7075,7 @@ USB ડિવાઇસ</translation>
 <translation id="6406708970972405507">સેટિંગ - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી છે</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> અને <ph name="WEBSITE_3" /> પર તમારો ડેટા વાંચો અને બદલો</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">છબી ફાઇલો</translation>
 <translation id="6410328738210026208">ચેનલ બદલો અને Powerwash કરો</translation>
 <translation id="6410390304316730527">Safe Browsing એવા હુમલાખોરોથી તમારું રક્ષણ કરી શકે છે જે તમને દુર્ભાવનાપૂર્ણ સૉફ્ટવેર ઇન્સ્ટૉલ કરવા અથવા પાસવર્ડ, ફોન નંબર અથવા ક્રેડિટ કાર્ડ જેવી વ્યક્તિગત માહિતી જાહેર કરવા જેવી જોખમી બાબતો કરવા ગેરમાર્ગે દોરી શકે છે. જો તમે આ બંધ કરો, તો અજાણી અથવા ભરોસાપાત્ર ન હોય એવી સાઇટ બ્રાઉઝ કરતી વખતે સાવધાન રહેજો.</translation>
@@ -7671,6 +7671,7 @@ USB ડિવાઇસ</translation>
 <translation id="6845231585063669905">A થી Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="FILE_NAME" />ને <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવા માગે છે.</translation>
 <translation id="6846843854964504403">સલામતી માટે રીસેટ</translation>
+<translation id="6846861364742126526">Gemini સાથે ચૅટ કરવા માટે, તમારા માઇક્રોફોનનો ઉપયોગ કરો. જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે તમારા ડેટાનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="6847125920277401289">ચાલુ રાખવા માટે સ્પેસ ખાલી કરો</translation>
 <translation id="6850286078059909152">ટેક્સ્ટનો રંગ</translation>
 <translation id="6850925512806464982">આ ટૅબના ગ્રૂપનો ઍક્સેસ દરેક વ્યક્તિ તરત જ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>

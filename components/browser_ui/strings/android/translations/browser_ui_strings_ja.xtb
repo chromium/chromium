@@ -53,6 +53,7 @@
 <translation id="1532175480576580256">カスタム ショートカットのボトムシートが画面全体に表示されています</translation>
 <translation id="1538031354170655462">付近のタグやデバイスと接続してバッジのスキャンやタッチ決済などを行うため、サイトで近距離無線通信（NFC）を使用する場合があります</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
+<translation id="1565353932454306569"><ph name="ORIGIN" /> – 全画面表示を終了するには、画面の端からドラッグします。</translation>
 <translation id="1569054338208717605">Chrome の V8 エンジンでサイトを高速化する（攻撃に対する Chrome の耐性は若干低下します）</translation>
 <translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
 <translation id="1594521731409209842">画面をピンチして写真のサイズを変更します</translation>
@@ -137,6 +138,7 @@
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
 <translation id="2347601491101454548">カスタム ショートカットのボトムシートが画面の下半分に表示されています</translation>
 <translation id="2359808026110333948">続行</translation>
+<translation id="2364212713469273030"><ph name="ORIGIN" /> - 全画面表示を終了するには、上からドラッグして、左端または右端からスワイプします。</translation>
 <translation id="2379925928934107488">可能であれば、Chrome がダークモードを使用している場合にダークモードをサイトに適用します</translation>
 <translation id="2390272837142897736">拡大</translation>
 <translation id="2397689164757137845">許可 • 正確</translation>

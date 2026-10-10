@@ -2014,7 +2014,6 @@
 <translation id="252513908494776481">می‌توانید درباره این زبانه سؤال بپرسید</translation>
 <translation id="2525746158911982776">به‌روزرسانی انجام نشد زیرا سیستم فضای ذخیره‌سازی کافی ندارد.</translation>
 <translation id="2525842906387880861">دیگر پیشنهادی را در این صفحه نخواهید دید</translation>
-<translation id="2526346836766369775">زبانه مجزای جدید</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="2526619973349913024">بررسی برای وجود به‌روزرسانی</translation>
 <translation id="2527167509808613699">هر نوع اتصال</translation>
@@ -2285,6 +2284,7 @@
 <translation id="2731971182069536520">دفعه بعد که دستگاهتان را بازراه‌اندازی می‌کنید، سرپرستتان به‌روزرسانی یک‌باره‌ای انجام می‌دهد که داده‌های محلی شما را حذف خواهد کرد.</translation>
 <translation id="2733248615007838252">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این نتایج را می‌پسندید.</translation>
 <translation id="27349076983469322">پس‌زمینه روشن</translation>
+<translation id="2735081931800992557">‏خواندن و نشان دادن فایل‌های PDF</translation>
 <translation id="2735712963799620190">زمان‌بندی</translation>
 <translation id="2737363922397526254">کوچک کردن...</translation>
 <translation id="2737719817922589807">&amp;نشانک‌ها و فهرست‌ها</translation>
@@ -3703,6 +3703,7 @@
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
 <translation id="3771721161825963003">نمایش عمودی زبانه‌ها</translation>
 <translation id="3771851622616482156">از سیستم این سایت (ازجمله در برگه‌های باز) خارج خواهید شد</translation>
+<translation id="3772951945682043324">هیچ زبانه اخیراً بسته‌شده‌ای وجود ندارد</translation>
 <translation id="3774059845329307709">شماره سریال</translation>
 <translation id="3774166835015494435">اعلان‌ها و عکس‌های جدید</translation>
 <translation id="3775432569830822555">‏گواهی سرور SSL</translation>
@@ -5028,7 +5029,7 @@
 <translation id="4801512016965057443">اجازه دادن فراگردی داده تلفن همراه</translation>
 <translation id="4803599447809045620">غیرفعال کردن پیوندها</translation>
 <translation id="4804311503028830356">برای کاوش گزینه‌های دیگر، روی علامت برگشت کلیک کنید</translation>
-<translation id="4804818685124855865">قطع اتصال</translation>
+<translation id="4804818685124855865">قطع کردن اتصال</translation>
 <translation id="4804827417948292437">آووکادو</translation>
 <translation id="4806071198808203109">ذخیره فریم ویدیو به‌عنوان…</translation>
 <translation id="4807098396393229769">نام روی کارت</translation>
@@ -5893,7 +5894,6 @@
 <translation id="5463348003600590648">غیرفعال کردن پیشنهادها</translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
 <translation id="5463856536939868464">منوی دارای نشانک‌های مخفی</translation>
-<translation id="5465214111614807935">پنجره مجزای جدید</translation>
 <translation id="5466374726908360271">جای‌گذاری و جستجوی «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="5466721587278161554">گروه‌های زبانه شما در نوار نشانک‌ها در منو برنامه ذخیره می‌شود و اگر همگام‌سازی روشن باشد در همه دستگاه‌های واردشده به حساب به‌روز می‌شود</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود شده‌اند</translation>
@@ -7050,7 +7050,6 @@
 <translation id="6379228010899751161">برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در حسابتان (<ph name="ACCOUNT_EMAIL" />) استفاده کنید، هویت خود را درستی‌سنجی کنید</translation>
 <translation id="6379827283296619736">نه، همچنان کار کردن در این نمایه</translation>
 <translation id="6380618366311601172">‏‫Gemini قادر نخواهد بود تکالیفی را که به ورود به سیستم در <ph name="DOMAIN" /> نیاز دارند انجام دهد.</translation>
-<translation id="6383321659284013430">پنجره مجزای جدید</translation>
 <translation id="6383382161803538830">حالت خواندن در این صفحه دردسترس نیست</translation>
 <translation id="638418309848716977">پیوندهای پشتیبانی‌شده</translation>
 <translation id="6384275966486438344">تغییر تنظیمات جستجویتان به: <ph name="SEARCH_HOST" /></translation>
@@ -7085,6 +7084,7 @@
 <translation id="6406708970972405507">تنظیمات - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">مجاز است در دستگاه داده ذخیره کند</translation>
 <translation id="6408118934673775994">خواندن و تغییر داده‌هایتان در <ph name="WEBSITE_1" />، ‏<ph name="WEBSITE_2" /> و <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750">‫<ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">فایل‌های تصویری</translation>
 <translation id="6410328738210026208">تغییر کانال و پاکسازی</translation>
 <translation id="6410390304316730527">«مرور ایمن» از شما دربرابر مهاجمانی محافظت می‌کند که ممکن است فریبتان دهند تا کارهای خطرناکی انجام دهید؛ ازجمله نصب نرم‌افزار مخرب یا افشای اطلاعات شخصی مثل گذرواژه‌ها، شماره‌های تماس، یا کارت‌های اعتباری. اگر «مرور ایمن» را خاموش می‌کنید، هنگام مرور کردن در سایت‌های ناآشنا یا نامعتبر احتیاط کنید.</translation>
@@ -7680,6 +7680,7 @@
 <translation id="6845231585063669905">الف تا ی</translation>
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» می‌خواهد <ph name="FILE_NAME" /> را با <ph name="PRINTER_NAME" /> چاپ کند.</translation>
 <translation id="6846843854964504403">بازنشانی ایمنی</translation>
+<translation id="6846861364742126526">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. از داده‌هایتان برای بهبود دادن مدل‌های هوشواره‌ای زایا استفاده نمی‌شود.</translation>
 <translation id="6847125920277401289">برای ادامه، فضا خالی کنید</translation>
 <translation id="6850286078059909152">رنگ نوشتار</translation>
 <translation id="6850925512806464982">همه دسترسی به این گروه زبانه را فوراً ازدست می‌دهند و این گروه از همه دستگاه‌ها حذف می‌شود</translation>

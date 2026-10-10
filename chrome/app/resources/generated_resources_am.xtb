@@ -2010,7 +2010,6 @@
 <translation id="252513908494776481">ስለዚህ ትር ይጠይቁ</translation>
 <translation id="2525746158911982776">ሥርዓቱ በቂ የማከማቻ ቦታ ስለሌለው ዝማኔው አልተሳካም።</translation>
 <translation id="2525842906387880861">በዚህ ገጽ ላይ ጥቆማዎችን እንደገና አያዩም</translation>
-<translation id="2526346836766369775">አዲስ የተገለለ ትር</translation>
 <translation id="2526590354069164005">ዴስክቶፕ</translation>
 <translation id="2526619973349913024">ዝማኔን ፈልግ</translation>
 <translation id="2527167509808613699">ማንኛውም ዓይነት ግንኙነት</translation>
@@ -2281,6 +2280,7 @@
 <translation id="2731971182069536520">መሣሪያዎን ዳግም በሚያስነሱበት ቀጣዩ ጊዜ ላይ አስተዳዳሪዎ አካባቢያዊ ውሂብዎን የሚሰርዝ የአንድ ጊዜ ዝማኔ ያከናውናል።</translation>
 <translation id="2733248615007838252">አሪፍ የሚለው እርስዎ እነዚህን ውጤቶች እንደወደዱ ግብረመልስ ያቀርባል።</translation>
 <translation id="27349076983469322">ፈዛዝ ያለ ጀርባ</translation>
+<translation id="2735081931800992557">PDF ፋይሎችን ማንበብ እና ማሳየት</translation>
 <translation id="2735712963799620190">የጊዜ ሰሌዳ</translation>
 <translation id="2737363922397526254">ሰብስብ...</translation>
 <translation id="2737719817922589807">&amp;እልባቶች እና ዝርዝሮች</translation>
@@ -3699,6 +3699,7 @@
 <translation id="3771294271822695279">የቪዲዮ ፋይሎች</translation>
 <translation id="3771721161825963003">ትሮችን በአቀባዊ አሳይ</translation>
 <translation id="3771851622616482156">ክፍት ትሮችን ጨምሮ፣ ከዚህ ጣቢያ ዘግተው እንዲወጡ ይደረጋሉ</translation>
+<translation id="3772951945682043324">በቅርብ ጊዜ የተዘጉ ትሮች የሉም</translation>
 <translation id="3774059845329307709">የመለያ ቁጥር</translation>
 <translation id="3774166835015494435">የቅርብ ጊዜ ፎቶዎች እና ማሳወቂያዎች</translation>
 <translation id="3775432569830822555">SSL አገልጋይ ሰርቲፊኬት</translation>
@@ -5887,7 +5888,6 @@
 <translation id="5463348003600590648">ጥቆማዎችን አሰናክል</translation>
 <translation id="5463625433003343978">መሣሪያዎችን በማግኘት ላይ...</translation>
 <translation id="5463856536939868464">የተደበቁ ዕልባቶችን የያዘ ምናሌ</translation>
-<translation id="5465214111614807935">አዲስ እና &amp;የተለየ መስኮት</translation>
 <translation id="5466374726908360271">ይለጥፉና «<ph name="SEARCH_TERMS" />»ን ይፈልጉ</translation>
 <translation id="5466721587278161554">የእርስዎ የትር ቡድኖች በዕልባቶች አሞሌ፣ የመተግበሪያ ምናሌ ውስጥ ይቀመጣሉ እና ስምረት ከበራ በመለያ በገቡ ሁሉም መሣሪያዎችዎ ላይ ይዘመናል።</translation>
 <translation id="5467207440419968613">የታገዱ <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /></translation>
@@ -7044,7 +7044,6 @@
 <translation id="6379228010899751161">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያሉትን የይለፍ ቃሎች ሁልጊዜ መጠቀም እንደሚችሉ ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6379827283296619736">አይ፣ በዚህ መገለጫ መሥራት ቀጥል</translation>
 <translation id="6380618366311601172">Gemini <ph name="DOMAIN" /> ላይ መግባት የሚጠይቁ ተግባራትን ማጠናቀቅ አይችልም።</translation>
-<translation id="6383321659284013430">አዲስ እና &amp;የተለየ መስኮት</translation>
 <translation id="6383382161803538830">የንባብ ሁነታ በዚህ ገጽ ላይ አይገኝም</translation>
 <translation id="638418309848716977">የሚደገፉ አገናኞች</translation>
 <translation id="6384275966486438344">የፍለጋ ቅንብሮችዎን ወደሚከተለው ይለውጡ፦ <ph name="SEARCH_HOST" /></translation>
@@ -7079,6 +7078,7 @@
 <translation id="6406708970972405507">ቅንብሮች - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">በመሣሪያዎ ላይ ውሂብ ለማስቀመጥ ተፈቅዷል</translation>
 <translation id="6408118934673775994">ውሂብዎን በ<ph name="WEBSITE_1" />፣ <ph name="WEBSITE_2" /> እና <ph name="WEBSITE_3" /> ላይ ያነብባል እና ይቀይራል</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">የምስል ፋይሎች</translation>
 <translation id="6410328738210026208">ሰርጥ ቀይር እና Powerwash</translation>
 <translation id="6410390304316730527">የጥንቃቄ አሰሳ እንደ ተንኮል-አዘል ሶፍትዌር መጫን ያለ አደገኛ ነገር እንዲያደርጉ ወይም እንደ የይለፍ ቃላት፣ ስልክ ቁጥሮች ወይም ክሬዲት ካርዶች ያለ የግል መረጃን እንዲገልጡ እርስዎን ሊያታልሉዎ ከሚችሉ አጥቂዎች ይጠብቀዎታል። ካጠፉት ያልተለመደ ወይም ስማቸው ጥሩ ያልሆኑ ጣቢያዎችን ሲያስሱ ይጠንቀቁ።</translation>
@@ -7674,6 +7674,7 @@
 <translation id="6845231585063669905">ከሀ ወደ ፐ</translation>
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» <ph name="FILE_NAME" />ን በ<ph name="PRINTER_NAME" /> ማተም ይፈልጋል።</translation>
 <translation id="6846843854964504403">የደህንነት ዳግም ማስጀመር</translation>
+<translation id="6846861364742126526">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="6847125920277401289">ለመቀጠል ቦታ ያስለቅቁ</translation>
 <translation id="6850286078059909152">የጽሑፍ ቀለም</translation>
 <translation id="6850925512806464982">ሁሉም ሰው ወዲያውኑ የዚህን የትር ቡድን መዳረሻ ያጣል እና ከሁሉም መሣሪያዎች ላይ ይሰረዛል</translation>
@@ -9601,7 +9602,7 @@ nil</translation>
 <translation id="8306885873692337975">የቅርብ ጊዜ ባህሪያትን እና የደህንነት ማሻሻያዎችን ያግኙ።</translation>
 <translation id="8308024039615003152">መስክ</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> የእርስዎ ካሜራ መድረስ የሚፈልግ ከሆነ ይጠይቅ</translation>
-<translation id="830868413617744215">ቅድመ-ይሁንታ</translation>
+<translation id="830868413617744215">ቅድመ ይሁንታ</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> ትሮች</translation>
 <translation id="831207808878314375">ብየና</translation>
 <translation id="8312841338723044391">ቀጥታ ስርጭት</translation>

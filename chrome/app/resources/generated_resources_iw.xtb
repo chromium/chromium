@@ -2014,7 +2014,6 @@
 <translation id="252513908494776481">יש לי שאלה לגבי הכרטיסייה הזו</translation>
 <translation id="2525746158911982776">העדכון נכשל כי אין למערכת מספיק נפח אחסון.</translation>
 <translation id="2525842906387880861">מעכשיו לא יוצגו לך הצעות בדף הזה</translation>
-<translation id="2526346836766369775">כרטיסייה מבודדת חדשה</translation>
 <translation id="2526590354069164005">שולחן עבודה</translation>
 <translation id="2526619973349913024">יש עדכון חדש?</translation>
 <translation id="2527167509808613699">חיבור מכל סוג שהוא</translation>
@@ -5894,7 +5893,6 @@
 <translation id="5463348003600590648">השבתת הצעות</translation>
 <translation id="5463625433003343978">מתבצע חיפוש מכשירים…</translation>
 <translation id="5463856536939868464">התפריט מכיל סימניות נסתרות</translation>
-<translation id="5465214111614807935">חלון &amp;מבודד חדש</translation>
 <translation id="5466374726908360271">הד&amp;בקה וחיפוש של "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">אם הסנכרון מופעל, קבוצות הכרטיסיות נשמרות בסרגל הסימניות ובתפריט האפליקציות ומתעדכנות בכל המכשירים שמחוברים לחשבון</translation>
 <translation id="5467207440419968613">ההרשאות הבאות נחסמו: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7052,7 +7050,6 @@
 <translation id="6379228010899751161">כדי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון <ph name="ACCOUNT_EMAIL" />, עליך לאמת את הזהות שלך</translation>
 <translation id="6379827283296619736">לא, אני רוצה להמשיך לעבוד בפרופיל הזה</translation>
 <translation id="6380618366311601172">‏‫Gemini לא יוכל להשלים משימות שמחייבות כניסה לאתר <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">חלון &amp;מבודד חדש</translation>
 <translation id="6383382161803538830">מצב הקריאה לא זמין בדף הזה</translation>
 <translation id="638418309848716977">קישורים נתמכים</translation>
 <translation id="6384275966486438344">שינוי הגדרות החיפוש שלך ל: <ph name="SEARCH_HOST" /></translation>
@@ -9607,7 +9604,7 @@
 <translation id="8306885873692337975">קבלה של התכונות ושיפורי האבטחה האחרונים.</translation>
 <translation id="8308024039615003152">אחו</translation>
 <translation id="8308179586020895837">לשאול אם <ph name="HOST" /> רוצה לגשת למצלמה שלך</translation>
-<translation id="830868413617744215">ביטא</translation>
+<translation id="830868413617744215">בטא</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> כרטיסיות</translation>
 <translation id="831207808878314375">הגדרה</translation>
 <translation id="8312841338723044391">בשידור חי</translation>

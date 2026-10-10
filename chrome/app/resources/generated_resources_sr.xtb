@@ -2001,7 +2001,6 @@
 <translation id="252513908494776481">Поставите питање о овој картици</translation>
 <translation id="2525746158911982776">Ажурирање није успело јер систем нема довољно меморијског простора.</translation>
 <translation id="2525842906387880861">Више нећете видети предлоге на овој страници</translation>
-<translation id="2526346836766369775">Нова изолована &amp;картица</translation>
 <translation id="2526590354069164005">Радна површина</translation>
 <translation id="2526619973349913024">Провери да ли постоји ажурирање</translation>
 <translation id="2527167509808613699">Било која врста везе</translation>
@@ -2272,6 +2271,7 @@
 <translation id="2731971182069536520">Када следећи пут рестартујете уређај, администратор ће обавити једнократно ажурирање које ће избрисати локалне податке.</translation>
 <translation id="2733248615007838252">Опција Свиђа ми се шаље повратне информације да вам се свиђају ови резултати.</translation>
 <translation id="27349076983469322">Светла позадина</translation>
+<translation id="2735081931800992557">Чита и приказује PDF фајлове</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Скупи...</translation>
 <translation id="2737719817922589807">Обележивачи и листе</translation>
@@ -3690,6 +3690,7 @@
 <translation id="3771294271822695279">Видео датотеке</translation>
 <translation id="3771721161825963003">Прикажи картице вертикално</translation>
 <translation id="3771851622616482156">Одјавићете се са овог сајта, укључујући и инстанце на отвореним картицама</translation>
+<translation id="3772951945682043324">Нема недавно затворених картица</translation>
 <translation id="3774059845329307709">Серијски број</translation>
 <translation id="3774166835015494435">Недавне слике и обавештења</translation>
 <translation id="3775432569830822555">Сертификат SSL сервера</translation>
@@ -5878,7 +5879,6 @@
 <translation id="5463348003600590648">Онемогући предлоге</translation>
 <translation id="5463625433003343978">Траже се уређаји…</translation>
 <translation id="5463856536939868464">Мени са скривеним обележивачима</translation>
-<translation id="5465214111614807935">Нови &amp;изоловани прозор</translation>
 <translation id="5466374726908360271">Налепи и претражи „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="5466721587278161554">Групе картица се чувају на траци са обележивачима и у менију апликације и ажурирају се на свим уређајима на којима сте пријављени ако је синхронизација укључена</translation>
 <translation id="5467207440419968613">Блокирано је: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7036,7 +7036,6 @@
 <translation id="6379228010899751161">Потврдите идентитет да бисте били сигурни да увек можете да користите лозинке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Не, настави да радиш на овом профилу</translation>
 <translation id="6380618366311601172">Gemini неће моћи да обавља задатке који захтевају пријављивање на <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Нови &amp;изоловани прозор</translation>
 <translation id="6383382161803538830">Режим читања није доступан на овој страници</translation>
 <translation id="638418309848716977">Подржани линкови</translation>
 <translation id="6384275966486438344">Промените подешавања претраге на: <ph name="SEARCH_HOST" /></translation>
@@ -7071,6 +7070,7 @@
 <translation id="6406708970972405507">Подешавања – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Дозвољено је чување података на уређају</translation>
 <translation id="6408118934673775994">Читање и мењање података на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Датотеке слика</translation>
 <translation id="6410328738210026208">Промени канал и обави Powerwash</translation>
 <translation id="6410390304316730527">Безбедно прегледање вас штити од нападача који могу да вас наведу да урадите нешто опасно, на пример, да инсталирате злонамерни софтвер или откријете личне податке попут лозинки, бројева телефона или бројева кредитних картица. Ако га искључите, будите опрезни при прегледању непознатих или небезбедних сајтова.</translation>
@@ -7668,6 +7668,7 @@
 <translation id="6845231585063669905">Од А до Z</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> жели да штампа <ph name="FILE_NAME" /> помоћу штампача <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Безбедно ресетовање</translation>
+<translation id="6846861364742126526">Користите микрофон да бисте разговарали са Gemini-јем. Подаци се не користе за побољшавање модела генеративне вештачке интелигенције.</translation>
 <translation id="6847125920277401289">Ослободите простор да бисте наставили</translation>
 <translation id="6850286078059909152">Боја текста</translation>
 <translation id="6850925512806464982">Сви ће одмах изгубити приступ групи картица и она ће бити избрисана са свих уређаја</translation>
@@ -9590,7 +9591,7 @@
 <translation id="8306885873692337975">Добијајте најновије функције и безбедносна побољшања.</translation>
 <translation id="8308024039615003152">Ливада</translation>
 <translation id="8308179586020895837">Питај ме ако <ph name="HOST" /> жели да приступи камери</translation>
-<translation id="830868413617744215">Beta</translation>
+<translation id="830868413617744215">Бета</translation>
 <translation id="8310409247509201074">Картица: <ph name="NUM" /></translation>
 <translation id="831207808878314375">Дефиниција</translation>
 <translation id="8312841338723044391">УЖИВО</translation>

@@ -2014,7 +2014,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="252513908494776481">Uliza kuhusu kichupo hiki</translation>
 <translation id="2525746158911982776">Imeshindwa kusasisha kwa sababu nafasi ya kuhifadhi kwenye mfumo haitoshi.</translation>
 <translation id="2525842906387880861">Hutaona mapendekezo kwenye ukurasa huu tena</translation>
-<translation id="2526346836766369775">Kichupo kipya &amp;kilichotengwa</translation>
 <translation id="2526590354069164005">Eneo-kazi</translation>
 <translation id="2526619973349913024">Kagua Usasishaji</translation>
 <translation id="2527167509808613699">Aina yoyote ya muunganisho.</translation>
@@ -2285,6 +2284,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2731971182069536520">Utakapozima na kuwasha tena kifaa chako, msimamizi wako atatekeleza sasisho la mara moja ambalo litafuta data ya kifaa chako.</translation>
 <translation id="2733248615007838252">Alama ya bomba hutuma maoni kuwa unapenda matokeo haya.</translation>
 <translation id="27349076983469322">Mandhari-nyuma meupe</translation>
+<translation id="2735081931800992557">Kusoma na kuonyesha faili za PDF</translation>
 <translation id="2735712963799620190">Ratiba</translation>
 <translation id="2737363922397526254">Kunja...</translation>
 <translation id="2737719817922589807">Alamisho na orodha</translation>
@@ -3703,6 +3703,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3771294271822695279">Faili za Video</translation>
 <translation id="3771721161825963003">Onyesha Vichupo kwa Mkao Wima</translation>
 <translation id="3771851622616482156">Utaondolewa katika akaunti kwenye tovuti hii, ikiwa ni pamoja na vichupo ulivyofungua</translation>
+<translation id="3772951945682043324">Hakuna vichupo vilivyofungwa hivi majuzi</translation>
 <translation id="3774059845329307709">Nambari ya ufuatiliaji</translation>
 <translation id="3774166835015494435">Picha na arifa za hivi karibuni</translation>
 <translation id="3775432569830822555">Cheti cha Seva cha SSL</translation>
@@ -5891,7 +5892,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5463348003600590648">Zima mapendekezo</translation>
 <translation id="5463625433003343978">Inatafuta vifaa...</translation>
 <translation id="5463856536939868464">Menyu iliyo na alamisho zilizofichwa</translation>
-<translation id="5465214111614807935">Dirisha &amp;Huru jipya</translation>
 <translation id="5466374726908360271">Ba&amp;ndika na utafute “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Vikundi vya vichupo vyako huhifadhiwa kwenye sehemu ya alamisho, menyu ya programu na husasishwa katika vifaa vyako vyote ulivyotumia kuingia katika akaunti iwapo umewasha usawazishaji</translation>
 <translation id="5467207440419968613">Umezuia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7048,7 +7048,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6379228010899751161">Thibitisha kuwa ni wewe ili uhakikishe kuwa unaweza kutumia manenosiri katika akaunti yako kila wakati, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Hapana, endelea kutumia data ya kazini katika wasifu huu</translation>
 <translation id="6380618366311601172">Gemini haitaweza kukamilisha majukumu yanayohitaji kuingia katika akaunti kwenye <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Dirisha &amp;Huru Jipya</translation>
 <translation id="6383382161803538830">Hali ya kusoma haipatikani kwenye ukurasa huu</translation>
 <translation id="638418309848716977">Viungo vinavyoweza kutumika</translation>
 <translation id="6384275966486438344">Badilisha mipangilio yako ya kutafuta iwe: <ph name="SEARCH_HOST" /></translation>
@@ -7083,6 +7082,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6406708970972405507">Mipangilio - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Zimeruhusiwa kuhifadhi data kwenye kifaa chako</translation>
 <translation id="6408118934673775994">Kusoma na kubadilisha data yako kwenye <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> na <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Faili za Picha</translation>
 <translation id="6410328738210026208">Badilisha kituo na Powerwash</translation>
 <translation id="6410390304316730527">Kipengele cha Kuvinjari Salama hukulinda dhidi ya washambulizi ambao wanaweza kukulaghai ufanye kitu hatari kama vile kusakinisha programu hasidi au kufichua taarifa binafsi kama vile manenosiri, namba za simu au kadi za mikopo. Ukikizima, kuwa makini unapovinjari tovuti zisizo za kawaida au zisizo na sifa nzuri.</translation>
@@ -7676,6 +7676,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6845231585063669905">A hadi Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" inataka kuchapisha <ph name="FILE_NAME" /> ikitumia <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Uwekaji upya wa mipangilio salama</translation>
+<translation id="6846861364742126526">Tumia maikrofoni yako kupiga gumzo na Gemini. Data yako haitumiwi kuboresha mifumo ya AI zalishi.</translation>
 <translation id="6847125920277401289">Ongeza nafasi ili uendelee</translation>
 <translation id="6850286078059909152">Rangi ya maandishi</translation>
 <translation id="6850925512806464982">Kila mtu atapoteza idhini ya kufikia kikundi hiki cha vichupo cha papo hapo na kitafutwa kwenye vifaa vyote</translation>

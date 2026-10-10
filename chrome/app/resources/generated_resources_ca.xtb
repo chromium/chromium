@@ -2002,7 +2002,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="252513908494776481">Pregunta sobre aquesta pestanya</translation>
 <translation id="2525746158911982776">L'actualització ha fallat perquè el sistema no té prou espai d'emmagatzematge.</translation>
 <translation id="2525842906387880861">No tornaràs a veure suggeriments en aquesta pàgina</translation>
-<translation id="2526346836766369775">Pestanya aïllada nova</translation>
 <translation id="2526590354069164005">Escriptori</translation>
 <translation id="2526619973349913024">Cerca actualitzacions</translation>
 <translation id="2527167509808613699">Qualsevol tipus de connexió</translation>
@@ -5877,7 +5876,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5463348003600590648">Desactiva els suggeriments</translation>
 <translation id="5463625433003343978">S'estan cercant dispositius...</translation>
 <translation id="5463856536939868464">Menú amb adreces d'interès amagades</translation>
-<translation id="5465214111614807935">Finestra aïllada nova</translation>
 <translation id="5466374726908360271">Engan&amp;xa i cerca "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Els teus grups de pestanyes es desen a la barra d'adreces d'interès, al menú de l'aplicació i s'actualitzen en tots els dispositius en què has iniciat la sessió si la sincronització està activada</translation>
 <translation id="5467207440419968613">Permisos bloquejats: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7032,7 +7030,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6379228010899751161">Verifica la teva identitat per assegurar-te que puguis utilitzar sempre les contrasenyes del teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">No, continua treballant en aquest perfil</translation>
 <translation id="6380618366311601172">Gemini no podrà completar les tasques que requereixin iniciar la sessió a <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Finestra aïllada nova</translation>
 <translation id="6383382161803538830">El mode de lectura no està disponible en aquesta pàgina</translation>
 <translation id="638418309848716977">Enllaços admesos</translation>
 <translation id="6384275966486438344">Canviar la configuració de la cerca a: <ph name="SEARCH_HOST" /></translation>

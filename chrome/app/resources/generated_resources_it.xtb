@@ -2001,7 +2001,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="252513908494776481">Chiedi informazioni su questa scheda</translation>
 <translation id="2525746158911982776">Aggiornamento non riuscito perché lo spazio di archiviazione del sistema non è sufficiente.</translation>
 <translation id="2525842906387880861">Non vedrai più suggerimenti in questa pagina</translation>
-<translation id="2526346836766369775">Nuova &amp;scheda isolata</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Verifica la presenza di aggiornamenti</translation>
 <translation id="2527167509808613699">Qualsiasi tipo di connessione</translation>
@@ -2272,6 +2271,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2731971182069536520">La prossima volta che riavvii il dispositivo, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali.</translation>
 <translation id="2733248615007838252">Mi piace invia un feedback negativo relativo a questi risultati.</translation>
 <translation id="27349076983469322">Sfondo chiaro</translation>
+<translation id="2735081931800992557">Leggere e visualizzare file PDF</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
 <translation id="2737363922397526254">Comprimi...</translation>
 <translation id="2737719817922589807">&amp;Preferiti ed elenchi</translation>
@@ -3690,6 +3690,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3771294271822695279">File video</translation>
 <translation id="3771721161825963003">Mostra schede verticalmente</translation>
 <translation id="3771851622616482156">Uscirai da questo sito, schede aperte incluse</translation>
+<translation id="3772951945682043324">Nessuna scheda chiusa di recente</translation>
 <translation id="3774059845329307709">Numero di serie</translation>
 <translation id="3774166835015494435">Foto e notifiche recenti</translation>
 <translation id="3775432569830822555">Certificato server SSL</translation>
@@ -5879,7 +5880,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5463348003600590648">Disattiva suggerimenti</translation>
 <translation id="5463625433003343978">Ricerca di dispositivi in corso…</translation>
 <translation id="5463856536939868464">Menu contenente i Preferiti nascosti</translation>
-<translation id="5465214111614807935">Nuova &amp;finestra isolata</translation>
 <translation id="5466374726908360271">I&amp;ncolla e cerca "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">I tuoi gruppi di schede vengono salvati nella barra dei preferiti e nel menu delle app e vengono aggiornati su tutti i dispositivi su cui è stato eseguito l'accesso se la sincronizzazione è attiva</translation>
 <translation id="5467207440419968613">Autorizzazioni bloccate: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
@@ -7033,7 +7033,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6379228010899751161">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">No, continua a usare questo profilo per il lavoro</translation>
 <translation id="6380618366311601172">Gemini non sarà in grado di completare le attività che richiedono l'accesso a <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nuova &amp;finestra isolata</translation>
 <translation id="6383382161803538830">Modalità Lettura non disponibile in questa pagina</translation>
 <translation id="638418309848716977">Link supportati</translation>
 <translation id="6384275966486438344">Modifica delle impostazioni di ricerca per: <ph name="SEARCH_HOST" /></translation>
@@ -7068,6 +7067,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6406708970972405507">Impostazioni - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Autorizzati a salvare dati sul dispositivo</translation>
 <translation id="6408118934673775994">Leggere e modificare i tuoi dati su <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="6410328738210026208">Cambia canale ed esegui Powerwash</translation>
 <translation id="6410390304316730527">La Navigazione sicura ti protegge da attaccanti che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
@@ -7661,6 +7661,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6845231585063669905">Dalla A alla Z</translation>
 <translation id="6846178040388691741">L'estensione "<ph name="EXTENSION_NAME" />" vuole stampare il file <ph name="FILE_NAME" /> con la stampante <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Reimpostazione di sicurezza</translation>
+<translation id="6846861364742126526">Usa il microfono per parlare con Gemini. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="6847125920277401289">Libera spazio per continuare</translation>
 <translation id="6850286078059909152">Colore testo</translation>
 <translation id="6850925512806464982">Tutte le persone perderanno immediatamente l'accesso a questo gruppo di schede, che verrà eliminato da tutti i dispositivi</translation>

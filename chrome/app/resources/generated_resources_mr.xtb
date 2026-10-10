@@ -2015,7 +2015,6 @@
 <translation id="252513908494776481">या टॅबबद्दल विचारा</translation>
 <translation id="2525746158911982776">सिस्टीममध्ये पुरेशी स्टोरेज जागा नसल्यामुळे अपडेट करता आले नाही.</translation>
 <translation id="2525842906387880861">तुम्हाला या पेजवर सूचना पुन्हा दिसणार नाही</translation>
-<translation id="2526346836766369775">नवीन अलिप्त &amp;टॅब</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">अपडेटासाठी तपासा</translation>
 <translation id="2527167509808613699">कोणत्याही प्रकारचे कनेक्शन</translation>
@@ -5894,7 +5893,6 @@
 <translation id="5463348003600590648">सूचना बंद करा</translation>
 <translation id="5463625433003343978">डिव्हाइस शोधत आहे…</translation>
 <translation id="5463856536939868464">मेनूमध्ये लपलेले बुकमार्क आहेत</translation>
-<translation id="5465214111614807935">नवीन &amp;अलिप्त विंडो</translation>
 <translation id="5466374726908360271">पेस्ट करा आणि “<ph name="SEARCH_TERMS" />” शोधा</translation>
 <translation id="5466721587278161554">तुमचे टॅब गट बुकमार्क बार, अ‍ॅप मेनूमध्ये सेव्ह केले जातात आणि सिंक सुरू केलेले असल्यास, ते तुमच्या साइन-इन केलेल्या सर्व डिव्हाइसवर अपडेट केले जातात</translation>
 <translation id="5467207440419968613">ब्लॉक केलेले <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6589,6 +6587,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007053304250788613">फक्त एक डिस्प्ले मिरर मोडमध्ये वगळला जाऊ शकतो</translation>
 <translation id="6007240208646052708">तुमच्या भाषेमध्ये व्हॉइस शोध उपलब्ध नाही.</translation>
+<translation id="6007858579659393165">टॅबना नवीन पारदर्शक लुक मिळाला आहे</translation>
 <translation id="6010651352520077187">सुरू असताना, Google Translate हे तुमच्या आवडीच्या भाषेत साइटचे भाषांतर करण्याची सुविधा देईल. हे आपोआप साइटचे भाषांतरदेखील करू शकते.</translation>
 <translation id="6011193465932186973">फिंगरप्रिंट</translation>
 <translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
@@ -7053,7 +7052,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6379228010899751161">तुम्ही तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये, पासवर्ड कधीही वापरू शकता याची खात्री करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="6379827283296619736">नाही, या प्रोफाइलमध्ये काम करणे सुरू ठेवा</translation>
 <translation id="6380618366311601172">ज्या टास्कसाठी <ph name="DOMAIN" /> वर साइन इन करणे आवश्यक आहे, अशा टास्क Gemini पूर्ण करू शकणार नाही.</translation>
-<translation id="6383321659284013430">नवीन &amp;अलिप्त विंडो</translation>
 <translation id="6383382161803538830">या पेजवर वाचन मोड उपलब्ध नाही</translation>
 <translation id="638418309848716977">सपोर्ट असलेल्या लिंक</translation>
 <translation id="6384275966486438344">आपल्या शोध सेटिंग्ज यावर बदला: <ph name="SEARCH_HOST" /></translation>
@@ -9481,6 +9479,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8212601853154459483">ही प्रोफाइल <ph name="PROFILE_MANAGER" /> द्वारे व्यवस्थापित केली जाते आणि तुम्ही <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी स्वतंत्र प्रोफाइल तयार करणे आवश्यक आहे</translation>
 <translation id="8212792694174629011">कोणतीही प्रोफाइल आढळली नाहीत. तुमच्या डिव्हाइसचा कॅमेरा वापरून QR कोड स्कॅन करण्याचा प्रयत्न करा किंवा तुमच्या वाहकाने दिलेला अ‍ॅक्टिव्हेशन कोड एंटर करा.</translation>
 <translation id="8214489666383623925">फाइल उघडा...</translation>
+<translation id="8214771296778317256">तुमची प्राधान्य दिलेली टॅब शैली इथे निवडा</translation>
 <translation id="8215129063232901118">तुमच्या <ph name="DEVICE_TYPE" /> वरून तुमच्या फोनच्या क्षमता अ‍ॅक्सेस करा</translation>
 <translation id="8217212468862726597">पॉइंटर हायलाइट करा</translation>
 <translation id="8217399928341212914">एकाधिक फाइलचे ऑटोमॅटिक डाउनलोड ब्लॉक करणे सुरू ठेवा</translation>
@@ -10726,6 +10725,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9154194610265714752">अपडेट केलेले</translation>
 <translation id="915485121129452731">पेन टॅबलेट</translation>
 <translation id="9155344700756733162">रंगाची निवड रद्द करा</translation>
+<translation id="9155515662479003830">तुम्ही सेटिंग्जमध्ये कधीही क्लासिक शैलीवर परत स्विच करू शकता</translation>
 <translation id="9157096865782046368">०.८ सेकंद</translation>
 <translation id="9157697743260533322">सर्व वापरकर्त्यांसाठी ऑटोमॅटिक अपडेट सेट करण्यात अयशस्वी झाले (प्रीफ्लाइट लाँच एरर: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">प्रिंटरचे झाकण उघडे आहे</translation>

@@ -2002,7 +2002,6 @@
 <translation id="252513908494776481">询问关于此标签页的问题</translation>
 <translation id="2525746158911982776">系统存储空间不足导致更新失败。</translation>
 <translation id="2525842906387880861">此页面不会再显示建议</translation>
-<translation id="2526346836766369775">新的隔离标签页</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
 <translation id="2527167509808613699">各种连接</translation>
@@ -2273,6 +2272,7 @@
 <translation id="2731971182069536520">当您下次重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。</translation>
 <translation id="2733248615007838252">选择“我喜欢”，会提交您喜欢这些搜索结果的反馈。</translation>
 <translation id="27349076983469322">浅色背景</translation>
+<translation id="2735081931800992557">读取和显示 PDF 文件</translation>
 <translation id="2735712963799620190">时间安排</translation>
 <translation id="2737363922397526254">收起...</translation>
 <translation id="2737719817922589807">书签和清单(&amp;B)</translation>
@@ -3689,6 +3689,7 @@
 <translation id="3771294271822695279">视频文件</translation>
 <translation id="3771721161825963003">垂直显示标签页</translation>
 <translation id="3771851622616482156">您将会自动退出这个网站（包括已打开的标签页中的网站）</translation>
+<translation id="3772951945682043324">近期没有关闭的标签页</translation>
 <translation id="3774059845329307709">序列号</translation>
 <translation id="3774166835015494435">近期拍摄的照片和收到的通知</translation>
 <translation id="3775432569830822555">SSL 服务器证书</translation>
@@ -5876,7 +5877,6 @@
 <translation id="5463348003600590648">停用建议功能</translation>
 <translation id="5463625433003343978">正在查找设备…</translation>
 <translation id="5463856536939868464">包含隐藏书签的菜单</translation>
-<translation id="5465214111614807935">打开新的隔离窗口(&amp;I)</translation>
 <translation id="5466374726908360271">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">您的标签页分组会保存在书签栏和应用菜单中，并在您所有已登录账号的设备上更新（如果同步功能已开启）</translation>
 <translation id="5467207440419968613">禁用了“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
@@ -7030,7 +7030,6 @@
 <translation id="6379228010899751161">请验证您的身份，以确保您可以一直使用账号 <ph name="ACCOUNT_EMAIL" /> 中的密码</translation>
 <translation id="6379827283296619736">否，继续在工作时使用此资料</translation>
 <translation id="6380618366311601172">Gemini 将无法完成需要在 <ph name="DOMAIN" /> 上登录的任务。</translation>
-<translation id="6383321659284013430">打开新的隔离窗口(&amp;I)</translation>
 <translation id="6383382161803538830">此页面不支持朗读模式</translation>
 <translation id="638418309848716977">支持的链接</translation>
 <translation id="6384275966486438344">将您的搜索设置更改为：<ph name="SEARCH_HOST" /></translation>
@@ -7065,6 +7064,7 @@
 <translation id="6406708970972405507">设置 - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">可以将数据保存在设备上</translation>
 <translation id="6408118934673775994">读取和更改您在<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />和<ph name="WEBSITE_3" />上的数据</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">图片文件</translation>
 <translation id="6410328738210026208">变更版本并执行 Powerwash</translation>
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
@@ -7658,6 +7658,7 @@
 <translation id="6845231585063669905">由 A 到 Z</translation>
 <translation id="6846178040388691741">“<ph name="EXTENSION_NAME" />”想使用“<ph name="PRINTER_NAME" />”打印“<ph name="FILE_NAME" />”。</translation>
 <translation id="6846843854964504403">安全重置</translation>
+<translation id="6846861364742126526">使用麦克风与 Gemini 对话。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="6847125920277401289">需要释放空间才能继续</translation>
 <translation id="6850286078059909152">文字颜色</translation>
 <translation id="6850925512806464982">所有人将立即失去对此标签页分组的访问权限，并且此分组将从所有设备中删除</translation>
@@ -9580,7 +9581,7 @@
 <translation id="8306885873692337975">获取最新的功能和安全性方面的改进。</translation>
 <translation id="8308024039615003152">草地</translation>
 <translation id="8308179586020895837">当 <ph name="HOST" /> 想要使用摄像头时询问我</translation>
-<translation id="830868413617744215">测试版</translation>
+<translation id="830868413617744215">Beta 版</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> 个标签页</translation>
 <translation id="831207808878314375">定义</translation>
 <translation id="8312841338723044391">实时</translation>

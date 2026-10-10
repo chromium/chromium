@@ -852,6 +852,7 @@
 <translation id="3672283986707092811">Selecionar tudo</translation>
 <translation id="3679163990085797665">Excluir itens lidos</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
+<translation id="3689746421535476813">Escolha uma forma de pagamento salva para editar ou adicione uma nova</translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3700134753671613714">Faça login para ter acesso aos seus favoritos em todos os seus dispositivos.</translation>
 <translation id="3701167022068948696">Corrigir agora</translation>
@@ -1719,6 +1720,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6372558618707314581">Acesse a página que quiser</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6374514103145916800">Perguntar</translation>
+<translation id="6381241974485088375">Personalize a página Nova Guia quando quiser por aqui</translation>
 <translation id="6383719166112032471">Abrir local…</translation>
 <translation id="6387994324662817823">As senhas são salvas no Gerenciador de senhas do Google somente neste dispositivo.</translation>
 <translation id="6393156038355142111">Sugerir senha forte</translation>
@@ -2425,6 +2427,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8535368836838588657">Mostrar senha</translation>
 <translation id="8540426897269305488">Fazer login com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Algo deu errado. Toque no botão Live para tentar iniciar uma sessão do Live novamente.</translation>
+<translation id="8544172904312384600">Editar ou adicionar uma nova forma de pagamento</translation>
 <translation id="8545276357312221485">Confira as configurações padrão do seu navegador</translation>
 <translation id="854938212724803178">Você tem 1 senha comprometida. Corrija o problema agora para se proteger.</translation>
 <translation id="8551311254462607218">Na barra de endereço, toque no ícone de câmera do Google Lens</translation>
@@ -2463,6 +2466,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8639963783467694461">Definições de preenchimento automático</translation>
 <translation id="8642417828095157370">As guias são compartilhadas para deixar as respostas mais relevantes</translation>
 <translation id="8643403533759285912">Excluir grupo</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Não foi possível remover o monitoramento do preço.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8655861111558401309">Selecione Excluir Dados de Navegação</translation>

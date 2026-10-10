@@ -2015,7 +2015,6 @@
 <translation id="252513908494776481">এই ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="2525746158911982776">সিস্টেমে পর্যাপ্ত স্টোরেজ স্পেস না থাকার কারণে আপডেট করা যায়নি।</translation>
 <translation id="2525842906387880861">আপনি এই পৃষ্ঠাতে আর সাজেশন দেখতে পাবেন না</translation>
-<translation id="2526346836766369775">নতুন আইসোলেটেড &amp;ট্যাব</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2526619973349913024">আপডেট চেক করুন</translation>
 <translation id="2527167509808613699">যেকোনও প্রকারের কানেকশন</translation>
@@ -2286,6 +2285,7 @@
 <translation id="2731971182069536520">ডিভাইস পরের বার চালানোর সময়, আপনার অ্যাডমিনিস্ট্রেটর এককালীন আপডেট করবেন যার ফলে আপনার স্থানীয় ডেটা মুছে যাবে।</translation>
 <translation id="2733248615007838252">আপনি যে এইসব ফলাফল পছন্দ করেন, 'থাম্বস-আপ' আইকন সেই মতামত জমা দেয়।</translation>
 <translation id="27349076983469322">হালকা ব্যাকগ্রাউন্ড</translation>
+<translation id="2735081931800992557">PDF ফাইল পড়ুন ও দেখান</translation>
 <translation id="2735712963799620190">সময়সূচি</translation>
 <translation id="2737363922397526254">আড়াল করুন...</translation>
 <translation id="2737719817922589807">&amp;বুকমার্ক ও তালিকা</translation>
@@ -3704,6 +3704,7 @@
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
 <translation id="3771721161825963003">ট্যাবগুলি উল্লম্বভাবে দেখুন</translation>
 <translation id="3771851622616482156">খোলা ট্যাবের সাইটগুলি সহ এই সাইট থেকে আপনাকে সাইন-আউট করে দেওয়া হবে</translation>
+<translation id="3772951945682043324">সম্প্রতি বন্ধ করা কোনও ট্যাব নেই</translation>
 <translation id="3774059845329307709">সিরিয়াল নম্বর</translation>
 <translation id="3774166835015494435">সাম্প্রতিক ফটো এবং বিজ্ঞপ্তি</translation>
 <translation id="3775432569830822555">SSL সার্ভার সার্টিফিকেট</translation>
@@ -5894,7 +5895,6 @@
 <translation id="5463348003600590648">সাজেশন বন্ধ করুন</translation>
 <translation id="5463625433003343978">ডিভাইস খোঁজা হচ্ছে...</translation>
 <translation id="5463856536939868464">গোপন বুকমার্কগুলি সমন্বিত মেনু</translation>
-<translation id="5465214111614807935">নতুন &amp;আইসোলেটেড উইন্ডো</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” পে&amp;স্ট করে সার্চ করুন</translation>
 <translation id="5466721587278161554">আপনার ট্যাব গ্রুপ, বুকমার্ক বারে এবং অ্যাপ মেনুতে সেভ করা হয় এবং সিঙ্ক চালু করা থাকলে আপনার সবকটি সাইন-ইন করা ডিভাইসে আপডেট হয়ে যায়</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ব্লক করা হয়েছে</translation>
@@ -7052,7 +7052,6 @@
 <translation id="6379228010899751161">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ আপনার পাসওয়ার্ড যেকোনও সময় যাতে ব্যবহার করতে পারেন তা নিশ্চিত করতে আপনার পরিচয় যাচাই করুন</translation>
 <translation id="6379827283296619736">না, এই প্রোফাইলে কাজ চালিয়ে যান</translation>
 <translation id="6380618366311601172">Gemini এমন টাস্ক সম্পূর্ণ করতে পারবে না যার জন্য <ph name="DOMAIN" />-এ সাইন-ইন করতে হবে।</translation>
-<translation id="6383321659284013430">নতুন &amp;আইসোলেটেড উইন্ডো</translation>
 <translation id="6383382161803538830">পড়ার মোড এই পৃষ্ঠায় উপলভ্য নেই</translation>
 <translation id="638418309848716977">কাজ করে এমন লিঙ্ক</translation>
 <translation id="6384275966486438344">আপনার সার্চের সেটিংস এ পরিবর্তন করুন: <ph name="SEARCH_HOST" /></translation>
@@ -7087,6 +7086,7 @@
 <translation id="6406708970972405507">সেটিংস - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, ও <ph name="WEBSITE_3" /> এ আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">ছবি ফাইল</translation>
 <translation id="6410328738210026208">চ্যানেল পরিবর্তন  করুন এবং পাওয়ারওয়াশ করুন</translation>
 <translation id="6410390304316730527">আক্রমণকারীরা হয়ত ক্ষতিকারক সফ্টওয়্যার ইনস্টল করা অথবা পাসওয়ার্ড, ফোন নম্বর বা ক্রেডিট কার্ডের মতো ব্যক্তিগত তথ্য প্রকাশ করার জন্য কৌশলে প্রতারণা করতে পারে। তার হাত থেকে Safe Browsing আপনাকে সুরক্ষিত রাখে। এটি বন্ধ করে রাখলে, অজানা বা পরিচিত নয় এমন সাইট ব্রাউজ করার সময়ে সতর্ক থাকুন।</translation>
@@ -7682,6 +7682,7 @@
 <translation id="6845231585063669905">A থেকে Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="PRINTER_NAME" /> নামের প্রিন্টারের মাধ্যমে <ph name="FILE_NAME" /> প্রিন্ট করতে চাইছে।</translation>
 <translation id="6846843854964504403">সেফটি রিসেট</translation>
+<translation id="6846861364742126526">Gemini-এর সাথে চ্যাট করতে আপনার মাইক্রোফোন ব্যবহার করুন। জেনারেটিভ AI মডেল উন্নত করার জন্য আপনার ডেটা ব্যবহার করা হয়নি।</translation>
 <translation id="6847125920277401289">চালিয়ে যেতে জায়গা খালি করুন</translation>
 <translation id="6850286078059909152">টেক্সটের রঙ</translation>
 <translation id="6850925512806464982">সকলেই অবিলম্বে, ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>

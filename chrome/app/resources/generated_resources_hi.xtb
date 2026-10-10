@@ -1598,6 +1598,7 @@
 <translation id="2215070081105889450">ऑडियो शेयर करने के लिए, टैब या स्क्रीन शेयर करें</translation>
 <translation id="2217208085547223783">ट्रस्ट स्टेट</translation>
 <translation id="2218019600945559112">माउस और टचपैड</translation>
+<translation id="2218116022473625437">सेटिंग में जाकर, टेक्स्ट को हाइलाइट करने की सुविधा बंद की जा सकती है, आवाज़ में बदलाव किया जा सकता है, और पेज के दिखने का तरीका बदला जा सकता है.</translation>
 <translation id="2218515861914035131">सादे टेक्स्ट के रूप में चिपकाएं</translation>
 <translation id="2219007152108311874">हर बार वेबसाइट पर आने के बाद पूछें</translation>
 <translation id="2220529011494928058">किसी समस्या की रिपोर्ट करें</translation>
@@ -2015,7 +2016,6 @@
 <translation id="252513908494776481">इस टैब पर मौजूद कॉन्टेंट के बारे में सवाल पूछें</translation>
 <translation id="2525746158911982776">सिस्टम में स्टोरेज के लिए ज़रूरी जगह न होने की वजह से, अपडेट नहीं किया जा सका.</translation>
 <translation id="2525842906387880861">आपको इस पेज पर, फिर से सुझाव नहीं दिखेंगे</translation>
-<translation id="2526346836766369775">नया आइसोलेटेड टैब</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">देखें कि अपडेट उपलब्ध हैं या नहीं</translation>
 <translation id="2527167509808613699">किसी प्रकार का कनेक्शन</translation>
@@ -2286,6 +2286,7 @@
 <translation id="2731971182069536520">जब आप अगली बार डिवाइस रीस्टार्ट करेंगे, तो आपका एडमिन एक बार किया जाने वाला अपडेट करेगा जिससे आपका स्थानीय डेटा मिट जाएगा.</translation>
 <translation id="2733248615007838252">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको ये नतीजे पसंद हैं.</translation>
 <translation id="27349076983469322">हल्का बैकग्राउंड</translation>
+<translation id="2735081931800992557">PDF फ़ाइलें पढ़ें और दिखाएं</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
 <translation id="2737719817922589807">बुकमार्क और सूचियां</translation>
@@ -3704,6 +3705,7 @@
 <translation id="3771294271822695279">वीडियो फ़ाइलें</translation>
 <translation id="3771721161825963003">टैब को वर्टिकल तरीके से दिखाएं</translation>
 <translation id="3771851622616482156">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
+<translation id="3772951945682043324">हाल ही में कोई टैब बंद नहीं किया गया है</translation>
 <translation id="3774059845329307709">सीरियल नंबर</translation>
 <translation id="3774166835015494435">हाल ही की फ़ोटो और सूचनाएं</translation>
 <translation id="3775432569830822555">SSL सर्वर प्रमाणपत्र</translation>
@@ -3772,6 +3774,7 @@
 <translation id="3812525830114410218">गलत प्रमाणपत्र</translation>
 <translation id="3813296892522778813">अगर आपको वह चीज़ नहीं मिल रही है जिसे आप खोज रहे हैं, तो <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome सहायता<ph name="END_LINK_CHROMIUM" /> पर जाएं</translation>
 <translation id="3813358687923336574">पेजों का अनुवाद करने और हाज़िर जवाबों के लिए इस्तेमाल हुई भाषा</translation>
+<translation id="3815509884387832993">रीडिंग मोड के टूलबार में मौजूद, 'एआई प्लेबैक चालू करें' बटन का इस्तेमाल करके, इस पेज पर मौजूद कॉन्टेंट को पॉडकास्ट की तरह सुनें</translation>
 <translation id="3815668647912194650">बाद में टैब जोड़ने के लिए, इस ग्रुप को बनाए रखें. अगर आपको इसकी ज़रूरत नहीं है, तो इसे मिटा दें.</translation>
 <translation id="3816118180265633665">Chrome Colors</translation>
 <translation id="3817524650114746564">अपने कंप्यूटर की प्रॉक्सी सेटिंग खोलें</translation>
@@ -4155,6 +4158,7 @@
 <translation id="4109135793348361820">विंडो को <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) पर ले जाएं</translation>
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
+<translation id="4112282889480354965">एक्सटेंशन और स्किल</translation>
 <translation id="4113743276555482284">फ़ाइल का पासवर्ड</translation>
 <translation id="4114524937989710624">आपको फ़ाइलों के सुझाव दिखाए जा रहे हैं, ताकि आप उन फ़ाइलों को आसानी से ढूंढ सकें जिन्हें आपने हाल ही में Google Drive पर इस्तेमाल किया था.
         <ph name="BREAK" />
@@ -5891,7 +5895,6 @@
 <translation id="5463348003600590648">सुझाव बंद करें</translation>
 <translation id="5463625433003343978">डिवाइस ढूंढे जा रहे हैं...</translation>
 <translation id="5463856536939868464">मेन्यू में बुकमार्क छुपे हुए हैं</translation>
-<translation id="5465214111614807935">नई आइसोलेटेड विंडो</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” को चिपकाएं और खोजें</translation>
 <translation id="5466721587278161554">आपके टैब ग्रुप, बुकमार्क बार और ऐप्लिकेशन मेन्यू में सेव किए जाते हैं. साथ ही, सिंक करने की सुविधा चालू होने पर ये आपके साइन इन किए हुए सभी डिवाइसों में अपने-आप अपडेट हो जाते हैं</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को ब्लॉक किया गया है</translation>
@@ -7049,7 +7052,6 @@
 <translation id="6379228010899751161">अपनी पहचान की पुष्टि करें, ताकि आप जब चाहें अपने खाते <ph name="ACCOUNT_EMAIL" /> में सेव किए गए पासवर्ड इस्तेमाल कर पाएं</translation>
 <translation id="6379827283296619736">नहीं, ऑफ़िस के लिए इस प्रोफ़ाइल का इस्तेमाल जारी रखें</translation>
 <translation id="6380618366311601172">Gemini, ऐसे टास्क पूरे नहीं कर पाएगा जिनके लिए <ph name="DOMAIN" /> में साइन इन करना ज़रूरी है.</translation>
-<translation id="6383321659284013430">नई आइसोलेटेड विंडो</translation>
 <translation id="6383382161803538830">रीडिंग मोड इस पेज पर उपलब्ध नहीं है</translation>
 <translation id="638418309848716977">सहायता लिंक</translation>
 <translation id="6384275966486438344">अपनी खोज सेटिंग इसमें बदलें: <ph name="SEARCH_HOST" /></translation>
@@ -7084,6 +7086,7 @@
 <translation id="6406708970972405507">सेटिंग - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">साइटों को आपके डिवाइस पर डेटा सेव करने की अनुमति है</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> और <ph name="WEBSITE_3" /> पर मौजूद आपका डेटा पढ़ और बदल सकता है</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">इमेज फ़ाइल</translation>
 <translation id="6410328738210026208">चैनल बदलें और पावरवॉश करें</translation>
 <translation id="6410390304316730527">सुरक्षित ब्राउज़िंग की सुविधा आपको ऐसे हमलावरों से बचाती है जो धोखे से आपसे नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करा सकते हैं या फिर आपकी व्यक्तिगत जानकारी चुरा सकते हैं जैसे कि पासवर्ड, फ़ोन नंबर या क्रेडिट कार्ड की जानकारी. अगर आप इस सुविधा को बंद करते हैं, तो ऐसी साइटें ब्राउज़ करते समय सावधान रहें जिनसे आप अनजान हैं या जो जानी-मानी नहीं हैं.</translation>
@@ -7679,6 +7682,7 @@
 <translation id="6845231585063669905">A से Z के क्रम में</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="FILE_NAME" /> को <ph name="PRINTER_NAME" /> इस्तेमाल करके प्रिंट करना चाहता है.</translation>
 <translation id="6846843854964504403">सुरक्षा के लिए सेटिंग रीसेट करने की सुविधा</translation>
+<translation id="6846861364742126526">Gemini से बोलकर बातचीत करने के लिए, माइक्रोफ़ोन का इस्तेमाल करें. आपके डेटा का इस्तेमाल, जनरेटिव एआई मॉडल को बेहतर बनाने के लिए नहीं किया जाता है.</translation>
 <translation id="6847125920277401289">जारी रखने के लिए डिवाइस में स्पेस खाली करें</translation>
 <translation id="6850286078059909152">टेक्स्ट का रंग</translation>
 <translation id="6850925512806464982">सभी लोगों के लिए इस टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे सभी डिवाइसों से मिटा दिया जाएगा</translation>
@@ -8795,6 +8799,7 @@
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> पर कास्ट करना बंद करें</translation>
 <translation id="7704305437604973648">Tasks</translation>
 <translation id="7705085181312584869">लिखने में मेरी मदद करो</translation>
+<translation id="7705230242432916648">एआई प्लेबैक की मदद से, इस पेज पर मौजूद कॉन्टेंट को पॉडकास्ट की तरह सुनें</translation>
 <translation id="7705276765467986571">बुकमार्क मॉडल लोड नहीं कर सका.</translation>
 <translation id="7705334495398865155">अपने हार्डवेयर आईडी (BSSID) को किसी भी क्रम में लगाएं, ताकि दूसरे लोग इस डिवाइस को ट्रैक न कर सकें.</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
@@ -9601,7 +9606,7 @@
 <translation id="8306885873692337975">नई सुविधाएं और बेहतर सुरक्षा पाएं.</translation>
 <translation id="8308024039615003152">घास का मैदान</translation>
 <translation id="8308179586020895837">अगर <ph name="HOST" /> आपका कैमरा और माइक्रोफ़ोन एक्सेस करना चाहे, तो इसके लिए पूछें</translation>
-<translation id="830868413617744215">बीटा</translation>
+<translation id="830868413617744215">बीटा वर्शन</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> टैब</translation>
 <translation id="831207808878314375">परिभाषा</translation>
 <translation id="8312841338723044391">लाइव</translation>
@@ -10224,6 +10229,7 @@
 <translation id="8780123805589053431">Google से इमेज के बारे में जानकारी पाएं</translation>
 <translation id="8780443667474968681">बोलकर खोजने की सेवा बंद कर दी गई है.</translation>
 <translation id="8781834595282316166">ग्रुप में नया टैब जोड़ें</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, शॉर्टकट को मूव करने के लिए, लेफ़्ट और राइट ऐरो बटन का इस्तेमाल करें. पूरा करने के लिए, Enter या Escape बटन को दबाएं.</translation>
 <translation id="8781980678064919987">लिड बंद होने पर शट डाउन करें</translation>
 <translation id="8783171585655659524">स्‍क्रीनशॉट शामिल करें</translation>
 <translation id="8785622406424941542">स्टाइलस</translation>

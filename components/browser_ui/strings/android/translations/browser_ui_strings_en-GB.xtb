@@ -53,6 +53,7 @@
 <translation id="1532175480576580256">My shortcuts bottom sheet opened at full height</translation>
 <translation id="1538031354170655462">Sites usually use Near Field Communication (NFC) to work with nearby tags or devices, such as scanning badges or paying contactless</translation>
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
+<translation id="1565353932454306569"><ph name="ORIGIN" /> – Drag from the side of the screen to exit full screen.</translation>
 <translation id="1569054338208717605">Speed up sites with Chrome's V8 engine but make Chrome slightly less resistant to attacks</translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
 <translation id="1594521731409209842">Pinch screen to resize photo</translation>
@@ -137,6 +138,7 @@
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
 <translation id="2347601491101454548">My shortcuts bottom sheet opened at half height</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2364212713469273030"><ph name="ORIGIN" /> – Drag from top and swipe from the left or right edge to exit full screen.</translation>
 <translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2390272837142897736">Increase zoom</translation>
 <translation id="2397689164757137845">Allowed • Precise</translation>

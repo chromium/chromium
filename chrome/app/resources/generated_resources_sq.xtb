@@ -2002,7 +2002,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="252513908494776481">Pyet për këtë skedë</translation>
 <translation id="2525746158911982776">Përditësimi dështoi sepse sistemi nuk ka hapësirë ruajtëse të mjaftueshme.</translation>
 <translation id="2525842906387880861">Nuk do të shikosh më sugjerime në këtë faqe</translation>
-<translation id="2526346836766369775">&amp;Skedë e re e izoluar</translation>
 <translation id="2526590354069164005">Desktopi</translation>
 <translation id="2526619973349913024">Kontrollo përditësime</translation>
 <translation id="2527167509808613699">Çdo lloj lidhjeje</translation>
@@ -2273,6 +2272,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2731971182069536520">Herën tjetër që rindez pajisjen tënde, administratori yt do të kryejë një përditësim vetëm një herë që do të fshijë të dhënat e tua lokale.</translation>
 <translation id="2733248615007838252">Opsioni i gishtave tregon se të pëlqejnë këto rezultate.</translation>
 <translation id="27349076983469322">Sfondi i ndriçuar</translation>
+<translation id="2735081931800992557">Të lexojë dhe të shfaqë skedarët PDF</translation>
 <translation id="2735712963799620190">Planifikimi</translation>
 <translation id="2737363922397526254">Palos...</translation>
 <translation id="2737719817922589807">&amp;Faqeshënuesit dhe listat</translation>
@@ -3691,6 +3691,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3771294271822695279">Skedarët video</translation>
 <translation id="3771721161825963003">Shfaq skedat vertikalisht</translation>
 <translation id="3771851622616482156">Do të dalësh nga ky sajt, duke përfshirë edhe në skedat e hapura</translation>
+<translation id="3772951945682043324">Nuk ka skeda të mbyllura së fundi</translation>
 <translation id="3774059845329307709">Numri i serisë</translation>
 <translation id="3774166835015494435">Fotografitë dhe njoftimet më të fundit</translation>
 <translation id="3775432569830822555">Certifikata e serverit SSL</translation>
@@ -5879,7 +5880,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5463348003600590648">Çaktivizo sugjerimet</translation>
 <translation id="5463625433003343978">Po gjen pajisje...</translation>
 <translation id="5463856536939868464">Menyja përmban faqeshënues të fshehur</translation>
-<translation id="5465214111614807935">Dritare e re e izoluar</translation>
 <translation id="5466374726908360271">Ngj&amp;it dhe kërko për “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Grupet e tua të skedave ruhen në shiritin e faqeshënuesve, në menynë e aplikacioneve, dhe përditësohen nëpër të gjitha pajisjet ku je identifikuar nëse sinkronizimi është i aktivizuar</translation>
 <translation id="5467207440419968613">Të bllokuara: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7036,7 +7036,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6379228010899751161">Verifiko që je ti për t'u siguruar që mund të përdorësh gjithmonë fjalëkalimet në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Jo, vazhdo të punosh në këtë profil</translation>
 <translation id="6380618366311601172">Gemini nuk do të mund të përfundojë detyrat që kërkojnë identifikimin në <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Dritare e re e izoluar</translation>
 <translation id="6383382161803538830">Modaliteti i leximit nuk ofrohet në këtë faqe</translation>
 <translation id="638418309848716977">Lidhjet e mbështetura</translation>
 <translation id="6384275966486438344">Ndryshoji cilësimet e kërkimit në: <ph name="SEARCH_HOST" /></translation>
@@ -7071,6 +7070,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6406708970972405507">Cilësimet - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Lejohet që të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="6408118934673775994">Lexo dhe ndrysho të dhënat e tua në <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Skedarët e imazheve</translation>
 <translation id="6410328738210026208">Ndërro kanalin dhe zbato Powerwash</translation>
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
@@ -7664,6 +7664,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6845231585063669905">Nga A-ja te Z-ja</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" dëshiron të printojë <ph name="FILE_NAME" /> me <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Rivendosja e sigurisë</translation>
+<translation id="6846861364742126526">Përdor mikrofonin për të biseduar me Gemini. Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="6847125920277401289">Liro hapësirë për të vazhduar</translation>
 <translation id="6850286078059909152">Ngjyra e tekstit</translation>
 <translation id="6850925512806464982">Të gjithë do të humbasin menjëherë qasjen në këtë grup skedash dhe ai do të fshihet nga të gjitha pajisjet</translation>

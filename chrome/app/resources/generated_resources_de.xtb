@@ -2002,7 +2002,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="252513908494776481">Frage zu diesem Tab stellen</translation>
 <translation id="2525746158911982776">Das Update ist fehlgeschlagen, weil im System nicht genügend Speicherplatz vorhanden ist.</translation>
 <translation id="2525842906387880861">Auf dieser Seite werden keine Vorschläge mehr angezeigt</translation>
-<translation id="2526346836766369775">Neuer isolierter &amp;Tab</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Nach Updates suchen</translation>
 <translation id="2527167509808613699">Jede Verbindungsart</translation>
@@ -2273,6 +2272,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2731971182069536520">Beim nächsten Neustart deines Geräts führt dein Administrator ein einmaliges Update durch, bei dem deine lokalen Daten gelöscht werden.</translation>
 <translation id="2733248615007838252">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
 <translation id="27349076983469322">Heller Hintergrund</translation>
+<translation id="2735081931800992557">PDF-Dateien lesen und anzeigen</translation>
 <translation id="2735712963799620190">Zeitplan</translation>
 <translation id="2737363922397526254">Minimieren...</translation>
 <translation id="2737719817922589807">&amp;Lesezeichen und Listen</translation>
@@ -3689,6 +3689,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3771294271822695279">Videodateien</translation>
 <translation id="3771721161825963003">Tabs vertikal anzeigen</translation>
 <translation id="3771851622616482156">Du wirst von dieser Website abgemeldet, auch in offenen Tabs</translation>
+<translation id="3772951945682043324">Keine kürzlich geschlossenen Tabs</translation>
 <translation id="3774059845329307709">Seriennummer</translation>
 <translation id="3774166835015494435">Letzte Fotos und Benachrichtigungen</translation>
 <translation id="3775432569830822555">SSL-Serverzertifikat</translation>
@@ -5877,7 +5878,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5463348003600590648">Vorschläge deaktivieren</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
 <translation id="5463856536939868464">Menü enthält ausgeblendete Lesezeichen</translation>
-<translation id="5465214111614807935">Neues &amp;isoliertes Fenster</translation>
 <translation id="5466374726908360271">Ei&amp;nfügen und nach "<ph name="SEARCH_TERMS" />" suchen</translation>
 <translation id="5466721587278161554">Deine Tabgruppen werden in der Lesezeichenleiste und im App‑Menü gespeichert und auf allen deinen angemeldeten Geräten aktualisiert, wenn die Synchronisierung aktiviert ist</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> blockiert</translation>
@@ -7031,7 +7031,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6379228010899751161">Bestätige deine Identität, um die Passwörter in deinem Konto <ph name="ACCOUNT_EMAIL" /> jederzeit zu verwenden</translation>
 <translation id="6379827283296619736">Nein, dieses Profil für die Arbeit verwenden</translation>
 <translation id="6380618366311601172">Gemini kann dann keine Aufgaben ausführen, für die eine Anmeldung bei <ph name="DOMAIN" /> erforderlich ist.</translation>
-<translation id="6383321659284013430">Neues &amp;isoliertes Fenster</translation>
 <translation id="6383382161803538830">Lesemodus auf dieser Seite nicht verfügbar</translation>
 <translation id="638418309848716977">Unterstützte Links</translation>
 <translation id="6384275966486438344">Sucheinstellungen in <ph name="SEARCH_HOST" /> ändern</translation>
@@ -7066,6 +7065,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6406708970972405507">Einstellungen – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Speichern von Daten auf deinem Gerät genehmigt</translation>
 <translation id="6408118934673775994">Eigene Daten auf <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> und <ph name="WEBSITE_3" /> lesen und ändern</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Bilddateien</translation>
 <translation id="6410328738210026208">Kanaländerung und Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing schützt dich gegen Angreifer, die dich dazu verleiten möchten, Risiken einzugehen, wie z. B. schädliche Software zu installieren oder personenbezogene Daten wie Passwörter, Telefonnummern oder Kreditkartendaten preiszugeben. Wenn du Safe Browsing deaktivierst, sei besonders vorsichtig, wenn du auf unbekannten oder zweifelhaften Websites surfst.</translation>
@@ -7659,6 +7659,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6845231585063669905">A bis Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" möchte die Datei "<ph name="FILE_NAME" />" mit <ph name="PRINTER_NAME" /> ausdrucken.</translation>
 <translation id="6846843854964504403">Sicherheits-Reset</translation>
+<translation id="6846861364742126526">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="6847125920277401289">Zum Fortfahren Speicherplatz freigeben</translation>
 <translation id="6850286078059909152">Schriftfarbe</translation>
 <translation id="6850925512806464982">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe und sie wird von allen Geräten gelöscht</translation>

@@ -53,6 +53,7 @@
 <translation id="1532175480576580256">내 바로가기 하단 시트가 전체 높이로 열림</translation>
 <translation id="1538031354170655462">사이트에서는 일반적으로 근거리 무선통신(NFC)을 사용하여 배지를 스캔하거나 비접촉 결제하는 등 근처의 태그 또는 기기와 상호작용합니다.</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
+<translation id="1565353932454306569"><ph name="ORIGIN" />: 전체 화면을 종료하려면 화면 측면에서 드래그하세요.</translation>
 <translation id="1569054338208717605">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다.</translation>
 <translation id="1593426485665524382">화면 상단에서 새로운 작업 가능</translation>
 <translation id="1594521731409209842">손가락을 모으거나 벌려 사진 크기 조절</translation>
@@ -137,6 +138,7 @@
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
 <translation id="2347601491101454548">내 바로가기 하단 시트가 절반 높이로 열림</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2364212713469273030"><ph name="ORIGIN" />: 전체 화면을 종료하려면 위에서 드래그하고 왼쪽 또는 오른쪽 가장자리에서 스와이프하세요.</translation>
 <translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2390272837142897736">확대</translation>
 <translation id="2397689164757137845">허용됨 • 정확한 위치</translation>

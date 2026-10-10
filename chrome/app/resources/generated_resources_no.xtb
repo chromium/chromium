@@ -2012,7 +2012,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="252513908494776481">Spør om denne fanen</translation>
 <translation id="2525746158911982776">Oppdateringen mislyktes fordi systemet ikke har nok lagringsplass.</translation>
 <translation id="2525842906387880861">Du vil ikke se forslag på denne siden igjen</translation>
-<translation id="2526346836766369775">Ny isolert &amp;fane</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2526619973349913024">Se etter oppdateringer</translation>
 <translation id="2527167509808613699">Alle typer tilkobling</translation>
@@ -2283,6 +2282,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2731971182069536520">Neste gang du starter enheten på nytt, utfører administratoren en engangsoppdatering som sletter de lokale dataene dine.</translation>
 <translation id="2733248615007838252">Tommel opp sender tilbakemelding om at du liker disse resultatene.</translation>
 <translation id="27349076983469322">Lys bakgrunn</translation>
+<translation id="2735081931800992557">Les og vis PDF-filer</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
 <translation id="2737363922397526254">Skjul</translation>
 <translation id="2737719817922589807">&amp;Bokmerker og lister</translation>
@@ -3701,6 +3701,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3771294271822695279">Videofiler</translation>
 <translation id="3771721161825963003">Vis faner vertikalt</translation>
 <translation id="3771851622616482156">Du blir logget av dette nettstedet, også på faner som er åpne</translation>
+<translation id="3772951945682043324">Ingen nylig lukkede faner</translation>
 <translation id="3774059845329307709">Serienummer</translation>
 <translation id="3774166835015494435">Nylige bilder og varsler</translation>
 <translation id="3775432569830822555">SSL-tjenersertifikat</translation>
@@ -5886,7 +5887,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5463348003600590648">Deaktiver forslag</translation>
 <translation id="5463625433003343978">Finner enheter …</translation>
 <translation id="5463856536939868464">Meny med skjulte bokmerker</translation>
-<translation id="5465214111614807935">Nytt &amp;isolert vindu</translation>
 <translation id="5466374726908360271">&amp;Lim inn og søk etter «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="5466721587278161554">Fanegruppene dine lagres på bokmerkeraden og i appmenyen, og de oppdateres på alle de påloggede enhetene dine hvis synkronisering er slått på</translation>
 <translation id="5467207440419968613">Blokkerte <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
@@ -7043,7 +7043,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6379228010899751161">Bekreft at det er deg, for å sikre at du alltid kan bruke passordene i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Nei, fortsett med denne profilen for jobbrelatert bruk</translation>
 <translation id="6380618366311601172">Gemini kan ikke fullføre oppgaver som krever pålogging på <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nytt &amp;isolert vindu</translation>
 <translation id="6383382161803538830">Lesemodus er ikke tilgjengelig på denne siden</translation>
 <translation id="638418309848716977">Støttede linker</translation>
 <translation id="6384275966486438344">endre søkeinnstillingene dine til: <ph name="SEARCH_HOST" /></translation>
@@ -7078,6 +7077,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6406708970972405507">Innstillinger – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Nettsteder som har lov til å lagre data på enheten din</translation>
 <translation id="6408118934673775994">lese og endre opplysningene dine på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Bildefiler</translation>
 <translation id="6410328738210026208">Bytt kanal og bruk Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing beskytter deg mot angripere som kan prøve å lure deg til å gjøre farlige ting, som å installere skadelig programvare eller avsløre personopplysninger, for eksempel passord, telefonnumre eller kredittkortinformasjon. Hvis du slår det av, må du være forsiktig når du surfer på ukjente eller useriøse nettsteder.</translation>
@@ -7671,6 +7671,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6845231585063669905">A til Å</translation>
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» vil skrive ut <ph name="FILE_NAME" /> med <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Sikkerhetstilbakestilling</translation>
+<translation id="6846861364742126526">Bruk mikrofonen til å chatte med Gemini. Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="6847125920277401289">Frigjør plass for å fortsette</translation>
 <translation id="6850286078059909152">Tekstfarge</translation>
 <translation id="6850925512806464982">Alle mister tilgangen til denne fanegruppen umiddelbart, og den blir slettet fra alle enheter</translation>

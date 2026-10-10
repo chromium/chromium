@@ -2002,7 +2002,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="252513908494776481">Perguntar sobre este separador</translation>
 <translation id="2525746158911982776">A atualização falhou porque o sistema não tem espaço de armazenamento suficiente.</translation>
 <translation id="2525842906387880861">Não vai voltar a ver sugestões nesta página</translation>
-<translation id="2526346836766369775">Novo &amp;separador isolado</translation>
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
 <translation id="2526619973349913024">Procurar atualizações</translation>
 <translation id="2527167509808613699">Qualquer tipo de ligação</translation>
@@ -5884,7 +5883,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5463348003600590648">Desativar sugestões</translation>
 <translation id="5463625433003343978">A localizar dispositivos…</translation>
 <translation id="5463856536939868464">Menu com marcadores ocultos</translation>
-<translation id="5465214111614807935">Nova janela &amp;isolada</translation>
 <translation id="5466374726908360271">Co&amp;lar e pesquisar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Os seus grupos de separadores são guardados na barra de marcadores e no menu da app, sendo atualizados em todos os dispositivos com sessão iniciada se a sincronização estiver ativada</translation>
 <translation id="5467207440419968613">Bloqueou <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
@@ -7043,7 +7041,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6379228010899751161">Valide a sua identidade para se certificar de que pode sempre usar as palavras-passe na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Não, continuar a trabalhar neste perfil</translation>
 <translation id="6380618366311601172">O Gemini não vai conseguir concluir tarefas que exijam o início de sessão em <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nova janela &amp;isolada</translation>
 <translation id="6383382161803538830">O modo de leitura não está disponível nesta página</translation>
 <translation id="638418309848716977">Links suportados</translation>
 <translation id="6384275966486438344">Alterar as definições de pesquisa para: <ph name="SEARCH_HOST" /></translation>

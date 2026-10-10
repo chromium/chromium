@@ -1597,6 +1597,7 @@
 <translation id="2215070081105889450">ເພື່ອແບ່ງປັນສຽງ, ໃຫ້ແບ່ງປັນແຖບ ຫຼື ໜ້າຈໍແທນ</translation>
 <translation id="2217208085547223783">ສະຖານະຄວາມເຊື່ອຖື</translation>
 <translation id="2218019600945559112">ເມົ້າ ແລະ ແຜ່ນສຳຜັດ</translation>
+<translation id="2218116022473625437">ທ່ານສາມາດປິດການໄຮໄລ້ຂໍ້ຄວາມ, ແກ້ໄຂສຽງ ແລະ ປ່ຽນຮູບລັກຂອງໜ້າໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="2218515861914035131">ແປະໃສ່ເປັນຂໍ້ຄວາມທໍາມະດາ</translation>
 <translation id="2219007152108311874">ຖາມທຸກເທື່ອທີ່ເຂົ້າໄປເວັບໄຊ</translation>
 <translation id="2220529011494928058">ລາຍ​ງານ​ບັນ​ຫາ</translation>
@@ -2014,7 +2015,6 @@
 <translation id="252513908494776481">ຖາມກ່ຽວກັບແຖບນີ້</translation>
 <translation id="2525746158911982776">ການອັບເດດບໍ່ສຳເລັດເນື່ອງຈາກລະບົບມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ.</translation>
 <translation id="2525842906387880861">ທ່ານຈະບໍ່ເຫັນຄຳແນະນຳຢູ່ໜ້ານີ້ອີກ</translation>
-<translation id="2526346836766369775">ແຖບແຍກໃໝ່</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="2526619973349913024">ກວດຫາອັບເດດ</translation>
 <translation id="2527167509808613699">ການເຊື່ອມຕໍ່ປະເພດໃດໜຶ່ງ</translation>
@@ -2285,6 +2285,7 @@
 <translation id="2731971182069536520">ຄັ້ງຕໍ່ໄປທີ່ທ່ານປິດເປີດອຸປະກອນຂອງທ່ານ, ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະເຮັດການອັບເດດຄັ້ງດຽວທີ່ຈະລຶບຂໍ້ມູນໃນເຄື່ອງຂອງທ່ານ.</translation>
 <translation id="2733248615007838252">ຍົກໂປ້ຂຶ້ນເພື່ອສົ່ງຄຳຕິຊົມທີ່ທ່ານຖືກໃຈສິ່ງເຫຼົ່ານີ້.</translation>
 <translation id="27349076983469322">ພື້ນຫຼັງແຈ້ງ</translation>
+<translation id="2735081931800992557">ອ່ານ ແລະ ສະແດງໄຟລ໌ PDF</translation>
 <translation id="2735712963799620190">ກຳນົດເວລາ</translation>
 <translation id="2737363922397526254">ຍຸບລົງ...</translation>
 <translation id="2737719817922589807">&amp;ບຸກມາກ ແລະ ລາຍຊື່</translation>
@@ -2306,7 +2307,7 @@
 <translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
 <translation id="274362947316498129">ມີແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງ <ph name="DEVICE_NAME" /> ຢູ່. ກະລຸນາປິດສະວິດຄວາມເປັນສ່ວນຕົວ <ph name="DEVICE_NAME" /> ເພື່ອອະນຸຍາດສິດເຂົ້າເຖິງ.</translation>
 <translation id="2744221223678373668">ແຊຣ໌ແລ້ວ</translation>
-<translation id="2744919074068076548">ເປີດມຸມມອງແຍກ</translation>
+<translation id="2744919074068076548">ມຸມມອງແຍກທີ່ເປີດຢູ່</translation>
 <translation id="2745080116229976798">ອັນທີ່​ສຳຄັນ​ນ້ອຍ​ກວ່າ​ທີ່​​ເຂົ້າ​ເກນ​ຄຸນສົມບັດ​ຂອງ Microsoft</translation>
 <translation id="2749756011735116528">ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -3703,6 +3704,7 @@
 <translation id="3771294271822695279">ໄຟລ​໌​ວິ​ດີ​ໂອ</translation>
 <translation id="3771721161825963003">ສະແດງແຖບໃນແນວຕັ້ງ</translation>
 <translation id="3771851622616482156">ທ່ານຈະຖືກພາອອກຈາກລະບົບເວັບໄຊນີ້, ຮວມທັງໃນແຖບທີ່ເປີດຢູ່</translation>
+<translation id="3772951945682043324">ບໍ່ມີແຖບທີ່ຫາກໍປິດ</translation>
 <translation id="3774059845329307709">ໝາຍເລກຊີຣຽວ</translation>
 <translation id="3774166835015494435">ຮູບພາບ ແລະ ການແຈ້ງເຕືອນຫຼ້າສຸດ</translation>
 <translation id="3775432569830822555">ໃບຢັ້ງຢືນເຊີບເວີ SSL</translation>
@@ -3771,6 +3773,7 @@
 <translation id="3812525830114410218">ໃບ​ຢັ້ງ​ຢືນ​​ບໍ່​ດີ</translation>
 <translation id="3813296892522778813">ໄປຫາ <ph name="BEGIN_LINK_CHROMIUM" />ຄວາມຊ່ວຍເຫຼືອ Google Chrome<ph name="END_LINK_CHROMIUM" /> ຖ້າທ່ານບໍ່ສາມາດຊອກເຫັນສິ່ງທີ່ທ່ານກຳລັງຊອກຫາ</translation>
 <translation id="3813358687923336574">ພາສາທີ່ໃຊ້ສຳລັບການແປພາສາໜ້າ ແລະ ຄຳຕອບດ່ວນ</translation>
+<translation id="3815509884387832993">ຟັງໜ້ານີ້ຄືກັບວ່າມັນເປັນພອດແຄສດ້ວຍການຫຼິ້ນ AI ໂດຍໃຊ້ປຸ່ມເປີດໃຊ້ການຫຼິ້ນ AI ໃນແຖບເຄື່ອງມືໂໝດການອ່ານ</translation>
 <translation id="3815668647912194650">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ອອກຈາກມັນຫາກທ່ານບໍ່ຕ້ອງການເຂົ້າເຖິງມັນອີກຕໍ່ໄປ.</translation>
 <translation id="3816118180265633665">ສີຂອງ Chrome</translation>
 <translation id="3817524650114746564">ເປີດການຕັ້ງຄ່າພຣັອກຊີຂອງຄອມພິວເຕີຂອງທ່ານ</translation>
@@ -4155,6 +4158,7 @@
 <translation id="4109135793348361820">ຍ້າຍໜ້າຕ່າງໄປຫາ <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> )</translation>
 <translation id="4110485659976215879">ກູ້ຄຳເຕືອນຄືນ</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
+<translation id="4112282889480354965">ສ່ວນຂະຫຍາຍ ແລະ ທັກສະ</translation>
 <translation id="4113743276555482284">ລະຫັດຜ່ານໄຟລ໌</translation>
 <translation id="4114524937989710624">ທ່ານກຳລັງເບິ່ງໄຟລ໌ທີ່ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໃນ Google Drive ໄດ້ຢ່າງງ່າຍດາຍ.
         <ph name="BREAK" />
@@ -5892,7 +5896,6 @@
 <translation id="5463348003600590648">ປິດການນຳໃຊ້ຄຳແນະນຳ</translation>
 <translation id="5463625433003343978">ກຳລັງຊອກຫາອຸປະກອນ…</translation>
 <translation id="5463856536939868464">ເມນູທີ່ມີບຸກມາກສ໌ເຊື່ອງໄວ້</translation>
-<translation id="5465214111614807935">&amp;ໜ້າຈໍແຍກໃໝ່</translation>
 <translation id="5466374726908360271">ວາງໃສ່ ແລະ ຊອກຫາ “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້ໃນແຖບບຸກມາກ, ເມນູແອັບ ແລະ ຈະອັບເດດກຸ່ມແຖບດັ່ງກ່າວໃນອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບແລ້ວທຸກເຄື່ອງຂອງທ່ານຫາກເປີດການຊິ້ງໄວ້</translation>
 <translation id="5467207440419968613">ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ໄວ້ແລ້ວ</translation>
@@ -7049,7 +7052,6 @@
 <translation id="6379228010899751161">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ລະຫັດຜ່ານໄດ້ຕະຫຼອດເວລາໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">ບໍ່, ເຮັດວຽກໃນໂປຣໄຟລ໌ນີ້ຕໍ່ໄປ</translation>
 <translation id="6380618366311601172">Gemini ຈະບໍ່ສາມາດເຮັດໜ້າວຽກທີ່ຕ້ອງເຂົ້າສູ່ລະບົບຢູ່ <ph name="DOMAIN" /> ໃຫ້ສຳເລັດໄດ້.</translation>
-<translation id="6383321659284013430">&amp;ໜ້າຈໍແຍກໃໝ່</translation>
 <translation id="6383382161803538830">ໂໝດການອ່ານບໍ່ມີໃຫ້ຢູ່ໜ້ານີ້</translation>
 <translation id="638418309848716977">ລິ້ງທີ່ຮອງຮັບ</translation>
 <translation id="6384275966486438344">ປ່ຽນການຕັ້ງຄ່າການຄົ້ນຫາຂອງທ່ານເປັນ​: <ph name="SEARCH_HOST" /></translation>
@@ -7084,6 +7086,7 @@
 <translation id="6406708970972405507">ການຕັ້ງຄ່າ - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">ອະນຸຍາດໃຫ້ບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານແລ້ວ</translation>
 <translation id="6408118934673775994">ອ່ານ​ ແລະ​ປ່ຽນແປງ​ຂໍ້​ມູນ​ຂອງ​ທ່ານຢູ່ເທິງ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, ແລະ <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">ໄຟລ​໌​ຮູບ​</translation>
 <translation id="6410328738210026208">ປ່ຽນ​​ຊ່ອງ ​ແລະ Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing ປົກປ້ອງທ່ານຈາກຜູ້ໂຈມຕີທີ່ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ: ຕິດຕັ້ງຊອບແວອັນຕະລາຍ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວ ເຊັ່ນ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ. ຖ້າທ່ານປິດມັນ, ກະລຸນາລະມັດລະວັງໃນເວລາເຂົ້າເບິ່ງເວັບໄຊທີ່ບໍ່ຄຸ້ນເຄີຍ ຫຼື ບໍ່ເປັນທີ່ຮູ້ຈັກ.</translation>
@@ -7677,6 +7680,7 @@
 <translation id="6845231585063669905">A ຫາ Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ຕ້ອງການພິມ <ph name="FILE_NAME" /> ດ້ວຍ <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">ຣີເຊັດຄວາມປອດໄພ</translation>
+<translation id="6846861364742126526">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານເພື່ອສົນທະນາກັບ Gemini. ລະບົບບໍ່ໄດ້ໃຊ້ຂໍ້ມູນຂອງທ່ານໃນການປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="6847125920277401289">ຂະຫຍາຍພື້ນທີ່ຫວ່າງເພື່ອສືບຕໍ່</translation>
 <translation id="6850286078059909152">ສີຂໍ້ຄວາມ</translation>
 <translation id="6850925512806464982">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບນີ້ທັນທີ ແລະ ມັນຈະຖືກລຶບຈາກອຸປະກອນທັງໝົດ</translation>
@@ -8792,6 +8796,7 @@
 <translation id="7702463352133825032">ຢຸດສົ່ງສັນຍານໄປຫາ <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">ໜ້າວຽກ​</translation>
 <translation id="7705085181312584869">ຊ່ວຍຂ້ອຍຂຽນ</translation>
+<translation id="7705230242432916648">ຟັງໜ້ານີ້ຄືກັບວ່າມັນເປັນພອດແຄສດ້ວຍການຫຼິ້ນ AI</translation>
 <translation id="7705276765467986571">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ລຸ້ນບຸກມາກຄ໌ໄດ້.</translation>
 <translation id="7705334495398865155">ສຸ່ມ ID ຂອງຮາດແວຂອງທ່ານ (BSSID) ເພື່ອປ້ອງກັນບໍ່ໃຫ້ຄົນອື່ນຕິດຕາມອຸປະກອນນີ້.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10220,6 +10225,7 @@
 <translation id="8780123805589053431">ຮັບລາຍລະອຽດຮູບພາບຈາກ Google</translation>
 <translation id="8780443667474968681">ປິດການຊອກຫາດ້ວຍສຽງແລ້ວ.</translation>
 <translation id="8781834595282316166">ແຖບໃໝ່ໃນກຸ່ມ</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ແລະ ຂວາເພື່ອຍ້າຍທາງລັດ. ກົດ Enter ຫຼື Escape ເພື່ອສຳເລັດ.</translation>
 <translation id="8781980678064919987">ປິດເຄື່ອງເມື່ອປິດຝາປິດ</translation>
 <translation id="8783171585655659524">ລວມເອົາຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="8785622406424941542">ປາຍປາກກາ</translation>

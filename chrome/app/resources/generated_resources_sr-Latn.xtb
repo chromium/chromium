@@ -2001,7 +2001,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="252513908494776481">Postavite pitanje o ovoj kartici</translation>
 <translation id="2525746158911982776">Ažuriranje nije uspelo jer sistem nema dovoljno memorijskog prostora.</translation>
 <translation id="2525842906387880861">Više nećete videti predloge na ovoj stranici</translation>
-<translation id="2526346836766369775">Nova izolovana &amp;kartica</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="2526619973349913024">Proveri da li postoji ažuriranje</translation>
 <translation id="2527167509808613699">Bilo koja vrsta veze</translation>
@@ -2272,6 +2271,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2731971182069536520">Kada sledeći put restartujete uređaj, administrator će obaviti jednokratno ažuriranje koje će izbrisati lokalne podatke.</translation>
 <translation id="2733248615007838252">Opcija Sviđa mi se šalje povratne informacije da vam se sviđaju ovi rezultati.</translation>
 <translation id="27349076983469322">Svetla pozadina</translation>
+<translation id="2735081931800992557">Čita i prikazuje PDF fajlove</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Skupi...</translation>
 <translation id="2737719817922589807">Obeleživači i liste</translation>
@@ -3690,6 +3690,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3771294271822695279">Video datoteke</translation>
 <translation id="3771721161825963003">Prikaži kartice vertikalno</translation>
 <translation id="3771851622616482156">Odjavićete se sa ovog sajta, uključujući i instance na otvorenim karticama</translation>
+<translation id="3772951945682043324">Nema nedavno zatvorenih kartica</translation>
 <translation id="3774059845329307709">Serijski broj</translation>
 <translation id="3774166835015494435">Nedavne slike i obaveštenja</translation>
 <translation id="3775432569830822555">Sertifikat SSL servera</translation>
@@ -5878,7 +5879,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5463348003600590648">Onemogući predloge</translation>
 <translation id="5463625433003343978">Traže se uređaji…</translation>
 <translation id="5463856536939868464">Meni sa skrivenim obeleživačima</translation>
-<translation id="5465214111614807935">Novi &amp;izolovani prozor</translation>
 <translation id="5466374726908360271">Nalepi i pretraži „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="5466721587278161554">Grupe kartica se čuvaju na traci sa obeleživačima i u meniju aplikacije i ažuriraju se na svim uređajima na kojima ste prijavljeni ako je sinhronizacija uključena</translation>
 <translation id="5467207440419968613">Blokirano je: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7036,7 +7036,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6379228010899751161">Potvrdite identitet da biste bili sigurni da uvek možete da koristite lozinke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ne, nastavi da radiš na ovom profilu</translation>
 <translation id="6380618366311601172">Gemini neće moći da obavlja zadatke koji zahtevaju prijavljivanje na <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Novi &amp;izolovani prozor</translation>
 <translation id="6383382161803538830">Režim čitanja nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržani linkovi</translation>
 <translation id="6384275966486438344">Promenite podešavanja pretrage na: <ph name="SEARCH_HOST" /></translation>
@@ -7071,6 +7070,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6406708970972405507">Podešavanja – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Dozvoljeno je čuvanje podataka na uređaju</translation>
 <translation id="6408118934673775994">Čitanje i menjanje podataka na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Datoteke slika</translation>
 <translation id="6410328738210026208">Promeni kanal i obavi Powerwash</translation>
 <translation id="6410390304316730527">Bezbedno pregledanje vas štiti od napadača koji mogu da vas navedu da uradite nešto opasno, na primer, da instalirate zlonamerni softver ili otkrijete lične podatke poput lozinki, brojeva telefona ili brojeva kreditnih kartica. Ako ga isključite, budite oprezni pri pregledanju nepoznatih ili nebezbednih sajtova.</translation>
@@ -7668,6 +7668,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6845231585063669905">Od A do Z</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> želi da štampa <ph name="FILE_NAME" /> pomoću štampača <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Bezbedno resetovanje</translation>
+<translation id="6846861364742126526">Koristite mikrofon da biste razgovarali sa Gemini-jem. Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije.</translation>
 <translation id="6847125920277401289">Oslobodite prostor da biste nastavili</translation>
 <translation id="6850286078059909152">Boja teksta</translation>
 <translation id="6850925512806464982">Svi će odmah izgubiti pristup grupi kartica i ona će biti izbrisana sa svih uređaja</translation>

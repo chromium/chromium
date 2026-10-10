@@ -2005,7 +2005,6 @@
 <translation id="252513908494776481">يمكنك طرح سؤال حول علامة التبويب هذه</translation>
 <translation id="2525746158911982776">تعذَّر التحديث لأنّ مساحة التخزين في النظام غير كافية.</translation>
 <translation id="2525842906387880861">لن تظهر لك الاقتراحات على هذه الصفحة مجدّدًا</translation>
-<translation id="2526346836766369775">&amp;علامة تبويب جديدة للتصفّح المعزول</translation>
 <translation id="2526590354069164005">سطح المكتب</translation>
 <translation id="2526619973349913024">التحقّق من توفّر تحديث</translation>
 <translation id="2527167509808613699">جميع أنواع الاتصالات</translation>
@@ -2276,6 +2275,7 @@
 <translation id="2731971182069536520">في المرة القادمة التي يتم فيها إعادة تشغيل الجهاز، سيُجري مشرفك تحديثًا لمرة واحدة، ما سيؤدي إلى حذف البيانات المحلية.</translation>
 <translation id="2733248615007838252">يمكنك النقر على زر الإعجاب إذا أعجبتك هذه النتائج.</translation>
 <translation id="27349076983469322">خلفية فاتحة</translation>
+<translation id="2735081931800992557">‏قراءة ملفات PDF وعرضها</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
 <translation id="2737363922397526254">تصغير...</translation>
 <translation id="2737719817922589807">الإشارات المرجعية والقوائم</translation>
@@ -3695,6 +3695,7 @@
 <translation id="3771294271822695279">ملفات فيديو</translation>
 <translation id="3771721161825963003">عرض علامات التبويب عموديًا</translation>
 <translation id="3771851622616482156">سيتم تسجيل خروجك من هذا الموقع الإلكتروني، بما في ذلك المواقع الإلكترونية في علامات التبويب المفتوحة.</translation>
+<translation id="3772951945682043324">ما مِن علامات تبويب مغلقة مؤخرًا</translation>
 <translation id="3774059845329307709">رقم تسلسلي</translation>
 <translation id="3774166835015494435">الصور والإشعارات الحديثة</translation>
 <translation id="3775432569830822555">‏شهادة خادم بروتوكول SSL (طبقة المقابس الآمنة)</translation>
@@ -5882,7 +5883,6 @@
 <translation id="5463348003600590648">إيقاف الاقتراحات</translation>
 <translation id="5463625433003343978">جارٍ البحث عن أجهزة...</translation>
 <translation id="5463856536939868464">قائمة تحتوي على إشارات مخفية</translation>
-<translation id="5465214111614807935">نافذة &amp;تصفّح معزول جديدة</translation>
 <translation id="5466374726908360271">ل&amp;صق وبحث عن "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">يتم حفظ مجموعات علامات التبويب في شريط الإشارات وقائمة التطبيقات ويتم تعديلها على جميع الأجهزة التي سجّلت الدخول عليها في حال تفعيل المزامنة</translation>
 <translation id="5467207440419968613">تم حظر إذن <ph name="PERMISSION_1" /> وإذن <ph name="PERMISSION_2" />.</translation>
@@ -7039,7 +7039,6 @@
 <translation id="6379228010899751161">يُرجى إثبات هويتك للتأكّد من أنّه يمكنك استخدام كلمات المرور في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6379827283296619736">لا، أريد مواصلة استخدام ملف العمل هذا</translation>
 <translation id="6380618366311601172">‏لن يتمكّن Gemini من إكمال المهام التي تتطلّب تسجيل الدخول على <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">نافذة &amp;تصفّح معزول جديدة</translation>
 <translation id="6383382161803538830">وضع القراءة غير متاح على هذه الصفحة</translation>
 <translation id="638418309848716977">الروابط المتوافقة</translation>
 <translation id="6384275966486438344">تغيير إعدادات البحث لـ: <ph name="SEARCH_HOST" /></translation>
@@ -7074,6 +7073,7 @@
 <translation id="6406708970972405507">الإعدادات - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">المواقع الإلكترونية المسموح لها بحفظ البيانات على جهازك</translation>
 <translation id="6408118934673775994">قراءة بياناتك وتغييرها في <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">ملفات الصور</translation>
 <translation id="6410328738210026208">‏تغيير القناة وPowerwash</translation>
 <translation id="6410390304316730527">يحميك "التصفُّح الآمن" من المهاجمين الذين قد يحاولون خداعك لاتّخاذ إجراءات خطيرة، مثل تثبيت البرامج الضارة أو الكشف عن معلومات شخصية، مثل كلمات المرور أو أرقام الهواتف أو بطاقات الائتمان. وفي حال إيقاف "التصفُّح الآمن"، ننصحك بتوخّي الحذر عند تصفُّح مواقع إلكترونية غير مألوفة أو غير آمنة.</translation>
@@ -7675,6 +7675,7 @@
 <translation id="6845231585063669905">من الألف إلى الياء</translation>
 <translation id="6846178040388691741">تريد الإضافة "<ph name="EXTENSION_NAME" />" طباعة <ph name="FILE_NAME" /> باستخدام <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">إعادة الضبط لتعزيز الأمان</translation>
+<translation id="6846861364742126526">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث مع Gemini. ولن تُستخدَم بياناتك لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="6847125920277401289">إخلاء بعض المساحة للمواصلة</translation>
 <translation id="6850286078059909152">لون النص</translation>
 <translation id="6850925512806464982">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب هذه، وسيتم حذفها من جميع الأجهزة</translation>
@@ -9598,7 +9599,7 @@
 <translation id="8306885873692337975">يُرجى الحصول على أحدث الميزات وتحسينات الأمان.</translation>
 <translation id="8308024039615003152">مرج</translation>
 <translation id="8308179586020895837">الرجوع إليك عند رغبة <ph name="HOST" /> في الدخول إلى الكاميرا</translation>
-<translation id="830868413617744215">تجريبي</translation>
+<translation id="830868413617744215">إصدار تجريبي</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> علامة تبويب</translation>
 <translation id="831207808878314375">تعريف</translation>
 <translation id="8312841338723044391">مباشر</translation>

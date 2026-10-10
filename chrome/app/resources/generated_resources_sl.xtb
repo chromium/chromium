@@ -2014,7 +2014,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="252513908494776481">Vprašajte o tem zavihku</translation>
 <translation id="2525746158911982776">Posodobitev ni uspela, ker sistem nima dovolj prostora za shranjevanje.</translation>
 <translation id="2525842906387880861">Na tej strani ne bo več prikazano to:</translation>
-<translation id="2526346836766369775">Novi izolirani &amp;zavihek</translation>
 <translation id="2526590354069164005">Namizje</translation>
 <translation id="2526619973349913024">Poišči posodobitev</translation>
 <translation id="2527167509808613699">Kakršna koli povezava</translation>
@@ -5895,7 +5894,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5463348003600590648">Onemogoči predloge</translation>
 <translation id="5463625433003343978">Iskanje naprav …</translation>
 <translation id="5463856536939868464">Meni s skritimi zaznamki</translation>
-<translation id="5465214111614807935">Novo &amp;izolirano okno</translation>
 <translation id="5466374726908360271">&amp;Prilepi in poišči »<ph name="SEARCH_TERMS" />«</translation>
 <translation id="5466721587278161554">Skupine zavihkov so shranjene v vrstici z zaznamki in meniju aplikacije ter se posodabljajo v vseh napravah, v katerih ste prijavljeni, če je sinhronizacija vklopljena</translation>
 <translation id="5467207440419968613">Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7053,7 +7051,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6379228010899751161">Potrdite, da ste to vi, da boste lahko vedno uporabljali gesla v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ne, nadaljuj delo v tem profilu</translation>
 <translation id="6380618366311601172">Gemini ne bo mogel dokončati opravil, ki zahtevajo prijavo v <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Novo &amp;izolirano okno</translation>
 <translation id="6383382161803538830">Način za branje na tej strani ni na voljo</translation>
 <translation id="638418309848716977">Podprte povezave</translation>
 <translation id="6384275966486438344">Sprememba nastavitev iskanja na: <ph name="SEARCH_HOST" /></translation>

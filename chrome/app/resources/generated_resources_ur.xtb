@@ -2002,7 +2002,6 @@
 <translation id="252513908494776481">اس ٹیب کے بارے میں پوچھیں</translation>
 <translation id="2525746158911982776">اپ ڈیٹ ناکام ہو گئی کیونکہ سسٹم میں اسٹوریج کی جگہ کافی نہیں ہے۔</translation>
 <translation id="2525842906387880861">آپ کو دوبارہ اس صفحے پر تجاویز دکھائی نہیں دیں گی</translation>
-<translation id="2526346836766369775">نیا الگ تھلگ ٹیب</translation>
 <translation id="2526590354069164005">ڈیسک ٹاپ</translation>
 <translation id="2526619973349913024">اپ ڈیٹ چیک کریں</translation>
 <translation id="2527167509808613699">کسی بھی قسم کا کنکشن</translation>
@@ -2273,6 +2272,7 @@
 <translation id="2731971182069536520">اگلی بار جب آپ اپنا آلہ دوبارہ شروع کریں گے تو آپ کا منتظم یک وقتی اپ ڈیٹ کرے گا جس سے آپ کا مقامی ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="2733248615007838252">اظہار پسندیدگی تاثرات جمع کراتا ہے کہ آپ کو یہ نتائج پسند ہیں۔</translation>
 <translation id="27349076983469322">ہلکا پس منظر</translation>
+<translation id="2735081931800992557">‏‫PDF فائلز پڑھیں اور ڈسپلے کریں</translation>
 <translation id="2735712963799620190">شیڈول</translation>
 <translation id="2737363922397526254">سکیڑیں…</translation>
 <translation id="2737719817922589807">&amp;بُک مارکس اور فہرستیں</translation>
@@ -3689,6 +3689,7 @@
 <translation id="3771294271822695279">ویڈیو فائلیں</translation>
 <translation id="3771721161825963003">ٹیبز کو عمودی طور پر دکھائیں</translation>
 <translation id="3771851622616482156">اوپن ٹیبز سمیت، آپ اس سائٹ سے سائن آؤٹ ہو جائیں گے</translation>
+<translation id="3772951945682043324">حال ہی میں بند کردہ کوئی ٹیب نہیں ہے</translation>
 <translation id="3774059845329307709">نمبر شمار</translation>
 <translation id="3774166835015494435">حالیہ تصاویر اور اطلاعات</translation>
 <translation id="3775432569830822555">‏SSL سرور سرٹیفکیٹ</translation>
@@ -5876,7 +5877,6 @@
 <translation id="5463348003600590648">تجاویز کو غیر فعال کریں</translation>
 <translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
 <translation id="5463856536939868464">مخفی بُک مارکس پر مشتمل مینیو</translation>
-<translation id="5465214111614807935">نئی اور الگ تھلگ ونڈو</translation>
 <translation id="5466374726908360271">پیسٹ کریں اور “<ph name="SEARCH_TERMS" />” تلاش کریں</translation>
 <translation id="5466721587278161554">آپ کے ٹیب گروپس بُک مارکس بار اور ایپ مینو میں محفوظ ہو جاتے ہیں اور سنک کی سہولت آن ہونے پر آپ کے تمام سائن ان کردہ آلات پر اپ ڈیٹ ہو جاتے ہیں</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو مسدود کر دیا گیا</translation>
@@ -7033,7 +7033,6 @@
 <translation id="6379228010899751161">یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں پاس ورڈز استعمال کر سکتے ہیں توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="6379827283296619736">نہیں، اس پروفائل میں کام کرنا جاری رکھیں</translation>
 <translation id="6380618366311601172">‏‫Gemini ان ٹاسکس کو مکمل نہیں کر سکے گا جن کے لیے <ph name="DOMAIN" /> پر سائن ان کرنے کی ضرورت ہے۔</translation>
-<translation id="6383321659284013430">نئی اور الگ تھلگ ونڈو</translation>
 <translation id="6383382161803538830">‏Reading mode اس صفحے پر دستیاب نہیں ہے</translation>
 <translation id="638418309848716977">تعاون یافتہ لنکس</translation>
 <translation id="6384275966486438344">اپنی تلاش کی ترتیبات کو اس سے تبدیل کریں: <ph name="SEARCH_HOST" /></translation>
@@ -7068,6 +7067,7 @@
 <translation id="6406708970972405507">ترتیبات - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت ہے</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> اور <ph name="WEBSITE_3" /> پر اپنا ڈیٹا پڑھیں اور اس میں تبدیلی کریں</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">تصویری فائلیں</translation>
 <translation id="6410328738210026208">چینل اور پاور واش تبدیل کریں</translation>
 <translation id="6410390304316730527">محفوظ براؤزنگ ان حملہ آوروں سے آپ کی حفاظت کرتی ہے جو نقصان دہ سافٹ ویئر انسٹال کرنے یا پاس ورڈز، فون نمبرز یا کریڈٹ کارڈز جیسی ذاتی معلومات افشاء کرنے جیسے کچھ خطرناک کام انجام دینے میں آپ کو پھنسا سکتے ہیں۔ اگر آپ اسے آف کرتے ہیں تو غیر مانوس یا غیر معروف سائٹس کو براؤز کرتے وقت محتاط رہیں۔</translation>
@@ -7661,6 +7661,7 @@
 <translation id="6845231585063669905">‏A سے Z تک</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" <ph name="FILE_NAME" /> کو <ph name="PRINTER_NAME" /> کے ساتھ پرنٹ کرنا چاہتا ہے۔</translation>
 <translation id="6846843854964504403">سیفٹی ری سیٹ</translation>
+<translation id="6846861364742126526">‏‫Gemini سے چیٹ کرنے کیلئے اپنا مائیکروفون استعمال کریں۔ تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کیلئے، آپ کے ڈیٹا کا استعمال نہیں کیا جاتا ہے۔</translation>
 <translation id="6847125920277401289">جاری رکھنے کے لیے جگہ خالی کریں</translation>
 <translation id="6850286078059909152">متن کا رنگ</translation>
 <translation id="6850925512806464982">ہر کوئی فوری طور پر اس ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور اسے تمام آلات سے حذف کر دیا جائے گا</translation>

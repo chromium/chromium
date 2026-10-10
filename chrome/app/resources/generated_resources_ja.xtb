@@ -2001,7 +2001,6 @@
 <translation id="252513908494776481">このタブについて質問する</translation>
 <translation id="2525746158911982776">システムに十分な空き容量がないため、更新できませんでした。</translation>
 <translation id="2525842906387880861">今後このページで提案は表示されません</translation>
-<translation id="2526346836766369775">新しいアイソレート タブ(&amp;T)</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="2526619973349913024">アップデートを確認</translation>
 <translation id="2527167509808613699">あらゆる種類の接続</translation>
@@ -2272,6 +2271,7 @@
 <translation id="2731971182069536520">次回デバイスを再起動すると、管理者による 1 回限りの更新が行われ、ローカルデータが削除されます。</translation>
 <translation id="2733248615007838252">高く評価すると、この結果が気に入ったというフィードバックが送信されます。</translation>
 <translation id="27349076983469322">明るい背景</translation>
+<translation id="2735081931800992557">PDF ファイルの読み取りと表示</translation>
 <translation id="2735712963799620190">スケジュール</translation>
 <translation id="2737363922397526254">折りたたむ...</translation>
 <translation id="2737719817922589807">ブックマークとリスト(&amp;B)</translation>
@@ -3688,6 +3688,7 @@
 <translation id="3771294271822695279">動画ファイル</translation>
 <translation id="3771721161825963003">タブを縦方向に表示</translation>
 <translation id="3771851622616482156">タブで表示中のものも含め、このサイトからログアウトします</translation>
+<translation id="3772951945682043324">最近閉じたタブはありません</translation>
 <translation id="3774059845329307709">シリアル番号</translation>
 <translation id="3774166835015494435">最近の写真と通知</translation>
 <translation id="3775432569830822555">SSL サーバー証明書</translation>
@@ -5874,7 +5875,6 @@
 <translation id="5463348003600590648">提案を無効にする</translation>
 <translation id="5463625433003343978">デバイスを検出しています...</translation>
 <translation id="5463856536939868464">非表示のブックマークを含むメニュー</translation>
-<translation id="5465214111614807935">新しいアイソレート ウィンドウ(&amp;I)</translation>
 <translation id="5466374726908360271">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
 <translation id="5466721587278161554">タブグループはブックマーク バーとアプリメニューに保存され、同期がオンになっている場合はログインしているすべてのデバイスで更新されます</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロックしました</translation>
@@ -6567,6 +6567,7 @@
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6007053304250788613">ミラーモードで除外できるディスプレイは 1 つだけです</translation>
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
+<translation id="6007858579659393165">タブが新しい透明なデザインになりました</translation>
 <translation id="6010651352520077187">Google 翻訳をオンにすると、指定した言語でサイトを翻訳するかを確認するメッセージが表示されます。また、サイトを自動的に翻訳することもできます。</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011308810877101166">検索候補の関連性を高める</translation>
@@ -7031,7 +7032,6 @@
 <translation id="6379228010899751161">アカウント「<ph name="ACCOUNT_EMAIL" />」のパスワードを常に使用できるようにするには、本人確認を行ってください</translation>
 <translation id="6379827283296619736">いいえ、このプロフィールで作業を続行します</translation>
 <translation id="6380618366311601172">Gemini は、<ph name="DOMAIN" /> でログインが必要なタスクを完了できなくなります。</translation>
-<translation id="6383321659284013430">新しいアイソレート ウィンドウ(&amp;I)</translation>
 <translation id="6383382161803538830">このページではリーディング モードを利用できません</translation>
 <translation id="638418309848716977">対応リンク</translation>
 <translation id="6384275966486438344">検索設定を次に変更します: <ph name="SEARCH_HOST" /></translation>
@@ -7066,6 +7066,7 @@
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">デバイスへのデータの保存を許可する</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 上にある自分のデータの読み取りと変更</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
 <translation id="6410390304316730527">セーフ ブラウジングは、不正なソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導する悪意のあるユーザーから保護します。オフにする場合、なじみのないサイトや評判の悪いサイトを閲覧する際は十分に注意してください。</translation>
@@ -7659,6 +7660,7 @@
 <translation id="6845231585063669905">昇順</translation>
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」が <ph name="PRINTER_NAME" /> での <ph name="FILE_NAME" /> の印刷をリクエストしています。</translation>
 <translation id="6846843854964504403">セーフティ リセット</translation>
+<translation id="6846861364742126526">マイクを使用して Gemini と会話できます。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="6847125920277401289">続行するには容量を空けてください</translation>
 <translation id="6850286078059909152">テキストの色</translation>
 <translation id="6850925512806464982">全員がこのタブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
@@ -9456,6 +9458,7 @@
 <translation id="8212601853154459483">このプロフィールは <ph name="PROFILE_MANAGER" /> によって管理されており、アカウント <ph name="USER_EMAIL_ADDRESS" /> のプロフィールを別途作成する必要があります</translation>
 <translation id="8212792694174629011">プロファイルが見つかりませんでした。デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してみてください。</translation>
 <translation id="8214489666383623925">ファイルを開く...</translation>
+<translation id="8214771296778317256">ここでタブのスタイルを選択できます</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" /> からスマートフォンの機能にアクセスします</translation>
 <translation id="8217212468862726597">ポインタをハイライト表示</translation>
 <translation id="8217399928341212914">複数ファイルの自動ダウンロードを今後もブロックする</translation>
@@ -9580,7 +9583,7 @@
 <translation id="8306885873692337975">最新の機能を入手しセキュリティを強化しましょう。</translation>
 <translation id="8308024039615003152">草地</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> がカメラへのアクセスを必要としているときは確認画面を表示する</translation>
-<translation id="830868413617744215">Beta</translation>
+<translation id="830868413617744215">ベータ版</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> 個のタブ</translation>
 <translation id="831207808878314375">定義</translation>
 <translation id="8312841338723044391">ライブ</translation>
@@ -10701,6 +10704,7 @@
 <translation id="9154194610265714752">更新完了</translation>
 <translation id="915485121129452731">ペンタブレット</translation>
 <translation id="9155344700756733162">色の選択を解除</translation>
+<translation id="9155515662479003830">設定でいつでも従来のスタイルに戻すことができます</translation>
 <translation id="9157096865782046368">0.8秒</translation>
 <translation id="9157697743260533322">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト開始エラー: <ph name="ERROR_NUMBER" />）</translation>
 <translation id="9157915340203975005">プリンタのフタが開いています</translation>

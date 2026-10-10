@@ -1588,6 +1588,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2215070081105889450">Para compartir o audio, comparte unha pestana ou pantalla</translation>
 <translation id="2217208085547223783">Grao de fiabilidade</translation>
 <translation id="2218019600945559112">Rato e panel táctil</translation>
+<translation id="2218116022473625437">Podes desactivar o realce de texto, modificar a voz e cambiar o aspecto da páxina na configuración.</translation>
 <translation id="2218515861914035131">Pegar como texto sen formato</translation>
 <translation id="2219007152108311874">Preguntar en cada visita</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
@@ -2002,7 +2003,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="252513908494776481">Fai preguntas sobre esta pestana</translation>
 <translation id="2525746158911982776">Produciuse un erro na actualización porque o sistema non ten suficiente espazo de almacenamento.</translation>
 <translation id="2525842906387880861">Non volverás ver suxestións nesta páxina de novo</translation>
-<translation id="2526346836766369775">Nova &amp;pestana illada</translation>
 <translation id="2526590354069164005">Ordenador</translation>
 <translation id="2526619973349913024">Buscar actualizacións</translation>
 <translation id="2527167509808613699">Calquera tipo de conexión</translation>
@@ -3764,6 +3764,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3812525830114410218">Certificado incorrecto</translation>
 <translation id="3813296892522778813">Accede á <ph name="BEGIN_LINK_CHROMIUM" />axuda de Google Chrome<ph name="END_LINK_CHROMIUM" /> se non atopas o que buscas.</translation>
 <translation id="3813358687923336574">Idioma usado para a tradución das páxinas e para a función Respostas rápidas</translation>
+<translation id="3815509884387832993">Usa o botón Activar reprodución xerada por IA na barra de ferramentas do modo de lectura para escoitar esta páxina como se fose un pódcast coa reprodución xerada por IA.</translation>
 <translation id="3815668647912194650">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non queres acceder a el.</translation>
 <translation id="3816118180265633665">Cores de Chrome</translation>
 <translation id="3817524650114746564">Abrir configuración de proxy do teu ordenador</translation>
@@ -4148,6 +4149,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sen conexión)</translation>
+<translation id="4112282889480354965">Extensións e habilidades</translation>
 <translation id="4113743276555482284">Contrasinal do ficheiro</translation>
 <translation id="4114524937989710624">Estás vendo suxestións de ficheiros que che axudarán a acceder con facilidade á túa actividade máis recente en Google Drive.
         <ph name="BREAK" />
@@ -5886,7 +5888,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5463348003600590648">Desactivar suxestións</translation>
 <translation id="5463625433003343978">Buscando dispositivos…</translation>
 <translation id="5463856536939868464">Menú con marcadores ocultos</translation>
-<translation id="5465214111614807935">Nova ventá &amp;illada</translation>
 <translation id="5466374726908360271">Pegar e bu&amp;scar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Os grupos de pestanas gárdanse na barra de marcadores e no menú de aplicacións, e actualízanse en todos os dispositivos nos que teñas a sesión iniciada se a sincronización está activada</translation>
 <translation id="5467207440419968613">Bloqueáronse os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
@@ -7041,7 +7042,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6379228010899751161">Verifica a túa identidade para asegurarte de poder usar sempre os contrasinais na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6379827283296619736">Non, continuar usando datos do traballo neste perfil</translation>
 <translation id="6380618366311601172">Gemini non poderá completar as tarefas para as que sexa necesario iniciar sesión en <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nova ventá &amp;illada</translation>
 <translation id="6383382161803538830">O modo de lectura non se pode usar nesta páxina</translation>
 <translation id="638418309848716977">Ligazóns compatibles</translation>
 <translation id="6384275966486438344">Cambiar a túa configuración de busca a: <ph name="SEARCH_HOST" /></translation>
@@ -8787,6 +8787,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7702463352133825032">Deixar de emitir no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarefa</translation>
 <translation id="7705085181312584869">Axúdame a escribir</translation>
+<translation id="7705230242432916648">Escoita esta páxina como se fose un pódcast coa reprodución xerada por IA</translation>
 <translation id="7705276765467986571">Erro ao cargar o modelo do marcador.</translation>
 <translation id="7705334495398865155">Establece de forma aleatoria o código de identificación do hardware (BSSID) para evitar que outras persoas fagan un seguimento deste dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -10216,6 +10217,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8780123805589053431">Obter descricións de Google para as imaxes</translation>
 <translation id="8780443667474968681">Desactivouse a busca por voz.</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />, usa as teclas Frecha dereita e Frecha esquerda para mover o atallo. Preme Introducir ou Escape para rematar.</translation>
 <translation id="8781980678064919987">Apagar cando a tapa estea pechada</translation>
 <translation id="8783171585655659524">Incluír captura de pantalla</translation>
 <translation id="8785622406424941542">Lapis óptico</translation>

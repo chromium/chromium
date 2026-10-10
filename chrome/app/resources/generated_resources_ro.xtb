@@ -2002,7 +2002,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="252513908494776481">Întreabă despre această filă</translation>
 <translation id="2525746158911982776">Actualizarea nu a reușit deoarece sistemul nu are suficient spațiu de stocare.</translation>
 <translation id="2525842906387880861">Nu vei mai vedea sugestii în această pagină.</translation>
-<translation id="2526346836766369775">Filă izola&amp;tă nouă</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Verifică dacă există actualizări</translation>
 <translation id="2527167509808613699">Orice fel de conexiune</translation>
@@ -2273,6 +2272,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2731971182069536520">Data viitoare când repornești dispozitivul, administratorul va face o actualizare unică ce va șterge datele locale.</translation>
 <translation id="2733248615007838252">Îmi place trimite feedback conform căruia îți plac aceste rezultate.</translation>
 <translation id="27349076983469322">Fundal deschis</translation>
+<translation id="2735081931800992557">să citească și să afișeze fișiere PDF;</translation>
 <translation id="2735712963799620190">Program</translation>
 <translation id="2737363922397526254">Restrânge...</translation>
 <translation id="2737719817922589807">&amp;Marcaje și liste</translation>
@@ -3690,6 +3690,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3771294271822695279">Fișiere video</translation>
 <translation id="3771721161825963003">Afișează filele pe verticală</translation>
 <translation id="3771851622616482156">Te vei deconecta de la acest site, inclusiv din filele deschise</translation>
+<translation id="3772951945682043324">Nu există file închise recent</translation>
 <translation id="3774059845329307709">Număr de serie</translation>
 <translation id="3774166835015494435">Fotografiile și notificările recente</translation>
 <translation id="3775432569830822555">Certificat de server SSL</translation>
@@ -5878,7 +5879,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5463348003600590648">Dezactivează sugestiile</translation>
 <translation id="5463625433003343978">Se caută dispozitive...</translation>
 <translation id="5463856536939868464">Meniu conținând marcajele ascunse</translation>
-<translation id="5465214111614807935">Fereastră &amp;izolată nouă</translation>
 <translation id="5466374726908360271">In&amp;serează și caută „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Grupurile de file se salvează în bara de marcaje și în meniul aplicației și se actualizează pe toate dispozitivele conectate dacă sincronizarea este activată</translation>
 <translation id="5467207440419968613">Permisiuni blocate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7035,7 +7035,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6379228010899751161">Confirmă-ți identitatea pentru a te asigura că poți folosi oricând parolele din contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Nu, continuă să lucrezi în acest profil</translation>
 <translation id="6380618366311601172">Gemini nu va putea finaliza activități care necesită conectarea la <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Fereastră &amp;izolată nouă</translation>
 <translation id="6383382161803538830">Modul de lectură nu este disponibil pe această pagină</translation>
 <translation id="638418309848716977">Linkuri acceptate</translation>
 <translation id="6384275966486438344">Schimbați setările de căutare la: <ph name="SEARCH_HOST" /></translation>
@@ -7070,6 +7069,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6406708970972405507">Setări – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Au permisiunea de a salva date pe dispozitiv</translation>
 <translation id="6408118934673775994">Citește și modifică datele de pe <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Fișiere imagine</translation>
 <translation id="6410328738210026208">Schimbați canalul și folosiți Powerwash</translation>
 <translation id="6410390304316730527">Navigarea sigură te protejează împotriva atacatorilor care ar putea să te păcălească să faci lucruri periculoase, cum ar fi să instalezi software rău intenționat sau să dezvălui informații cu caracter personal, cum ar fi parole, numere de telefon sau carduri de credit. Dacă o dezactivezi, ai grijă atunci când navighezi pe site-uri nefamiliare sau nelegitime.</translation>
@@ -7665,6 +7665,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6845231585063669905">De la A la Z</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” dorește să imprime <ph name="FILE_NAME" /> la <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Resetare de siguranță</translation>
+<translation id="6846861364742126526">Folosește microfonul pentru a conversa prin chat cu Gemini. Datele tale nu sunt folosite pentru a îmbunătăți modelele AI generativ.</translation>
 <translation id="6847125920277401289">Eliberează spațiu pentru a continua</translation>
 <translation id="6850286078059909152">Culoarea textului</translation>
 <translation id="6850925512806464982">Toți utilizatorii vor pierde imediat accesul la grupul de file și acesta va fi șters de pe toate dispozitivele</translation>

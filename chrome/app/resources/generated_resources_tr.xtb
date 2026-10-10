@@ -2002,7 +2002,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="252513908494776481">Bu sekme hakkında soru sorun</translation>
 <translation id="2525746158911982776">Sistemde yeterli depolama alanı olmadığı için güncelleme başarısız oldu.</translation>
 <translation id="2525842906387880861">Bu sayfada bir daha öneri görmeyeceksiniz</translation>
-<translation id="2526346836766369775">Yeni yalıtılmış &amp;sekme</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
 <translation id="2526619973349913024">Güncellemeleri denetle</translation>
 <translation id="2527167509808613699">Herhangi bir bağlantı türü</translation>
@@ -2273,6 +2272,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2731971182069536520">Cihazınızı yeniden başlattığınızda, yerel verilerinizi silecek olan bir seferlik güncelleme yapılır.</translation>
 <translation id="2733248615007838252">Beğenme düğmesini tıkladığınızda bu sonuçların hoşunuza gittiğine dair geri bildirim gönderilir.</translation>
 <translation id="27349076983469322">Açık renkli arka plan</translation>
+<translation id="2735081931800992557">PDF dosyalarını okuma ve görüntüleme</translation>
 <translation id="2735712963799620190">Program</translation>
 <translation id="2737363922397526254">Daralt...</translation>
 <translation id="2737719817922589807">&amp;Yer işaretleri ve listeler</translation>
@@ -3689,6 +3689,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3771294271822695279">Video Dosyaları</translation>
 <translation id="3771721161825963003">Sekmeleri Dikey Olarak Göster</translation>
 <translation id="3771851622616482156">Açık sekmeler de dahil olmak üzere bu sitede oturumunuz kapatılır</translation>
+<translation id="3772951945682043324">Yakın zamanda kapatılan sekme yok</translation>
 <translation id="3774059845329307709">Seri numarası</translation>
 <translation id="3774166835015494435">Son fotoğraflar ve bildirimler</translation>
 <translation id="3775432569830822555">SSL Sunucu Sertifikası</translation>
@@ -5878,7 +5879,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5463348003600590648">Önerileri devre dışı bırak</translation>
 <translation id="5463625433003343978">Cihazlar bulunuyor...</translation>
 <translation id="5463856536939868464">Gizlenmiş yer işaretlerini içeren menü</translation>
-<translation id="5465214111614807935">Yeni &amp;Yalıtılmış pencere</translation>
 <translation id="5466374726908360271">Ya&amp;pıştır ve “<ph name="SEARCH_TERMS" />” sorgusunu ara</translation>
 <translation id="5466721587278161554">Sekme gruplarınız yer işareti çubuğuna ve uygulama menüsüne kaydedilir, senkronizasyon etkinse oturum açılmış tüm cihazlarınızda güncellenir</translation>
 <translation id="5467207440419968613">Engellendi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7036,7 +7036,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6379228010899751161"><ph name="ACCOUNT_EMAIL" /> hesabınızdaki şifreleri her zaman kullanabilmek için kimliğinizi doğrulayın</translation>
 <translation id="6379827283296619736">Hayır, bu profilde çalışmaya devam et</translation>
 <translation id="6380618366311601172">Gemini, <ph name="DOMAIN" /> sitesinde oturum açmayı gerektiren görevleri tamamlayamaz.</translation>
-<translation id="6383321659284013430">Yeni &amp;Yalıtılmış Pencere</translation>
 <translation id="6383382161803538830">Okuma modu bu sayfada kullanılamıyor</translation>
 <translation id="638418309848716977">Desteklenen bağlantılar</translation>
 <translation id="6384275966486438344">Arama ayarlarınızı <ph name="SEARCH_HOST" /> olarak değiştirme</translation>
@@ -7071,6 +7070,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6406708970972405507">Ayarlar - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Cihazınıza veri kaydetmesine izin veriliyor</translation>
 <translation id="6408118934673775994">Şu web sitelerinde verilerinizi okuma ve değiştirme: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ve <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Resim Dosyaları</translation>
 <translation id="6410328738210026208">Kanal değiştir ve Powerwash işlemini yap</translation>
 <translation id="6410390304316730527">Güvenli Tarama, sizi yanıltarak kötü amaçlı yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanıza neden olabilecek saldırganlara karşı korur. Bu özelliği kapatırsanız tanıdık olmayan veya saygınlığı şüpheli sitelere göz atarken dikkatli olun.</translation>
@@ -7664,6 +7664,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6845231585063669905">A'dan Z'ye</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="FILE_NAME" /> dosyasını <ph name="PRINTER_NAME" /> adlı yazıcıda yazdırmak istiyor.</translation>
 <translation id="6846843854964504403">Güvenlik ayarları sıfırlama</translation>
+<translation id="6846861364742126526">Gemini ile sohbet etmek için mikrofonunuzu kullanın. Verileriniz, üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz.</translation>
 <translation id="6847125920277401289">Devam etmek için yer boşaltın</translation>
 <translation id="6850286078059909152">Metin rengi</translation>
 <translation id="6850925512806464982">Herkes sekme grubuna erişimini anında kaybeder ve grup tüm cihazlardan silinir</translation>

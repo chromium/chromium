@@ -2002,7 +2002,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="252513908494776481">Posez une question concernant cet onglet</translation>
 <translation id="2525746158911982776">Échec de la mise à jour, car le système manque d'espace de stockage.</translation>
 <translation id="2525842906387880861">Vous ne verrez plus de suggestions sur cette page</translation>
-<translation id="2526346836766369775">Nouvel ongle&amp;t isolé</translation>
 <translation id="2526590354069164005">Bureau</translation>
 <translation id="2526619973349913024">Rechercher des mises à jour</translation>
 <translation id="2527167509808613699">Toutes sortes de connexions</translation>
@@ -2273,6 +2272,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2731971182069536520">La prochaine fois que vous redémarrerez votre appareil, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales.</translation>
 <translation id="2733248615007838252">"J'aime" indique que ces résultats vous conviennent.</translation>
 <translation id="27349076983469322">Arrière-plan clair</translation>
+<translation id="2735081931800992557">Lire et afficher des fichiers PDF</translation>
 <translation id="2735712963799620190">Horaires</translation>
 <translation id="2737363922397526254">Réduire...</translation>
 <translation id="2737719817922589807">Favoris et listes</translation>
@@ -3689,6 +3689,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3771294271822695279">Fichiers vidéo</translation>
 <translation id="3771721161825963003">Afficher les onglets verticalement</translation>
 <translation id="3771851622616482156">Vous allez être déconnecté de ce site, y compris dans les onglets ouverts</translation>
+<translation id="3772951945682043324">Aucun onglet récemment fermé</translation>
 <translation id="3774059845329307709">Numéro de série</translation>
 <translation id="3774166835015494435">Photos et notifications récentes</translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
@@ -5877,7 +5878,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5463348003600590648">Désactiver les suggestions</translation>
 <translation id="5463625433003343978">Recherche d'appareils…</translation>
 <translation id="5463856536939868464">Menu contenant des favoris masqués</translation>
-<translation id="5465214111614807935">Nouvelle fenêtre isolée</translation>
 <translation id="5466374726908360271">Coller et chercher "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Vos groupes d'onglets sont enregistrés dans la barre de favoris et le menu de l'appli, et mis à jour sur tous les appareils connectés si la synchronisation est activée</translation>
 <translation id="5467207440419968613">Autorisations bloquées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
@@ -7035,7 +7035,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6379228010899751161">Confirmez votre identité pour toujours pouvoir utiliser les mots de passe de votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Non, continuer à travailler dans ce profil</translation>
 <translation id="6380618366311601172">Gemini ne pourra pas effectuer les tâches qui nécessitent de se connecter sur <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nouvelle fenêtre isolée</translation>
 <translation id="6383382161803538830">Mode Lecture non disponible sur cette page</translation>
 <translation id="638418309848716977">Liens compatibles</translation>
 <translation id="6384275966486438344">Modifier les paramètres de la recherche pour utiliser l'adresse <ph name="SEARCH_HOST" />.</translation>
@@ -7070,6 +7069,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6406708970972405507">Paramètres – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="6408118934673775994">Accéder aux données de <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" />, et les modifier</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="6410328738210026208">Changer de version et Powerwash</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
@@ -7665,6 +7665,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6845231585063669905">De A à Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" souhaite imprimer <ph name="FILE_NAME" /> avec <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Réinitialisation sécurisée</translation>
+<translation id="6846861364742126526">Utilisez votre micro pour discuter avec Gemini. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6847125920277401289">Libérer de l'espace pour continuer</translation>
 <translation id="6850286078059909152">Couleur du texte</translation>
 <translation id="6850925512806464982">Tout le monde perdra immédiatement l'accès à ce groupe d'onglets, qui sera supprimé de tous les appareils</translation>

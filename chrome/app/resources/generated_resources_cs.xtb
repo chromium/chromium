@@ -2002,7 +2002,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="252513908494776481">Zeptejte se na tuhle kartu</translation>
 <translation id="2525746158911982776">Aktualizace se nezdařila, protože v systému není dost úložného prostoru.</translation>
 <translation id="2525842906387880861">Na této stránce se vám už nebudou zobrazovat návrhy</translation>
-<translation id="2526346836766369775">Nová izolovaná &amp;karta</translation>
 <translation id="2526590354069164005">Plocha</translation>
 <translation id="2526619973349913024">Zkontrolovat aktualizace</translation>
 <translation id="2527167509808613699">Jakýkoli typ spojení</translation>
@@ -2273,6 +2272,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2731971182069536520">Až příště zařízení restartujete, administrátor provede jednorázovou aktualizaci, která vymaže vaše místní data.</translation>
 <translation id="2733248615007838252">Palec nahoru odešle zpětnou vazbu, že se vám tyto výsledky líbí.</translation>
 <translation id="27349076983469322">Světlé pozadí</translation>
+<translation id="2735081931800992557">Čtení a zobrazování souborů PDF</translation>
 <translation id="2735712963799620190">Plán</translation>
 <translation id="2737363922397526254">Sbalit...</translation>
 <translation id="2737719817922589807">&amp;Záložky a seznamy</translation>
@@ -3689,6 +3689,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3771294271822695279">Soubory videa</translation>
 <translation id="3771721161825963003">Zobrazit karty svisle</translation>
 <translation id="3771851622616482156">Z tohoto webu budete odhlášeni (i na otevřených kartách)</translation>
+<translation id="3772951945682043324">Žádné nedávno zavřené karty</translation>
 <translation id="3774059845329307709">Sériové číslo</translation>
 <translation id="3774166835015494435">Nejnovější fotky a oznámení</translation>
 <translation id="3775432569830822555">Certifikát serveru SSL</translation>
@@ -5876,7 +5877,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5463348003600590648">Deaktivovat návrhy</translation>
 <translation id="5463625433003343978">Hledání zařízení…</translation>
 <translation id="5463856536939868464">Nabídka obsahující skryté záložky</translation>
-<translation id="5465214111614807935">Nové &amp;izolované okno</translation>
 <translation id="5466374726908360271">Vl&amp;ožit a vyhledat výraz „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="5466721587278161554">Skupiny karet se ukládají na lištu záložek a do nabídky aplikací, a když je zapnutá synchronizace, aktualizují se na všech zařízeních</translation>
 <translation id="5467207440419968613">Zablokována oprávnění <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7030,7 +7030,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6379228010899751161">Pokud chcete mít vždy možnost používat hesla ve svém účtu <ph name="ACCOUNT_EMAIL" />, ověřte svou totožnost</translation>
 <translation id="6379827283296619736">Ne, pokračovat v práci v tomhle profilu</translation>
 <translation id="6380618366311601172">Gemini nebude moct provádět úkoly, které vyžadují přihlášení na webu <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nové &amp;izolované okno</translation>
 <translation id="6383382161803538830">Režim čtení není na této stránce k dispozici</translation>
 <translation id="638418309848716977">Podporované odkazy</translation>
 <translation id="6384275966486438344">Změnit nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
@@ -7065,6 +7064,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6406708970972405507">Nastavení – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Má povoleno ukládat data do zařízení</translation>
 <translation id="6408118934673775994">Čtení a úprava dat na webu <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
 <translation id="6410328738210026208">Změnit kanál a použít funkci Powerwash</translation>
 <translation id="6410390304316730527">Bezpečné prohlížení vás chrání před útočníky, kteří se vás snaží přimět k nebezpečné akci, jako je instalace škodlivého softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). Pokud ji vypnete, budete si muset dávat pozor na neznámé a podezřelé weby.</translation>
@@ -7662,6 +7662,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6845231585063669905">A až Z</translation>
 <translation id="6846178040388691741">Rozšíření <ph name="EXTENSION_NAME" /> chce vytisknout soubor <ph name="FILE_NAME" /> pomocí tiskárny <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Bezpečnostní reset</translation>
+<translation id="6846861364742126526">Používejte k chatování s Gemini mikrofon. Vaše data se nepoužívají k vylepšování modelů generativní umělé inteligence.</translation>
 <translation id="6847125920277401289">Chcete-li pokračovat, uvolněte místo</translation>
 <translation id="6850286078059909152">Barva textu</translation>
 <translation id="6850925512806464982">Ke této skupině karet všichni okamžitě ztratí přístup a bude smazána ze všech zařízení</translation>

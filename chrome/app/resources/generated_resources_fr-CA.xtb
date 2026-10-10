@@ -2002,7 +2002,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="252513908494776481">Posez une question sur cet onglet</translation>
 <translation id="2525746158911982776">La mise à jour a échoué, car le système manque d'espace de stockage.</translation>
 <translation id="2525842906387880861">Vous ne verrez plus de suggestions sur cette page</translation>
-<translation id="2526346836766369775">Nouvel &amp;onglet isolé</translation>
 <translation id="2526590354069164005">Ordinateur de bureau</translation>
 <translation id="2526619973349913024">Rechercher des mises à jour</translation>
 <translation id="2527167509808613699">Tout type de connexion</translation>
@@ -2274,6 +2273,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2731971182069536520">La prochaine fois que vous redémarrerez votre appareil, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales.</translation>
 <translation id="2733248615007838252">La mention J'aime indique que vous aimez ces résultats.</translation>
 <translation id="27349076983469322">Arrière-plan clair</translation>
+<translation id="2735081931800992557">Lire et afficher les fichiers PDF</translation>
 <translation id="2735712963799620190">Horaire</translation>
 <translation id="2737363922397526254">Réduire...</translation>
 <translation id="2737719817922589807">Favoris et listes</translation>
@@ -3693,6 +3693,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3771294271822695279">Fichiers vidéo</translation>
 <translation id="3771721161825963003">Afficher les onglets verticalement</translation>
 <translation id="3771851622616482156">Vous serez déconnecté de ce site, y compris dans les onglets ouverts</translation>
+<translation id="3772951945682043324">Aucun onglet récemment fermé</translation>
 <translation id="3774059845329307709">Numéro de série</translation>
 <translation id="3774166835015494435">Photos et notifications récentes</translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
@@ -5842,7 +5843,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5436211819997237281">L'extension actuelle qui gère votre page Nouvel onglet</translation>
 <translation id="5436492226391861498">En attente du tunnel mandataire...</translation>
 <translation id="5436510242972373446">Recherche sur <ph name="SITE_NAME" /> :</translation>
-<translation id="5437406591808823366">Pour remplir automatiquement et enregistrer vos mots de passe sur vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
+<translation id="5437406591808823366">Pour saisir automatiquement et enregistrer vos mots de passe sur vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616">La largeur de la fenêtre <ph name="WINDOW_SIDE" /> est désormais de <ph name="WINDOW_SIZE_PERCENT" />, et la largeur du volet <ph name="PANE_SIDE" /> est désormais de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Rechercher des extensions</translation>
 <translation id="5440240650630588012">Appliquez une ligne ou une fenêtre de lecture pour faciliter la concentration. Appuyez sur ⌥L ou accédez aux paramètres.</translation>
@@ -5881,7 +5882,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5463348003600590648">Désactiver les suggestions</translation>
 <translation id="5463625433003343978">Recherche d'appareils en cours…</translation>
 <translation id="5463856536939868464">Menu contenant des favoris masqués</translation>
-<translation id="5465214111614807935">Nouvelle &amp;fenêtre isolée</translation>
 <translation id="5466374726908360271">Coller et rechercher « <ph name="SEARCH_TERMS" /> »</translation>
 <translation id="5466721587278161554">Vos groupes d'onglets sont enregistrés dans la barre de favoris et dans le menu de l'appli, et sont mis à jour sur l'ensemble de vos appareils connectés si la synchronisation est activée</translation>
 <translation id="5467207440419968613">Autorisations bloquées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
@@ -6574,6 +6574,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6007053304250788613">Un seul écran peut être exclu en mode Miroir</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas offerte dans votre langue.</translation>
+<translation id="6007858579659393165">Les onglets ont une nouvelle apparence transparente</translation>
 <translation id="6010651352520077187">Lorsqu'il est activé, Google Traduction vous proposera de traduire les sites dans la langue de votre choix. Il peut également traduire automatiquement des sites.</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
@@ -7038,7 +7039,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6379228010899751161">Confirmez votre identité pour vous assurer de toujours pouvoir utiliser les mots de passe de votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Non, continuer à travailler dans ce profil</translation>
 <translation id="6380618366311601172">Gemini ne pourra pas effectuer les tâches qui nécessitent de se connecter sur le site <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nouvelle &amp;fenêtre isolée</translation>
 <translation id="6383382161803538830">Le mode lecture n'est pas accessible sur cette page</translation>
 <translation id="638418309848716977">Liens compatibles</translation>
 <translation id="6384275966486438344">Changer vos paramètres de recherche à : <ph name="SEARCH_HOST" /></translation>
@@ -7073,6 +7073,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6406708970972405507">Paramètres – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Autorisé à enregistrer des données sur votre appareil</translation>
 <translation id="6408118934673775994">Accéder à vos données sur <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" /> et les modifier</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="6410328738210026208">Changement de version et réinitialisation « Powerwash »</translation>
 <translation id="6410390304316730527">La navigation sécurisée vous protège contre les pirates qui pourraient vous inciter à faire quelque chose de dangereux comme installer un logiciel malveillant ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). Si vous la désactivez, faites attention lorsque vous naviguez sur des sites inconnus ou de mauvaise réputation.</translation>
@@ -7668,6 +7669,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6845231585063669905">A à Z</translation>
 <translation id="6846178040388691741">« <ph name="EXTENSION_NAME" /> » souhaite imprimer <ph name="FILE_NAME" /> avec <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Réinitialisation de sécurité</translation>
+<translation id="6846861364742126526">Utilisez votre microphone pour discuter avec Gemini. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6847125920277401289">Libérez de l'espace pour continuer</translation>
 <translation id="6850286078059909152">Couleur du texte</translation>
 <translation id="6850925512806464982">Tous les utilisateurs perdront immédiatement l'accès au groupe d'onglets, et ce dernier sera supprimé de tous les appareils.</translation>
@@ -9465,6 +9467,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8212601853154459483">Ce profil est géré par <ph name="PROFILE_MANAGER" /> et vous oblige à créer un profil distinct pour le compte <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Aucun profil n'a été trouvé. Numérisez un code QR à l'aide de l'appareil photo ou entrez le code d'activation fourni par votre fournisseur de services.</translation>
 <translation id="8214489666383623925">Ouvrir...</translation>
+<translation id="8214771296778317256">Choisissez votre style d'onglet préféré ici</translation>
 <translation id="8215129063232901118">Accéder aux fonctionnalités de votre téléphone à partir de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Mettre en évidence le pointeur</translation>
 <translation id="8217399928341212914">Continuer à bloquer le téléchargement automatique de plusieurs fichiers</translation>
@@ -10709,6 +10712,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9154194610265714752">Mis à jour</translation>
 <translation id="915485121129452731">Tablette à stylet</translation>
 <translation id="9155344700756733162">Désélectionner la couleur</translation>
+<translation id="9155515662479003830">Vous pouvez toujours revenir au style classique dans les paramètres</translation>
 <translation id="9157096865782046368">0,8 seconde</translation>
 <translation id="9157697743260533322">Impossible de configurer les mises à jour automatiques pour tous les utilisateurs (erreur de lancement des vérifications : <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Le panneau d'accès de l'imprimante est ouvert</translation>

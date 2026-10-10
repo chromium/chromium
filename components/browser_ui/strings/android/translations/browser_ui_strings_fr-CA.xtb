@@ -53,6 +53,7 @@
 <translation id="1532175480576580256">Zone de contenu dans le bas de l'écran concernant Mes raccourcis ouverte à pleine hauteur</translation>
 <translation id="1538031354170655462">Les sites utilisent généralement la communication en champ proche (CCP) pour fonctionner avec des balises ou des appareils à proximité, comme le balayage de badges ou le paiement sans contact</translation>
 <translation id="1547123415014299762">Les témoins tiers sont autorisés</translation>
+<translation id="1565353932454306569"><ph name="ORIGIN" /> – Balayez l'écran à partir du côté pour quitter le mode Plein écran.</translation>
 <translation id="1569054338208717605">Accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement moins résistant aux attaques</translation>
 <translation id="1593426485665524382">Nouvelles actions accessibles près du haut de l'écran</translation>
 <translation id="1594521731409209842">Pincer l'écran pour redimensionner la photo</translation>
@@ -137,6 +138,7 @@
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
 <translation id="2347601491101454548">Zone de contenu dans le bas de l'écran concernant Mes raccourcis ouverte à mi-hauteur</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2364212713469273030"><ph name="ORIGIN" /> – Faites glisser l'écran à partir du haut et balayez-le à partir du bord gauche ou droit pour quitter le mode Plein écran.</translation>
 <translation id="2379925928934107488">Si possible, appliquer le thème sombre aux sites lorsque Chrome l'utilise</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>
 <translation id="2397689164757137845">Autorisée • Précise</translation>

@@ -2015,7 +2015,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="252513908494776481">Vra oor hierdie oortjie</translation>
 <translation id="2525746158911982776">Die opdatering het misluk omdat die stelsel nie genoeg bergingspasie het nie.</translation>
 <translation id="2525842906387880861">Jy sal nie weer voorstelle op hierdie bladsy sien nie</translation>
-<translation id="2526346836766369775">Nuwe geïsoleerde &amp;oortjie</translation>
 <translation id="2526590354069164005">Rekenaar</translation>
 <translation id="2526619973349913024">Gaan na vir opdatering</translation>
 <translation id="2527167509808613699">Enige tipe verbinding</translation>
@@ -2286,6 +2285,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2731971182069536520">Wanneer jy jou toestel volgende keer herbegin, sal jou administrateur 'n eenmalige opdatering uitvoer wat jou plaaslike data sal uitvee.</translation>
 <translation id="2733248615007838252">Opduim stuur terugvoer dat jy van hierdie resultate hou.</translation>
 <translation id="27349076983469322">Ligte agtergrond</translation>
+<translation id="2735081931800992557">Lees en wys PDF-lêers</translation>
 <translation id="2735712963799620190">Skedule</translation>
 <translation id="2737363922397526254">Vou in …</translation>
 <translation id="2737719817922589807">&amp;Boekmerke en lyste</translation>
@@ -3704,6 +3704,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3771294271822695279">Videolêers</translation>
 <translation id="3771721161825963003">Wys oortjies vertikaal</translation>
 <translation id="3771851622616482156">Jy sal by hierdie werf afgemeld word, insluitend in oop oortjies</translation>
+<translation id="3772951945682043324">Geen onlangs toegemaakte oortjies nie</translation>
 <translation id="3774059845329307709">Reeksnommer</translation>
 <translation id="3774166835015494435">Onlangse foto's en kennisgewings</translation>
 <translation id="3775432569830822555">SSL-bedienersertifikaat</translation>
@@ -5894,7 +5895,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5463348003600590648">Deaktiveer voorstelle</translation>
 <translation id="5463625433003343978">Soek tans toestelle …</translation>
 <translation id="5463856536939868464">Kieslys wat versteekte boekmerke bevat</translation>
-<translation id="5465214111614807935">Nuwe &amp;geïsoleerde venster</translation>
 <translation id="5466374726908360271">Plak en soek vir “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Jou oortjiegroepe word in die boekmerkbalk en appkieslys gestoor, en word op al jou aangemelde toestelle opgedateer as sinkronisasie aangeskakel is</translation>
 <translation id="5467207440419968613">Het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> geblokkeer</translation>
@@ -7052,7 +7052,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6379228010899751161">Verifieer dat dit jy is om seker te maak dat jy altyd die wagwoorde in jou rekening, <ph name="ACCOUNT_EMAIL" />, kan gebruik</translation>
 <translation id="6379827283296619736">Nee, gaan voort om in hierdie profiel te werk</translation>
 <translation id="6380618366311601172">Gemini sal nie take kan voltooi wat aanmelding op <ph name="DOMAIN" /> vereis nie.</translation>
-<translation id="6383321659284013430">Nuwe &amp;geïsoleerde venster</translation>
 <translation id="6383382161803538830">Leesmodus is nie op hierdie bladsy beskikbaar nie</translation>
 <translation id="638418309848716977">Gesteunde skakels</translation>
 <translation id="6384275966486438344">Verander jou soektoginstellings na: <ph name="SEARCH_HOST" /></translation>
@@ -7087,6 +7086,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6406708970972405507">Instellings – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Mag data op jou toestel stoor</translation>
 <translation id="6408118934673775994">Lees en verander jou data op <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" /> …</translation>
 <translation id="6410257289063177456">Prentlêers</translation>
 <translation id="6410328738210026208">Verander kanaal en Kragwas</translation>
 <translation id="6410390304316730527">Veiligblaai beskerm jou teen aanvallers wat jou dalk kan mislei om iets gevaarlik te doen, soos om kwaadwillige sagteware te installeer of jou persoonlike inligting, soos wagwoorde, foonnommers of kredietkaartinligting, bekend te maak. As jy dit afskakel, moet jy versigtig wees wanneer jy op onbekende of nie-fatsoenlike werwe blaai.</translation>
@@ -7680,6 +7680,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6845231585063669905">A tot Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" wil <ph name="FILE_NAME" /> druk met <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Veiligheidterugstelling</translation>
+<translation id="6846861364742126526">Gebruik jou mikrofoon om met Gemini te klets. Jou data word nie gebruik om generatiewe-KI-modelle te verbeter nie.</translation>
 <translation id="6847125920277401289">Maak spasie beskikbaar om voort te gaan</translation>
 <translation id="6850286078059909152">Tekskleur</translation>
 <translation id="6850925512806464982">Almal sal onmiddellik toegang tot hierdie oortjiegroep verloor en dit sal van alle toestelle af uitgevee word</translation>

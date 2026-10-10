@@ -668,6 +668,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2127747486437921899">Etzana</translation>
 <translation id="2130448033692577677">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroa ez delako ezarri.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131006834960167560">Ordainketen betetze automatikoa gaitzeko beheko panela altuera osoan ireki da.</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Bilatzaile hauek ausaz zerrendatzen dira. Nahi duzunean alda dezakezu lehenetsia.</translation>
 <translation id="2134584557120247184">Hegaldi-txartela</translation>
@@ -1363,6 +1364,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3289578402369490638">Sareko beste dendetatik</translation>
 <translation id="3293642807462928945">Lortu informazio gehiago <ph name="POLICY_NAME" /> gidalerroari buruz</translation>
 <translation id="3295444047715739395">Ikusi eta kudeatu pasahitzak Chrome-ren ezarpenetan</translation>
+<translation id="3296595523896103792">Ordainketen betetze automatikoa gaitzeko beheko panela itxi da.</translation>
 <translation id="3299098170013242198">Windows Hello aktibatuta dago pasahitzen eremuak betetzeko</translation>
 <translation id="3299197721044635447">Ezin izan da itsatsi edukia Chrome-ren testuinguru kudeatutik kanpo, erakundearen gidalerroak direla eta</translation>
 <translation id="3299720788264079132">Arazoren bat izan da <ph name="FEATURE_NAME" /> erabiltzean</translation>
@@ -4163,6 +4165,7 @@ Xehetasun gehiago:
 <translation id="7955105108888461311">Eska iezadazu zuzenean</translation>
 <translation id="7956713633345437162">Mugikorreko laster-markak</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
+<translation id="7961493403319780137">Lortu eginbide honi buruzko informazio gehiago: Gmail-eko egiaztapen-kodeen betetze automatikoa.</translation>
 <translation id="7962467575542381659">Plataformako makina</translation>
 <translation id="796439090588610411">Chrome-k helbide elektroniko hau automatikoki berresteari utziko dio onartzen diren webguneetan.</translation>
 <translation id="7966803981046576691">Laneko kontu mota</translation>

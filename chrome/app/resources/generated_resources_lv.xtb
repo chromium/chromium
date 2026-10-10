@@ -2002,7 +2002,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="252513908494776481">Uzdodiet jautājumus šo cilni</translation>
 <translation id="2525746158911982776">Atjaunināšana neizdevās, jo sistēmā nepietiek vietas krātuvē.</translation>
 <translation id="2525842906387880861">Ieteikumi vairs netiks rādīti šajā lapā.</translation>
-<translation id="2526346836766369775">Jauna izolēta &amp;cilne</translation>
 <translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="2526619973349913024">Pārbaudīt atjauninājumus</translation>
 <translation id="2527167509808613699">Jebkāda veida savienojums</translation>
@@ -2273,6 +2272,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2731971182069536520">Nākamreiz, kad restartēsiet ierīci, administrators veiks vienreizēju atjauninājumu, kas dzēsīs jūsu lokālos datus.</translation>
 <translation id="2733248615007838252">Nospiežot pogu “Patīk”, varat norādīt, ka jums patīk šie rezultāti.</translation>
 <translation id="27349076983469322">Gaišs fons</translation>
+<translation id="2735081931800992557">Lasīt un rādīt PDF failus</translation>
 <translation id="2735712963799620190">Grafiks</translation>
 <translation id="2737363922397526254">Sakļaut...</translation>
 <translation id="2737719817922589807">&amp;Grāmatzīmes un saraksti</translation>
@@ -3689,6 +3689,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3771294271822695279">Video faili</translation>
 <translation id="3771721161825963003">Rādīt cilnes vertikāli</translation>
 <translation id="3771851622616482156">Jūs tiksiet izrakstīts no šīs vietnes, tostarp atvērtajās cilnēs</translation>
+<translation id="3772951945682043324">Nav nesen aizvērtu ciļņu</translation>
 <translation id="3774059845329307709">Sērijas numurs</translation>
 <translation id="3774166835015494435">Jaunākie fotoattēli un paziņojumi</translation>
 <translation id="3775432569830822555">SSL servera sertifikāts</translation>
@@ -5878,7 +5879,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5463348003600590648">Atspējot ieteikumus</translation>
 <translation id="5463625433003343978">Notiek ierīču meklēšana…</translation>
 <translation id="5463856536939868464">Izvēlne ar paslēptām grāmatzīmēm</translation>
-<translation id="5465214111614807935">Jauns &amp;izolēts logs</translation>
 <translation id="5466374726908360271">Ielīmēt un meklēt “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Jūsu ciļņu grupas ir saglabātas grāmatzīmju joslā un lietotņu izvēlnē un tiek atjauninātas visās ierīcēs, kurās esat pierakstījies, ja sinhronizācija ir ieslēgta.</translation>
 <translation id="5467207440419968613">Bloķēts: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7032,7 +7032,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6379228010899751161">Lai vienmēr varētu izmantot kontā <ph name="ACCOUNT_EMAIL" /> saglabātās paroles, apstipriniet savu identitāti.</translation>
 <translation id="6379827283296619736">Nē, turpināt izmantot šo profilu</translation>
 <translation id="6380618366311601172">Gemini nevarēs veikt uzdevumus, kuru izpildei ir nepieciešama pierakstīšanās vietnē <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Jauns &amp;izolēts logs</translation>
 <translation id="6383382161803538830">Lasīšanas režīms šajā lapā nav pieejams.</translation>
 <translation id="638418309848716977">Atbalstītās saites</translation>
 <translation id="6384275966486438344">Mainiet savus meklēšanas iestatījumus uz šiem: <ph name="SEARCH_HOST" /></translation>
@@ -7067,6 +7066,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6406708970972405507">Iestatījumi — <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Drīkst saglabāt datus jūsu ierīcē</translation>
 <translation id="6408118934673775994">Lasīt un mainīt jūsu datus vietnēs <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> un <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
 <translation id="6410328738210026208">Mainīt kanālu un Powerwash</translation>
 <translation id="6410390304316730527">Izmantojot drošu pārlūkošanu, jūs iegūstat aizsardzību pret uzbrucējiem, kuri varētu mudināt jūs veikt bīstamas darbības, piemēram, instalēt ļaunprātīgu programmatūru vai atklāt personas informāciju — paroles, tālruņa numurus, kredītkaršu datus u.tml. Ja izslēgsiet drošu pārlūkošanu, ievērojiet piesardzību, pārlūkojot nepazīstamas vietnes vai vietnes ar sliktu reputāciju.</translation>
@@ -7664,6 +7664,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6845231585063669905">A–Z</translation>
 <translation id="6846178040388691741">Paplašinājums “<ph name="EXTENSION_NAME" />” vēlas drukāt failu “<ph name="FILE_NAME" />” printerī <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Drošības atiestatīšana</translation>
+<translation id="6846861364742126526">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Jūsu dati netiek izmantoti ģeneratīvā MI modeļu uzlabošanai.</translation>
 <translation id="6847125920277401289">Lai turpinātu, atbrīvojiet vietu</translation>
 <translation id="6850286078059909152">Teksta krāsa</translation>
 <translation id="6850925512806464982">Visi lietotāji nekavējoties zaudēs piekļuvi šai ciļņu grupai, un tā tiks izdzēsta no visām ierīcēm.</translation>
@@ -9586,7 +9587,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8306885873692337975">Iegūstiet jaunākās funkcijas un drošības uzlabojumus.</translation>
 <translation id="8308024039615003152">Pļava</translation>
 <translation id="8308179586020895837">Vaicāt, vai vietne <ph name="HOST" /> vēlas piekļūt kamerai</translation>
-<translation id="830868413617744215">Beta</translation>
+<translation id="830868413617744215">Beta versija</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> cilnes</translation>
 <translation id="831207808878314375">Definīcija</translation>
 <translation id="8312841338723044391">TIEŠRAIDE</translation>

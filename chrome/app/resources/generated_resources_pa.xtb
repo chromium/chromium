@@ -2015,7 +2015,6 @@
 <translation id="252513908494776481">ਇਸ ਟੈਬ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="2525746158911982776">ਅੱਪਡੇਟ ਅਸਫਲ ਰਿਹਾ ਕਿਉਂਕਿ ਸਿਸਟਮ ਵਿੱਚ ਲੋੜੀਂਦੀ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2525842906387880861">ਤੁਹਾਨੂੰ ਇਸ ਪੰਨੇ 'ਤੇ ਦੁਬਾਰਾ ਸੁਝਾਅ ਨਹੀਂ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
-<translation id="2526346836766369775">ਨਵੀਂ ਆਇਸੋਲੇਟਿਡ ਟੈਬ</translation>
 <translation id="2526590354069164005">ਡੈਸਕਟਾਪ</translation>
 <translation id="2526619973349913024">ਅੱਪਡੇਟ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2527167509808613699">ਕਿਸੇ ਵੀ ਪ੍ਰਕਾਰ ਦਾ ਕਨੈਕਸ਼ਨ</translation>
@@ -2286,6 +2285,7 @@
 <translation id="2731971182069536520">ਅਗਲੀ ਵਾਰ ਜਦ ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋਗੇ, ਤਾਂ ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇੱਕ ਵਾਰ ਅੱਪਡੇਟ ਕਰੇਗਾ, ਜਿਸ ਨਾਲ ਤੁਹਾਡਾ ਸਥਾਨਕ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ।</translation>
 <translation id="2733248615007838252">ਥੰਬਸ ਅੱਪ ਇਹ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਇਹ ਨਤੀਜੇ ਪਸੰਦ ਹਨ।</translation>
 <translation id="27349076983469322">ਹਲਕਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
+<translation id="2735081931800992557">PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਪੜ੍ਹੋ ਅਤੇ ਦਿਖਾਓ</translation>
 <translation id="2735712963799620190">ਸਮਾਂ ਨਿਯਤ ਕਰੋ</translation>
 <translation id="2737363922397526254">ਸਮੇਟੋ ...</translation>
 <translation id="2737719817922589807">ਬੁੱਕਮਾਰਕ ਅਤੇ ਸੂਚੀਆਂ</translation>
@@ -3705,6 +3705,7 @@
 <translation id="3771294271822695279">ਵੀਡੀਓ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3771721161825963003">ਟੈਬਾਂ ਨੂੰ ਖੜ੍ਹਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਓ</translation>
 <translation id="3771851622616482156">ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਸਮੇਤ, ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="3772951945682043324">ਕੋਈ ਹਾਲੀਆ ਬੰਦ ਕੀਤੀ ਟੈਬ ਨਹੀਂ ਹੈ</translation>
 <translation id="3774059845329307709">ਸੀਰੀਅਲ ਨੰਬਰ</translation>
 <translation id="3774166835015494435">ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="3775432569830822555">SSL ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
@@ -5894,7 +5895,6 @@
 <translation id="5463348003600590648">ਸੁਝਾਅ ਬੰਦ ਕਰੋ</translation>
 <translation id="5463625433003343978">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="5463856536939868464">ਮੀਨੂ ਵਿੱਚ ਲੁਕਾਏ ਗਏ ਬੁੱਕਮਾਰਕ ਹਨ</translation>
-<translation id="5465214111614807935">ਨਵੀਂ &amp;ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋ</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” ਪੇਸਟ ਕਰਕੇ ਖੋਜੋ</translation>
 <translation id="5466721587278161554">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਬੁੱਕਮਾਰਕ ਬਾਰ, ਐਪ ਮੀਨੂ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ ਅਤੇ ਸਿੰਕ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਅੱਪਡੇਟ ਹੋ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -7051,7 +7051,6 @@
 <translation id="6379228010899751161">ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਨੂੰ ਕਦੇ ਵੀ ਵਰਤ ਸਕੋ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6379827283296619736">ਨਹੀਂ, ਇਸ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6380618366311601172">Gemini ਉਨ੍ਹਾਂ ਕਾਰਜਾਂ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕਰ ਸਕੇਗਾ, ਜਿਨ੍ਹਾਂ ਲਈ <ph name="DOMAIN" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
-<translation id="6383321659284013430">ਨਵੀਂ &amp;ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋ</translation>
 <translation id="6383382161803538830">ਇਸ ਪੰਨੇ 'ਤੇ ਪੜ੍ਹਨ ਦਾ ਮੋਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="638418309848716977">ਸਮਰਥਿਤ ਲਿੰਕ</translation>
 <translation id="6384275966486438344">ਆਪਣੀਆਂ ਖੋਜ ਸੈਟਿੰਗਾਂ ਨੂੰ ਇਸ ਵਿੱਚ ਬਦਲੋ: <ph name="SEARCH_HOST" /></translation>
@@ -7086,6 +7085,7 @@
 <translation id="6406708970972405507">ਸੈਟਿੰਗਾਂ - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, ਅਤੇ <ph name="WEBSITE_3" /> ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">ਚਿੱਤਰ ਫਾਈਲਾਂ</translation>
 <translation id="6410328738210026208">ਚੈਨਲ ਅਤੇ ਪਾਵਰਵਾਸ਼ ਬਦਲੋ</translation>
 <translation id="6410390304316730527">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਜਿਹੇ ਹਮਲਾਵਾਰਾਂ ਤੋਂ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ ਜੋ ਖਰਾਬ ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਪਾਸਵਰਡ, ਫ਼ੋਨ ਨੰਬਰ, ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡਾਂ ਵਰਗੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦਾ ਖੁਲਾਸਾ ਕਰਨ ਵਰਗੇ ਖਤਰਨਾਕ ਕੰਮ ਕਰਕੇ ਤੁਹਾਡੇ ਨਾਲ ਚਾਲਬਾਜ਼ੀ ਕਰ ਸਕਦੇ ਹਨ। ਜੇ ਤੁਸੀਂ ਇਸਨੂੰ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ ਅਣਪਛਾਤੀਆਂ ਅਤੇ ਅਪ੍ਰਸਿੱਧ ਸਾਈਟਾਂ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਸਮੇਂ ਸਾਵਧਾਨ ਰਹੋ।</translation>
@@ -7681,6 +7681,7 @@
 <translation id="6845231585063669905">A ਤੋਂ Z ਤੱਕ</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ <ph name="PRINTER_NAME" /> ਨਾਲ <ph name="FILE_NAME" /> ਨੂੰ ਪ੍ਰਿੰਟ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="6846843854964504403">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ</translation>
+<translation id="6846861364742126526">Gemini ਨਾਲ ਚੈਟ ਕਰਨ ਲਈ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਤੁਹਾਡੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ।</translation>
 <translation id="6847125920277401289">ਜਾਰੀ ਰੱਖਣ ਲਈ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="6850286078059909152">ਲਿਖਤ ਦਾ ਰੰਗ</translation>
 <translation id="6850925512806464982">ਹਰ ਕੋਈ ਇਸ ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਇਸ ਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>

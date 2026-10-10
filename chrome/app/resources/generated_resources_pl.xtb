@@ -1996,7 +1996,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="252513908494776481">Zapytaj o tę kartę</translation>
 <translation id="2525746158911982776">Aktualizacja się nie udała, ponieważ w systemie jest za mało dostępnego miejsca.</translation>
 <translation id="2525842906387880861">Na tej stronie nie zobaczysz już sugestii</translation>
-<translation id="2526346836766369775">Nowa &amp;karta przeglądania prywatnego</translation>
 <translation id="2526590354069164005">Pulpit</translation>
 <translation id="2526619973349913024">Sprawdź dostępność aktualizacji</translation>
 <translation id="2527167509808613699">Dowolny rodzaj połączenia</translation>
@@ -2267,6 +2266,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2731971182069536520">Po następnym uruchomieniu urządzenia administrator wykona jednorazową aktualizację, która usunie Twoje dane lokalne.</translation>
 <translation id="2733248615007838252">Opcja Lubię powoduje przesłanie opinii z informacją, że te wyniki Ci się podobają.</translation>
 <translation id="27349076983469322">Jasne tło</translation>
+<translation id="2735081931800992557">Odczytywanie i wyświetlanie plików PDF</translation>
 <translation id="2735712963799620190">Harmonogram</translation>
 <translation id="2737363922397526254">Zwiń...</translation>
 <translation id="2737719817922589807">&amp;Zakładki i listy</translation>
@@ -3681,6 +3681,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3771294271822695279">Pliki wideo</translation>
 <translation id="3771721161825963003">Pokaż karty w pionie</translation>
 <translation id="3771851622616482156">Wylogujemy Cię z tej strony, także na otwartych kartach</translation>
+<translation id="3772951945682043324">Brak ostatnio zamkniętych kart</translation>
 <translation id="3774059845329307709">Numer seryjny</translation>
 <translation id="3774166835015494435">Najnowsze zdjęcia i powiadomienia</translation>
 <translation id="3775432569830822555">Certyfikat serwera SSL</translation>
@@ -5866,7 +5867,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5463348003600590648">Wyłącz sugestie</translation>
 <translation id="5463625433003343978">Szukam urządzeń...</translation>
 <translation id="5463856536939868464">Menu zawierające ukryte zakładki</translation>
-<translation id="5465214111614807935">Nowe okno przeglądania prywatnego</translation>
 <translation id="5466374726908360271">&amp;Wklej i wyszukaj „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Twoje grupy kart są zapisywane na pasku zakładek i w menu aplikacji. Jeśli masz włączoną synchronizację, są one aktualizowane na wszystkich urządzeniach, na których się logujesz</translation>
 <translation id="5467207440419968613">Zablokowano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7024,7 +7024,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6379228010899751161">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Nie, kontynuuj pracę w tym profilu</translation>
 <translation id="6380618366311601172">Gemini nie będzie w stanie wykonywać zadań, które wymagają zalogowania się na <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nowe okno przeglądania prywatnego</translation>
 <translation id="6383382161803538830">Tryb czytania jest niedostępny na tej stronie</translation>
 <translation id="638418309848716977">Obsługiwane linki</translation>
 <translation id="6384275966486438344">Zmiana ustawień wyszukiwania na: <ph name="SEARCH_HOST" /></translation>
@@ -7059,6 +7058,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6406708970972405507">Ustawienia – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Zezwolono na zapisywanie danych na urządzeniu</translation>
 <translation id="6408118934673775994">Odczytywanie i modyfikowanie Twoich danych na: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Pliki graficzne</translation>
 <translation id="6410328738210026208">Zmień kanał i wykonaj Powerwash</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
@@ -7654,6 +7654,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6845231585063669905">A–Z</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” chce wydrukować plik <ph name="FILE_NAME" /> na drukarce <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Resetowanie bezpieczeństwa</translation>
+<translation id="6846861364742126526">Używaj mikrofonu do czatowania z Gemini. Nie używamy Twoich danych do ulepszania modeli generatywnej AI.</translation>
 <translation id="6847125920277401289">Aby kontynuować, zwolnij miejsce</translation>
 <translation id="6850286078059909152">Kolor tekstu</translation>
 <translation id="6850925512806464982">Wszyscy natychmiast utracą dostęp do tej grupy kart i zostanie ona usunięta ze wszystkich urządzeń</translation>

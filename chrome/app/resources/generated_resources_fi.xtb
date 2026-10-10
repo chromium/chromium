@@ -2014,7 +2014,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="252513908494776481">Kysy tästä välilehdestä</translation>
 <translation id="2525746158911982776">Päivitys epäonnistui, koska järjestelmässä ei ole tarpeeksi tallennustilaa.</translation>
 <translation id="2525842906387880861">Et enää näe ehdotuksia enää tällä sivulla</translation>
-<translation id="2526346836766369775">Uusi eristetty &amp;välilehti</translation>
 <translation id="2526590354069164005">Työpöytä</translation>
 <translation id="2526619973349913024">Tarkista päivitykset</translation>
 <translation id="2527167509808613699">Mikä tahansa yhteys</translation>
@@ -2285,6 +2284,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2731971182069536520">Seuraavan kerran kun käynnistät laitteen uudelleen, järjestelmänvalvoja tekee kertaluontoisen päivityksen, joka poistaa paikallisen datasi.</translation>
 <translation id="2733248615007838252">Tykkään-painike lähettää palautetta tuloksista tykkäämisestä.</translation>
 <translation id="27349076983469322">Vaalea tausta</translation>
+<translation id="2735081931800992557">lukea ja näyttää PDF-tiedostoja</translation>
 <translation id="2735712963799620190">Aikataulu</translation>
 <translation id="2737363922397526254">Tiivistä...</translation>
 <translation id="2737719817922589807">&amp;Kirjanmerkit ja listat</translation>
@@ -3703,6 +3703,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3771294271822695279">Videotiedostot </translation>
 <translation id="3771721161825963003">Näytä välilehdet pystysuunnassa</translation>
 <translation id="3771851622616482156">Sinut kirjataan ulos tältä sivustolta, myös avoimilta välilehdiltä</translation>
+<translation id="3772951945682043324">Ei äskettäin suljettuja välilehtiä</translation>
 <translation id="3774059845329307709">Sarjanumero</translation>
 <translation id="3774166835015494435">Viimeisimmät kuvat ja ilmoitukset</translation>
 <translation id="3775432569830822555">SSL-palvelinvarmenne</translation>
@@ -5890,7 +5891,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5463348003600590648">Poista ehdotukset käytöstä</translation>
 <translation id="5463625433003343978">Haetaan laitteita…</translation>
 <translation id="5463856536939868464">Piilotetut kirjanmerkit sisältävä valikko</translation>
-<translation id="5465214111614807935">Uusi &amp;eristetty selainikkuna</translation>
 <translation id="5466374726908360271">Liitä ja tee haku <ph name="SEARCH_TERMS" /></translation>
 <translation id="5466721587278161554">Välilehtiryhmät tallennetaan kirjanmerkkipalkkiin ja sovellusvalikkoon, ja ne päivitetään kaikilla sisäänkirjautuneilla laitteilla, jos synkronointi on päällä</translation>
 <translation id="5467207440419968613">Estetty: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6583,6 +6583,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6006484371116297560">Perinteinen</translation>
 <translation id="6007053304250788613">Vain yhden näytön voi jättää pois peilaustilasta</translation>
 <translation id="6007240208646052708">Puhehaku ei ole käytettävissä kielelläsi.</translation>
+<translation id="6007858579659393165">Välilehdillä on uusi läpinäkyvä ulkoasu</translation>
 <translation id="6010651352520077187">Kun tämä on päällä, Google Kääntäjä tarjoaa sivustojen kääntämistä haluamallesi kielelle. Se voi myös kääntää sivustoja automaattisesti.</translation>
 <translation id="6011193465932186973">Sormenjälki</translation>
 <translation id="6011308810877101166">Paranna hakuehdotuksia</translation>
@@ -7047,7 +7048,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6379228010899751161">Vahvista henkilöllisyytesi, jotta voit aina käyttää tililläsi olevia salasanoja: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ei, jatka työskentelyä tässä profiilissa</translation>
 <translation id="6380618366311601172">Gemini ei voi tehdä asioita, jotka edellyttävät kirjautumista sivustolle <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Uusi &amp;eristetty selainikkuna</translation>
 <translation id="6383382161803538830">Lukutila ei ole käytettävissä tällä sivulla</translation>
 <translation id="638418309848716977">Tuetut linkit</translation>
 <translation id="6384275966486438344">Ota käyttöön seuraava hakukone: <ph name="SEARCH_HOST" /></translation>
@@ -7082,6 +7082,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6406708970972405507">Asetukset – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Datan tallentaminen laitteelle on sallittu</translation>
 <translation id="6408118934673775994">lukea ja muuttaa tietojasi sivustoissa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ja <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Kuvatiedostot </translation>
 <translation id="6410328738210026208">Vaihda kanavaa ja tee Powerwash</translation>
 <translation id="6410390304316730527">Selaussuoja parantaa suojaustasi, jos hyökkääjä yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan haittaohjelmia tai paljastamaan henkilötietoja (esimerkiksi salasanoja, puhelinnumeroita tai credit-kortin tietoja). Jos laitat sen pois päältä, ole varovainen tuntemattomilla tai huonomaineisilla sivustoilla.</translation>
@@ -7675,6 +7676,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6845231585063669905">A–Z</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> haluaa tulostaa tiedoston <ph name="FILE_NAME" /> tulostimella <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Turvallinen nollaus</translation>
+<translation id="6846861364742126526">Keskustele Geminin kanssa mikrofonin avulla. Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="6847125920277401289">Vapauta tilaa jatkaaksesi</translation>
 <translation id="6850286078059909152">Tekstin väri</translation>
 <translation id="6850925512806464982">Kaikki menettävät välittömästi pääsyn tähän välilehtiryhmään, ja se poistetaan kaikilta laitteilta</translation>
@@ -9473,6 +9475,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> hallinnoi tätä profiilia ja edellyttää, että luot erillisen profiilin tilille <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Profiileja ei löytynyt. Kokeile skannata QR-koodi laitteen kameralla tai lisää operaattorilta saamasi aktivointikoodi.</translation>
 <translation id="8214489666383623925">Avaa tiedosto...</translation>
+<translation id="8214771296778317256">Valitse haluamasi välilehtityyli täältä</translation>
 <translation id="8215129063232901118">Hyödynnä puhelimesi ominaisuuksia: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Korostuksen osoitin</translation>
 <translation id="8217399928341212914">Estä edelleen useiden tiedostojen automaattinen lataaminen</translation>
@@ -10718,6 +10721,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9154194610265714752">Päivitetty</translation>
 <translation id="915485121129452731">Tablettikynä</translation>
 <translation id="9155344700756733162">Poista värin valinta</translation>
+<translation id="9155515662479003830">Voit milloin tahansa vaihtaa takaisin klassiseen tyyliin asetuksista</translation>
 <translation id="9157096865782046368">0,8 sekuntia</translation>
 <translation id="9157697743260533322">Automaattisten päivitysten käyttöönotto kaikille käyttäjille epäonnistui (käynnistysvirhe valmistelun aikana: <ph name="ERROR_NUMBER" />).</translation>
 <translation id="9157915340203975005">Tulostimen kansi on auki</translation>

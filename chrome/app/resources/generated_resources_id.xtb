@@ -2014,7 +2014,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="252513908494776481">Tanyakan tentang tab ini</translation>
 <translation id="2525746158911982776">Update gagal karena sistem tidak memiliki ruang penyimpanan yang cukup.</translation>
 <translation id="2525842906387880861">Anda tidak akan melihat saran di halaman ini lagi</translation>
-<translation id="2526346836766369775">&amp;Tab Terisolasi Baru</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Periksa update</translation>
 <translation id="2527167509808613699">Jenis sambungan apa pun</translation>
@@ -2285,6 +2284,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2731971182069536520">Saat berikutnya Anda memulai ulang perangkat, administrator Anda akan menjalankan update satu kali yang akan menghapus data lokal Anda.</translation>
 <translation id="2733248615007838252">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai hasil ini.</translation>
 <translation id="27349076983469322">Latar belakang terang</translation>
+<translation id="2735081931800992557">Membaca dan menampilkan file PDF</translation>
 <translation id="2735712963799620190">Jadwal</translation>
 <translation id="2737363922397526254">Ciutkan...</translation>
 <translation id="2737719817922589807">&amp;Bookmark dan daftar</translation>
@@ -3703,6 +3703,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3771294271822695279">File Video</translation>
 <translation id="3771721161825963003">Tampilkan Tab Secara Vertikal</translation>
 <translation id="3771851622616482156">Anda akan logout dari situs ini, termasuk di tab yang terbuka</translation>
+<translation id="3772951945682043324">Tidak ada tab yang baru ditutup</translation>
 <translation id="3774059845329307709">Nomor seri</translation>
 <translation id="3774166835015494435">Foto terbaru dan notifikasi</translation>
 <translation id="3775432569830822555">Sertifikat Server SSL</translation>
@@ -5893,7 +5894,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5463348003600590648">Nonaktifkan saran</translation>
 <translation id="5463625433003343978">Mencari perangkat ...</translation>
 <translation id="5463856536939868464">Menu yang berisi bookmark tersembunyi</translation>
-<translation id="5465214111614807935">&amp;Jendela terisolasi baru</translation>
 <translation id="5466374726908360271">Tempel dan telusuri “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Grup tab Anda disimpan di kolom bookmark, menu aplikasi, dan diperbarui di semua perangkat yang Anda gunakan untuk login jika sinkronisasi diaktifkan</translation>
 <translation id="5467207440419968613">Memblokir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7050,7 +7050,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6379228010899751161">Verifikasi diri Anda untuk memastikan Anda selalu dapat menggunakan sandi di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Tidak, tetap gunakan profil ini untuk bekerja</translation>
 <translation id="6380618366311601172">Gemini tidak akan dapat menyelesaikan tugas yang memerlukan login di <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">&amp;Jendela Terisolasi Baru</translation>
 <translation id="6383382161803538830">Mode baca tidak tersedia di halaman ini</translation>
 <translation id="638418309848716977">Link yang didukung</translation>
 <translation id="6384275966486438344">Ubah setelan penelusuran Anda menjadi: <ph name="SEARCH_HOST" /></translation>
@@ -7085,6 +7084,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6406708970972405507">Setelan - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Diizinkan menyimpan data di perangkat Anda</translation>
 <translation id="6408118934673775994">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, dan <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">File Gambar</translation>
 <translation id="6410328738210026208">Ganti saluran dan Powerwash</translation>
 <translation id="6410390304316730527">Safe Browsing akan melindungi Anda dari penyerang yang dapat mengelabui Anda agar melakukan sesuatu yang berbahaya, misalnya menginstal software berbahaya atau mengungkap informasi pribadi seperti sandi, nomor telepon, atau kartu kredit. Jika dinonaktifkan, harap berhati-hati saat mengakses situs tidak dikenal atau tidak tepercaya.</translation>
@@ -7678,6 +7678,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6845231585063669905">A ke Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ingin mencetak <ph name="FILE_NAME" /> dengan <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Reset keamanan</translation>
+<translation id="6846861364742126526">Gunakan mikrofon untuk melakukan percakapan dengan Gemini. Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="6847125920277401289">Kosongkan ruang untuk melanjutkan</translation>
 <translation id="6850286078059909152">Warna teks</translation>
 <translation id="6850925512806464982">Semua orang akan segera kehilangan akses ke grup tab ini, dan grup ini akan dihapus dari semua perangkat</translation>

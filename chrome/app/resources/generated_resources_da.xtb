@@ -2016,7 +2016,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="252513908494776481">Stil spørgsmål om denne fane</translation>
 <translation id="2525746158911982776">Opdateringen mislykkedes, fordi systemet ikke har tilstrækkelig lagerplads.</translation>
 <translation id="2525842906387880861">Du får ikke længere vist forslag på denne side</translation>
-<translation id="2526346836766369775">Ny isoleret &amp;fane</translation>
 <translation id="2526590354069164005">Skrivebord</translation>
 <translation id="2526619973349913024">Søg efter opdatering</translation>
 <translation id="2527167509808613699">Enhver form for forbindelse</translation>
@@ -2287,6 +2286,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2731971182069536520">Næste gang du genstarter din enhed, udfører din administrator en engangsopdatering, der sletter dine lokale data.</translation>
 <translation id="2733248615007838252">Hvis du giver et like, indsendes der feedback om, at du kan lide disse resultater.</translation>
 <translation id="27349076983469322">Lys baggrund</translation>
+<translation id="2735081931800992557">Læse og vise PDF-filer</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
 <translation id="2737363922397526254">Skjul...</translation>
 <translation id="2737719817922589807">Bogmærker og lister</translation>
@@ -3705,6 +3705,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3771294271822695279">Videofiler</translation>
 <translation id="3771721161825963003">Vis faner lodret</translation>
 <translation id="3771851622616482156">Du logges ud af dette website, også i åbne faner</translation>
+<translation id="3772951945682043324">Der er ingen nyligt lukkede faner</translation>
 <translation id="3774059845329307709">Serienummer</translation>
 <translation id="3774166835015494435">Seneste billeder og notifikationer</translation>
 <translation id="3775432569830822555">SSL-servercertifikat</translation>
@@ -5895,7 +5896,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5463348003600590648">Deaktiver forslag</translation>
 <translation id="5463625433003343978">Finder enheder...</translation>
 <translation id="5463856536939868464">Menu med skjulte bogmærker</translation>
-<translation id="5465214111614807935">Nyt &amp;isoleret vindue</translation>
 <translation id="5466374726908360271">Ind&amp;sæt, og søg efter "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Dine fanegrupper gemmes på bogmærkelinjen og i appmenuen, og de opdateres på alle de enheder, hvor du er logget ind, hvis synkronisering er aktiveret</translation>
 <translation id="5467207440419968613">Adgangen til <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev blokeret</translation>
@@ -6588,6 +6588,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6006484371116297560">Klassisk</translation>
 <translation id="6007053304250788613">Der kan kun ekskluderes én skærm i Spejl-tilstand</translation>
 <translation id="6007240208646052708">Talesøgning er ikke tilgængelig på dit sprog.</translation>
+<translation id="6007858579659393165">Faner har fået et nyt gennemsigtigt udseende</translation>
 <translation id="6010651352520077187">Når det er aktiveret, tilbyder Google Oversæt at oversætte websites til dit foretrukne sprog. Det kan også oversætte websites automatisk.</translation>
 <translation id="6011193465932186973">Fingeraftryk</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
@@ -7052,7 +7053,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6379228010899751161">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Nej. Fortsæt med at arbejde på denne profil</translation>
 <translation id="6380618366311601172">Gemini kan ikke udføre opgaver, der kræver, at du er logget ind på <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nyt &amp;isoleret vindue</translation>
 <translation id="6383382161803538830">Læsetilstand er ikke tilgængelig på denne side</translation>
 <translation id="638418309848716977">Understøttede links</translation>
 <translation id="6384275966486438344">Skifte dine søgeindstillinger til: <ph name="SEARCH_HOST" /></translation>
@@ -7087,6 +7087,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6406708970972405507">Indstillinger – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Har tilladelse til at gemme data på din enhed</translation>
 <translation id="6408118934673775994">Læse og redigere dine data på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Billedfiler</translation>
 <translation id="6410328738210026208">Skift kanal og powerwash</translation>
 <translation id="6410390304316730527">Beskyttet browsing beskytter dig mod hackere, som kan narre dig til at gøre uhensigtsmæssige ting, f.eks. at installere skadelig software eller afsløre personlige oplysninger som adgangskoder, telefonnumre eller kreditkortnumre. Hvis du deaktivere funktionen, skal du være ekstra forsigtig, når du besøger websites, du ikke kender eller har tillid til.</translation>
@@ -7682,6 +7683,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6845231585063669905">A til Å</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" anmoder om at udskrive <ph name="FILE_NAME" /> via <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Sikkerhedsnulstilling</translation>
+<translation id="6846861364742126526">Brug din mikrofon til at chatte med Gemini. Dine data anvendes ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="6847125920277401289">Frigør plads for at fortsætte</translation>
 <translation id="6850286078059909152">Tekstfarve</translation>
 <translation id="6850925512806464982">Alle mister øjeblikkeligt adgangen til denne fanegruppe, og den slettes fra alle enheder</translation>
@@ -9480,6 +9482,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8212601853154459483">Denne profil administreres af <ph name="PROFILE_MANAGER" /> og kræver, at du opretter en separat profil for kontoen <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Der blev ikke fundet nogen profiler. Prøv at scanne QR-koden med kameraet på din enhed, eller angiv den aktiveringskode, du har fået af dit mobilselskab.</translation>
 <translation id="8214489666383623925">Åbn fil...</translation>
+<translation id="8214771296778317256">Vælg din foretrukne fanestil her</translation>
 <translation id="8215129063232901118">Få adgang til din telefons funktioner via din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Fremhæv markør</translation>
 <translation id="8217399928341212914">Fortsæt med at blokere automatiske downloads af flere filer</translation>
@@ -10726,6 +10729,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9154194610265714752">Opdateret</translation>
 <translation id="915485121129452731">Tablet med styluspen</translation>
 <translation id="9155344700756733162">Fjern markeringen ved farven</translation>
+<translation id="9155515662479003830">Du kan altid skifte tilbage til den klassiske stil i indstillingerne</translation>
 <translation id="9157096865782046368">0,8 sekunder</translation>
 <translation id="9157697743260533322">Automatiske opdateringer kunne ikke konfigureres for alle brugere (fejl ved forhåndsopstart: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Lågen på printeren er åben</translation>

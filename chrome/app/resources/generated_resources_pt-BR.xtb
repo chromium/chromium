@@ -1598,6 +1598,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2215070081105889450">Para compartilhar áudio, compartilhe uma guia ou tela</translation>
 <translation id="2217208085547223783">Confiança</translation>
 <translation id="2218019600945559112">Mouse e touchpad</translation>
+<translation id="2218116022473625437">Nas configurações, você pode desativar o destaque de texto, modificar a voz e mudar a aparência da página.</translation>
 <translation id="2218515861914035131">Colar como texto sem formatação</translation>
 <translation id="2219007152108311874">Perguntar sempre</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
@@ -2015,7 +2016,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="252513908494776481">Pergunte sobre esta guia</translation>
 <translation id="2525746158911982776">Falha na atualização por falta de espaço de armazenamento no sistema.</translation>
 <translation id="2525842906387880861">Você não verá mais sugestões nesta página</translation>
-<translation id="2526346836766369775">Nova &amp;guia isolada</translation>
 <translation id="2526590354069164005">Área de trabalho</translation>
 <translation id="2526619973349913024">Verificar atualizações</translation>
 <translation id="2527167509808613699">Qualquer tipo de conexão</translation>
@@ -3774,6 +3774,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3812525830114410218">Certificado inválido</translation>
 <translation id="3813296892522778813">Se você não encontrar o que está procurando, acesse a <ph name="BEGIN_LINK_CHROMIUM" />Ajuda do Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Idioma usado para traduzir páginas e nas Respostas rápidas</translation>
+<translation id="3815509884387832993">Ouça esta página como se fosse um podcast com a reprodução com IA usando o botão Ativar Reprodução com IA na barra de ferramentas do Modo de Leitura</translation>
 <translation id="3815668647912194650">Mantenha esse grupo para adicionar guias mais tarde ou saia dele se não quiser mais ter acesso.</translation>
 <translation id="3816118180265633665">Cores do Chrome</translation>
 <translation id="3817524650114746564">Abre as configurações de proxy do computador</translation>
@@ -4158,6 +4159,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4109135793348361820">Mover janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (off-line)</translation>
+<translation id="4112282889480354965">Extensões e habilidades</translation>
 <translation id="4113743276555482284">Senha do arquivo</translation>
 <translation id="4114524937989710624">Você está vendo arquivos sugeridos para voltar de forma simples à sua atividade mais recente no Google Drive.
         <ph name="BREAK" />
@@ -5896,7 +5898,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5463348003600590648">Desativar sugestões</translation>
 <translation id="5463625433003343978">Localizando dispositivos…</translation>
 <translation id="5463856536939868464">Menu contendo favoritos ocultos</translation>
-<translation id="5465214111614807935">Nova Janela &amp;Isolada</translation>
 <translation id="5466374726908360271">Colar e pesquisar “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5466721587278161554">Seus grupos de guias são salvos na barra de favoritos e no menu de apps e atualizados em todos os dispositivos conectados quando a sincronização está ativada</translation>
 <translation id="5467207440419968613">Bloqueados: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6590,6 +6591,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6006484371116297560">Clássico</translation>
 <translation id="6007053304250788613">Apenas uma tela pode ser excluída no modo espelho</translation>
 <translation id="6007240208646052708">A pesquisa por voz no seu idioma não está disponível.</translation>
+<translation id="6007858579659393165">As guias têm um novo visual transparente</translation>
 <translation id="6010651352520077187">Quando ativado, o Google Tradutor oferece a tradução de sites para seu idioma preferido. Ele também pode traduzir sites automaticamente.</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
@@ -7054,7 +7056,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6379228010899751161">Confirme sua identidade para sempre poder usar as senhas na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Não, continuar trabalhando neste perfil</translation>
 <translation id="6380618366311601172">O Gemini não vai conseguir concluir tarefas que exigem login em <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nova Janela &amp;Isolada</translation>
 <translation id="6383382161803538830">O modo de leitura não está disponível nesta página</translation>
 <translation id="638418309848716977">Links compatíveis</translation>
 <translation id="6384275966486438344">Alterar suas configurações de pesquisa para: <ph name="SEARCH_HOST" /></translation>
@@ -8803,6 +8804,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7702463352133825032">Parar de transmitir para <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarefa</translation>
 <translation id="7705085181312584869">Me ajude a escrever</translation>
+<translation id="7705230242432916648">Ouça esta página como se fosse um podcast com a reprodução com IA</translation>
 <translation id="7705276765467986571">Não foi possível carregar o modelo do favorito.</translation>
 <translation id="7705334495398865155">Coloque o ID do seu hardware (BSSID) em ordem aleatória para evitar que outras pessoas rastreiem este dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -9484,6 +9486,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8212601853154459483">Este perfil é gerenciado por <ph name="PROFILE_MANAGER" />, e você precisa criar outro para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8212792694174629011">Nenhum perfil foi encontrado. Tente ler o QR code usando a câmera do dispositivo ou digite o código de ativação enviado pela operadora.</translation>
 <translation id="8214489666383623925">Abrir arquivo...</translation>
+<translation id="8214771296778317256">Escolha aqui o estilo de guia de sua preferência</translation>
 <translation id="8215129063232901118">Acessar as funcionalidades do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Destacar ponteiro</translation>
 <translation id="8217399928341212914">Continuar a bloquear downloads automáticos de vários arquivos</translation>
@@ -10231,6 +10234,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8780123805589053431">Ver descrições de imagens do Google</translation>
 <translation id="8780443667474968681">A pesquisa por voz foi desativada.</translation>
 <translation id="8781834595282316166">Nova guia no grupo</translation>
+<translation id="878190123554258638"><ph name="SHORTCUT_TITLE" />. Use as setas para a esquerda e para a direita para mover o atalho. Pressione Enter ou Esc para concluir.</translation>
 <translation id="8781980678064919987">Desligar quando a tampa estiver fechada</translation>
 <translation id="8783171585655659524">Incluir captura de tela</translation>
 <translation id="8785622406424941542">Stylus</translation>
@@ -10729,6 +10733,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="915485121129452731">Tablet com caneta</translation>
 <translation id="9155344700756733162">Desmarcar cor</translation>
+<translation id="9155515662479003830">Você pode voltar para o estilo clássico a qualquer momento, basta acessar as configurações</translation>
 <translation id="9157096865782046368">0,8 segundo</translation>
 <translation id="9157697743260533322">Falha ao configurar atualizações automáticas para todos os usuários (erro de inicialização de simulação: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">A porta da impressora está aberta</translation>

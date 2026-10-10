@@ -2003,7 +2003,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="252513908494776481">Postavite pitanje o ovoj kartici</translation>
 <translation id="2525746158911982776">Ažuriranje nije uspjelo jer sustav nema dovoljno prostora za pohranu.</translation>
 <translation id="2525842906387880861">Na ovoj stranici više vam se neće prikazivati prijedlozi</translation>
-<translation id="2526346836766369775">Nova izolirana &amp;kartica</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="2526619973349913024">Provjeri ažuriranja</translation>
 <translation id="2527167509808613699">Bilo koja vrsta veze</translation>
@@ -2274,6 +2273,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2731971182069536520">Prilikom sljedećeg ponovnog pokretanja uređaja vaš će administrator izvršiti jednokratno ažuriranje kojim će se izbrisati vaši lokalni podaci.</translation>
 <translation id="2733248615007838252">Palac gore šalje povratne informacije da vam se ti rezultati sviđaju.</translation>
 <translation id="27349076983469322">Svijetla pozadina</translation>
+<translation id="2735081931800992557">Čitati i prikazivati PDF datoteke</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Sažmi...</translation>
 <translation id="2737719817922589807">&amp;Oznake i popisi</translation>
@@ -3691,6 +3691,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3771294271822695279">Datoteke videozapisa</translation>
 <translation id="3771721161825963003">Prikaži kartice okomito</translation>
 <translation id="3771851622616482156">Odjavit ćete se s te web-lokacije, uključujući prijave na otvorenim karticama</translation>
+<translation id="3772951945682043324">Nema nedavno zatvorenih kartica</translation>
 <translation id="3774059845329307709">Serijski broj</translation>
 <translation id="3774166835015494435">Nedavne fotografije i obavijesti</translation>
 <translation id="3775432569830822555">Certifikat SSL poslužitelja</translation>
@@ -5879,7 +5880,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5463348003600590648">Onemogućite prijedloge</translation>
 <translation id="5463625433003343978">Traženje uređaja...</translation>
 <translation id="5463856536939868464">Izbornik koji sadrži skrivene oznake</translation>
-<translation id="5465214111614807935">Novi izolirani prozor</translation>
 <translation id="5466374726908360271">Za&amp;lijepi i traži pojam "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Vaše grupe kartica spremaju se na traku oznaka i izbornik aplikacija te se ažuriraju na svim uređajima na kojima ste prijavljeni ako je sinkronizacija uključena</translation>
 <translation id="5467207440419968613">Blokirano je sljedeće: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -7033,7 +7033,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6379228010899751161">Potvrdite svoj identitet kako biste uvijek mogli upotrebljavati zaporke na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ne, nastavit ću raditi na ovom profilu</translation>
 <translation id="6380618366311601172">Gemini neće moći izvršiti zadatke koji zahtijevaju prijavu na uslugu <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Novi izolirani prozor</translation>
 <translation id="6383382161803538830">Prozor za čitanje nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržane veze</translation>
 <translation id="6384275966486438344">promijeniti postavke pretraživanja u: <ph name="SEARCH_HOST" /></translation>
@@ -7068,6 +7067,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6406708970972405507">Postavke – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Dopušteno je spremanje podataka na uređaju</translation>
 <translation id="6408118934673775994">pročitati i promijeniti vaše podatke na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="6410328738210026208">Promijeni kanal i pokreni Powerwash</translation>
 <translation id="6410390304316730527">Sigurno pregledavanje štiti vas od napadača koji vas mogu na prijevaru pokušati navesti da napravite nešto opasno kao što je instaliranje zlonamjernog softvera ili otkrivanje osobnih podataka kao što su zaporke, telefonski brojevi ili kreditne kartice. Ako ga isključite, pripazite kada pregledavate nepoznate ili nepouzdane web-lokacije.</translation>
@@ -7665,6 +7665,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6845231585063669905">Od A do Ž</translation>
 <translation id="6846178040388691741">Proširenje "<ph name="EXTENSION_NAME" />" želi ispisati datoteku <ph name="FILE_NAME" /> na pisaču <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Sigurnosno vraćanje na zadano</translation>
+<translation id="6846861364742126526">Upotrijebite mikrofon da biste razgovarali s Geminijem. Vaši se podaci ne upotrebljavaju za poboljšanje modela generativnog AI-ja.</translation>
 <translation id="6847125920277401289">Oslobodite prostor da biste nastavili</translation>
 <translation id="6850286078059909152">Boja teksta</translation>
 <translation id="6850925512806464982">Svi će odmah izgubiti pristup ovoj grupi kartica i izbrisat će se sa svih uređaja</translation>

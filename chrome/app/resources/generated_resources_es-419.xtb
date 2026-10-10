@@ -2002,7 +2002,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="252513908494776481">Pregunta sobre esta pestaña</translation>
 <translation id="2525746158911982776">No se pudo realizar la actualización porque el sistema no tiene suficiente espacio de almacenamiento.</translation>
 <translation id="2525842906387880861">No volverás a ver sugerencias en esta página</translation>
-<translation id="2526346836766369775">Nueva pestaña &amp;aislada</translation>
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2526619973349913024">Verificar actualización</translation>
 <translation id="2527167509808613699">Cualquier tipo de conexión</translation>
@@ -2273,6 +2272,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2731971182069536520">La próxima vez que reinicies el dispositivo, tu administrador realizará una actualización única que borrará tus datos locales.</translation>
 <translation id="2733248615007838252">La opción Me gusta envía comentarios que indican que te gustan estos resultados.</translation>
 <translation id="27349076983469322">Fondo claro</translation>
+<translation id="2735081931800992557">Leer y mostrar archivos PDF</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Contraer...</translation>
 <translation id="2737719817922589807">&amp;Favoritos y listas</translation>
@@ -3691,6 +3691,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3771294271822695279">Archivos de video</translation>
 <translation id="3771721161825963003">Mostrar las pestañas verticalmente</translation>
 <translation id="3771851622616482156">Saldrás de este sitio, incluso si está en pestañas abiertas.</translation>
+<translation id="3772951945682043324">No hay pestañas cerradas recientemente</translation>
 <translation id="3774059845329307709">Número de serie</translation>
 <translation id="3774166835015494435">Notificaciones y fotos recientes</translation>
 <translation id="3775432569830822555">Certificado del servidor SSL</translation>
@@ -5881,7 +5882,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5463348003600590648">Inhabilitar las sugerencias</translation>
 <translation id="5463625433003343978">Buscando dispositivos…</translation>
 <translation id="5463856536939868464">El menú contiene favoritos ocultos.</translation>
-<translation id="5465214111614807935">Nueva &amp;ventana aislada</translation>
 <translation id="5466374726908360271">&amp;Pegar y buscar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5466721587278161554">Tus grupos de pestañas se guardan en la barra de favoritos y el menú de la app, y se actualizan en todos los dispositivos en los que accediste a tu cuenta si la sincronización está activada</translation>
 <translation id="5467207440419968613">Permisos bloqueados: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
@@ -7038,7 +7038,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6379228010899751161">Verifica tu identidad para asegurarte de que siempre puedas usar las contraseñas en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">No, seguir trabajando en este perfil</translation>
 <translation id="6380618366311601172">Gemini no podrá completar tareas que requieran acceder a <ph name="DOMAIN" />.</translation>
-<translation id="6383321659284013430">Nueva &amp;ventana aislada</translation>
 <translation id="6383382161803538830">El modo de lectura no está disponible en esta página</translation>
 <translation id="638418309848716977">Vínculos compatibles</translation>
 <translation id="6384275966486438344">Cambiar la configuración de búsqueda por <ph name="SEARCH_HOST" /></translation>
@@ -7073,6 +7072,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6406708970972405507">Configuración: <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Se pueden guardar datos en tu dispositivo</translation>
 <translation id="6408118934673775994">Leer y modificar tus datos en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y <ph name="WEBSITE_3" /></translation>
+<translation id="640980925764810750"><ph name="MENU_ITEM" />…</translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="6410328738210026208">Cambiar canal y Powerwash</translation>
 <translation id="6410390304316730527">La Navegación segura te protege de los atacantes que pueden engañarte para que hagas algo peligroso, como instalar software o divulgar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). Si la desactivas, ten cuidado cuando navegues en sitios desconocidos o sospechosos.</translation>
@@ -7666,6 +7666,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6845231585063669905">De la A a la Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" quiere imprimir <ph name="FILE_NAME" /> con <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Restablecimiento de seguridad</translation>
+<translation id="6846861364742126526">Usa el micrófono para chatear con Gemini. Tus datos no se usarán para mejorar modelos de IA generativa.</translation>
 <translation id="6847125920277401289">Libera espacio para continuar</translation>
 <translation id="6850286078059909152">Color del texto</translation>
 <translation id="6850925512806464982">Todos los usuarios perderán de inmediato el acceso a este grupo de pestañas, y se borrará de todos los dispositivos</translation>
