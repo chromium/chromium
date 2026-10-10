@@ -95,7 +95,7 @@ class ExtensionSidePanelCoordinator : public SidePanelService::Observer,
   content::WebContents* GetHostWebContentsForTesting() const;
 
   // Deregisters this extension's SidePanelEntry from `registry_`.
-  // To avoid re-entrancy this does not happen automatically in the destructor.
+  // Called automatically in the destructor if the entry is still registered.
   void DeregisterEntry();
 
   // Called when the native view is destroyed.

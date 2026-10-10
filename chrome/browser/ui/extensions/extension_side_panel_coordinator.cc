@@ -104,6 +104,8 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
 }
 
 ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() {
+  DeregisterEntry();
+
   // If the panel was active when its coordinator is destroyed (e.g., due to
   // a tab/window closing), fire the onClosed event.
   if (is_panel_active_) {
@@ -271,13 +273,13 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
 
 SidePanelNativeView ExtensionSidePanelCoordinator::CreateView(
     SidePanelEntryScope& scope) {
+  DCHECK(!host_);
   if (delegate_) {
     host_ = delegate_->CreateHost(side_panel_url_);
   }
 
   if (host_) {
     // Observe the host to dispatch onOpened after its initial load completes.
-    scoped_host_observation_.Reset();
     scoped_host_observation_.Observe(host_.get());
 
     // Handle the containing view calling window.close();

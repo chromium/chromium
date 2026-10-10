@@ -509,6 +509,50 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   EXPECT_FALSE(GetActionItemForExtension(extension.get(), browser_actions));
 }
 
+// Tests that closing a window with an extension side panel cleanly tears down
+// the coordinator and deregisters the entry from the registry without
+// use-after-free. Regression test for
+// https://issues.chromium.org/issues/570026889.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       CloseWindowWithCachedSidePanelCleanTeardown) {
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // Create a second browser window so that closing it does not exit the test.
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(second_browser);
+
+  SidePanelRegistry* const second_registry =
+      SidePanelRegistry::From(second_browser);
+  ASSERT_TRUE(second_registry);
+  SidePanelEntry* const entry = second_registry->GetEntryForKey(extension_key);
+  ASSERT_TRUE(entry);
+
+  ExtensionSidePanelCoordinator* const coordinator =
+      ExtensionSidePanelManager::From(second_browser)
+          ->GetExtensionCoordinatorForTesting(extension->id());
+  ASSERT_TRUE(coordinator);
+
+  // Populate a cached view while the side panel is closed. Because the side
+  // panel is closed, TearDownPreBrowserWindowDestruction() is a no-op
+  // during window closure, ensuring that ~ExtensionSidePanelCoordinator() is
+  // what deregisters the entry and tears down the cached view cleanly before
+  // ExtensionViewHost is destroyed.
+  entry->CacheView(entry->GetContent());
+  EXPECT_TRUE(entry->CachedView());
+  EXPECT_TRUE(coordinator->GetHostWebContentsForTesting());
+
+  // Close the browser window. During teardown of BrowserWindowFeatures,
+  // ExtensionSidePanelManager is destroyed before SidePanelRegistry.
+  // The coordinator's destructor must deregister the entry and destroy the
+  // cached view cleanly while ExtensionViewHost is still alive.
+  CloseBrowserSynchronously(second_browser);
+}
+
 // Test that an extension's SidePanelEntry, coordinator, and action item are not
 // registered for an incognito window or tab when the extension is not allowed
 // to run in incognito.
