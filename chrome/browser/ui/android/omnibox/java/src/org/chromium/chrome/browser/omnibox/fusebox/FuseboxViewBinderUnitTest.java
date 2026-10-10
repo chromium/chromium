@@ -1041,6 +1041,24 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void listItems_truncateAfterTwoLines() {
+        PopupButtonData tool =
+                new PopupButtonData.Builder()
+                        .setType(PopupButtonType.TOOL)
+                        .setText("pinned tool")
+                        .build();
+        mModel.set(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST, List.of(tool));
+
+        TextView staticRowText = mPopup.mMoreOptionsButton.findViewById(R.id.action_text);
+        TextView dynamicRowText =
+                mPopup.mPinnedToolsContainer.getChildAt(0).findViewById(R.id.action_text);
+        for (TextView text : List.of(staticRowText, dynamicRowText)) {
+            assertEquals(2, text.getMaxLines());
+            assertEquals(TextUtils.TruncateAt.END, text.getEllipsize());
+        }
+    }
+
+    @Test
     public void recentTabsEnabled_withFavicon() {
         Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.BLUE);
         PopupButtonData dataWithFavicon =

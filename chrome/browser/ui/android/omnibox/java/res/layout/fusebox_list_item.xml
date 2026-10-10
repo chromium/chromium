@@ -37,6 +37,8 @@ found in the LICENSE file.
             android:duplicateParentState="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:textAlignment="viewStart"/>
 
         <TextView
