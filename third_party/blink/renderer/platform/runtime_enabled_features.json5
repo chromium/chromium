@@ -711,6 +711,14 @@
       status: "experimental",
     },
     {
+      // Restricts the `display` adjustment in LayoutTheme::AdjustStyle() to
+      // elements which have a native widget appearance, so that `appearance`
+      // no longer changes `display` on other elements.
+      // See https://crbug.com/568576344 and https://crbug.com/408002786.
+      name: "AppearanceDisplayAdjustmentForWidgetsOnly",
+      status: "stable",
+    },
+    {
       name: "ApproximateGeolocationPermission",
       // This feature is controlled by the kApproximateGeolocationPermission
       // base::Feature in the browser process.
@@ -3234,13 +3242,6 @@
       // flag was added in M148, and can be removed in M150.
       name: "FixMapElementEmptyNameBug",
       status: "stable",
-    },
-    {
-      // This fixes the suppression of markers for <details> and
-      // list items for appearance:auto.
-      // This was added in M146 and can be removed after M148.
-      // Note that as-is, this flag triggers crbug.com/408002786.
-      name: "FixMarkerSuppressionForAppearanceAuto",
     },
     {
       // Guard the kStart / kEnd / kStartAndEnd branches of

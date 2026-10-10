@@ -156,6 +156,18 @@ void ResetPadding(ComputedStyleBuilder& builder) {
   builder.ResetPaddingLeft();
 }
 
+// An element laid out as a widget keeps the adjusted display even when author
+// styles suppress its effective appearance, while `appearance` on an element
+// without a native appearance must not affect `display` at all.
+bool IsLaidOutAsWidget(const Element& element, AppearanceValue appearance) {
+  if (!RuntimeEnabledFeatures::
+          AppearanceDisplayAdjustmentForWidgetsOnlyEnabled()) {
+    return true;
+  }
+  return appearance != AppearanceValue::kNone ||
+         AutoAppearanceFor(element) != AppearanceValue::kNone;
+}
+
 bool SystemAccentColorAllowed() {
   return RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() ||
          RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled();
@@ -278,35 +290,28 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
 
 void LayoutTheme::AdjustStyle(const Element& element,
                               ComputedStyleBuilder& builder) {
-  AppearanceValue original_appearance = builder.Appearance();
-  DCHECK_NE(original_appearance, AppearanceValue::kNone);
+  DCHECK_NE(builder.Appearance(), AppearanceValue::kNone);
   AppearanceValue appearance = AdjustAppearanceWithAuthorStyle(
-      AdjustAppearanceWithElementType(original_appearance, element), builder);
+      AdjustAppearanceWithElementType(builder.Appearance(), element), builder);
   builder.SetEffectiveAppearance(appearance);
   DCHECK_NE(appearance, AppearanceValue::kAuto);
 
-  if (RuntimeEnabledFeatures::FixMarkerSuppressionForAppearanceAutoEnabled() &&
-      appearance == AppearanceValue::kNone &&
-      original_appearance == AppearanceValue::kAuto) {
-    return;
-  }
-
-  // Force inline and table display styles to be inline-block (except for table-
-  // which is block)
-  if (builder.Display() == EDisplay::kInline ||
-      builder.Display() == EDisplay::kInlineTable ||
-      builder.Display() == EDisplay::kTableRowGroup ||
-      builder.Display() == EDisplay::kTableHeaderGroup ||
-      builder.Display() == EDisplay::kTableFooterGroup ||
-      builder.Display() == EDisplay::kTableRow ||
-      builder.Display() == EDisplay::kTableColumnGroup ||
-      builder.Display() == EDisplay::kTableColumn ||
-      builder.Display() == EDisplay::kTableCell ||
-      builder.Display() == EDisplay::kTableCaption) {
-    builder.SetDisplay(EDisplay::kInlineBlock);
-  } else if (builder.Display() == EDisplay::kListItem ||
-             builder.Display() == EDisplay::kTable) {
-    builder.SetDisplay(EDisplay::kBlock);
+  if (IsLaidOutAsWidget(element, appearance)) {
+    if (builder.Display() == EDisplay::kInline ||
+        builder.Display() == EDisplay::kInlineTable ||
+        builder.Display() == EDisplay::kTableRowGroup ||
+        builder.Display() == EDisplay::kTableHeaderGroup ||
+        builder.Display() == EDisplay::kTableFooterGroup ||
+        builder.Display() == EDisplay::kTableRow ||
+        builder.Display() == EDisplay::kTableColumnGroup ||
+        builder.Display() == EDisplay::kTableColumn ||
+        builder.Display() == EDisplay::kTableCell ||
+        builder.Display() == EDisplay::kTableCaption) {
+      builder.SetDisplay(EDisplay::kInlineBlock);
+    } else if (builder.Display() == EDisplay::kListItem ||
+               builder.Display() == EDisplay::kTable) {
+      builder.SetDisplay(EDisplay::kBlock);
+    }
   }
 
   if (appearance == AppearanceValue::kNone) {

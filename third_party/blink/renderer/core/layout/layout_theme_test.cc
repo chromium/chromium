@@ -76,6 +76,44 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
   EXPECT_EQ(custom_color, OutlineColor(span));
 }
 
+TEST_F(LayoutThemeTest, AppearanceDoesNotAdjustDisplayOfNonWidgets) {
+  ScopedAppearanceDisplayAdjustmentForWidgetsOnlyForTest scoped_feature(true);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #span, #anchor { appearance: button; display: inline; }
+      #item { appearance: auto; display: list-item; }
+    </style>
+    <span id=span>span</span>
+    <a id=anchor>anchor</a>
+    <div id=item>item</div>
+  )HTML");
+
+  EXPECT_EQ(EDisplay::kInline,
+            GetElementById("span")->GetComputedStyle()->Display());
+  EXPECT_EQ(EDisplay::kInline,
+            GetElementById("anchor")->GetComputedStyle()->Display());
+  EXPECT_EQ(EDisplay::kListItem,
+            GetElementById("item")->GetComputedStyle()->Display());
+}
+
+TEST_F(LayoutThemeTest, AppearanceAdjustsDisplayOfWidgets) {
+  ScopedAppearanceDisplayAdjustmentForWidgetsOnlyForTest scoped_feature(true);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #inline_button { display: inline; }
+      /* 'border' makes the effective appearance 'none'. */
+      #cell_button { display: table-cell; border: none; }
+    </style>
+    <button id=inline_button>button</button>
+    <button id=cell_button>button</button>
+  )HTML");
+
+  EXPECT_EQ(EDisplay::kInlineBlock,
+            GetElementById("inline_button")->GetComputedStyle()->Display());
+  EXPECT_EQ(EDisplay::kInlineBlock,
+            GetElementById("cell_button")->GetComputedStyle()->Display());
+}
+
 // The expectations in the tests below are relying on LayoutThemeDefault.
 // LayoutThemeMac doesn't inherit from that class.
 #if !BUILDFLAG(IS_MAC)

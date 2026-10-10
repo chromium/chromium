@@ -443,6 +443,9 @@ TEST_F(StyleAdjusterTest, RepeatedSVGAdjustment) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
+  const bool appearance_adjusts_display =
+      !RuntimeEnabledFeatures::
+          AppearanceDisplayAdjustmentForWidgetsOnlyEnabled();
   const struct {
     const char* id;
     EDisplay display;
@@ -456,10 +459,10 @@ TEST_F(StyleAdjusterTest, RepeatedSVGAdjustment) {
       {"text", EDisplay::kInlineBlock, EPosition::kStatic, false},
       {"inline", EDisplay::kInline, EPosition::kStatic, false},
       {"contents", EDisplay::kContents, EPosition::kStatic, false},
-      {"appearance", EDisplay::kInline, EPosition::kStatic, true,
-       AppearanceValue::kButton},
-      {"appearance_cached", EDisplay::kInline, EPosition::kStatic, true,
-       AppearanceValue::kButton},
+      {"appearance", EDisplay::kInline, EPosition::kStatic,
+       appearance_adjusts_display, AppearanceValue::kButton},
+      {"appearance_cached", EDisplay::kInline, EPosition::kStatic,
+       appearance_adjusts_display, AppearanceValue::kButton},
       {"appearance_unchanged", EDisplay::kBlock, EPosition::kStatic, false,
        AppearanceValue::kButton},
       {"unchanged", EDisplay::kBlock, EPosition::kStatic, false},

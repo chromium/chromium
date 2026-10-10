@@ -103,9 +103,8 @@ TEST_F(InsertListCommandTest, CleanupNodeSameAsDestinationNode) {
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<ul><li><table><colgroup><col>"
-      "</colgroup></table></li>"
-      "<li><button>|</button></li></ul>",
+      "<ul><li>^<table><colgroup><col>"
+      "</colgroup></table>|</li></ul><br><button></button>",
       GetSelectionTextFromBody());
 }
 
@@ -157,7 +156,7 @@ TEST_F(InsertListCommandTest, UnlistifyParagraphWithNonEditable) {
 
 // Refer https://crbug.com/1188327
 TEST_F(InsertListCommandTest, NestedSpansJustInsideBody) {
-  InsertStyleElement("span { appearance: checkbox; }");
+  InsertStyleElement("span { display: inline-block; }");
   GetDocument().setDesignMode("on");
   Selection().SetSelection(
       SetSelectionTextToBody("<span><span><span>a</span></span></span>|b"),
