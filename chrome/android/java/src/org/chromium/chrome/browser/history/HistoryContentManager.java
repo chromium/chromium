@@ -43,6 +43,9 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
@@ -809,7 +812,20 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @return True if history page needs to show the actor filter UI.
      */
     boolean showActorFilter() {
-        return ChromeFeatureList.sBrowsingHistoryFilterByActor.isEnabled() && mShowActorFilter;
+        return ChromeFeatureList.sBrowsingHistoryFilterByActor.isEnabled()
+                && mShowActorFilter
+                && isGlicWebActuationAvailable();
+    }
+
+    /**
+     * @return True if Glic web actuation is available for the current profile: Glic is enabled and
+     *     consented, and the user has turned on actuation on web. Mirrors the desktop check in
+     *     {@code history::PopulatePlatformDataSource}.
+     */
+    private boolean isGlicWebActuationAvailable() {
+        if (!GlicEnabling.isEnabledAndConsentForProfile(mProfile)) return false;
+        GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(mProfile);
+        return glicService != null && glicService.getUserEnabledActuationOnWeb();
     }
 
     /** returns whether the info header will be available for user upon request. */

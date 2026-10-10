@@ -71,6 +71,10 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
@@ -184,6 +188,8 @@ public class HistoryUiTest {
     @Mock private PackageManager mPackageManager;
     @Mock private FilterSheetCoordinator mAppFilterSheet;
     @Mock private ApplicationInfo mPackageAppInfo;
+    @Mock private GlicEnabling.Natives mGlicEnablingJni;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -220,6 +226,11 @@ public class HistoryUiTest {
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
         IncognitoUtils.setEnabledForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        // The actor filter is only shown when Glic web actuation is available for the profile.
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJni);
+        doReturn(true).when(mGlicEnablingJni).isEnabledAndConsentForProfile(mProfile);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        doReturn(true).when(mGlicKeyedService).getUserEnabledActuationOnWeb();
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -231,26 +242,7 @@ public class HistoryUiTest {
         boolean isAppSpecificHistoryEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY);
         mBackPressManager = new BackPressManager();
-        mHistoryManager =
-                new HistoryManager(
-                        mProfile,
-                        mWindowAndroid,
-                        mActivity,
-                        true,
-                        mSnackbarManager,
-                        SupplierUtils.of(mBottomSheetController),
-                        /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
-                        /* activityResultTracker= */ mActivityResultTracker,
-                        /* tabSupplier= */ null,
-                        mHistoryProvider,
-                        new HistoryUmaRecorder(),
-                        /* clientPackageName= */ null,
-                        /* shouldShowClearData= */ true,
-                        /* launchedForApp= */ false,
-                        /* showAppFilter= */ isAppSpecificHistoryEnabled,
-                        /* shouldClusterByDomain= */ false,
-                        /* openHistoryItemCallback= */ null,
-                        /* edgeToEdgePadAdjusterGenerator= */ null);
+        mHistoryManager = createHistoryManager();
         mContentManager = mHistoryManager.getContentManagerForTests();
         mAdapter = mContentManager.getAdapter();
         mRecyclerView = mContentManager.getRecyclerView();
@@ -269,6 +261,29 @@ public class HistoryUiTest {
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
 
         BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager);
+    }
+
+    private HistoryManager createHistoryManager() {
+        return new HistoryManager(
+                mProfile,
+                mWindowAndroid,
+                mActivity,
+                true,
+                mSnackbarManager,
+                SupplierUtils.of(mBottomSheetController),
+                /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
+                /* activityResultTracker= */ mActivityResultTracker,
+                /* tabSupplier= */ null,
+                mHistoryProvider,
+                new HistoryUmaRecorder(),
+                /* clientPackageName= */ null,
+                /* shouldShowClearData= */ true,
+                /* launchedForApp= */ false,
+                /* showAppFilter= */ ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.APP_SPECIFIC_HISTORY),
+                /* shouldClusterByDomain= */ false,
+                /* openHistoryItemCallback= */ null,
+                /* edgeToEdgePadAdjusterGenerator= */ null);
     }
 
     @Test
@@ -979,6 +994,18 @@ public class HistoryUiTest {
     @Test
     public void testSearch_ActorFilterDisabled() {
         Assert.assertFalse(mContentManager.showActorFilter());
+    }
+
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR)
+    @Test
+    public void testSearch_ActorFilterHiddenWhenGlicWebActuationUnavailable() {
+        doReturn(false).when(mGlicEnablingJni).isEnabledAndConsentForProfile(mProfile);
+        HistoryContentManager contentManager = createHistoryManager().getContentManagerForTests();
+
+        Assert.assertFalse(contentManager.showActorFilter());
+        Assert.assertEquals(
+                View.GONE,
+                contentManager.getActorFilterForTesting().getChipViewForTesting().getVisibility());
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)

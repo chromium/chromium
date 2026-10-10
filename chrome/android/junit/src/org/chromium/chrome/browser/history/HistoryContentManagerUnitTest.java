@@ -32,6 +32,7 @@ import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -120,6 +121,8 @@ public class HistoryContentManagerUnitTest {
         IdentityServicesProviderJni.setInstanceForTesting(mIdentityServicesProviderJni);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
+        // The actor filter consults GlicEnabling; keep it off so no native call is made.
+        GlicEnabling.setEnabledForTesting(false);
 
         mHistoryContentManager =
                 HistoryContentManager.create(
