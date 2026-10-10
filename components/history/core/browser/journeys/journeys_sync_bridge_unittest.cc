@@ -58,8 +58,10 @@ constexpr char kTestEmoji[] = "test emoji";
 constexpr char kTestOverview[] = "test overview";
 constexpr char kTestShortOverview[] = "test short overview";
 constexpr int64_t kTestVisitTimestamp = 200;
+constexpr int64_t kOtherVisitTimestamp = 300;
 constexpr char kTestQueryTitle[] = "continuation title";
 constexpr char kTestQueryPrompt[] = "continuation prompt";
+constexpr char kTestCollectionTitle[] = "collection title";
 
 constexpr char kAddOrUpdateSuccessHistogram[] =
     "History.SyncedJourneys.DatabaseOperationSuccess.AddOrUpdateJourneys";
@@ -80,9 +82,15 @@ JourneySpecifics CreateTestJourneySpecifics(
   specifics.set_short_overview(kTestShortOverview);
   specifics.add_history_entries()->set_visit_timestamp_windows_epoch_micros(
       kTestVisitTimestamp);
-  auto* query = specifics.add_continuation_queries();
+  JourneySpecifics::ContinuationQuery* query =
+      specifics.add_continuation_queries();
   query->set_title(kTestQueryTitle);
   query->set_prompt(kTestQueryPrompt);
+  JourneySpecifics::Collection* collection = specifics.add_collections();
+  collection->set_title(kTestCollectionTitle);
+  collection->add_items()
+      ->mutable_history_entry()
+      ->set_visit_timestamp_windows_epoch_micros(kTestVisitTimestamp);
   return specifics;
 }
 
@@ -99,7 +107,12 @@ JourneyRow CreateTestJourneyRow(const std::string& journey_id = kTestJourneyId,
         {JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
             base::Microseconds(kTestVisitTimestamp)))},
         /*continuation_queries=*/
-        {JourneyContinuationQuery(kTestQueryTitle, kTestQueryPrompt)});
+        {JourneyContinuationQuery(kTestQueryTitle, kTestQueryPrompt)},
+        /*collections=*/
+        {JourneyHistoryEntryCollection(
+            kTestCollectionTitle,
+            {JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
+                base::Microseconds(kTestVisitTimestamp)))})});
   }
   return JourneyRow(journey_id, title, creation_time, /*emoji=*/kTestEmoji);
 }
@@ -330,6 +343,57 @@ TEST_F(JourneysSyncBridgeTest, ApplyIncrementalSyncChangesAdd) {
             CreateTestJourneyRow("guid_2", "Title 2"));
   histogram_tester.ExpectUniqueSample(kAddOrUpdateSuccessHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kDeleteSuccessHistogram, 0);
+}
+
+// Collections and their items keep their order in both directions, even when
+// items are not sorted by timestamp, and empty collections are kept.
+TEST_F(JourneysSyncBridgeTest, ConvertsCollectionsInOrderInBothDirections) {
+  JourneysSyncBridge bridge = CreateBridge();
+
+  JourneySpecifics specifics = CreateTestJourneySpecifics();
+  specifics.clear_collections();
+  specifics.add_history_entries()->set_visit_timestamp_windows_epoch_micros(
+      kOtherVisitTimestamp);
+  JourneySpecifics::Collection* first = specifics.add_collections();
+  first->set_title("First");
+  first->add_items()
+      ->mutable_history_entry()
+      ->set_visit_timestamp_windows_epoch_micros(kOtherVisitTimestamp);
+  first->add_items()
+      ->mutable_history_entry()
+      ->set_visit_timestamp_windows_epoch_micros(kTestVisitTimestamp);
+  specifics.add_collections()->set_title("Empty");
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_journey() = specifics;
+  entity_data.name = kTestJourneyId;
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(
+      syncer::EntityChange::CreateAdd(kTestJourneyId, std::move(entity_data)));
+  EXPECT_EQ(bridge.ApplyIncrementalSyncChanges(
+                bridge.CreateMetadataChangeList(), std::move(add_changes)),
+            std::nullopt);
+
+  ASSERT_EQ(fake_backend_.journeys().size(), 1u);
+  EXPECT_THAT(
+      fake_backend_.journeys().at(kTestJourneyId).collections,
+      ElementsAre(
+          JourneyHistoryEntryCollection(
+              "First",
+              {JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
+                   base::Microseconds(kOtherVisitTimestamp))),
+               JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
+                   base::Microseconds(kTestVisitTimestamp)))}),
+          JourneyHistoryEntryCollection("Empty", {})));
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge.GetAllDataForDebugging();
+  ASSERT_TRUE(batch);
+  ASSERT_TRUE(batch->HasNext());
+  auto [key, batch_entity_data] = batch->Next();
+  EXPECT_EQ(key, kTestJourneyId);
+  ASSERT_TRUE(batch_entity_data);
+  EXPECT_THAT(batch_entity_data->specifics.journey(), EqualsProto(specifics));
+  EXPECT_FALSE(batch->HasNext());
 }
 
 TEST_F(JourneysSyncBridgeTest, ApplyIncrementalSyncChangesUpdate) {

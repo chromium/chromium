@@ -5,6 +5,7 @@
 #include "components/history/core/browser/journeys/journeys_sync_bridge.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -12,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/history/core/browser/journeys/history_backend_for_journeys_sync.h"
+#include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/journeys/journeys_sync_metadata_database.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -24,8 +26,13 @@ namespace history::journeys {
 
 namespace {
 
+using sync_pb::JourneySpecifics;
+
+// TODO(crbug.com/414527270): Share the Windows-epoch microsecond conversions
+// with journeys_backend_util.cc and the journeys tests instead of spelling
+// them out at every call site.
 // LINT.IfChange(JourneySpecificsConversions)
-JourneyRow JourneyRowFromSpecifics(const sync_pb::JourneySpecifics& specifics) {
+JourneyRow JourneyRowFromSpecifics(const JourneySpecifics& specifics) {
   JourneyRow row;
   row.journey_id = specifics.journey_id();
   row.title = specifics.title();
@@ -41,20 +48,34 @@ JourneyRow JourneyRowFromSpecifics(const sync_pb::JourneySpecifics& specifics) {
   row.creation_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specifics.creation_time_windows_epoch_micros()));
 
-  for (const auto& entry : specifics.history_entries()) {
+  for (const JourneySpecifics::HistoryEntry& entry :
+       specifics.history_entries()) {
     row.history_entries.emplace_back(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(entry.visit_timestamp_windows_epoch_micros())));
   }
 
-  for (const auto& query : specifics.continuation_queries()) {
+  for (const JourneySpecifics::ContinuationQuery& query :
+       specifics.continuation_queries()) {
     row.continuation_queries.emplace_back(query.title(), query.prompt());
+  }
+
+  for (const JourneySpecifics::Collection& collection :
+       specifics.collections()) {
+    std::vector<JourneyHistoryEntry> items;
+    items.reserve(collection.items_size());
+    for (const JourneySpecifics::CollectionItem& item : collection.items()) {
+      items.emplace_back(
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+              item.history_entry().visit_timestamp_windows_epoch_micros())));
+    }
+    row.collections.emplace_back(collection.title(), std::move(items));
   }
 
   return row;
 }
 
-sync_pb::JourneySpecifics SpecificsFromJourneyRow(const JourneyRow& row) {
-  sync_pb::JourneySpecifics specifics;
+JourneySpecifics SpecificsFromJourneyRow(const JourneyRow& row) {
+  JourneySpecifics specifics;
   specifics.set_journey_id(row.journey_id);
   specifics.set_title(row.title);
   if (row.emoji.has_value()) {
@@ -69,15 +90,28 @@ sync_pb::JourneySpecifics SpecificsFromJourneyRow(const JourneyRow& row) {
   specifics.set_creation_time_windows_epoch_micros(
       row.creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  for (const auto& entry : row.history_entries) {
+  for (const JourneyHistoryEntry& entry : row.history_entries) {
     specifics.add_history_entries()->set_visit_timestamp_windows_epoch_micros(
         entry.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   }
 
-  for (const auto& query : row.continuation_queries) {
-    auto* q = specifics.add_continuation_queries();
-    q->set_title(query.title);
-    q->set_prompt(query.prompt);
+  for (const JourneyContinuationQuery& query : row.continuation_queries) {
+    JourneySpecifics::ContinuationQuery* query_specifics =
+        specifics.add_continuation_queries();
+    query_specifics->set_title(query.title);
+    query_specifics->set_prompt(query.prompt);
+  }
+
+  for (const JourneyHistoryEntryCollection& collection : row.collections) {
+    JourneySpecifics::Collection* collection_specifics =
+        specifics.add_collections();
+    collection_specifics->set_title(collection.title);
+    for (const JourneyHistoryEntry& item : collection.items) {
+      collection_specifics->add_items()
+          ->mutable_history_entry()
+          ->set_visit_timestamp_windows_epoch_micros(
+              item.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    }
   }
 
   return specifics;
@@ -234,6 +268,7 @@ JourneysSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_creation_time_windows_epoch_micros();
   trimmed_specifics.clear_history_entries();
   trimmed_specifics.clear_continuation_queries();
+  trimmed_specifics.clear_collections();
   // LINT.ThenChange(//components/sync/protocol/journey_specifics.proto:JourneySpecifics)
 
   sync_pb::EntitySpecifics trimmed_entity_specifics;

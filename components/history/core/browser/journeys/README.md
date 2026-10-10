@@ -279,8 +279,7 @@ std::vector<Journey>   (size ≤ number of stored journeys)
 ## Sync Integration & Lifecycle (`syncer::JOURNEY`)
 
 The wire format is `sync_pb::JourneySpecifics`, defined in
-[`journey_specifics.proto`][specifics], with nested `HistoryEntry` and
-`ContinuationQuery` messages.
+[`journey_specifics.proto`][specifics].
 
 ```text
 sync engine ── ClientTagBasedDataTypeProcessor
