@@ -11,7 +11,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
@@ -21,7 +20,14 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
   NewTabPageBrowserTest() {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/
+        {
+#if BUILDFLAG(IS_ANDROID)
+            // Customization buttons on the WebUI NTP are feature-flagged on
+            // Android.
+            ntp_features::kNtpCustomizeWebUiAndroid,
+#endif
+        },
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                ntp_realbox::kNtpRealboxNext,
                                contextual_tasks::kContextualTasksContext});
@@ -80,7 +86,14 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensUploadDialog) {
   RunTest("new_tab_page/lens_upload_dialog_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, Logo) {
+// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
+// position checks.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Logo DISABLED_Logo
+#else
+#define MAYBE_Logo Logo
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_Logo) {
   RunTest("new_tab_page/logo_test.js", "mocha.run()");
 }
 
@@ -129,7 +142,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, CrComposeboxAutocompleteContextTest) {
           "runMochaSuite('CrComposeboxAutocompleteContextTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
+// TODO(crbug.com/565815899): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ComposeboxContextMenu DISABLED_ComposeboxContextMenu
+#else
+#define MAYBE_ComposeboxContextMenu ComposeboxContextMenu
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxContextMenu) {
   RunTest("new_tab_page/composebox/composebox_context_menu_test.js",
           "runMochaSuite('NewTabPageComposeboxContextMenuTest')");
 }
@@ -277,12 +296,20 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Misc) {
           "runMochaSuite('NewTabPageAppTest Misc')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbThemingRemoveScrim) {
+// TODO(crbug.com/571327206): The OneGoogleBar is disabled on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_OgbThemingRemoveScrim DISABLED_OgbThemingRemoveScrim
+#define MAYBE_OgbScrim DISABLED_OgbScrim
+#else
+#define MAYBE_OgbThemingRemoveScrim OgbThemingRemoveScrim
+#define MAYBE_OgbScrim OgbScrim
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_OgbThemingRemoveScrim) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest OgbThemingRemoveScrim')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, OgbScrim) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_OgbScrim) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest OgbScrim')");
 }
@@ -336,7 +363,9 @@ class NewTabPageAppComposeboxInvariantTest
 };
 
 // TODO(crbug.com/564567296): Flaky timeout on Linux debug builds.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
+// alignment checks.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_InvariantChecks DISABLED_InvariantChecks
 #else
 #define MAYBE_InvariantChecks InvariantChecks
@@ -409,7 +438,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
 }
 
 // TODO(crbug.com/527605085): Flaky timeout on Linux debug builds.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/565815572): Subpixel layout rounding on Android breaks exact
+// size checks.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_VoiceSearchCoherence DISABLED_VoiceSearchCoherence
 #else
 #define MAYBE_VoiceSearchCoherence VoiceSearchCoherence

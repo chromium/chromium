@@ -110,10 +110,13 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
     searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
+    // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+    // <if expr="not is_android">
     searchboxHandler.setPromiseResolveFor(
         'getSmartTabSharingActive', {active: false});
     searchboxHandler.setPromiseResolveFor(
         'resetSmartTabSharing', {active: false});
+    // </if>
     searchboxHandler.setPromiseResolveFor('getInputState', {
       state: new MockInputState({
         toolConfigs: [],
@@ -156,6 +159,17 @@ createComposeboxElement<T extends ComposeboxUnionElement = ComposeboxElement>(
 export async function waitForAddFileCallCount(
     searchboxHandler: TestMock<SearchboxPageHandlerRemote>,
     expectedCount: number): Promise<void> {
+  // <if expr="is_android">
+  // On the Android emulator an image upload can block on a sync IPC to the
+  // browser UI thread for seconds, so don't bound the wait with a deadline.
+  // The C++ test timeout still catches real hangs.
+  while (searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN) < expectedCount) {
+    await new Promise<void>(resolve => setTimeout(resolve, 50));
+  }
+  assertEquals(
+      expectedCount, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+  // </if>
+  // <if expr="not is_android">
   const startTime = Date.now();
   return new Promise((resolve, reject) => {
     const checkCount = () => {
@@ -174,6 +188,7 @@ export async function waitForAddFileCallCount(
     };
     checkCount();
   });
+  // </if>
 }
 
 export function getInputForFileType(

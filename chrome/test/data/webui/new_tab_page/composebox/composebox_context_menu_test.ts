@@ -616,7 +616,10 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             }],
             mode: ToolMode.kUnspecified,
             model: 0,
+            // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+            // <if expr="not is_android">
             smartTabSharingActive: false,
+            // </if>
           };
 
           createComposeboxElement(testProxy, {state: initialState});
@@ -682,6 +685,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           assertEquals(0, contextMenus.length);
         });
 
+    // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+    // <if expr="not is_android">
     test(
         'smart tab sharing item is disabled when tab input type is disabled',
         async () => {
@@ -758,6 +763,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           assertTrue(!!smartTabSharingItemDisabled);
           assertTrue(smartTabSharingItemDisabled.disabled);
         });
+    // </if>
 
     test(
         'share tabs trigger is disabled when tab input type is disabled',
@@ -766,8 +772,11 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             contextManagementInComposeboxEnabled: true,
             composeboxSmartTabSharingVisible: true,
           });
+          // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+          // <if expr="not is_android">
           testProxy.searchboxHandler.setPromiseResolveFor(
               'getSmartTabSharingActive', {active: false});
+          // </if>
 
           const sampleTabs = [{
             tabId: 1,
@@ -832,8 +841,11 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             contextManagementInComposeboxEnabled: true,
             composeboxSmartTabSharingVisible: true,
           });
+          // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+          // <if expr="not is_android">
           testProxy.searchboxHandler.setPromiseResolveFor(
               'getSmartTabSharingActive', {active: false});
+          // </if>
 
           const sampleTabs = [{
             tabId: 1,
@@ -914,8 +926,11 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             contextManagementInComposeboxEnabled: true,
             composeboxSmartTabSharingVisible: true,
           });
+          // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+          // <if expr="not is_android">
           testProxy.searchboxHandler.setPromiseResolveFor(
               'getSmartTabSharingActive', {active: false});
+          // </if>
 
           const sampleTabs = [{
             tabId: 1,

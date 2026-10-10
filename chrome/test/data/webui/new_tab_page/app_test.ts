@@ -139,6 +139,7 @@ suite('NewTabPageAppTest', () => {
     searchboxHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'NTP_REALBOX'}));
+    // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
     // <if expr="not is_android">
     searchboxHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
@@ -290,6 +291,8 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
+  // TODO(crbug.com/571327206): Disabled on Android, where the OneGoogleBar is
+  // disabled.
   suite('OgbThemingRemoveScrim', () => {
     test('Ogb updates on ntp load', async () => {
       // Act.
@@ -324,6 +327,8 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
+  // TODO(crbug.com/571327206): Disabled on Android, where the OneGoogleBar is
+  // disabled.
   suite('OgbScrim', () => {
     test('scroll bounce', async () => {
       // Arrange.
@@ -497,6 +502,8 @@ suite('NewTabPageAppTest', () => {
       assertTrue(mostVisited.hasAttribute('is-dark_'));
     });
 
+    // TODO(crbug.com/571327206): The OneGoogleBar is disabled on Android.
+    // <if expr="not is_android">
     [true, false].forEach((isDark) => {
       test(
           `OGB light mode whenever background image
@@ -529,6 +536,7 @@ suite('NewTabPageAppTest', () => {
             assertEquals(true, applyLightTheme);
           });
     });
+    // </if>
 
     suite('theming metrics', () => {
       test('having no theme produces correct metrics', async () => {
@@ -5440,6 +5448,7 @@ suite('NewTabPageAppReducedMotionTest', () => {
     searchboxHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'NTP_REALBOX'}));
+    // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
     // <if expr="not is_android">
     searchboxHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
@@ -5617,6 +5626,7 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
     searchboxHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'NTP_REALBOX'}));
+    // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
     // <if expr="not is_android">
     searchboxHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
